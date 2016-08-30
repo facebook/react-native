@@ -15,17 +15,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Picture;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
 
-import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -39,10 +40,12 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import android.content.Intent;
-import android.net.Uri;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 
 /**
  * Manages instances of {@link WebView}
@@ -84,6 +87,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static final String BLANK_URL = "about:blank";
 
   private WebViewConfig mWebViewConfig;
+  private @Nullable WebView.PictureListener mPictureListener;
 
   private static class ReactWebViewClient extends WebViewClient {
 
@@ -117,11 +121,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         if (url.startsWith("http://") || url.startsWith("https://")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);   
-          return true;   
-        }              
+          view.getContext().startActivity(intent);
+          return true;
+        }
     }
 
     @Override
@@ -163,13 +167,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingFinishEvent(
               webView.getId(),
               createWebViewEvent(webView, url)));
-    }
-
-    private static void dispatchEvent(WebView webView, Event event) {
-      ReactContext reactContext = (ReactContext) webView.getContext();
-      EventDispatcher eventDispatcher =
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(event);
     }
 
     private WritableMap createWebViewEvent(WebView webView, String url) {
@@ -267,6 +264,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     webView.getSettings().setBuiltInZoomControls(true);
     webView.getSettings().setDisplayZoomControls(false);
 
+    // Fixes broken full-screen modals/galleries due to body height being 0.
+    webView.setLayoutParams(
+            new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
+
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
@@ -288,7 +290,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
   }
-
 
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {
@@ -323,6 +324,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
       if (source.hasKey("uri")) {
         String url = source.getString("uri");
+        String previousUrl = view.getUrl();
+        if (previousUrl != null && previousUrl.equals(url)) {
+          return;
+        }
         if (source.hasKey("method")) {
           String method = source.getString("method");
           if (method.equals(HTTP_METHOD_POST)) {
@@ -356,6 +361,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
     view.loadUrl(BLANK_URL);
+  }
+
+  @ReactProp(name = "onContentSizeChange")
+  public void setOnContentSizeChange(WebView view, boolean sendContentSizeChangeEvents) {
+    if (sendContentSizeChangeEvents) {
+      view.setPictureListener(getPictureListener());
+    } else {
+      view.setPictureListener(null);
+    }
   }
 
   @Override
@@ -396,5 +410,29 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     super.onDropViewInstance(webView);
     ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
+  }
+
+  private WebView.PictureListener getPictureListener() {
+    if (mPictureListener == null) {
+      mPictureListener = new WebView.PictureListener() {
+        @Override
+        public void onNewPicture(WebView webView, Picture picture) {
+          dispatchEvent(
+            webView,
+            new ContentSizeChangeEvent(
+              webView.getId(),
+              webView.getWidth(),
+              webView.getContentHeight()));
+        }
+      };
+    }
+    return mPictureListener;
+  }
+
+  private static void dispatchEvent(WebView webView, Event event) {
+    ReactContext reactContext = (ReactContext) webView.getContext();
+    EventDispatcher eventDispatcher =
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    eventDispatcher.dispatchEvent(event);
   }
 }

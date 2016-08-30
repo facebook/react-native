@@ -7,11 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __CSS_LAYOUT_INTERNAL_H
-#define __CSS_LAYOUT_INTERNAL_H
-
-#include <stdio.h>
-#include <stdlib.h>
+#pragma once
 
 #include "CSSLayout.h"
 #include "CSSNodeList.h"
@@ -30,23 +26,21 @@ typedef struct CSSCachedMeasurement {
 
 // This value was chosen based on empiracle data. Even the most complicated
 // layouts should not require more than 16 entries to fit within the cache.
-enum {
-  CSS_MAX_CACHED_RESULT_COUNT = 16
-};
+enum { CSS_MAX_CACHED_RESULT_COUNT = 16 };
 
 typedef struct CSSLayout {
   float position[4];
   float dimensions[2];
   CSSDirection direction;
 
-  float flexBasis;
+  float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
-  int generationCount;
+  uint32_t generationCount;
   CSSDirection lastParentDirection;
 
-  int nextCachedMeasurementsIndex;
+  uint32_t nextCachedMeasurementsIndex;
   CSSCachedMeasurement cachedMeasurements[CSS_MAX_CACHED_RESULT_COUNT];
   float measuredDimensions[2];
 
@@ -63,21 +57,13 @@ typedef struct CSSStyle {
   CSSPositionType positionType;
   CSSWrapType flexWrap;
   CSSOverflow overflow;
-  float flex;
-  float margin[6];
-  float position[4];
-  /**
-   * You should skip all the rules that contain negative values for the
-   * following attributes. For example:
-   *   {padding: 10, paddingLeft: -5}
-   * should output:
-   *   {left: 10 ...}
-   * the following two are incorrect:
-   *   {left: -5 ...}
-   *   {left: 0 ...}
-   */
-  float padding[6];
-  float border[6];
+  float flexGrow;
+  float flexShrink;
+  float flexBasis;
+  float margin[CSSEdgeCount];
+  float position[CSSEdgeCount];
+  float padding[CSSEdgeCount];
+  float border[CSSEdgeCount];
   float dimensions[2];
   float minDimensions[2];
   float maxDimensions[2];
@@ -86,20 +72,22 @@ typedef struct CSSStyle {
 typedef struct CSSNode {
   CSSStyle style;
   CSSLayout layout;
-  int lineIndex;
-  bool shouldUpdate;
+  uint32_t lineIndex;
+  bool hasNewLayout;
   bool isTextNode;
   CSSNodeRef parent;
   CSSNodeListRef children;
   bool isDirty;
 
-  struct CSSNode* nextChild;
+  struct CSSNode *nextChild;
 
-  CSSSize (*measure)(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode);
+  CSSSize (*measure)(void *context,
+                     float width,
+                     CSSMeasureMode widthMode,
+                     float height,
+                     CSSMeasureMode heightMode);
   void (*print)(void *context);
   void *context;
 } CSSNode;
 
 CSS_EXTERN_C_END
-
-#endif

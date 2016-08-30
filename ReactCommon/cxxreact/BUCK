@@ -1,8 +1,8 @@
 CXX_LIBRARY_COMPILER_FLAGS = []
 REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
 if THIS_IS_FBOBJC:
-  inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS)
-  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.combined_flags_as_dict()['compiler_flags']
+  inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
+  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
   REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
 
 def kwargs_add(base_kwargs, **new_kwargs):
@@ -49,7 +49,7 @@ elif THIS_IS_FBOBJC:
     ios_library(
       name = 'bridge',
       header_path_prefix = "cxxreact",
-      inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS),
+      inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
       frameworks = [
         '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
       ],
@@ -109,6 +109,7 @@ react_library(
   force_static = True,
   srcs = [
     'CxxMessageQueue.cpp',
+    'CxxNativeModule.cpp',
     'Executor.cpp',
     'Instance.cpp',
     'JSCExecutor.cpp',
@@ -125,6 +126,7 @@ react_library(
     'NativeToJsBridge.cpp',
     'Platform.cpp',
     'Value.cpp',
+    'Unicode.cpp',
   ],
   headers = [
     'JSCLegacyProfiler.h',
@@ -136,6 +138,7 @@ react_library(
   ],
   exported_headers = [
     'CxxMessageQueue.h',
+    'CxxNativeModule.h',
     'Executor.h',
     'ExecutorToken.h',
     'ExecutorTokenFactory.h',
@@ -153,6 +156,7 @@ react_library(
     'Platform.h',
     'SystraceSection.h',
     'Value.h',
+    'Unicode.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNative"',
@@ -165,7 +169,9 @@ react_library(
     '-frtti',
   ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
   deps = [
+    ':module',
     '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('microprofiler:microprofiler'),
   ],
   visibility = [ 'PUBLIC' ],
 )

@@ -21,7 +21,7 @@ function logAndroid() {
   });
 }
 
-function _logAndroid(resolve, reject) {
+function _logAndroid() {
   try {
     const adbPath = process.env.ANDROID_HOME
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
@@ -43,9 +43,12 @@ function _logAndroid(resolve, reject) {
     console.log(chalk.red(
       'adb invocation failed. Do you have adb in your PATH?'
     ));
-    reject();
-    return;
+    return Promise.reject();
   }
 }
 
-module.exports = logAndroid;
+module.exports = {
+  name: 'log-android',
+  description: 'starts adb logcat',
+  func: logAndroid,
+};

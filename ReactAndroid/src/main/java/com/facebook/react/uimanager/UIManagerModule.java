@@ -518,4 +518,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void addUIBlock (UIBlock block) {
     mUIImplementation.addUIBlock(block);
   }
+
+  /**
+   * Given a reactTag from a component, find its root node tag, if possible.
+   * Otherwise, this will return 0. If the reactTag belongs to a root node, this
+   * will return the same reactTag.
+   *
+   * @param reactTag the component tag
+   *
+   * @return the rootTag
+   */
+  public int resolveRootTagFromReactTag(int reactTag) {
+    return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+  }
 }

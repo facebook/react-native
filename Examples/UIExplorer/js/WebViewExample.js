@@ -42,30 +42,27 @@ var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
 
-var WebViewExample = React.createClass({
+class WebViewExample extends React.Component {
+  state = {
+    url: DEFAULT_URL,
+    status: 'No Page Loaded',
+    backButtonEnabled: false,
+    forwardButtonEnabled: false,
+    loading: true,
+    scalesPageToFit: true,
+  };
 
-  getInitialState: function() {
-    return {
-      url: DEFAULT_URL,
-      status: 'No Page Loaded',
-      backButtonEnabled: false,
-      forwardButtonEnabled: false,
-      loading: true,
-      scalesPageToFit: true,
-    };
-  },
+  inputText = '';
 
-  inputText: '',
-
-  handleTextInputChange: function(event) {
+  handleTextInputChange = (event) => {
     var url = event.nativeEvent.text;
     if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;
     }
     this.inputText = url;
-  },
+  };
 
-  render: function() {
+  render() {
     this.inputText = this.state.url;
 
     return (
@@ -120,26 +117,26 @@ var WebViewExample = React.createClass({
         </View>
       </View>
     );
-  },
+  }
 
-  goBack: function() {
+  goBack = () => {
     this.refs[WEBVIEW_REF].goBack();
-  },
+  };
 
-  goForward: function() {
+  goForward = () => {
     this.refs[WEBVIEW_REF].goForward();
-  },
+  };
 
-  reload: function() {
+  reload = () => {
     this.refs[WEBVIEW_REF].reload();
-  },
+  };
 
-  onShouldStartLoadWithRequest: function(event) {
+  onShouldStartLoadWithRequest = (event) => {
     // Implement any custom loading logic here, don't forget to return!
     return true;
-  },
+  };
 
-  onNavigationStateChange: function(navState) {
+  onNavigationStateChange = (navState) => {
     this.setState({
       backButtonEnabled: navState.canGoBack,
       forwardButtonEnabled: navState.canGoForward,
@@ -148,13 +145,13 @@ var WebViewExample = React.createClass({
       loading: navState.loading,
       scalesPageToFit: true
     });
-  },
+  };
 
-  onSubmitEditing: function(event) {
+  onSubmitEditing = (event) => {
     this.pressGoButton();
-  },
+  };
 
-  pressGoButton: function() {
+  pressGoButton = () => {
     var url = this.inputText.toLowerCase();
     if (url === this.state.url) {
       this.reload();
@@ -165,17 +162,17 @@ var WebViewExample = React.createClass({
     }
     // dismiss keyboard
     this.refs[TEXT_INPUT_REF].blur();
-  },
+  };
+}
 
-});
-
-var Button = React.createClass({
-  _handlePress: function() {
+class Button extends React.Component {
+  _handlePress = () => {
     if (this.props.enabled !== false && this.props.onPress) {
       this.props.onPress();
     }
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View style={styles.button}>
@@ -184,17 +181,14 @@ var Button = React.createClass({
       </TouchableWithoutFeedback>
     );
   }
-});
+}
 
-var ScaledWebView = React.createClass({
+class ScaledWebView extends React.Component {
+  state = {
+    scalingEnabled: true,
+  };
 
-  getInitialState: function() {
-    return {
-      scalingEnabled: true,
-    }
-  },
-
-  render: function() {
+  render() {
     return (
       <View>
         <WebView
@@ -220,8 +214,8 @@ var ScaledWebView = React.createClass({
         </View>
       </View>
     );
-  },
-})
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

@@ -834,8 +834,8 @@ h2 {
 }
 
 .docs-prevnext {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .button {
@@ -1580,56 +1580,58 @@ input#algolia-doc-search:focus {
   color: #3B3738;
 }
 
-.params, .props
-{
-    border-spacing: 0;
-    border: 0;
-    border-collapse: collapse;
+.params, .props {
+  border-spacing: 0;
+  border: 0;
+  border-collapse: collapse;
 }
 
 .params .name, .props .name, .name code {
-    color: #4D4E53;
+  color: #4D4E53;
 }
 
-.params td, .params th, .props td, .props th
-{
-    border: 1px solid #ddd;
-    margin: 0px;
-    text-align: left;
-    vertical-align: top;
-    padding: 4px 6px;
-    display: table-cell;
+.params td, .params th, .props td, .props th {
+  border: 1px solid #ddd;
+  margin: 0px;
+  text-align: left;
+  vertical-align: top;
+  padding: 4px 6px;
+  display: table-cell;
 }
 
-.params thead tr, .props thead tr
-{
-    background-color: hsl(198, 75%, 88%);
-    font-weight: bold;
+.params thead tr, .props thead tr {
+  background-color: hsl(198, 75%, 88%);
+  font-weight: bold;
 }
 
-.params .params thead tr, .props .props thead tr
-{
-    background-color: #fff;
-    font-weight: bold;
+.params .params thead tr, .props .props thead tr {
+  background-color: #fff;
+  font-weight: bold;
 }
 
 .params th, .props th { border-right: 1px solid #aaa; }
 .params thead .last, .props thead .last { border-right: 1px solid #ddd; }
 
 .params td.description > div > p:first-child,
-.props td.description > div > p:first-child
-{
-    margin-top: 0;
-    padding-top: 0;
+.props td.description > div > p:first-child {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .params td.description > p:last-child,
-.props td.description > p:last-child
-{
-    margin-bottom: 0;
-    padding-bottom: 0;
+.props td.description > p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
+.edit-page-block {
+  padding: 5px;
+  margin-bottom: 40px;
+  font-size: 12px;
+  color: #887766;
+  text-align: center;
+  background-color: rgba(5, 165, 209, 0.05);
+}
 
 /** Web player **/
 
@@ -1643,4 +1645,151 @@ input#algolia-doc-search:focus {
 
 .web-player.mobile > .prism {
   display: block;
+}
+
+/** Blog **/
+
+.entry-header {
+  margin: 40px 0 0 0;
+}
+
+.entry-header h1 {
+  margin: 0;
+  font-size: 33px;
+  line-height: 36px;
+}
+
+.entry-header h4 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.entry-header .author {
+  color: #5A6b77;
+}
+
+.entry-header .date {
+  color: #66637A;
+}
+
+.entry-readmore {
+  margin: 12px 0 0;
+}
+
+.entry-share {
+  padding: 36px 0;
+  display: block;
+  text-align: left;
+}
+
+.small-title {
+  font-size: 10px;
+  color: #66637A;
+  letter-spacing: .4rem;
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 12px;
+}
+
+.entry-share .small-title {
+  float: left;
+  width: 50%;
+}
+
+.social-buttons {
+  padding-top: 7px;
+  float: left;
+  width: 50%;
+}
+
+article {
+  margin: 0 0 40px 0;
+  line-height: 1.7;
+}
+
+article h2 {
+  font-size: 26px;
+  line-height: 30px;
+}
+
+article li {
+  line-height: 28px;
+}
+
+.author-info {
+  margin-top: 26px;
+  text-align: center;
+  border-bottom: 1px solid #f1f1f1;
+  padding-bottom: 20px
+}
+
+.the-image {
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background-position: center center;
+  background-color: #fff;
+  background-size: cover;
+}
+
+.author-image {
+  position: relative;
+}
+
+.author-image:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  top: 50%;
+  left: 0;
+  background-color: #F1F1F1;
+}
+
+.posted-on {
+  font-size: 12px;
+  color: rgba(102,99,122,.29);
+  margin-bottom: 0;
+  margin-top: 15px;
+}
+
+.name-title {
+  margin-top: 2px;
+  font-size: 22px;
+  font-weight: 400;
+  margin: 3px 0 5px;
+  color: #5A6B77;
+}
+
+.name-title a {
+  color: #5A6B77;
+}
+
+.name-title .title {
+  color: rgba(102,99,122,.44);
+}
+
+.btn {
+    background: 0 0;
+    color: #05A5D1;
+    min-width: 0;
+    border: 1px solid #05A5D1;
+    display: inline-block;
+    padding: 9px 18px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.btn a {
+  text-decoration: none !important;
+}
+
+.btn:hover {
+  text-decoration: none !important;
 }

@@ -7,50 +7,47 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "CSSNodeList.h"
 
 struct CSSNodeList {
-  int capacity;
-  int count;
+  uint32_t capacity;
+  uint32_t count;
   void **items;
 };
 
-CSSNodeListRef CSSNodeListNew(unsigned int initialCapacity) {
-  CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
-  assert(list != NULL);
+CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
+  const CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
+  CSS_ASSERT(list != NULL, "Could not allocate memory for list");
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(void*) * list->capacity);
-  assert(list->items != NULL);
+  list->items = malloc(sizeof(void *) * list->capacity);
+  CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
 }
 
-void CSSNodeListFree(CSSNodeListRef list) {
+void CSSNodeListFree(const CSSNodeListRef list) {
+  free(list->items);
   free(list);
 }
 
-unsigned int CSSNodeListCount(CSSNodeListRef list) {
+uint32_t CSSNodeListCount(const CSSNodeListRef list) {
   return list->count;
 }
 
-void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node) {
+void CSSNodeListAdd(const CSSNodeListRef list, const CSSNodeRef node) {
   CSSNodeListInsert(list, node, list->count);
 }
 
-void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, unsigned int index) {
+void CSSNodeListInsert(const CSSNodeListRef list, const CSSNodeRef node, const uint32_t index) {
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(void*) * list->capacity);
-    assert(list->items != NULL);
+    list->items = realloc(list->items, sizeof(void *) * list->capacity);
+    CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
-  for (unsigned int i = list->count; i > index; i--) {
+  for (uint32_t i = list->count; i > index; i--) {
     list->items[i] = list->items[i - 1];
   }
 
@@ -58,11 +55,11 @@ void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, unsigned int index)
   list->items[index] = node;
 }
 
-CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, unsigned int index) {
-  CSSNodeRef removed = list->items[index];
+CSSNodeRef CSSNodeListRemove(const CSSNodeListRef list, const uint32_t index) {
+  const CSSNodeRef removed = list->items[index];
   list->items[index] = NULL;
 
-  for (unsigned int i = index; i < list->count - 1; i++) {
+  for (uint32_t i = index; i < list->count - 1; i++) {
     list->items[i] = list->items[i + 1];
     list->items[i + 1] = NULL;
   }
@@ -71,8 +68,8 @@ CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, unsigned int index) {
   return removed;
 }
 
-CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
-  for (unsigned int i = 0; i < list->count; i++) {
+CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node) {
+  for (uint32_t i = 0; i < list->count; i++) {
     if (list->items[i] == node) {
       return CSSNodeListRemove(list, i);
     }
@@ -81,6 +78,6 @@ CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
   return NULL;
 }
 
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, unsigned int index) {
+CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index) {
   return list->items[index];
 }

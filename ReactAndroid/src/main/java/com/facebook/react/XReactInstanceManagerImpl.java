@@ -487,7 +487,17 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
 
     moveToBeforeResumeLifecycleState();
-    mCurrentActivity = null;
+  }
+
+  @Override
+  public void onHostPause(Activity activity) {
+    Assertions.assertNotNull(mCurrentActivity);
+    Assertions.assertCondition(
+      activity == mCurrentActivity,
+      "Pausing an activity that is not the current activity, this is incorrect! " +
+        "Current activity: " + mCurrentActivity.getClass().getSimpleName() + " " +
+        "Paused activity: " + activity.getClass().getSimpleName());
+    onHostPause();
   }
 
   /**
@@ -524,6 +534,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     moveToBeforeCreateLifecycleState();
     mCurrentActivity = null;
+  }
+
+  @Override
+  public void onHostDestroy(Activity activity) {
+    if (activity == mCurrentActivity) {
+      onHostDestroy();
+    }
   }
 
   @Override
@@ -590,9 +607,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     if (mCurrentReactContext != null) {
-      mCurrentReactContext.onActivityResult(requestCode, resultCode, data);
+      mCurrentReactContext.onActivityResult(activity, requestCode, resultCode, data);
     }
   }
 
@@ -765,6 +782,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    rootView.setRootViewTag(rootTag);
     @Nullable Bundle launchOptions = rootView.getLaunchOptions();
     WritableMap initialProps = Arguments.makeNativeMap(launchOptions);
     String jsAppModuleName = rootView.getJSModuleName();
@@ -907,10 +925,10 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   private void processPackage(
-      ReactPackage reactPackage,
-      ReactApplicationContext reactContext,
-      NativeModuleRegistry.Builder nativeRegistryBuilder,
-      JavaScriptModuleRegistry.Builder jsModulesBuilder) {
+    ReactPackage reactPackage,
+    ReactApplicationContext reactContext,
+    NativeModuleRegistry.Builder nativeRegistryBuilder,
+    JavaScriptModuleRegistry.Builder jsModulesBuilder) {
     for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
       nativeRegistryBuilder.add(nativeModule);
     }

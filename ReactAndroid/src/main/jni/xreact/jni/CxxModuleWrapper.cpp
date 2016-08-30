@@ -44,10 +44,19 @@ public:
   static void registerNatives() {
     registerHybrid({
       makeNativeMethod("initHybrid", CxxMethodWrapper::initHybrid),
+      makeNativeMethod("getType", CxxMethodWrapper::getType),
       makeNativeMethod("invoke",
                        "(Lcom/facebook/react/bridge/CatalystInstance;Lcom/facebook/react/bridge/ExecutorToken;Lcom/facebook/react/bridge/ReadableNativeArray;)V",
                        CxxMethodWrapper::invoke),
     });
+  }
+
+  std::string getType() {
+    if (method_->func) {
+      return "remote";
+    } else {
+      return "syncHook";
+    }
   }
 
   void invoke(jobject catalystinstance, ExecutorToken::jhybridobject executorToken, NativeArray* args);
@@ -58,6 +67,12 @@ public:
 void CxxMethodWrapper::invoke(jobject jCatalystInstance, ExecutorToken::jhybridobject jExecutorToken, NativeArray* arguments) {
   CxxModule::Callback first;
   CxxModule::Callback second;
+
+  if (!method_->func) {
+    throw std::runtime_error(
+      folly::to<std::string>("Method ", method_->name,
+                             " is synchronous but invoked asynchronously"));
+  }
 
   if (method_->callbacks >= 1) {
     auto catalystInstance = make_global(adopt_local(jCatalystInstance));

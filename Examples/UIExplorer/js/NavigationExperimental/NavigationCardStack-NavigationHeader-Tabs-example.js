@@ -267,7 +267,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
           key={'stack_' + tabKey}
           onNavigateBack={this._back}
           navigationState={scenes}
-          renderOverlay={this._renderHeader}
+          renderHeader={this._renderHeader}
           renderScene={this._renderScene}
           style={styles.navigatorCardStack}
         />
@@ -333,10 +333,10 @@ const YourHeader = createAppNavigationContainer(class extends Component {
     this.props.navigate({type: 'pop'});
   }
 
-  _renderTitleComponent(): ReactElement {
+  _renderTitleComponent(props: Object): ReactElement {
     return (
       <NavigationHeader.Title>
-        {this.props.scene.route.key}
+        {props.scene.route.key}
       </NavigationHeader.Title>
     );
   }
@@ -359,7 +359,7 @@ const YourScene = createAppNavigationContainer(class extends Component {
 
   render(): ReactElement {
     return (
-      <ScrollView style={styles.scrollView}>
+      <ScrollView>
         <NavigationExampleRow
           text="Push Route"
           onPress={this._pushRoute}
@@ -462,9 +462,6 @@ const styles = StyleSheet.create({
   },
   navigatorCardStack: {
     flex: 20,
-  },
-  scrollView: {
-    marginTop: 64
   },
   tabs: {
     flex: 1,

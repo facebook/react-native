@@ -20,10 +20,10 @@ Note the latest version of the `react-native` npm package from here (or use `npm
 
 * https://www.npmjs.com/package/react-native
 
-Now install that version of `react-native` in your project with `npm install --save`. For example, to upgrade to the version `0.26`, in a terminal run:
+Now install that version of `react-native` in your project with `npm install --save`. For example, to upgrade to the version `0.31`, in a terminal run:
 
 ```sh
-$ npm install --save react-native@0.26
+$ npm install --save react-native@0.31
 ```
 
 ## 2. Upgrade your project templates
@@ -47,25 +47,4 @@ This will check your files against the latest template and perform the following
 
 # Manual Upgrades
 
-Xcode project format is pretty complex and sometimes it's tricky to upgrade and merge new changes.
-
-### From 0.13 to 0.14
-
-The major change in this version happened to the CLI ([see changelog](https://github.com/facebook/react-native/releases/tag/v0.14.0-rc)) and static images ([see docs](docs/images.html)). To use the new asset system in existing Xcode project, do the following:
-
-Add new "Run Script" step to your project's build phases:
-
-![](https://cloud.githubusercontent.com/assets/192222/11050044/871bf926-86f7-11e5-8908-736106457bcb.png)
-
-Set the script to
-```sh
-../node_modules/react-native/packager/react-native-xcode.sh
-```
-
-![](https://cloud.githubusercontent.com/assets/192222/11050052/8f098252-86f7-11e5-994a-364aabbaa7d1.png)
-
-Move main.jsbundle to Trash (it will be generated automatically by Xcode using the script above)
-
-![](https://cloud.githubusercontent.com/assets/192222/11050104/f3d025e2-86f7-11e5-9101-a4622236338d.png)
-
-If you installed Node via nvm, you might experience "react-native: command not found". See [issues/3974](https://github.com/facebook/react-native/issues/3974) for workaround and [pull/4015](https://github.com/facebook/react-native/pull/4015) for the fix.
+Some upgrades require manual steps, e.g. 0.13 to 0.14, or 0.28 to 0.29. Be sure to check the [release notes](https://github.com/facebook/react-native/releases) when upgrading so that you can identify any manual changes your particular project may require.

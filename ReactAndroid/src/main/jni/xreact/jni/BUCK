@@ -38,7 +38,7 @@ cxx_library(
     '-Wall',
     '-Werror',
     '-fexceptions',
-    '-std=c++11',
+    '-std=c++1y',
     '-fvisibility=hidden',
     '-frtti',
     '-Wno-pessimizing-move',

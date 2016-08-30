@@ -368,9 +368,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
     NSArray<NSString *> *events = [self.manager customDirectEventTypes];
+#pragma clang diagnostic pop
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],
         @"customDirectEventTypes must return an array, but %@ returned %@",
@@ -381,8 +384,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
+#pragma clang diagnostic pop
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],

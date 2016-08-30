@@ -165,7 +165,7 @@ class YourNavigator extends React.Component {
 class YourScene extends React.Component {
   render() {
     return (
-      <ScrollView style={styles.scrollView}>
+      <ScrollView>
         <NavigationExampleRow
           text={'route = ' + this.props.route.key}
         />
@@ -189,9 +189,6 @@ class YourScene extends React.Component {
 const styles = StyleSheet.create({
   navigator: {
     flex: 1,
-  },
-  scrollView: {
-    marginTop: 64
   },
 });
 

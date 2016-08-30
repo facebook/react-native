@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
+  CxxNativeModule.cpp \
   Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
@@ -20,6 +21,7 @@ LOCAL_SRC_FILES := \
   NativeToJsBridge.cpp \
   Platform.cpp \
   Value.cpp \
+  Unicode.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)

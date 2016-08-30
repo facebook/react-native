@@ -12,14 +12,20 @@ package com.facebook.react.modules.i18nmanager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.support.v4.text.TextUtilsCompat;
+import android.support.v4.view.ViewCompat;
+
+import java.util.Locale;
 
 public class I18nUtil {
   private static I18nUtil sharedI18nUtilInstance = null;
 
-  private static final String MY_PREFS_NAME =
+  private static final String SHARED_PREFS_NAME =
     "com.facebook.react.modules.i18nmanager.I18nUtil";
-  private static final String KEY_FOR_PREFS =
+  private static final String KEY_FOR_PREFS_ALLOWRTL =
     "RCTI18nUtil_allowRTL";
+  private static final String KEY_FOR_PREFS_FORCERTL =
+    "RCTI18nUtil_forceRTL";
 
   private I18nUtil() {
      // Exists only to defeat instantiation.
@@ -32,22 +38,61 @@ public class I18nUtil {
     return sharedI18nUtilInstance;
   }
 
-  // If set allowRTL on the JS side,
-  // the RN app will automatically have a RTL layout.
+  /**
+   * Check if the device is currently running on an RTL locale.
+   * This only happens when the app:
+   * - is forcing RTL layout, regardless of the active language (for development purpose)
+   * - allows RTL layout when using RTL locale
+   */
   public boolean isRTL(Context context) {
-    return allowRTL(context);
+    if (isRTLForced(context)) {
+      return true;
+    }
+    return isRTLAllowed(context) &&
+      isDevicePreferredLanguageRTL();
   }
 
-  private boolean allowRTL(Context context) {
+  /**
+   * Should be used very early during app start up
+   * Before the bridge is initialized
+   */
+  private boolean isRTLAllowed(Context context) {
+    return isPrefSet(context, KEY_FOR_PREFS_ALLOWRTL, false);
+  }
+
+  public void allowRTL(Context context, boolean allowRTL) {
+    setPref(context, KEY_FOR_PREFS_ALLOWRTL, allowRTL);
+  }
+
+  /**
+   * Could be used to test RTL layout with English
+   * Used for development and testing purpose
+   */
+  private boolean isRTLForced(Context context) {
+    return isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false);
+  }
+
+  public void forceRTL(Context context, boolean forceRTL) {
+    setPref(context, KEY_FOR_PREFS_FORCERTL, forceRTL);
+  }
+
+  // Check if the current device language is RTL
+  private boolean isDevicePreferredLanguageRTL() {
+    final int directionality =
+      TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault());
+    return directionality == ViewCompat.LAYOUT_DIRECTION_RTL;
+   }
+
+  private boolean isPrefSet(Context context, String key, boolean defaultValue) {
     SharedPreferences prefs =
-      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
-    return prefs.getBoolean(KEY_FOR_PREFS, false);
+      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+    return prefs.getBoolean(key, defaultValue);
   }
 
-  public void setAllowRTL(Context context, boolean allowRTL) {
+  private void setPref(Context context, String key, boolean value) {
     SharedPreferences.Editor editor =
-      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).edit();
-    editor.putBoolean(KEY_FOR_PREFS, allowRTL);
+      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit();
+    editor.putBoolean(key, value);
     editor.apply();
   }
 }

@@ -29,6 +29,9 @@ public class ViewProps {
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
   public static final String FLEX = "flex";
+  public static final String FLEX_GROW = "flexGrow";
+  public static final String FLEX_SHRINK = "flexShrink";
+  public static final String FLEX_BASIS = "flexBasis";
   public static final String FLEX_DIRECTION = "flexDirection";
   public static final String FLEX_WRAP = "flexWrap";
   public static final String HEIGHT = "height";
@@ -90,11 +93,14 @@ public class ViewProps {
   public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
   public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
   public static final int[] BORDER_SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
+      Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP,
+      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.START, Spacing.END, Spacing.TOP,
       Spacing.BOTTOM
+  };
+  public static final int[] POSITION_SPACING_TYPES = {
+      Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
 
   private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(

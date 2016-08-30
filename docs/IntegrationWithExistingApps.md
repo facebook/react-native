@@ -103,7 +103,7 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game)) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
@@ -526,7 +526,7 @@ You can examine the code that added the React Native screen on [GitHub](https://
 In your app's root folder, run:
 
     $ npm init
-    $ npm install --save react-native
+    $ npm install --save react react-native
     $ curl -o .flowconfig https://raw.githubusercontent.com/facebook/react-native/master/.flowconfig
 
 This creates a node module for your app and adds the `react-native` npm dependency. Now open the newly created `package.json` file and add this under `scripts`:
@@ -573,8 +573,14 @@ AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
 ## Prepare your current app
 
 In your app's `build.gradle` file add the React Native dependency:
+```
+dependencies {
+    ...
+    compile "com.facebook.react:react-native:+" // From node_modules.
+}
+```
 
-    compile "com.facebook.react:react-native:+"  // From node_modules
+> If you want to ensure that you are always using a specific React Native version in your native build, replace `+` with an actual React Native version you've downloaded from `npm`.
 
 In your project's `build.gradle` file add an entry for the local React Native maven directory:
 
@@ -584,12 +590,14 @@ allprojects {
         ...
         maven {
             // All of React Native (JS, Android binaries) is installed from npm
-            url "$rootDir/node_modules/react-native/android"
+            url "$rootDir/../node_modules/react-native/android"
         }
     }
     ...
 }
 ```
+
+> Make sure that the path is correct! You shouldn’t run into any “Failed to resolve: com.facebook.react:react-native:0.x.x" errors after running Gradle sync in Android Studio.
 
 Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
@@ -600,6 +608,10 @@ This is only really used in dev mode when reloading JavaScript from the developm
 ## Add native code
 
 You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an `Activity` that creates a `ReactRootView`, starts a React application inside it and sets it as the main content view.
+
+> If you are targetting Android version <5, use the `AppCompatActivity` class from the `com.android.support:appcompat` package instead of `Activity`.
+
+> If you find out later that your app crashes due to `Didn't find class "com.facebook.jni.IteratorHelper"` exception, uncomment the `setUseOldBridge` line. [See related issue on GitHub.](https://github.com/facebook/react-native/issues/8701)
 
 ```java
 public class MyReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
@@ -618,6 +630,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
                 .addPackage(new MainReactPackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
+                //.setUseOldBridge(true) // uncomment this line if your app crashes
                 .build();
         mReactRootView.startReactApplication(mReactInstanceManager, "HelloWorld", null);
 
@@ -630,6 +643,20 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
     }
 }
 ```
+> If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
+
+If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
+
+We need set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` because some components rely on this theme.
+```xml
+<activity
+  android:name=".MyReactActivity"
+  android:label="@string/app_name"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+</activity>
+```
+
+
 
 > A `ReactInstanceManager` can be shared amongst multiple activities and/or fragments. You will want to make your own `ReactFragment` or `ReactActivity` and have a singleton *holder* that holds a `ReactInstanceManager`. When you need the `ReactInstanceManager` (e.g., to hook up the `ReactInstanceManager` to the lifecycle of those Activities or Fragments) use the one provided by the singleton.
 
@@ -641,7 +668,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostPause();
+        mReactInstanceManager.onPause();
     }
 }
 
@@ -650,7 +677,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostResume(this, this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 
@@ -659,7 +686,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.onDestroy();
     }
 }
 ```
@@ -679,7 +706,7 @@ We also need to pass back button events to React Native:
 
 This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle a back press, your `invokeDefaultOnBackPressed` method will be called. By default this simply finishes your `Activity`.
 
-Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button:
+Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button (use `Ctrl + M` if you're using Android Studio emulator):
 
 ```java
 @Override
@@ -700,7 +727,11 @@ To run your app, you need to first start the development server. To do this, sim
 
     $ npm start
 
-Now build and run your Android app as normal (e.g. `./gradlew installDebug`). Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
+Now build and run your Android app as normal (`./gradlew installDebug` from command-line; in Android Studio just create debug build as usual).
+
+> If you are using Android Studio for your builds and not the Gradle Wrapper directly, make sure you install [watchman](https://facebook.github.io/watchman/) before running `npm start`. It will prevent the packager from crashing due to conflicts between Android Studio and the React Native packager.
+
+Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
 
 ![Screenshot](img/EmbeddedAppAndroid.png)
 
@@ -772,3 +803,13 @@ if (!foundHash) {
   display('platform', isMac ? 'objc' : 'android');
 }
 </script>
+
+## Creating a release build in Android Studio
+
+You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which’ll be included with your native Android app:
+
+    $ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+
+Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist!
+
+Now just create a release build of your native app from within Android Studio as usual and you should be good to go!
