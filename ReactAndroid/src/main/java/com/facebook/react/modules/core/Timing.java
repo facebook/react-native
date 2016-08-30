@@ -107,6 +107,9 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
             SparseArray<Timer> timers = mTimerIdsToTimers.get(timer.mExecutorToken);
             if (timers != null) {
               timers.remove(timer.mCallbackID);
+              if (timers.size() == 0) {
+                mTimerIdsToTimers.remove(timer.mExecutorToken);
+              }
             }
           }
         }
@@ -389,6 +392,9 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       }
       // We may have already called/removed it
       timersForContext.remove(timerId);
+      if (timersForContext.size() == 0) {
+        mTimerIdsToTimers.remove(executorToken);
+      }
       mTimers.remove(timer);
     }
   }
