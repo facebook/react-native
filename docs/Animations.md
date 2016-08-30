@@ -11,7 +11,7 @@ previous: handling-touches
 Fluid, meaningful animations are essential to the mobile user experience. Like
 everything in React Native, Animation APIs for React Native are currently under
 development, but have started to coalesce around two complementary systems:
-`LayoutAnimation` for animated global layout transactions, and `Animated` for
+`LayoutAnimation` for animated global layout transitions, and `Animated` for
 more granular and interactive control of specific values.
 
 ### Animated ###
