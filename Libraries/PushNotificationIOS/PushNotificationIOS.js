@@ -97,16 +97,6 @@ class PushNotificationIOS {
   _remoteNotificationCompleteCalllbackCalled: boolean;
 
   /**
-   * When calling the completion handler for a remote notification these are the
-   * available completion results.
-   */
-  static FetchResult: FetchResult = {
-    NewData: 'UIBackgroundFetchResultNewData',
-    NoData: 'UIBackgroundFetchResultNoData',
-    ResultFailed: 'UIBackgroundFetchResultFailed',
-  };
-
-  /**
    * Schedules the localNotification for immediate presentation.
    *
    * details is an object containing:
@@ -414,5 +404,11 @@ class PushNotificationIOS {
     return this._data;
   }
 }
+
+/**
+ * When calling the completion handler for a remote notification these are the
+ * available completion results.
+ */
+PushNotificationIOS.FetchResult = FetchResult;
 
 module.exports = PushNotificationIOS;
