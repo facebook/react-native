@@ -26,7 +26,10 @@ var support = React.createClass({
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
-      <Site section={metadata.section} title={metadata.title}>
+      <Site
+        section={metadata.section}
+        title={metadata.title}
+        description={content.trim().split('\n')[0]} >
         <section className="content wrap documentationContent nosidebar">
           <div className="inner-content">
             <Marked>{content}</Marked>

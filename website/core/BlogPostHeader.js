@@ -19,13 +19,14 @@ var BlogPostHeader = React.createClass({
 
     var hero;
     if (post.hero) {
-      hero = <img src={post.hero} />;
+      hero = <img src={post.hero} width="650"/>;
     }
 
     var title = post.title;
     var href = "/react-native/blog/" + post.path;
     if (this.props.excerpt) {
-      title = <a href={href}>{post.title}</a>
+      title = <a href={href}>{post.title}</a>;
+      hero = <a href={href}>{hero}</a>;
     }
 
     return (
