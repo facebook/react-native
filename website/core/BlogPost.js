@@ -36,12 +36,8 @@ var BlogPost = React.createClass({
     var footer = <BlogPostFooter post={post} postedOnDate={postedOnDate} />;
 
     if (this.props.excerpt) {
-      var excerptLength = 50;
-      var words = content.trim().split(' ');
-      if (words.length > excerptLength) {
-        content = words.slice(0,excerptLength).join(' ') + '...';
-        footer = <ReadMoreLink href={'/react-native/blog/' + post.path} />;
-      }
+      content = content.trim().split('\n')[0];
+      footer = <ReadMoreLink href={'/react-native/blog/' + post.path} />;
     }
 
     return (

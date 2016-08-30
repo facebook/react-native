@@ -34,7 +34,10 @@ var DocsLayout = React.createClass({
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
-      <Site section="docs" title={metadata.title}>
+      <Site
+        section="docs"
+        title={metadata.title}
+        description={content.trim().split('\n')[0]} >
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
