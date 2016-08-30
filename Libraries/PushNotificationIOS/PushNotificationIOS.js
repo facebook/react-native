@@ -23,6 +23,12 @@ const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
+export type FetchResult = {
+  NewData: string,
+  NoData: string,
+  ResultFailed: string,
+};
+
 /**
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
@@ -88,12 +94,13 @@ class PushNotificationIOS {
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
+  _remoteNotificationCompleteCalllbackCalled: boolean;
 
   /**
    * When calling the completion handler for a remote notification these are the
    * available completion results.
    */
-  static FetchResult = {
+  static FetchResult: FetchResult = {
     NewData: 'UIBackgroundFetchResultNewData',
     NoData: 'UIBackgroundFetchResultNoData',
     ResultFailed: 'UIBackgroundFetchResultFailed',
@@ -362,7 +369,7 @@ class PushNotificationIOS {
    * If you do not call this method your background remote notifications could
    * be throttled, to read more about it see the above documentation link.
    */
-  finish(fetchResult) {
+  finish(fetchResult: FetchResult) {
     if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
       return;
     }
