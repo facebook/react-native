@@ -19,10 +19,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.GeolocationPermissions;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -151,6 +153,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     @Override
+    public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
+      boolean ignoreSslError = ((ReactWebView) webView).getIgnoreSslError();
+      if (ignoreSslError) {
+        // Ignore the Ssl error
+        handler.proceed();
+      }
+      else {
+        super.onReceivedSslError(webView, handler, error);
+      }
+    }
+
+    @Override
     public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
       super.doUpdateVisitedHistory(webView, url, isReload);
 
@@ -189,6 +203,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private boolean ignoreSslError;
 
     /**
      * WebView must be created with an context of the current activity
@@ -218,6 +233,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setInjectedJavaScript(@Nullable String js) {
       injectedJS = js;
+    }
+
+    public void setIgnoreSslError(boolean ignoreSslError) {
+      this.ignoreSslError = ignoreSslError;
+    }
+
+    public boolean getIgnoreSslError() {
+      return this.ignoreSslError;
     }
 
     public void callInjectedJavaScript() {
@@ -307,6 +330,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "ignoreSslError")
+  public void setIgnoreSslError(WebView view, boolean ignoreSslError) {
+    ((ReactWebView) view).setIgnoreSslError(ignoreSslError);
   }
 
   @ReactProp(name = "source")
