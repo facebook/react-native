@@ -674,9 +674,8 @@ const TextInput = React.createClass({
       children = <Text>{children}</Text>;
     }
 
-    let selection = this.props.selection;
-    if (selection && selection.end == null) {
-      selection = {start: selection.start, end: selection.end};
+    if (props.selection && props.selection.end == null) {
+      props.selection = {start: props.selection.start, end: props.selection.start};
     }
 
     const textContainer =
@@ -690,7 +689,6 @@ const TextInput = React.createClass({
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
         text={this._getText()}
-        selection={selection}
         children={children}
       />;
 
