@@ -11,8 +11,6 @@
  */
 'use strict';
 
-var merge = require('merge');
-
 /**
  * Faster version of `merge` that doesn't check its arguments and
  * also merges prototype inherited properties.
@@ -23,18 +21,14 @@ var merge = require('merge');
  * inherited properties.
  */
 var mergeFast = function(one: Object, two: Object): Object {
-  if (__DEV__) {
-    return merge(one, two);
-  } else {
-    var ret = {};
-    for (var keyOne in one) {
-      ret[keyOne] = one[keyOne];
-    }
-    for (var keyTwo in two) {
-      ret[keyTwo] = two[keyTwo];
-    }
-    return ret;
+  var ret = {};
+  for (var keyOne in one) {
+    ret[keyOne] = one[keyOne];
   }
+  for (var keyTwo in two) {
+    ret[keyTwo] = two[keyTwo];
+  }
+  return ret;
 };
 
 module.exports = mergeFast;
