@@ -59,7 +59,7 @@ var WebPlayer = React.createClass({
           style={{marginTop: 4}}
           width='880'
           height={this.parseParams(this.props.params).platform === 'android' ? '425' : '420'}
-          data-src={`//npmcdn.com/react-native-web-player@${WEB_PLAYER_VERSION}/index.html${hash}`}
+          data-src={`//unpkg.com/react-native-web-player@${WEB_PLAYER_VERSION}/index.html${hash}`}
           frameBorder='0'
         />
       </div>
