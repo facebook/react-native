@@ -5,21 +5,11 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @flow
- *
  */
-'use strict';
+package com.facebook.react.bridge;
 
-export type EventOptions = {
-  telemetric: boolean,
-};
+import java.util.Map;
 
-export type Event = {
-  id: number,
-  startTimeStamp: [number, number],
-  durationMs?: number,
-  name: string,
-  data?: any,
-  options: EventOptions,
-};
+public interface PerformanceCounter {
+  public Map<String,Double> getPerformanceCounters();
+}

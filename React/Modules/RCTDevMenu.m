@@ -9,6 +9,8 @@
 
 #import "RCTDevMenu.h"
 
+#import <objc/runtime.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
@@ -255,7 +257,7 @@ RCT_EXPORT_MODULE()
 // TODO: Move non-UI logic into separate RCTDevSettings module
 - (void)connectPackager
 {
-  Class webSocketManagerClass = NSClassFromString(@"RCTWebSocketManager");
+  Class webSocketManagerClass = objc_lookUpClass("RCTWebSocketManager");
   id<RCTWebSocketProxy> webSocketManager = (id <RCTWebSocketProxy>)[webSocketManagerClass sharedInstance];
   NSURL *url = [self packagerURL];
   if (url) {
@@ -281,7 +283,7 @@ RCT_EXPORT_MODULE()
   if ([target isEqualToString:@"bridge"]) {
     if ([action isEqualToString:@"reload"]) {
       if ([options[@"debug"] boolValue]) {
-        _bridge.executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+        _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
       }
       [_bridge reload];
     }
@@ -453,7 +455,7 @@ RCT_EXPORT_MODULE()
     [weakSelf reload];
   }]];
 
-  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  Class jsDebuggingExecutorClass = objc_lookUpClass("RCTWebSocketExecutor");
   if (!jsDebuggingExecutorClass) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName] handler:^{
       UIAlertView *alert = RCTAlertView(
@@ -637,7 +639,7 @@ RCT_EXPORT_METHOD(reload)
     // needed to prevent overriding a custom executor with the default if a
     // custom executor has been set directly on the bridge
     if (executorClass == Nil &&
-        _bridge.executorClass != NSClassFromString(@"RCTWebSocketExecutor")) {
+        _bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
       return;
     }
 

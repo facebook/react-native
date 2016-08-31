@@ -104,8 +104,8 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t, css_backface_visibility_t;
-+ (css_clip_t)css_clip_t:(id)json;
+typedef BOOL css_backface_visibility_t;
++ (CSSOverflow)CSSOverflow:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (CSSFlexDirection)CSSFlexDirection:(id)json;
 + (CSSJustify)CSSJustify:(id)json;

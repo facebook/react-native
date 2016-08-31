@@ -35,7 +35,7 @@ function startEvent(
   const id = UUID++;
   EVENT_INDEX[id] = {
     id,
-    startTimeStamp: Date.now(),
+    startTimeStamp: process.hrtime(),
     name,
     data,
     options,
@@ -45,7 +45,9 @@ function startEvent(
 }
 
 function endEvent(id: number): void {
-  getEvent(id).endTimeStamp = Date.now();
+  const event = getEvent(id);
+  const delta = process.hrtime(event.startTimeStamp);
+  event.durationMs = Math.round((delta[0] * 1e9 + delta[1]) / 1e6);
   logEvent(id, 'endEvent');
 }
 
@@ -70,34 +72,27 @@ function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
   }
 
   const {
-    startTimeStamp,
-    endTimeStamp,
     name,
+    durationMs,
     data,
     options,
   } = event;
 
-  const duration = +endTimeStamp - startTimeStamp;
+  const logTimeStamp = new Date().toLocaleString();
   const dataString = data ? ': ' + JSON.stringify(data) : '';
   const {telemetric} = options;
 
   switch (phase) {
     case 'startEvent':
       // eslint-disable-next-line no-console-disallow
-      console.log(
-        chalk.dim(
-          '[' + new Date(startTimeStamp).toLocaleString() + '] ' +
-          '<START> ' + name + dataString
-        )
-      );
+      console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
       break;
 
     case 'endEvent':
       // eslint-disable-next-line no-console-disallow
       console.log(
-        chalk.dim('[' + new Date(endTimeStamp).toLocaleString() + '] ' + '<END>   ' + name) +
-        chalk.dim(dataString) +
-        (telemetric ? chalk.reset.cyan(' (' + (duration) + 'ms)') : chalk.dim(' (' + (duration) + 'ms)'))
+        chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString} `) +
+        (telemetric ? chalk.reset.cyan(`(${+durationMs}ms)`) : chalk.dim(`(${+durationMs}ms)`))
       );
       forgetEvent(id);
       break;

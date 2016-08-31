@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -141,6 +143,20 @@ public class ReactContext extends ContextWrapper {
 
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
     mLifecycleEventListeners.remove(listener);
+  }
+
+  public Map<String, Map<String,Double>> getAllPerformanceCounters() {
+    Map<String, Map<String,Double>> totalPerfMap =
+      new HashMap<>();
+    if (mCatalystInstance != null) {
+      for (NativeModule nativeModule : mCatalystInstance.getNativeModules()) {
+        if (nativeModule instanceof PerformanceCounter) {
+          PerformanceCounter perfCounterModule = (PerformanceCounter) nativeModule;
+          totalPerfMap.put(nativeModule.getName(), perfCounterModule.getPerformanceCounters());
+        }
+      }
+    }
+    return totalPerfMap;
   }
 
   public void addActivityEventListener(ActivityEventListener listener) {
