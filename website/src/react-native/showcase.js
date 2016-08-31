@@ -328,6 +328,13 @@ var featured = [
     infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
     infoTitle: 'React Native at Artsy',
   },
+  {
+    name: '16直播',
+    icon: 'http://p17.qhimg.com/t012e5fe09adb1d0ffa.png',
+    linkPlayStore: 'http://zhushou.360.cn/detail/index/soft_id/3438248?recrefer=SE_D_16%E7%9B%B4%E6%92%AD',
+    infoLink: 'https://github.com/lekenny',
+    infoTitle: 'The new live show, ',
+  },
 ];
 
 featured.sort(function(a, b) {
