@@ -160,6 +160,7 @@ const Image = React.createClass({
       // TODO: Tooling to support documenting these directly and having them display in the docs.
       PropTypes.shape({
         uri: PropTypes.string,
+        bundle: PropTypes.string,
         width: PropTypes.number,
         height: PropTypes.number,
         scale: PropTypes.number,

@@ -22,11 +22,11 @@
 
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 
-static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
+static NSString *RCTCacheKeyForImage(NSString *imageTag, NSString *bundlePath, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode, NSString *responseDate)
 {
-    return [NSString stringWithFormat:@"%@|%g|%g|%g|%zd|%@",
-            imageTag, size.width, size.height, scale, resizeMode, responseDate];
+    return [NSString stringWithFormat:@"%@|%@|%g|%g|%g|%zd|%@",
+            imageTag, bundlePath, size.width, size.height, scale, resizeMode, responseDate];
 }
 
 @implementation RCTImageCache
@@ -77,23 +77,25 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 }
 
 - (UIImage *)imageForUrl:(NSString *)url
+              bundlePath:(NSString *)bundlePath
                     size:(CGSize)size
                    scale:(CGFloat)scale
               resizeMode:(RCTResizeMode)resizeMode
             responseDate:(NSString *)responseDate
 {
-  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode, responseDate);
+  NSString *cacheKey = RCTCacheKeyForImage(url, bundlePath, size, scale, resizeMode, responseDate);
   return [_decodedImageCache objectForKey:cacheKey];
 }
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
+             bundlePath:(NSString *)bundlePath
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
            responseDate:(NSString *)responseDate
 {
-  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode, responseDate);
+  NSString *cacheKey = RCTCacheKeyForImage(url, bundlePath, size, scale, resizeMode, responseDate);
   return [self addImageToCache:image forKey:cacheKey];
 }
 

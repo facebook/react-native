@@ -68,6 +68,9 @@
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		FDE5F4041C6C919C000818F5 /* OtherBundle.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FDE5F4031C6C919C000818F5 /* OtherBundle.xcassets */; };
+		FDE5F4061C6C91AA000818F5 /* Resources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FDE5F4051C6C91AA000818F5 /* Resources-Info.plist */; };
+		FDE5F4091C6C91C6000818F5 /* UIExplorerBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FDE5F3FD1C6C9143000818F5 /* UIExplorerBundle.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,7 +186,27 @@
 			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
 			remoteInfo = RCTVibration;
 		};
+		FDE5F4071C6C91BC000818F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FDE5F3FC1C6C9143000818F5;
+			remoteInfo = UIExplorerBundle;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FDE5F3EB1C6C8A74000818F5 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,6 +277,9 @@
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
+		FDE5F3FD1C6C9143000818F5 /* UIExplorerBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		FDE5F4031C6C919C000818F5 /* OtherBundle.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = OtherBundle.xcassets; sourceTree = "<group>"; };
+		FDE5F4051C6C91AA000818F5 /* Resources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Resources-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -303,6 +329,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				14B6DA821B276C5900BF4DD1 /* libRCTTest.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDE5F3FA1C6C9143000818F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,6 +594,7 @@
 				143BC57C1B21E18100462512 /* UIExplorerUnitTests */,
 				143BC5961B21E3E100462512 /* UIExplorerIntegrationTests */,
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
+				FDE5F3FE1C6C9143000818F5 /* UIExplorerBundle */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
 			indentWidth = 2;
@@ -573,6 +607,7 @@
 				13B07F961A680F5B00A75B9A /* UIExplorer.app */,
 				004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */,
 				143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */,
+				FDE5F3FD1C6C9143000818F5 /* UIExplorerBundle.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -583,6 +618,15 @@
 				D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FDE5F3FE1C6C9143000818F5 /* UIExplorerBundle */ = {
+			isa = PBXGroup;
+			children = (
+				FDE5F4051C6C91AA000818F5 /* Resources-Info.plist */,
+				FDE5F4031C6C919C000818F5 /* OtherBundle.xcassets */,
+			);
+			path = UIExplorerBundle;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -612,11 +656,13 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				FDE5F3EB1C6C8A74000818F5 /* Embed Frameworks */,
 				68CD48B71D2BCB2C007E06A9 /* Run Script */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FDE5F4081C6C91BC000818F5 /* PBXTargetDependency */,
 			);
 			name = UIExplorer;
 			productName = "Hello World";
@@ -641,6 +687,23 @@
 			productReference = 143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		FDE5F3FC1C6C9143000818F5 /* UIExplorerBundle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FDE5F4001C6C9143000818F5 /* Build configuration list for PBXNativeTarget "UIExplorerBundle" */;
+			buildPhases = (
+				FDE5F3F91C6C9143000818F5 /* Sources */,
+				FDE5F3FA1C6C9143000818F5 /* Frameworks */,
+				FDE5F3FB1C6C9143000818F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UIExplorerBundle;
+			productName = UIExplorerBundle;
+			productReference = FDE5F3FD1C6C9143000818F5 /* UIExplorerBundle.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -656,6 +719,9 @@
 					143BC5941B21E3E100462512 = {
 						CreatedOnToolsVersion = 6.3.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					FDE5F3FC1C6C9143000818F5 = {
+						CreatedOnToolsVersion = 7.2;
 					};
 				};
 			};
@@ -737,6 +803,7 @@
 				13B07F861A680F5B00A75B9A /* UIExplorer */,
 				004D289D1AAF61C70097A701 /* UIExplorerUnitTests */,
 				143BC5941B21E3E100462512 /* UIExplorerIntegrationTests */,
+				FDE5F3FC1C6C9143000818F5 /* UIExplorerBundle */,
 			);
 		};
 /* End PBXProject section */
@@ -862,6 +929,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDE5F4091C6C91C6000818F5 /* UIExplorerBundle.bundle in Resources */,
+				1323F18A1C04AB9F0091BED0 /* flux@3x.png in Resources */,
+				1323F18B1C04AB9F0091BED0 /* hawk.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* LegacyImage.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
@@ -872,6 +942,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDE5F3FB1C6C9143000818F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FDE5F4061C6C91AA000818F5 /* Resources-Info.plist in Resources */,
+				FDE5F4041C6C919C000818F5 /* OtherBundle.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -945,6 +1024,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FDE5F3F91C6C9143000818F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -952,6 +1038,11 @@
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* UIExplorer */;
 			targetProxy = 143BC59B1B21E3E100462512 /* PBXContainerItemProxy */;
+		};
+		FDE5F4081C6C91BC000818F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FDE5F3FC1C6C9143000818F5 /* UIExplorerBundle */;
+			targetProxy = FDE5F4071C6C91BC000818F5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1021,7 +1112,8 @@
 					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
@@ -1040,7 +1132,8 @@
 					"$(SRCROOT)/../../React/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
@@ -1220,6 +1313,39 @@
 			};
 			name = Release;
 		};
+		FDE5F4011C6C9143000818F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "UIExplorerBundle/Resources-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.internal.uiexplorer.local.bundle;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		FDE5F4021C6C9143000818F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "UIExplorerBundle/Resources-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.internal.uiexplorer.local.bundle;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1258,6 +1384,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		FDE5F4001C6C9143000818F5 /* Build configuration list for PBXNativeTarget "UIExplorerBundle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FDE5F4011C6C9143000818F5 /* Debug */,
+				FDE5F4021C6C9143000818F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

@@ -100,6 +100,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
     });
   } else {
     [_bridge.imageLoader loadImageWithURLRequest:request
+                                      bundlePath:nil
                                         callback:^(NSError *loadError, UIImage *loadedImage) {
       if (loadError) {
         reject(RCTErrorUnableToLoad, nil, loadError);

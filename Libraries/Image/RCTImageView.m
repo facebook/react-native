@@ -310,6 +310,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
     _reloadImageCancellationBlock =
     [_bridge.imageLoader loadImageWithURLRequest:source.request
+                                      bundlePath:source.bundleURL.absoluteString
                                             size:imageSize
                                            scale:imageScale
                                          clipped:NO
