@@ -561,7 +561,7 @@ const TextInput = React.createClass({
     return typeof this.props.value === 'string' ?
       this.props.value :
       (
-        this.props.defaultValue ?
+        typeof this.props.defaultValue === 'string' ?
         this.props.defaultValue :
         ''
       );
