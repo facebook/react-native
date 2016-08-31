@@ -17,7 +17,7 @@ import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.react.bridge.ReadableArray;
 
 /**
- * Common interface for DrawImageWithPipeline and DrawImageWithDrawee.
+ * Common interface for DrawImageWithDrawee.
  */
 /* package */ interface DrawImage extends AttachDetachListener {
   /**
