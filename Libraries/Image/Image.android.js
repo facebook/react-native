@@ -185,6 +185,17 @@ var Image = React.createClass({
     abortPrefetch(requestId: number) {
       ImageLoader.abortRequest(requestId);
     },
+
+    /**
+     * Perform cache interrogation.
+     *
+     * @param urls the list of image URLs to check the cache for.
+     * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
+     *         not in the mapping, it means it's not in the cache.
+     */
+    async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+      return await ImageLoader.queryCache(urls);
+    }
   },
 
   mixins: [NativeMethodsMixin],
