@@ -1764,16 +1764,6 @@ static void layoutNodeImpl(const CSSNodeRef node,
           childWidthMeasureMode = CSSMeasureModeAtMost;
         }
 
-        // The W3C spec doesn't say anything about the 'overflow' property,
-        // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) &&
-              !CSSValueIsUndefined(availableInnerHeight)) {
-            childHeight = availableInnerHeight;
-            childHeightMeasureMode = CSSMeasureModeAtMost;
-          }
-        }
-
         layoutNodeInternal(currentAbsoluteChild,
                            childWidth,
                            childHeight,
