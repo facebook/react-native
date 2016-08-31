@@ -6,23 +6,20 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * iOS stub for BackAndroid.android.js
+ * @flow
  *
- * @providesModule BackAndroid
  */
-
 'use strict';
 
-function emptyFunction() {}
-
-const BackAndroid = {
-  exitApp: emptyFunction,
-  addEventListener() {
-    return {
-      remove: emptyFunction,
-    };
-  },
-  removeEventListener: emptyFunction,
+export type EventOptions = {
+  telemetric: boolean,
 };
 
-module.exports = BackAndroid;
+export type Event = {
+  id: number,
+  startTimeStamp: [number, number],
+  durationMs?: number,
+  name: string,
+  data?: any,
+  options: EventOptions,
+};

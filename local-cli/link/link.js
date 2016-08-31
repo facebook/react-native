@@ -14,15 +14,13 @@ const copyAssetsIOS = require('./ios/copyAssets');
 const getProjectDependencies = require('./getProjectDependencies');
 const getDependencyConfig = require('./getDependencyConfig');
 const pollParams = require('./pollParams');
+const commandStub = require('./commandStub');
+const promisify = require('./promisify');
 
 log.heading = 'rnpm-link';
 
-const commandStub = (cb) => cb();
 const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
 
-const promisify = (func) => new Promise((resolve, reject) =>
-  func((err, res) => err ? reject(err) : resolve(res))
-);
 
 const linkDependencyAndroid = (androidProject, dependency) => {
   if (!androidProject || !dependency.config.android) {

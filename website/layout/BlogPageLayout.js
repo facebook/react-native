@@ -32,7 +32,8 @@ var BlogPageLayout = React.createClass({
     return (
       <Site
         section="blog"
-        title="Blog">
+        title="React Native Blog"
+        description="The best place to stay up-to-date with the latest React Native news and events.">
         <section className="content wrap documentationContent">
           <BlogSidebar />
           <div className="inner-content">

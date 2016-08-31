@@ -1,16 +1,13 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.views.recyclerview;
+package com.facebook.react.uimanager.events;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event dispatched by {@link RecyclerViewBackedScrollView} when total height of it's children
- * changes
+ * Event dispatched when total width or height of a view's children changes
  */
 public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
 

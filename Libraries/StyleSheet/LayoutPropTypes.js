@@ -344,8 +344,13 @@ var LayoutPropTypes = {
    *  When `flex` is -1, the component is normally sized according
    *  `width` and `height`. However, if there's not enough space,
    *  the component will shrink to its `minWidth` and `minHeight`.
+   *
+   * flexGrow, flexShrink, and flexBasis work the same as in CSS.
    */
   flex: ReactPropTypes.number,
+  flexGrow: ReactPropTypes.number,
+  flexShrink: ReactPropTypes.number,
+  flexBasis: ReactPropTypes.number,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
