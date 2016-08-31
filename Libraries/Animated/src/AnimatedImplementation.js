@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Easing = require('Easing');
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var React = require('React');
@@ -20,7 +19,7 @@ var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 var NativeAnimatedHelper = require('NativeAnimatedHelper');
 
-var findNodeHandle = require('findNodeHandle');
+var findNodeHandle = require('react/lib/findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -73,8 +72,9 @@ class Animated {
 }
 
 type AnimationConfig = {
-  isInteraction?: bool;
-  useNativeDriver?: bool;
+  isInteraction?: bool,
+  useNativeDriver?: bool,
+  onComplete?: ?EndCallback,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -97,7 +97,7 @@ class Animation {
       NativeAnimatedAPI.stopAnimation(this.__nativeId);
     }
   }
-  _getNativeAnimationConfig(): any {
+  __getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
     throw new Error('This animation type cannot be offloaded to native');
@@ -114,7 +114,7 @@ class Animation {
     NativeAnimatedAPI.startAnimatingNode(
       this.__nativeId,
       animatedValue.__getNativeTag(),
-      this._getNativeAnimationConfig(),
+      this.__getNativeAnimationConfig(),
       this.__debouncedOnEnd.bind(this)
     );
   }
@@ -207,20 +207,27 @@ function _flush(rootNode: AnimatedValue): void {
 }
 
 type TimingAnimationConfig =  AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
-  easing?: (value: number) => number;
-  duration?: number;
-  delay?: number;
+  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+  easing?: (value: number) => number,
+  duration?: number,
+  delay?: number,
 };
 
 type TimingAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue;
-  easing?: (value: number) => number;
-  duration?: number;
-  delay?: number;
+  toValue: number | AnimatedValue,
+  easing?: (value: number) => number,
+  duration?: number,
+  delay?: number,
 };
 
-var easeInOut = Easing.inOut(Easing.ease);
+let _easeInOut;
+function easeInOut() {
+  if (!_easeInOut) {
+    const Easing = require('Easing');
+    _easeInOut = Easing.inOut(Easing.ease);
+  }
+  return _easeInOut;
+}
 
 class TimingAnimation extends Animation {
   _startTime: number;
@@ -239,23 +246,25 @@ class TimingAnimation extends Animation {
   ) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing !== undefined ? config.easing : easeInOut;
+    this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = !!config.useNativeDriver;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
   }
 
-  _getNativeAnimationConfig(): any {
+  __getNativeAnimationConfig(): any {
     var frameDuration = 1000.0 / 60.0;
     var frames = [];
-    for (var dt = 0.0; dt <= this._duration; dt += frameDuration) {
+    for (var dt = 0.0; dt < this._duration; dt += frameDuration) {
       frames.push(this._easing(dt / this._duration));
     }
+    frames.push(this._easing(1));
     return {
       type: 'frames',
       frames,
       toValue: this._toValue,
+      delay: this._delay
     };
   }
 
@@ -319,19 +328,19 @@ class TimingAnimation extends Animation {
     super.stop();
     this.__active = false;
     clearTimeout(this._timeout);
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
 
 type DecayAnimationConfig = AnimationConfig & {
-  velocity: number | {x: number, y: number};
-  deceleration?: number;
+  velocity: number | {x: number, y: number},
+  deceleration?: number,
 };
 
 type DecayAnimationConfigSingle = AnimationConfig & {
-  velocity: number;
-  deceleration?: number;
+  velocity: number,
+  deceleration?: number,
 };
 
 class DecayAnimation extends Animation {
@@ -342,6 +351,7 @@ class DecayAnimation extends Animation {
   _velocity: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -349,13 +359,24 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+  }
+
+  __getNativeAnimationConfig() {
+    return {
+      type: 'decay',
+      deceleration: this._deceleration,
+      velocity: this._velocity,
+    };
   }
 
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
+    previousAnimation: ?Animation,
+    animatedValue: AnimatedValue,
   ): void {
     this.__active = true;
     this._lastValue = fromValue;
@@ -363,7 +384,11 @@ class DecayAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._startTime = Date.now();
-    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    if (this._useNativeDriver) {
+      this.__startNativeAnimation(animatedValue);
+    } else {
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    }
   }
 
   onUpdate(): void {
@@ -389,33 +414,33 @@ class DecayAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
 
 type SpringAnimationConfig = AnimationConfig & {
-  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY;
-  overshootClamping?: bool;
-  restDisplacementThreshold?: number;
-  restSpeedThreshold?: number;
-  velocity?: number | {x: number, y: number};
-  bounciness?: number;
-  speed?: number;
-  tension?: number;
-  friction?: number;
+  toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
+  overshootClamping?: bool,
+  restDisplacementThreshold?: number,
+  restSpeedThreshold?: number,
+  velocity?: number | {x: number, y: number},
+  bounciness?: number,
+  speed?: number,
+  tension?: number,
+  friction?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
-  toValue: number | AnimatedValue;
-  overshootClamping?: bool;
-  restDisplacementThreshold?: number;
-  restSpeedThreshold?: number;
-  velocity?: number;
-  bounciness?: number;
-  speed?: number;
-  tension?: number;
-  friction?: number;
+  toValue: number | AnimatedValue,
+  overshootClamping?: bool,
+  restDisplacementThreshold?: number,
+  restSpeedThreshold?: number,
+  velocity?: number,
+  bounciness?: number,
+  speed?: number,
+  tension?: number,
+  friction?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -440,6 +465,7 @@ class SpringAnimation extends Animation {
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: SpringAnimationConfigSingle,
@@ -452,6 +478,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
 
     var springConfig;
@@ -474,11 +501,25 @@ class SpringAnimation extends Animation {
     this._friction = springConfig.friction;
   }
 
+  __getNativeAnimationConfig() {
+    return {
+      type: 'spring',
+      overshootClamping: this._overshootClamping,
+      restDisplacementThreshold: this._restDisplacementThreshold,
+      restSpeedThreshold: this._restSpeedThreshold,
+      tension: this._tension,
+      friction: this._friction,
+      initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
+      toValue: this._toValue,
+    };
+  }
+
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
     previousAnimation: ?Animation,
+    animatedValue: AnimatedValue
   ): void {
     this.__active = true;
     this._startPosition = fromValue;
@@ -498,7 +539,11 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    this.onUpdate();
+    if (this._useNativeDriver) {
+      this.__startNativeAnimation(animatedValue);
+    } else {
+      this.onUpdate();
+    }
   }
 
   getInternalState(): Object {
@@ -539,22 +584,26 @@ class SpringAnimation extends Animation {
       // This is using RK4. A good blog post to understand how it works:
       // http://gafferongames.com/game-physics/integration-basics/
       var aVelocity = velocity;
-      var aAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var aAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       var tempPosition = position + aVelocity * step / 2;
       var tempVelocity = velocity + aAcceleration * step / 2;
 
       var bVelocity = tempVelocity;
-      var bAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var bAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + bVelocity * step / 2;
       tempVelocity = velocity + bAcceleration * step / 2;
 
       var cVelocity = tempVelocity;
-      var cAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var cAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + cVelocity * step / 2;
       tempVelocity = velocity + cAcceleration * step / 2;
 
       var dVelocity = tempVelocity;
-      var dAcceleration = this._tension * (this._toValue - tempPosition) - this._friction * tempVelocity;
+      var dAcceleration = this._tension *
+        (this._toValue - tempPosition) - this._friction * tempVelocity;
       tempPosition = position + cVelocity * step / 2;
       tempVelocity = velocity + cAcceleration * step / 2;
 
@@ -604,7 +653,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    window.cancelAnimationFrame(this._animationFrame);
+    global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
 }
@@ -626,6 +675,7 @@ class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?Animated;
   _listeners: {[key: string]: ValueListenerCallback};
+  __nativeAnimatedValueListener: ?any;
 
   constructor(value: number) {
     super();
@@ -644,6 +694,14 @@ class AnimatedValue extends AnimatedWithChildren {
     return this._value + this._offset;
   }
 
+  __makeNative() {
+    super.__makeNative();
+
+    if (Object.keys(this._listeners).length) {
+      this._startListeningToNativeValueUpdates();
+    }
+  }
+
   /**
    * Directly set the value.  This will stop any animations running on the value
    * and update all the bound properties.
@@ -653,7 +711,9 @@ class AnimatedValue extends AnimatedWithChildren {
       this._animation.stop();
       this._animation = null;
     }
-    this._updateValue(value, !this.__isNative /* don't perform a flush for natively driven values */);
+    this._updateValue(
+      value,
+      !this.__isNative /* don't perform a flush for natively driven values */);
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
     }
@@ -685,15 +745,50 @@ class AnimatedValue extends AnimatedWithChildren {
   addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
     this._listeners[id] = callback;
+    if (this.__isNative) {
+      this._startListeningToNativeValueUpdates();
+    }
     return id;
   }
 
   removeListener(id: string): void {
     delete this._listeners[id];
+    if (this.__isNative && Object.keys(this._listeners).length === 0) {
+      this._stopListeningForNativeValueUpdates();
+    }
   }
 
   removeAllListeners(): void {
     this._listeners = {};
+    if (this.__isNative) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  _startListeningToNativeValueUpdates() {
+    if (this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+      'onAnimatedValueUpdate',
+      (data) => {
+        if (data.tag !== this.__getNativeTag()) {
+          return;
+        }
+        this._updateValue(data.value, false /* flush */);
+      }
+    );
+  }
+
+  _stopListeningForNativeValueUpdates() {
+    if (!this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    this.__nativeAnimatedValueListener.remove();
+    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   /**
@@ -731,8 +826,8 @@ class AnimatedValue extends AnimatedWithChildren {
     animation.start(
       this._value,
       (value) => {
-        // Natively driven animations will never call into that callback, therefore we can always pass `flush = true`
-        // to allow the updated value to propagate to native with `setNativeProps`
+        // Natively driven animations will never call into that callback, therefore we can always
+        // pass flush = true to allow the updated value to propagate to native with setNativeProps
         this._updateValue(value, true /* flush */);
       },
       (result) => {
@@ -781,7 +876,7 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 }
 
-type ValueXYListenerCallback = (value: {x: number; y: number}) => void;
+type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 
 /**
  * 2D Value for driving 2D animations, such as pan gestures.  Almost identical
@@ -824,9 +919,9 @@ type ValueXYListenerCallback = (value: {x: number; y: number}) => void;
 class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {[key: string]: {x: string; y: string}};
+  _listeners: {[key: string]: {x: string, y: string}};
 
-  constructor(valueIn?: ?{x: number | AnimatedValue; y: number | AnimatedValue}) {
+  constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
     super();
     var value: any = valueIn || {x: 0, y: 0};  // @flowfixme: shouldn't need `: any`
     if (typeof value.x === 'number' && typeof value.y === 'number') {
@@ -845,12 +940,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this._listeners = {};
   }
 
-  setValue(value: {x: number; y: number}) {
+  setValue(value: {x: number, y: number}) {
     this.x.setValue(value.x);
     this.y.setValue(value.y);
   }
 
-  setOffset(offset: {x: number; y: number}) {
+  setOffset(offset: {x: number, y: number}) {
     this.x.setOffset(offset.x);
     this.y.setOffset(offset.y);
   }
@@ -860,7 +955,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
-  __getValue(): {x: number; y: number} {
+  __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
       y: this.y.__getValue(),
@@ -956,10 +1051,30 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
+  __transformDataType(range) {
+    // Change the string array type to number array
+    // So we can reuse the same logic in iOS and Android platform
+    return range.map(function (value) {
+      if (typeof value !== 'string') {
+        return value;
+      }
+      if (/deg$/.test(value)) {
+        const degrees = parseFloat(value, 10) || 0;
+        const radians = degrees * Math.PI / 180.0;
+        return radians;
+      } else {
+        // Assume radians
+        return parseFloat(value, 10) || 0;
+      }
+    });
+  }
+
   __getNativeConfig(): any {
     NativeAnimatedHelper.validateInterpolation(this._config);
     return {
       ...this._config,
+      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      outputRange: this.__transformDataType(this._config.outputRange),
       type: 'interpolation',
     };
   }
@@ -1078,12 +1193,61 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 }
 
+class AnimatedDiffClamp extends AnimatedWithChildren {
+  _a: Animated;
+  _min: number;
+  _max: number;
+  _value: number;
+  _lastValue: number;
+
+  constructor(a: Animated, min: number, max: number) {
+    super();
+
+    this._a = a;
+    this._min = min;
+    this._max = max;
+    this._value = this._lastValue = this._a.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __getValue(): number {
+    const value = this._a.__getValue();
+    const diff = value - this._lastValue;
+    this._lastValue = value;
+    this._value = Math.min(Math.max(this._value + diff, this._min), this._max);
+    return this._value;
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
   constructor(transforms: Array<Object>) {
     super();
     this._transforms = transforms;
+  }
+
+  __makeNative() {
+    super.__makeNative();
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          value.__makeNative();
+        }
+      }
+    });
   }
 
   __getValue(): Array<Object> {
@@ -1138,6 +1302,35 @@ class AnimatedTransform extends AnimatedWithChildren {
       }
     });
   }
+
+  __getNativeConfig(): any {
+    var transConfigs = [];
+
+    this._transforms.forEach(transform => {
+      for (var key in transform) {
+        var value = transform[key];
+        if (value instanceof Animated) {
+          transConfigs.push({
+            type: 'animated',
+            property: key,
+            nodeTag: value.__getNativeTag(),
+          });
+        } else {
+          transConfigs.push({
+            type: 'static',
+            property: key,
+            value,
+          });
+        }
+      }
+    });
+
+    NativeAnimatedHelper.validateTransform(transConfigs);
+    return {
+      type: 'transform',
+      transforms: transConfigs,
+    };
+  }
 }
 
 class AnimatedStyle extends AnimatedWithChildren {
@@ -1161,8 +1354,8 @@ class AnimatedStyle extends AnimatedWithChildren {
       var value = this._style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
-          // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date
+          // We cannot use value of natively driven nodes this way as the value we have access from
+          // JS may not be up to date.
           style[key] = value.__getValue();
         }
       } else {
@@ -1213,7 +1406,7 @@ class AnimatedStyle extends AnimatedWithChildren {
 
   __getNativeConfig(): Object {
     var styleConfig = {};
-    for (let styleKey in this._style) {
+    for (const styleKey in this._style) {
       if (this._style[styleKey] instanceof Animated) {
         styleConfig[styleKey] = this._style[styleKey].__getNativeTag();
       }
@@ -1254,9 +1447,9 @@ class AnimatedProps extends Animated {
     for (var key in this._props) {
       var value = this._props[key];
       if (value instanceof Animated) {
-        if (!value.__isNative) {
-          // We cannot use value of natively driven nodes this way as the value we have access from JS
-          // may not be up to date
+        if (!value.__isNative || value instanceof AnimatedStyle) {
+          // We cannot use value of natively driven nodes this way as the value we have access from
+          // JS may not be up to date.
           props[key] = value.__getValue();
         }
       } else {
@@ -1342,7 +1535,7 @@ class AnimatedProps extends Animated {
 
   __getNativeConfig(): Object {
     var propsConfig = {};
-    for (let propKey in this._props) {
+    for (const propKey in this._props) {
       var value = this._props[propKey];
       if (value instanceof Animated) {
         propsConfig[propKey] = value.__getNativeTag();
@@ -1357,17 +1550,22 @@ class AnimatedProps extends Animated {
 }
 
 function createAnimatedComponent(Component: any): any {
-  var refName = 'node';
-
   class AnimatedComponent extends React.Component {
+    _component: any;
     _propsAnimated: AnimatedProps;
+    _setComponentRef: Function;
+
+    constructor(props: Object) {
+      super(props);
+      this._setComponentRef = this._setComponentRef.bind(this);
+    }
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
     }
 
     setNativeProps(props) {
-      this.refs[refName].setNativeProps(props);
+      this._component.setNativeProps(props);
     }
 
     componentWillMount() {
@@ -1375,7 +1573,7 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentDidMount() {
-      this._propsAnimated.setNativeView(this.refs[refName]);
+      this._propsAnimated.setNativeView(this._component);
     }
 
     attachProps(nextProps) {
@@ -1388,9 +1586,9 @@ function createAnimatedComponent(Component: any): any {
       // need to re-render it. In this case, we have a fallback that uses
       // forceUpdate.
       var callback = () => {
-        if (this.refs[refName].setNativeProps) {
+        if (this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
-            this.refs[refName].setNativeProps(
+            this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
             );
           } else {
@@ -1409,8 +1607,8 @@ function createAnimatedComponent(Component: any): any {
       );
 
 
-      if (this.refs && this.refs[refName]) {
-        this._propsAnimated.setNativeView(this.refs[refName]);
+      if (this._component) {
+        this._propsAnimated.setNativeView(this._component);
       }
 
       // When you call detach, it removes the element from the parent list
@@ -1432,9 +1630,13 @@ function createAnimatedComponent(Component: any): any {
       return (
         <Component
           {...this._propsAnimated.__getValue()}
-          ref={refName}
+          ref={this._setComponentRef}
         />
       );
+    }
+
+    _setComponentRef(c) {
+      this._component = c;
     }
   }
   AnimatedComponent.propTypes = {
@@ -1503,8 +1705,8 @@ class AnimatedTracking extends Animated {
 }
 
 type CompositeAnimation = {
-  start: (callback?: ?EndCallback) => void;
-  stop: () => void;
+  start: (callback?: ?EndCallback) => void,
+  stop: () => void,
 };
 
 var add = function(
@@ -1528,6 +1730,24 @@ var modulo = function(
   return new AnimatedModulo(a, modulus);
 };
 
+var diffClamp = function(
+  a: Animated,
+  min: number,
+  max: number,
+): AnimatedDiffClamp {
+  return new AnimatedDiffClamp(a, min, max);
+};
+
+const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
+  if (callback && config.onComplete) {
+    return (...args) => {
+      config.onComplete && config.onComplete(...args);
+      callback && callback(...args);
+    };
+  } else {
+    return callback || config.onComplete;
+  }
+};
 
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
@@ -1559,6 +1779,7 @@ var spring = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, spring) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1587,6 +1808,7 @@ var timing = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1615,6 +1837,7 @@ var decay = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1665,7 +1888,7 @@ var sequence = function(
 };
 
 type ParallelConfig = {
-  stopTogether?: bool; // If one is stopped, stop all.  default: true
+  stopTogether?: bool, // If one is stopped, stop all.  default: true
 }
 var parallel = function(
   animations: Array<CompositeAnimation>,
@@ -1905,6 +2128,17 @@ module.exports = {
    * provided Animated value
    */
   modulo,
+
+  /**
+   * Create a new Animated value that is limited between 2 values. It uses the
+   * difference between the last value so even if the value is far from the bounds
+   * it will start changing when the value starts getting closer again.
+   * (`value = clamp(value + diff, min, max)`).
+   *
+   * This is useful with scroll events, for example, to show the navbar when
+   * scrolling up and to hide it when scrolling down.
+   */
+  diffClamp,
 
   /**
    * Starts an animation after the given delay.

@@ -12,17 +12,11 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "Value.h"
-
 namespace facebook {
 namespace react {
 
-struct JsException : std::runtime_error {
-  using std::runtime_error::runtime_error;
-};
-
 inline void throwJSExecutionException(const char* msg) {
-  throw JsException(msg);
+  throw JSException(msg);
 }
 
 template <typename... Args>
@@ -31,7 +25,12 @@ inline void throwJSExecutionException(const char* fmt, Args... args) {
   msgSize = std::min(512, msgSize + 1);
   char *msg = (char*) alloca(msgSize);
   snprintf(msg, msgSize, fmt, args...);
-  throw JsException(msg);
+  throw JSException(msg);
+}
+
+template <typename... Args>
+inline void throwJSExecutionExceptionWithStack(const char* msg, const char* stack) {
+  throw JSException(msg, stack);
 }
 
 void installGlobalFunction(
@@ -50,8 +49,48 @@ JSValueRef evaluateScript(
     JSStringRef script,
     JSStringRef sourceURL);
 
+#if WITH_FBJSCEXTENSIONS
+JSValueRef evaluateSourceCode(
+    JSContextRef ctx,
+    JSSourceCodeRef source,
+    JSStringRef sourceURL);
+#endif
+
+void formatAndThrowJSException(
+    JSContextRef ctx,
+    JSValueRef exn,
+    JSStringRef sourceURL);
+
 JSValueRef makeJSError(JSContextRef ctx, const char *error);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
+JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);
+
+template<JSValueRef (method)(JSContextRef ctx,
+        JSObjectRef function,
+        JSObjectRef thisObject,
+        size_t argumentCount,
+        const JSValueRef arguments[],
+        JSValueRef *exception)>
+inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+        JSContextRef ctx,
+        JSObjectRef function,
+        JSObjectRef thisObject,
+        size_t argumentCount,
+        const JSValueRef arguments[],
+        JSValueRef *exception) {
+      try {
+        return (*method)(ctx, function, thisObject, argumentCount, arguments, exception);
+      } catch (...) {
+        *exception = translatePendingCppExceptionToJSError(ctx, function);
+        return JSValueMakeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
+}
 
 } }

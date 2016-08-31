@@ -135,9 +135,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
-    view.setBorderColor(
-        SPACING_TYPES[index],
-        color == null ? CSSConstants.UNDEFINED : (float) color);
+    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
@@ -195,6 +195,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     } else {
       parent.addView(child, index);
     }
+    reorderChildrenByZIndex(parent);
   }
 
   @Override

@@ -14,14 +14,11 @@ import java.util.HashSet;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.disk.DiskCacheConfig;
-import com.facebook.common.internal.AndroidPredicates;
 import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -81,11 +78,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
   @Override
   public void clearSensitiveData() {
     // Clear image cache.
-    ImagePipelineFactory imagePipelineFactory = Fresco.getImagePipelineFactory();
-    imagePipelineFactory.getBitmapMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
-    imagePipelineFactory.getEncodedMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
-    imagePipelineFactory.getMainFileCache().clearAll();
-    imagePipelineFactory.getSmallImageFileCache().clearAll();
+    Fresco.getImagePipeline().clearCaches();
   }
 
   private static ImagePipelineConfig getDefaultConfig(

@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 
@@ -64,6 +65,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new FakeWebSocketModule())
         .addJSModule(ViewRenderingTestModule.class)
         .build();
 

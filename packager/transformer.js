@@ -15,7 +15,7 @@ const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
-const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
+const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
 const json5 = require('json5');
 const path = require('path');
 

@@ -39,6 +39,9 @@ cd ..
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
+# Define entry file
+ENTRY_FILE=${1:-index.ios.js}
+
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   . "$HOME/.nvm/nvm.sh"
 elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
@@ -47,7 +50,7 @@ fi
 
 # Set up the nodenv node version manager if present
 if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
-  eval "$($HOME/.nodenv/bin/nodenv init -)"
+  eval "$("$HOME/.nodenv/bin/nodenv" init -)"
 fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
@@ -68,10 +71,27 @@ type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
+if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; then
+  PLISTBUDDY='/usr/libexec/PlistBuddy'
+  PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
+  IP=$(ipconfig getifaddr en0)
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP.xip.io:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+  echo "$IP.xip.io" > "$DEST/ip.txt"
+fi
+
+BUNDLE_FILE="$DEST/main.jsbundle"
+
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
-  --entry-file index.ios.js \
+  --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \
-  --reset-cache true \
-  --bundle-output "$DEST/main.jsbundle" \
+  --reset-cache \
+  --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST"
+
+if [[ ! $DEV && ! -f "$BUNDLE_FILE" ]]; then
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
+  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  exit 2
+fi

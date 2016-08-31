@@ -39,6 +39,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
+  SystraceSection s("getConfig", "module", name);
   auto it = modulesByName_.find(name);
   if (it == modulesByName_.end()) {
     return nullptr;
@@ -51,8 +52,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s("getConfig constants",
-                      "module", name);
+    SystraceSection s("getConstants");
     folly::dynamic constants = module->getConstants();
     if (constants.isObject() && constants.size() > 0) {
       config.push_back(std::move(constants));
@@ -60,24 +60,27 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
   }
 
   {
-    SystraceSection s("getConfig methods",
-                      "module", name);
+    SystraceSection s("getMethods");
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;
     folly::dynamic asyncMethodIds = folly::dynamic::array;
+    folly::dynamic syncHookIds = folly::dynamic::array;
 
     for (auto& descriptor : methods) {
       methodNames.push_back(std::move(descriptor.name));
       if (descriptor.type == "remoteAsync") {
         asyncMethodIds.push_back(methodNames.size() - 1);
+      } else if (descriptor.type == "syncHook") {
+        syncHookIds.push_back(methodNames.size() - 1);
       }
     }
 
     if (!methodNames.empty()) {
       config.push_back(std::move(methodNames));
-      if (!asyncMethodIds.empty()) {
-        config.push_back(std::move(asyncMethodIds));
+      config.push_back(std::move(asyncMethodIds));
+      if (!syncHookIds.empty()) {
+        config.push_back(std::move(syncHookIds));
       }
     }
   }

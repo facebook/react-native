@@ -12,12 +12,11 @@
 		1304D5B21AA8C50D0002E2BE /* RCTGIFImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */; };
 		134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
 		139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
-		13EF7F0B1BC42D4E003F47DD /* RCTShadowVirtualImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F081BC42D4E003F47DD /* RCTShadowVirtualImage.m */; };
-		13EF7F0C1BC42D4E003F47DD /* RCTVirtualImageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F0A1BC42D4E003F47DD /* RCTVirtualImageManager.m */; };
-		13EF7F7F1BC825B1003F47DD /* RCTXCAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTXCAssetImageLoader.m */; };
+		13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
 		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 /* End PBXBuildFile section */
 
@@ -44,8 +43,8 @@
 		134B00A11B54232B00EC8DFB /* RCTImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtils.m; sourceTree = "<group>"; };
 		139A38821C4D57AD00862840 /* RCTResizeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTResizeMode.h; sourceTree = "<group>"; };
 		139A38831C4D587C00862840 /* RCTResizeMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTResizeMode.m; sourceTree = "<group>"; };
-		13EF7F7D1BC825B1003F47DD /* RCTXCAssetImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTXCAssetImageLoader.h; sourceTree = "<group>"; };
-		13EF7F7E1BC825B1003F47DD /* RCTXCAssetImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTXCAssetImageLoader.m; sourceTree = "<group>"; };
+		13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTLocalAssetImageLoader.h; sourceTree = "<group>"; };
+		13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLocalAssetImageLoader.m; sourceTree = "<group>"; };
 		143879361AAD32A300F088A5 /* RCTImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoader.h; sourceTree = "<group>"; };
 		143879371AAD32A300F088A5 /* RCTImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoader.m; sourceTree = "<group>"; };
 		35123E691B59C99D00EBAD80 /* RCTImageStoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageStoreManager.h; sourceTree = "<group>"; };
@@ -53,6 +52,8 @@
 		354631661B69857700AA0B86 /* RCTImageEditingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageEditingManager.h; sourceTree = "<group>"; };
 		354631671B69857700AA0B86 /* RCTImageEditingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageEditingManager.m; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCD34C251D4B8FE900268922 /* RCTImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageCache.h; sourceTree = "<group>"; };
+		CCD34C261D4B8FE900268922 /* RCTImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageCache.m; sourceTree = "<group>"; };
 		EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageBlurUtils.h; sourceTree = "<group>"; };
 		EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageBlurUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -71,12 +72,14 @@
 		58B511541A9E6B3D00147676 = {
 			isa = PBXGroup;
 			children = (
+				CCD34C251D4B8FE900268922 /* RCTImageCache.h */,
+				CCD34C261D4B8FE900268922 /* RCTImageCache.m */,
 				EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */,
 				EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */,
 				139A38821C4D57AD00862840 /* RCTResizeMode.h */,
 				139A38831C4D587C00862840 /* RCTResizeMode.m */,
-				13EF7F7D1BC825B1003F47DD /* RCTXCAssetImageLoader.h */,
-				13EF7F7E1BC825B1003F47DD /* RCTXCAssetImageLoader.m */,
+				13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */,
+				13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */,
 				1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */,
 				1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */,
 				354631661B69857700AA0B86 /* RCTImageEditingManager.h */,
@@ -169,8 +172,9 @@
 				139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */,
 				1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */,
 				EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */,
-				13EF7F7F1BC825B1003F47DD /* RCTXCAssetImageLoader.m in Sources */,
+				13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */,
 				134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */,
+				CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

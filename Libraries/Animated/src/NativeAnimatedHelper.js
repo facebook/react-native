@@ -11,24 +11,35 @@
  */
 'use strict';
 
-var NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+const NativeEventEmitter = require('NativeEventEmitter');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
-var __nativeAnimationIdCount = 1; /* used for started animations */
+let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
+let __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
+let nativeEventEmitter;
+
 /**
- * Simple wrappers around NativeANimatedModule to provide flow and autocmplete support for
+ * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
  * the native module methods
  */
-var API = {
+const API = {
   createAnimatedNode: function(tag: number, config: Object): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
+  },
+  startListeningToAnimatedNodeValue: function(tag: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.startListeningToAnimatedNodeValue(tag);
+  },
+  stopListeningToAnimatedNodeValue: function(tag: number) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
   },
   connectAnimatedNodes: function(parentTag: number, childTag: number): void {
     assertNativeAnimatedModule();
@@ -71,17 +82,28 @@ var API = {
  * to be updated through the shadow view hierarchy (all non-layout properties). This list is limited
  * to the properties that will perform best when animated off the JS thread.
  */
-var PROPS_WHITELIST = {
+const PROPS_WHITELIST = {
   style: {
     opacity: true,
-
+    transform: true,
     /* legacy android transform properties */
     scaleX: true,
     scaleY: true,
-    rotation: true,
     translateX: true,
     translateY: true,
   },
+};
+
+const TRANSFORM_WHITELIST = {
+  translateX: true,
+  translateY: true,
+  scale: true,
+  scaleX: true,
+  scaleY: true,
+  rotate: true,
+  rotateX: true,
+  rotateY: true,
+  perspective: true,
 };
 
 function validateProps(params: Object): void {
@@ -90,6 +112,14 @@ function validateProps(params: Object): void {
       throw new Error(`Property '${key}' is not supported by native animated module`);
     }
   }
+}
+
+function validateTransform(configs: Array<Object>): void {
+  configs.forEach((config) => {
+    if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
+      throw new Error(`Property '${config.property}' is not supported by native animated module`);
+    }
+  });
 }
 
 function validateStyles(styles: Object): void {
@@ -129,8 +159,15 @@ module.exports = {
   API,
   validateProps,
   validateStyles,
+  validateTransform,
   validateInterpolation,
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
+  get nativeEventEmitter() {
+    if (!nativeEventEmitter) {
+      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+    }
+    return nativeEventEmitter;
+  },
 };

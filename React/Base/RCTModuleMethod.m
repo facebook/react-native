@@ -426,7 +426,7 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 
 - (NSDictionary *)profileArgs
 {
-  if (_profileArgs) {
+  if (!_profileArgs) {
     // This sets _selector
     [self processMethodSignature];
     _profileArgs = @{

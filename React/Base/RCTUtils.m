@@ -11,6 +11,7 @@
 
 #import <mach/mach_time.h>
 #import <objc/message.h>
+#import <objc/runtime.h>
 
 #import <UIKit/UIKit.h>
 
@@ -19,6 +20,7 @@
 #import <zlib.h>
 #import <dlfcn.h>
 
+#import "RCTAssert.h"
 #import "RCTLog.h"
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
@@ -228,9 +230,31 @@ NSString *RCTMD5Hash(NSString *string)
   ];
 }
 
+BOOL RCTIsMainQueue()
+{
+  static void *mainQueueKey = &mainQueueKey;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_queue_set_specific(dispatch_get_main_queue(),
+                                mainQueueKey, mainQueueKey, NULL);
+  });
+  return dispatch_get_specific(mainQueueKey) == mainQueueKey;
+}
+
+void RCTExecuteOnMainQueue(dispatch_block_t block)
+{
+  if (RCTIsMainQueue()) {
+    block();
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
 {
-  if ([NSThread isMainThread]) {
+  if (RCTIsMainQueue()) {
     block();
   } else if (sync) {
     dispatch_sync(dispatch_get_main_queue(), ^{
@@ -411,7 +435,7 @@ BOOL RCTRunningInTestEnvironment(void)
   static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
+    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest");
   });
   return isTestEnvironment;
 }
@@ -589,24 +613,15 @@ NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
   return path;
 }
 
-BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL)
+BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
   NSString *name = RCTBundlePathForURL(imageURL);
-  if (name.pathComponents.count != 1) {
-    // URL is invalid, or is a file path, not an XCAsset identifier
+  if (!name) {
     return NO;
   }
+
   NSString *extension = [name pathExtension];
-  if (extension.length && ![extension isEqualToString:@"png"]) {
-    // Not a png
-    return NO;
-  }
-  extension = extension.length ? nil : @"png";
-  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
-    // File actually exists in bundle, so is not an XCAsset
-    return NO;
-  }
-  return YES;
+  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
 }
 
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *extension, NSError **error)

@@ -27,7 +27,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
-  NSMutableArray<UIView *> *_reactSubviews;
   CAShapeLayer *_highlightLayer;
 }
 
@@ -35,8 +34,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 {
   if ((self = [super initWithFrame:frame])) {
     _textStorage = [NSTextStorage new];
-    _reactSubviews = [NSMutableArray array];
-
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
 
@@ -68,19 +65,9 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   self.backgroundColor = inheritedBackgroundColor;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)didUpdateReactSubviews
 {
-  [_reactSubviews insertObject:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  [_reactSubviews removeObject:subview];
-}
-
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _reactSubviews;
+  // Do nothing, as subviews are managed by `setTextStorage:` method
 }
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
@@ -88,6 +75,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   if (_textStorage != textStorage) {
     _textStorage = textStorage;
 
+    // Update subviews
     NSMutableArray *nonTextDescendants = [NSMutableArray new];
     collectNonTextDescendants(self, nonTextDescendants);
     NSArray *subviews = self.subviews;
@@ -108,11 +96,11 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 
 - (void)drawRect:(CGRect)rect
 {
-  NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  CGRect textFrame = UIEdgeInsetsInsetRect(self.bounds, _contentInset);
-  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSLayoutManager *layoutManager = [_textStorage.layoutManagers firstObject];
+  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  CGRect textFrame = self.textFrame;
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:textFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textFrame.origin];
 
@@ -166,7 +154,6 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   return reactTag;
 }
 
-
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
@@ -181,6 +168,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
     [self setNeedsDisplay];
   }
 }
+
 
 #pragma mark - Accessibility
 

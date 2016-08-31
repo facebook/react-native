@@ -55,14 +55,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
 }
 
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _reactSubview ? @[_reactSubview] : @[];
-}
-
-- (void)insertReactSubview:(UIView *)subview atIndex:(__unused NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
+  [super insertReactSubview:subview atIndex:atIndex];
   [subview addGestureRecognizer:_touchHandler];
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
@@ -74,15 +70,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
+  [super removeReactSubview:subview];
   [subview removeGestureRecognizer:_touchHandler];
-  [subview removeFromSuperview];
   _reactSubview = nil;
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as subview (singular) is managed by `insertReactSubview:atIndex:`
 }
 
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
+    [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = NO;
   }
 }
@@ -99,11 +100,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     } else if ([self.animationType isEqualToString:@"slide"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
-    [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
-      if (_onShow) {
-        _onShow(nil);
-      }
-    }];
+    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
 }

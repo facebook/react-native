@@ -13,7 +13,9 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -23,6 +25,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -40,6 +44,10 @@ public class UIImplementation {
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
+  private final ReactApplicationContext mReactContext;
+
+  private double mLayoutCount = 0.0;
+  private double mLayoutTimer = 0.0;
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
@@ -47,13 +55,16 @@ public class UIImplementation {
 
   private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
     this(
+        reactContext,
         viewManagers,
         new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
   }
 
   protected UIImplementation(
+      ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       UIViewOperationQueue operationsQueue) {
+    mReactContext = reactContext;
     mViewManagers = viewManagers;
     mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
@@ -63,6 +74,10 @@ public class UIImplementation {
 
   protected ReactShadowNode createRootShadowNode() {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    if (sharedI18nUtilInstance.isRTL(mReactContext)) {
+      rootCSSNode.setDirection(CSSDirection.RTL);
+    }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
   }
@@ -99,6 +114,7 @@ public class UIImplementation {
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
+
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -131,6 +147,14 @@ public class UIImplementation {
     if (mOperationsQueue.isEmpty()) {
       dispatchViewUpdates(eventDispatcher, -1); // -1 = no associated batch id
     }
+  }
+
+  public double getLayoutCount() {
+    return mLayoutCount;
+  }
+
+  public double getLayoutTimer() {
+    return mLayoutTimer;
   }
 
   /**
@@ -564,7 +588,6 @@ public class UIImplementation {
     mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
   }
 
-
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
@@ -727,10 +750,13 @@ public class UIImplementation {
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
         .arg("rootTag", cssRoot.getReactTag())
         .flush();
+    double startTime = (double) System.nanoTime();
     try {
       cssRoot.calculateLayout(mLayoutContext);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutCount = mLayoutCount + 1;
     }
   }
 
@@ -773,5 +799,27 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+  }
+
+  public void addUIBlock(UIBlock block) {
+    mOperationsQueue.enqueueUIBlock(block);
+  }
+
+  public int resolveRootTagFromReactTag(int reactTag) {
+    if (mShadowNodeRegistry.isRootNode(reactTag)) {
+      return reactTag;
+    }
+
+    ReactShadowNode node = resolveShadowNode(reactTag);
+    int rootTag = 0;
+    if (node != null) {
+      rootTag = node.getRootNode().getReactTag();
+    } else {
+      FLog.w(
+        ReactConstants.TAG,
+        "Warning : attempted to resolve a non-existent react shadow node. reactTag=" + reactTag);
+    }
+
+    return rootTag;
   }
 }

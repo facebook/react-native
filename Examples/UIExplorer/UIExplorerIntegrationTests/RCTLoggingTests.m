@@ -36,28 +36,27 @@
 {
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
-    NSString *app = @"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp";
+    NSString *app = @"IntegrationTests/IntegrationTestsApp";
     scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
-    RCTAssert(scriptURL != nil, @"No scriptURL set");
   } else {
     scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
-    RCTAssert(scriptURL != nil, @"Could not locate main.jsBundle");
   }
+  RCTAssert(scriptURL != nil, @"No scriptURL set");
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:scriptURL moduleProvider:NULL launchOptions:nil];
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:5];
+  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:60];
   while (date.timeIntervalSinceNow > 0 && _bridge.loading) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
   XCTAssertFalse(_bridge.loading);
 
   _logSem = dispatch_semaphore_create(0);
-  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, __unused NSString *fileName, __unused NSNumber *lineNumber, NSString *message) {
     if (source == RCTLogSourceJavaScript) {
-      _lastLogLevel = level;
-      _lastLogSource = source;
-      _lastLogMessage = message;
-      dispatch_semaphore_signal(_logSem);
+      self->_lastLogLevel = level;
+      self->_lastLogSource = source;
+      self->_lastLogMessage = message;
+      dispatch_semaphore_signal(self->_logSem);
     }
   });
 }
@@ -96,12 +95,22 @@
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[@"Invoking console.error"]];
   dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
 
+  // For local bundles, we'll first get a warning about symbolication
+  if ([_bridge.bundleURL isFileURL]) {
+    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  }
+
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.error");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[@"Throwing an error"]];
   dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+
+  // For local bundles, we'll first get a warning about symbolication
+  if ([_bridge.bundleURL isFileURL]) {
+    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);

@@ -2,8 +2,10 @@
 id: colors
 title: Colors
 layout: docs
-category: Polyfills
+category: Guides
 permalink: docs/colors.html
+next: images
+previous: integration-with-existing-apps
 ---
 
 The following formats are supported:

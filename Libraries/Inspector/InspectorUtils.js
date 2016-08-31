@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
+var ReactNativeComponentTree = require('react/lib/ReactNativeComponentTree');
 
 function traverseOwnerTreeUp(hierarchy, instance) {
   if (instance) {
@@ -19,7 +19,7 @@ function traverseOwnerTreeUp(hierarchy, instance) {
   }
 }
 
-function findInstanceByNativeTag(rootTag, nativeTag) {
+function findInstanceByNativeTag(nativeTag) {
   return ReactNativeComponentTree.getInstanceFromNode(nativeTag);
 }
 

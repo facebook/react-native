@@ -9,19 +9,36 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeDelegate.h"
-
 extern uint32_t const RCTRAMBundleMagicNumber;
 
-@class RCTBridge;
+extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
-/**
- * Class that allows easy embedding, loading, life-cycle management of a
- * JavaScript application inside of a native application.
- * TODO: Incremental module loading. (low pri).
- */
+NS_ENUM(NSInteger) {
+  RCTJavaScriptLoaderErrorNoScriptURL = 1,
+  RCTJavaScriptLoaderErrorFailedOpeningFile = 2,
+  RCTJavaScriptLoaderErrorFailedReadingFile = 3,
+  RCTJavaScriptLoaderErrorFailedStatingFile = 3,
+  RCTJavaScriptLoaderErrorURLLoadFailed = 3,
+
+  RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
+};
+
+typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
+
 @interface RCTJavaScriptLoader : NSObject
 
-+ (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(RCTSourceLoadBlock)onComplete;
++ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete;
+
+/**
+ * @experimental
+ * Attempts to synchronously load the script at the given URL. The following two conditions must be met:
+ *   1. It must be a file URL.
+ *   2. It must point to a RAM bundle.
+ * If the URL does not meet those conditions, this method will return nil and supply an error with the domain
+ * RCTJavaScriptLoaderErrorDomain and the code RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously.
+ */
++ (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
+                                   sourceLength:(int64_t *)sourceLength
+                                          error:(NSError **)error;
 
 @end

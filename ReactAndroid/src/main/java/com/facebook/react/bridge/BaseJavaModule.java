@@ -9,10 +9,6 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.systrace.Systrace;
-import com.facebook.systrace.SystraceMessage;
-
 import javax.annotation.Nullable;
 
 import java.io.IOException;
@@ -20,6 +16,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -469,6 +469,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
   @Override
   public boolean canOverrideExistingModule() {
+    // TODO(t11394819): Make this final and use annotation
     return false;
   }
 

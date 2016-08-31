@@ -12,6 +12,8 @@ package com.facebook.react.uimanager;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
+import com.facebook.react.common.SingleThreadAsserter;
+
 /**
  * Simple container class to keep track of {@link ReactShadowNode}s associated with a particular
  * UIManagerModule instance.
@@ -20,19 +22,25 @@ import android.util.SparseBooleanArray;
 
   private final SparseArray<ReactShadowNode> mTagsToCSSNodes;
   private final SparseBooleanArray mRootTags;
+  private final SingleThreadAsserter mThreadAsserter;
 
   public ShadowNodeRegistry() {
     mTagsToCSSNodes = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
+    mThreadAsserter = new SingleThreadAsserter();
   }
 
   public void addRootNode(ReactShadowNode node) {
+    // TODO(6242243): This should be asserted... but UIManagerModule is
+    // thread-unsafe and calls this on the wrong thread.
+    //mThreadAsserter.assertNow();
     int tag = node.getReactTag();
     mTagsToCSSNodes.put(tag, node);
     mRootTags.put(tag, true);
   }
 
   public void removeRootNode(int tag) {
+    mThreadAsserter.assertNow();
     if (!mRootTags.get(tag)) {
       throw new IllegalViewOperationException(
           "View with tag " + tag + " is not registered as a root view");
@@ -43,10 +51,12 @@ import android.util.SparseBooleanArray;
   }
 
   public void addNode(ReactShadowNode node) {
+    mThreadAsserter.assertNow();
     mTagsToCSSNodes.put(node.getReactTag(), node);
   }
 
   public void removeNode(int tag) {
+    mThreadAsserter.assertNow();
     if (mRootTags.get(tag)) {
       throw new IllegalViewOperationException(
           "Trying to remove root node " + tag + " without using removeRootNode!");
@@ -55,18 +65,22 @@ import android.util.SparseBooleanArray;
   }
 
   public ReactShadowNode getNode(int tag) {
+    mThreadAsserter.assertNow();
     return mTagsToCSSNodes.get(tag);
   }
 
   public boolean isRootNode(int tag) {
+    mThreadAsserter.assertNow();
     return mRootTags.get(tag);
   }
 
   public int getRootNodeCount() {
+    mThreadAsserter.assertNow();
     return mRootTags.size();
   }
 
   public int getRootTag(int index) {
+    mThreadAsserter.assertNow();
     return mRootTags.keyAt(index);
   }
 }

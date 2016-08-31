@@ -32,7 +32,6 @@ if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
 class Inspector extends React.Component {
   props: {
     inspectedViewTag: ?number,
-    rootTag: ?number,
     onRequestRerenderApp: (callback: (tag: ?number) => void) => void
   };
 
@@ -45,6 +44,7 @@ class Inspector extends React.Component {
     perfing: bool,
     inspected: any,
     inspectedViewTag: any,
+    networking: bool,
   };
 
   _subs: ?Array<() => void>;
@@ -61,6 +61,7 @@ class Inspector extends React.Component {
       inspected: null,
       selection: null,
       inspectedViewTag: this.props.inspectedViewTag,
+      networking: false,
     };
   }
 
@@ -130,7 +131,7 @@ class Inspector extends React.Component {
     // therefore we use the internal _instance property directly.
     var publicInstance = instance['_instance'] || {};
     var source = instance['_currentElement'] && instance['_currentElement']['_source'];
-    UIManager.measure(instance.getNativeNode(), (x, y, width, height, left, top) => {
+    UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
@@ -175,6 +176,7 @@ class Inspector extends React.Component {
       perfing: val,
       inspecting: false,
       inspected: null,
+      networking: false,
     });
   }
 
@@ -192,13 +194,21 @@ class Inspector extends React.Component {
     });
   }
 
+  setNetworking(val: bool) {
+    this.setState({
+      networking: val,
+      perfing: false,
+      inspecting: false,
+      inspected: null,
+    });
+  }
+
   render() {
     var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
     return (
       <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
           <InspectorOverlay
-            rootTag={this.props.rootTag}
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
             onTouchInstance={this.onTouchInstance.bind(this)}
@@ -216,6 +226,8 @@ class Inspector extends React.Component {
             setSelection={this.setSelection.bind(this)}
             touchTargetting={Touchable.TOUCH_TARGET_DEBUG}
             setTouchTargetting={this.setTouchTargetting.bind(this)}
+            networking={this.state.networking}
+            setNetworking={this.setNetworking.bind(this)}
           />
         </View>
       </View>

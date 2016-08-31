@@ -16,7 +16,7 @@
 
 static NSString *RCTCurrentAppBackgroundState()
 {
-  RCTAssertMainThread();
+  RCTAssertMainQueue();
 
   static NSDictionary *states;
   static dispatch_once_t onceToken;
@@ -44,6 +44,11 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{@"initialAppState": RCTCurrentAppBackgroundState()};
 }
 
 #pragma mark - Lifecycle

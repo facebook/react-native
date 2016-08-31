@@ -29,8 +29,9 @@ Pod::Spec.new do |s|
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
+    ss.dependency            'React/CSSLayout'
     ss.source_files        = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files       = "**/__tests__/*", "IntegrationTests/*"
+    ss.exclude_files       = "**/__tests__/*", "IntegrationTests/*", "React/CSSLayout/*"
     ss.frameworks          = "JavaScriptCore"
     ss.libraries           = "stdc++"
     ss.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
@@ -40,6 +41,11 @@ Pod::Spec.new do |s|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/ART/**/*.{h,m}"
     ss.preserve_paths = "Libraries/ART/**/*.js"
+  end
+
+  s.subspec 'CSSLayout' do |ss|
+    ss.source_files        = "React/CSSLayout/**/*.{c,h}"
+    ss.header_mappings_dir = "React"
   end
 
   s.subspec 'RCTActionSheet' do |ss|
@@ -52,6 +58,11 @@ Pod::Spec.new do |s|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/AdSupport/*.{h,m}"
     ss.preserve_paths = "Libraries/AdSupport/*.js"
+  end
+
+  s.subspec 'RCTAnimation' do |ss|
+    ss.dependency       'React/Core'
+    ss.source_files   = "Libraries/NativeAnimation/{Nodes/*,*}.{h,m}"
   end
 
   s.subspec 'RCTCameraRoll' do |ss|

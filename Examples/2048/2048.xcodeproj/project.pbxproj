@@ -14,6 +14,8 @@
 		1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1461632C1AC3E22900C2F5AD /* libReact.a */; };
 		5F82F1781B85785200FAE87E /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F82F1771B85784500FAE87E /* libRCTWebSocket.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		E730D7501D4EE4E2000B7DA8 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E730D74C1D4EE4D0000B7DA8 /* libRCTNetwork.a */; };
+		E730D7571D4EE538000B7DA8 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E730D7561D4EE534000B7DA8 /* libRCTImage.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		E730D74B1D4EE4D0000B7DA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E730D7471D4EE4D0000B7DA8 /* RCTNetwork.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B511DB1A9E6C8500147676;
+			remoteInfo = RCTNetwork;
+		};
+		E730D7551D4EE534000B7DA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E730D7511D4EE534000B7DA8 /* RCTImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B5115D1A9E6B3D00147676;
+			remoteInfo = RCTImage;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +67,8 @@
 		146163271AC3E22900C2F5AD /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		5F82F1721B85784500FAE87E /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
+		E730D7471D4EE4D0000B7DA8 /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
+		E730D7511D4EE534000B7DA8 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +76,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E730D7571D4EE538000B7DA8 /* libRCTImage.a in Frameworks */,
+				E730D7501D4EE4E2000B7DA8 /* libRCTNetwork.a in Frameworks */,
 				5F82F1781B85785200FAE87E /* libRCTWebSocket.a in Frameworks */,
 				1461632D1AC3E23900C2F5AD /* libReact.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
@@ -99,6 +119,8 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				E730D7511D4EE534000B7DA8 /* RCTImage.xcodeproj */,
+				E730D7471D4EE4D0000B7DA8 /* RCTNetwork.xcodeproj */,
 				5F82F1721B85784500FAE87E /* RCTWebSocket.xcodeproj */,
 				146163271AC3E22900C2F5AD /* React.xcodeproj */,
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
@@ -133,6 +155,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E730D7481D4EE4D0000B7DA8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E730D74C1D4EE4D0000B7DA8 /* libRCTNetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E730D7521D4EE534000B7DA8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E730D7561D4EE534000B7DA8 /* libRCTImage.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +181,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				68ACCCD51D2BE2D2008E368A /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -174,6 +213,14 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = E730D7521D4EE534000B7DA8 /* Products */;
+					ProjectRef = E730D7511D4EE534000B7DA8 /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = E730D7481D4EE4D0000B7DA8 /* Products */;
+					ProjectRef = E730D7471D4EE4D0000B7DA8 /* RCTNetwork.xcodeproj */;
+				},
 				{
 					ProductGroup = 832341B11AAA6A8300B99B32 /* Products */;
 					ProjectRef = 832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */;
@@ -216,6 +263,20 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E730D74C1D4EE4D0000B7DA8 /* libRCTNetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTNetwork.a;
+			remoteRef = E730D74B1D4EE4D0000B7DA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E730D7561D4EE534000B7DA8 /* libRCTImage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTImage.a;
+			remoteRef = E730D7551D4EE534000B7DA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -229,6 +290,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		68ACCCD51D2BE2D2008E368A /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\n$SRCROOT/../../packager/react-native-xcode.sh Examples/2048/Game2048.js\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		13B07F871A680F5B00A75B9A /* Sources */ = {

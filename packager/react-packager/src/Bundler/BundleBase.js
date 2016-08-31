@@ -32,7 +32,7 @@ class BundleBase {
 
   addModule(module) {
     if (!(module instanceof ModuleTransport)) {
-      throw new Error('Expeceted a ModuleTransport object');
+      throw new Error('Expected a ModuleTransport object');
     }
 
     return this._modules.push(module) - 1;
@@ -59,8 +59,10 @@ class BundleBase {
   }
 
   finalize(options) {
-    Object.freeze(this._modules);
-    Object.freeze(this._assets);
+    if (!options.allowUpdates) {
+      Object.freeze(this._modules);
+      Object.freeze(this._assets);
+    }
 
     this._finalized = true;
   }
@@ -74,6 +76,10 @@ class BundleBase {
 
     this._source = this._modules.map((module) => module.code).join('\n');
     return this._source;
+  }
+
+  invalidateSource() {
+    this._source = null;
   }
 
   assertFinalized(message) {

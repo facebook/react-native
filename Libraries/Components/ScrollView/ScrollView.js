@@ -15,9 +15,8 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
-const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('react/lib/ReactNative');
 const ScrollResponder = require('ScrollResponder');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -179,9 +178,9 @@ const ScrollView = React.createClass({
     ]),
     /**
      * When false, tapping outside of the focused text input when the keyboard
-     * is up dismisses the keyboard. When true, the scroll view will not catch
-     * taps, and the keyboard will not dismiss automatically. The default value
-     * is false.
+     * is up dismisses the keyboard. When true, the keyboard will not dismiss
+     * automatically, and the scroll view will not catch taps, but children of
+     * the scroll view can catch taps. The default value is false.
      */
     keyboardShouldPersistTaps: PropTypes.bool,
     /**
@@ -468,11 +467,12 @@ const ScrollView = React.createClass({
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
 
+    const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
     const props = {
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
-      style: ([styles.base, this.props.style]: ?Array<any>),
+      style: ([baseStyle, this.props.style]: ?Array<any>),
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchEnd: this.scrollResponderHandleTouchEnd,
@@ -529,7 +529,7 @@ const ScrollView = React.createClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
-          <ScrollViewClass {...props} style={styles.base} ref={this._setScrollViewRef}>
+          <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
         );
@@ -544,11 +544,15 @@ const ScrollView = React.createClass({
 });
 
 const styles = StyleSheet.create({
-  base: {
+  baseVertical: {
     flex: 1,
+    flexDirection: 'column',
+  },
+  baseHorizontal: {
+    flex: 1,
+    flexDirection: 'row',
   },
   contentContainerHorizontal: {
-    alignSelf: 'flex-start',
     flexDirection: 'row',
   },
 });

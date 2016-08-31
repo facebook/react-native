@@ -107,6 +107,6 @@ module.exports = yeoman.generators.NamedBase.extend({
       return;
     }
 
-    this.npmInstall(`react@${reactVersion}`, { '--save': true });
+    this.npmInstall(`react@${reactVersion}`, { '--save': true, '--save-exact': true });
   }
 });

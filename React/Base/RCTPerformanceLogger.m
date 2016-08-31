@@ -14,77 +14,22 @@
 #import "RCTLog.h"
 #import "RCTProfile.h"
 
-static int64_t RCTPLData[RCTPLSize][2] = {};
-static NSUInteger RCTPLCookies[RCTPLSize] = {};
-
-void RCTPerformanceLoggerStart(RCTPLTag tag)
+@interface RCTPerformanceLogger ()
 {
-  if (RCTProfileIsProfiling()) {
-    NSString *label = RCTPerformanceLoggerLabels()[tag];
-    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
-  }
-
-  RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
-  RCTPLData[tag][1] = 0;
+  int64_t _data[RCTPLSize][2];
+  NSUInteger _cookies[RCTPLSize];
 }
 
-void RCTPerformanceLoggerEnd(RCTPLTag tag)
-{
-  if (RCTPLData[tag][0] != 0 && RCTPLData[tag][1] == 0) {
-    RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+@property (nonatomic, copy) NSArray<NSString *> *labelsForTags;
 
-    if (RCTProfileIsProfiling()) {
-      NSString *label = RCTPerformanceLoggerLabels()[tag];
-      RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
-    }
-  } else {
-    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
-  }
-}
+@end
 
-void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
-{
-  RCTPLData[tag][0] = 0;
-  RCTPLData[tag][1] = value;
-}
+@implementation RCTPerformanceLogger
 
-void RCTPerformanceLoggerAdd(RCTPLTag tag, int64_t value)
+- (instancetype)init
 {
-  RCTPLData[tag][0] = 0;
-  RCTPLData[tag][1] += value;
-}
-
-void RCTPerformanceLoggerAppendStart(RCTPLTag tag)
-{
-  RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
-}
-
-void RCTPerformanceLoggerAppendEnd(RCTPLTag tag)
-{
-  if (RCTPLData[tag][0] != 0) {
-    RCTPLData[tag][1] += CACurrentMediaTime() * 1000 - RCTPLData[tag][0];
-    RCTPLData[tag][0] = 0;
-  } else {
-    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
-  }
-}
-
-NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
-{
-  NSMutableArray *result = [NSMutableArray array];
-  for (NSUInteger index = 0; index < RCTPLSize; index++) {
-    [result addObject:@(RCTPLData[index][0])];
-    [result addObject:@(RCTPLData[index][1])];
-  }
-  return result;
-}
-
-NSArray *RCTPerformanceLoggerLabels(void)
-{
-  static NSArray *labels;
-  static dispatch_once_t token;
-  dispatch_once(&token, ^{
-    labels = @[
+  if (self = [super init]) {
+    _labelsForTags = @[
       @"ScriptDownload",
       @"ScriptExecution",
       @"RAMBundleLoad",
@@ -98,56 +43,88 @@ NSArray *RCTPerformanceLoggerLabels(void)
       @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
       @"JSCWrapperOpenLibrary",
-      @"JSCWrapperLoadFunctions",
       @"JSCExecutorSetup",
       @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",
     ];
-  });
-  return labels;
+  }
+  return self;
 }
 
-@interface RCTPerformanceLogger : NSObject <RCTBridgeModule>
-
-@end
-
-@implementation RCTPerformanceLogger
-
-RCT_EXPORT_MODULE()
-
-@synthesize bridge = _bridge;
-
-- (instancetype)init
+- (void)markStartForTag:(RCTPLTag)tag
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+#if RCT_PROFILE
+  if (RCTProfileIsProfiling()) {
+    NSString *label = _labelsForTags[tag];
+    _cookies[tag] = RCTProfileBeginAsyncEvent(RCTProfileTagAlways, label, nil);
+  }
+#endif
+  _data[tag][0] = CACurrentMediaTime() * 1000;
+  _data[tag][1] = 0;
 }
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(sendTimespans)
-                                               name:RCTContentDidAppearNotification
-                                             object:nil];
+- (void)markStopForTag:(RCTPLTag)tag
+{
+#if RCT_PROFILE
+  if (RCTProfileIsProfiling()) {
+    NSString *label =_labelsForTags[tag];
+    RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger", nil);
+  }
+#endif
+  if (_data[tag][0] != 0 && _data[tag][1] == 0) {
+    _data[tag][1] = CACurrentMediaTime() * 1000;
+  } else {
+    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
+  }
 }
 
-- (void)dealloc
+- (void)setValue:(int64_t)value forTag:(RCTPLTag)tag
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  _data[tag][0] = 0;
+  _data[tag][1] = value;
 }
 
-- (void)sendTimespans
+- (void)addValue:(int64_t)value forTag:(RCTPLTag)tag
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  _data[tag][0] = 0;
+  _data[tag][1] += value;
+}
 
-  [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
-    RCTPerformanceLoggerOutput(),
-    RCTPerformanceLoggerLabels(),
-  ]];
+- (void)appendStartForTag:(RCTPLTag)tag
+{
+  _data[tag][0] = CACurrentMediaTime() * 1000;
+}
+
+- (void)appendStopForTag:(RCTPLTag)tag
+{
+  if (_data[tag][0] != 0) {
+    _data[tag][1] += CACurrentMediaTime() * 1000 - _data[tag][0];
+    _data[tag][0] = 0;
+  } else {
+    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
+  }
+}
+
+- (NSArray<NSNumber *> *)valuesForTags
+{
+  NSMutableArray *result = [NSMutableArray array];
+  for (NSUInteger index = 0; index < RCTPLSize; index++) {
+    [result addObject:@(_data[index][0])];
+    [result addObject:@(_data[index][1])];
+  }
+  return result;
+}
+
+- (int64_t)durationForTag:(RCTPLTag)tag
+{
+  return _data[tag][1] - _data[tag][0];
+}
+
+- (int64_t)valueForTag:(RCTPLTag)tag
+{
+  return _data[tag][1];
 }
 
 @end

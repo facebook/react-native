@@ -9,9 +9,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RCTBundleURLProvider : NSObject
-
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
+
+extern const NSUInteger kRCTBundleURLProviderDefaultPort;
+
+@interface RCTBundleURLProvider : NSObject
 
 /**
  * Set default settings on NSUserDefaults.
@@ -19,11 +21,21 @@ extern NSString *const RCTBundleURLProviderUpdatedNotification;
 - (void)setDefaults;
 
 /**
+ * Reset every settings to default.
+ */
+- (void)resetToDefaults;
+
+/**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
  */
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                    fallbackResource:(NSString *)resourceName;
+
+/**
+ * Returns the URL of the packager server.
+ */
+- (NSURL *)packagerServerURL;
 
 /**
  * The IP address or hostname of the packager.
@@ -35,4 +47,15 @@ extern NSString *const RCTBundleURLProviderUpdatedNotification;
 @property (nonatomic, assign) BOOL enableDev;
 
 + (instancetype)sharedSettings;
+
+/**
+ Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
+ instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
+ and fall back to a pre-packaged bundle if it is not.
+ */
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification;
+
 @end

@@ -17,7 +17,7 @@ var Transform = require('art/core/transform');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
 var merge = require('merge');
 
 // Diff Helpers
@@ -136,9 +136,8 @@ function childrenAsString(children) {
 
 // Surface - Root node of all ART
 
-var Surface = React.createClass({
-
-  render: function() {
+class Surface extends React.Component {
+  render() {
     var props = this.props;
     var w = extractNumber(props.width, 0);
     var h = extractNumber(props.height, 0);
@@ -148,8 +147,7 @@ var Surface = React.createClass({
       </NativeSurfaceView>
     );
   }
-
-});
+}
 
 // Node Props
 
@@ -204,9 +202,8 @@ function extractOpacity(props) {
 // Note: ART has a notion of width and height on Group but AFAIK it's a noop in
 // ReactART.
 
-var Group = React.createClass({
-
-  render: function() {
+class Group extends React.Component {
+  render() {
     var props = this.props;
     return (
       <NativeGroup
@@ -216,12 +213,10 @@ var Group = React.createClass({
       </NativeGroup>
     );
   }
+}
 
-});
-
-var ClippingRectangle = React.createClass({
-
-  render: function() {
+class ClippingRectangle extends React.Component {
+  render() {
     var props = this.props;
     var x = extractNumber(props.x, 0);
     var y = extractNumber(props.y, 0);
@@ -241,8 +236,7 @@ var ClippingRectangle = React.createClass({
       </NativeGroup>
     );
   }
-
-});
+}
 
 // Renderables
 
@@ -376,9 +370,8 @@ function extractStrokeJoin(strokeJoin) {
 // Note: ART has a notion of width and height on Shape but AFAIK it's a noop in
 // ReactART.
 
-var Shape = React.createClass({
-
-  render: function() {
+class Shape extends React.Component {
+  render() {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
     var d = new Path(path).toJSON();
@@ -397,8 +390,7 @@ var Shape = React.createClass({
       />
     );
   }
-
-});
+}
 
 // Text
 
@@ -472,9 +464,8 @@ function extractAlignment(alignment) {
   }
 }
 
-var Text = React.createClass({
-
-  render: function() {
+class Text extends React.Component {
+  render() {
     var props = this.props;
     var textPath = props.path ? new Path(props.path).toJSON() : null;
     var textFrame = extractFontAndLines(
@@ -498,8 +489,7 @@ var Text = React.createClass({
       />
     );
   }
-
-});
+}
 
 // Declarative fill type objects - API design not finalized
 

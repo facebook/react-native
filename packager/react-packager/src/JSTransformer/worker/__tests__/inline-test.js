@@ -141,6 +141,113 @@ describe('inline constants', () => {
       normalize(code.replace(/require\('react-native'\)\.Platform\.OS/, '"android"')));
   });
 
+  it('inlines Platform.select in the code if Platform is a global and the argument is an object literal', () => {
+    const code = `function a() {
+      var a = Platform.select({ios: 1, android: 2});
+      var b = a.Platform.select({ios: 1, android: 2});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '1')));
+  });
+
+  it('replaces Platform.select in the code if Platform is a top level import', () => {
+    const code = `
+      var Platform = require('Platform');
+      function a() {
+        Platform.select({ios: 1, android: 2});
+        var b = a.Platform.select({});
+      }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '2')));
+  });
+
+  it('replaces Platform.select in the code if Platform is a top level import from react-native', () => {
+    const code = `
+      var Platform = require('react-native').Platform;
+      function a() {
+        Platform.select({ios: 1, android: 2});
+        var b = a.Platform.select({});
+      }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '1')));
+  });
+
+  it('replaces require("Platform").select in the code', () => {
+    const code = `function a() {
+      var a = require('Platform').select({ios: 1, android: 2});
+      var b = a.require('Platform').select({});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '2')));
+  });
+
+  it('replaces React.Platform.select in the code if React is a global', () => {
+    const code = `function a() {
+      var a = React.Platform.select({ios: 1, android: 2});
+      var b = a.React.Platform.select({});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/React\.Platform\.select[^;]+/, '1')));
+  });
+
+  it('replaces ReactNative.Platform.select in the code if ReactNative is a global', () => {
+    const code = `function a() {
+      var a = ReactNative.Platform.select({ios: 1, android: 2});
+      var b = a.ReactNative.Platform.select({});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative\.Platform\.select[^;]+/, '1')));
+  });
+
+  it('replaces React.Platform.select in the code if React is a top level import', () => {
+    const code = `
+      var React = require('React');
+      function a() {
+        var a = React.Platform.select({ios: 1, android: 2});
+        var b = a.React.Platform.select({});
+      }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/React\.Platform\.select[^;]+/, '1')));
+  });
+
+  it('replaces require("React").Platform.select in the code', () => {
+    const code = `function a() {
+      var a = require('React').Platform.select({ios: 1, android: 2});
+      var b = a.require('React').Platform.select({});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/require\('React'\)\.Platform\.select[^;]+/, '2')));
+  });
+
+  it('replaces ReactNative.Platform.select in the code if ReactNative is a top level import', () => {
+    const code = `
+      var ReactNative = require('react-native');
+      function a() {
+        var a = ReactNative.Plaftform.select({ios: 1, android: 2});
+        var b = a.ReactNative.Platform.select;
+      }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative.Platform\.select[^;]+/, '2')));
+  });
+
+  it('replaces require("react-native").Platform.select in the code', () => {
+    const code = `
+      var a = require('react-native').Platform.select({ios: 1, android: 2});
+      var b = a.require('react-native').Platform.select({});
+    `;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/require\('react-native'\)\.Platform\.select[^;]+/, '2')));
+  });
+
+  it('replaces non-existing properties with `undefined`', () => {
+    const code = 'var a = Platform.select({ios: 1, android: 2})';
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'doesnotexist'});
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/Platform\.select[^;]+/, 'undefined')));
+  });
+
   it('replaces process.env.NODE_ENV in the code', () => {
     const code = `function a() {
       if (process.env.NODE_ENV === 'production') {

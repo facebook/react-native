@@ -13,7 +13,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var BugReporting = require('BugReporting');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 
 var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
@@ -31,9 +31,9 @@ var runCount = 1;
 type ComponentProvider = () => ReactClass<any>;
 
 type AppConfig = {
-  appKey: string;
-  component?: ComponentProvider;
-  run?: Function;
+  appKey: string,
+  component?: ComponentProvider,
+  run?: Function,
 };
 
 /**

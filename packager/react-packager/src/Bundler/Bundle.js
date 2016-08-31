@@ -22,7 +22,6 @@ class Bundle extends BundleBase {
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
-    this._numPrependedModules = 0;
     this._numRequireCalls = 0;
     this._dev = dev;
     this._minify = minify;
@@ -53,10 +52,6 @@ class Bundle extends BundleBase {
     });
   }
 
-  setNumPrependedModules(n) {
-    this._numPrependedModules = n;
-  }
-
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
@@ -64,7 +59,7 @@ class Bundle extends BundleBase {
       this._addRequireCall(super.getMainModuleId());
     }
 
-    super.finalize();
+    super.finalize(options);
   }
 
   _addRequireCall(moduleId) {
@@ -72,7 +67,7 @@ class Bundle extends BundleBase {
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
-      id: this._numRequireCalls - 1,
+      id: -this._numRequireCalls - 1,
       code,
       virtual: true,
       sourceCode: code,
@@ -119,7 +114,6 @@ class Bundle extends BundleBase {
       this._ramBundle = {
         startupModules,
         lazyModules,
-        allModules: modules,
       };
     }
 
@@ -277,7 +271,6 @@ class Bundle extends BundleBase {
     return {
       ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
-      numPrependedModules: this._numPrependedModules,
       numRequireCalls: this._numRequireCalls,
       shouldCombineSourceMaps: this._shouldCombineSourceMaps,
     };
@@ -287,7 +280,6 @@ class Bundle extends BundleBase {
     const bundle = new Bundle({sourceMapUrl: json.sourceMapUrl});
 
     bundle._sourceMapUrl = json.sourceMapUrl;
-    bundle._numPrependedModules = json.numPrependedModules;
     bundle._numRequireCalls = json.numRequireCalls;
     bundle._shouldCombineSourceMaps = json.shouldCombineSourceMaps;
 

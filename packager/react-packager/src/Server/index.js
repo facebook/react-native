@@ -10,16 +10,32 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('node-haste').FileWatcher;
-const getPlatformExtension = require('node-haste').getPlatformExtension;
+const FileWatcher = require('../node-haste').FileWatcher;
+const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
-const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
+const defaultAssetExts = require('../../../defaultAssetExts');
+const mime = require('mime-types');
 const path = require('path');
 const url = require('url');
+
+const debug = require('debug')('ReactNativePackager:Server');
+
+function debounceAndBatch(fn, delay) {
+  let timeout, args = [];
+  return (value) => {
+    args.push(value);
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const a = args;
+      args = [];
+      fn(a);
+    }, delay);
+  };
+}
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -63,12 +79,7 @@ const validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', 'pdf', // Document formats
-    ],
+    default: defaultAssetExts,
   },
   transformTimeoutInterval: {
     type: 'number',
@@ -135,7 +146,10 @@ const bundleOpts = declareOpts({
   isolateModuleIDs: {
     type: 'boolean',
     default: false
-  }
+  },
+  resolutionResponse: {
+    type: 'object',
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -159,7 +173,14 @@ const dependencyOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  minify: {
+    type: 'boolean',
+    default: undefined,
+  },
 });
+
+const bundleDeps = new WeakMap();
+const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 
 class Server {
   constructor(options) {
@@ -205,12 +226,41 @@ class Server {
     const bundlerOpts = Object.create(opts);
     bundlerOpts.fileWatcher = this._fileWatcher;
     bundlerOpts.assetServer = this._assetServer;
+    bundlerOpts.allowBundleUpdates = !options.nonPersistent;
     this._bundler = new Bundler(bundlerOpts);
 
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
-    this._debouncedFileChangeHandler = _.debounce(filePath => {
-      this._clearBundles();
+    // changes to the haste map can affect resolution of files in the bundle
+    this._bundler
+      .getResolver()
+      .getDependecyGraph()
+      .getHasteMap()
+      .on('change', () => {
+        debug('Clearing bundle cache due to haste map change');
+        this._clearBundles();
+      });
+
+    this._debouncedFileChangeHandler = debounceAndBatch(filePaths => {
+      // only clear bundles for non-JS changes
+      if (filePaths.every(RegExp.prototype.test, /\.js(?:on)?$/i)) {
+        for (const key in this._bundles) {
+          this._bundles[key].then(bundle => {
+            const deps = bundleDeps.get(bundle);
+            filePaths.forEach(filePath => {
+              if (deps.files.has(filePath)) {
+                deps.outdated.add(filePath);
+              }
+            });
+          }).catch(e => {
+            debug(`Could not update bundle: ${e}, evicting from cache`);
+            delete this._bundles[key];
+          });
+        }
+      } else {
+        debug('Clearing bundles due to non-JS change');
+        this._clearBundles();
+      }
       this._informChangeWatchers();
     }, 50);
   }
@@ -239,7 +289,26 @@ class Server {
       }
 
       const opts = bundleOpts(options);
-      return this._bundler.bundle(opts);
+      const building = this._bundler.bundle(opts);
+      building.then(bundle => {
+        const modules = bundle.getModules();
+        const nonVirtual = modules.filter(m => !m.virtual);
+        bundleDeps.set(bundle, {
+          files: new Map(
+            nonVirtual
+              .map(({sourcePath, meta = {dependencies: []}}) =>
+                [sourcePath, meta.dependencies])
+          ),
+          idToIndex: new Map(modules.map(({id}, i) => [id, i])),
+          dependencyPairs: new Map(
+            nonVirtual
+              .filter(({meta}) => meta && meta.dependencyPairs)
+              .map(m => [m.sourcePath, m.meta.dependencyPairs])
+          ),
+          outdated: new Set(),
+        });
+      });
+      return building;
     });
   }
 
@@ -308,6 +377,10 @@ class Server {
       this._clearBundles();
       this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
       return;
+    } else if (type !== 'change' && absPath.indexOf(NODE_MODULES) !== -1) {
+      // node module resolution can be affected by added or removed files
+      debug('Clearing bundles due to potential node_modules resolution change');
+      this._clearBundles();
     }
 
     Promise.all(
@@ -348,7 +421,6 @@ class Server {
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
-      ret += '<div><a href="/debug/graph">Dependency Graph</a></div>';
       res.end(ret);
     } else if (parts[1] === 'bundles') {
       ret += '<h1> Cached Bundles </h1>';
@@ -362,13 +434,9 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack);
+          console.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
-    } else if (parts[1] === 'graph'){
-      ret += '<h1> Dependency Graph </h2>';
-      ret += this._bundler.getGraphDebugInfo();
-      res.end(ret);
     } else {
       res.writeHead('404');
       res.end('Invalid debug request');
@@ -394,19 +462,124 @@ class Server {
     });
   }
 
+  _rangeRequestMiddleware(req, res, data, assetPath) {
+    if (req.headers && req.headers.range) {
+      const [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
+      const dataStart = parseInt(rangeStart, 10);
+      const dataEnd = rangeEnd ? parseInt(rangeEnd, 10) : data.length - 1;
+      const chunksize = (dataEnd - dataStart) + 1;
+
+      res.writeHead(206, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
+        'Content-Type': mime.lookup(path.basename(assetPath[1]))
+      });
+
+      return data.slice(dataStart, dataEnd + 1);
+    }
+
+    return data;
+  }
+
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
+    const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => res.end(data),
+        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
         error => {
           console.error(error.stack);
           res.writeHead('404');
           res.end('Asset not found');
         }
       ).done(() => Activity.endEvent(assetEvent));
+  }
+
+  _useCachedOrUpdateOrCreateBundle(options) {
+    const optionsJson = JSON.stringify(options);
+    const bundleFromScratch = () => {
+      const building = this.buildBundle(options);
+      this._bundles[optionsJson] = building;
+      return building;
+    };
+
+    if (optionsJson in this._bundles) {
+      return this._bundles[optionsJson].then(bundle => {
+        const deps = bundleDeps.get(bundle);
+        const {dependencyPairs, files, idToIndex, outdated} = deps;
+        if (outdated.size) {
+          debug('Attempt to update existing bundle');
+          const changedModules =
+            Array.from(outdated, this.getModuleForPath, this);
+          deps.outdated = new Set();
+
+          const opts = bundleOpts(options);
+          const {platform, dev, minify, hot} = opts;
+
+          // Need to create a resolution response to pass to the bundler
+          // to process requires after transform. By providing a
+          // specific response we can compute a non recursive one which
+          // is the least we need and improve performance.
+          const bundlePromise = this._bundles[optionsJson] =
+            this.getDependencies({
+              platform, dev, hot, minify,
+              entryFile: options.entryFile,
+              recursive: false,
+            }).then(response => {
+              debug('Update bundle: rebuild shallow bundle');
+
+              changedModules.forEach(m => {
+                response.setResolvedDependencyPairs(
+                  m,
+                  dependencyPairs.get(m.path),
+                  {ignoreFinalized: true},
+                );
+              });
+
+              return this.buildBundle({
+                ...options,
+                resolutionResponse: response.copy({
+                  dependencies: changedModules,
+                })
+              }).then(updateBundle => {
+                const oldModules = bundle.getModules();
+                const newModules = updateBundle.getModules();
+                for (let i = 0, n = newModules.length; i < n; i++) {
+                  const moduleTransport = newModules[i];
+                  const {meta, sourcePath} = moduleTransport;
+                  if (outdated.has(sourcePath)) {
+                    if (!contentsEqual(meta.dependencies, new Set(files.get(sourcePath)))) {
+                      // bail out if any dependencies changed
+                      return Promise.reject(Error(
+                        `Dependencies of ${sourcePath} changed from [${
+                          files.get(sourcePath).join(', ')
+                        }] to [${meta.dependencies.join(', ')}]`
+                      ));
+                    }
+
+                    oldModules[idToIndex.get(moduleTransport.id)] = moduleTransport;
+                  }
+                }
+
+                bundle.invalidateSource();
+                debug('Successfully updated existing bundle');
+                return bundle;
+            });
+          }).catch(e => {
+            debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
+            return bundleFromScratch();
+          });
+          return bundlePromise;
+        } else {
+          debug('Using cached bundle');
+          return bundle;
+        }
+      });
+    }
+
+    return bundleFromScratch();
   }
 
   processRequest(req, res, next) {
@@ -437,28 +610,39 @@ class Server {
       return;
     }
 
-    const startReqEventId = Activity.startEvent('request:' + req.url);
+    const startReqEventId = Activity.startEvent(
+      'Requesting bundle',
+      {
+        url: req.url,
+      },
+      {
+        telemetric: true,
+      },
+    );
     const options = this._getOptionsFromUrl(req.url);
-    const optionsJson = JSON.stringify(options);
-    const building = this._bundles[optionsJson] || this.buildBundle(options);
-
-    this._bundles[optionsJson] = building;
+    debug('Getting bundle for request');
+    const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
         if (requestType === 'bundle') {
+          debug('Generating source code');
           const bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
             dev: options.dev,
           });
+          debug('Writing response headers');
           res.setHeader('Content-Type', 'application/javascript');
           res.setHeader('ETag', p.getEtag());
           if (req.headers['if-none-match'] === res.getHeader('ETag')){
+            debug('Responding with 304');
             res.statusCode = 304;
             res.end();
           } else {
+            debug('Writing request body');
             res.end(bundleSource);
           }
+          debug('Finished response');
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
           let sourceMap = p.getSourceMap({
@@ -480,35 +664,56 @@ class Server {
           Activity.endEvent(startReqEventId);
         }
       },
-      this._handleError.bind(this, res, optionsJson)
+      error => this._handleError(res, JSON.stringify(options), error)
     ).done();
   }
 
   _symbolicate(req, res) {
-    const startReqEventId = Activity.startEvent('symbolicate');
+    const startReqEventId = Activity.startEvent(
+      'Symbolicating',
+      null,
+      {
+        telemetric: true,
+      },
+    );
     new Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
       // In case of multiple bundles / HMR, some stack frames can have
       // different URLs from others
-      const urls = stack.map(frame => frame.file);
-      const uniqueUrls = urls.filter((elem, idx) => urls.indexOf(elem) === idx);
+      const urlIndexes = {};
+      const uniqueUrls = [];
+      stack.forEach(frame => {
+        const sourceUrl = frame.file;
+        // Skip `/debuggerWorker.js` which drives remote debugging because it
+        // does not need to symbolication.
+        // Skip anything except http(s), because there is no support for that yet
+        if (!urlIndexes.hasOwnProperty(sourceUrl) &&
+            !sourceUrl.endsWith('/debuggerWorker.js') &&
+            sourceUrl.startsWith('http')) {
+          urlIndexes[sourceUrl] = uniqueUrls.length;
+          uniqueUrls.push(sourceUrl);
+        }
+      });
 
-      const sourceMaps = uniqueUrls.map(sourceUrl => this._sourceMapForURL(sourceUrl));
+      const sourceMaps = uniqueUrls.map(
+        sourceUrl => this._sourceMapForURL(sourceUrl)
+      );
       return Promise.all(sourceMaps).then(consumers => {
         return stack.map(frame => {
-          const idx = uniqueUrls.indexOf(frame.file);
+          const sourceUrl = frame.file;
+          if (!urlIndexes.hasOwnProperty(sourceUrl)) {
+            return frame;
+          }
+          const idx = urlIndexes[sourceUrl];
           const consumer = consumers[idx];
-
           const original = consumer.originalPositionFor({
             line: frame.lineNumber,
             column: frame.column,
           });
-
           if (!original) {
             return frame;
           }
-
           return Object.assign({}, frame, {
             file: original.source,
             lineNumber: original.line,
@@ -530,9 +735,7 @@ class Server {
 
   _sourceMapForURL(reqUrl) {
     const options = this._getOptionsFromUrl(reqUrl);
-    const optionsJson = JSON.stringify(options);
-    const building = this._bundles[optionsJson] || this.buildBundle(options);
-    this._bundles[optionsJson] = building;
+    const building = this._useCachedOrUpdateOrCreateBundle(options);
     return building.then(p => {
       const sourceMap = p.getSourceMap({
         minify: options.minify,
@@ -623,6 +826,10 @@ class Server {
 
     return query[opt] === 'true' || query[opt] === '1';
   }
+}
+
+function contentsEqual(array, set) {
+  return array.length === set.size && array.every(set.has, set);
 }
 
 module.exports = Server;

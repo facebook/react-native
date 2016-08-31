@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -29,11 +28,12 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
  * views to custom {@link PagerAdapter} instance which is used by {@link NativeViewHierarchyManager}
  * to add children nodes according to react views hierarchy.
  */
-/* package */ class ReactViewPager extends ViewPager {
+public class ReactViewPager extends ViewPager {
 
   private class Adapter extends PagerAdapter {
 
-    private List<View> mViews = new ArrayList<>();
+    private final List<View> mViews = new ArrayList<>();
+    private boolean mIsViewPagerInIntentionallyInconsistentState = false;
 
     void addView(View child, int index) {
       mViews.add(index, child);
@@ -58,6 +58,32 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
       setOffscreenPageLimit(mViews.size());
     }
 
+    /**
+     * Replace a set of views to the ViewPager adapter and update the ViewPager
+     */
+    void setViews(List<View> views) {
+      mViews.clear();
+      mViews.addAll(views);
+      notifyDataSetChanged();
+
+      // we want to make sure we return POSITION_NONE for every view here, since this is only
+      // called after a removeAllViewsFromAdapter
+      mIsViewPagerInIntentionallyInconsistentState = false;
+    }
+
+    /**
+     * Remove all the views from the adapter and de-parents them from the ViewPager
+     * After calling this, it is expected that notifyDataSetChanged should be called soon
+     * afterwards.
+     */
+    void removeAllViewsFromAdapter(ViewPager pager) {
+      mViews.clear();
+      pager.removeAllViews();
+      // set this, so that when the next addViews is called, we return POSITION_NONE for every
+      // entry so we can remove whichever views we need to and add the ones that we need to.
+      mIsViewPagerInIntentionallyInconsistentState = true;
+    }
+
     View getViewAt(int index) {
       return mViews.get(index);
     }
@@ -65,6 +91,13 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     @Override
     public int getCount() {
       return mViews.size();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+      // if we've removed all views, we want to return POSITION_NONE intentionally
+      return mIsViewPagerInIntentionallyInconsistentState || !mViews.contains(object) ?
+        POSITION_NONE : mViews.indexOf(object);
     }
 
     @Override
@@ -76,8 +109,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-      View view = mViews.get(position);
-      container.removeView(view);
+      container.removeView((View) object);
     }
 
     @Override
@@ -91,14 +123,14 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), SystemClock.nanoTime(), position, positionOffset));
+          new PageScrollEvent(getId(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), SystemClock.nanoTime(), position));
+            new PageSelectedEvent(getId(), position));
       }
     }
 
@@ -119,7 +151,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
           throw new IllegalStateException("Unsupported pageScrollState");
       }
       mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getId(), SystemClock.nanoTime(), pageScrollState));
+        new PageScrollStateChangedEvent(getId(), pageScrollState));
     }
   }
 
@@ -186,5 +218,13 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   /*package*/ View getViewFromAdapter(int index) {
     return getAdapter().getViewAt(index);
+  }
+
+  public void setViews(List<View> views) {
+    getAdapter().setViews(views);
+  }
+
+  public void removeAllViewsFromAdapter() {
+    getAdapter().removeAllViewsFromAdapter(this);
   }
 }

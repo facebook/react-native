@@ -16,6 +16,7 @@
 		58C572511AA6229D00CDF9C8 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58C5724D1AA6224400CDF9C8 /* libRCTText.a */; };
 		5FF8942E1B85571A007731BE /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FF8942D1B8556F8007731BE /* libRCTWebSocket.a */; };
 		832044981B492C2500E297FC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832044951B492C1E00E297FC /* libRCTSettings.a */; };
+		E730D7731D4EE604000B7DA8 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E730D76E1D4EE5FC000B7DA8 /* libRCTNetwork.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTSettings;
 		};
+		E730D76D1D4EE5FC000B7DA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E730D7681D4EE5FC000B7DA8 /* RCTNetwork.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 58B511DB1A9E6C8500147676;
+			remoteInfo = RCTNetwork;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +77,7 @@
 		587650DA1A9EB0DB008B8F17 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = ../../Libraries/Text/RCTText.xcodeproj; sourceTree = "<group>"; };
 		5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = ../../Libraries/WebSocket/RCTWebSocket.xcodeproj; sourceTree = "<group>"; };
 		8320448F1B492C1E00E297FC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
+		E730D7681D4EE5FC000B7DA8 /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E730D7731D4EE604000B7DA8 /* libRCTNetwork.a in Frameworks */,
 				5FF8942E1B85571A007731BE /* libRCTWebSocket.a in Frameworks */,
 				144C5F691AC3E5E300B004E7 /* libReact.a in Frameworks */,
 				1341803E1AA91802003F314A /* libRCTImage.a in Frameworks */,
@@ -119,6 +129,7 @@
 		58C572071AA6126D00CDF9C8 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				E730D7681D4EE5FC000B7DA8 /* RCTNetwork.xcodeproj */,
 				5FF894281B8556F8007731BE /* RCTWebSocket.xcodeproj */,
 				144C5F631AC3E5D800B004E7 /* React.xcodeproj */,
 				134180381AA917ED003F314A /* RCTImage.xcodeproj */,
@@ -171,6 +182,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E730D7691D4EE5FC000B7DA8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E730D76E1D4EE5FC000B7DA8 /* libRCTNetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -181,6 +200,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				681C70ED1D2BE73C00E71791 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -215,6 +235,10 @@
 				{
 					ProductGroup = 134180391AA917ED003F314A /* Products */;
 					ProjectRef = 134180381AA917ED003F314A /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = E730D7691D4EE5FC000B7DA8 /* Products */;
+					ProjectRef = E730D7681D4EE5FC000B7DA8 /* RCTNetwork.xcodeproj */;
 				},
 				{
 					ProductGroup = 832044901B492C1E00E297FC /* Products */;
@@ -276,6 +300,13 @@
 			remoteRef = 832044941B492C1E00E297FC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E730D76E1D4EE5FC000B7DA8 /* libRCTNetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTNetwork.a;
+			remoteRef = E730D76D1D4EE5FC000B7DA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -289,6 +320,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		681C70ED1D2BE73C00E71791 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export NODE_BINARY=node\n$SRCROOT/../../packager/react-native-xcode.sh Examples/TicTacToe/TicTacToeApp.js\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		13B07F871A680F5B00A75B9A /* Sources */ = {

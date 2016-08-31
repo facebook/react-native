@@ -29,12 +29,11 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
   public ReactTextChangedEvent(
       int viewId,
-      long timestampMs,
       String text,
       int contentSizeWidth,
       int contentSizeHeight,
       int eventCount) {
-    super(viewId, timestampMs);
+    super(viewId);
     mText = text;
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
