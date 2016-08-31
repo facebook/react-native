@@ -104,7 +104,13 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
             timer.mTargetTime = frameTimeMillis + timer.mInterval;
             mTimers.add(timer);
           } else {
-            mTimerIdsToTimers.remove(timer.mExecutorToken);
+            SparseArray<Timer> timers = mTimerIdsToTimers.get(timer.mExecutorToken);
+            if (timers != null) {
+              timers.remove(timer.mCallbackID);
+              if (timers.size() == 0) {
+                mTimerIdsToTimers.remove(timer.mExecutorToken);
+              }
+            }
           }
         }
       }
@@ -385,7 +391,10 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         return;
       }
       // We may have already called/removed it
-      mTimerIdsToTimers.remove(executorToken);
+      timersForContext.remove(timerId);
+      if (timersForContext.size() == 0) {
+        mTimerIdsToTimers.remove(executorToken);
+      }
       mTimers.remove(timer);
     }
   }
