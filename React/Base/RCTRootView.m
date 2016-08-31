@@ -236,6 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
+  RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
   [bridge enqueueJSCall:@"AppRegistry"
                  method:@"runApplication"
                    args:@[moduleName, appParameters]
