@@ -1176,6 +1176,11 @@ class AnimatedModulo extends AnimatedWithChildren {
     this._modulus = modulus;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
   __getValue(): number {
     return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
   }
@@ -1190,6 +1195,14 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'modulus',
+      input: this._a.__getNativeTag(),
+      modulus: this._modulus,
+    };
   }
 }
 
