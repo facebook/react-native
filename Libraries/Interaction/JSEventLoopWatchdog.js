@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const performanceNow = require('performanceNow');
+const performanceNow = require('fbjs/lib/performanceNow');
 
 type Handler = {
   onIterate?: () => void,

@@ -28,9 +28,14 @@ export type Command = {
     desc: string,
     cmd: string,
   }>,
+  pkg?: {
+    version: string,
+    name: string,
+  },
 };
 
 const documentedCommands = [
+  require('./android/android'),
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),

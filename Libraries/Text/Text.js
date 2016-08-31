@@ -255,12 +255,12 @@ const Text = React.createClass({
                 });
               };
 
-              this.touchableHandlePress = () => {
-                this.props.onPress && this.props.onPress();
+              this.touchableHandlePress = (e: SyntheticEvent) => {
+                this.props.onPress && this.props.onPress(e);
               };
 
-              this.touchableHandleLongPress = () => {
-                this.props.onLongPress && this.props.onLongPress();
+              this.touchableHandleLongPress = (e: SyntheticEvent) => {
+                this.props.onLongPress && this.props.onLongPress(e);
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {

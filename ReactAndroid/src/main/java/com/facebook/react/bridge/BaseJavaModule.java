@@ -9,13 +9,6 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.annotations.ReactModule;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.systrace.Systrace;
-import com.facebook.systrace.SystraceMessage;
-
 import javax.annotation.Nullable;
 
 import java.io.IOException;
@@ -23,6 +16,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -466,17 +463,6 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
-  public String getName() {
-    ReactModule module = getClass().getAnnotation(ReactModule.class);
-    if (module == null) {
-      throw new IllegalStateException(
-        getClass().getSimpleName() +
-          "module must have @ReactModule annotation or override getName()");
-    }
-    return module.name();
-  }
-
-  @Override
   public void initialize() {
     // do nothing
   }
@@ -499,11 +485,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
   @Override
   public boolean supportsWebWorkers() {
-    ReactModule module = getClass().getAnnotation(ReactModule.class);
-    if (module == null) {
-      return false;
-    }
-    return module.supportsWebWorkers();
+    return false;
   }
 
   private static char paramTypeToChar(Class paramClass) {
