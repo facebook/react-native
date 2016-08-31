@@ -479,8 +479,8 @@ static bool isColumnDirection(const CSSFlexDirection flexDirection) {
 
 static float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.margin, CSSEdgeStart, 0))) {
-    return computedEdgeValue(node->style.margin, CSSEdgeStart, 0);
+      !CSSValueIsUndefined(node->style.margin[CSSEdgeStart])) {
+    return node->style.margin[CSSEdgeStart];
   }
 
   return computedEdgeValue(node->style.margin, leading[axis], 0);
@@ -488,8 +488,8 @@ static float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis
 
 static float getTrailingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.margin, CSSEdgeEnd, 0))) {
-    return computedEdgeValue(node->style.margin, CSSEdgeEnd, 0);
+      !CSSValueIsUndefined(node->style.margin[CSSEdgeEnd])) {
+    return node->style.margin[CSSEdgeEnd];
   }
 
   return computedEdgeValue(node->style.margin, trailing[axis], 0);
@@ -497,9 +497,9 @@ static float getTrailingMargin(const CSSNodeRef node, const CSSFlexDirection axi
 
 static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.padding, CSSEdgeStart, 0)) &&
-      computedEdgeValue(node->style.padding, CSSEdgeStart, 0) >= 0) {
-    return computedEdgeValue(node->style.padding, CSSEdgeStart, 0);
+      !CSSValueIsUndefined(node->style.padding[CSSEdgeStart]) &&
+      node->style.padding[CSSEdgeStart] >= 0) {
+    return node->style.padding[CSSEdgeStart];
   }
 
   if (computedEdgeValue(node->style.padding, leading[axis], 0) >= 0) {
@@ -511,9 +511,9 @@ static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axi
 
 static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.padding, CSSEdgeEnd, 0)) &&
-      computedEdgeValue(node->style.padding, CSSEdgeEnd, 0) >= 0) {
-    return computedEdgeValue(node->style.padding, CSSEdgeEnd, 0);
+      !CSSValueIsUndefined(node->style.padding[CSSEdgeEnd]) &&
+      node->style.padding[CSSEdgeEnd] >= 0) {
+    return node->style.padding[CSSEdgeEnd];
   }
 
   if (computedEdgeValue(node->style.padding, trailing[axis], 0) >= 0) {
@@ -525,9 +525,9 @@ static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection ax
 
 static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.border, CSSEdgeStart, 0)) &&
-      computedEdgeValue(node->style.border, CSSEdgeStart, 0) >= 0) {
-    return computedEdgeValue(node->style.border, CSSEdgeStart, 0);
+      !CSSValueIsUndefined(node->style.border[CSSEdgeStart]) &&
+      node->style.border[CSSEdgeStart] >= 0) {
+    return node->style.border[CSSEdgeStart];
   }
 
   if (computedEdgeValue(node->style.border, leading[axis], 0) >= 0) {
@@ -539,9 +539,9 @@ static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis
 
 static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(computedEdgeValue(node->style.border, CSSEdgeEnd, 0)) &&
-      computedEdgeValue(node->style.border, CSSEdgeEnd, 0) >= 0) {
-    return computedEdgeValue(node->style.border, CSSEdgeEnd, 0);
+      !CSSValueIsUndefined(node->style.border[CSSEdgeEnd]) &&
+      node->style.border[CSSEdgeEnd] >= 0) {
+    return node->style.border[CSSEdgeEnd];
   }
 
   if (computedEdgeValue(node->style.border, trailing[axis], 0) >= 0) {
