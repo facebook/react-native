@@ -133,11 +133,19 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CSSPositionType position;
 @property (nonatomic, assign) CSSWrapType flexWrap;
 @property (nonatomic, assign) CGFloat flex;
+@property (nonatomic, assign) CGFloat flexGrow;
+@property (nonatomic, assign) CGFloat flexShrink;
+@property (nonatomic, assign) CGFloat flexBasis;
 
 /**
  * z-index, used to override sibling order in the view
  */
 @property (nonatomic, assign) NSInteger zIndex;
+
+/**
+ * Clipping properties
+ */
+@property (nonatomic, assign) CSSOverflow overflow;
 
 /**
  * Calculate property changes that need to be propagated to the view.

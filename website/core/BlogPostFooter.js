@@ -17,14 +17,28 @@ var BlogPostFooter = React.createClass({
   render: function() {
     var post = this.props.post;
 
+    var authorImage = this.props.post.authorImage ? this.props.post.authorImage : '/react-native/img/author.png';
+
+    var authorNameTitleSeparator = '';
+    var authorTitle;
+    if (this.props.post.authorTitle) {
+      authorNameTitleSeparator = ', ';
+      authorTitle = <span className="title">{this.props.post.authorTitle}</span>;
+    }
+
     return (
       <div>
         <aside className="author-info">
+          <div className="author-image">
+            <span className="the-image" style={{backgroundImage: "url(" + authorImage + ")"}}></span>
+          </div>
           <p className="posted-on">Posted on {this.props.postedOnDate}</p>
           <p className="name-title">
             <a href={post.authorURL} target="_blank">
               {post.author}
             </a>
+            { authorNameTitleSeparator }
+            { authorTitle }
           </p>
         </aside>
         <aside className="entry-share">
