@@ -208,6 +208,11 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
   }
 
   @Override
+  protected boolean shouldClip() {
+    return false;
+  }
+
+  @Override
   public void onSubmit(String id, Object callerContext) {
     if (mCallback != null && mReactTag != 0) {
       mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_START);
