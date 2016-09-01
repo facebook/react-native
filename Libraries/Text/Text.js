@@ -22,11 +22,12 @@ const Touchable = require('Touchable');
 const createReactNativeComponentClass =
   require('react/lib/createReactNativeComponentClass');
 const merge = require('merge');
+const mergeFast = require('mergeFast');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 const viewConfig = {
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
+  validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
     ellipsizeMode: true,
@@ -189,7 +190,7 @@ const Text = React.createClass({
     };
   },
   getInitialState: function(): Object {
-    return merge(Touchable.Mixin.touchableGetInitialState(), {
+    return mergeFast(Touchable.Mixin.touchableGetInitialState(), {
       isHighlighted: false,
     });
   },
@@ -334,7 +335,7 @@ var RCTVirtualText = RCTText;
 
 if (Platform.OS === 'android') {
   RCTVirtualText = createReactNativeComponentClass({
-    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+    validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
     }),
     uiViewClassName: 'RCTVirtualText',
