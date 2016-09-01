@@ -33,8 +33,6 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * whole text subtree.
  */
 public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
-  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
-  private @Nullable TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
@@ -52,18 +50,17 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
-    view.setMaxLines(mNumberOfLines);
+    view.setNumberOfLines(numberOfLines);
   }
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
   public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
     if (ellipsizeMode == null || ellipsizeMode.equals("tail")) {
-      mEllipsizeLocation = TextUtils.TruncateAt.END;
+      view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     } else if (ellipsizeMode.equals("head")) {
-      mEllipsizeLocation = TextUtils.TruncateAt.START;
+      view.setEllipsizeLocation(TextUtils.TruncateAt.START);
     } else if (ellipsizeMode.equals("middle")) {
-      mEllipsizeLocation = TextUtils.TruncateAt.MIDDLE;
+      view.setEllipsizeLocation(TextUtils.TruncateAt.MIDDLE);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }
@@ -111,7 +108,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
 
   @Override
   protected void onAfterUpdateTransaction(ReactTextView view) {
-    @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
-    view.setEllipsize(ellipsizeLocation);
+    super.onAfterUpdateTransaction(view);
+    view.updateView();
   }
 }
