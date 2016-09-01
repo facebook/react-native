@@ -57,7 +57,7 @@ class DimensionsExample extends React.Component {
         <Text>Size class horizontal: {iosSizeClassHorizontal}</Text>
         <Text>Size class vertical: {iosSizeClassVertical}</Text>
       </View>
-    )
+    );
   }
 }
 

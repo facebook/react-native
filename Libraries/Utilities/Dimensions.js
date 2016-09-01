@@ -87,7 +87,8 @@ class Dimensions {
    * Example: `var {height, width} = Dimensions.get('window');`
    *
    * On iOS, the supported keys are `width`, `height`, `scale`,
-   * `iosSizeClassHorizontal`, and `iosSizeClassVertical`.
+   * `iosSizeClassHorizontal`, and `iosSizeClassVertical`. Size classes are
+   * either the string `"compact"` or `"regular"`.
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
