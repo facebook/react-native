@@ -577,7 +577,10 @@ var ListView = React.createClass({
     }
     if (updatedFrames) {
       updatedFrames.forEach((newFrame) => {
-        this._childFrames[newFrame.index] = merge(newFrame);
+        // Sometimes x/y/width/heigh maybe return zero
+        if (newFrame.x != 0 || newFrame.y != 0 || newFrame.width != 0 || newFrame.height != 0) {
+          this._childFrames[newFrame.index] = merge(newFrame);
+        }
       });
     }
     var isVertical = !this.props.horizontal;
@@ -612,13 +615,13 @@ var ListView = React.createClass({
           totalIndex++;
         }
         if (!frame) {
-          break;
+          continue;
         }
         var rowVisible = visibleSection[rowID];
         var min = isVertical ? frame.y : frame.x;
         var max = min + (isVertical ? frame.height : frame.width);
         if ((!min && !max) || (min === max)) {
-          break;
+          continue;
         }
         if (min > visibleMax || max < visibleMin) {
           if (rowVisible) {
