@@ -594,7 +594,7 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   return output;
 }
 
-NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
+NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path

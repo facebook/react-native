@@ -58,8 +58,11 @@
 		27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
+		3D13F8481D6F6AF900E69E0E /* ImageInBundle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */; };
+		3D13F84A1D6F6AFD00E69E0E /* OtherImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */; };
 		3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */; };
 		3D2AFAF51D646CF80089D1A3 /* LegacyImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* LegacyImage@2x.png */; };
+		3D56F9F11D6F6E9B00F53A06 /* UIExplorerBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
 		3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* TestBundle.js */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
@@ -162,6 +165,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTLinking;
 		};
+		3D13F84B1D6F6B5F00E69E0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D13F83D1D6F6AE000E69E0E;
+			remoteInfo = UIExplorerBundle;
+		};
 		58005BED1ABA80530062E044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 58005BE41ABA80530062E044 /* RCTTest.xcodeproj */;
@@ -243,6 +253,10 @@
 		27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlexibleSizeExampleView.m; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.m; sourceTree = "<group>"; };
 		27F441EA1BEBE5030039B79C /* FlexibleSizeExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlexibleSizeExampleView.h; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.h; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
+		3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D13F8401D6F6AE000E69E0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
+		3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ImageInBundle.png; sourceTree = "<group>"; };
+		3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = OtherImages.xcassets; sourceTree = "<group>"; };
 		3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLoggingTests.m; sourceTree = "<group>"; };
 		3D2AFAF41D646CF80089D1A3 /* LegacyImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "LegacyImage@2x.png"; path = "UIExplorer/LegacyImage@2x.png"; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
@@ -303,6 +317,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				14B6DA821B276C5900BF4DD1 /* libRCTTest.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D13F83B1D6F6AE000E69E0E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +558,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3D13F83F1D6F6AE000E69E0E /* UIExplorerBundle */ = {
+			isa = PBXGroup;
+			children = (
+				3D13F8401D6F6AE000E69E0E /* Info.plist */,
+				3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */,
+				3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */,
+			);
+			name = UIExplorerBundle;
+			path = UIExplorer/UIExplorerBundle;
+			sourceTree = "<group>";
+		};
 		58005BE51ABA80530062E044 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -560,6 +592,7 @@
 				1316A21D1AA397F400C0188E /* Libraries */,
 				143BC57C1B21E18100462512 /* UIExplorerUnitTests */,
 				143BC5961B21E3E100462512 /* UIExplorerIntegrationTests */,
+				3D13F83F1D6F6AE000E69E0E /* UIExplorerBundle */,
 				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
@@ -573,6 +606,7 @@
 				13B07F961A680F5B00A75B9A /* UIExplorer.app */,
 				004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */,
 				143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */,
+				3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -617,6 +651,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3D13F84C1D6F6B5F00E69E0E /* PBXTargetDependency */,
 			);
 			name = UIExplorer;
 			productName = "Hello World";
@@ -641,6 +676,23 @@
 			productReference = 143BC5951B21E3E100462512 /* UIExplorerIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		3D13F83D1D6F6AE000E69E0E /* UIExplorerBundle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D13F8411D6F6AE000E69E0E /* Build configuration list for PBXNativeTarget "UIExplorerBundle" */;
+			buildPhases = (
+				3D13F83A1D6F6AE000E69E0E /* Sources */,
+				3D13F83B1D6F6AE000E69E0E /* Frameworks */,
+				3D13F83C1D6F6AE000E69E0E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UIExplorerBundle;
+			productName = UIExplorerBundle;
+			productReference = 3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -656,6 +708,9 @@
 					143BC5941B21E3E100462512 = {
 						CreatedOnToolsVersion = 6.3.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					3D13F83D1D6F6AE000E69E0E = {
+						CreatedOnToolsVersion = 7.3.1;
 					};
 				};
 			};
@@ -737,6 +792,7 @@
 				13B07F861A680F5B00A75B9A /* UIExplorer */,
 				004D289D1AAF61C70097A701 /* UIExplorerUnitTests */,
 				143BC5941B21E3E100462512 /* UIExplorerIntegrationTests */,
+				3D13F83D1D6F6AE000E69E0E /* UIExplorerBundle */,
 			);
 		};
 /* End PBXProject section */
@@ -863,6 +919,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				3D56F9F11D6F6E9B00F53A06 /* UIExplorerBundle.bundle in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* LegacyImage@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
@@ -872,6 +929,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D13F83C1D6F6AE000E69E0E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D13F8481D6F6AF900E69E0E /* ImageInBundle.png in Resources */,
+				3D13F84A1D6F6AFD00E69E0E /* OtherImages.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -945,6 +1011,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3D13F83A1D6F6AE000E69E0E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -952,6 +1025,11 @@
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* UIExplorer */;
 			targetProxy = 143BC59B1B21E3E100462512 /* PBXContainerItemProxy */;
+		};
+		3D13F84C1D6F6B5F00E69E0E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D13F83D1D6F6AE000E69E0E /* UIExplorerBundle */;
+			targetProxy = 3D13F84B1D6F6B5F00E69E0E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1080,6 +1158,34 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.React.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UIExplorer.app/UIExplorer";
+			};
+			name = Release;
+		};
+		3D13F8421D6F6AE000E69E0E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = UIExplorer/UIExplorerBundle/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.UIExplorerBundle;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		3D13F8431D6F6AE000E69E0E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = UIExplorer/UIExplorerBundle/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.UIExplorerBundle;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
 		};
@@ -1246,6 +1352,15 @@
 			buildConfigurations = (
 				143BC59E1B21E3E100462512 /* Debug */,
 				143BC59F1B21E3E100462512 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D13F8411D6F6AE000E69E0E /* Build configuration list for PBXNativeTarget "UIExplorerBundle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D13F8421D6F6AE000E69E0E /* Debug */,
+				3D13F8431D6F6AE000E69E0E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
