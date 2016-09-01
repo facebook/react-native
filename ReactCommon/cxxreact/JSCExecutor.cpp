@@ -344,15 +344,14 @@ void JSCExecutor::bindBridge() throw(JSException) {
   m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
 }
 
-void JSCExecutor::flush() {
-  auto result = m_flushedQueueJS->callAsFunction({});
+void JSCExecutor::callNativeModules(Value&& value) {
   try {
-    auto calls = Value(m_context, result).toJSONString();
+    auto calls = value.toJSONString();
     m_delegate->callNativeModules(*this, std::move(calls), true);
   } catch (...) {
     std::string message = "Error in flush()";
     try {
-      message += ":" + Value(m_context, result).toString().str();
+      message += ":" + value.toString().str();
     } catch (...) {
       // ignored
     }
@@ -360,31 +359,44 @@ void JSCExecutor::flush() {
   }
 }
 
+void JSCExecutor::flush() {
+  callNativeModules(m_flushedQueueJS->callAsFunction({}));
+}
+
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  try {
-    auto result = m_callFunctionReturnFlushedQueueJS->callAsFunction({
-      Value(m_context, String::createExpectingAscii(moduleId)),
-      Value(m_context, String::createExpectingAscii(methodId)),
-      Value::fromDynamic(m_context, std::move(arguments))
-    });
-    auto calls = Value(m_context, result).toJSONString();
-    m_delegate->callNativeModules(*this, std::move(calls), true);
-  } catch (...) {
-    std::throw_with_nested(std::runtime_error("Error calling function: " + moduleId + ":" + methodId));
-  }
+  // This weird pattern is because Value is not default constructible.
+  // The lambda is inlined, so there's no overhead.
+
+  auto result = [&] {
+    try {
+      return m_callFunctionReturnFlushedQueueJS->callAsFunction({
+        Value(m_context, String::createExpectingAscii(moduleId)),
+        Value(m_context, String::createExpectingAscii(methodId)),
+        Value::fromDynamic(m_context, std::move(arguments))
+      });
+    } catch (...) {
+      std::throw_with_nested(
+        std::runtime_error("Error calling function: " + moduleId + ":" + methodId));
+    }
+  }();
+
+  callNativeModules(std::move(result));
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  try {
-    auto result = m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
-      JSValueMakeNumber(m_context, callbackId),
-      Value::fromDynamic(m_context, std::move(arguments))
-    });
-    auto calls = Value(m_context, result).toJSONString();
-    m_delegate->callNativeModules(*this, std::move(calls), true);
-  } catch (...) {
-    std::throw_with_nested(std::runtime_error(folly::to<std::string>("Error invoking callback.", callbackId)));
-  }
+  auto result = [&] {
+    try {
+      return m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
+        JSValueMakeNumber(m_context, callbackId),
+        Value::fromDynamic(m_context, std::move(arguments))
+      });
+    } catch (...) {
+      std::throw_with_nested(
+        std::runtime_error(folly::to<std::string>("Error invoking callback.", callbackId)));
+    }
+  }();
+
+  callNativeModules(std::move(result));
 }
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
