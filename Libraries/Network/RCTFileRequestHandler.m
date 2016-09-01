@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
+                withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_fileQueue) {
