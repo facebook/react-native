@@ -328,6 +328,14 @@ var featured = [
     infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
     infoTitle: 'React Native at Artsy',
   },
+  {
+    name: 'Babylon Sahil',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple62/v4/96/2b/a9/962ba9c9-fec4-4d71-d0c7-0a88c2f136f9/icon175x175.jpeg',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.babylon.sahil.android',
+    linkAppStore: 'https://itunes.apple.com/us/app/babylon-sahil/id1144991664?mt=8',
+    infoLink: 'http://www.babylon.com.tr/',
+    infoTitle: 'Babylon Beach App',
+  },
 ];
 
 featured.sort(function(a, b) {
