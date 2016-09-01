@@ -78,7 +78,7 @@ But it also works with any type that is supported by the `RCTConvert` class (see
 In our `CalendarManager` example, we need to pass the event date to the native method. We can't send JavaScript Date objects over the bridge, so we need to convert the date to a string or number. We could write our native function like this:
 
 ```objective-c
-RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSNumber *)secondsSinceUnixEpoch)
+RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(nonnull NSNumber *)secondsSinceUnixEpoch)
 {
   NSDate *date = [RCTConvert NSDate:secondsSinceUnixEpoch];
 }
