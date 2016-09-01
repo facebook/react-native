@@ -204,6 +204,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./ClipboardExample'),
   },
   {
+    key: 'DimensionsExample',
+    module: require('./DimensionsExample'),
+  },
+  {
     key: 'GeolocationExample',
     module: require('./GeolocationExample'),
   },

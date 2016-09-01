@@ -1520,12 +1520,18 @@ static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
   RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
+  id mainScreen = [UIScreen mainScreen];
+  CGRect screenSize = [mainScreen bounds];
+  UIUserInterfaceSizeClass horizontalSizeClass = [[mainScreen traitCollection] horizontalSizeClass];
+  UIUserInterfaceSizeClass verticalSizeClass = [[mainScreen traitCollection] verticalSizeClass];
+
   return @{
     @"window": @{
         @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
         @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
         @"scale": @(RCTScreenScale()),
+        @"iosSizeClassHorizontal": @(horizontalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
+        @"iosSizeClassVertical": @(verticalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
     },
   };
 }

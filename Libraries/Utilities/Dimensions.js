@@ -17,6 +17,12 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
 
+type DimensionsChangedEventName = $Enum<{
+  backPress: string,
+}>;
+
+var _dimensionsChangedSubscriptions = new Set();
+
 var dimensions = {};
 class Dimensions {
   /**
@@ -60,6 +66,12 @@ class Dimensions {
     }
 
     Object.assign(dimensions, dims);
+
+    var subscriptions = [..._dimensionsChangedSubscriptions].reverse();
+    var subsubscriptionArgument = Object.assign({}, dimensions);
+    for (var i = 0; i < subscriptions.length; ++i) {
+      subscriptions[i](subsubscriptionArgument);
+    }
   }
 
   /**
@@ -74,12 +86,59 @@ class Dimensions {
    *
    * Example: `var {height, width} = Dimensions.get('window');`
    *
+   * On iOS, the supported keys are `width`, `height`, `scale`,
+   * `iosSizeClassHorizontal`, and `iosSizeClassVertical`.
+   *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
    */
   static get(dim: string): Object {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
+  }
+
+  /**
+   * Only supports 'change' event.
+   *
+   * Detect changes in screen dimensions, usually from rotating the device or
+   * when starting or changing side-by-side view in iOS.
+   *
+   * The callback in invoked with an object keyed by dimension Name
+   * (i.e. window, screen)
+   *
+   * Returns an object with a remove function.
+   *
+   *  * Example:
+   *
+   * ```javascript
+   * Dimensions.addEventListener('change', function(dimensions) {
+   *   deepEqual(dimensions.window, Dimensions.get('window')) === true
+   * });
+   * ```
+   */
+  static addEventListener(
+    eventName: DimensionsChangedEventName,
+    handler: Function
+  ): {remove: () => void} {
+    invariant(
+      eventName === 'change',
+      'Trying to subscribe to unknown event: "%s"', eventName
+    );
+    _dimensionsChangedSubscriptions.add(handler);
+    return {
+      remove: () => Dimensions.removeEventListener(eventName, handler),
+    };
+  }
+
+  static removeEventListener(
+    eventName: DimensionsChangedEventName,
+    handler: Function
+  ): void {
+    invariant(
+      eventName === 'change',
+      'Trying to unsubscribe to unknown event: "%s"', eventName
+    );
+    _dimensionsChangedSubscriptions.delete(handler);
   }
 }
 
