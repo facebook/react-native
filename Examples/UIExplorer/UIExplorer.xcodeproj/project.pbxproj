@@ -59,7 +59,7 @@
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */; };
-		3D2AFAF51D646CF80089D1A3 /* LegacyImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* LegacyImage.png */; };
+		3D2AFAF51D646CF80089D1A3 /* LegacyImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* LegacyImage@2x.png */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
 		3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* TestBundle.js */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
@@ -244,7 +244,7 @@
 		27F441EA1BEBE5030039B79C /* FlexibleSizeExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlexibleSizeExampleView.h; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.h; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLoggingTests.m; sourceTree = "<group>"; };
-		3D2AFAF41D646CF80089D1A3 /* LegacyImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LegacyImage.png; path = UIExplorer/LegacyImage.png; sourceTree = "<group>"; };
+		3D2AFAF41D646CF80089D1A3 /* LegacyImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "LegacyImage@2x.png"; path = "UIExplorer/LegacyImage@2x.png"; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
 		3DD981D51D33C6FB007DC7BE /* TestBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TestBundle.js; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
@@ -334,7 +334,7 @@
 		1323F18D1C04ABAC0091BED0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				3D2AFAF41D646CF80089D1A3 /* LegacyImage.png */,
+				3D2AFAF41D646CF80089D1A3 /* LegacyImage@2x.png */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -863,7 +863,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				3D2AFAF51D646CF80089D1A3 /* LegacyImage.png in Resources */,
+				3D2AFAF51D646CF80089D1A3 /* LegacyImage@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
