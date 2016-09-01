@@ -29,6 +29,9 @@ public class ViewProps {
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
   public static final String FLEX = "flex";
+  public static final String FLEX_GROW = "flexGrow";
+  public static final String FLEX_SHRINK = "flexShrink";
+  public static final String FLEX_BASIS = "flexBasis";
   public static final String FLEX_DIRECTION = "flexDirection";
   public static final String FLEX_WRAP = "flexWrap";
   public static final String HEIGHT = "height";

@@ -1,7 +1,9 @@
 ---
 title: Introducing Hot Reloading
 author: Martín Bigio
+authorTitle: Software Engineer at Instagram
 authorURL: https://twitter.com/martinbigio
+authorImage: https://avatars3.githubusercontent.com/u/535661?v=3&s=128
 authorTwitter: martinbigio
 ---
 

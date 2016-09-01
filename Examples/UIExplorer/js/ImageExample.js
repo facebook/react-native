@@ -613,8 +613,36 @@ exports.examples = [
       return (
         <Image
           source={require('image!LegacyImage')}
-          style={styles.base}
         />
+      );
+    },
+  },
+  {
+    title: 'Bundled images',
+    description:
+      'Images shipped in a separate native bundle',
+    render: function() {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <Image
+            source={{
+              url: 'ImageInBundle',
+              bundle: 'UIExplorerBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={{borderColor: 'yellow', borderWidth: 4}}
+          />
+          <Image
+            source={{
+              url: 'ImageInAssetCatalog',
+              bundle: 'UIExplorerBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={{marginLeft: 10, borderColor: 'blue', borderWidth: 4}}
+          />
+        </View>
       );
     },
   },

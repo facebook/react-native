@@ -11,6 +11,7 @@
 
 #import <mach/mach_time.h>
 #import <objc/message.h>
+#import <objc/runtime.h>
 
 #import <UIKit/UIKit.h>
 
@@ -434,7 +435,7 @@ BOOL RCTRunningInTestEnvironment(void)
   static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
+    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest");
   });
   return isTestEnvironment;
 }
@@ -595,7 +596,7 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   return output;
 }
 
-NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
+NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path

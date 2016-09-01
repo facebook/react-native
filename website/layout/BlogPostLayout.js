@@ -26,6 +26,9 @@ var BlogPostLayout = React.createClass({
         title={this.props.metadata.title}
         description={this.props.children.trim().split('\n')[0]}
         path={'blog/' + this.props.metadata.path}
+        author={this.props.metadata.author}
+        authorTwitter={this.props.metadata.authorTwitter}
+        image={this.props.metadata.hero}
         >
         <section className="content wrap documentationContent">
           <BlogSidebar title={this.props.metadata.title} />
