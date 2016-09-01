@@ -90,6 +90,9 @@ class Dimensions {
    * `iosSizeClassHorizontal`, and `iosSizeClassVertical`. Size classes are
    * either the string `"compact"` or `"regular"`.
    *
+   * On Android, the supported keys are `width`, `height`, `scale`, `fontScale`,
+   * and `densityDpi`.
+   *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
    */
@@ -104,12 +107,12 @@ class Dimensions {
    * Detect changes in screen dimensions, usually from rotating the device or
    * when starting or changing side-by-side view in iOS.
    *
-   * The callback in invoked with an object keyed by dimension Name
+   * The callback in invoked with an object keyed by dimension name
    * (i.e. window, screen)
    *
    * Returns an object with a remove function.
    *
-   *  * Example:
+   * Example:
    *
    * ```javascript
    * Dimensions.addEventListener('change', function(dimensions) {
