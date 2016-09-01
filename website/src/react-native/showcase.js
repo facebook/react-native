@@ -48,6 +48,14 @@ var featured = [
     infoTitle: 'How We Built the First Cross-Platform React Native App',
   },
   {
+    name: 'Cdiscount',
+    icon: 'https://lh3.googleusercontent.com/I4tSLeMEcdJ4e0LjTIxTD3pHG668JfQ88Y1RbSTJyvEbCzSJLVkCf6ZveJtUZ6ufkcU=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/fr/app/cdiscount/id398364165',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=cdiscount.mobile',
+    infoLink: 'http://www.cdiscount.com/application-mobile.html',
+    infoTitle: 'Millions of products at the best price, only at Cdiscount ',
+  },
+  {
     name: 'F8',
     icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
     linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
