@@ -10,13 +10,10 @@
 #import "RCTEventEmitter.h"
 
 @interface RCTPushNotificationManager : RCTEventEmitter
-#if !TARGET_OS_TV
 
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
-
-#endif
 
 @end

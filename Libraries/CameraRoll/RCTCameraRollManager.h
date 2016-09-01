@@ -7,11 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
-
-#if !TARGET_OS_TV
-#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface RCTConvert (ALAssetGroup)
 
@@ -19,7 +18,6 @@
 + (ALAssetsFilter *)ALAssetsFilter:(id)json;
 
 @end
-#endif //TARGET_OS_TV
 
 @interface RCTCameraRollManager : NSObject <RCTBridgeModule>
 

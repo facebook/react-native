@@ -20,8 +20,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-#if !TARGET_OS_TV
-
 @implementation RCTConvert (ALAssetGroup)
 
 RCT_ENUM_CONVERTER(ALAssetsGroupType, (@{
@@ -75,13 +73,9 @@ RCT_ENUM_CONVERTER(ALAssetsGroupType, (@{
 
 @end
 
-#endif //TARGET_OS_TV
-
 @implementation RCTCameraRollManager
 
 RCT_EXPORT_MODULE()
-
-#if !TARGET_OS_TV
 
 @synthesize bridge = _bridge;
 
@@ -237,7 +231,5 @@ static void checkPhotoLibraryConfig()
   }
 #endif
 }
-
-#endif //TARGET_OS_TV
 
 @end

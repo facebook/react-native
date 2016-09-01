@@ -9,9 +9,7 @@
 
 #import "RCTPhotoLibraryImageLoader.h"
 
-#if !TARGET_OS_TV
 #import <Photos/Photos.h>
-#endif
 
 #import "RCTImageUtils.h"
 #import "RCTUtils.h"
@@ -20,22 +18,17 @@
 
 RCT_EXPORT_MODULE()
 
-
 @synthesize bridge = _bridge;
 
 #pragma mark - RCTImageLoader
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-#if TARGET_OS_TV
-  return NO;
-#else
   if (![PHAsset class]) {
     return NO;
   }
   return [requestURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame ||
     [requestURL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame;
-#endif
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
@@ -45,9 +38,6 @@ RCT_EXPORT_MODULE()
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-#if TARGET_OS_TV
-  return nil;
-#else
   // Using PhotoKit for iOS 8+
   // The 'ph://' prefix is used by FBMediaKit to differentiate between
   // assets-library. It is prepended to the local ID so that it is in the
@@ -112,7 +102,6 @@ RCT_EXPORT_MODULE()
   return ^{
     [[PHImageManager defaultManager] cancelImageRequest:requestID];
   };
-#endif //TARGET_OS_TV
 }
 
 @end
