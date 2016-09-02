@@ -102,11 +102,14 @@ navigator.pop();
 
 A more complete example that demonstrates the pushing and popping of routes could therefore look something like this:
 
+Change your main file to:
 ```javascript
 import React, { Component, PropTypes } from 'react';
-import { Navigator, Text, TouchableHighlight, View } from 'react-native';
+import { Navigator, AppRegistry } from 'react-native';
 
-export default class SimpleNavigationApp extends Component {
+import MyScene from './MyScene';
+
+class SimpleNavigationApp extends Component {
   render() {
     return (
       <Navigator
@@ -115,16 +118,16 @@ export default class SimpleNavigationApp extends Component {
           return (
             <MyScene
               title={route.title}
-  
-              // Function to call when a new scene should be displayed           
-              onForward={ () => {    
+
+              // Function to call when a new scene should be displayed
+              onForward={ () => {
                 const nextIndex = route.index + 1;
                 navigator.push({
                   title: 'Scene ' + nextIndex,
                   index: nextIndex,
                 });
               }}
-  
+
               // Function to call to go back to the previous scene
               onBack={() => {
                 if (route.index > 0) {
@@ -139,6 +142,11 @@ export default class SimpleNavigationApp extends Component {
   }
 }
 
+AppRegistry.registerComponent('SimpleNavigationApp', () => SimpleNavigationApp);
+```
+
+Change your `MyScene`.js to:
+```javascript
 class MyScene extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
