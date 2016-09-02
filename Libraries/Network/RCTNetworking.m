@@ -331,17 +331,11 @@ RCT_EXPORT_MODULE()
   // Attempt to decode text
   NSString *encodedResponse = [[NSString alloc] initWithData:data encoding:encoding];
   if (!encodedResponse && data.length) {
-    // We don't have an encoding, or the encoding is incorrect, so now we
-    // try to guess (unfortunately, this feature is available in iOS 8+ only)
-    if ([NSString respondsToSelector:@selector(stringEncodingForData:
-                                               encodingOptions:
-                                               convertedString:
-                                               usedLossyConversion:)]) {
-      [NSString stringEncodingForData:data
-                      encodingOptions:nil
-                      convertedString:&encodedResponse
-                  usedLossyConversion:NULL];
-    }
+    // We don't have an encoding, or the encoding is incorrect, so now we try to guess
+    [NSString stringEncodingForData:data
+                    encodingOptions:nil
+                    convertedString:&encodedResponse
+                usedLossyConversion:NULL];
   }
   return encodedResponse;
 }
