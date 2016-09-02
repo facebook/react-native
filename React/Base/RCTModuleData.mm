@@ -11,6 +11,8 @@
 
 #import <objc/runtime.h>
 
+#include <mutex>
+
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
@@ -23,7 +25,7 @@
   NSDictionary<NSString *, id> *_constantsToExport;
   NSString *_queueName;
   __weak RCTBridge *_bridge;
-  NSLock *_instanceLock;
+  std::mutex _instanceLock;
   BOOL _setupComplete;
 }
 
@@ -35,8 +37,6 @@
 {
   _implementsBatchDidComplete = [_moduleClass instancesRespondToSelector:@selector(batchDidComplete)];
   _implementsPartialBatchDidFlush = [_moduleClass instancesRespondToSelector:@selector(partialBatchDidFlush)];
-
-  _instanceLock = [NSLock new];
 
   static IMP objectInitMethod;
   static dispatch_once_t onceToken;
@@ -84,42 +84,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)setUpInstanceAndBridge
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", @{ @"moduleClass": _moduleClass });
-  [_instanceLock lock];
-  if (!_setupComplete && _bridge.valid) {
-    if (!_instance) {
-      if (RCT_DEBUG && _requiresMainQueueSetup) {
-        RCTAssertMainQueue();
-      }
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": _moduleClass });
-      _instance = [_moduleClass new];
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  {
+    std::unique_lock<std::mutex> lock(_instanceLock);
+
+    if (!_setupComplete && _bridge.valid) {
       if (!_instance) {
-        // Module init returned nil, probably because automatic instantatiation
-        // of the module is not supported, and it is supposed to be passed in to
-        // the bridge constructor. Mark setup complete to avoid doing more work.
-        _setupComplete = YES;
-        RCTLogWarn(@"The module %@ is returning nil from its constructor. You "
-                   "may need to instantiate it yourself and pass it into the "
-                   "bridge.", _moduleClass);
+        if (RCT_DEBUG && _requiresMainQueueSetup) {
+          RCTAssertMainQueue();
+        }
+        RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": _moduleClass });
+        _instance = [_moduleClass new];
+        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+        if (!_instance) {
+          // Module init returned nil, probably because automatic instantatiation
+          // of the module is not supported, and it is supposed to be passed in to
+          // the bridge constructor. Mark setup complete to avoid doing more work.
+          _setupComplete = YES;
+          RCTLogWarn(@"The module %@ is returning nil from its constructor. You "
+                     "may need to instantiate it yourself and pass it into the "
+                     "bridge.", _moduleClass);
+        }
       }
+
+      if (_instance && RCTProfileIsProfiling()) {
+        RCTProfileHookInstance(_instance);
+      }
+
+      // Bridge must be set before methodQueue is set up, as methodQueue
+      // initialization requires it (View Managers get their queue by calling
+      // self.bridge.uiManager.methodQueue)
+      [self setBridgeForInstance];
     }
 
-    if (_instance && RCTProfileIsProfiling()) {
-      RCTProfileHookInstance(_instance);
-    }
-
-    // Bridge must be set before methodQueue is set up, as methodQueue
-    // initialization requires it (View Managers get their queue by calling
-    // self.bridge.uiManager.methodQueue)
-    [self setBridgeForInstance];
+    [self setUpMethodQueue];
   }
-  [_instanceLock unlock];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
-
-  // This is called outside of the lock in order to prevent deadlock issues
-  // because the logic in `setUpMethodQueue` can cause `moduleData.instance`
-  // to be accessed re-entrantly.
-  [self setUpMethodQueue];
 
   // This is called outside of the lock in order to prevent deadlock issues
   // because the logic in `finishSetupForInstance` can cause
