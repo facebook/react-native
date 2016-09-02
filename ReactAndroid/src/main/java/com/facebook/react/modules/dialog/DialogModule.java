@@ -9,10 +9,6 @@
 
 package com.facebook.react.modules.dialog;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -21,7 +17,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,6 +25,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
@@ -138,7 +137,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
           mFragmentToShow = alertFragment;
         }
       } else {
-        AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
+        AlertFragment alertFragment = AlertFragment.build(actionListener, arguments);
         if (isInForeground) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));

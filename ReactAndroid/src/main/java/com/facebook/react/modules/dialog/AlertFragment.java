@@ -9,14 +9,14 @@
 
 package com.facebook.react.modules.dialog;
 
-import javax.annotation.Nullable;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+
+import javax.annotation.Nullable;
 
 /**
  * A fragment used to display the dialog.
@@ -30,15 +30,19 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   /* package */ static final String ARG_BUTTON_NEUTRAL = "button_neutral";
   /* package */ static final String ARG_ITEMS = "items";
 
-  private final @Nullable DialogModule.AlertFragmentListener mListener;
+  private @Nullable DialogModule.AlertFragmentListener mListener;
 
   public AlertFragment() {
-      mListener = null;
+    mListener = null;
   }
 
-  public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
-    mListener = listener;
-    setArguments(arguments);
+
+  public static AlertFragment build(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
+    AlertFragment alertFragment = new AlertFragment();
+    alertFragment.setArguments(arguments);
+    alertFragment.mListener = listener;
+
+    return alertFragment;
   }
 
   public static Dialog createDialog(
