@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		134E969A1BCEB7F800AFFDA1 /* RCTDataRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 134E96991BCEB7F800AFFDA1 /* RCTDataRequestHandler.m */; settings = {ASSET_TAGS = (); }; };
+		134E969A1BCEB7F800AFFDA1 /* RCTDataRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 134E96991BCEB7F800AFFDA1 /* RCTDataRequestHandler.m */; };
 		1372B7371AB03E7B00659ED6 /* RCTNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7361AB03E7B00659ED6 /* RCTNetInfo.m */; };
 		13D6D66A1B5FCF8200883BE9 /* RCTNetworkTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D6D6691B5FCF8200883BE9 /* RCTNetworkTask.m */; };
-		13EF800E1BCBE015003F47DD /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */; settings = {ASSET_TAGS = (); }; };
+		13EF800E1BCBE015003F47DD /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */; };
 		352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */; };
-		58B512081A9E6CE300147676 /* RCTNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.m */; };
+		58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,7 +40,7 @@
 		352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTHTTPRequestHandler.m; sourceTree = "<group>"; };
 		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512061A9E6CE300147676 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
-		58B512071A9E6CE300147676 /* RCTNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNetworking.m; sourceTree = "<group>"; };
+		58B512071A9E6CE300147676 /* RCTNetworking.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNetworking.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 				1372B7351AB03E7B00659ED6 /* RCTNetInfo.h */,
 				1372B7361AB03E7B00659ED6 /* RCTNetInfo.m */,
 				58B512061A9E6CE300147676 /* RCTNetworking.h */,
-				58B512071A9E6CE300147676 /* RCTNetworking.m */,
+				58B512071A9E6CE300147676 /* RCTNetworking.mm */,
 				58B511DC1A9E6C8500147676 /* Products */,
 			);
 			indentWidth = 2;
@@ -143,7 +143,7 @@
 				13EF800E1BCBE015003F47DD /* RCTFileRequestHandler.m in Sources */,
 				134E969A1BCEB7F800AFFDA1 /* RCTDataRequestHandler.m in Sources */,
 				1372B7371AB03E7B00659ED6 /* RCTNetInfo.m in Sources */,
-				58B512081A9E6CE300147676 /* RCTNetworking.m in Sources */,
+				58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */,
 				352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -186,7 +186,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -226,7 +226,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
