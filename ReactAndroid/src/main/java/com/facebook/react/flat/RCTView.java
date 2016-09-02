@@ -13,10 +13,10 @@ import javax.annotation.Nullable;
 
 import android.graphics.Rect;
 
+import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
@@ -24,6 +24,9 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  * Node for a react View.
  */
 /* package */ final class RCTView extends FlatShadowNode {
+  private static final int[] SPACING_TYPES = {
+      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+  };
 
   private @Nullable DrawBorder mDrawBorder;
 
@@ -91,7 +94,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
   public void setBorderWidths(int index, float borderWidth) {
     super.setBorderWidths(index, borderWidth);
 
-    int type = ViewProps.BORDER_SPACING_TYPES[index];
+    int type = SPACING_TYPES[index];
     getMutableBorder().setBorderWidth(type, PixelUtil.toPixelFromDIP(borderWidth));
   }
 
@@ -106,7 +109,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color", defaultDouble = Double.NaN)
   public void setBorderColor(int index, double color) {
-    int type = ViewProps.BORDER_SPACING_TYPES[index];
+    int type = SPACING_TYPES[index];
     if (Double.isNaN(color)) {
       getMutableBorder().resetBorderColor(type);
     } else {
