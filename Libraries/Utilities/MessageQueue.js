@@ -31,6 +31,8 @@ const TO_JS = 0;
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
+const DEBUG_INFO_LIMIT = 32;
+
 const MethodTypes = keyMirror({
   remote: null,
   remoteAsync: null,
@@ -75,7 +77,7 @@ class MessageQueue {
 
     lazyProperty(this, 'RemoteModules', () => {
       const {remoteModuleConfig} = configProvider();
-      const modulesConfig = this._genModulesConfig(remoteModuleConfig);
+      const modulesConfig = remoteModuleConfig;
       const modules = this._genModules(modulesConfig);
 
       if (__DEV__) {
@@ -168,10 +170,11 @@ class MessageQueue {
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        // eventually delete old debug info
-        (this._callbackID > (1 << 5)) &&
-          (this._debugInfo[this._callbackID >> 5] = null);
-        this._debugInfo[this._callbackID >> 1] = [module, method];
+        let callId = this._callbackID >> 1;
+        this._debugInfo[callId] = [module, method];
+        if (callId > DEBUG_INFO_LIMIT) {
+          delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
+        }
       }
       onFail && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onFail;
@@ -275,52 +278,6 @@ class MessageQueue {
   /**
    * Private helper methods
    */
-
-  /**
-   * Converts the old, object-based module structure to the new
-   * array-based structure. TODO (t8823865) Removed this
-   * function once Android has been updated.
-   */
-  _genModulesConfig(modules /* array or object */) {
-    if (Array.isArray(modules)) {
-      return modules;
-    } else {
-      const moduleArray = [];
-      const moduleNames = Object.keys(modules);
-      for (var i = 0, l = moduleNames.length; i < l; i++) {
-        const moduleName = moduleNames[i];
-        const moduleConfig = modules[moduleName];
-        const module = [moduleName];
-        if (moduleConfig.constants) {
-          module.push(moduleConfig.constants);
-        }
-        const methodsConfig = moduleConfig.methods;
-        if (methodsConfig) {
-          const methods = [];
-          const asyncMethods = [];
-          const syncHooks = [];
-          const methodNames = Object.keys(methodsConfig);
-          for (var j = 0, ll = methodNames.length; j < ll; j++) {
-            const methodName = methodNames[j];
-            const methodConfig = methodsConfig[methodName];
-            methods[methodConfig.methodID] = methodName;
-            if (methodConfig.type === MethodTypes.remoteAsync) {
-              asyncMethods.push(methodConfig.methodID);
-            } else if (methodConfig.type === MethodTypes.syncHook) {
-              syncHooks.push(methodConfig.methodID);
-            }
-          }
-          if (methods.length) {
-            module.push(methods);
-            module.push(asyncMethods);
-            module.push(syncHooks);
-          }
-        }
-        moduleArray[moduleConfig.moduleID] = module;
-      }
-      return moduleArray;
-    }
-  }
 
   _genLookupTables(modulesConfig, moduleTable, methodTable) {
     modulesConfig.forEach((config, moduleID) => {

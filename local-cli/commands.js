@@ -11,7 +11,7 @@
 'use strict';
 
 const Config = require('./util/Config');
-const getUserCommands = require('./rnpm/core/src/getCommands');
+const getUserCommands = require('./core/getCommands');
 
 export type Command = {
   name: string,
@@ -28,19 +28,24 @@ export type Command = {
     desc: string,
     cmd: string,
   }>,
+  pkg?: {
+    version: string,
+    name: string,
+  },
 };
 
 const documentedCommands = [
+  require('./android/android'),
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
-  require('./rnpm/link/link'),
-  require('./rnpm/link/unlink'),
-  require('./rnpm/install/install'),
-  require('./rnpm/install/uninstall'),
+  require('./link/link'),
+  require('./link/unlink'),
+  require('./install/install'),
+  require('./install/uninstall'),
   require('./upgrade/upgrade'),
   require('./logAndroid/logAndroid'),
   require('./logIOS/logIOS'),

@@ -32,14 +32,20 @@ var BlogPageLayout = React.createClass({
     return (
       <Site
         section="blog"
-        title="Blog">
+        title="React Native Blog"
+        description="The best place to stay up-to-date with the latest React Native news and events.">
         <section className="content wrap documentationContent">
           <BlogSidebar />
           <div className="inner-content">
             {MetadataBlog.files
               .slice(page * perPage, (page + 1) * perPage)
               .map((post) => {
-                return <BlogPost post={post} content={post.content} />
+                return (
+                  <div>
+                    <BlogPost post={post} content={post.content} excerpt={true} />
+                    <hr />
+                  </div>
+                )
               })
             }
             <div className="docs-prevnext">

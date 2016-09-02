@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facebook.common.logging.FLog;
@@ -19,6 +20,7 @@ import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -60,7 +62,7 @@ import com.facebook.systrace.SystraceMessage;
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener {
+    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -133,6 +135,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+  }
+
+  public Map<String,Double> getPerformanceCounters() {
+    Map<String,Double> perfMap = new HashMap<>();
+    perfMap.put("LayoutCount", mUIImplementation.getLayoutCount());
+    perfMap.put("LayoutTimer", mUIImplementation.getLayoutTimer());
+    return perfMap;
   }
 
   /**
@@ -517,5 +526,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
      */
   public void addUIBlock (UIBlock block) {
     mUIImplementation.addUIBlock(block);
+  }
+
+  /**
+   * Given a reactTag from a component, find its root node tag, if possible.
+   * Otherwise, this will return 0. If the reactTag belongs to a root node, this
+   * will return the same reactTag.
+   *
+   * @param reactTag the component tag
+   *
+   * @return the rootTag
+   */
+  public int resolveRootTagFromReactTag(int reactTag) {
+    return mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 }
