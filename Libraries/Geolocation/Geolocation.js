@@ -38,7 +38,7 @@ type GeoOptions = {
  * You need to include the `NSLocationWhenInUseUsageDescription` key
  * in Info.plist to enable geolocation when using the app. Geolocation is
  * enabled by default when you create a project with `react-native init`.
- * 
+ *
  * In order to enable geolocation in the background, you need to include the
  * 'NSLocationAlwaysUsageDescription' key in Info.plist and add location as
  * a background mode in the 'Capabilities' tab in XCode.
