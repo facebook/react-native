@@ -83,7 +83,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (widthMode == MeasureSpec.UNSPECIFIED || heightMode == MeasureSpec.UNSPECIFIED) {
       throw new IllegalStateException(
           "The root catalyst view must have a width and height given to it by it's parent view. " +
-          "You can do this by specifying MATCH_PARENT or explicit width and height in the layout.");
+          "You can do this by specifying MATCH_PARENT or explicit width and height in the " +
+          "layout. widthMode=" + widthMode + ", heightMode=" + heightMode);
     }
 
     setMeasuredDimension(

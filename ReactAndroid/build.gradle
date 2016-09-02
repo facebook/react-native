@@ -245,6 +245,7 @@ android {
         java {
           srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
           exclude 'com/facebook/react/processing'
+          exclude 'com/facebook/react/module/processing'
         }
     }
 

@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.bridge.annotations;
+package com.facebook.react.module.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
