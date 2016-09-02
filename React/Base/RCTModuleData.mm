@@ -83,7 +83,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)setUpInstanceAndBridge
 {
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", @{ @"moduleClass": _moduleClass });
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", @{ @"moduleClass": NSStringFromClass(_moduleClass) });
   {
     std::unique_lock<std::mutex> lock(_instanceLock);
 
@@ -92,7 +92,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
-        RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": _moduleClass });
+        RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": NSStringFromClass(_moduleClass) });
         _instance = [_moduleClass new];
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
         if (!_instance) {
@@ -293,8 +293,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
     }, YES);
 #pragma clang diagnostic pop
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
   }
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
 }
 
 - (NSArray *)config
