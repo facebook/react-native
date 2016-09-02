@@ -66,7 +66,10 @@ function getSourceMapsForCapture(capture, onFailure, onSuccess) {
   const sourcemaps = new Map();
   for (const id in capture.refs) {
     const ref = capture.refs[id];
-    if (ref.type === 'Function' && ref.value && !!ref.value.url) {
+    if ((ref.type === 'ScriptExecutable' ||
+        ref.type === 'EvalExecutable' ||
+        ref.type === 'ProgramExecutable' ||
+        ref.type === 'FunctionExecutable') && ref.value.url) {
       urls.add(ref.value.url);
     }
   }
@@ -88,24 +91,29 @@ function getSourceMapsForCapture(capture, onFailure, onSuccess) {
 // capture: capture object
 // onSuccess: function (capture object)
 // onFailure: function (string)
-function symbolocateHeapCaptureFunctions(capture, onFailure, onSuccess) {
+function symbolicateHeapCaptureFunctions(capture, onFailure, onSuccess) {
   getSourceMapsForCapture(capture, onFailure, (sourcemaps) => {
     for (const id in capture.refs) {
       const ref = capture.refs[id];
-      if (ref.type === 'Function' && ref.value && !!ref.value.url) {
+      if (ref.type === 'ScriptExecutable' ||
+          ref.type === 'EvalExecutable' ||
+          ref.type === 'ProgramExecutable' ||
+          ref.type === 'FunctionExecutable') {
         const sourcemap = sourcemaps.get(ref.value.url);
-        const original = sourcemap.originalPositionFor({
-          line: ref.value.line,
-          column: ref.value.col,
-        });
-        if (original.name) {
-          ref.value.name = original.name;
-        } else if (!ref.value.name) {
-          ref.value.name = path.posix.basename(original.source) + ':' + original.line;
+        if (sourcemap) {
+          const original = sourcemap.originalPositionFor({
+            line: ref.value.line,
+            column: ref.value.col,
+          });
+          if (original.name) {
+            ref.value.name = original.name;
+          } else if (!ref.value.name) {
+            ref.value.name = path.posix.basename(original.source) + ':' + original.line;
+          }
+          ref.value.url = original.source;
+          ref.value.line = original.line;
+          ref.value.col = original.column;
         }
-        ref.value.url = 'file://' + original.source;
-        ref.value.line = original.line;
-        ref.value.col = original.column;
       }
     }
     onSuccess(capture);
@@ -118,8 +126,8 @@ module.exports = function(req, res, next) {
     return;
   }
 
-  console.log('Symbolocating Heap Capture');
-  symbolocateHeapCaptureFunctions(JSON.parse(req.rawBody), (err) => {
+  console.log('symbolicating Heap Capture');
+  symbolicateHeapCaptureFunctions(JSON.parse(req.rawBody), (err) => {
       console.error('Error when symbolicating: ' + err);
     },
     (capture) => {
