@@ -11,8 +11,13 @@
     "node": ">=4"
   },
   "jest": {
+    "automock": true,
     "scriptPreprocessor": "jestSupport/preprocessor.js",
-    "setupEnvScriptFile": "jestSupport/env.js",
+    "setupFiles": [
+      "jestSupport/env.js"
+    ],
+    "timers": "fake",
+    "resetModules": true,
     "moduleNameMapper": {
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
@@ -203,9 +208,9 @@
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
     "flow-bin": "^0.31.1",
-    "jest": "~14.1.0",
-    "jest-repl": "~14.1.0",
-    "jest-runtime": "~14.1.0",
+    "jest": "15.1.0",
+    "jest-repl": "15.1.0",
+    "jest-runtime": "15.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
     "react": "15.3.1-rc.2",
