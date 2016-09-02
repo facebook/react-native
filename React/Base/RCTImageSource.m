@@ -46,6 +46,12 @@
   (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<RCTImageSource: %p URL=%@, size=%@, scale=%0.f>",
+          self, _request.URL, NSStringFromCGSize(_size), _scale];
+}
+
 @end
 
 @implementation RCTConvert (ImageSource)
@@ -75,8 +81,8 @@
   }
 
   RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURLRequest:request
-                                                               size:size
-                                                              scale:scale];
+                                                                      size:size
+                                                                     scale:scale];
   imageSource.packagerAsset = packagerAsset;
   return imageSource;
 }

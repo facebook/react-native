@@ -356,7 +356,13 @@ class Bundler {
     onModuleTransformed = noop,
     finalizeBundle = noop,
   }) {
-    const findEventId = Activity.startEvent('find dependencies');
+    const findEventId = Activity.startEvent(
+      'Finding dependencies',
+      null,
+      {
+        telemetric: true,
+      },
+    );
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {

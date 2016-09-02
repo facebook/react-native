@@ -19,6 +19,7 @@
 		13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E31D07A6C9005F35D8 /* RCTStyleAnimatedNode.m */; };
 		13E501EF1D07A6C9005F35D8 /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */; };
 		13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */; };
+		94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,6 +60,8 @@
 		13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTransformAnimatedNode.m; sourceTree = "<group>"; };
 		13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTValueAnimatedNode.h; sourceTree = "<group>"; };
 		13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTValueAnimatedNode.m; sourceTree = "<group>"; };
+		94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuloAnimatedNode.h; sourceTree = "<group>"; };
+		94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuloAnimatedNode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +94,8 @@
 				13E501DB1D07A6C9005F35D8 /* RCTAnimationDriverNode.m */,
 				13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */,
 				13E501DD1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.m */,
+				94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */,
+				94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */,
 				13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */,
 				13E501DF1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.m */,
 				13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */,
@@ -176,6 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */,
+				94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */,
 				13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */,
 				13E501CC1D07A644005F35D8 /* RCTAnimationUtils.m in Sources */,
 				13E501CF1D07A644005F35D8 /* RCTNativeAnimatedModule.m in Sources */,

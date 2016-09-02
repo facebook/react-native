@@ -1549,6 +1549,54 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }];
 }
 
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
+{
+  RCTAssertMainQueue();
+  RCTAssert(completion != nil, @"Attempted to resolve rootView for tag %@ without a completion block", reactTag);
+
+  if (reactTag == nil) {
+    completion(nil);
+    return;
+  }
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    NSNumber *rootTag = [self _rootTagForReactTag:reactTag];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UIView *rootView = nil;
+      if (rootTag != nil) {
+        rootView = [self viewForReactTag:rootTag];
+      }
+      completion(rootView);
+    });
+  });
+}
+
+- (NSNumber *)_rootTagForReactTag:(NSNumber *)reactTag
+{
+  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
+
+  if (reactTag == nil) {
+    return nil;
+  }
+
+  if (RCTIsReactRootView(reactTag)) {
+    return reactTag;
+  }
+
+  NSNumber *rootTag = nil;
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  while (shadowView) {
+    RCTShadowView *parent = [shadowView reactSuperview];
+    if (!parent && RCTIsReactRootView(shadowView.reactTag)) {
+      rootTag = shadowView.reactTag;
+      break;
+    }
+    shadowView = parent;
+  }
+
+  return rootTag;
+}
+
 static UIView *_jsResponder;
 
 + (UIView *)JSResponder
