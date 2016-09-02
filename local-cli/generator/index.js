@@ -8,6 +8,7 @@
  */
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 var utils = require('../generator-utils');
@@ -108,5 +109,30 @@ module.exports = yeoman.generators.NamedBase.extend({
     }
 
     this.npmInstall(`react@${reactVersion}`, { '--save': true, '--save-exact': true });
+    this.npmInstall(`jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion}`.split(' '), {
+      saveDev: true,
+      '--save-exact': true
+    });
+    fs.writeFileSync(
+      path.join(
+        this.destinationRoot(),
+        '.babelrc'
+      ),
+      '{\n"presets": ["react-native"]\n}'
+    );
+    var packageJSONPath = path.join(
+      this.destinationRoot(),
+      'package.json'
+    );
+    var packageJSON = JSON.parse(
+      fs.readFileSync(
+        packageJSONPath
+      )
+    );
+    packageJSON.scripts.test = 'jest'
+    packageJSON.jest = {
+      preset: 'jest-react-native'
+    };
+    fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, '\t'));
   }
 });
