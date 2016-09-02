@@ -10,6 +10,110 @@
 /*eslint no-console-disallow: "off"*/
 /*global React ReactDOM Table stringInterner stackRegistry aggrow preLoadedCapture:true*/
 
+function RefVisitor(refs,id){
+this.refs=refs;
+this.id=id;
+}
+
+RefVisitor.prototype={
+moveToEdge:function moveToEdge(name){
+var ref=this.refs[this.id];
+if(ref&&ref.edges){
+var edges=ref.edges;
+for(var edgeId in edges){
+if(edges[edgeId]===name){
+this.id=edgeId;
+return this;
+}
+}
+}
+this.id=undefined;
+return this;
+},
+moveToFirst:function moveToFirst(callback){
+var ref=this.refs[this.id];
+if(ref&&ref.edges){
+var edges=ref.edges;
+for(var edgeId in edges){
+this.id=edgeId;
+if(callback(edges[edgeId],this)){
+return this;
+}
+}
+}
+this.id=undefined;
+return this;
+},
+forEachEdge:function forEachEdge(callback){
+var ref=this.refs[this.id];
+if(ref&&ref.edges){
+var edges=ref.edges;
+var visitor=new RefVisitor(this.refs,undefined);
+for(var edgeId in edges){
+visitor.id=edgeId;
+callback(edges[edgeId],visitor);
+}
+}
+},
+getType:function getType(){
+var ref=this.refs[this.id];
+if(ref){
+return ref.type;
+}
+return undefined;
+},
+getRef:function getRef(){
+return this.refs[this.id];
+},
+clone:function clone(){
+return new RefVisitor(this.refs,this.id);
+},
+isDefined:function isDefined(){
+return!!this.id;
+},
+getValue:function getValue(){var _this=this;
+var ref=this.refs[this.id];
+if(ref){
+if(ref.type==='string'){
+if(ref.value){
+return ref.value;
+}else{var _ret=function(){
+var rope=[];
+_this.forEachEdge(function(name,visitor){
+if(name&&name.startsWith('[')&&name.endsWith(']')){
+var index=parseInt(name.substring(1,name.length-1),10);
+rope[index]=visitor.getValue();
+}
+});
+return{v:rope.join('')};}();if(typeof _ret==="object")return _ret.v;
+}
+}else if(ref.type==='ScriptExecutable'||
+ref.type==='EvalExecutable'||
+ref.type==='ProgramExecutable'){
+return ref.value.url+':'+ref.value.line+':'+ref.value.col;
+}else if(ref.type==='FunctionExecutable'){
+return ref.value.name+'@'+ref.value.url+':'+ref.value.line+':'+ref.value.col;
+}else if(ref.type==='NativeExecutable'){
+return ref.value.function+' '+ref.value.constructor+' '+ref.value.name;
+}else if(ref.type==='Function'){
+var executable=this.clone().moveToEdge('@Executable');
+if(executable.id){
+return executable.getRef().type+' '+executable.getValue();
+}
+}
+}
+return'#none';
+}};
+
+
+function forEachRef(refs,callback){
+var visitor=new RefVisitor(refs,undefined);
+for(var id in refs){
+visitor.id=id;
+callback(visitor);
+}
+}
+
 function getTypeName(ref){
 if(ref.type==='Function'&&!!ref.value){
 return'Function '+ref.value.name;
@@ -212,13 +316,14 @@ var sizeField=2;
 var traceField=3;
 var pathField=4;
 var reactField=5;
-var numFields=6;
+var valueField=6;
+var numFields=7;
 
 return{
 strings:strings,
 stacks:stacks,
 data:data,
-register:function registerCapture(captureId,capture){
+register:function registerCapture(captureId,capture){var _this2=this;
 // NB: capture.refs is potentially VERY large, so we try to avoid making
 // copies, even of iteration is a bit more annoying.
 var rowCount=0;
@@ -245,34 +350,41 @@ this.stacks,
 reactComponentTreeMap);
 
 var internedCaptureId=this.strings.intern(captureId);
-for(var _id4 in capture.refs){
-var ref=capture.refs[_id4];
-newData[dataOffset+idField]=parseInt(_id4,16);
-newData[dataOffset+typeField]=this.strings.intern(getTypeName(ref));
+var noneStack=this.stacks.insert(this.stacks.root,'#none');
+forEachRef(capture.refs,function(visitor){
+var ref=visitor.getRef();
+var id=visitor.id;
+newData[dataOffset+idField]=parseInt(id,16);
+newData[dataOffset+typeField]=_this2.strings.intern(ref.type);
 newData[dataOffset+sizeField]=ref.size;
 newData[dataOffset+traceField]=internedCaptureId;
-var pathNode=rootPathMap[_id4];
+var pathNode=rootPathMap[id];
 if(pathNode===undefined){
 throw'did not find path for ref!';
 }
 newData[dataOffset+pathField]=pathNode.id;
-var reactTree=reactComponentTreeMap[_id4];
+var reactTree=reactComponentTreeMap[id];
 if(reactTree===undefined){
-newData[dataOffset+reactField]=
-this.stacks.insert(this.stacks.root,'<not-under-tree>').id;
+newData[dataOffset+reactField]=noneStack.id;
 }else{
 newData[dataOffset+reactField]=reactTree.id;
 }
+newData[dataOffset+valueField]=_this2.strings.intern(visitor.getValue());
 dataOffset+=numFields;
-}
-for(var _id5 in capture.markedBlocks){
-var block=capture.markedBlocks[_id5];
-newData[dataOffset+idField]=parseInt(_id5,16);
+});
+for(var _id4 in capture.markedBlocks){
+var block=capture.markedBlocks[_id4];
+newData[dataOffset+idField]=parseInt(_id4,16);
 newData[dataOffset+typeField]=this.strings.intern('Marked Block Overhead');
 newData[dataOffset+sizeField]=block.capacity-block.size;
 newData[dataOffset+traceField]=internedCaptureId;
-newData[dataOffset+pathField]=this.stacks.root;
-newData[dataOffset+reactField]=this.stacks.root;
+newData[dataOffset+pathField]=noneStack.id;
+newData[dataOffset+reactField]=noneStack.id;
+newData[dataOffset+valueField]=this.strings.intern(
+'capacity: '+block.capacity+
+', size: '+block.size+
+', granularity: '+block.cellSize);
+
 dataOffset+=numFields;
 }
 this.data=newData;
@@ -297,12 +409,12 @@ return agData[rowA*numFields+idField]-agData[rowB*numFields+idField];
 });
 
 var typeExpander=ag.addFieldExpander('Type',
-function getSize(row){return agStrings.get(agData[row*numFields+typeField]);},
-function compareSize(rowA,rowB){
+function getType(row){return agStrings.get(agData[row*numFields+typeField]);},
+function compareType(rowA,rowB){
 return agData[rowA*numFields+typeField]-agData[rowB*numFields+typeField];
 });
 
-ag.addFieldExpander('Size',
+var sizeExpander=ag.addFieldExpander('Size',
 function getSize(row){return agData[row*numFields+sizeField].toString();},
 function compareSize(rowA,rowB){
 return agData[rowA*numFields+sizeField]-agData[rowB*numFields+sizeField];
@@ -319,6 +431,12 @@ function getStack(row){return agStacks.get(agData[row*numFields+pathField]);});
 
 var reactExpander=ag.addCalleeStackExpander('React Tree',
 function getStack(row){return agStacks.get(agData[row*numFields+reactField]);});
+
+var valueExpander=ag.addFieldExpander('Value',
+function getValue(row){return agStrings.get(agData[row*numFields+valueField]);},
+function compareValue(rowA,rowB){
+return agData[rowA*numFields+valueField]-agData[rowB*numFields+valueField];
+});
 
 var sizeAggregator=ag.addAggregator('Size',
 function aggregateSize(indices){
@@ -339,7 +457,15 @@ return indices.length;
 function formatCount(value){return value.toString();},
 function sortCount(a,b){return b-a;});
 
-ag.setActiveExpanders([pathExpander,reactExpander,typeExpander,idExpander,traceExpander]);
+ag.setActiveExpanders([
+pathExpander,
+reactExpander,
+typeExpander,
+idExpander,
+traceExpander,
+valueExpander,
+sizeExpander]);
+
 ag.setActiveAggregators([sizeAggregator,countAggregator]);
 return ag;
 }};
