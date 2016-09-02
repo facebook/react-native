@@ -321,8 +321,17 @@ RCT_EXPORT_MODULE()
   return callback(nil, nil);
 }
 
-+ (NSString *)decodeTextData:(NSData *)data fromResponse:(NSURLResponse *)response
++ (NSString *)decodeTextData:(NSData *)dataToDecode task:(RCTNetworkTask *)task {
+  return [self decodeTextData:dataToDecode task:task isIncremental:NO undecodableLength:NULL];
+}
+
++ (NSString *)decodeTextData:(NSData *)dataToDecode
+                        task:(RCTNetworkTask *)task
+               isIncremental:(BOOL)isIncremental
+           undecodableLength:(NSUInteger *)undecodableLength
 {
+  NSData *data = [task unshiftUndecodablePartialDataToData:dataToDecode];
+  NSURLResponse *response = task.response;
   NSStringEncoding encoding = NSUTF8StringEncoding;
   if (response.textEncodingName) {
     CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
@@ -331,16 +340,47 @@ RCT_EXPORT_MODULE()
   // Attempt to decode text
   NSString *encodedResponse = [[NSString alloc] initWithData:data encoding:encoding];
   if (!encodedResponse && data.length) {
+    
+    
+    
     // We don't have an encoding, or the encoding is incorrect, so now we
     // try to guess (unfortunately, this feature is available in iOS 8+ only)
     if ([NSString respondsToSelector:@selector(stringEncodingForData:
                                                encodingOptions:
                                                convertedString:
                                                usedLossyConversion:)]) {
-      [NSString stringEncodingForData:data
-                      encodingOptions:nil
-                      convertedString:&encodedResponse
-                  usedLossyConversion:NULL];
+      
+      encoding = [NSString stringEncodingForData:data
+                                 encodingOptions:nil
+                                 convertedString:&encodedResponse
+                             usedLossyConversion:NULL];
+      
+      if (encoding > 0 && isIncremental) {
+        // When response data contains multi-byte charactor, incremental data may contain a part of the charactor.
+        // eg. The UTF-8-encoded of `𝟘` is `\xF0\x9D\x9F\x98`, the incremental data may end with `\xF0\x9D`,
+        // and the next incremental data will begin with `\x9F\x98`.
+        // So we will save the undecodable part `\xF0\x9D` and unshift it to the next incremental data
+        // to make next incremental data begin with `\xF0\x9D\x9F\x98`, so the string will be decoded to `𝟘`.
+        
+        // By default, `NSString` replaces any unsupported characters whith `\ufffd`(�)
+        // so we will remove the undecodable tail of the incremental data, save it,
+        // and wait for the next incremental data
+        NSRange validRange = [encodedResponse rangeOfString:[encodedResponse stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\ufffd"]]];
+        NSUInteger invalidTailLocation = validRange.location + validRange.length;
+        NSString *encdodedResponseWithoutInvalidTail = [encodedResponse substringWithRange:NSMakeRange(0, invalidTailLocation)];
+        NSData *validData = [encdodedResponseWithoutInvalidTail dataUsingEncoding:encoding];
+        NSData *undecodablePartialData = [data subdataWithRange:NSMakeRange(validData.length, data.length - validData.length)];
+        
+        if (undecodablePartialData.length > 0) {
+          [task saveUndecodablePartialData:undecodablePartialData];
+        }
+        
+        if (undecodableLength) {
+          *undecodableLength = undecodablePartialData.length;
+        }
+        
+        encodedResponse = encdodedResponseWithoutInvalidTail;
+      }
     }
   }
   return encodedResponse;
@@ -358,7 +398,7 @@ RCT_EXPORT_MODULE()
 
   NSString *responseString;
   if ([responseType isEqualToString:@"text"]) {
-    responseString = [RCTNetworking decodeTextData:data fromResponse:task.response];
+    responseString = [RCTNetworking decodeTextData:data task:task];
     if (!responseString) {
       RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
       return;
@@ -412,12 +452,16 @@ RCT_EXPORT_MODULE()
   if (incrementalUpdates) {
     if ([responseType isEqualToString:@"text"]) {
       incrementalDataBlock = ^(NSData *data, int64_t progress, int64_t total) {
-        NSString *responseString = [RCTNetworking decodeTextData:data fromResponse:task.response];
+        NSUInteger undecodableLength = 0;
+        NSString *responseString = [RCTNetworking decodeTextData:data
+                                                            task:task
+                                                   isIncremental:YES
+                                               undecodableLength:&undecodableLength];
         if (!responseString) {
           RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
           return;
         }
-        NSArray<id> *responseJSON = @[task.requestID, responseString, @(progress), @(total)];
+        NSArray<id> *responseJSON = @[task.requestID, responseString, @(progress - undecodableLength), @(total)];
         [self sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
       };
     } else {
@@ -430,17 +474,31 @@ RCT_EXPORT_MODULE()
 
   RCTURLRequestCompletionBlock completionBlock =
   ^(NSURLResponse *response, NSData *data, NSError *error) {
-    // Unless we were sending incremental (text) chunks to JS, all along, now
-    // is the time to send the request body to JS.
-    if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
-      [self sendData:data
-        responseType:responseType
-             forTask:task];
-    }
-    NSArray *responseJSON = @[task.requestID,
-                              RCTNullIfNil(error.localizedDescription),
-                              error.code == kCFURLErrorTimedOut ? @YES : @NO
-                              ];
+      // If the final part incremental data ends with some undecodable data,
+      // then the undecodable part will also be send to JS
+      NSData *leftedData = [task unshiftUndecodablePartialDataToData:nil];
+      if (leftedData.length > 0) {
+        NSString *responseString = [RCTNetworking decodeTextData:data task:task];
+        if (!responseString) {
+          RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+        }
+        else {
+          NSArray<id> *responseJSON = @[task.requestID, responseString, @(data.length), @(data.length)];
+          [self sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
+        }
+      }
+      
+      // Unless we were sending incremental (text) chunks to JS, all along, now
+      // is the time to send the request body to JS.
+      if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
+        [self sendData:data
+          responseType:responseType
+               forTask:task];
+      }
+      NSArray *responseJSON = @[task.requestID,
+                                RCTNullIfNil(error.localizedDescription),
+                                error.code == kCFURLErrorTimedOut ? @YES : @NO
+                                ];
 
     [self sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
     [self->_tasksByRequestID removeObjectForKey:task.requestID];

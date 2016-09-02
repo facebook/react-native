@@ -46,4 +46,7 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 - (void)start;
 - (void)cancel;
 
+- (void)saveUndecodablePartialData:(NSData *)data;
+- (NSData *)unshiftUndecodablePartialDataToData:(NSData *)data;
+
 @end
