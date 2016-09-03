@@ -238,11 +238,6 @@ static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef co
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-- (NSError *)errorForJSError:(JSValue *)jsError
-{
-  return RCTNSErrorFromJSError(_jscWrapper, jsError.context.JSGlobalContextRef, jsError.JSValueRef);
-}
-
 #if RCT_DEV
 
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
