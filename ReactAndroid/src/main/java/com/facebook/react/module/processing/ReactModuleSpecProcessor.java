@@ -139,7 +139,8 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       TypeElement typeElement = mElements.getTypeElement(nativeModule);
       ReactModule reactModule = typeElement.getAnnotation(ReactModule.class);
       if (reactModule == null) {
-        throw new ReactModuleSpecException(keyString + " not found.");
+        throw new ReactModuleSpecException(keyString + " not found by ReactModuleSpecProcessor. " +
+        "Did you forget to add the @ReactModule annotation the the native module?");
       }
       String valueString = new StringBuilder()
         .append("new ReactModuleInfo(")
