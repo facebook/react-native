@@ -16,8 +16,10 @@ jest
     Networking: {
       addListener: function() {},
       removeListeners: function() {},
-      sendRequest: (options, callback) => {
-        callback(1);
+      sendRequest(options, callback) {
+        if (typeof callback === 'function') { // android does not pass a callback
+          callback(1);
+        }
       },
       abortRequest: function() {},
     }
