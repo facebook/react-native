@@ -50,7 +50,7 @@ import okhttp3.ResponseBody;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = "RCTNetworking")
+@ReactModule(name = "RCTNetworking", supportsWebWorkers = true)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
