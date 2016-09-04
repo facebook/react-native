@@ -10,6 +10,11 @@ describe('link', () => {
   beforeEach(() => {
     delete require.cache[require.resolve('../link')];
     log.level = 'silent';
+
+    jest.setMock(
+      'chalk',
+      require('../__mocks__/chalk.js')
+    );
   });
 
   it('should reject when run in a folder without package.json', (done) => {
