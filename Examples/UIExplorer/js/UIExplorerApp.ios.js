@@ -28,6 +28,7 @@ const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
 const UIExplorerList = require('./UIExplorerList.ios');
+const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
@@ -177,10 +178,9 @@ class UIExplorerApp extends React.Component {
 
     const Example = UIExplorerList.Modules[state.key];
     if (Example) {
-      const Component = UIExplorerExampleList.makeRenderable(Example);
       return (
         <View style={styles.exampleContainer}>
-          <Component />
+          <UIExplorerExampleContainer module={Example} />
         </View>
       );
     }
@@ -207,10 +207,9 @@ UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Exa
   if (ExampleModule.displayName) {
     class Snapshotter extends React.Component {
       render() {
-        const Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
         return (
           <SnapshotViewIOS>
-            <Renderable />
+            <UIExplorerExampleContainer module={ExampleModule} />
           </SnapshotViewIOS>
         );
       }

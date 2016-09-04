@@ -1336,15 +1336,6 @@ public class LayoutEngine {
             childWidthMeasureMode = CSSMeasureMode.AT_MOST;
           }
 
-          // The W3C spec doesn't say anything about the 'overflow' property,
-          // but all major browsers appear to implement the following logic.
-          if (node.style.overflow == CSSOverflow.HIDDEN) {
-            if (isMainAxisRow && Float.isNaN(childHeight) && !Float.isNaN(availableInnerHeight)) {
-              childHeight = availableInnerHeight;
-              childHeightMeasureMode = CSSMeasureMode.AT_MOST;
-            }
-          }
-
           layoutNodeInternal(layoutContext, currentAbsoluteChild, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, false, "abs-measure");
           childWidth = currentAbsoluteChild.layout.measuredDimensions[DIMENSION_WIDTH] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
           childHeight = currentAbsoluteChild.layout.measuredDimensions[DIMENSION_HEIGHT] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));

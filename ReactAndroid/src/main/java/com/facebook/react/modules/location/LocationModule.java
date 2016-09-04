@@ -28,11 +28,13 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
  * Native module that exposes Geolocation to JS.
  */
+@ReactModule(name = "LocationObserver")
 public class LocationModule extends ReactContextBaseJavaModule {
 
   private @Nullable String mWatchedProvider;
@@ -76,7 +78,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
     private final boolean highAccuracy;
     private final float distanceFilter;
 
-    private LocationOptions(long timeout, double maximumAge, boolean highAccuracy, float distanceFilter) {
+    private LocationOptions(
+      long timeout,
+      double maximumAge,
+      boolean highAccuracy,
+      float distanceFilter) {
       this.timeout = timeout;
       this.maximumAge = maximumAge;
       this.highAccuracy = highAccuracy;
@@ -91,8 +97,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
           map.hasKey("maximumAge") ? map.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
       boolean highAccuracy =
           map.hasKey("enableHighAccuracy") && map.getBoolean("enableHighAccuracy");
-      float distanceFilter =
-          map.hasKey("distanceFilter") ? (float) map.getDouble("distanceFilter") : RCT_DEFAULT_LOCATION_ACCURACY;
+      float distanceFilter = map.hasKey("distanceFilter") ?
+        (float) map.getDouble("distanceFilter") :
+        RCT_DEFAULT_LOCATION_ACCURACY;
 
       return new LocationOptions(timeout, maximumAge, highAccuracy, distanceFilter);
     }
@@ -156,7 +163,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
       }
       if (!provider.equals(mWatchedProvider)) {
         locationManager.removeUpdates(mLocationListener);
-        locationManager.requestLocationUpdates(provider, 1000, locationOptions.distanceFilter, mLocationListener);
+        locationManager.requestLocationUpdates(
+          provider,
+          1000,
+          locationOptions.distanceFilter,
+          mLocationListener);
       }
       mWatchedProvider = provider;
     } catch (SecurityException e) {
