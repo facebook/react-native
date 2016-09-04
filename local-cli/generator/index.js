@@ -12,9 +12,9 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 var utils = require('../generator-utils');
 
-module.exports = yeoman.generators.NamedBase.extend({
+module.exports = yeoman.Base.extend({
   constructor: function() {
-    yeoman.generators.NamedBase.apply(this, arguments);
+    yeoman.Base.apply(this, arguments);
 
     this.option('skip-ios', {
       desc: 'Skip generating iOS files',
