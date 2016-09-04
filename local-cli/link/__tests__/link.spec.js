@@ -13,7 +13,7 @@ describe('link', () => {
 
     jest.setMock(
       'chalk',
-      require('../__mocks__/chalk.js')
+      require('../../../__mocks__/chalk.js')
     );
   });
 
