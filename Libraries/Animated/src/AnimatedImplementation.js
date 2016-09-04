@@ -788,6 +788,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
 
     this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
     NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
