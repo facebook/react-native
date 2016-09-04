@@ -13,6 +13,7 @@ import javax.inject.Provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.bridge.JavaScriptModule;
@@ -23,6 +24,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
+import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -45,6 +47,18 @@ import com.facebook.systrace.Systrace;
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
+@ReactModuleList({
+  AnimationsDebugModule.class,
+  AndroidInfoModule.class,
+  DeviceEventManagerModule.class,
+  ExceptionsManagerModule.class,
+  Timing.class,
+  SourceCodeModule.class,
+  UIManagerModule.class,
+  DebugComponentOwnershipModule.class,
+  JSCHeapCapture.class,
+  JSCSamplingProfiler.class,
+})
 /* package */ class CoreModulesPackage extends LazyReactPackage {
 
   private final ReactInstanceManager mReactInstanceManager;
@@ -62,7 +76,7 @@ import com.facebook.systrace.Systrace;
 
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
-    List<ModuleSpec> moduleSpecList = new ArrayList();
+    List<ModuleSpec> moduleSpecList = new ArrayList<>();
     moduleSpecList.add(
       new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
         @Override
@@ -164,7 +178,7 @@ import com.facebook.systrace.Systrace;
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList<>(0);
+    return Collections.emptyList();
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {

@@ -117,6 +117,7 @@ private:
   void initOnJSVMThread() throw(JSException);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
+  void callNativeModules(Value&&);
   void flush();
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);

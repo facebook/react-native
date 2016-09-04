@@ -57,14 +57,6 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
- * Create a NSError from a JSError object.
- *
- * If available, the error's userInfo property will contain the JS stacktrace under
- * the RCTJSStackTraceKey key.
- */
-- (NSError *)errorForJSError:(JSValue *)jsError;
-
-/**
  * @experimental
  * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
  * The returned executor has already executed the supplied application script synchronously.

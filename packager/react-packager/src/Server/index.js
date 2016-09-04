@@ -510,6 +510,16 @@ class Server {
         const deps = bundleDeps.get(bundle);
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
+          const updateExistingBundleEventId =
+            Activity.startEvent(
+              'Updating existing bundle',
+              {
+                outdatedModules: outdated.size,
+              },
+              {
+                telemetric: true,
+              },
+            );
           debug('Attempt to update existing bundle');
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
@@ -565,6 +575,7 @@ class Server {
 
                 bundle.invalidateSource();
                 debug('Successfully updated existing bundle');
+                Activity.endEvent(updateExistingBundleEventId);
                 return bundle;
             });
           }).catch(e => {
