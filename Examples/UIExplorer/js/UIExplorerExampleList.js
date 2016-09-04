@@ -31,8 +31,6 @@ const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
 
-const createExamplePage = require('./createExamplePage');
-
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios';
@@ -57,12 +55,6 @@ class UIExplorerExampleList extends React.Component {
     style: ?any,
   }) {
     super(props);
-  }
-
-  static makeRenderable(example: any): ReactClass<any> {
-    return example.examples ?
-      createExamplePage(null, example) :
-      example;
   }
 
   render(): ?ReactElement<any> {

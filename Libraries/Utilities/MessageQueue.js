@@ -31,6 +31,8 @@ const TO_JS = 0;
 
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
+const DEBUG_INFO_LIMIT = 32;
+
 const MethodTypes = keyMirror({
   remote: null,
   remoteAsync: null,
@@ -168,10 +170,11 @@ class MessageQueue {
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        // eventually delete old debug info
-        (this._callbackID > (1 << 5)) &&
-          (this._debugInfo[this._callbackID >> 5] = null);
-        this._debugInfo[this._callbackID >> 1] = [module, method];
+        let callId = this._callbackID >> 1;
+        this._debugInfo[callId] = [module, method];
+        if (callId > DEBUG_INFO_LIMIT) {
+          delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
+        }
       }
       onFail && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onFail;

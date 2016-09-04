@@ -156,7 +156,7 @@ public class Spacing {
    * Resets the spacing instance to its default state. This method is meant to be used when
    * recycling {@link Spacing} instances.
    */
-  void reset() {
+  public void reset() {
     Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
     mHasAliasesSet = false;
     mValueFlags = 0;

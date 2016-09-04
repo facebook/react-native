@@ -125,10 +125,19 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     return URL ? [NSURLRequest requestWithURL:URL] : nil;
   }
   if ([json isKindOfClass:[NSDictionary class]]) {
-    NSURL *URL = [self NSURL:json[@"uri"] ?: json[@"url"]];
+    NSString *URLString = json[@"uri"] ?: json[@"url"];
+
+    NSURL *URL;
+    NSString *bundleName = json[@"bundle"];
+    if (bundleName) {
+      URLString = [NSString stringWithFormat:@"%@.bundle/%@", bundleName, URLString];
+    }
+
+    URL = [self NSURL:URLString];
     if (!URL) {
       return nil;
     }
+
     NSData *body = [self NSData:json[@"body"]];
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];
@@ -601,10 +610,10 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
   @"visible": @YES
 }), YES, boolValue)
 
-RCT_ENUM_CONVERTER(css_clip_t, (@{
-  @"hidden": @YES,
-  @"visible": @NO
-}), NO, boolValue)
+RCT_ENUM_CONVERTER(CSSOverflow, (@{
+  @"hidden": @(CSSOverflowHidden),
+  @"visible": @(CSSOverflowVisible)
+}), CSSOverflowVisible, intValue)
 
 RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
   @"row": @(CSSFlexDirectionRow),

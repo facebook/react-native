@@ -489,6 +489,7 @@ const components = [
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
+  '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/CustomComponents/ListView/ListView.js',
   '../Libraries/Components/MapView/MapView.js',
   '../Libraries/Modal/Modal.js',
