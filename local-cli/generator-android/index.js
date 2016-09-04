@@ -20,9 +20,12 @@ function validatePackageName(name) {
   return true;
 }
 
-module.exports = yeoman.generators.NamedBase.extend({
-  constructor: function() {
-    yeoman.generators.NamedBase.apply(this, arguments);
+module.exports = yeoman.Base.extend({
+  constructor: function(args, options) {
+    yeoman.Base.apply(this, arguments);
+
+    this.name = args[0];
+    this.options = options;
 
     this.option('package', {
       desc: 'Package name for the application (com.example.app)',

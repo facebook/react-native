@@ -26,8 +26,8 @@ xdescribe('React Yeoman Generators', function() {
       //         rc/index.js
       var log = console.log;
       console.log = function() {};
-      assert = require('yeoman-generator').assert;
-      var helpers = require('yeoman-generator').test;
+      assert = require('yeoman-assert');
+      var helpers = require('yeoman-test');
       console.log = log;
 
       var generated = false;
@@ -102,8 +102,8 @@ xdescribe('React Yeoman Generators', function() {
       //         rc/index.js
       var log = console.log;
       console.log = function() {};
-      assert = require('yeoman-generator').assert;
-      var helpers = require('yeoman-generator').test;
+      assert = require('yeoman-assert');
+      var helpers = require('yeoman-test');
       console.log = log;
 
       var generated = false;
@@ -185,8 +185,8 @@ xdescribe('React Yeoman Generators', function() {
       //         rc/index.js
       var log = console.log;
       console.log = function() {};
-      assert = require('yeoman-generator').assert;
-      var helpers = require('yeoman-generator').test;
+      assert = require('yeoman-assert');
+      var helpers = require('yeoman-test');
       console.log = log;
 
       var generated = false;

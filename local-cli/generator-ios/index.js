@@ -12,7 +12,13 @@ var chalk = require('chalk');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 
-module.exports = yeoman.generators.NamedBase.extend({
+module.exports = yeoman.Base.extend({
+  constructor: function(args) {
+    yeoman.Base.apply(this, arguments);
+
+    this.name = args[0];
+  },
+
   writing: function() {
     var templateVars = {name: this.name};
     // SomeApp/ios/SomeApp
