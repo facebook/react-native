@@ -27,7 +27,7 @@ module.exports = yeoman.generators.NamedBase.extend({
       defaults: false
     });
     this.option('skip-jest', {
-      desc: 'Skip installing jest',
+      desc: 'Skip installing Jest',
       type: Boolean,
       defaults: false
     });
