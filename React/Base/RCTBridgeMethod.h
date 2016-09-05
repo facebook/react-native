@@ -19,7 +19,6 @@ typedef NS_ENUM(NSUInteger, RCTFunctionType) {
 @protocol RCTBridgeMethod <NSObject>
 
 @property (nonatomic, copy, readonly) NSString *JSMethodName;
-@property (nonatomic, copy, readonly) NSDictionary *profileArgs;
 @property (nonatomic, readonly) RCTFunctionType functionType;
 
 - (void)invokeWithBridge:(RCTBridge *)bridge
