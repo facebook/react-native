@@ -202,7 +202,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      return;
+      // throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id
+      //   + (mWebSocketConnections.containsKey(id) ? "Has key in map. " : "No key in map. " )
+      //   + "Message: " + message
+      // );
     }
     try {
       client.sendMessage(RequestBody.create(WebSocket.TEXT, message));
@@ -216,7 +220,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      return;
+      // throw new RuntimeException(
+      //   "Cannot send a message. Unknown WebSocket id " + id
+      //   + (mWebSocketConnections.containsKey(id) ? "Has key in map. " : "No key in map. " )
+      // );
     }
     try {
       client.sendMessage(RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
@@ -230,7 +238,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error
-      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      return;
+      // throw new RuntimeException(
+      //   "Cannot send a message. Unknown WebSocket id " + id
+      //   + (mWebSocketConnections.containsKey(id) ? "Has key in map. " : "No key in map. " )
+      // );
     }
     try {
       Buffer buffer = new Buffer();
