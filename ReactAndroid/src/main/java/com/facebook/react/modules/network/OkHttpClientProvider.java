@@ -10,7 +10,10 @@
 package com.facebook.react.modules.network;
 
 import java.util.concurrent.TimeUnit;
-import com.squareup.okhttp.OkHttpClient;
+
+import javax.annotation.Nullable;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Helper class that provides the same OkHttpClient instance that will be used for all networking
@@ -19,18 +22,28 @@ import com.squareup.okhttp.OkHttpClient;
 public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
-  private static OkHttpClient sClient;
+  private static @Nullable OkHttpClient sClient;
 
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
-      // TODO: #7108751 plug in stetho
-      sClient = new OkHttpClient();
-
-      // No timeouts by default
-      sClient.setConnectTimeout(0, TimeUnit.MILLISECONDS);
-      sClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-      sClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+      sClient = createClient();
     }
     return sClient;
+  }
+  
+  // okhttp3 OkHttpClient is immutable
+  // This allows app to init an OkHttpClient with custom settings.
+  public static void replaceOkHttpClient(OkHttpClient client) {
+    sClient = client;
+  }
+
+  private static OkHttpClient createClient() {
+    // No timeouts by default
+    return new OkHttpClient.Builder()
+      .connectTimeout(0, TimeUnit.MILLISECONDS)
+      .readTimeout(0, TimeUnit.MILLISECONDS)
+      .writeTimeout(0, TimeUnit.MILLISECONDS)
+      .cookieJar(new ReactCookieJarContainer())
+      .build();
   }
 }

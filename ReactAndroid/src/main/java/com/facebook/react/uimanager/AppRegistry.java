@@ -18,4 +18,6 @@ import com.facebook.react.bridge.WritableMap;
 public interface AppRegistry extends JavaScriptModule {
 
   void runApplication(String appKey, WritableMap appParameters);
+  void unmountApplicationComponentAtRootTag(int rootNodeTag);
+
 }

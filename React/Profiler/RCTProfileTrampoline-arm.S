@@ -1,9 +1,19 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__arm__)
+#if RCT_PROFILE && defined(__arm__)
 
-	.align 5
+  .thumb
+  .thumb_func
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
   /**
@@ -25,7 +35,12 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * profile
    */
   mov r0, #0xc
-  bl SYMBOL_NAME(malloc)
+  movw	ip, :lower16:(L_malloc-(LPC1_0+4))
+  movt	ip, :upper16:(L_malloc-(LPC1_0+4))
+LPC1_0:
+  add ip, pc
+  ldr ip, [ip]
+  blx ip
   /**
    * r4 is the callee saved register we'll use to refer to the allocated memory,
    * store its initial value, so we can restore it later
@@ -77,10 +92,24 @@ SYMBOL_NAME(RCTProfileTrampoline):
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  bl SYMBOL_NAME(free)
+  movw	ip, :lower16:(L_free-(LPC1_1+4))
+  movt	ip, :upper16:(L_free-(LPC1_1+4))
+LPC1_1:
+  add ip, pc
+  ldr ip, [ip]
+  blx ip
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
   bx lr // jump to the calleer
+
+  trap
+
+  .data
+  .p2align 2
+L_malloc:
+  .long SYMBOL_NAME(malloc)
+L_free:
+  .long SYMBOL_NAME(free)
 
 #endif

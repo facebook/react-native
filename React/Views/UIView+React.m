@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
+#import "RCTShadowView.h"
 
 @implementation UIView (React)
 
@@ -25,6 +26,21 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+
+#if RCT_DEV
+
+- (RCTShadowView *)_DEBUG_reactShadowView
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)_DEBUG_setReactShadowView:(RCTShadowView *)shadowView
+{
+  // Use assign to avoid keeping the shadowView alive it if no longer exists
+  objc_setAssociatedObject(self, @selector(_DEBUG_reactShadowView), shadowView, OBJC_ASSOCIATION_ASSIGN);
+}
+
+#endif
 
 - (BOOL)isReactRootView
 {
@@ -40,25 +56,84 @@
   return view.reactTag;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
-{
-  [self insertSubview:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  RCTAssert(subview.superview == self, @"%@ is a not a subview of %@", subview, self);
-  [subview removeFromSuperview];
-}
-
 - (NSArray<UIView *> *)reactSubviews
 {
-  return self.subviews;
+  return objc_getAssociatedObject(self, _cmd);
 }
 
 - (UIView *)reactSuperview
 {
   return self.superview;
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  // We access the associated object directly here in case someone overrides
+  // the `reactSubviews` getter method and returns an immutable array.
+  NSMutableArray *subviews = objc_getAssociatedObject(self, @selector(reactSubviews));
+  if (!subviews) {
+    subviews = [NSMutableArray new];
+    objc_setAssociatedObject(self, @selector(reactSubviews), subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  [subviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  // We access the associated object directly here in case someone overrides
+  // the `reactSubviews` getter method and returns an immutable array.
+  NSMutableArray *subviews = objc_getAssociatedObject(self, @selector(reactSubviews));
+  [subviews removeObject:subview];
+  [subview removeFromSuperview];
+}
+
+- (NSInteger)reactZIndex
+{
+  return [objc_getAssociatedObject(self, _cmd) integerValue];
+}
+
+- (void)setReactZIndex:(NSInteger)reactZIndex
+{
+  objc_setAssociatedObject(self, @selector(reactZIndex), @(reactZIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSArray<UIView *> *)sortedReactSubviews
+{
+  NSArray *subviews = objc_getAssociatedObject(self, _cmd);
+  if (!subviews) {
+    // Check if sorting is required - in most cases it won't be
+    BOOL sortingRequired = NO;
+    for (UIView *subview in self.reactSubviews) {
+      if (subview.reactZIndex != 0) {
+        sortingRequired = YES;
+        break;
+      }
+    }
+    subviews = sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+      if (a.reactZIndex > b.reactZIndex) {
+        return NSOrderedDescending;
+      } else {
+        // ensure sorting is stable by treating equal zIndex as ascending so
+        // that original order is preserved
+        return NSOrderedAscending;
+      }
+    }] : self.reactSubviews;
+    objc_setAssociatedObject(self, _cmd, subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  return subviews;
+}
+
+// private method, used to reset sort
+- (void)clearSortedSubviews
+{
+  objc_setAssociatedObject(self, @selector(sortedReactSubviews), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)didUpdateReactSubviews
+{
+  for (UIView *subview in self.sortedReactSubviews) {
+    [self addSubview:subview];
+  }
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -82,9 +157,9 @@
   self.bounds = bounds;
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+- (void)reactSetInheritedBackgroundColor:(__unused UIColor *)inheritedBackgroundColor
 {
-  self.backgroundColor = inheritedBackgroundColor;
+  // Does nothing by default
 }
 
 - (UIViewController *)reactViewController

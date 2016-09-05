@@ -23,15 +23,17 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Module that records debug information during transitions (animated navigation events such as
  * going from one screen to another).
  */
+@ReactModule(name = "AnimationsDebugModule")
 public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
-  private final DeveloperSettings mCatalystSettings;
+  private @Nullable final DeveloperSettings mCatalystSettings;
 
   public AnimationsDebugModule(
       ReactApplicationContext reactContext,
@@ -47,7 +49,8 @@ public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRecordingFps() {
-    if (!mCatalystSettings.isAnimationFpsDebugEnabled()) {
+    if (mCatalystSettings == null ||
+        !mCatalystSettings.isAnimationFpsDebugEnabled()) {
       return;
     }
 

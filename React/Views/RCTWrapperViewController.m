@@ -123,6 +123,7 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
 
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
+    item.titleView = _navItem.titleImageView;
     item.backBarButtonItem = _navItem.backButtonItem;
     item.leftBarButtonItem = _navItem.leftButtonItem;
     item.rightBarButtonItem = _navItem.rightButtonItem;

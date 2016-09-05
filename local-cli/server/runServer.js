@@ -8,32 +8,43 @@
  */
 'use strict';
 
+const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
-const isAbsolutePath = require('absolute-path');
+const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
+const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
+const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
+const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
+const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
+const defaultAssetExts = require('../../packager/defaultAssetExts');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
+  var ms = null;
+  const packagerServer = getPackagerServer(args, config);
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
+    .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
+    .use(openStackFrameInEditorMiddleware(args))
+    .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
+    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
-    // Temporarily disable flow check until it's more stable
-    //.use(getFlowTypeCheckMiddleware(args))
-    .use(getAppMiddleware(args, config));
+    .use(jscProfilerMiddleware)
+    .use(indexPageMiddleware)
+    .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
 
@@ -42,35 +53,43 @@ function runServer(args, config, readyCallback) {
 
   const serverInstance = http.createServer(app).listen(
     args.port,
-    '::',
+    args.host,
     function() {
+      attachHMRServer({
+        httpServer: serverInstance,
+        path: '/hot',
+        packagerServer,
+      });
+
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+      ms = messageSocket.attachToServer(serverInstance, '/message');
       webSocketProxy.attachToServer(serverInstance, '/devtools');
       readyCallback();
     }
   );
+  // Disable any kind of automatic timeout behavior for incoming
+  // requests in case it takes the packager more than the default
+  // timeout of 120 seconds to respond to a request.
+  serverInstance.timeout = 0;
 }
 
-function getAppMiddleware(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
-  }
+function getPackagerServer(args, config) {
+  const transformModulePath =
+    args.transformer ? path.resolve(args.transformer) :
+    typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+    undefined;
 
-  return ReactPackager.middleware({
+  return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
-    transformModulePath: transformerPath,
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    transformModulePath: transformModulePath,
+    extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
-    assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
-    resetCache: args.resetCache || args['reset-cache'],
-    polyfillModuleNames: [
-      require.resolve(
-        '../../Libraries/JavaScriptAppEngine/polyfills/document.js'
-      ),
-    ],
+    assetExts: defaultAssetExts.concat(args.assetExts),
+    resetCache: args.resetCache,
     verbose: args.verbose,
   });
 }

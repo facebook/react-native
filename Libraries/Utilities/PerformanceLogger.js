@@ -10,8 +10,10 @@
  */
 'use strict';
 
+const BatchedBridge = require('BatchedBridge');
+const fbjsPerformanceNow = require('fbjs/lib/performanceNow');
 
-var performanceNow = require('performanceNow');
+const performanceNow = global.nativePerformanceNow || fbjsPerformanceNow;
 
 var timespans = {};
 var extras = {};
@@ -61,6 +63,15 @@ var PerformanceLogger = {
         console.log(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
           key,
+        );
+      }
+      return;
+    }
+    if (timespans[key].endTime) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to end a timespan that has already ended ',
+          key
         );
       }
       return;
@@ -130,5 +141,10 @@ var PerformanceLogger = {
     return extras;
   }
 };
+
+BatchedBridge.registerCallableModule(
+  'PerformanceLogger',
+  PerformanceLogger
+);
 
 module.exports = PerformanceLogger;

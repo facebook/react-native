@@ -23,14 +23,14 @@
 
 @implementation RCTMethodArgumentTests
 
-extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes);
+extern SEL RCTParseMethodSignature(NSString *methodSignature, NSArray **argTypes);
 
 - (void)testOneArgument
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(NSInteger)foo";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:");
+  NSString *methodSignature = @"foo:(NSInteger)foo";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
   XCTAssertEqual(arguments.count, (NSUInteger)1);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
 }
@@ -38,9 +38,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testTwoArguments
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(NSInteger)foo bar:(BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo:(NSInteger)foo bar:(BOOL)bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -49,9 +49,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testSpaces
 {
   NSArray *arguments;
-  NSString *methodName = @"foo : (NSInteger)foo bar : (BOOL) bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo : (NSInteger)foo bar : (BOOL) bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -60,9 +60,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testNewlines
 {
   NSArray *arguments;
-  NSString *methodName = @"foo : (NSInteger)foo\nbar : (BOOL) bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo : (NSInteger)foo\nbar : (BOOL) bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -71,9 +71,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testUnnamedArgs
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(NSInteger)foo:(BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo::");
+  NSString *methodSignature = @"foo:(NSInteger)foo:(BOOL)bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo::");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSInteger");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -82,9 +82,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testUntypedUnnamedArgs
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:foo:bar:bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:::");
+  NSString *methodSignature = @"foo:foo:bar:bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:::");
   XCTAssertEqual(arguments.count, (NSUInteger)3);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"id");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"id");
@@ -94,9 +94,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testAttributes
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(__attribute__((nonnull)) NSString *)foo bar:(__unused BOOL)bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo:(__attribute__((unused)) NSString *)foo bar:(__unused BOOL)bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -105,9 +105,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testNullability
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(nullable NSString *)foo bar:(nonnull NSNumber *)bar baz:(id)baz";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:baz:");
+  NSString *methodSignature = @"foo:(nullable NSString *)foo bar:(nonnull NSNumber *)bar baz:(id)baz";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:baz:");
   XCTAssertEqual(arguments.count, (NSUInteger)3);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"NSNumber");
@@ -120,9 +120,9 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testSemicolonStripping
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(NSString *)foo bar:(BOOL)bar;";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo:(NSString *)foo bar:(BOOL)bar;";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"BOOL");
@@ -131,14 +131,54 @@ extern void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **argTypes
 - (void)testUnused
 {
   NSArray *arguments;
-  NSString *methodName = @"foo:(__unused NSString *)foo bar:(NSNumber *)bar";
-  RCTParseObjCMethodName(&methodName, &arguments);
-  XCTAssertEqualObjects(methodName, @"foo:bar:");
+  NSString *methodSignature = @"foo:(__unused NSString *)foo bar:(NSNumber *)bar";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:bar:");
   XCTAssertEqual(arguments.count, (NSUInteger)2);
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSString");
   XCTAssertEqualObjects(((RCTMethodArgument *)arguments[1]).type, @"NSNumber");
   XCTAssertTrue(((RCTMethodArgument *)arguments[0]).unused);
   XCTAssertFalse(((RCTMethodArgument *)arguments[1]).unused);
+}
+
+- (void)testGenericArray
+{
+  NSArray *arguments;
+  NSString *methodSignature = @"foo:(NSArray<NSString *> *)foo;";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  XCTAssertEqual(arguments.count, (NSUInteger)1);
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSStringArray");
+}
+
+- (void)testNestedGenericArray
+{
+  NSArray *arguments;
+  NSString *methodSignature = @"foo:(NSArray<NSArray<NSString *> *> *)foo;";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  XCTAssertEqual(arguments.count, (NSUInteger)1);
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSStringArrayArray");
+}
+
+- (void)testGenericSet
+{
+  NSArray *arguments;
+  NSString *methodSignature = @"foo:(NSSet<NSNumber *> *)foo;";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  XCTAssertEqual(arguments.count, (NSUInteger)1);
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSNumberSet");
+}
+
+- (void)testGenericDictionary
+{
+  NSArray *arguments;
+  NSString *methodSignature = @"foo:(NSDictionary<NSString *, NSNumber *> *)foo;";
+  SEL selector = RCTParseMethodSignature(methodSignature, &arguments);
+  XCTAssertEqualObjects(NSStringFromSelector(selector), @"foo:");
+  XCTAssertEqual(arguments.count, (NSUInteger)1);
+  XCTAssertEqualObjects(((RCTMethodArgument *)arguments[0]).type, @"NSNumberDictionary");
 }
 
 @end

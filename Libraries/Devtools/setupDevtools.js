@@ -11,10 +11,17 @@
  */
 'use strict';
 
+var Platform = require('Platform');
+var NativeModules = require('NativeModules');
+
 function setupDevtools() {
   var messageListeners = [];
   var closeListeners = [];
-  var ws = new window.WebSocket('ws://localhost:8097/devtools');
+  var hostname = 'localhost';
+  if (Platform.OS === 'android' && NativeModules.AndroidConstants) {
+    hostname = NativeModules.AndroidConstants.ServerHost.split(':')[0];
+  }
+  var ws = new window.WebSocket('ws://' + hostname + ':8097/devtools');
   // this is accessed by the eval'd backend code
   var FOR_BACKEND = { // eslint-disable-line no-unused-vars
     resolveRNStyle: require('flattenStyle'),
@@ -30,17 +37,20 @@ function setupDevtools() {
       },
     },
   };
-  ws.onclose = () => {
-    setTimeout(setupDevtools, 200);
-    closeListeners.forEach(fn => fn());
-  };
-  ws.onerror = error => {
-    setTimeout(setupDevtools, 200);
-    closeListeners.forEach(fn => fn());
-  };
+  ws.onclose = handleClose;
+  ws.onerror = handleClose;
   ws.onopen = function () {
     tryToConnect();
   };
+
+  var hasClosed = false;
+  function handleClose() {
+    if (!hasClosed) {
+      hasClosed = true;
+      setTimeout(setupDevtools, 2000);
+      closeListeners.forEach(fn => fn());
+    }
+  }
 
   function tryToConnect() {
     ws.send('attach:agent');
@@ -61,12 +71,27 @@ function setupDevtools() {
       console.error('Failed to eval: ' + e.message);
       return;
     }
+    // This is breaking encapsulation of the React package. Move plz.
+    var ReactNativeComponentTree = require('react/lib/ReactNativeComponentTree');
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
-      CurrentOwner: require('ReactCurrentOwner'),
-      InstanceHandles: require('ReactInstanceHandles'),
-      Mount: require('ReactNativeMount'),
-      Reconciler: require('ReactReconciler'),
-      TextComponent: require('ReactNativeTextComponent'),
+      ComponentTree: {
+        getClosestInstanceFromNode: function (node) {
+          return ReactNativeComponentTree.getClosestInstanceFromNode(node);
+        },
+        getNodeFromInstance: function (inst) {
+          // inst is an internal instance (but could be a composite)
+          while (inst._renderedComponent) {
+            inst = inst._renderedComponent;
+          }
+          if (inst) {
+            return ReactNativeComponentTree.getNodeFromInstance(inst);
+          } else {
+            return null;
+          }
+        }
+      },
+      Mount: require('react/lib/ReactNativeMount'),
+      Reconciler: require('react/lib/ReactReconciler')
     });
     ws.onmessage = handleMessage;
   }

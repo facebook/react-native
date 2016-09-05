@@ -17,7 +17,11 @@ function emptyFunction() {}
 
 const BackAndroid = {
   exitApp: emptyFunction,
-  addEventListener: emptyFunction,
+  addEventListener() {
+    return {
+      remove: emptyFunction,
+    };
+  },
   removeEventListener: emptyFunction,
 };
 

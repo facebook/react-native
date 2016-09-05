@@ -59,6 +59,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    // TODO: can this be moved out of the startup path?
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
@@ -90,8 +92,11 @@ RCT_EXPORT_MODULE()
   BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
     _isVoiceOverEnabled = newIsVoiceOverEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"voiceOverDidChange"
                                                 body:@(_isVoiceOverEnabled)];
+#pragma clang diagnostic pop
   }
 }
 
@@ -176,7 +181,7 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
 
 - (RCTAccessibilityManager *)accessibilityManager
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTAccessibilityManager class])];
+  return [self moduleForClass:[RCTAccessibilityManager class]];
 }
 
 @end

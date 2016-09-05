@@ -13,22 +13,15 @@
  */
 'use strict';
 
-export type ResolvedAssetSource = {
-  __packager_asset: boolean,
-  width: number,
-  height: number,
-  uri: string,
-  scale: number,
-};
+import type { ResolvedAssetSource } from 'AssetSourceResolver';
 
-var AssetRegistry = require('AssetRegistry');
-var PixelRatio = require('PixelRatio');
-var Platform = require('Platform');
-var SourceCode = require('NativeModules').SourceCode;
+const AssetRegistry = require('AssetRegistry');
+const AssetSourceResolver = require('AssetSourceResolver');
+const { SourceCode } = require('NativeModules');
 
-var _serverURL, _offlinePath;
+let _customSourceTransformer, _serverURL, _bundleSourcePath;
 
-function getDevServerURL() {
+function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
     var scriptURL = SourceCode.scriptURL;
     var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
@@ -40,112 +33,60 @@ function getDevServerURL() {
       _serverURL = null;
     }
   }
-
   return _serverURL;
 }
 
-function getOfflinePath() {
-  if (_offlinePath === undefined) {
-    var scriptURL = SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^file:\/\/(\/.*\/)/);
-    if (match) {
-      _offlinePath = match[1];
+function getBundleSourcePath(): ?string {
+  if (_bundleSourcePath === undefined) {
+    const scriptURL = SourceCode.scriptURL;
+    if (!scriptURL) {
+      // scriptURL is falsy, we have nothing to go on here
+      _bundleSourcePath = null;
+      return _bundleSourcePath;
+    }
+    if (scriptURL.startsWith('assets://')) {
+      // running from within assets, no offline path to use
+      _bundleSourcePath = null;
+      return _bundleSourcePath;
+    }
+    if (scriptURL.startsWith('file://')) {
+      // cut off the protocol
+      _bundleSourcePath = scriptURL.substring(7, scriptURL.lastIndexOf('/') + 1);
     } else {
-      _offlinePath = '';
+      _bundleSourcePath = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
     }
   }
 
-  return _offlinePath;
+  return _bundleSourcePath;
+}
+
+function setCustomSourceTransformer(
+  transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource,
+): void {
+  _customSourceTransformer = transformer;
 }
 
 /**
- * Returns the path at which the asset can be found in the archive
+ * `source` is either a number (opaque type returned by require('./foo.png'))
+ * or an `ImageSource` like { uri: '<http location || file path>' }
  */
-function getPathInArchive(asset) {
-  if (Platform.OS === 'android') {
-    var assetDir = getBasePath(asset);
-    // E.g. 'assets_awesomemodule_icon'
-    // The Android resource system picks the correct scale.
-    return (assetDir + '/' + asset.name)
-      .toLowerCase()
-      .replace(/\//g, '_')           // Encode folder structure in file name
-      .replace(/([^a-z0-9_])/g, '')  // Remove illegal chars
-      .replace(/^assets_/, '');      // Remove "assets_" prefix
-  } else {
-    // E.g. 'assets/AwesomeModule/icon@2x.png'
-    return getOfflinePath() + getScaledAssetPath(asset);
-  }
-}
-
-/**
- * Returns an absolute URL which can be used to fetch the asset
- * from the devserver
- */
-function getPathOnDevserver(devServerUrl, asset) {
-  return devServerUrl + getScaledAssetPath(asset) + '?platform=' + Platform.OS +
-    '&hash=' + asset.hash;
-}
-
-/**
- * Returns a path like 'assets/AwesomeModule'
- */
-function getBasePath(asset) {
-  // TODO(frantic): currently httpServerLocation is used both as
-  // path in http URL and path within IPA. Should we have zipArchiveLocation?
-  var path = asset.httpServerLocation;
-  if (path[0] === '/') {
-    path = path.substr(1);
-  }
-  return path;
-}
-
-/**
- * Returns a path like 'assets/AwesomeModule/icon@2x.png'
- */
-function getScaledAssetPath(asset) {
-  var scale = pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  var assetDir = getBasePath(asset);
-  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
-}
-
-function pickScale(scales: Array<number>, deviceScale: number): number {
-  // Packager guarantees that `scales` array is sorted
-  for (var i = 0; i < scales.length; i++) {
-    if (scales[i] >= deviceScale) {
-      return scales[i];
-    }
-  }
-
-  // If nothing matches, device scale is larger than any available
-  // scales, so we return the biggest one. Unless the array is empty,
-  // in which case we default to 1
-  return scales[scales.length - 1] || 1;
-}
-
 function resolveAssetSource(source: any): ?ResolvedAssetSource {
   if (typeof source === 'object') {
     return source;
   }
 
   var asset = AssetRegistry.getAssetByID(source);
-  if (asset) {
-    return assetToImageSource(asset);
+  if (!asset) {
+    return null;
   }
 
-  return null;
-}
-
-function assetToImageSource(asset): ResolvedAssetSource {
-  var devServerURL = getDevServerURL();
-  return {
-    __packager_asset: true,
-    width: asset.width,
-    height: asset.height,
-    uri: devServerURL ? getPathOnDevserver(devServerURL, asset) : getPathInArchive(asset),
-    scale: pickScale(asset.scales, PixelRatio.get()),
-  };
+  const resolver = new AssetSourceResolver(getDevServerURL(), getBundleSourcePath(), asset);
+  if (_customSourceTransformer) {
+    return _customSourceTransformer(resolver);
+  }
+  return resolver.defaultAsset();
 }
 
 module.exports = resolveAssetSource;
-module.exports.pickScale = pickScale;
+module.exports.pickScale = AssetSourceResolver.pickScale;
+module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

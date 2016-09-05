@@ -11,39 +11,37 @@
  */
 'use strict';
 
-var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
-
-var loadSourceMap = require('loadSourceMap');
-var parseErrorStack = require('parseErrorStack');
-var stringifySafe = require('stringifySafe');
-
-var sourceMapPromise;
-
-var exceptionID = 0;
+let exceptionID = 0;
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 function reportException(e: Error, isFatal: bool) {
-  var currentExceptionID = ++exceptionID;
+  const parseErrorStack = require('parseErrorStack');
+  const symbolicateStackTrace = require('symbolicateStackTrace');
+  const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+
+  const currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
-    var stack = parseErrorStack(e);
+    const stack = parseErrorStack(e);
     if (isFatal) {
       RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
     } else {
       RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      (sourceMapPromise = sourceMapPromise || loadSourceMap())
-        .then(map => {
-          var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
-        })
-        .catch(error => {
-          // This can happen in a variety of normal situations, such as
-          // Network module not being available, or when running locally
-          console.warn('Unable to load source map: ' + error.message);
-        });
+      symbolicateStackTrace(stack).then(
+        (prettyStack) => {
+          if (prettyStack) {
+            RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
+          } else {
+            throw new Error('The stack is null');
+          }
+        }
+      ).catch(
+        (error) =>
+          console.warn('Unable to symbolicate stack trace: ' + error.message)
+      );
     }
   }
 }
@@ -73,9 +71,11 @@ function installConsoleErrorReporter() {
   if (console._errorOriginal) {
     return; // already installed
   }
-  console._errorOriginal = console.error.bind(console);
+  // Flow doesn't like it when you set arbitrary values on a global object
+  (console: any)._errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
-    console._errorOriginal.apply(null, arguments);
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any)._errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
@@ -83,20 +83,22 @@ function installConsoleErrorReporter() {
     if (arguments[0] && arguments[0].stack) {
       reportException(arguments[0], /* isFatal */ false);
     } else {
-      var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+      const stringifySafe = require('stringifySafe');
+      const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
       if (str.slice(0, 10) === '"Warning: ') {
         // React warnings use console.error so that a stack trace is shown, but
         // we don't (currently) want these to show a redbox
         // (Note: Logic duplicated in polyfills/console.js.)
         return;
       }
-      var error : any = new Error('console.error: ' + str);
+      const error : any = new Error('console.error: ' + str);
       error.framesToPop = 1;
       reportException(error, /* isFatal */ false);
     }
   };
   if (console.reportErrorsAsExceptions === undefined) {
-    console.reportErrorsAsExceptions = true; // Individual apps can disable this
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any).reportErrorsAsExceptions = true; // Individual apps can disable this
   }
 }
 

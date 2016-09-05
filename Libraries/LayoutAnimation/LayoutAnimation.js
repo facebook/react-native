@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
+var PropTypes = require('react/lib/ReactPropTypes');
+var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 var TypesEnum = {
   spring: true,
@@ -40,19 +40,19 @@ var animChecker = createStrictShapeTypeChecker({
   initialVelocity: PropTypes.number,
   type: PropTypes.oneOf(
     Object.keys(Types)
-  ),
+  ).isRequired,
   property: PropTypes.oneOf( // Only applies to create/delete
     Object.keys(Properties)
   ),
 });
 
 type Anim = {
-  duration?: number;
-  delay?: number;
-  springDamping?: number;
-  initialVelocity?: number;
-  type?: $Enum<typeof TypesEnum>;
-  property?: $Enum<typeof PropertiesEnum>;
+  duration?: number,
+  delay?: number,
+  springDamping?: number,
+  initialVelocity?: number,
+  type?: $Enum<typeof TypesEnum>,
+  property?: $Enum<typeof PropertiesEnum>,
 }
 
 var configChecker = createStrictShapeTypeChecker({
@@ -63,15 +63,15 @@ var configChecker = createStrictShapeTypeChecker({
 });
 
 type Config = {
-  duration: number;
-  create?: Anim;
-  update?: Anim;
-  delete?: Anim;
+  duration: number,
+  create?: Anim,
+  update?: Anim,
+  delete?: Anim,
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
   configChecker({config}, 'config', 'LayoutAnimation.configureNext');
-  RCTUIManager.configureNextLayoutAnimation(
+  UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );
 }
@@ -85,6 +85,10 @@ function create(duration: number, type, creationProp): Config {
     },
     update: {
       type,
+    },
+    delete: {
+      type,
+      property: creationProp,
     },
   };
 }
@@ -105,6 +109,10 @@ var Presets = {
     update: {
       type: Types.spring,
       springDamping: 0.4,
+    },
+    delete: {
+      type: Types.linear,
+      property: Properties.opacity,
     },
   },
 };

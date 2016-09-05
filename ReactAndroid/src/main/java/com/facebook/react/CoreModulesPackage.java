@@ -9,14 +9,22 @@
 
 package com.facebook.react;
 
+import javax.inject.Provider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import com.facebook.react.bridge.BridgeProfiling;
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.devsupport.HMRClient;
+import com.facebook.react.devsupport.JSCHeapCapture;
+import com.facebook.react.devsupport.JSCSamplingProfiler;
+import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -27,64 +35,165 @@ import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.AppRegistry;
-import com.facebook.react.uimanager.ReactNative;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.systrace.Systrace;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
-/* package */ class CoreModulesPackage implements ReactPackage {
+@ReactModuleList({
+  AnimationsDebugModule.class,
+  AndroidInfoModule.class,
+  DeviceEventManagerModule.class,
+  ExceptionsManagerModule.class,
+  Timing.class,
+  SourceCodeModule.class,
+  UIManagerModule.class,
+  DebugComponentOwnershipModule.class,
+  JSCHeapCapture.class,
+  JSCSamplingProfiler.class,
+})
+/* package */ class CoreModulesPackage extends LazyReactPackage {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
+  private final UIImplementationProvider mUIImplementationProvider;
 
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
-      DefaultHardwareBackBtnHandler hardwareBackBtnHandler) {
+      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      UIImplementationProvider uiImplementationProvider) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
+    mUIImplementationProvider = uiImplementationProvider;
   }
 
   @Override
-  public List<NativeModule> createNativeModules(
-      ReactApplicationContext catalystApplicationContext) {
-    return Arrays.<NativeModule>asList(
-        new AnimationsDebugModule(
-            catalystApplicationContext,
-            mReactInstanceManager.getDevSupportManager().getDevSettings()),
-        new AndroidInfoModule(),
-        new DeviceEventManagerModule(catalystApplicationContext, mHardwareBackBtnHandler),
-        new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager()),
-        new Timing(catalystApplicationContext),
-        new SourceCodeModule(
-            mReactInstanceManager.getSourceUrl(),
-            mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
-        new UIManagerModule(
-            catalystApplicationContext,
-            mReactInstanceManager.createAllViewManagers(catalystApplicationContext)),
-        new DebugComponentOwnershipModule(catalystApplicationContext));
+  public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
+    List<ModuleSpec> moduleSpecList = new ArrayList<>();
+    moduleSpecList.add(
+      new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new AnimationsDebugModule(
+            reactContext,
+            mReactInstanceManager.getDevSupportManager().getDevSettings());
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(AndroidInfoModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new AndroidInfoModule();
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(DeviceEventManagerModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(ExceptionsManagerModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(Timing.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new SourceCodeModule(mReactInstanceManager.getSourceUrl());
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(UIManagerModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return createUIManager(reactContext);
+        }
+      }));
+
+    if (ReactBuildConfig.DEBUG) {
+      moduleSpecList.add(
+        new ModuleSpec(DebugComponentOwnershipModule.class, new Provider<NativeModule>() {
+          @Override
+          public NativeModule get() {
+            return new DebugComponentOwnershipModule(reactContext);
+          }
+        }));
+      moduleSpecList.add(
+        new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
+          @Override
+          public NativeModule get() {
+            return new JSCHeapCapture(reactContext);
+          }
+        }));
+      moduleSpecList.add(
+        new ModuleSpec(JSCSamplingProfiler.class, new Provider<NativeModule>() {
+          @Override
+          public NativeModule get() {
+            return new JSCSamplingProfiler(reactContext);
+          }
+        }));
+    }
+
+    return moduleSpecList;
   }
 
   @Override
   public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Arrays.asList(
+    List<Class<? extends JavaScriptModule>> jsModules = new ArrayList<>(Arrays.asList(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class,
         JSTimersExecution.class,
         RCTEventEmitter.class,
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
-        BridgeProfiling.class,
-        ReactNative.class,
-        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
+        com.facebook.react.bridge.Systrace.class,
+        HMRClient.class,
+        JSCSamplingProfiler.SamplingProfiler.class,
+        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class));
+
+    if (ReactBuildConfig.DEBUG) {
+      jsModules.add(JSCHeapCapture.HeapCapture.class);
+    }
+
+    return jsModules;
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList<>(0);
+    return Collections.emptyList();
+  }
+
+  private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    try {
+      List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
+        reactContext);
+      return new UIManagerModule(
+        reactContext,
+        viewManagersList,
+        mUIImplementationProvider.createUIImplementation(
+          reactContext,
+          viewManagersList));
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 }

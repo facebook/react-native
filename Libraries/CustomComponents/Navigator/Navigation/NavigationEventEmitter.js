@@ -59,7 +59,7 @@ class NavigationEventEmitter extends EventEmitter {
       // An event cycle that was previously created hasn't finished yet.
       // Put this event cycle into the queue and will finish them later.
       var args: any = Array.prototype.slice.call(arguments);
-      this._emitQueue.unshift(args);
+      this._emitQueue.push(args);
       return;
     }
 

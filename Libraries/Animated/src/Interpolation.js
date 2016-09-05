@@ -9,28 +9,21 @@
  * @providesModule Interpolation
  * @flow
  */
+/* eslint no-bitwise: 0 */
 'use strict';
 
-var tinycolor = require('tinycolor');
-
-// TODO(#7644673): fix this hack once github jest actually checks invariants
-var invariant = function(condition, message) {
-  if (!condition) {
-    var error = new Error(message);
-    (error: any).framesToPop = 1; // $FlowIssue
-    throw error;
-  }
-};
+var invariant = require('fbjs/lib/invariant');
+var normalizeColor = require('normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
-  inputRange: Array<number>;
-  outputRange: (Array<number> | Array<string>);
-  easing?: ((input: number) => number);
-  extrapolate?: ExtrapolateType;
-  extrapolateLeft?: ExtrapolateType;
-  extrapolateRight?: ExtrapolateType;
+  inputRange: Array<number>,
+  outputRange: (Array<number> | Array<string>),
+  easing?: ((input: number) => number),
+  extrapolate?: ExtrapolateType,
+  extrapolateLeft?: ExtrapolateType,
+  extrapolateRight?: ExtrapolateType,
 };
 
 var linear = (t) => t;
@@ -164,16 +157,20 @@ function interpolate(
   return result;
 }
 
-function colorToRgba(
-  input: string
-): string {
-  var color = tinycolor(input);
-  if (color.isValid()) {
-    var {r, g, b, a} = color.toRgb();
-    return `rgba(${r}, ${g}, ${b}, ${a === undefined ? 1 : a})`;
-  } else {
+function colorToRgba(input: string): string {
+  var int32Color = normalizeColor(input);
+  if (int32Color === null) {
     return input;
   }
+
+  int32Color = int32Color || 0; // $FlowIssue
+
+  var r = (int32Color & 0xff000000) >>> 24;
+  var g = (int32Color & 0x00ff0000) >>> 16;
+  var b = (int32Color & 0x0000ff00) >>> 8;
+  var a = (int32Color & 0x000000ff) / 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 var stringShapeRegex = /[0-9\.-]+/g;
@@ -225,15 +222,25 @@ function createInterpolationFromStringOutputRange(
     });
   });
 
+  // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
+  // round the opacity (4th column).
+  const shouldRound = isRgbOrRgba(outputRange[0]);
+
   return (input) => {
     var i = 0;
     // 'rgba(0, 100, 200, 0)'
     // ->
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
-      return String(interpolations[i++](input));
+      const val = +interpolations[i++](input);
+      const rounded = shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
+      return String(rounded);
     });
   };
+}
+
+function isRgbOrRgba(range) {
+  return typeof range === 'string' && range.startsWith('rgb');
 }
 
 function checkPattern(arr: Array<string>) {

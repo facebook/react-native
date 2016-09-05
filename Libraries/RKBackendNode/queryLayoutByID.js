@@ -11,8 +11,7 @@
  */
 'use strict';
 
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 type OnSuccessCallback = (
   left: number,
@@ -41,18 +40,21 @@ type OnErrorCallback = (error: any) => void
  *
  * This is an IOS specific implementation.
  *
- * @param {string} rootNodeID ID of the platform specific node to be measured.
+ * @param {number} tag ID of the platform specific node to be measured.
  * @param {function} onError `func(error)`
  * @param {function} onSuccess `func(left, top, width, height, pageX, pageY)`
  */
 var queryLayoutByID = function(
-  rootNodeID: string,
+  tag: ?number,
   onError: OnErrorCallback,
   onSuccess: OnSuccessCallback
 ): void {
+  if (tag == null) {
+    return;
+  }
   // Native bridge doesn't *yet* surface errors.
-  RCTUIManager.measure(
-    ReactNativeTagHandles.rootNodeIDToTag[rootNodeID],
+  UIManager.measure(
+    tag,
     onSuccess
   );
 };

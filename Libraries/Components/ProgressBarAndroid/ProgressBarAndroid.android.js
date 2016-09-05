@@ -10,15 +10,17 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
-var ReactPropTypes = require('ReactPropTypes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
+var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',
+  'Normal',
   'Small',
   'Large',
   'Inverse',
@@ -63,10 +65,12 @@ var indeterminateType = function(props, propName, componentName) {
  */
 var ProgressBarAndroid = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Style of the ProgressBar. One of:
      *
      * - Horizontal
+     * - Normal (default)
      * - Small
      * - Large
      * - Inverse
@@ -86,7 +90,7 @@ var ProgressBarAndroid = React.createClass({
     /**
      * Color of the progress bar.
      */
-    color: ReactPropTypes.string,
+    color: ColorPropType,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -95,18 +99,31 @@ var ProgressBarAndroid = React.createClass({
 
   getDefaultProps: function() {
     return {
-      styleAttr: 'Large',
+      styleAttr: 'Normal',
       indeterminate: true
     };
   },
 
   mixins: [NativeMethodsMixin],
 
+  componentDidMount: function() {
+    if (this.props.indeterminate && this.props.styleAttr !== 'Horizontal') {
+      console.warn(
+        'Circular indeterminate `ProgressBarAndroid`' +
+        'is deprecated. Use `ActivityIndicator` instead.'
+      );
+    }
+  },
+
   render: function() {
     return <AndroidProgressBar {...this.props} />;
   },
 });
 
-var AndroidProgressBar = requireNativeComponent('AndroidProgressBar', ProgressBarAndroid);
+var AndroidProgressBar = requireNativeComponent(
+  'AndroidProgressBar',
+  ProgressBarAndroid,
+  {nativeOnly: {animating: true}},
+);
 
 module.exports = ProgressBarAndroid;

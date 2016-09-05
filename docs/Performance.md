@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: upgrading
+previous: navigation
 ---
 
 A compelling reason for using React Native instead of WebView-based
@@ -72,7 +73,7 @@ out of the box than `Navigator`. The reason for this is that the
 animations for the transitions are done entirely on the main thread, and
 so they are not interrupted by frame drops on the JavaScript thread.
 ([Read about why you should probably use Navigator
-anyways.](/react-native/docs/navigator-comparison.html))
+anyways.](docs/navigator-comparison.html))
 
 Similarly, you can happily scroll up and down through a ScrollView when
 the JavaScript thread is locked up because the ScrollView lives on the
@@ -80,6 +81,10 @@ main thread (the scroll events are dispatched to the JS thread though,
 but their receipt is not necessary for the scroll to occur).
 
 ### Common sources of performance problems
+
+#### Console.log statements
+
+When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
 
 #### Development mode (dev=true)
 
@@ -197,7 +202,7 @@ your use case.
 If we had a list with 2000 items and rendered them all immediately that
 would be a poor use of both memory and computational resources. It would
 also probably cause some pretty awful jank. So the scrollRenderAhead
-distance allows us to specify for far beyond the current viewport we
+distance allows us to specify how far beyond the current viewport we
 should continue to render rows.
 
 ##### removeClippedSubviews
@@ -205,7 +210,7 @@ should continue to render rows.
 "When true, offscreen child views (whose `overflow` value is `hidden`)
 are removed from their native backing superview when offscreen.  This
 can improve scrolling performance on long lists. The default value is
-false."
+`true`."(The default value is `false` before version 0.14-rc).
 
 This is an extremely important optimization to apply on large ListViews.
 On Android the `overflow` value is always `hidden` so you don't need to
@@ -257,7 +262,6 @@ where the modal was opened from. See the Animations guide for more
 information about how to use LayoutAnimation.
 
 Caveats:
-- LayoutAnimation only exists on iOS.
 - LayoutAnimation only works for fire-and-forget animations ("static"
   animations) -- if it must be be interruptible, you will need to use
 Animated.

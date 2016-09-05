@@ -9,6 +9,8 @@
 
 #import "RCTHTTPRequestHandler.h"
 
+#import "RCTNetworking.h"
+
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
 
 @end
@@ -19,28 +21,20 @@
   NSURLSession *_session;
 }
 
-RCT_EXPORT_MODULE()
+@synthesize bridge = _bridge;
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
-                                           valueOptions:NSPointerFunctionsStrongMemory
-                                               capacity:0];
-  }
-  return self;
-}
+RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
   [_session invalidateAndCancel];
   _session = nil;
-  _delegates = nil;
 }
 
 - (BOOL)isValid
 {
-  return _delegates != nil;
+  // if session == nil and delegates != nil, we've been invalidated
+  return _session || !_delegates;
 }
 
 #pragma mark - NSURLRequestHandler
@@ -62,12 +56,18 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
+
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
+    callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
+
+    _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
+                                           valueOptions:NSPointerFunctionsStrongMemory
+                                               capacity:0];
   }
 
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];

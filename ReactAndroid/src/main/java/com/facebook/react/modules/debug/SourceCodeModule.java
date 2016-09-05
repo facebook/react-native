@@ -14,40 +14,29 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
+@ReactModule(name = "RCTSourceCode")
 public class SourceCodeModule extends BaseJavaModule {
 
-  private final String mSourceMapUrl;
   private final String mSourceUrl;
 
-  public SourceCodeModule(String sourceUrl, String sourceMapUrl) {
-    mSourceMapUrl = sourceMapUrl;
+  public SourceCodeModule(String sourceUrl) {
     mSourceUrl = sourceUrl;
   }
 
   @Override
   public String getName() {
-    return "RKSourceCode";
-  }
-
-  @ReactMethod
-  public void getScriptText(final Callback onSuccess, final Callback onError) {
-    WritableMap map = new WritableNativeMap();
-    map.putString("fullSourceMappingURL", mSourceMapUrl);
-    onSuccess.invoke(map);
+    return "RCTSourceCode";
   }
 
   @Override
   public @Nullable Map<String, Object> getConstants() {
-    HashMap<String, Object> constants = new HashMap<String, Object>();
+    HashMap<String, Object> constants = new HashMap<>();
     constants.put("scriptURL", mSourceUrl);
     return constants;
   }

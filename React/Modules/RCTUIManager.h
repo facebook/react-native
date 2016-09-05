@@ -13,6 +13,17 @@
 #import "RCTBridgeModule.h"
 #import "RCTInvalidating.h"
 #import "RCTViewManager.h"
+#import "RCTRootView.h"
+
+/**
+ * UIManager queue
+ */
+RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
+
+/**
+ * Default name for the UIManager queue
+ */
+RCT_EXTERN char *const RCTUIManagerQueueName;
 
 /**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
@@ -45,22 +56,9 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 /**
- * The UIIManager has the concept of a designated "main scroll view", which is
- * useful for apps built around a central scrolling content area (e.g. a
- * timeline).
- */
-@property (nonatomic, weak) id<RCTScrollableProtocol> mainScrollView;
-
-/**
- * Allows native environment code to respond to "the main scroll view" events.
- * see `RCTUIManager`'s `setMainScrollViewTag`.
- */
-@property (nonatomic, readwrite, weak) id<UIScrollViewDelegate> nativeMainScrollDelegate;
-
-/**
  * Register a root view with the RCTUIManager.
  */
-- (void)registerRootView:(UIView *)rootView;
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility;
 
 /**
  * Gets the view associated with a reactTag.
@@ -74,10 +72,17 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)setFrame:(CGRect)frame forView:(UIView *)view;
 
 /**
- * Update the background color of a root view. This is usually triggered by
- * manually setting the background color of the root view with native code.
+ * Set the natural size of a view, which is used when no explicit size is set.
+ * Use UIViewNoIntrinsicMetric to ignore a dimension.
  */
-- (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView;
+- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
+
+/**
+ * Update the background color of a view. The source of truth for
+ * backgroundColor is the shadow view, so if to update backgroundColor from
+ * native code you will need to call this method.
+ */
+- (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute
@@ -86,9 +91,37 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
 
 /**
+ * Given a reactTag from a component, find its root view, if possible.
+ * Otherwise, this will give back nil.
+ *
+ * @param reactTag the component tag
+ * @param completion the completion block that will hand over the rootView, if any.
+ *
+ * @return the rootView
+ */
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
+
+/**
  * The view that is currently first responder, according to the JS context.
  */
 + (UIView *)JSResponder;
+
+/**
+ * Normally, UI changes are not applied until the complete batch of method
+ * invocations from JavaScript to native has completed.
+ *
+ * Setting this to YES will flush UI changes sooner, which could potentially
+ * result in inconsistent UI updates.
+ *
+ * The default is NO (recommended).
+ */
+@property (atomic, assign) BOOL unsafeFlushUIChangesBeforeBatchEnds;
+
+/**
+ * In some cases we might want to trigger layout from native side.
+ * React won't be aware of this, so we need to make sure it happens.
+ */
+- (void)setNeedsLayout;
 
 @end
 

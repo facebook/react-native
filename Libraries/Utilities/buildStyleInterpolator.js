@@ -9,7 +9,7 @@
  */
 /* eslint-disable global-strict */
 
-var keyOf = require('keyOf');
+var keyOf = require('fbjs/lib/keyOf');
 
 var X_DIM = keyOf({x: null});
 var Y_DIM = keyOf({y: null});
@@ -102,7 +102,7 @@ var ARGUMENT_NAMES_RE = /([^\s,]+)/g;
  *
  *  inline(inlineMe, ['hi', 'bye']);  // "hi = bye + bye;"
  *
- * @param {function} func Any simple function whos arguments can be replaced via a regex.
+ * @param {function} func Any simple function who's arguments can be replaced via a regex.
  * @param {array<string>} replaceWithArgs Corresponding names of variables
  * within an environment, to replace `func` args with.
  * @return {string} Resulting function body string.
@@ -461,8 +461,9 @@ for (var varIndex = 0; varIndex < 16; varIndex++) {
 }
 var setNextMatrixAndDetectChange = function(orderedMatrixOperations) {
   var fn = [
-    '  var transformMatrix = result.transformMatrix !== undefined ? ' +
-    'result.transformMatrix : (result.transformMatrix = []);'
+    '  var transform = result.transform !== undefined ? ' +
+    'result.transform : (result.transform = [{ matrix: [] }]);' +
+    '  var transformMatrix = transform[0].matrix;'
   ];
   fn.push.apply(
     fn,
@@ -553,8 +554,15 @@ var createFunctionString = function(anims) {
  * object and returns a boolean describing if any update was actually applied.
  */
 var buildStyleInterpolator = function(anims) {
-  return Function(createFunctionString(anims))();
+  // Defer compiling this method until we really need it.
+  var interpolator = null;
+  function lazyStyleInterpolator(result, value) {
+    if (interpolator === null) {
+      interpolator = Function(createFunctionString(anims))();
+    }
+    return interpolator(result, value);
+  }
+  return lazyStyleInterpolator;
 };
-
 
 module.exports = buildStyleInterpolator;

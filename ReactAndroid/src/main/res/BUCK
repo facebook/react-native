@@ -17,3 +17,12 @@ android_resource(
     'PUBLIC',
   ],
 )
+
+android_resource(
+  name = 'modal',
+  res = 'views/modal',
+  package = 'com.facebook.react',
+  visibility = [
+    'PUBLIC',
+  ],
+)

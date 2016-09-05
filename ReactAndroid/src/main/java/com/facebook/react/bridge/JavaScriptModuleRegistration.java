@@ -13,67 +13,33 @@ import javax.annotation.concurrent.Immutable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
-import com.facebook.react.common.MapBuilder;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * Registration info for a {@link JavaScriptModule}. Maps its methods to method ids.
  */
 @Immutable
-class JavaScriptModuleRegistration {
+public class JavaScriptModuleRegistration {
 
-  private final int mModuleId;
   private final Class<? extends JavaScriptModule> mModuleInterface;
-  private final Map<Method, Integer> mMethodsToIds;
-  private final Map<Method, String> mMethodsToTracingNames;
 
-  JavaScriptModuleRegistration(int moduleId, Class<? extends JavaScriptModule> moduleInterface) {
-    mModuleId = moduleId;
+  public JavaScriptModuleRegistration(Class<? extends JavaScriptModule> moduleInterface) {
     mModuleInterface = moduleInterface;
 
-    mMethodsToIds = MapBuilder.newHashMap();
-    mMethodsToTracingNames = MapBuilder.newHashMap();
-    final Method[] declaredMethods = mModuleInterface.getDeclaredMethods();
-    Arrays.sort(declaredMethods, new Comparator<Method>() {
-      @Override
-      public int compare(Method lhs, Method rhs) {
-        return lhs.getName().compareTo(rhs.getName());
+    if (ReactBuildConfig.DEBUG) {
+      Set<String> methodNames = new LinkedHashSet<>();
+      for (Method method : mModuleInterface.getDeclaredMethods()) {
+        if (!methodNames.add(method.getName())) {
+          throw new AssertionError(
+            "Method overloading is unsupported: " + mModuleInterface.getName() + "#" +
+              method.getName());
+        }
       }
-    });
-
-    // Methods are sorted by name so we can dupe check and have obvious ordering
-    String previousName = null;
-    for (int i = 0; i < declaredMethods.length; i++) {
-      Method method = declaredMethods[i];
-      String name = method.getName();
-      Assertions.assertCondition(
-          !name.equals(previousName),
-          "Method overloading is unsupported: " + mModuleInterface.getName() + "#" + name);
-      previousName = name;
-
-      mMethodsToIds.put(method, i);
-      mMethodsToTracingNames.put(method, "JSCall__" + getName() + "_" + method.getName());
     }
-  }
-
-  public int getModuleId() {
-    return mModuleId;
-  }
-
-  public int getMethodId(Method method) {
-    final Integer id = mMethodsToIds.get(method);
-    if (id == null) {
-      Assertions.assertUnreachable("Unknown method: " + method.getName());
-    }
-    return id.intValue();
-  }
-
-  public String getTracingName(Method method) {
-    return Assertions.assertNotNull(mMethodsToTracingNames.get(method));
   }
 
   public Class<? extends JavaScriptModule> getModuleInterface() {
@@ -92,7 +58,7 @@ class JavaScriptModuleRegistration {
     return name;
   }
 
-  public Set<Method> getMethods() {
-    return mMethodsToIds.keySet();
+  public List<Method> getMethods() {
+    return Arrays.asList(mModuleInterface.getDeclaredMethods());
   }
 }

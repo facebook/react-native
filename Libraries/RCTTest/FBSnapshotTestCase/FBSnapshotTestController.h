@@ -97,7 +97,7 @@ extern NSString *const FBReferenceImageFilePathKey;
 
 
 /**
- The directory in which referfence images are stored.
+ The directory in which reference images are stored.
  */
 @property (readwrite, nonatomic, copy) NSString *referenceImagesDirectory;
 

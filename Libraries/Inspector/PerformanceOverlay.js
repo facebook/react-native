@@ -17,18 +17,19 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var PerformanceOverlay = React.createClass({
-  render: function() {
+class PerformanceOverlay extends React.Component {
+  render() {
     var perfLogs = PerformanceLogger.getTimespans();
     var items = [];
 
     for (var key in perfLogs) {
       if (perfLogs[key].totalTime) {
+        var unit = (key === 'BundleSize') ? 'b' : 'ms';
         items.push(
-          <View style={styles.row}>
+          <View style={styles.row} key={key}>
             <Text style={[styles.text, styles.label]}>{key}</Text>
             <Text style={[styles.text, styles.totalTime]}>
-              {perfLogs[key].totalTime + 'ms'}
+              {perfLogs[key].totalTime + unit}
             </Text>
           </View>
         );
@@ -41,7 +42,7 @@ var PerformanceOverlay = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

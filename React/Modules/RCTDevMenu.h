@@ -37,6 +37,11 @@
 @property (nonatomic, assign) BOOL liveReloadEnabled;
 
 /**
+ * Enables hot loading. Currently not supported in open source.
+ */
+@property (nonatomic, assign) BOOL hotLoadingEnabled;
+
+/**
  * Shows the FPS monitor for the JS and Main threads.
  */
 @property (nonatomic, assign) BOOL showFPS;

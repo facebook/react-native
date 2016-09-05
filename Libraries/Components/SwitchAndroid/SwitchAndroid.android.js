@@ -10,21 +10,25 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 var SWITCH = 'switch';
 
 /**
- * Standard Android two-state toggle component
+ * @deprecated
+ *
+ * Use <Switch> instead for cross-platform compatibility.
  */
 var SwitchAndroid = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Boolean value of the switch.
      */
@@ -34,7 +38,7 @@ var SwitchAndroid = React.createClass({
      */
     disabled: PropTypes.bool,
     /**
-     * Invoked with the new value when the value chages.
+     * Invoked with the new value when the value changes.
      */
     onValueChange: PropTypes.func,
     /**
@@ -79,6 +83,11 @@ var SwitchAndroid = React.createClass({
   }
 });
 
-var RKSwitch = requireNativeComponent('AndroidSwitch', null);
+var RKSwitch = requireNativeComponent('AndroidSwitch', SwitchAndroid, {
+  nativeOnly: {
+    on: true,
+    enabled: true,
+  }
+});
 
 module.exports = SwitchAndroid;

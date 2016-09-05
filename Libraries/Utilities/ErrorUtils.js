@@ -8,9 +8,7 @@
  *
  * @providesModule ErrorUtils
  */
-/* eslint-disable consistent-this, global-strict */
-
-var GLOBAL = this;
+/* eslint-disable strict */
 
 /**
  * The particular require runtime that we are using looks for a global
@@ -24,4 +22,4 @@ var GLOBAL = this;
  * that use it aren't just using a global variable, so simply export the global
  * variable here. ErrorUtils is originally defined in a file named error-guard.js.
  */
-module.exports = GLOBAL.ErrorUtils;
+module.exports = global.ErrorUtils;

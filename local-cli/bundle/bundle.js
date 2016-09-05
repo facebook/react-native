@@ -6,17 +6,32 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
 const buildBundle = require('./buildBundle');
+const outputBundle = require('./output/bundle');
+const outputPrepack = require('./output/prepack');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const parseCommandLine = require('../util/parseCommandLine');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundle(argv, config) {
-  return buildBundle(parseCommandLine(bundleCommandLineArgs, argv), config);
+function bundleWithOutput(argv, config, args, output, packagerInstance) {
+  if (!output) {
+    output = args.prepack ? outputPrepack : outputBundle;
+  }
+  return buildBundle(args, config, output, packagerInstance);
 }
 
-module.exports = bundle;
+function bundle(argv, config, args, packagerInstance) {
+  return bundleWithOutput(argv, config, args, undefined, packagerInstance);
+}
+
+module.exports = {
+  name: 'bundle',
+  description: 'builds the javascript bundle for offline use',
+  func: bundle,
+  options: bundleCommandLineArgs,
+
+  // not used by the CLI itself
+  withOutput: bundleWithOutput,
+};

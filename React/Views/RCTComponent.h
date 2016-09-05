@@ -9,6 +9,8 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#import <Foundation/Foundation.h>
+
 /**
  * These block types can be used for mapping input event handlers from JS to view
  * properties. Unlike JS method callbacks, these can be called multiple times.
@@ -35,6 +37,18 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 - (BOOL)isReactRootView;
 
 @optional
+
+/**
+ * Called each time props have been set.
+ * Not all props have to be set - React can set only changed ones.
+ * @param changedProps String names of all set props.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
+/**
+ * Called each time subviews have been updated
+ */
+- (void)didUpdateReactSubviews;
 
 // TODO: Deprecate this
 // This method is called after layout has been performed for all views known

@@ -8,238 +8,272 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 
-var SourceMapGenerator = require('source-map').SourceMapGenerator;
+const Bundle = require('../Bundle');
+const ModuleTransport = require('../../lib/ModuleTransport');
+const Promise = require('Promise');
+const SourceMapGenerator = require('source-map').SourceMapGenerator;
+const crypto = require('crypto');
 
-var Bundle = require('../Bundle');
-var ModuleTransport = require('../../lib/ModuleTransport');
-var UglifyJS = require('uglify-js');
-
-describe('Bundle', function() {
+describe('Bundle', () => {
   var bundle;
 
-  beforeEach(function() {
-    bundle = new Bundle('test_url');
-    bundle.getSourceMap = jest.genMockFn().mockImpl(function() {
+  beforeEach(() => {
+    bundle = new Bundle({sourceMapUrl: 'test_url'});
+    bundle.getSourceMap = jest.fn(() => {
       return 'test-source-map';
     });
   });
 
-  describe('source bundle', function() {
-    it('should create a bundle and get the source', function() {
-      bundle.addModule(new ModuleTransport({
-        code: 'transformed foo;',
-        sourceCode: 'source foo',
-        sourcePath: 'foo path',
-      }));
-      bundle.addModule(new ModuleTransport({
-        code: 'transformed bar;',
-        sourceCode: 'source bar',
-        sourcePath: 'bar path',
-      }));
-
-      bundle.finalize({});
-      expect(bundle.getSource({dev: true})).toBe([
-        'transformed foo;',
-        'transformed bar;',
-        '\/\/@ sourceMappingURL=test_url'
-      ].join('\n'));
-    });
-
-    it('should be ok to leave out the source map url', function() {
-      var p = new Bundle();
-      p.addModule(new ModuleTransport({
-        code: 'transformed foo;',
-        sourceCode: 'source foo',
-        sourcePath: 'foo path',
-      }));
-      p.addModule(new ModuleTransport({
-        code: 'transformed bar;',
-        sourceCode: 'source bar',
-        sourcePath: 'bar path',
-      }));
-
-      p.finalize({});
-      expect(p.getSource({dev: true})).toBe([
-        'transformed foo;',
-        'transformed bar;',
-      ].join('\n'));
-    });
-
-    it('should create a bundle and add run module code', function() {
-      bundle.addModule(new ModuleTransport({
-        code: 'transformed foo;',
-        sourceCode: 'source foo',
-        sourcePath: 'foo path'
-      }));
-
-      bundle.addModule(new ModuleTransport({
-        code: 'transformed bar;',
-        sourceCode: 'source bar',
-        sourcePath: 'bar path'
-      }));
-
-      bundle.setMainModuleId('foo');
-      bundle.finalize({
-        runBeforeMainModule: ['bar'],
-        runMainModule: true,
+  describe('source bundle', () => {
+    pit('should create a bundle and get the source', () => {
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle,
+          code: 'transformed foo;',
+          sourceCode: 'source foo',
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle,
+          code: 'transformed bar;',
+          sourceCode: 'source bar',
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        bundle.finalize({});
+        expect(bundle.getSource({dev: true})).toBe([
+          'transformed foo;',
+          'transformed bar;',
+          '\/\/# sourceMappingURL=test_url'
+        ].join('\n'));
       });
-      expect(bundle.getSource({dev: true})).toBe([
-        'transformed foo;',
-        'transformed bar;',
-        ';require("bar");',
-        ';require("foo");',
-        '\/\/@ sourceMappingURL=test_url',
-      ].join('\n'));
     });
 
-    it('should get minified source', function() {
-      var minified = {
-        code: 'minified',
-        map: 'map',
+    pit('should be ok to leave out the source map url', () => {
+      const otherBundle = new Bundle();
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'transformed foo;',
+          sourceCode: 'source foo',
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'transformed bar;',
+          sourceCode: 'source bar',
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        otherBundle.finalize({});
+        expect(otherBundle.getSource({dev: true})).toBe([
+          'transformed foo;',
+          'transformed bar;',
+        ].join('\n'));
+      });
+    });
+
+    pit('should create a bundle and add run module code', () => {
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle,
+          code: 'transformed foo;',
+          sourceCode: 'source foo',
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle,
+          code: 'transformed bar;',
+          sourceCode: 'source bar',
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        bundle.setMainModuleId('foo');
+        bundle.finalize({
+          runBeforeMainModule: ['bar'],
+          runMainModule: true,
+        });
+        expect(bundle.getSource({dev: true})).toBe([
+          'transformed foo;',
+          'transformed bar;',
+          ';require("bar");',
+          ';require("foo");',
+          '\/\/# sourceMappingURL=test_url',
+        ].join('\n'));
+      });
+    });
+
+    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+      const moduleTransports = [
+        createModuleTransport({name: 'module1'}),
+        createModuleTransport({name: 'module2'}),
+        createModuleTransport({name: 'module3'}),
+      ];
+
+      const resolves = {};
+      const resolver = {
+        wrapModule({name}) {
+          return new Promise(resolve => resolves[name] = resolve);
+        }
       };
 
-      UglifyJS.minify = function() {
-        return minified;
-      };
+      const promise = Promise.all(
+        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
+      .then(() => {
+        expect(bundle.getModules())
+          .toEqual(moduleTransports);
+      });
 
-      bundle.addModule(new ModuleTransport({
-        code: 'transformed foo;',
-        sourceCode: 'source foo',
-        sourcePath: 'foo path'
-      }));
-      bundle.finalize();
-      expect(bundle.getMinifiedSourceAndMap({dev: true})).toBe(minified);
+      resolves.module2({code: ''});
+      resolves.module3({code: ''});
+      resolves.module1({code: ''});
+
+      return promise;
     });
   });
 
-  describe('sourcemap bundle', function() {
-    it('should create sourcemap', function() {
-      var p = new Bundle('test_url');
-      p.addModule(new ModuleTransport({
-        code: [
-          'transformed foo',
-          'transformed foo',
-          'transformed foo',
-        ].join('\n'),
-        sourceCode: [
-          'source foo',
-          'source foo',
-          'source foo',
-        ].join('\n'),
-        sourcePath: 'foo path',
-      }));
-      p.addModule(new ModuleTransport({
-        code: [
-          'transformed bar',
-          'transformed bar',
-          'transformed bar',
-        ].join('\n'),
-        sourceCode: [
-          'source bar',
-          'source bar',
-          'source bar',
-        ].join('\n'),
-        sourcePath: 'bar path',
-      }));
+  describe('sourcemap bundle', () => {
+    pit('should create sourcemap', () => {
+      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
-      p.setMainModuleId('foo');
-      p.finalize({
-        runBeforeMainModule: [],
-        runMainModule: true,
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: [
+            'transformed foo',
+            'transformed foo',
+            'transformed foo',
+          ].join('\n'),
+          sourceCode: [
+            'source foo',
+            'source foo',
+            'source foo',
+          ].join('\n'),
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: [
+            'transformed bar',
+            'transformed bar',
+            'transformed bar',
+          ].join('\n'),
+          sourceCode: [
+            'source bar',
+            'source bar',
+            'source bar',
+          ].join('\n'),
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        otherBundle.setMainModuleId('foo');
+        otherBundle.finalize({
+          runBeforeMainModule: [],
+          runMainModule: true,
+        });
+        const sourceMap = otherBundle.getSourceMap({dev: true});
+        expect(sourceMap).toEqual(genSourceMap(otherBundle.getModules()));
       });
-      var s = p.getSourceMap({dev: true});
-      expect(s).toEqual(genSourceMap(p.getModules()));
     });
 
-    it('should combine sourcemaps', function() {
-      var p = new Bundle('test_url');
+    pit('should combine sourcemaps', () => {
+      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
-      p.addModule(new ModuleTransport({
-        code: 'transformed foo;\n',
-        map: {name: 'sourcemap foo'},
-        sourceCode: 'source foo',
-        sourcePath: 'foo path'
-      }));
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'transformed foo;\n',
+          sourceCode: 'source foo',
+          map: {name: 'sourcemap foo'},
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'transformed bar;\n',
+          sourceCode: 'source bar',
+          map: {name: 'sourcemap bar'},
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'image module;\nimage module;',
+          virtual: true,
+          sourceCode: 'image module;\nimage module;',
+          sourcePath: 'image.png',
+        });
+      }).then(() => {
+        otherBundle.setMainModuleId('foo');
+        otherBundle.finalize({
+          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          runMainModule: true,
+        });
 
-      p.addModule(new ModuleTransport({
-        code: 'transformed foo;\n',
-        map: {name: 'sourcemap bar'},
-        sourceCode: 'source foo',
-        sourcePath: 'foo path'
-      }));
-
-      p.addModule(new ModuleTransport({
-        code: 'image module;\nimage module;',
-        virtual: true,
-        sourceCode: 'image module;\nimage module;',
-        sourcePath: 'image.png',
-      }));
-
-      p.setMainModuleId('foo');
-      p.finalize({
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
-        runMainModule: true,
-      });
-
-      var s = p.getSourceMap({dev: true});
-      expect(s).toEqual({
-        file: 'bundle.js',
-        version: 3,
-        sections: [
-          { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
-          { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
-          {
-            offset: {
-              column: 0,
-              line: 4
+        const sourceMap = otherBundle.getSourceMap({dev: true});
+        expect(sourceMap).toEqual({
+          file: 'test_url',
+          version: 3,
+          sections: [
+            { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
+            { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
+            {
+              offset: {
+                column: 0,
+                line: 4
+              },
+              map: {
+                file: 'image.png',
+                mappings: 'AAAA;AACA;',
+                names: [],
+                sources: [ 'image.png' ],
+                sourcesContent: ['image module;\nimage module;'],
+                version: 3,
+              }
             },
-            map: {
-              file: 'image.png',
-              mappings: 'AAAA;AACA;',
-              names: [],
-              sources: [ 'image.png' ],
-              sourcesContent: ['image module;\nimage module;'],
-              version: 3,
-            }
-          },
-          {
-            offset: {
-              column: 0,
-              line: 6
+            {
+              offset: {
+                column: 0,
+                line: 6
+              },
+              map: {
+                file: 'require-InitializeJavaScriptAppEngine.js',
+                mappings: 'AAAA;',
+                names: [],
+                sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
+                sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+                version: 3,
+              }
             },
-            map: {
-              file: 'require-InitializeJavaScriptAppEngine.js',
-              mappings: 'AAAA;',
-              names: [],
-              sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
-              sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
-              version: 3,
-            }
-          },
-          {
-            offset: {
-              column: 0,
-              line: 7
+            {
+              offset: {
+                column: 0,
+                line: 7
+              },
+              map: {
+                file: 'require-foo.js',
+                mappings: 'AAAA;',
+                names: [],
+                sources: [ 'require-foo.js' ],
+                sourcesContent: [';require("foo");'],
+                version: 3,
+              }
             },
-            map: {
-              file: 'require-foo.js',
-              mappings: 'AAAA;',
-              names: [],
-              sources: [ 'require-foo.js' ],
-              sourcesContent: [';require("foo");'],
-              version: 3,
-            }
-          },
-        ],
+          ],
+        });
       });
     });
   });
 
-  describe('getAssets()', function() {
-    it('should save and return asset objects', function() {
-      var p = new Bundle('test_url');
+  describe('getAssets()', () => {
+    it('should save and return asset objects', () => {
+      var p = new Bundle({sourceMapUrl: 'test_url'});
       var asset1 = {};
       var asset2 = {};
       p.addAsset(asset1);
@@ -249,29 +283,61 @@ describe('Bundle', function() {
     });
   });
 
-  describe('getJSModulePaths()', function() {
-    it('should return module paths', function() {
-      var p = new Bundle('test_url');
-      p.addModule(new ModuleTransport({
-        code: 'transformed foo;\n',
-        sourceCode: 'source foo',
-        sourcePath: 'foo path'
-      }));
-      p.addModule(new ModuleTransport({
-        code: 'image module;\nimage module;',
-        virtual: true,
-        sourceCode: 'image module;\nimage module;',
-        sourcePath: 'image.png',
-      }));
+  describe('getJSModulePaths()', () => {
+    pit('should return module paths', () => {
+      var otherBundle = new Bundle({sourceMapUrl: 'test_url'});
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'transformed foo;\n',
+          sourceCode: 'source foo',
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: 'image module;\nimage module;',
+          virtual: true,
+          sourceCode: 'image module;\nimage module;',
+          sourcePath: 'image.png',
+        });
+      }).then(() => {
+        expect(otherBundle.getJSModulePaths()).toEqual(['foo path']);
+      });
+    });
+  });
 
-      expect(p.getJSModulePaths()).toEqual(['foo path']);
+  describe('getEtag()', function() {
+    it('should return an etag', function() {
+      var bundle = new Bundle({sourceMapUrl: 'test_url'});
+      bundle.finalize({});
+      var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
+      expect(bundle.getEtag()).toEqual(eTag);
+    });
+  });
+
+  describe('main module id:', function() {
+    it('can save a main module ID', function() {
+      const id = 'arbitrary module ID';
+      bundle.setMainModuleId(id);
+      expect(bundle.getMainModuleId()).toEqual(id);
+    });
+
+    it('can serialize and deserialize the module ID', function() {
+      const id = 'arbitrary module ID';
+      bundle.setMainModuleId(id);
+      bundle.finalize({});
+
+      const deserialized = Bundle.fromJSON(bundle.toJSON());
+
+      expect(deserialized.getMainModuleId()).toEqual(id);
     });
   });
 });
 
 
 function genSourceMap(modules) {
-  var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
+  var sourceMapGen = new SourceMapGenerator({file: 'test_url', version: 3});
   var bundleLineNo = 0;
   for (var i = 0; i < modules.length; i++) {
     var module = modules[i];
@@ -301,4 +367,36 @@ function genSourceMap(modules) {
     );
   }
   return sourceMapGen.toJSON();
+}
+
+function resolverFor(code, map) {
+  return {
+    wrapModule: () => Promise.resolve({code, map}),
+  };
+}
+
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
+  return bundle.addModule(
+    resolverFor(code, map),
+    null,
+    {isPolyfill: () => polyfill},
+    createModuleTransport({
+      code,
+      sourceCode,
+      sourcePath,
+      map,
+      virtual,
+      polyfill,
+    }),
+  );
+}
+
+function createModuleTransport(data) {
+  return new ModuleTransport({
+    code: '',
+    id: '',
+    sourceCode: '',
+    sourcePath: '',
+    ...data,
+  });
 }

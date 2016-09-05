@@ -29,7 +29,7 @@ void (function(root, factory) {
   }
 }(this, function() {
 
-  var innerRegex = /[#@] sourceMappingURL=([^\s'"]*)/
+  var innerRegex = /[#@] source(?:Mapping)?URL=([^\s'"]*)/
 
   var regex = RegExp(
     "(?:" +

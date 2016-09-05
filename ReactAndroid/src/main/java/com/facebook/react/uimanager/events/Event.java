@@ -9,6 +9,8 @@
 
 package com.facebook.react.uimanager.events;
 
+import com.facebook.react.common.SystemClock;
+
 /**
  * A UI event that can be dispatched to JS.
  *
@@ -18,23 +20,26 @@ package com.facebook.react.uimanager.events;
  */
 public abstract class Event<T extends Event> {
 
+  private static int sUniqueID = 0;
+
   private boolean mInitialized;
   private int mViewTag;
   private long mTimestampMs;
+  private int mUniqueID = sUniqueID++;
 
   protected Event() {
   }
 
-  protected Event(int viewTag, long timestampMs) {
-    init(viewTag, timestampMs);
+  protected Event(int viewTag) {
+    init(viewTag);
   }
 
   /**
    * This method needs to be called before event is sent to event dispatcher.
    */
-  protected void init(int viewTag, long timestampMs) {
+  protected void init(int viewTag) {
     mViewTag = viewTag;
-    mTimestampMs = timestampMs;
+    mTimestampMs = SystemClock.nanoTime();
     mInitialized = true;
   }
 
@@ -78,6 +83,13 @@ public abstract class Event<T extends Event> {
    */
   public short getCoalescingKey() {
     return 0;
+  }
+
+  /**
+   * @return The unique id of this event.
+   */
+  public int getUniqueID() {
+    return mUniqueID;
   }
 
   /**
