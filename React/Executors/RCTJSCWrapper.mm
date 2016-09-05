@@ -16,21 +16,29 @@
 
 #include <dlfcn.h>
 
+#if HAS_FBGLOG
+#import <FBGLog/FBGLogSink.h>
+
+typedef void (*configureJSCLoggingForIOSFuncType)(int32_t, std::unique_ptr<google::LogSink>, void (*)());
+#endif
+
 static void *RCTCustomLibraryHandler(void)
 {
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    const char *path = [[[NSBundle mainBundle] pathForResource:@"JavaScriptCore"
-                                                        ofType:nil
-                                                   inDirectory:@"Frameworks/JavaScriptCore.framework"] UTF8String];
-    if (path) {
-      handler = dlopen(path, RTLD_LAZY);
-      if (!handler) {
-        RCTLogWarn(@"Can't load custom JSC library: %s", dlerror());
+    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
+    if (!handler) {
+      const char *err = dlerror();
+
+      // Ignore the dlopen failure if custom JSC wasn't included in our app
+      // bundle. Unfortunately dlopen only provides string based errors.
+      if (err != nullptr && strstr(err, "image not found") == nullptr) {
+        RCTLogWarn(@"Can't load custom JSC library: %s", err);
       }
     }
   });
+
   return handler;
 }
 
@@ -86,12 +94,24 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
   wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
+
+#if HAS_FBGLOG
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    void *handle = dlsym(libraryHandle, "configureJSCLoggingForIOS");
+
+    if (handle) {
+      configureJSCLoggingForIOSFuncType logConfigFunc = (configureJSCLoggingForIOSFuncType)handle;
+      logConfigFunc(google::GLOG_INFO, FBGLogSink(), FBGLogFailureFunction);
+    }
+  });
+#endif
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
   RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC && [UIDevice currentDevice].systemVersion.floatValue >= 8) {
+  if (useCustomJSC) {
     RCTSetUpCustomLibraryPointers(wrapper);
   } else {
     RCTSetUpSystemLibraryPointers(wrapper);

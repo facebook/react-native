@@ -34,7 +34,7 @@ RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, RCTResizeMode)
-RCT_EXPORT_VIEW_PROPERTY(source, NSArray<RCTImageSource *>)
+RCT_REMAP_VIEW_PROPERTY(source, imageSources, NSArray<RCTImageSource *>);
 RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
 {
   // Default tintColor isn't nil - it's inherited from the superView - but we
@@ -49,13 +49,13 @@ RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
                   errorBlock:(RCTResponseErrorBlock)errorBlock)
 {
   [self.bridge.imageLoader getImageSizeForURLRequest:request
-                                  block:^(NSError *error, CGSize size) {
-                                    if (error) {
-                                      errorBlock(error);
-                                    } else {
-                                      successBlock(@[@(size.width), @(size.height)]);
-                                    }
-                                  }];
+                                               block:^(NSError *error, CGSize size) {
+                                                 if (error) {
+                                                   errorBlock(error);
+                                                 } else {
+                                                   successBlock(@[@(size.width), @(size.height)]);
+                                                 }
+                                               }];
 }
 
 RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request

@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -51,22 +50,19 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
-    view.setMaxLines(numberOfLines);
-    view.setEllipsize(TextUtils.TruncateAt.END);
+    view.setNumberOfLines(numberOfLines);
   }
 
-  @ReactProp(name = ViewProps.LINE_BREAK_MODE)
-  public void setLineBreakMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    if(ellipsizeMode == null) {
-      return;
-    }
-
-    if (ellipsizeMode.equals("head")) {
-      view.setEllipsize(TextUtils.TruncateAt.START);
+  @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
+  public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
+    if (ellipsizeMode == null || ellipsizeMode.equals("tail")) {
+      view.setEllipsizeLocation(TextUtils.TruncateAt.END);
+    } else if (ellipsizeMode.equals("head")) {
+      view.setEllipsizeLocation(TextUtils.TruncateAt.START);
     } else if (ellipsizeMode.equals("middle")) {
-      view.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-    } else if (ellipsizeMode.equals("tail")) {
-      view.setEllipsize(TextUtils.TruncateAt.END);
+      view.setEllipsizeLocation(TextUtils.TruncateAt.MIDDLE);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }
   }
 
@@ -108,5 +104,11 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @Override
   public Class<ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(ReactTextView view) {
+    super.onAfterUpdateTransaction(view);
+    view.updateView();
   }
 }

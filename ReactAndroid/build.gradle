@@ -202,6 +202,7 @@ task cleanReactNdkLib(type: Exec) {
     commandLine getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
 }
@@ -244,6 +245,7 @@ android {
         java {
           srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
           exclude 'com/facebook/react/processing'
+          exclude 'com/facebook/react/module/processing'
         }
     }
 
@@ -264,6 +266,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.11.0'
@@ -286,6 +289,7 @@ dependencies {
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
+    androidTestCompile fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
     androidTestCompile 'com.android.support.test:runner:0.3'
     androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }

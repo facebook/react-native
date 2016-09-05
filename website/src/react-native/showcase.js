@@ -10,10 +10,12 @@
 /*
 Thousands of applications use React Native, so we can't list all of them
 in our showcase. To be useful to someone looking through the showcase,
-either the app must be something that most readers would recognize, or the makers of the application must have posted useful technical content about the making of the app. It also must be useful considering that the majority of readers only speak English. So, each app in the showcase should link to either:
+either the app must be something that most readers would recognize, or the makers of the application must have
+posted useful technical content about the making of the app. It also must be useful considering that the majority
+of readers only speak English. So, each app in the showcase should link to either:
 
 1/ An English-language news article discussing the app, built either by a funded startup or for a public company
-2/ An English-language technical blog post by the app creators specifically discussing React Native
+2/ An English-language technical post on a funded startup or public company blog discussing React Native
 
 For each app in the showcase, use infoLink and infoTitle to reference this content.
 */
@@ -153,12 +155,6 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
     infoLink: 'http://www.cbssports.com/fantasy/football/games/franchise/2015',
     infoTitle: 'The award winning Fantasy Football league manager.',
-  },
-  {
-    name: 'Codementor - Live 1:1 Expert Developer Help',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
-    infoLink: 'https://techcrunch.com/2015/08/26/codementor-live-classes/',
-    infoTitle: 'Codementor, a Learning Platform for Developers',
   },
   {
     name: 'Coiney窓口',
@@ -311,6 +307,20 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
     infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
     infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
+  },
+  {
+    name: '昨日热推',
+    icon: 'https://frontbin.com/images/apple-touch-icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/zuo-ri-re-tui/id1137163693?l=en&mt=8',
+    infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
+    infoTitle: 'Developing the react-native-image-viewer library',
+  },
+  {
+    name: 'Artsy – Collect and Bid on Fine Art & Design',
+    icon: 'https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8',
+    infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
+    infoTitle: 'React Native at Artsy',
   },
 ];
 

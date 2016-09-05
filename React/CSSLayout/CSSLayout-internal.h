@@ -33,7 +33,7 @@ typedef struct CSSLayout {
   float dimensions[2];
   CSSDirection direction;
 
-  float flexBasis;
+  float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
@@ -57,21 +57,13 @@ typedef struct CSSStyle {
   CSSPositionType positionType;
   CSSWrapType flexWrap;
   CSSOverflow overflow;
-  float flex;
-  float margin[6];
-  float position[6];
-  /**
-   * You should skip all the rules that contain negative values for the
-   * following attributes. For example:
-   *   {padding: 10, paddingLeft: -5}
-   * should output:
-   *   {left: 10 ...}
-   * the following two are incorrect:
-   *   {left: -5 ...}
-   *   {left: 0 ...}
-   */
-  float padding[6];
-  float border[6];
+  float flexGrow;
+  float flexShrink;
+  float flexBasis;
+  float margin[CSSEdgeCount];
+  float position[CSSEdgeCount];
+  float padding[CSSEdgeCount];
+  float border[CSSEdgeCount];
   float dimensions[2];
   float minDimensions[2];
   float maxDimensions[2];
@@ -90,10 +82,10 @@ typedef struct CSSNode {
   struct CSSNode *nextChild;
 
   CSSSize (*measure)(void *context,
-      float width,
-      CSSMeasureMode widthMode,
-      float height,
-      CSSMeasureMode heightMode);
+                     float width,
+                     CSSMeasureMode widthMode,
+                     float height,
+                     CSSMeasureMode heightMode);
   void (*print)(void *context);
   void *context;
 } CSSNode;

@@ -41,12 +41,16 @@ class Tester extends React.Component {
   current = 0;
 
   onPress = () => {
+    const animConfig = (
+      this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
+    );
     this.current = this.current ? 0 : 1;
     const config = {
-      ...this.props.config,
+      ...animConfig,
       toValue: this.current,
     };
 
+    // $FlowIssue #0000000
     Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
@@ -335,7 +339,33 @@ exports.examples = [
                         inputRange: [0, 1],
                         outputRange: [0, 100],
                       })
-                    }
+                    },
+                  ],
+                }
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },{
+    title: 'translateX => Animated.decay',
+    render: function() {
+      return (
+        <Tester
+          type="decay"
+          config={{ velocity: 0.5 }}
+          reverseConfig={{ velocity: -0.5 }}
+        >
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim
+                    },
                   ],
                 }
               ]}
@@ -347,7 +377,6 @@ exports.examples = [
   },
   {
     title: 'Animated value listener',
-    platform: 'android',
     render: function() {
       return (
         <ValueListenerExample />

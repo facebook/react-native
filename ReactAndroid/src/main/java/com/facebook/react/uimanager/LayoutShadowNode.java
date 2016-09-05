@@ -56,6 +56,21 @@ public class LayoutShadowNode extends ReactShadowNode {
     super.setFlex(flex);
   }
 
+  @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
+  public void setFlexGrow(float flexGrow) {
+    super.setFlexGrow(flexGrow);
+  }
+
+  @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
+  public void setFlexShrink(float flexShrink) {
+    super.setFlexShrink(flexShrink);
+  }
+
+  @ReactProp(name = ViewProps.FLEX_BASIS, defaultFloat = 0f)
+  public void setFlexBasis(float flexBasis) {
+    super.setFlexBasis(flexBasis);
+  }
+
   @ReactProp(name = ViewProps.FLEX_DIRECTION)
   public void setFlexDirection(@Nullable String flexDirection) {
     setFlexDirection(
@@ -133,10 +148,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.BOTTOM,
   }, defaultFloat = CSSConstants.UNDEFINED)
   public void setPositionValues(int index, float position) {
-    setPositionValue(
+    setPosition(
       ViewProps.POSITION_SPACING_TYPES[index],
-      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position)
-    );
+      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position));
   }
 
   @ReactProp(name = ViewProps.POSITION)

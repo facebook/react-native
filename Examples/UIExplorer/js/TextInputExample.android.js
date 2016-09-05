@@ -241,6 +241,110 @@ class BlurOnSubmitExample extends React.Component {
   }
 }
 
+class ToggleDefaultPaddingExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {hasPadding: false};
+  }
+  render() {
+    return (
+      <View>
+        <TextInput style={this.state.hasPadding ? { padding: 0 } : null}/>
+        <Text onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
+          Toggle padding
+        </Text>
+      </View>
+    );
+  }
+}
+
+type SelectionExampleState = {
+  selection: {
+    start: number;
+    end: number;
+  };
+  value: string;
+};
+
+class SelectionExample extends React.Component {
+  state: SelectionExampleState;
+
+  _textInput: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selection: {start: 0, end: 0},
+      value: props.value
+    };
+  }
+
+  onSelectionChange({nativeEvent: {selection}}) {
+    this.setState({selection});
+  }
+
+  getRandomPosition() {
+    var length = this.state.value.length;
+    return Math.round(Math.random() * length);
+  }
+
+  select(start, end) {
+    this._textInput.focus();
+    this.setState({selection: {start, end}});
+  }
+
+  selectRandom() {
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
+    this.select(...positions);
+  }
+
+  placeAt(position) {
+    this.select(position, position);
+  }
+
+  placeAtRandom() {
+    this.placeAt(this.getRandomPosition());
+  }
+
+  render() {
+    var length = this.state.value.length;
+
+    return (
+      <View>
+        <TextInput
+          multiline={this.props.multiline}
+          onChangeText={(value) => this.setState({value})}
+          onSelectionChange={this.onSelectionChange.bind(this)}
+          ref={textInput => (this._textInput = textInput)}
+          selection={this.state.selection}
+          style={this.props.style}
+          value={this.state.value}
+        />
+        <View>
+          <Text>
+            selection = {JSON.stringify(this.state.selection)}
+          </Text>
+          <Text onPress={this.placeAt.bind(this, 0)}>
+            Place at Start (0, 0)
+          </Text>
+          <Text onPress={this.placeAt.bind(this, length)}>
+            Place at End ({length}, {length})
+          </Text>
+          <Text onPress={this.placeAtRandom.bind(this)}>
+            Place at Random
+          </Text>
+          <Text onPress={this.select.bind(this, 0, length)}>
+            Select All
+          </Text>
+          <Text onPress={this.selectRandom.bind(this)}>
+            Select Random
+          </Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
@@ -482,19 +586,19 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            style={[styles.multiline, {textAlign: "left", textAlignVertical: "top"}]}
+            style={[styles.multiline, {textAlign: 'left', textAlignVertical: 'top'}]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            style={[styles.multiline, {textAlign: "center", textAlignVertical: "center"}]}
+            style={[styles.multiline, {textAlign: 'center', textAlignVertical: 'center'}]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            style={[styles.multiline, {color: 'blue'}, {textAlign: "right", textAlignVertical: "bottom"}]}>
+            style={[styles.multiline, {color: 'blue'}, {textAlign: 'right', textAlignVertical: 'bottom'}]}>
             <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
           </TextInput>
         </View>
@@ -597,6 +701,28 @@ exports.examples = [
           <TextInput
             placeholder="This does not have drawable props set"
             style={styles.singleLine}
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Toggle Default Padding',
+    render: function(): ReactElement { return <ToggleDefaultPaddingExample />; },
+  },
+  {
+    title: 'Text selection & cursor placement',
+    render: function() {
+      return (
+        <View>
+          <SelectionExample
+            style={styles.default}
+            value="text selection can be changed"
+          />
+          <SelectionExample
+            multiline
+            style={styles.multiline}
+            value={"multiline text selection\ncan also be changed"}
           />
         </View>
       );

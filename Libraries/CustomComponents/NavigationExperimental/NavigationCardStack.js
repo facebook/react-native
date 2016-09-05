@@ -38,7 +38,6 @@ const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleIn
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
@@ -65,15 +64,18 @@ type Props = {
   cardStyle?: any,
   style: any,
   gestureResponseDistance?: ?number,
+  enableGestures: ?boolean
 };
 
 type DefaultProps = {
   direction: NavigationGestureDirection,
+  enableGestures: boolean
 };
 
 /**
  * A controlled navigation view that renders a stack of cards.
  *
+ * ```html
  *     +------------+
  *   +-|   Header   |
  * +-+ |------------|
@@ -84,23 +86,111 @@ type DefaultProps = {
  * +-+ |            |
  *   +-+            |
  *     +------------+
+ * ```
+ *
+ * ## Example
+ *
+ * ```js
+ *
+ * class App extends React.Component {
+ *   constructor(props, context) {
+ *     this.state = {
+ *       navigation: {
+ *         index: 0,
+ *         routes: [
+ *           {key: 'page 1'},
+ *         },
+ *       },
+ *     };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <NavigationCardStack
+ *         navigationState={this.state.navigation}
+ *         renderScene={this._renderScene}
+ *       />
+ *     );
+ *   }
+ *
+ *   _renderScene: (props) => {
+ *     return (
+ *       <View>
+ *         <Text>{props.scene.route.key}</Text>
+ *       </View>
+ *     );
+ *   };
+ * ```
  */
 class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _render : NavigationSceneRenderer;
   _renderScene : NavigationSceneRenderer;
 
   static propTypes = {
-    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-    navigationState: NavigationPropTypes.navigationState.isRequired,
-    onNavigateBack: PropTypes.func,
-    renderHeader: PropTypes.func,
-    renderScene: PropTypes.func.isRequired,
+    /**
+     * Custom style applied to the card.
+     */
     cardStyle: View.propTypes.style,
+
+    /**
+     * Direction of the cards movement. Value could be `horizontal` or
+     * `vertical`. Default value is `horizontal`.
+     */
+    direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+
+    /**
+     * The distance from the edge of the card which gesture response can start
+     * for. Defaults value is `30`.
+     */
     gestureResponseDistance: PropTypes.number,
+
+    /**
+     * Enable gestures. Default value is true
+     */
+    enableGestures: PropTypes.bool,
+
+    /**
+     * The controlled navigation state. Typically, the navigation state
+     * look like this:
+     *
+     * ```js
+     * const navigationState = {
+     *   index: 0, // the index of the selected route.
+     *   routes: [ // A list of routes.
+     *     {key: 'page 1'}, // The 1st route.
+     *     {key: 'page 2'}, // The second route.
+     *   ],
+     * };
+     * ```
+     */
+    navigationState: NavigationPropTypes.navigationState.isRequired,
+
+    /**
+     * Callback that is called when the "back" action is performed.
+     * This happens when the back button is pressed or the back gesture is
+     * performed.
+     */
+    onNavigateBack: PropTypes.func,
+
+    /**
+     * Function that renders the header.
+     */
+    renderHeader: PropTypes.func,
+
+    /**
+     * Function that renders the a scene for a route.
+     */
+    renderScene: PropTypes.func.isRequired,
+
+    /**
+     * Custom style applied to the cards stack.
+     */
+    style: View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
+    enableGestures: true,
   };
 
   constructor(props: Props, context: any) {
@@ -110,14 +200,6 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   componentWillMount(): void {
     this._render = this._render.bind(this);
     this._renderScene = this._renderScene.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps: Object, nextState: void): boolean {
-    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
-      this,
-      nextProps,
-      nextState
-    );
   }
 
   render(): ReactElement<any> {
@@ -162,14 +244,18 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
       NavigationCardStackStyleInterpolator.forVertical(props) :
       NavigationCardStackStyleInterpolator.forHorizontal(props);
 
-    const panHandlersProps = {
-      ...props,
-      onNavigateBack: this.props.onNavigateBack,
-      gestureResponseDistance: this.props.gestureResponseDistance,
-    };
-    const panHandlers = isVertical ?
-      NavigationCardStackPanResponder.forVertical(panHandlersProps) :
-      NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
+    let panHandlers = null;
+
+    if (this.props.enableGestures) {
+      const panHandlersProps = {
+        ...props,
+        onNavigateBack: this.props.onNavigateBack,
+        gestureResponseDistance: this.props.gestureResponseDistance,
+      };
+      panHandlers = isVertical ?
+        NavigationCardStackPanResponder.forVertical(panHandlersProps) :
+        NavigationCardStackPanResponder.forHorizontal(panHandlersProps);
+    }
 
     return (
       <NavigationCard

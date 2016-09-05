@@ -32,6 +32,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -227,6 +228,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
+    }
+  }
+
+  @ReactProp(name = "selection")
+  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
+    if (selection == null) {
+      return;
+    }
+
+    if (selection.hasKey("start") && selection.hasKey("end")) {
+      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 

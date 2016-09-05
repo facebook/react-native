@@ -16,6 +16,7 @@ const Config = require('./util/Config');
 const childProcess = require('child_process');
 const Promise = require('promise');
 const chalk = require('chalk');
+const minimist = require('minimist');
 const path = require('path');
 const fs = require('fs');
 const gracefulFs = require('graceful-fs');
@@ -51,11 +52,19 @@ function printHelpInformation() {
     cmdName = cmdName + '|' + this._alias;
   }
 
+  const sourceInformation = this.pkg
+    ? [
+      `  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`,
+      '',
+    ]
+    : [];
+
   let output = [
     '',
     chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
     `  ${this._description}`,
     '',
+    ...sourceInformation,
     `  ${chalk.bold('Options:')}`,
     '',
     this.optionHelp().replace(/^/gm, '    '),
@@ -113,6 +122,7 @@ const addCommand = (command: Command, config: Config) => {
 
     cmd.helpInformation = printHelpInformation.bind(cmd);
     cmd.examples = command.examples;
+    cmd.pkg = command.pkg;
 
   options
     .forEach(opt => cmd.option(
@@ -121,16 +131,38 @@ const addCommand = (command: Command, config: Config) => {
       opt.parse || defaultOptParser,
       typeof opt.default === 'function' ? opt.default(config) : opt.default,
     ));
+
+  // Placeholder option for --config, which is parsed before any other option,
+  // but needs to be here to avoid "unknown option" errors when specified
+  cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
 
+function getCliConfig() {
+  // Use a lightweight option parser to look up the CLI configuration file,
+  // which we need to set up the parser for the other args and options
+  let cliArgs = minimist(process.argv.slice(2));
+
+  let cwd;
+  let configPath;
+  if (cliArgs.config != null) {
+    cwd = process.cwd();
+    configPath = cliArgs.config;
+  } else {
+    cwd = __dirname;
+    configPath = Config.findConfigPath(cwd);
+  }
+
+  return Config.get(cwd, defaultConfig, configPath);
+}
+
 function run() {
-  const config = Config.get(__dirname, defaultConfig);
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';
 
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
+  const config = getCliConfig();
   commands.forEach(cmd => addCommand(cmd, config));
 
   commander.parse(process.argv);

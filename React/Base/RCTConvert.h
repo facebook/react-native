@@ -104,8 +104,8 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t, css_backface_visibility_t;
-+ (css_clip_t)css_clip_t:(id)json;
+typedef BOOL css_backface_visibility_t;
++ (CSSOverflow)CSSOverflow:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (CSSFlexDirection)CSSFlexDirection:(id)json;
 + (CSSJustify)CSSJustify:(id)json;
@@ -232,7 +232,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<id> *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json              \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

@@ -11,11 +11,11 @@
  */
 'use strict';
 
-const performanceNow = require('performanceNow');
+const performanceNow = require('fbjs/lib/performanceNow');
 
 type Handler = {
-  onIterate?: () => void;
-  onStall: (params: {lastInterval: number}) => string;
+  onIterate?: () => void,
+  onStall: (params: {lastInterval: number}) => string,
 };
 
 /**

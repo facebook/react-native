@@ -20,6 +20,8 @@ const invariant = require('fbjs/lib/invariant');
 
 invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
 
+const _takeSnapshot = UIManager.takeSnapshot;
+
 /**
  * Capture an image of the screen, window or an individual view. The image
  * will be stored in a temporary file that will only exist for as long as the
@@ -46,7 +48,6 @@ UIManager.takeSnapshot = async function(
     quality ?: number,
   },
 ) {
-  const _takeSnapshot = UIManager.takeSnapshot;
   if (!_takeSnapshot) {
     console.warn('UIManager.takeSnapshot is not available on this platform');
     return;

@@ -238,11 +238,6 @@ static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef co
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-- (NSError *)errorForJSError:(JSValue *)jsError
-{
-  return RCTNSErrorFromJSError(_jscWrapper, jsError.context.JSGlobalContextRef, jsError.JSValueRef);
-}
-
 #if RCT_DEV
 
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
@@ -452,12 +447,24 @@ static NSThread *newJavaScriptThread(void)
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     };
 
+    context[@"nativeCallSyncHook"] = ^id(NSUInteger module, NSUInteger method, NSArray *args) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid) {
+        return nil;
+      }
+
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeCallSyncHook", nil);
+      id result = [strongSelf->_bridge callNativeModule:module method:method params:args];
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config", nil);
+      return result;
+    };
+
 #if RCT_PROFILE
     __weak RCTBridge *weakBridge = self->_bridge;
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
+        NSUInteger newCookie = _RCTProfileBeginFlowEvent();
         CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
         [weakBridge.flowIDMapLock unlock];
       }
@@ -466,8 +473,8 @@ static NSThread *newJavaScriptThread(void)
     context[@"nativeTraceEndAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
-        _RCTProfileEndFlowEvent(@(newCookie));
+        NSUInteger newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+        _RCTProfileEndFlowEvent(newCookie);
         CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
         [weakBridge.flowIDMapLock unlock];
       }

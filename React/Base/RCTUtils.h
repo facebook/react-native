@@ -104,8 +104,8 @@ RCT_EXTERN UIAlertView *__nullable RCTAlertView(NSString *title,
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id __nullable RCTNilIfNull(id __nullable value);
-RCT_EXTERN id RCTNullIfNil(id __nullable value);
+#define RCTNullIfNil(value) (value ?: (id)kCFNull)
+#define RCTNilIfNull(value) (value == (id)kCFNull ? nil : value)
 
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);

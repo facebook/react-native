@@ -47,12 +47,12 @@ var animChecker = createStrictShapeTypeChecker({
 });
 
 type Anim = {
-  duration?: number;
-  delay?: number;
-  springDamping?: number;
-  initialVelocity?: number;
-  type?: $Enum<typeof TypesEnum>;
-  property?: $Enum<typeof PropertiesEnum>;
+  duration?: number,
+  delay?: number,
+  springDamping?: number,
+  initialVelocity?: number,
+  type?: $Enum<typeof TypesEnum>,
+  property?: $Enum<typeof PropertiesEnum>,
 }
 
 var configChecker = createStrictShapeTypeChecker({
@@ -63,10 +63,10 @@ var configChecker = createStrictShapeTypeChecker({
 });
 
 type Config = {
-  duration: number;
-  create?: Anim;
-  update?: Anim;
-  delete?: Anim;
+  duration: number,
+  create?: Anim,
+  update?: Anim,
+  delete?: Anim,
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
