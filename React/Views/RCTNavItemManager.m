@@ -39,7 +39,7 @@ RCT_ENUM_CONVERTER(UIBarButtonSystemItem, (@{
   @"undo": @(UIBarButtonSystemItemUndo),
   @"redo": @(UIBarButtonSystemItemRedo),
   @"page-curl": @(UIBarButtonSystemItemPageCurl)
-}), -1, integerValue);
+}), NSNotFound, integerValue);
 
 @end
 
@@ -67,10 +67,11 @@ RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(leftButtonTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(leftButtonIcon, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(leftButtonSystemIcon, UIBarButtonSystemItem)
 
 RCT_EXPORT_VIEW_PROPERTY(rightButtonIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
-RCT_EXPORT_VIEW_PROPERTY(rightButtonSystemItem, UIBarButtonSystemItem)
+RCT_EXPORT_VIEW_PROPERTY(rightButtonSystemIcon, UIBarButtonSystemItem)
 
 RCT_EXPORT_VIEW_PROPERTY(onLeftButtonPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onRightButtonPress, RCTBubblingEventBlock)

@@ -52,7 +52,7 @@ class NavigatorTransitionerIOS extends React.Component {
   }
 }
 
-var SystemItemsLabels = {
+var SystemIconsLabels = {
   done: true,
   cancel: true,
   edit: true,
@@ -77,10 +77,10 @@ var SystemItemsLabels = {
   undo: true,
   redo: true,
   'page-curl': true,
-}
-var SystemItems = keyMirror(SystemItemsLabels);
+};
+var SystemIcons = keyMirror(SystemIconsLabels);
 
-type BarButtonSystemItem = $Enum<typeof SystemItemsLabels>;
+type BarButtonSystemIcon = $Enum<typeof SystemIconsLabels>;
 
 type Route = {
   component: Function,
@@ -91,11 +91,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
-  leftButtonSystemItem?: BarButtonSystemItem;
+  leftButtonSystemIcon?: BarButtonSystemIcon;
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
-  rightButtonSystemItem?: BarButtonSystemItem;
+  rightButtonSystemIcon?: BarButtonSystemIcon;
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -371,6 +371,17 @@ var NavigatorIOS = React.createClass({
       leftButtonTitle: PropTypes.string,
 
       /**
+       * If set, the left header button will appear with this system icon
+       *
+       * Supported icons are `done`, `cancel`, `edit`, `save`, `add`,
+       * `flexible-space`, `fixed-space`, `compose`, `reply`, `action`,
+       * `organize`, `bookmarks`, `search`, `refresh`, `stop`, `camera`,
+       * `trash`, `play`, `pause`, `rewind`, `fast-forward`, `undo`,
+       * `redo`, and `page-curl`
+       */
+      leftButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemIcons)),
+
+      /**
        * This function will be invoked when the left navigation bar item is
        * pressed.
        */
@@ -389,11 +400,14 @@ var NavigatorIOS = React.createClass({
 
       /**
        * If set, the right header button will appear with this system icon
+       *
+       * See leftButtonSystemIcon for supported icons
        */
-      rightButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemItems)),
+      rightButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemIcons)),
 
       /**
-       * Called when the right header button is pressed
+       * This function will be invoked when the right navigation bar item is
+       * pressed.
        */
       onRightButtonPress: PropTypes.func,
 
