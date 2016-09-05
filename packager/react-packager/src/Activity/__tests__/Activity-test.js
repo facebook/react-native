@@ -28,7 +28,7 @@ describe('Activity', () => {
   });
 
   describe('startEvent', () => {
-    it('writes a START event out to the console', () => {
+    it('writes the "START" phase of non-silent events to the console', () => {
       const EVENT_NAME = 'EVENT_NAME';
       const DATA = {someData: 42};
 
@@ -43,10 +43,21 @@ describe('Activity', () => {
       expect(consoleMsg).toContain(EVENT_NAME);
       expect(consoleMsg).toContain(JSON.stringify(DATA));
     });
+
+    it('does not write the "START" phase of silent events to the console', () => {
+      const EVENT_NAME = 'EVENT_NAME';
+      const DATA = {someData: 42};
+
+      Activity.startEvent(EVENT_NAME, DATA, {silent: true});
+      jest.runOnlyPendingTimers();
+
+      // eslint-disable-next-line no-console-disallow
+      expect(console.log.mock.calls.length).toBe(0);
+    });
   });
 
   describe('endEvent', () => {
-    it('writes an END event out to the console', () => {
+    it('writes the "END" phase of non-silent events to the console', () => {
       const EVENT_NAME = 'EVENT_NAME';
       const DATA = {someData: 42};
 
@@ -61,6 +72,18 @@ describe('Activity', () => {
       expect(consoleMsg).toContain('END');
       expect(consoleMsg).toContain(EVENT_NAME);
       expect(consoleMsg).toContain(JSON.stringify(DATA));
+    });
+
+    it('does not write the "END" phase of silent events to the console', () => {
+      const EVENT_NAME = 'EVENT_NAME';
+      const DATA = {someData: 42};
+
+      const eventID = Activity.startEvent(EVENT_NAME, DATA, {silent: true});
+      Activity.endEvent(eventID);
+      jest.runOnlyPendingTimers();
+
+      // eslint-disable-next-line no-console-disallow
+      expect(console.log.mock.calls.length).toBe(0);
     });
 
     it('throws when called with an invalid eventId', () => {
