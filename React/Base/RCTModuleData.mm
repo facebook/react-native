@@ -245,8 +245,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
 
     if ([_moduleClass instancesRespondToSelector:@selector(methodsToExport)]) {
-      [self instance];
-      [moduleMethods addObjectsFromArray:[_instance methodsToExport]];
+      [moduleMethods addObjectsFromArray:[self.instance methodsToExport]];
     }
 
     unsigned int methodCount;
@@ -310,29 +309,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass], nil);
 
   NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
-  NSMutableArray<NSNumber *> *asyncMethods = nil;
+  NSMutableArray<NSNumber *> *promiseMethods = nil;
+  NSMutableArray<NSNumber *> *syncMethods = nil;
+
   for (id<RCTBridgeMethod> method in self.methods) {
     if (method.functionType == RCTFunctionTypePromise) {
-      if (!asyncMethods) {
-        asyncMethods = [NSMutableArray new];
+      if (!promiseMethods) {
+        promiseMethods = [NSMutableArray new];
       }
-      [asyncMethods addObject:@(methods.count)];
+      [promiseMethods addObject:@(methods.count)];
+    }
+    else if (method.functionType == RCTFunctionTypeSync) {
+      if (!syncMethods) {
+        syncMethods = [NSMutableArray new];
+      }
+      [syncMethods addObject:@(methods.count)];
     }
     [methods addObject:method.JSMethodName];
   }
 
-  NSMutableArray *config = [NSMutableArray new];
-  [config addObject:self.name];
-  if (constants.count) {
-    [config addObject:constants];
-  }
-  if (methods) {
-    [config addObject:methods];
-    if (asyncMethods) {
-      [config addObject:asyncMethods];
-    }
-  }
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass], nil);
+  NSArray *config = @[
+                      self.name,
+                      RCTNullIfNil(constants),
+                      RCTNullIfNil(methods),
+                      RCTNullIfNil(promiseMethods),
+                      RCTNullIfNil(syncMethods)
+                      ];
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
   return config;
 }
 

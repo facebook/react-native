@@ -393,7 +393,6 @@ const TextInput = React.createClass({
     /**
      * The start and end of the text input's selection. Set start and end to
      * the same value to position the cursor.
-     * @platform ios
      */
     selection: PropTypes.shape({
       start: PropTypes.number.isRequired,
@@ -677,6 +676,10 @@ const TextInput = React.createClass({
     );
     if (childCount > 1) {
       children = <Text>{children}</Text>;
+    }
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {start: props.selection.start, end: props.selection.start};
     }
 
     const textContainer =
