@@ -64,6 +64,7 @@ public class ReactEditText extends EditText {
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
   private int mNativeEventCount;
+  private int mMostRecentEventCount;
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -86,6 +87,7 @@ public class ReactEditText extends EditText {
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
+    mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
     mBlurOnSubmit = true;
@@ -183,6 +185,16 @@ public class ReactEditText extends EditText {
   }
 
   @Override
+  public void setSelection(int start, int end) {
+    // Skip setting the selection if the text wasn't set because of an out of date value.
+    if (mMostRecentEventCount < mNativeEventCount) {
+      return;
+    }
+
+    super.setSelection(start, end);
+  }
+
+  @Override
   protected void onSelectionChanged(int selStart, int selEnd) {
     super.onSelectionChanged(selStart, selEnd);
     if (mSelectionWatcher != null && hasFocus()) {
@@ -265,7 +277,8 @@ public class ReactEditText extends EditText {
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     // Only set the text if it is up to date.
-    if (reactTextUpdate.getJsEventCounter() < mNativeEventCount) {
+    mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
+    if (mMostRecentEventCount < mNativeEventCount) {
       return;
     }
 

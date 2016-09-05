@@ -33,6 +33,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super layoutSubviews];
 
+  // Fix for bug #7976
+  // TODO: Remove when updating to use iOS 10 refreshControl UIScrollView prop.
+  if (self.backgroundColor == nil) {
+    self.backgroundColor = [UIColor clearColor];
+  }
+
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
   if (_currentRefreshingState && _isInitialRender && _initialRefreshingState) {

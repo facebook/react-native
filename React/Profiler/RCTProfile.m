@@ -136,22 +136,6 @@ static NSDictionary *RCTProfileGetMemoryUsage(void)
   }
 }
 
-static NSDictionary *RCTProfileMergeArgs(NSDictionary *args0, NSDictionary *args1)
-{
-  args0 = RCTNilIfNull(args0);
-  args1 = RCTNilIfNull(args1);
-
-  if (!args0 && args1) {
-    args0 = args1;
-  } else if (args0 && args1) {
-    NSMutableDictionary *d = [args0 mutableCopy];
-    [d addEntriesFromDictionary:args1];
-    args0 = [d copy];
-  }
-
-  return RCTNullIfNil(args0);
-}
-
 #pragma mark - Module hooks
 
 static const char *RCTProfileProxyClassName(Class class)
@@ -207,13 +191,13 @@ void RCTProfileTrampolineStart(id self, SEL cmd)
    * block.
    */
   Class klass = [self class];
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"-[%s %s]", class_getName(klass), sel_getName(cmd)], nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"-[%s %s]", class_getName(klass), sel_getName(cmd)]), nil);
 }
 
 RCT_EXTERN void RCTProfileTrampolineEnd(void);
 void RCTProfileTrampolineEnd(void)
 {
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,modules,auto", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,modules,auto");
 }
 
 static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *);
@@ -331,7 +315,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
       } queue:moduleData.methodQueue];
     }
   }
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 static void RCTProfileUnhookInstance(id instance)
@@ -569,13 +553,12 @@ void _RCTProfileEndEvent(
   NSString *threadName,
   NSTimeInterval time,
   uint64_t tag,
-  NSString *category,
-  NSDictionary *args
+  NSString *category
 ) {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_section(tag, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->end_section(tag, 0, nil);
     return;
   }
 
@@ -589,7 +572,6 @@ void _RCTProfileEndEvent(
     }
 
     NSNumber *start = event[0];
-
     RCTProfileAddEvent(RCTProfileTraceEvents,
       @"tid": threadName,
       @"name": event[1],
@@ -597,7 +579,7 @@ void _RCTProfileEndEvent(
       @"ph": @"X",
       @"ts": start,
       @"dur": @(RCTProfileTimestamp(time).doubleValue - start.doubleValue),
-      @"args": RCTProfileMergeArgs(event[2], args),
+      @"args": event[2],
     );
   });
 }
@@ -634,13 +616,12 @@ void RCTProfileEndAsyncEvent(
   NSString *category,
   NSUInteger cookie,
   NSString *name,
-  NSString *threadName,
-  NSDictionary *args
+  NSString *threadName
 ) {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_section(tag, name.UTF8String, (int)(cookie % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->end_async_section(tag, name.UTF8String, (int)(cookie % INT_MAX), 0, nil);
     return;
   }
 
@@ -659,7 +640,7 @@ void RCTProfileEndAsyncEvent(
         @"ph": @"X",
         @"ts": event[0],
         @"dur": @(endTimestamp.doubleValue - [event[0] doubleValue]),
-        @"args": RCTProfileMergeArgs(event[2], args),
+        @"args": event[2],
       );
       [RCTProfileOngoingEvents removeObjectForKey:@(cookie)];
     }

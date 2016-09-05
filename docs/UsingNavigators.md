@@ -111,7 +111,7 @@ export default class SimpleNavigationApp extends Component {
     return (
       <Navigator
         initialRoute={{ title: 'My Initial Scene', index: 0 }}
-        renderScene={(route, navigator) =>
+        renderScene={(route, navigator) => {
           return (
             <MyScene
               title={route.title}
@@ -133,7 +133,7 @@ export default class SimpleNavigationApp extends Component {
               }}
             />
           )
-        }
+        }}
       />
     )
   }

@@ -129,6 +129,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           mJsEventCount,
           mContainsImages,
           getPadding(),
+          getEffectiveLineHeight(),
           mTextAlign
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
