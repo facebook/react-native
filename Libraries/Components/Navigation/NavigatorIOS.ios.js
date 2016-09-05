@@ -25,7 +25,7 @@ var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
-var keyMirror = require('fbjs/lib/keyMirror');
+const keyMirror = require('fbjs/lib/keyMirror');
 
 var TRANSITIONER_REF = 'transitionerRef';
 
@@ -52,14 +52,12 @@ class NavigatorTransitionerIOS extends React.Component {
   }
 }
 
-var SystemIconsLabels = {
+const SystemIconLabels = {
   done: true,
   cancel: true,
   edit: true,
   save: true,
   add: true,
-  'flexible-space': true,
-  'fixed-space': true,
   compose: true,
   reply: true,
   action: true,
@@ -78,9 +76,9 @@ var SystemIconsLabels = {
   redo: true,
   'page-curl': true,
 };
-var SystemIcons = keyMirror(SystemIconsLabels);
+const SystemIcons = keyMirror(SystemIconLabels);
 
-type BarButtonSystemIcon = $Enum<typeof SystemIconsLabels>;
+type SystemButtonType = $Enum<typeof SystemIconLabels>;
 
 type Route = {
   component: Function,
@@ -91,11 +89,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
-  leftButtonSystemIcon?: BarButtonSystemIcon;
+  leftButtonSystemIcon?: SystemButtonType;
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
-  rightButtonSystemIcon?: BarButtonSystemIcon;
+  rightButtonSystemIcon?: SystemButtonType;
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -374,10 +372,9 @@ var NavigatorIOS = React.createClass({
        * If set, the left header button will appear with this system icon
        *
        * Supported icons are `done`, `cancel`, `edit`, `save`, `add`,
-       * `flexible-space`, `fixed-space`, `compose`, `reply`, `action`,
-       * `organize`, `bookmarks`, `search`, `refresh`, `stop`, `camera`,
-       * `trash`, `play`, `pause`, `rewind`, `fast-forward`, `undo`,
-       * `redo`, and `page-curl`
+       * `compose`, `reply`, `action`, `organize`, `bookmarks`, `search`,
+       * `refresh`, `stop`, `camera`, `trash`, `play`, `pause`, `rewind`,
+       * `fast-forward`, `undo`, `redo`, and `page-curl`
        */
       leftButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemIcons)),
 
