@@ -446,24 +446,15 @@ const ScrollView = React.createClass({
       };
     }
 
-    // On Android make sure content views are not collapsable when using sticky
-    // headers so the indices actually map to native views.
-    let children = this.props.children;
-    if (Platform.OS === 'android' && this.props.stickyHeaderIndices) {
-      children = React.Children.map(
-        children,
-        child => child && React.cloneElement(child, {collapsable: false})
-      );
-    }
-
     const contentContainer =
       <View
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
-        collapsable={false}>
-        {children}
+        collapsable={false}
+        collapsableChildren={!this.props.stickyHeaderIndices}>
+        {this.props.children}
       </View>;
 
     const alwaysBounceHorizontal =

@@ -92,8 +92,12 @@ public class NativeViewHierarchyOptimizer {
       return;
     }
 
+    node.setIsCollapsibleChildren(isCollapsableChildren(initialProps));
+
     boolean isLayoutOnly = node.getViewClass().equals(ViewProps.VIEW_CLASS_NAME) &&
-        isLayoutOnlyAndCollapsable(initialProps);
+        isLayoutOnlyAndCollapsable(initialProps) &&
+        node.getParent() != null &&
+        node.getParent().isCollapsibleChildren();
     node.setIsLayoutOnly(isLayoutOnly);
 
     if (!isLayoutOnly) {
@@ -435,12 +439,36 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private static boolean isLayoutOnlyAndCollapsable(@Nullable ReactStylesDiffMap props) {
+  private static boolean isCollapsableChildren(@Nullable ReactStylesDiffMap props) {
+    if (props == null) {
+      return true;
+    }
+
+    if (props.hasKey(ViewProps.COLLAPSABLE_CHILDREN) && !props.getBoolean(ViewProps.COLLAPSABLE_CHILDREN, true)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private static boolean isCollapsable(@Nullable ReactStylesDiffMap props) {
     if (props == null) {
       return false;
     }
 
     if (props.hasKey(ViewProps.COLLAPSABLE) && !props.getBoolean(ViewProps.COLLAPSABLE, true)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private static boolean isLayoutOnlyAndCollapsable(@Nullable ReactStylesDiffMap props) {
+    if (props == null) {
+      return true;
+    }
+
+    if (!isCollapsable(props) || !isCollapsableChildren(props)) {
       return false;
     }
 

@@ -474,6 +474,15 @@ const View = React.createClass({
     collapsable: PropTypes.bool,
 
     /**
+     * Same as `collapsable` but also applies to all of this view's children.
+     * Setting this to `false` ensures that the all children exists in the native
+     * view hierarchy.
+     *
+     * @platform android
+     */
+    collapsableChildren: PropTypes.bool,
+
+    /**
      * Whether this `View` needs to rendered offscreen and composited with an alpha
      * in order to preserve 100% correct colors and blending behavior. The default
      * (`false`) falls back to drawing the component and its children with an alpha
