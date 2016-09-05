@@ -447,6 +447,18 @@ static NSThread *newJavaScriptThread(void)
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
     };
 
+    context[@"nativeCallSyncHook"] = ^id(NSUInteger module, NSUInteger method, NSArray *args) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid) {
+        return nil;
+      }
+
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeCallSyncHook", nil);
+      id result = [strongSelf->_bridge callNativeModule:module method:method params:args];
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config", nil);
+      return result;
+    };
+
 #if RCT_PROFILE
     __weak RCTBridge *weakBridge = self->_bridge;
     context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {

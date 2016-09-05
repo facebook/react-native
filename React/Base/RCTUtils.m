@@ -522,16 +522,6 @@ NSError *RCTErrorWithMessage(NSString *message)
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 
-id RCTNullIfNil(id __nullable value)
-{
-  return value ?: (id)kCFNull;
-}
-
-id __nullable RCTNilIfNull(id __nullable value)
-{
-  return value == (id)kCFNull ? nil : value;
-}
-
 double RCTZeroIfNaN(double value)
 {
   return isnan(value) || isinf(value) ? 0 : value;

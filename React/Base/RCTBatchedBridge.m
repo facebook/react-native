@@ -972,10 +972,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
             [self.flowIDMapLock unlock];
           }
 #endif
-          [self _handleRequestNumber:index
-                            moduleID:[moduleIDs[index] integerValue]
-                            methodID:[methodIDs[index] integerValue]
-                              params:paramsArrays[index]];
+          [self callNativeModule:[moduleIDs[index] integerValue]
+                          method:[methodIDs[index] integerValue]
+                          params:paramsArrays[index]];
         }
       }
 
@@ -1013,18 +1012,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (BOOL)_handleRequestNumber:(NSUInteger)i
-                    moduleID:(NSUInteger)moduleID
-                    methodID:(NSUInteger)methodID
-                      params:(NSArray *)params
+- (id)callNativeModule:(NSUInteger)moduleID
+                method:(NSUInteger)methodID
+                params:(NSArray *)params
 {
   if (!_valid) {
-    return NO;
-  }
-
-  if (RCT_DEBUG && ![params isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Invalid module/method/params tuple for request #%zd", i);
-    return NO;
+    return nil;
   }
 
   RCTModuleData *moduleData = _moduleDataByID[moduleID];
@@ -1040,7 +1033,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   @try {
-    [method invokeWithBridge:self module:moduleData.instance arguments:params];
+    return [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
   @catch (NSException *exception) {
     // Pass on JS exceptions
@@ -1052,9 +1045,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                          @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
                          exception, method.JSMethodName, moduleData.name, params];
     RCTFatal(RCTErrorWithMessage(message));
+    return nil;
   }
-
-  return YES;
 }
 
 - (void)startProfiling
