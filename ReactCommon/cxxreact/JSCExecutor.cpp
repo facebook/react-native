@@ -332,6 +332,7 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
 }
 
 void JSCExecutor::bindBridge() throw(JSException) {
+  SystraceSection s("JSCExecutor::bindBridge");
   auto global = Object::getGlobalObject(m_context);
   auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
   if (batchedBridgeValue.isUndefined()) {
@@ -345,11 +346,12 @@ void JSCExecutor::bindBridge() throw(JSException) {
 }
 
 void JSCExecutor::callNativeModules(Value&& value) {
+  SystraceSection s("JSCExecutor::callNativeModules");
   try {
     auto calls = value.toJSONString();
     m_delegate->callNativeModules(*this, std::move(calls), true);
   } catch (...) {
-    std::string message = "Error in flush()";
+    std::string message = "Error in callNativeModules()";
     try {
       message += ":" + value.toString().str();
     } catch (...) {
@@ -360,10 +362,12 @@ void JSCExecutor::callNativeModules(Value&& value) {
 }
 
 void JSCExecutor::flush() {
+  SystraceSection s("JSCExecutor::flush");
   callNativeModules(m_flushedQueueJS->callAsFunction({}));
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
+  SystraceSection s("JSCExecutor::callFunction");
   // This weird pattern is because Value is not default constructible.
   // The lambda is inlined, so there's no overhead.
 
@@ -384,6 +388,7 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+  SystraceSection s("JSCExecutor::invokeCallback");
   auto result = [&] {
     try {
       return m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
