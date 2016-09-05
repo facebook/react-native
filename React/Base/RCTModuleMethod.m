@@ -18,6 +18,7 @@
 #import "RCTLog.h"
 #import "RCTParserUtils.h"
 #import "RCTUtils.h"
+#import "RCTProfile.h"
 
 typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
@@ -399,7 +400,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 - (SEL)selector
 {
   if (_selector == NULL) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"", (@{ @"module": NSStringFromClass(_moduleClass),
+                                                          @"method": _methodSignature }));
     [self processMethodSignature];
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
   return _selector;
 }
