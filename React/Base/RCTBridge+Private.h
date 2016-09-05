@@ -100,15 +100,17 @@
 - (void)stopProfiling:(void (^)(NSData *))callback;
 
 /**
- * Executes native calls sent by JavaScript. Exposed for testing purposes only
- */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer;
-
-/**
  * Exposed for the RCTJSCExecutor for sending native methods called from
  * JavaScript in the middle of a batch.
  */
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
+
+/**
+ * Synchronously call a specific native module's method and return the result
+ */
+- (id)callNativeModule:(NSUInteger)moduleID
+                method:(NSUInteger)methodID
+                params:(NSArray *)params;
 
 /**
  * Exposed for the RCTJSCExecutor for lazily loading native modules
