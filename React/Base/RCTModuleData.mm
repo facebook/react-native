@@ -94,7 +94,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": NSStringFromClass(_moduleClass) });
         _instance = [_moduleClass new];
-        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
           // Module init returned nil, probably because automatic instantatiation
           // of the module is not supported, and it is supposed to be passed in to
@@ -118,7 +118,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     [self setUpMethodQueue];
   }
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // This is called outside of the lock in order to prevent deadlock issues
   // because the logic in `finishSetupForInstance` can cause
@@ -151,7 +151,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
                   "permitted. You must either @synthesize the bridge property, "
                   "or provide your own setter method.", self.name);
     }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
 
@@ -164,7 +164,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:_bridge
                                                       userInfo:@{@"module": _instance}];
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
 
@@ -194,7 +194,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         }
       }
     }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
 
@@ -208,7 +208,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (id<RCTBridgeModule>)instance
 {
   if (!_setupComplete) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass], nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
     if (_requiresMainQueueSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
@@ -225,11 +225,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         [self setUpInstanceAndBridge];
       }, YES);
 #pragma clang diagnostic pop
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
       [self setUpInstanceAndBridge];
     }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
   return _instance;
 }
@@ -281,7 +281,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)gatherConstants
 {
   if (_hasConstantsToExport && !_constantsToExport) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass], nil);
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
     if (!RCTIsMainQueue()) {
       RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
@@ -292,7 +292,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
     }, YES);
 #pragma clang diagnostic pop
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
 
@@ -306,7 +306,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     return (id)kCFNull; // Nothing to export
   }
 
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, [NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass], nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
 
   NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
   NSMutableArray<NSNumber *> *promiseMethods = nil;
@@ -335,7 +335,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
                       RCTNullIfNil(promiseMethods),
                       RCTNullIfNil(syncMethods)
                       ];
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]));
   return config;
 }
 
