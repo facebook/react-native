@@ -70,7 +70,7 @@ To revert the `User Search Header Paths` and `Header Search Paths` build setting
 
 ### Link error: Undefined symbols for architecture x86_64 when using CocoaPods
 
-If you get a linking error after your initial run of `pod install`, make sure `-lc++` is added to Other linker flags for your test target.  Source: `https://github.com/facebook/react-native/issues/8890`.
+If you get a linking error after your initial run of `pod install`, make sure `-lc++` is added to Other linker flags for your test target.  Source: [#8890].
 
 ### No transports available
 
