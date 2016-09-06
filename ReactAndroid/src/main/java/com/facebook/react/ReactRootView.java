@@ -11,11 +11,11 @@ package com.facebook.react;
 
 import javax.annotation.Nullable;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -346,6 +346,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
       }
       mDeviceRotation = rotation;
+      // It's important to repopulate DisplayMetrics and export them before emitting the
+      // orientation change event, so that the Dimensions object returns the correct new values.
+      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      emitUpdateDimensionsEvent();
       emitOrientationChanged(rotation);
     }
 
@@ -382,6 +386,30 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       map.putBoolean("isLandscape", isLandscape);
 
       sendEvent("namedOrientationDidChange", map);
+    }
+
+    private void emitUpdateDimensionsEvent() {
+      DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+      DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+
+      WritableMap windowDisplayMetricsMap = Arguments.createMap();
+      windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
+      windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
+      windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
+      windowDisplayMetricsMap.putDouble("fontScale", windowDisplayMetrics.scaledDensity);
+      windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
+
+      WritableMap screenDisplayMetricsMap = Arguments.createMap();
+      screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
+      screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
+      screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
+      screenDisplayMetricsMap.putDouble("fontScale", screenDisplayMetrics.scaledDensity);
+      screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
+
+      WritableMap dimensionsMap = Arguments.createMap();
+      dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
+      dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
+      sendEvent("didUpdateDimensions", dimensionsMap);
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {
