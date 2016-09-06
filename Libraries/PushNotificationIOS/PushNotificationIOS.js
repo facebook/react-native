@@ -17,11 +17,13 @@ const invariant = require('fbjs/lib/invariant');
 
 const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManager);
 
+let _pushActionHandlerSet = false;
 const _notifHandlers = new Map();
 
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+const PUSH_ACTION_EVENT = 'localNotificationActionReceived';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -45,32 +47,56 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *
  * And then in your AppDelegate implementation add the following:
  *
- *   ```
- *    // Required to register for notifications
- *    - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
- *    {
- *     [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
- *    }
- *    // Required for the register event.
- *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
- *    {
- *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
- *    }
- *    // Required for the notification event.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
- *    }
- *    // Required for the localNotification event.
- *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
- *    }
- *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
- *    {
- *      NSLog(@"%@", error);
- *    }
- *   ```
+ * ```
+ * // Required to register for notifications
+ * - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+ * {
+ *   [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+ * }
+ * // Required for the register event.
+ * - (void)application:(__unused UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+ * {
+ *   [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+ * }
+ * // Required for the notification event.
+ * - (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+ * {
+ *   [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+ * }
+ * // Required for the localNotification event.
+ * - (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+ * {
+ *  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+ * }
+ * - (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ * {
+ *   NSLog(@"%@", error);
+ * }
+ * ```
+ *
+ * If you plan on using push notification categories and actions, also include the following:
+ *
+ * ```
+ * - (void)application:(__unused UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler
+ * {
+ *   [RCTPushNotificationManager handleActionWithIdentifier:identifier forRemoteNotification:userInfo completionHandler:completionHandler];
+ * }
+ *
+ * - (void)application:(__unused UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler
+ * {
+ *   [RCTPushNotificationManager handleActionWithIdentifier:identifier forRemoteNotification:userInfo withResponseInfo:responseInfo completionHandler:completionHandler];
+ * }
+ *
+ * - (void)application:(__unused UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler
+ * {
+ *   [RCTPushNotificationManager handleActionWithIdentifier:identifier forLocalNotification:notification completionHandler:completionHandler];
+ * }
+ *
+ * - (void)application:(__unused UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler
+ * {
+ *   [RCTPushNotificationManager handleActionWithIdentifier:identifier forLocalNotification:notification withResponseInfo:responseInfo completionHandler:completionHandler];
+ * }
+ * ```
  */
 class PushNotificationIOS {
   _data: Object;
@@ -91,7 +117,18 @@ class PushNotificationIOS {
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
   static presentLocalNotification(details: Object) {
+    if (details.soundName == null) {
+      console.warn('Scheduling a notification without a soundName is deprecated; in a future release it will schedule a silent notification. To schedule a notification with the default system sound, use PushNotificationIOS.getDefaultSoundName()');
+      details.soundName = this.getDefaultSoundName();
+    }
     RCTPushNotificationManager.presentLocalNotification(details);
+  }
+
+  /**
+   * Returns the default system sound name.
+   */
+  static getDefaultSoundName(): string {
+    return RCTPushNotificationManager.defaultSoundName;
   }
 
   /**
@@ -108,6 +145,10 @@ class PushNotificationIOS {
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
    */
   static scheduleLocalNotification(details: Object) {
+    if (details.soundName == null) {
+      console.warn('Scheduling a notification without a soundName is deprecated; in a future release it will schedule a silent notification. To schedule a notification with the default system sound, use PushNotificationIOS.getDefaultSoundName()');
+      details.soundName = this.getDefaultSoundName();
+    }
     RCTPushNotificationManager.scheduleLocalNotification(details);
   }
 
@@ -116,6 +157,14 @@ class PushNotificationIOS {
    */
   static cancelAllLocalNotifications() {
     RCTPushNotificationManager.cancelAllLocalNotifications();
+  }
+
+  /**
+   * Schedules a batch of notifications for future presentation.
+   *
+   */
+  static setScheduledLocalNotifications(notificationArray: Object[]) {
+    return RCTPushNotificationManager.setScheduledLocalNotifications(notificationArray);
   }
 
   /**
@@ -148,6 +197,37 @@ class PushNotificationIOS {
    */
   static getScheduledLocalNotifications(callback: Function) {
     RCTPushNotificationManager.getScheduledLocalNotifications(callback);
+  }
+
+  /**
+   * Sets the global push action handler. This function will be called any time
+   * a user taps one of the push actions attached to the notifications.
+   *
+   * This method will be called with an object containing the following keys:
+   *
+   * - `identifier` : The identifier of the action, as set up with
+   *   `registerUserNotificationSettings`.
+   * - `type` : The type of notification, one of `local` or `remote`.
+   * - `notification` : The notifcation that was acted on, an instance of
+   *   `PushNotificationIOS`.
+   * - `responseInfo` : The response info for this action.
+   *
+   * If the handler function returns a promise, the completion handler will be
+   * called when the promise is resolved. Otherwise the completion handler is
+   * called immediately.
+   */
+  static setPushActionHandler(handler: Function) {
+    invariant(!_pushActionHandlerSet, 'push action handler can only be set once');
+    _pushActionHandlerSet = true;
+    PushNotificationEmitter.addListener(PUSH_ACTION_EVENT, function pushActionHandler(nativeArgs) {
+      const {identifier, type, notification, responseInfo, completionHandlerID} = nativeArgs;
+      const args = {identifier, type, notification: new PushNotificationIOS(notification), responseInfo};
+      const completionPromise = Promise.resolve(handler(args)).then(function callCompletionHandler() {
+        RCTPushNotificationManager.callPushActionCompletionHandler(completionHandlerID);
+      });
+      typeof completionPromise.done === 'function' && completionPromise.done();
+    });
+    RCTPushNotificationManager.startPublishingPushActions();
   }
 
   /**
@@ -213,6 +293,46 @@ class PushNotificationIOS {
 
   /**
    * Requests notification permissions from iOS, prompting the user's
+   * dialog box.
+   *
+   * This method returns a promise that will resolve when the user accepts,
+   * rejects, or if the permissions were previously rejected. The promise
+   * resolves to the current state of the permission.
+   */
+  static registerUserNotificationSettings(settings: {
+    types: {
+      alert?: boolean,
+      badge?: boolean,
+      sound?: boolean
+    },
+    categories?: {
+      identifier: string,
+      actions: {
+        identifier: string,
+        title: string,
+        activationMode?: string,
+        destructive?: boolean,
+        authenticationRequired?: boolean,
+      }[],
+      actionIdentifiersByContext: {
+        default: string[],
+        minimal: string[],
+      }
+    }[]
+  }): Promise<{
+    alert: boolean,
+    badge: boolean,
+    sound: boolean
+  }> {
+    return RCTPushNotificationManager.registerUserNotificationSettings(settings);
+  }
+
+
+  /**
+   * This method is deprecated.
+   * Use PushNotificationIOS.registerUserNotificationSettings instead.
+   *
+   * Requests notification permissions from iOS, prompting the user's
    * dialog box. By default, it will request all notification permissions, but
    * a subset of these can be requested by passing a map of requested
    * permissions.
@@ -238,6 +358,7 @@ class PushNotificationIOS {
     badge: boolean,
     sound: boolean
   }> {
+    console.warn('PushNotificationIOS.requestPermissions is deprecated. Use PushNotificationIOS.registerUserNotificationSettings instead.');
     var requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
@@ -252,7 +373,7 @@ class PushNotificationIOS {
         sound: true
       };
     }
-    return RCTPushNotificationManager.requestPermissions(requestedPermissions);
+    return RCTPushNotificationManager.registerUserNotificationSettings({types: requestedPermissions});
   }
 
   /**
