@@ -50,12 +50,12 @@ class Button extends React.Component {
 
 class NotificationExample extends React.Component {
   componentWillMount() {
-    PushNotificationIOS.requestPermissions();
-
     PushNotificationIOS.addEventListener('register', this._onRegistered);
     PushNotificationIOS.addEventListener('registrationError', this._onRegistrationError);
     PushNotificationIOS.addEventListener('notification', this._onRemoteNotification);
     PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
+
+    PushNotificationIOS.requestPermissions();
   }
 
   componentWillUnmount() {

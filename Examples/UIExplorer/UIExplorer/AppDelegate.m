@@ -80,31 +80,31 @@
 # pragma mark - Push Notifications
 
 // Required to register for notifications
-- (void)application:(UIApplication *)__unused application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+- (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
   [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
 }
 
 // Required for the remoteNotificationsRegistered event.
-- (void)application:(UIApplication *)__unused application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+- (void)application:(__unused UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 // Required for the remoteNotificationRegistrationError event.
-- (void)application:(UIApplication *)__unused application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+- (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
   [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 // Required for the remoteNotificationReceived event.
-- (void)application:(UIApplication *)__unused application didReceiveRemoteNotification:(NSDictionary *)notification
+- (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [RCTPushNotificationManager didReceiveRemoteNotification:notification];
 }
 
 // Required for the localNotificationReceived event.
-- (void)application:(UIApplication *)__unused application didReceiveLocalNotification:(UILocalNotification *)notification
+- (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
