@@ -236,6 +236,20 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
+     * @ios
+     *
+     * A function that is invoked when the webview calls `window.postMessage`.
+     * Requires `messagingEnabled` to be true.
+     *
+     * The argument passed to postMessage is available on `event.nativeEvent.message`.
+     *
+     * Note that if you pass an object to postMessage, an object is received in the
+     * event handler. However, this object has been passed through JSON.stringify, so
+     * undefined values are missing from objects, and NaN and Infinity values are
+     * converted to null.
+     */
+    onMessage: PropTypes.func,
+    /**
      * Boolean value that forces the `WebView` to show the loading view
      * on the first load.
      */
@@ -266,6 +280,13 @@ class WebView extends React.Component {
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+
+    /**
+     * @ios
+     *
+     * Injects a postMessage global into the webview. Required to use onMessage.
+     */
+    messagingEnabled: PropTypes.bool,
 
     /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
@@ -397,6 +418,8 @@ class WebView extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        messagingEnabled={this.props.messagingEnabled}
+        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
@@ -458,6 +481,27 @@ class WebView extends React.Component {
   };
 
   /**
+   * @ios
+   *
+   * Posts a message to the web view, which will invoke the global `onmessage` function.
+   *
+   * See note on object conversion in onMessage.
+   *
+   * In your webview, you'll need to something like the following.
+   *
+   * ```
+   * window.onmessage = function(message) { ... }
+   * ```
+   */
+  postMessage = (message) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.postMessage,
+      [message]
+    );
+  };
+
+  /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
@@ -502,6 +546,11 @@ class WebView extends React.Component {
     });
     this._updateNavigationState(event);
   };
+
+  _onMessage = (event: Event) => {
+    var {onMessage} = this.props;
+    onMessage && onMessage(event);
+  }
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
@@ -509,6 +558,7 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onMessage: true,
   },
 });
 

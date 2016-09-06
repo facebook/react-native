@@ -20,6 +20,7 @@
 #import "UIView+React.h"
 
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
+NSString *const RCTJSPostMessageHost = @"postMessage";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
 
@@ -27,6 +28,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
+@property (nonatomic, copy) RCTDirectEventBlock onMessage;
 
 @end
 
@@ -80,6 +82,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)stopLoading
 {
   [_webView stopLoading];
+}
+
+- (void)postMessage:(id)json
+{
+  NSString *serialized = RCTJSONStringify(json, NULL);
+  NSString *source = [NSString stringWithFormat:@"if (typeof onmessage === 'function') window.onmessage(%@);", serialized];
+  [_webView stringByEvaluatingJavaScriptFromString:source];
 }
 
 - (void)setSource:(NSDictionary *)source
@@ -221,6 +230,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
+  if (isJSNavigation && [request.URL.host isEqualToString:RCTJSPostMessageHost]) {
+    NSString *query = request.URL.query;
+    query = [query stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    query = [query stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+    id message = RCTJSONParse(query, NULL);
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"message": message,
+    }];
+    _onMessage(event);
+  }
+
   // JS Navigation handler
   return !isJSNavigation;
 }
@@ -248,6 +270,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+  if (_messagingEnabled) {
+    NSString *source = [NSString stringWithFormat:
+      @"window.postMessage = function(message) {"
+      "  window.location = '%@://%@?' + encodeURIComponent(JSON.stringify(message));"
+      "};", RCTJSNavigationScheme, RCTJSPostMessageHost];
+    [webView stringByEvaluatingJavaScriptFromString:source];
+  }
   if (_injectedJavaScript != nil) {
     NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
 
