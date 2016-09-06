@@ -24,10 +24,14 @@
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
+// This must match the native enum UIBarStyle
+
 typedef NS_ENUM(NSInteger, RCTBarStyle) {
   RCTBarStyleDefault          = 0,
   RCTBarStyleBlack            = 1,
 };
+
+// This must match the native enum UIDataDetectorTypes
 
 typedef NS_OPTIONS(NSUInteger, RCTDataDetectorTypes) {
   RCTDataDetectorTypePhoneNumber                              = 1 << 0,          // Phone number detection

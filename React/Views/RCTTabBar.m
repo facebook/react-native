@@ -175,32 +175,4 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return NO;
 }
 
-#if TARGET_OS_TV
-
-- (BOOL)isUserInteractionEnabled {
-  return YES;
-}
-
-// - (BOOL)canBecomeFocused {
-// //  return (self.onTVSelect != nil);
-//   return YES;
-// }
-
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
-  if(context.nextFocusedView == self) {
-    if(self.onTVFocus) {
-      self.onTVFocus(nil);
-    }
-    [self becomeFirstResponder];
-  } else {
-    if(self.onTVBlur) {
-      self.onTVBlur(nil);
-    }
-    [self resignFirstResponder];
-  }
-}
-
-#endif
-
-
 @end

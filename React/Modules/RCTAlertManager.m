@@ -16,22 +16,28 @@
 
 @implementation RCTConvert (UIAlertViewStyle)
 
-RCT_ENUM_CONVERTER(UIAlertViewStyle, (@{
-  @"default": @(UIAlertViewStyleDefault),
-  @"secure-text": @(UIAlertViewStyleSecureTextInput),
-  @"plain-text": @(UIAlertViewStylePlainTextInput),
-  @"login-password": @(UIAlertViewStyleLoginAndPasswordInput),
-}), UIAlertViewStyleDefault, integerValue)
+RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
+  @"default": @(RCTAlertViewStyleDefault),
+  @"secure-text": @(RCTAlertViewStyleSecureTextInput),
+  @"plain-text": @(RCTAlertViewStylePlainTextInput),
+  @"login-password": @(RCTAlertViewStyleLoginAndPasswordInput),
+}), RCTAlertViewStyleDefault, integerValue)
 
 @end
 
+#if TARGET_OS_TV
+@interface RCTAlertManager()
+#else
 @interface RCTAlertManager() <UIAlertViewDelegate>
+#endif
 
 @end
 
 @implementation RCTAlertManager
 {
+#if !TARGET_OS_TV
   NSMutableArray<UIAlertView *> *_alerts;
+#endif
   NSMutableArray<UIAlertController *> *_alertControllers;
   NSMutableArray<RCTResponseSenderBlock> *_alertCallbacks;
   NSMutableArray<NSArray<NSString *> *> *_alertButtonKeys;
@@ -46,9 +52,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+#if !TARGET_OS_TV
   for (UIAlertView *alert in _alerts) {
     [alert dismissWithClickedButtonIndex:0 animated:YES];
   }
+#endif
   for (UIAlertController *alertController in _alertControllers) {
     [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
   }
@@ -73,7 +81,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 {
   NSString *title = [RCTConvert NSString:args[@"title"]];
   NSString *message = [RCTConvert NSString:args[@"message"]];
-  UIAlertViewStyle type = [RCTConvert UIAlertViewStyle:args[@"type"]];
+  RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args[@"type"]];
   NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
   NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
   NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
@@ -85,7 +93,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
   if (buttons.count == 0) {
-    if (type == UIAlertViewStyleDefault) {
+    if (type == RCTAlertViewStyleDefault) {
       buttons = @[@{@"0": RCTUIKitLocalizedString(@"OK")}];
       cancelButtonKey = @"0";
     } else {
@@ -108,14 +116,14 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                                         message:nil
                                         preferredStyle:UIAlertControllerStyleAlert];
   switch (type) {
-    case UIAlertViewStylePlainTextInput: {
+    case RCTAlertViewStylePlainTextInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.secureTextEntry = NO;
         textField.text = defaultValue;
       }];
       break;
     }
-    case UIAlertViewStyleSecureTextInput: {
+    case RCTAlertViewStyleSecureTextInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = RCTUIKitLocalizedString(@"Password");
         textField.secureTextEntry = YES;
@@ -123,7 +131,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       }];
       break;
     }
-    case UIAlertViewStyleLoginAndPasswordInput: {
+    case RCTAlertViewStyleLoginAndPasswordInput: {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = RCTUIKitLocalizedString(@"Login");
         textField.text = defaultValue;
@@ -134,7 +142,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       }];
       break;
     }
-    case UIAlertViewStyleDefault:
+    case RCTAlertViewStyleDefault:
       break;
   }
 
@@ -156,11 +164,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                                                         style:buttonStyle
                                                       handler:^(__unused UIAlertAction *action) {
       switch (type) {
-        case UIAlertViewStylePlainTextInput:
-        case UIAlertViewStyleSecureTextInput:
+        case RCTAlertViewStylePlainTextInput:
+        case RCTAlertViewStyleSecureTextInput:
           callback(@[buttonKey, [alertController.textFields.firstObject text]]);
           break;
-        case UIAlertViewStyleLoginAndPasswordInput: {
+        case RCTAlertViewStyleLoginAndPasswordInput: {
           NSDictionary<NSString *, NSString *> *loginCredentials = @{
             @"login": [alertController.textFields.firstObject text],
             @"password": [alertController.textFields.lastObject text]
@@ -168,7 +176,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
           callback(@[buttonKey, loginCredentials]);
           break;
         }
-        case UIAlertViewStyleDefault:
+        case RCTAlertViewStyleDefault:
           callback(@[buttonKey]);
           break;
       }
@@ -182,6 +190,8 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 
   [presentingController presentViewController:alertController animated:YES completion:nil];
 }
+
+#if !TARGET_OS_TV
 
 #pragma mark - UIAlertViewDelegate
 
@@ -215,5 +225,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   [_alertCallbacks removeObjectAtIndex:index];
   [_alertButtonKeys removeObjectAtIndex:index];
 }
+
+#endif
 
 @end

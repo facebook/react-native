@@ -12,8 +12,6 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-#if !TARGET_OS_TV
-
 @interface RCTDatePicker ()
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
@@ -41,5 +39,3 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 @end
-
-#endif //TARGET_OS_TV

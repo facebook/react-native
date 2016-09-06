@@ -15,8 +15,6 @@
 
 RCT_EXPORT_MODULE()
 
-#if !TARGET_OS_TV
-
 - (UIView *)view
 {
   return [RCTRefreshControl new];
@@ -27,7 +25,5 @@ RCT_EXPORT_VIEW_PROPERTY(refreshing, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)
 RCT_EXPORT_VIEW_PROPERTY(titleColor, UIColor)
-
-#endif //TARGET_OS_TV
 
 @end

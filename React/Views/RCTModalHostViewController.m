@@ -14,8 +14,8 @@
   CGRect _lastViewFrame;
 #if !TARGET_OS_TV
   UIStatusBarStyle _preferredStatusBarStyle;
-#endif
   BOOL _preferredStatusBarHidden;
+#endif
 }
 
 - (instancetype)init

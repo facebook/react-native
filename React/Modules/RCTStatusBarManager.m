@@ -13,35 +13,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-#if TARGET_OS_TV
-typedef enum {
-  RCTStatusBarStyleDefault = 0,
-  RCTStatusBarStyleLightContent
-} RCTStatusBarStyle;
-
-typedef enum {
-  RCTStatusBarAnimationNone = 0,
-  RCTStatusBarAnimationFade,
-  RCTStatusBarAnimationSlide
-} RCTStatusBarAnimation;
-
-@implementation RCTConvert (UIStatusBar)
-
-RCT_ENUM_CONVERTER(RCTStatusBarStyle, (@{
-                                        @"default": @(RCTStatusBarStyleDefault),
-                                        @"light-content": @(RCTStatusBarStyleLightContent),
-                                        }), RCTStatusBarStyleDefault, integerValue);
-
-RCT_ENUM_CONVERTER(RCTStatusBarAnimation, (@{
-                                            @"none": @(RCTStatusBarAnimationNone),
-                                            @"fade": @(RCTStatusBarAnimationFade),
-                                            @"slide": @(RCTStatusBarAnimationSlide),
-                                            }), RCTStatusBarAnimationNone, integerValue);
-
-@end
-
-#else
-
 @implementation RCTConvert (UIStatusBar)
 
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
@@ -56,8 +27,6 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 }), UIStatusBarAnimationNone, integerValue);
 
 @end
-
-#endif //TARGET_OS_TV
 
 @implementation RCTStatusBarManager
 
@@ -83,12 +52,9 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
   [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
-#endif
-  
 }
 
 - (void)stopObserving
@@ -103,9 +69,6 @@ RCT_EXPORT_MODULE()
 
 - (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
 {
-#if TARGET_OS_TV
-  NSDictionary *event = @{};
-#else
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
   NSDictionary *event = @{
     @"frame": @{
@@ -115,7 +78,6 @@ RCT_EXPORT_MODULE()
       @"height": @(frame.size.height),
     },
   };
-#endif
   [self sendEventWithName:eventName body:event];
 }
 
@@ -131,18 +93,11 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 {
-#if TARGET_OS_TV
-  callback(@[@{
-    @"height":@0
-               }]);
-#else
   callback(@[@{
     @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
   }]);
-#endif
 }
 
-#if !TARGET_OS_TV
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {
@@ -166,13 +121,10 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
                                  withAnimation:animation];
   }
 }
-#endif
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
-#if !TARGET_OS_TV
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
-#endif
 }
 
 

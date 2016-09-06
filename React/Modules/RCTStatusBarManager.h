@@ -12,16 +12,12 @@
 #import "RCTEventEmitter.h"
 #import "RCTConvert.h"
 
-#if !TARGET_OS_TV
-
 @interface RCTConvert (UIStatusBar)
 
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json;
 + (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
 
 @end
-
-#endif //TARGET_OS_TV
 
 @interface RCTStatusBarManager : RCTEventEmitter
 
