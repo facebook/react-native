@@ -29,7 +29,6 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   for (var i = 0; i < subscriptions.length; ++i) {
     if (subscriptions[i]()) {
       invokeDefault = false;
-      break;
     }
   }
 
