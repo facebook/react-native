@@ -424,6 +424,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
     errorInfo[@"domain"] = RCTErrorDomain;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  errorInfo[@"userInfo"] = RCTNullIfNil(error.userInfo);
+
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
 
