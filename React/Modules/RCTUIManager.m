@@ -278,7 +278,7 @@ RCT_EXPORT_MODULE()
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   });
 }
 
@@ -1150,7 +1150,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCTProfileBeginFlowEvent();
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
+        @"count": @(previousPendingUIBlocks.count),
+      }));
       @try {
         for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
           block(self, self->_viewRegistry);
@@ -1159,9 +1161,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       @catch (NSException *exception) {
         RCTLogError(@"Exception thrown while executing UI block: %@", exception);
       }
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call", @{
-        @"count": @(previousPendingUIBlocks.count),
-      });
     });
   }
 }

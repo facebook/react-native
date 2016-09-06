@@ -21,7 +21,7 @@ var BlogSidebar = React.createClass({
         <div className="nav-docs-section">
           <h3>Recent Posts</h3>
           <ul>
-            {MetadataBlog.files.map(function(post) {
+            {MetadataBlog.files.slice(0,10).map(function(post) {
               return (
                 <li key={post.path}>
                   <a

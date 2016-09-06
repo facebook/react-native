@@ -33,6 +33,7 @@ const React = require('react');
 const StatusBar = require('StatusBar');
 const StyleSheet = require('StyleSheet');
 const ToolbarAndroid = require('ToolbarAndroid');
+const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerList = require('./UIExplorerList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
@@ -146,7 +147,6 @@ class UIExplorerApp extends React.Component {
     if (stack && stack.routes[index]) {
       const {key} = stack.routes[index];
       const ExampleModule = UIExplorerList.Modules[key];
-      const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
         <View style={styles.container}>
           <ToolbarAndroid
@@ -156,7 +156,8 @@ class UIExplorerApp extends React.Component {
             style={styles.toolbar}
             title={title}
           />
-          <ExampleComponent
+          <UIExplorerExampleContainer
+            module={ExampleModule}
             ref={(example) => { this._exampleRef = example; }}
           />
         </View>
