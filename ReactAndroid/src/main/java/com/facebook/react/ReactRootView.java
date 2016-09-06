@@ -161,8 +161,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   @Override
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-    // No-op - override in order to still receive events to onInterceptTouchEvent
-    // even when some other view disallow that
+    // Override in order to still receive events to onInterceptTouchEvent even when some other
+    // views disallow that, but propagate it up the tree if possible.
+    if (getParent() != null) {
+      getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
+    }
   }
 
   @Override
