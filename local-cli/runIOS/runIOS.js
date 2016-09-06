@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+* Copyright (c) 2015-present, Facebook, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the BSD-style license found in the
+* LICENSE file in the root directory of this source tree. An additional grant
+* of patent rights can be found in the PATENTS file in the same directory.
+*/
 'use strict';
 
 const child_process = require('child_process');
@@ -42,9 +42,9 @@ function runIOS(argv, config, args) {
       }
     }
   } else if (args.udid) {
-      runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
+    runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
   } else {
-      runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
   }
 }
 
@@ -53,20 +53,20 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   if (selectedDevice){
     runOnDevice(selectedDevice, scheme, xcodeProject);
   } else {
-      if (devices){
-        console.log('Could not find device with the udid: "' + udid + '".');
-        console.log('Choose one of the following:');
-        printFoundDevices(devices);
-      } else {
-        console.log('No iOS devices connected.');
-      }
+    if (devices){
+      console.log('Could not find device with the udid: "' + udid + '".');
+      console.log('Choose one of the following:');
+      printFoundDevices(devices);
+    } else {
+      console.log('No iOS devices connected.');
+    }
   }
 }
 
 function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   try {
     var simulators = JSON.parse(
-      child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
+    child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
     );
   } catch (e) {
     throw new Error('Could not parse the simulator list output');
@@ -112,12 +112,12 @@ function runOnDevice(selectedDevice, scheme, xcodeProject){
   console.log(`installing and launching your app on ${selectedDevice.name}...`);
   var iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
   if (iosDeployOutput.error) {
-      console.log('');
-      console.log('** INSTALLATION FAILED **');
-      console.log('Make sure you have ios-deploy installed globally.');
-      console.log('(e.g "npm install -g ios-deploy")');
+    console.log('');
+    console.log('** INSTALLATION FAILED **');
+    console.log('Make sure you have ios-deploy installed globally.');
+    console.log('(e.g "npm install -g ios-deploy")');
   } else {
-      console.log('** INSTALLATION SUCCEEDED **');
+    console.log('** INSTALLATION SUCCEEDED **');
   }
 }
 
@@ -163,18 +163,18 @@ module.exports = {
   description: 'builds your app and starts it on iOS simulator',
   func: runIOS,
   examples: [
-    {
-      desc: 'Run on a different simulator, e.g. iPhone 5',
-      cmd: 'react-native run-ios --simulator "iPhone 5"',
-    },
-    {
-      desc: 'Pass a non-standard location of iOS directory',
-      cmd: 'react-native run-ios --project-path "./app/ios"',
-    },
-    {
-      desc: "Run on a connected device, e.g. Max's iPhone",
-      cmd: "react-native run-ios --device 'Max's iPhone'",
-    },
+  {
+    desc: 'Run on a different simulator, e.g. iPhone 5',
+    cmd: 'react-native run-ios --simulator "iPhone 5"',
+  },
+  {
+    desc: 'Pass a non-standard location of iOS directory',
+    cmd: 'react-native run-ios --project-path "./app/ios"',
+  },
+  {
+    desc: "Run on a connected device, e.g. Max's iPhone",
+    cmd: "react-native run-ios --device 'Max's iPhone'",
+  },
   ],
   options: [{
     command: '--simulator [string]',
@@ -186,7 +186,7 @@ module.exports = {
   }, {
     command: '--project-path [string]',
     description: 'Path relative to project root where the Xcode project '
-     + '(.xcodeproj) lives. The default is \'ios\'.',
+      + '(.xcodeproj) lives. The default is \'ios\'.',
     default: 'ios',
   }, {
     command: '--device [string]',
