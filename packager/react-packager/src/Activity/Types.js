@@ -12,7 +12,8 @@
 'use strict';
 
 export type EventOptions = {
-  telemetric: boolean,
+  telemetric?: boolean,
+  silent?: boolean,
 };
 
 export type Event = {

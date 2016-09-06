@@ -6,6 +6,7 @@
 #include <folly/String.h>
 #include <glog/logging.h>
 
+#include "SystraceSection.h"
 #include "Value.h"
 
 namespace facebook {
@@ -41,6 +42,7 @@ String jsStringFromBigString(const JSBigString& bigstr) {
 }
 
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
+  SystraceSection s("evaluateScript");
   JSValueRef exn, result;
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
