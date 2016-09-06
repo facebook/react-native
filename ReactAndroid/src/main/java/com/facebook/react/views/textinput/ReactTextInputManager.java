@@ -32,6 +32,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -227,6 +228,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
+    }
+  }
+
+  @ReactProp(name = "selection")
+  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
+    if (selection == null) {
+      return;
+    }
+
+    if (selection.hasKey("start") && selection.hasKey("end")) {
+      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 
@@ -578,8 +590,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              (int) PixelUtil.toDIPFromPixel(contentWidth),
-              (int) PixelUtil.toDIPFromPixel(contentHeight),
+              PixelUtil.toDIPFromPixel(contentWidth),
+              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
@@ -671,7 +683,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
           mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingBottom();
       }
 
       if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
@@ -681,8 +693,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
             mEditText.getId(),
-            (int) PixelUtil.toDIPFromPixel(contentWidth),
-            (int) PixelUtil.toDIPFromPixel(contentHeight)));
+            PixelUtil.toDIPFromPixel(contentWidth),
+            PixelUtil.toDIPFromPixel(contentHeight)));
       }
     }
   }

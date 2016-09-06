@@ -11,7 +11,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
+#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
+#else
+#import "CSSLayout.h"
+#endif
+
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
@@ -285,7 +291,7 @@ RCT_EXPORT_MODULE()
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   });
 }
 
@@ -1159,7 +1165,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCTProfileBeginFlowEvent();
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
+        @"count": @(previousPendingUIBlocks.count),
+      }));
       @try {
         for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
           block(self, self->_viewRegistry);
@@ -1168,9 +1176,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       @catch (NSException *exception) {
         RCTLogError(@"Exception thrown while executing UI block: %@", exception);
       }
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call", @{
-        @"count": @(previousPendingUIBlocks.count),
-      });
     });
   }
 }

@@ -48,8 +48,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
     WritableMap eventData = Arguments.createMap();
 
     WritableMap selectionData = Arguments.createMap();
-    selectionData.putInt("start", mSelectionStart);
     selectionData.putInt("end", mSelectionEnd);
+    selectionData.putInt("start", mSelectionStart);
 
     eventData.putMap("selection", selectionData);
     return eventData;
