@@ -68,6 +68,10 @@ In the project's build settings, `User Search Header Paths` and `Header Search P
 
 To revert the `User Search Header Paths` and `Header Search Paths` build settings to their defaults set by CocoaPods - select the entry in the Build Settings panel, and hit delete. It will remove the custom override and return to the CocoaPod defaults.
 
+### Link error: Undefined symbols for architecture x86_64 when using CocoaPods
+
+If you get a linking error after your initial run of `pod install`, make sure `-lc++` is added to Other linker flags for your test target.  Source: `https://github.com/facebook/react-native/issues/8890`.
+
 ### No transports available
 
 React Native implements a polyfill for WebSockets. These [polyfills](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js) are initialized as part of the react-native module that you include in your application through `import React from 'react'`. If you load another module that requires WebSockets, such as [Firebase](https://github.com/facebook/react-native/issues/3645), be sure to load/require it after react-native:
