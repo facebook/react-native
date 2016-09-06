@@ -65,8 +65,8 @@ function generateRequestId() {
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   loadingIndicatorSrc: true,
+  resizeMethod: true,
   resizeMode: true,
-  forceResize: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
   shouldNotifyLoadEvents: true,
@@ -115,7 +115,6 @@ var Image = React.createClass({
     ]),
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
-    forceResize: PropTypes.bool,
     /**
      * Invoked on load start
      */
@@ -132,6 +131,12 @@ var Image = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * The mechanism that should be used to resize the image when the image's dimensions
+     * differ from the image view's dimensions. 'auto' means that some heuristics will
+     * be used to pick between 'resize' and 'scale'. The default value is 'auto'.
+     */
+    resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
     /**
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.

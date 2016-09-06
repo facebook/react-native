@@ -82,7 +82,7 @@ public class ReactImageView extends GenericDraweeView {
    */
   private static final Matrix sMatrix = new Matrix();
   private static final Matrix sInverse = new Matrix();
-  private boolean mForceResize;
+  private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
@@ -261,8 +261,8 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setForceResize(boolean forceResize) {
-    mForceResize = forceResize;
+  public void setResizeMethod(ImageResizeMethod resizeMethod) {
+    mResizeMethod = resizeMethod;
     mIsDirty = true;
   }
 
@@ -461,9 +461,14 @@ public class ReactImageView extends GenericDraweeView {
     // Resizing is inferior to scaling. See http://frescolib.org/docs/resizing-rotating.html#_
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
-    return
-      mForceResize ||
-      UriUtil.isLocalContentUri(imageSource.getUri()) ||
-      UriUtil.isLocalFileUri(imageSource.getUri());
+    if (mResizeMethod == ImageResizeMethod.AUTO) {
+      return
+        UriUtil.isLocalContentUri(imageSource.getUri()) ||
+        UriUtil.isLocalFileUri(imageSource.getUri());
+    } else if (mResizeMethod == ImageResizeMethod.RESIZE) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
