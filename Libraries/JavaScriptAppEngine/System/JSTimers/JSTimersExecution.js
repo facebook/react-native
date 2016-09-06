@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule JSTimersExecution
+ * @flow
  */
 'use strict';
 
@@ -39,35 +40,43 @@ const JSTimersExecution = {
     requestIdleCallback: null,
   }),
 
-  // Parallel arrays:
+  // Parallel arrays
   callbacks: [],
   types: [],
   timerIDs: [],
   immediates: [],
   requestIdleCallbacks: [],
 
+  errors: (null : ?[Error]),
+
   /**
    * Calls the callback associated with the ID. Also unregister that callback
    * if it was a one time timer (setTimeout), and not unregister it if it was
    * recurring (setInterval).
    */
-  callTimer(timerID, frameTime) {
+  callTimer(timerID: number, frameTime: number) {
     warning(
       timerID <= JSTimersExecution.GUID,
       'Tried to call timer with ID %s but no such timer exists.',
       timerID
     );
-    const timerIndex = JSTimersExecution.timerIDs.indexOf(timerID);
+
     // timerIndex of -1 means that no timer with that ID exists. There are
     // two situations when this happens, when a garbage timer ID was given
     // and when a previously existing timer was deleted before this callback
     // fired. In both cases we want to ignore the timer id, but in the former
     // case we warn as well.
+    const timerIndex = JSTimersExecution.timerIDs.indexOf(timerID);
     if (timerIndex === -1) {
       return;
     }
+
     const type = JSTimersExecution.types[timerIndex];
     const callback = JSTimersExecution.callbacks[timerIndex];
+    if (!callback || !type) {
+      console.error('No callback found for timerID ' + timerID);
+      return;
+    }
 
     // Clear the metadata
     if (type === JSTimersExecution.Type.setTimeout ||
@@ -83,8 +92,7 @@ const JSTimersExecution = {
           type === JSTimersExecution.Type.setImmediate) {
         callback();
       } else if (type === JSTimersExecution.Type.requestAnimationFrame) {
-        const currentTime = performanceNow();
-        callback(currentTime);
+        callback(performanceNow());
       } else if (type === JSTimersExecution.Type.requestIdleCallback) {
         callback({
           timeRemaining: function() {
@@ -96,12 +104,14 @@ const JSTimersExecution = {
         });
       } else {
         console.error('Tried to call a callback with invalid type: ' + type);
-        return;
       }
     } catch (e) {
-      // Don't rethrow so that we can run every other timer.
-      JSTimersExecution.errors = JSTimersExecution.errors || [];
-      JSTimersExecution.errors.push(e);
+      // Don't rethrow so that we can run all timers.
+      if (!JSTimersExecution.errors) {
+        JSTimersExecution.errors = [e];
+      } else {
+        JSTimersExecution.errors.push(e);
+      }
     }
   },
 
@@ -109,14 +119,16 @@ const JSTimersExecution = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers(timerIDs) {
+  callTimers(timerIDs: [number]) {
     invariant(
       timerIDs.length !== 0,
       'Cannot call `callTimers` with an empty list of IDs.'
     );
 
     JSTimersExecution.errors = null;
-    timerIDs.forEach((id) => { JSTimersExecution.callTimer(id); });
+    for (let i = 0; i < timerIDs.length; i++) {
+      JSTimersExecution.callTimer(timerIDs[i], 0);
+    }
 
     const errors = JSTimersExecution.errors;
     if (errors) {
@@ -135,15 +147,12 @@ const JSTimersExecution = {
     }
   },
 
-  callIdleCallbacks: function(frameTime) {
-    const { Timing } = require('NativeModules');
-
+  callIdleCallbacks: function(frameTime: number) {
     if (FRAME_DURATION - (performanceNow() - frameTime) < IDLE_CALLBACK_FRAME_DEADLINE) {
       return;
     }
 
     JSTimersExecution.errors = null;
-
     if (JSTimersExecution.requestIdleCallbacks.length > 0) {
       const passIdleCallbacks = JSTimersExecution.requestIdleCallbacks.slice();
       JSTimersExecution.requestIdleCallbacks = [];
@@ -154,6 +163,7 @@ const JSTimersExecution = {
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+      const { Timing } = require('NativeModules');
       Timing.setSendIdleEvents(false);
     }
 
@@ -180,7 +190,7 @@ const JSTimersExecution = {
       // Use for loop rather than forEach as per @vjeux's advice
       // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
       for (let i = 0; i < passImmediates.length; ++i) {
-        JSTimersExecution.callTimer(passImmediates[i]);
+        JSTimersExecution.callTimer(passImmediates[i], 0);
       }
     }
 
@@ -206,7 +216,7 @@ const JSTimersExecution = {
   /**
    * Called from native (in development) when environment times are out-of-sync.
    */
-  emitTimeDriftWarning(warningMessage) {
+  emitTimeDriftWarning(warningMessage: string) {
     if (hasEmittedTimeDriftWarning) {
       return;
     }
@@ -214,7 +224,7 @@ const JSTimersExecution = {
     console.warn(warningMessage);
   },
 
-  _clearIndex(i) {
+  _clearIndex(i: number) {
     JSTimersExecution.timerIDs[i] = null;
     JSTimersExecution.callbacks[i] = null;
     JSTimersExecution.types[i] = null;
