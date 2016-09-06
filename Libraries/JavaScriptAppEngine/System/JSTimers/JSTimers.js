@@ -15,6 +15,7 @@
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
 const RCTTiming = require('NativeModules').Timing;
 const JSTimersExecution = require('JSTimersExecution');
+const parseErrorStack = require('parseErrorStack');
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
@@ -31,6 +32,14 @@ function _allocateCallback(func: Function, type: $Keys<typeof JSTimersExecution.
   JSTimersExecution.timerIDs[freeIndex] = id;
   JSTimersExecution.callbacks[freeIndex] = func;
   JSTimersExecution.types[freeIndex] = type;
+  if (__DEV__) {
+    const e = (new Error() : any);
+    e.framesToPop = 1;
+    const stack = parseErrorStack(e);
+    if (stack) {
+      JSTimersExecution.identifiers[freeIndex] = stack.shift();
+    }
+  }
   return id;
 }
 

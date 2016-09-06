@@ -46,6 +46,7 @@ const JSTimersExecution = {
   timerIDs: [],
   immediates: [],
   requestIdleCallbacks: [],
+  identifiers: ([] : [{methodName: string}]),
 
   errors: (null : ?[Error]),
 
@@ -76,6 +77,11 @@ const JSTimersExecution = {
     if (!callback || !type) {
       console.error('No callback found for timerID ' + timerID);
       return;
+    }
+
+    if (__DEV__) {
+      const identifier = JSTimersExecution.identifiers[timerIndex] || {};
+      Systrace.beginEvent('Systrace.callTimer: ' + identifier.methodName);
     }
 
     // Clear the metadata
@@ -112,6 +118,10 @@ const JSTimersExecution = {
       } else {
         JSTimersExecution.errors.push(e);
       }
+    }
+
+    if (__DEV__) {
+      Systrace.endEvent();
     }
   },
 
@@ -228,6 +238,7 @@ const JSTimersExecution = {
     JSTimersExecution.timerIDs[i] = null;
     JSTimersExecution.callbacks[i] = null;
     JSTimersExecution.types[i] = null;
+    JSTimersExecution.identifiers[i] = null;
   },
 };
 
