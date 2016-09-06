@@ -21,7 +21,35 @@ const _notifHandlers = new Map();
 
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+
+/**
+ * An event emitted by PushNotificationIOS.
+ */
+export type PushNotificationEventName = $Enum<{
+  /**
+   * Fired when a remote notification is received. The handler will be invoked
+   * with an instance of `PushNotificationIOS`.
+   */
+  notification: string,
+  /**
+   * Fired when a local notification is received. The handler will be invoked
+   * with an instance of `PushNotificationIOS`.
+   */
+  localNotification: string,
+  /**
+   * Fired when the user registers for remote notifications. The handler will be
+   * invoked with a hex string representing the deviceToken.
+   */
+  register: string,
+  /**
+   * Fired when the user fails to register for remote notifications. Typically
+   * occurs when APNS is having issues, or the device is a simulator. The
+   * handler will be invoked with {message: string, code: number, details: any}.
+   */
+  registrationError: string,
+}>;
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -56,6 +84,11 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    {
  *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
  *    }
+ *    // Required for the registrationError event.
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ *    {
+ *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+ *    }
  *    // Required for the notification event.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
  *    {
@@ -65,10 +98,6 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
  *    {
  *     [RCTPushNotificationManager didReceiveLocalNotification:notification];
- *    }
- *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
- *    {
- *      NSLog(@"%@", error);
  *    }
  *   ```
  */
@@ -162,11 +191,15 @@ class PushNotificationIOS {
    *   handler will be invoked with an instance of `PushNotificationIOS`.
    * - `register`: Fired when the user registers for remote notifications. The
    *   handler will be invoked with a hex string representing the deviceToken.
+   * - `registrationError`: Fired when the user fails to register for remote
+   *   notifications. Typically occurs when APNS is having issues, or the device
+   *   is a simulator. The handler will be invoked with
+   *   {message: string, code: number, details: any}.
    */
-  static addEventListener(type: string, handler: Function) {
+  static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener;
     if (type === 'notification') {
@@ -190,6 +223,13 @@ class PushNotificationIOS {
           handler(registrationInfo.deviceToken);
         }
       );
+    } else if (type === 'registrationError') {
+      listener = PushNotificationEmitter.addListener(
+        NOTIF_REGISTRATION_ERROR_EVENT,
+        (errorInfo) => {
+          handler(errorInfo);
+        }
+      );
     }
     _notifHandlers.set(handler, listener);
   }
@@ -198,10 +238,10 @@ class PushNotificationIOS {
    * Removes the event listener. Do this in `componentWillUnmount` to prevent
    * memory leaks
    */
-  static removeEventListener(type: string, handler: Function) {
+  static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {
