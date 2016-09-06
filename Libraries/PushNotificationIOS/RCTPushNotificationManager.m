@@ -67,6 +67,18 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleRegisterUserNotificationSettings:)
+                                                 name:RCTRegisterUserNotificationSettings
+                                               object:nil];
+  }
+  return self;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -85,10 +97,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleRegisterUserNotificationSettings:)
-                                               name:RCTRegisterUserNotificationSettings
                                              object:nil];
 }
 
