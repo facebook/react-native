@@ -73,7 +73,7 @@ public class ReactTestHelper {
           .setJSExecutor(executor)
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
-          .setJSBundleLoader(JSBundleLoader.createFileLoader(
+          .setJSBundleLoader(JSBundleLoader.createAssetLoader(
                                mContext,
                                "assets://AndroidTestBundle.js"))
           .setNativeModuleCallExceptionHandler(
