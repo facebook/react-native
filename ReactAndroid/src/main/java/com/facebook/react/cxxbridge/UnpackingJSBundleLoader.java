@@ -39,18 +39,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 public class UnpackingJSBundleLoader extends JSBundleLoader {
 
   /**
-   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacker unpacked js source file.
-   */
-  public static final int UNPACKED_JS_SOURCE = (1 << 0);
-
-  /**
-   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacker unpacked bytecode cache files.
-   */
-  public static final int UNPACKED_BC_CACHE = (1 << 1);
-
-  /**
    * Name of the lock files. Multiple processes can be spawned off the same app
    * and we need to guarantee that at most one unpacks files at any time. To
    * make that work any process is required to hold file system lock on
