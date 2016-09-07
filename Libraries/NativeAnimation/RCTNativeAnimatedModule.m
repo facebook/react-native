@@ -15,6 +15,8 @@
 #import "RCTConvert.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTLog.h"
+#import "RCTDiffClampAnimatedNode.h"
+#import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
 #import "RCTStyleAnimatedNode.h"
@@ -68,7 +70,9 @@ RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
             @"props" : [RCTPropsAnimatedNode class],
             @"interpolation" : [RCTInterpolationAnimatedNode class],
             @"addition" : [RCTAdditionAnimatedNode class],
+            @"diffclamp": [RCTDiffClampAnimatedNode class],
             @"multiplication" : [RCTMultiplicationAnimatedNode class],
+            @"modulus" : [RCTModuloAnimatedNode class],
             @"transform" : [RCTTransformAnimatedNode class]};
   });
 

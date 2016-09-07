@@ -331,7 +331,7 @@ public class ReactTextInputPropertyTest {
       buildStyles("textAlign", null, "textAlignVertical", null));
     assertThat(view.getGravity()).isEqualTo(defaultGravity);
   }
-  
+
   @Test
   public void testMaxLength() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
@@ -339,5 +339,24 @@ public class ReactTextInputPropertyTest {
     view.setFilters(filters);
     mManager.setMaxLength(view, null);
     assertThat(view.getFilters()).isEqualTo(filters);
+  }
+
+  @Test
+  public void testSelection() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    view.setText("Need some text to select something...");
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getSelectionStart()).isEqualTo(0);
+    assertThat(view.getSelectionEnd()).isEqualTo(0);
+
+    JavaOnlyMap selection = JavaOnlyMap.of("start", 5, "end", 10);
+    mManager.updateProperties(view, buildStyles("selection", selection));
+    assertThat(view.getSelectionStart()).isEqualTo(5);
+    assertThat(view.getSelectionEnd()).isEqualTo(10);
+
+    mManager.updateProperties(view, buildStyles("selection", null));
+    assertThat(view.getSelectionStart()).isEqualTo(5);
+    assertThat(view.getSelectionEnd()).isEqualTo(10);
   }
 }

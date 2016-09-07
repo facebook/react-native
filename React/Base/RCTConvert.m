@@ -125,10 +125,19 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     return URL ? [NSURLRequest requestWithURL:URL] : nil;
   }
   if ([json isKindOfClass:[NSDictionary class]]) {
-    NSURL *URL = [self NSURL:json[@"uri"] ?: json[@"url"]];
+    NSString *URLString = json[@"uri"] ?: json[@"url"];
+
+    NSURL *URL;
+    NSString *bundleName = json[@"bundle"];
+    if (bundleName) {
+      URLString = [NSString stringWithFormat:@"%@.bundle/%@", bundleName, URLString];
+    }
+
+    URL = [self NSURL:URLString];
     if (!URL) {
       return nil;
     }
+
     NSData *body = [self NSData:json[@"body"]];
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];
@@ -601,10 +610,10 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
   @"visible": @YES
 }), YES, boolValue)
 
-RCT_ENUM_CONVERTER(css_clip_t, (@{
-  @"hidden": @YES,
-  @"visible": @NO
-}), NO, boolValue)
+RCT_ENUM_CONVERTER(CSSOverflow, (@{
+  @"hidden": @(CSSOverflowHidden),
+  @"visible": @(CSSOverflowVisible)
+}), CSSOverflowVisible, intValue)
 
 RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
   @"row": @(CSSFlexDirectionRow),
@@ -701,13 +710,17 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
         filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
       image = [UIImage imageWithContentsOfFile:filePath];
+      if (!image) {
+        RCTLogConvertError(json, @"an image. File not found.");
+      }
     }
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else if ([scheme isEqualToString:@"http"] && imageSource.packagerAsset) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
   } else {
-    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported");
+    RCTLogConvertError(json, @"an image. Only local files or data URIs are supported.");
+    return nil;
   }
 
   CGFloat scale = imageSource.scale;

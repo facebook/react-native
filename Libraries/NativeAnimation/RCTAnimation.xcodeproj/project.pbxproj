@@ -19,6 +19,8 @@
 		13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E31D07A6C9005F35D8 /* RCTStyleAnimatedNode.m */; };
 		13E501EF1D07A6C9005F35D8 /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */; };
 		13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */; };
+		94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */; };
+		193F64F41D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,6 +61,10 @@
 		13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTransformAnimatedNode.m; sourceTree = "<group>"; };
 		13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTValueAnimatedNode.h; sourceTree = "<group>"; };
 		13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTValueAnimatedNode.m; sourceTree = "<group>"; };
+		94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuloAnimatedNode.h; sourceTree = "<group>"; };
+		94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuloAnimatedNode.m; sourceTree = "<group>"; };
+		193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; };
+		193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDiffClampAnimatedNode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +89,8 @@
 		13E501D51D07A6C9005F35D8 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */,
+				193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */,
 				13E501D61D07A6C9005F35D8 /* RCTAdditionAnimatedNode.h */,
 				13E501D71D07A6C9005F35D8 /* RCTAdditionAnimatedNode.m */,
 				13E501D81D07A6C9005F35D8 /* RCTAnimatedNode.h */,
@@ -91,6 +99,8 @@
 				13E501DB1D07A6C9005F35D8 /* RCTAnimationDriverNode.m */,
 				13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */,
 				13E501DD1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.m */,
+				94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */,
+				94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */,
 				13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */,
 				13E501DF1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.m */,
 				13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */,
@@ -176,6 +186,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */,
+				94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */,
+				193F64F41D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m in Sources */,
 				13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */,
 				13E501CC1D07A644005F35D8 /* RCTAnimationUtils.m in Sources */,
 				13E501CF1D07A644005F35D8 /* RCTNativeAnimatedModule.m in Sources */,
@@ -229,7 +241,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -269,7 +281,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

@@ -12,9 +12,6 @@ package com.facebook.react.cxxbridge;
 import android.content.Context;
 
 import com.facebook.react.devsupport.DebugServerException;
-import com.facebook.react.devsupport.DevServerHelper;
-
-import java.io.File;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -24,20 +21,34 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader is recommended one for release version of your app. In that case local JS executor
-   * should be used. JS bundle will be read from assets directory in native code to save on passing
-   * large strings from java to native memory.
+   * should be used. JS bundle will be read from assets in native code to save on passing large
+   * strings from java to native memory.
    */
-  public static JSBundleLoader createFileLoader(
+  public static JSBundleLoader createAssetLoader(
       final Context context,
-      final String fileName) {
+      final String assetUrl) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(CatalystInstanceImpl instance) {
-        if (fileName.startsWith("assets://")) {
-          instance.loadScriptFromAssets(context.getAssets(), fileName);
-        } else {
-          instance.loadScriptFromFile(fileName, fileName);
-        }
+        instance.loadScriptFromAssets(context.getAssets(), assetUrl);
+      }
+
+      @Override
+      public String getSourceUrl() {
+        return assetUrl;
+      }
+    };
+  }
+
+  /**
+   * This loader loads bundle from file system. The bundle will be read in native code to save on
+   * passing large strings from java to native memorory.
+   */
+  public static JSBundleLoader createFileLoader(final String fileName) {
+    return new JSBundleLoader() {
+      @Override
+      public void loadScript(CatalystInstanceImpl instance) {
+        instance.loadScriptFromFile(fileName, fileName);
       }
 
       @Override
@@ -92,20 +103,6 @@ public abstract class JSBundleLoader {
         return realSourceURL;
       }
     };
-  }
-
-  public static JSBundleLoader createUnpackingBundleLoader(
-      final Context context,
-      final String sourceURL,
-      final String bundleName) {
-    return UnpackingJSBundleLoader.newBuilder()
-      .setContext(context)
-      .setSourceURL(sourceURL)
-      .setDestinationPath(new File(context.getFilesDir(), "optimized-bundle"))
-      .checkAndUnpackFile(bundleName + ".meta", "bundle.meta")
-      .unpackFile(bundleName, "bundle.js")
-      .setLoadFlags(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE)
-      .build();
   }
 
   public abstract void loadScript(CatalystInstanceImpl instance);

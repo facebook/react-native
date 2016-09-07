@@ -4,7 +4,8 @@
 # - At Facebook by running buck from the root of the fb repo
 # - Outside of Facebook by running buck in the root of the git repo
 
-import os
+with allow_unsafe_import():
+    import os
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
@@ -45,16 +46,27 @@ def android_library(
   *args,
   **kwargs):
 
-  common_processors = [
-    'com.facebook.react.processing.ReactPropertyProcessor',
-  ]
-  common_processor_deps = [
-    react_native_target('java/com/facebook/react/processing:processing'),
-  ]
-
   if react_native_target('java/com/facebook/react/uimanager/annotations:annotations') in deps and name != 'processing':
-      annotation_processors = list(set(annotation_processors + common_processors))
-      annotation_processor_deps = list(set(annotation_processor_deps + common_processor_deps))
+    react_property_processors = [
+      'com.facebook.react.processing.ReactPropertyProcessor',
+    ]
+    react_property_processor_deps = [
+      react_native_target('java/com/facebook/react/processing:processing'),
+    ]
+
+    annotation_processors = list(set(annotation_processors + react_property_processors))
+    annotation_processor_deps = list(set(annotation_processor_deps + react_property_processor_deps))
+
+  if react_native_target('java/com/facebook/react/module/annotations:annotations') in deps and name != 'processing':
+    react_module_processors = [
+      'com.facebook.react.module.processing.ReactModuleSpecProcessor',
+    ]
+    react_module_processor_deps = [
+      react_native_target('java/com/facebook/react/module/processing:processing'),
+    ]
+
+    annotation_processors = list(set(annotation_processors + react_module_processors))
+    annotation_processor_deps = list(set(annotation_processor_deps + react_module_processor_deps))
 
   original_android_library(
     name=name,

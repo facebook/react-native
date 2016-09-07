@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -65,15 +65,16 @@ public class ReactEditText extends EditText {
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
   private int mNativeEventCount;
+  private int mMostRecentEventCount;
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
-  private boolean mTextIsSelectable = true;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private final InternalKeyListener mKeyListener;
+  private boolean mDetectScrollMovement = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -87,6 +88,7 @@ public class ReactEditText extends EditText {
         getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
     mNativeEventCount = 0;
+    mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
     mBlurOnSubmit = true;
@@ -94,24 +96,6 @@ public class ReactEditText extends EditText {
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
-  }
-
-  /**
-   * Make sure multiline text input can be scrolled within a ScrollView
-   */
-  @Override
-  public boolean dispatchTouchEvent(MotionEvent ev) {
-    switch (ev.getAction()) {
-      case MotionEvent.ACTION_DOWN:
-        // Disallow ScrollView to intercept touch events.
-        this.getParent().requestDisallowInterceptTouchEvent(true);
-        break;
-      case MotionEvent.ACTION_UP:
-        // Allow ScrollView to intercept touch events.
-        this.getParent().requestDisallowInterceptTouchEvent(false);
-        break;
-    }
-    return super.dispatchTouchEvent(ev);
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -139,6 +123,31 @@ public class ReactEditText extends EditText {
     if (mContentSizeWatcher != null) {
       mContentSizeWatcher.onLayout();
     }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        mDetectScrollMovement = true;
+        // Disallow parent views to intercept touch events, until we can detect if we should be
+        // capturing these touches or not.
+        this.getParent().requestDisallowInterceptTouchEvent(true);
+        break;
+      case MotionEvent.ACTION_MOVE:
+        if (mDetectScrollMovement) {
+          if (!canScrollVertically(-1) &&
+              !canScrollVertically(1) &&
+              !canScrollHorizontally(-1) &&
+              !canScrollHorizontally(1)) {
+            // We cannot scroll, let parent views take care of these touches.
+            this.getParent().requestDisallowInterceptTouchEvent(false);
+          }
+          mDetectScrollMovement = false;
+        }
+        break;
+    }
+    return super.onTouchEvent(ev);
   }
 
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't
@@ -202,6 +211,16 @@ public class ReactEditText extends EditText {
   }
 
   @Override
+  public void setSelection(int start, int end) {
+    // Skip setting the selection if the text wasn't set because of an out of date value.
+    if (mMostRecentEventCount < mNativeEventCount) {
+      return;
+    }
+
+    super.setSelection(start, end);
+  }
+
+  @Override
   protected void onSelectionChanged(int selStart, int selEnd) {
     super.onSelectionChanged(selStart, selEnd);
     if (mSelectionWatcher != null && hasFocus()) {
@@ -259,12 +278,6 @@ public class ReactEditText extends EditText {
     setKeyListener(mKeyListener);
   }
 
-  @Override
-  public void setTextIsSelectable(boolean selectable) {
-    mTextIsSelectable = selectable;
-    super.setTextIsSelectable(selectable);
-  }
-
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
     mIsJSSettingFocus = true;
@@ -284,7 +297,8 @@ public class ReactEditText extends EditText {
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
     // Only set the text if it is up to date.
-    if (reactTextUpdate.getJsEventCounter() < mNativeEventCount) {
+    mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
+    if (mMostRecentEventCount < mNativeEventCount) {
       return;
     }
 

@@ -74,6 +74,7 @@ class Animated {
 type AnimationConfig = {
   isInteraction?: bool,
   useNativeDriver?: bool,
+  onComplete?: ?EndCallback,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -350,6 +351,7 @@ class DecayAnimation extends Animation {
   _velocity: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
+  _useNativeDriver: bool;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -357,13 +359,24 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
+    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+  }
+
+  __getNativeAnimationConfig() {
+    return {
+      type: 'decay',
+      deceleration: this._deceleration,
+      velocity: this._velocity,
+    };
   }
 
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
     onEnd: ?EndCallback,
+    previousAnimation: ?Animation,
+    animatedValue: AnimatedValue,
   ): void {
     this.__active = true;
     this._lastValue = fromValue;
@@ -371,7 +384,11 @@ class DecayAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._startTime = Date.now();
-    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    if (this._useNativeDriver) {
+      this.__startNativeAnimation(animatedValue);
+    } else {
+      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    }
   }
 
   onUpdate(): void {
@@ -771,6 +788,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
 
     this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
     NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
@@ -1053,11 +1071,16 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    NativeAnimatedHelper.validateInterpolation(this._config);
+    if (__DEV__) {
+      NativeAnimatedHelper.validateInterpolation(this._config);
+    }
+
     return {
-      ...this._config,
+      inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
       outputRange: this.__transformDataType(this._config.outputRange),
+      extrapolateLeft: this._config.extrapolateLeft || this._config.extrapolate || 'extend',
+      extrapolateRight: this._config.extrapolateRight || this._config.extrapolate || 'extend',
       type: 'interpolation',
     };
   }
@@ -1159,6 +1182,11 @@ class AnimatedModulo extends AnimatedWithChildren {
     this._modulus = modulus;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
   __getValue(): number {
     return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
   }
@@ -1173,6 +1201,65 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'modulus',
+      input: this._a.__getNativeTag(),
+      modulus: this._modulus,
+    };
+  }
+}
+
+class AnimatedDiffClamp extends AnimatedWithChildren {
+  _a: Animated;
+  _min: number;
+  _max: number;
+  _value: number;
+  _lastValue: number;
+
+  constructor(a: Animated, min: number, max: number) {
+    super();
+
+    this._a = a;
+    this._min = min;
+    this._max = max;
+    this._value = this._lastValue = this._a.__getValue();
+  }
+
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __getValue(): number {
+    const value = this._a.__getValue();
+    const diff = value - this._lastValue;
+    this._lastValue = value;
+    this._value = Math.min(Math.max(this._value + diff, this._min), this._max);
+    return this._value;
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'diffclamp',
+      input: this._a.__getNativeTag(),
+      min: this._min,
+      max: this._max,
+    };
   }
 }
 
@@ -1676,6 +1763,24 @@ var modulo = function(
   return new AnimatedModulo(a, modulus);
 };
 
+var diffClamp = function(
+  a: Animated,
+  min: number,
+  max: number,
+): AnimatedDiffClamp {
+  return new AnimatedDiffClamp(a, min, max);
+};
+
+const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
+  if (callback && config.onComplete) {
+    return (...args) => {
+      config.onComplete && config.onComplete(...args);
+      callback && callback(...args);
+    };
+  } else {
+    return callback || config.onComplete;
+  }
+};
 
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
@@ -1707,6 +1812,7 @@ var spring = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, spring) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1735,6 +1841,7 @@ var timing = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -1763,6 +1870,7 @@ var decay = function(
 ): CompositeAnimation {
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, config);
       var singleValue: any = value;
       var singleConfig: any = config;
       singleValue.stopTracking();
@@ -2053,6 +2161,17 @@ module.exports = {
    * provided Animated value
    */
   modulo,
+
+  /**
+   * Create a new Animated value that is limited between 2 values. It uses the
+   * difference between the last value so even if the value is far from the bounds
+   * it will start changing when the value starts getting closer again.
+   * (`value = clamp(value + diff, min, max)`).
+   *
+   * This is useful with scroll events, for example, to show the navbar when
+   * scrolling up and to hide it when scrolling down.
+   */
+  diffClamp,
 
   /**
    * Starts an animation after the given delay.

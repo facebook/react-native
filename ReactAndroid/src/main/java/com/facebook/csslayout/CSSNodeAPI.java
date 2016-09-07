@@ -54,6 +54,12 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setWrap(CSSWrap flexWrap);
   float getFlex();
   void setFlex(float flex);
+  float getFlexGrow();
+  void setFlexGrow(float flexGrow);
+  float getFlexShrink();
+  void setFlexShrink(float flexShrink);
+  float getFlexBasis();
+  void setFlexBasis(float flexBasis);
   Spacing getMargin();
   void setMargin(int spacingType, float margin);
   Spacing getPadding();
@@ -79,7 +85,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   float getLayoutWidth();
   float getLayoutHeight();
   CSSDirection getLayoutDirection();
-  void setDefaultPadding(int spacingType, float padding);
   CSSOverflow getOverflow();
   void setOverflow(CSSOverflow overflow);
   void setData(Object data);

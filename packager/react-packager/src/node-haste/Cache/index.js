@@ -87,7 +87,7 @@ class Cache {
       this._data[filepath].metadata = Object.create(null);
     }
 
-    record.data[field] = loaderPromise
+    const cachedPromise = record.data[field] = loaderPromise
       .then(data => Promise.all([
         data,
         denodeify(fs.stat)(filepath),
@@ -106,7 +106,9 @@ class Cache {
         return data;
       });
 
-    return record.data[field];
+    // don't cache rejected promises
+    cachedPromise.catch(error => delete record.data[field]);
+    return cachedPromise;
   }
 
   _persistCache() {

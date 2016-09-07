@@ -1,10 +1,12 @@
 ---
 title: San Francisco Meetup Recap
 author: Héctor Ramos
+authorTitle: Developer Advocate at Facebook
 authorURL: https://twitter.com/hectorramos
+authorImage: https://s.gravatar.com/avatar/f2223874e66e884c99087e452501f2da?s=128
+authorTwitter: hectorramos
+hero: /react-native/blog/img/rnmsf-august-2016-hero.jpg
 ---
-
-![](/react-native/blog/img/rnmsf-august-2016-hero.jpg)
 
 Last week I had the opportunity to attend the [React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.
 

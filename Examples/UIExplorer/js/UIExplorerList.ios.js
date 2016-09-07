@@ -23,8 +23,8 @@
 'use strict';
 
 export type UIExplorerExample = {
-  key: string;
-  module: Object;
+  key: string,
+  module: Object,
 };
 
 const ComponentExamples: Array<UIExplorerExample> = [
@@ -236,6 +236,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./NetInfoExample'),
   },
   {
+    key: 'OrientationChangeExample',
+    module: require('./OrientationChangeExample'),
+  },
+  {
     key: 'PanResponderExample',
     module: require('./PanResponderExample'),
   },
@@ -250,6 +254,10 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'RCTRootViewIOSExample',
     module: require('./RCTRootViewIOSExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
   },
   {
     key: 'ShareExample',

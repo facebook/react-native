@@ -13,12 +13,16 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.csslayout.FloatUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ViewDefaults;
+
+import javax.annotation.Nullable;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
@@ -31,6 +35,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private boolean mTextIsSelectable;
   private float mLineHeight = Float.NaN;
   private int mTextAlign = Gravity.NO_GRAVITY;
+  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
+  private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
 
   public ReactTextView(Context context) {
     super(context);
@@ -212,5 +218,19 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  public void setNumberOfLines(int numberOfLines) {
+    mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
+    setMaxLines(mNumberOfLines);
+  }
+
+  public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
+    mEllipsizeLocation = ellipsizeLocation;
+  }
+
+  public void updateView() {
+    @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
+    setEllipsize(ellipsizeLocation);
   }
 }

@@ -94,7 +94,7 @@ class SwipeableListView extends React.Component {
     dataSource: this.props.dataSource,
   };
 
-  _listViewRef: ?string = null;
+  _listViewRef: ?ReactElement<any> = null;
   _shouldBounceFirstRowOnMount = false;
 
   componentWillMount(): void {
@@ -132,7 +132,8 @@ class SwipeableListView extends React.Component {
    * (from high 20s to almost consistently 60 fps)
    */
   _setListViewScrollable = (value: boolean): void => {
-    if (this._listViewRef && this._listViewRef.setNativeProps) {
+    if (this._listViewRef &&
+        typeof this._listViewRef.setNativeProps === 'function') {
       this._listViewRef.setNativeProps({
         scrollEnabled: value,
       });
@@ -141,7 +142,8 @@ class SwipeableListView extends React.Component {
 
   // Passing through ListView's getScrollResponder() function
   getScrollResponder = (): ?Object => {
-    if (this._listViewRef && this._listViewRef.getScrollResponder) {
+    if (this._listViewRef &&
+        typeof this._listViewRef.getScrollResponder === 'function') {
       return this._listViewRef.getScrollResponder();
     }
   };
@@ -155,7 +157,6 @@ class SwipeableListView extends React.Component {
     }
 
     let shouldBounceOnMount = false;
-    // $FlowFixMe found when converting React.createClass to ES6
     if (this._shouldBounceFirstRowOnMount) {
       this._shouldBounceFirstRowOnMount = false;
       shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();

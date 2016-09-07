@@ -22,14 +22,12 @@
  */
 'use strict';
 
-const React = require('React');
-
 export type UIExplorerExample = {
-  key: string;
-  module: React.Component;
+  key: string,
+  module: Object,
 };
 
-var ComponentExamples: Array<UIExplorerExample> = [
+const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ActivityIndicatorExample',
     module: require('./ActivityIndicatorExample'),
@@ -108,7 +106,7 @@ var ComponentExamples: Array<UIExplorerExample> = [
   },
 ];
 
-const APIExamples = [
+const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'AccessibilityAndroidExample',
     module: require('./AccessibilityAndroidExample'),
@@ -178,6 +176,10 @@ const APIExamples = [
     module: require('./NetInfoExample'),
   },
   {
+    key: 'OrientationChangeExample',
+    module: require('./OrientationChangeExample'),
+  },
+  {
     key: 'PanResponderExample',
     module: require('./PanResponderExample'),
   },
@@ -188,6 +190,10 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
   },
   {
     key: 'ShareExample',

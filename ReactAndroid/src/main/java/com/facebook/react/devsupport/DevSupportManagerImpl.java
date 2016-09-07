@@ -234,8 +234,8 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
-      FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
       if (e instanceof JSException) {
+        FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
         // TODO #11638796: convert the stack into something useful
         showNewError(e.getMessage() + "\n\n" + ((JSException) e).getStack(), new StackFrame[] {},
                      JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
@@ -249,6 +249,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
 
   @Override
   public void showNewJavaError(String message, Throwable e) {
+    FLog.e(ReactConstants.TAG, "Exception in native call", e);
     showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE, ErrorType.NATIVE);
   }
 

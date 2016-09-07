@@ -10,7 +10,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
+//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
+#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
+#else
+#import "CSSLayout.h"
+#endif
+
 #import "RCTAnimationType.h"
 #import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"
@@ -104,8 +110,8 @@ typedef NSArray CGColorArray;
 typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
-typedef BOOL css_clip_t, css_backface_visibility_t;
-+ (css_clip_t)css_clip_t:(id)json;
+typedef BOOL css_backface_visibility_t;
++ (CSSOverflow)CSSOverflow:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (CSSFlexDirection)CSSFlexDirection:(id)json;
 + (CSSJustify)CSSJustify:(id)json;

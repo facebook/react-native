@@ -2,7 +2,7 @@
 
 var blacklist = require('../packager/blacklist');
 var path = require('path');
-var rnpmConfig = require('./rnpm/core/src/config');
+var rnpmConfig = require('./core/config');
 
 /**
  * Default configuration for the CLI.
