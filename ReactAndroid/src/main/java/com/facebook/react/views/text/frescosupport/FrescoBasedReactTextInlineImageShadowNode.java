@@ -21,6 +21,7 @@ import com.facebook.common.util.UriUtil;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -33,6 +34,7 @@ import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImag
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
+  private ReadableMap mHeaders;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
@@ -68,8 +70,17 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mUri = uri;
   }
 
+  @ReactProp(name = "headers")
+  public void setHeaders(ReadableMap headers) {
+    mHeaders = headers;
+  }
+
   public @Nullable Uri getUri() {
     return mUri;
+  }
+
+  public ReadableMap getHeaders() {
+    return mHeaders;
   }
 
   // TODO: t9053573 is tracking that this code should be shared
@@ -103,6 +114,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
       height,
       width,
       getUri(),
+      getHeaders(),
       getDraweeControllerBuilder(),
       getCallerContext());
   }

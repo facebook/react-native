@@ -85,10 +85,14 @@ var Image = React.createClass({
      * This prop can also contain several remote `uri`, specified together with
      * their width and height. The native side will then choose the best `uri` to display
      * based on the measured size of the image container.
+     *
+     * `headers` is an object representing the HTTP headers to send along with the request
+     * for a remote image.
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        headers: PropTypes.objectOf(PropTypes.string),
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -268,6 +272,7 @@ var Image = React.createClass({
         style,
         shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: sources,
+        headers: source.headers,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
@@ -314,6 +319,7 @@ var styles = StyleSheet.create({
 var cfg = {
   nativeOnly: {
     src: true,
+    headers: true,
     loadingIndicatorSrc: true,
     defaultImageSrc: true,
     imageTag: true,
