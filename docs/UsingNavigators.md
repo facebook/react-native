@@ -108,7 +108,7 @@ import { AppRegistry, Navigator, Text, View } from 'react-native';
 
 import MyScene from './MyScene';
 
-class YoDawgApp extends Component {
+class SimpleNavigationApp extends Component {
   render() {
     return (
       <Navigator
@@ -139,7 +139,7 @@ class YoDawgApp extends Component {
   }
 }
 
-AppRegistry.registerComponent('YoDawgApp', () => YoDawgApp);
+AppRegistry.registerComponent('SimpleNavigationApp', () => SimpleNavigationApp);
 ```
 
 And your MyScene.js to match this:
