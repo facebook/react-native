@@ -652,7 +652,11 @@ public class NativeAnimatedNodeTraversalTest {
         "inputRange",
         JavaOnlyArray.of(10d, 20d),
         "outputRange",
-        JavaOnlyArray.of(0d, 1d)));
+        JavaOnlyArray.of(0d, 1d),
+        "extrapolateLeft",
+        "extend",
+        "extrapolateRight",
+        "extend"));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,

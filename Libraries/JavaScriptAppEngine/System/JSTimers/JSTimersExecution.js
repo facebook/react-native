@@ -46,7 +46,7 @@ const JSTimersExecution = {
   timerIDs: [],
   immediates: [],
   requestIdleCallbacks: [],
-  identifiers: ([] : [{methodName: string}]),
+  identifiers: ([] : Array<null | {methodName: string}>),
 
   errors: (null : ?[Error]),
 
