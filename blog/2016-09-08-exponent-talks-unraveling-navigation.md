@@ -1,12 +1,12 @@
 ---
 title: Exponent Talks: Adam on Unraveling Navigation
-author: {insert name here}
-authorTitle: {insert title}
-authorURL: {link to homepage, github profile, twitter profile, etc}
-authorImage: {gravatar URL or direct link to an image, 128x128 minimum size}
-authorTwitter: {insert username}
+author: Héctor Ramos
+authorTitle: Developer Advocate at Facebook
+authorURL: https://twitter.com/hectorramos
+authorImage: https://s.gravatar.com/avatar/f2223874e66e884c99087e452501f2da?s=128
+authorTwitter: hectorramos
 youtubeVideoId: oeSjTxVkMhc
 category: videos
 ---
 
-Navigation in a mobile app isn't typically as simple as navigation in the browser. On the web, we usually have a single history stack. But on mobile, navigation can be deeply nested, and is tied directly into the fabric of almost every mobile app, even into the gestures and animations.
+[Adam Miskiewicz](https://twitter.com/skevy) from [Exponent](http://getexponent.com/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponentjs/ex-navigation) React Native library at Exponent's office hours last week.
