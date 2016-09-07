@@ -56,6 +56,8 @@ public class UnpackingJSBundleLoaderTest {
   private CatalystInstanceImpl mCatalystInstanceImpl;
   private UnpackingJSBundleLoader.Unpacker[] mMockUnpackers;
 
+  private Runnable mCallback;
+
   @Before
   public void setUp() throws IOException {
     mDestinationPath = folder.newFolder("destination");
@@ -75,6 +77,8 @@ public class UnpackingJSBundleLoaderTest {
     for (int i = 0; i < mMockUnpackers.length; ++i) {
       mMockUnpackers[i] = mock(UnpackingJSBundleLoader.Unpacker.class);
     }
+
+    mCallback = mock(Runnable.class);
   }
 
   private void addUnpackers() {
@@ -192,5 +196,18 @@ public class UnpackingJSBundleLoaderTest {
     } finally {
       assertFalse(mDestinationPath.exists());
     }
+  }
+
+  @Test
+  public void testCallbackIsCalledAfterUnpack() {
+    mBuilder.setOnUnpackedCallback(mCallback).build().prepare();
+    verify(mCallback).run();
+  }
+
+  @Test
+  public void testCallbackIsNotCalledIfNothingIsUnpacked() {
+    mBuilder.build().prepare();
+    mBuilder.setOnUnpackedCallback(mCallback).build().prepare();
+    verifyNoMoreInteractions(mCallback);
   }
 }
