@@ -43,6 +43,7 @@ public class UnpackingJSBundleLoaderTest {
 
   private static final String URL = "http://this.is.an.url";
   private static final int MOCK_UNPACKERS_NUM = 2;
+  private static final int UNPACKER_TEST_FLAGS = 129;
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
@@ -111,13 +112,13 @@ public class UnpackingJSBundleLoaderTest {
 
   @Test
   public void testSetLoadFlags() throws IOException {
-    mBuilder.setLoadFlags(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE)
+    mBuilder.setLoadFlags(UNPACKER_TEST_FLAGS)
       .build()
       .loadScript(mCatalystInstanceImpl);
     verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
       eq(mDestinationPath.getPath()),
       eq(URL),
-      eq(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE));
+      eq(UNPACKER_TEST_FLAGS));
   }
 
   @Test

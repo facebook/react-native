@@ -12,9 +12,6 @@ package com.facebook.react.cxxbridge;
 import android.content.Context;
 
 import com.facebook.react.devsupport.DebugServerException;
-import com.facebook.react.devsupport.DevServerHelper;
-
-import java.io.File;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -106,20 +103,6 @@ public abstract class JSBundleLoader {
         return realSourceURL;
       }
     };
-  }
-
-  public static JSBundleLoader createUnpackingBundleLoader(
-      final Context context,
-      final String sourceURL,
-      final String bundleName) {
-    return UnpackingJSBundleLoader.newBuilder()
-      .setContext(context)
-      .setSourceURL(sourceURL)
-      .setDestinationPath(new File(context.getFilesDir(), "optimized-bundle"))
-      .checkAndUnpackFile(bundleName + ".meta", "bundle.meta")
-      .unpackFile(bundleName, "bundle.js")
-      .setLoadFlags(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE)
-      .build();
   }
 
   public abstract void loadScript(CatalystInstanceImpl instance);
