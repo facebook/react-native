@@ -18,7 +18,6 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -154,10 +153,9 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
 
   @Override
   public void setPadding(int spacingType, float padding) {
-    if (getPadding().set(spacingType, padding)) {
-      mPaddingChanged = true;
-      dirty();
-    }
+    super.setPadding(spacingType, padding);
+    mPaddingChanged = true;
+    dirty();
   }
 
   @Override
