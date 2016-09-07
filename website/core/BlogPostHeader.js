@@ -29,6 +29,14 @@ var BlogPostHeader = React.createClass({
       hero = <a href={href}>{hero}</a>;
     }
 
+    if (post.youtube_video) {
+      hero = <div className="video-container youtube">
+               <iframe id="ytplayer" type="text/html" width="650" height="345"
+        src={post.youtube_video}
+        frameBorder="0"></iframe>
+              </div>;
+    }
+
     return (
       <header className="entry-header">
         {hero}
