@@ -70,19 +70,28 @@ We now have a simple app that renders your scene and nothing else. In this case,
 
 ### Using Navigator
 
-Enough about scenes, let's start navigating. We will start by rendering a `Navigator`, and then let the `Navigator` render the scene for you by passing in your own render function to its `renderScene` prop.
+Enough about scenes, let's start navigating. We will start by rendering a `Navigator`, and then let the `Navigator` render the scene for you by passing in your own render function to its `renderScene` prop. This is how your index should look like:
 
 ```javascript
-render() {
-  return (
-    <Navigator
-      initialRoute={{ title: 'My Initial Scene', index: 0 }}
-      renderScene={(route, navigator) => {
-        return <MyScene title={route.title} />
-      }}
-    />
-  );
+import React, { Component } from 'react';
+import { AppRegistry, Navigator } from 'react-native';
+
+import MyScene from './MyScene';
+
+class YoDawgApp extends Component {
+  render() {
+    return (
+      <Navigator
+        initialRoute={{ title: 'My Initial Scene', index: 0 }}
+        renderScene={(route, navigator) => {
+          return <MyScene title={route.title} />
+        }}
+      />
+    );
+  }
 }
+
+AppRegistry.registerComponent('YoDawgApp', () => YoDawgApp);
 ```
 
 Something you will encounter a lot when dealing with navigation is the concept of routes. A route is an object that contains information about a scene. It is used to provide all the context that the navigator's `renderScene` function needs to render a scene. It can have any number of keys to help distinguish your scene, and I happened to pick a single `title` key for the above example.
