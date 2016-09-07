@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.JavascriptException;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -212,6 +213,10 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
         } else if ("result".equals(field)) {
           parser.nextToken();
           result = parser.getText();
+        } else if ("error".equals(field)) {
+          parser.nextToken();
+          String error = parser.getText();
+          abort(error, new JavascriptException(error));
         }
       }
       if (replyID != null) {
