@@ -201,7 +201,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       try {
         JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();
         return Result.of(createReactContext(jsExecutor, params[0].getJsBundleLoader()));
-      } catch (Exception e) {
+      } catch (Throwable e) {
         // Pass exception to onPostExecute() so it can be handled on the main thread
         return Result.of(e);
       }
@@ -211,7 +211,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     protected void onPostExecute(Result<ReactApplicationContext> result) {
       try {
         setupReactContext(result.get());
-      } catch (Exception e) {
+      } catch (Throwable e) {
         mDevSupportManager.handleException(e);
       } finally {
         mReactContextInitAsyncTask = null;
@@ -230,7 +230,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     protected void onCancelled(Result<ReactApplicationContext> reactApplicationContextResult) {
       try {
         mMemoryPressureRouter.destroy(reactApplicationContextResult.get());
-      } catch (Exception e) {
+      } catch (Throwable e) {
         FLog.w(ReactConstants.TAG, "Caught exception after cancelling react context init", e);
       } finally {
         mReactContextInitAsyncTask = null;
@@ -240,29 +240,29 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private static class Result<T> {
     @Nullable private final T mResult;
-    @Nullable private final Exception mException;
+    @Nullable private final Throwable mThrowable;
 
     public static <T, U extends T> Result<T> of(U result) {
       return new Result<T>(result);
     }
 
-    public static <T> Result<T> of(Exception exception) {
+    public static <T> Result<T> of(Throwable exception) {
       return new Result<>(exception);
     }
 
     private Result(T result) {
-      mException = null;
+      mThrowable = null;
       mResult = result;
     }
 
-    private Result(Exception exception) {
-      mException = exception;
+    private Result(Throwable throwable) {
+      mThrowable = throwable;
       mResult = null;
     }
 
-    public T get() throws Exception {
-      if (mException != null) {
-        throw mException;
+    public T get() throws Throwable {
+      if (mThrowable != null) {
+        throw mThrowable;
       }
 
       Assertions.assertNotNull(mResult);

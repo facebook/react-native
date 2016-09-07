@@ -9,13 +9,13 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
+
+import javax.annotation.Nullable;
 
 /**
  * A dummy implementation of {@link DevSupportManager} to be used in production mode where
@@ -140,7 +140,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void handleException(Exception e) {
+  public void handleException(Throwable e) {
     mDefaultNativeModuleCallExceptionHandler.handleException(e);
   }
 }
