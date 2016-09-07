@@ -590,8 +590,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              (int) PixelUtil.toDIPFromPixel(contentWidth),
-              (int) PixelUtil.toDIPFromPixel(contentHeight),
+              PixelUtil.toDIPFromPixel(contentWidth),
+              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
@@ -683,7 +683,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
           mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingBottom();
       }
 
       if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
@@ -693,8 +693,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
             mEditText.getId(),
-            (int) PixelUtil.toDIPFromPixel(contentWidth),
-            (int) PixelUtil.toDIPFromPixel(contentHeight)));
+            PixelUtil.toDIPFromPixel(contentWidth),
+            PixelUtil.toDIPFromPixel(contentHeight)));
       }
     }
   }

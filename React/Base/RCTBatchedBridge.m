@@ -146,7 +146,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
         [performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
         config = [weakSelf moduleConfig];
         [performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
-        RCT_PROFILE_END_EVENT(0, @"", nil);
+        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
       }
     });
 
@@ -174,7 +174,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     }
   });
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
@@ -334,7 +334,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
       _javaScriptExecutor = (id<RCTJavaScriptExecutor>)module;
     }
   }
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // The executor is a bridge module, but we want it to be instantiated before
   // any other module has access to the bridge, in case they need the JS thread.
@@ -352,7 +352,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     // NOTE: _javaScriptExecutor is a weak reference
     _javaScriptExecutor = executorModule;
   }
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // Set up moduleData for automatically-exported modules
   RCT_PROFILE_BEGIN_EVENT(0, @"ModuleData", nil);
@@ -388,7 +388,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   _moduleDataByID = [moduleDataByID copy];
   _moduleDataByName = [moduleDataByName copy];
   _moduleClassesByID = [moduleClassesByID copy];
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // Synchronously set up the pre-initialized modules
   RCT_PROFILE_BEGIN_EVENT(0, @"extraModules", nil);
@@ -404,7 +404,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
       (void)[moduleData instance];
     }
   }
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // From this point on, RCTDidInitializeModuleNotification notifications will
   // be sent the first time a module is accessed.
@@ -413,7 +413,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   [self prepareModulesWithDispatchGroup:dispatchGroup];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)prepareModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -471,7 +471,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   }
 
   [_performanceLogger setValue:_modulesInitializedOnMainQueue forTag:RCTPLNativeModuleMainThreadUsesCount];
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)whitelistedModulesDidChange
@@ -580,7 +580,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   for (dispatch_block_t call in pendingCalls) {
     call();
   }
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)stopLoadingWithError:(NSError *)error
@@ -676,7 +676,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         block();
       }
 
-      RCT_PROFILE_END_EVENT(0, @"", nil);
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     }];
   } else if (queue) {
     dispatch_async(queue, block);
@@ -780,7 +780,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       completion();
     }
   } queue:RCTJSThread];
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 /**
@@ -833,13 +833,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"FetchApplicationScriptCallbacks", nil);
     [self->_javaScriptExecutor flushedQueue:^(id json, NSError *error)
      {
-       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,init", @{
-         @"json": RCTNullIfNil(json),
-         @"error": RCTNullIfNil(error),
-       });
-
+       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,init");
        [self handleBuffer:json batchEnded:YES];
-
        onComplete(error);
      }];
   }];
@@ -957,9 +952,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge handleBuffer:]", nil);
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTBatchedBridge handleBuffer:]", (@{
+        @"calls": @(calls.count),
+      }));
+
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
@@ -978,9 +976,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         }
       }
 
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,dispatch_async", @{
-        @"calls": @(calls.count),
-      });
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call,dispatch_async");
     };
 
     [self dispatchBlock:block queue:queue];

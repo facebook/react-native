@@ -243,9 +243,14 @@ RCT_EXPORT_MODULE()
       return (RCTURLRequestCancellationBlock)nil;
     }
     request.HTTPBody = result[@"body"];
-    NSString *contentType = result[@"contentType"];
-    if (contentType) {
-      [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
+    NSString *dataContentType = result[@"contentType"];
+    NSString *requestContentType = [request valueForHTTPHeaderField:@"Content-Type"];
+    BOOL isMultipart = [dataContentType hasPrefix:@"multipart"];
+    
+    // For multipart requests we need to override caller-specified content type with one
+    // from the data object, because it contains the boundary string
+    if (dataContentType && ([requestContentType length] == 0 || isMultipart)) {
+      [request setValue:dataContentType forHTTPHeaderField:@"Content-Type"];
     }
 
     // Gzip the request body

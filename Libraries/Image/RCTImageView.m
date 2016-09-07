@@ -214,6 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self cancelImageLoad];
   [self.layer removeAnimationForKey:@"contents"];
   self.image = nil;
+  _imageSource = nil;
 }
 
 - (void)clearImageIfDetached

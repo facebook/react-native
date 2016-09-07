@@ -483,7 +483,7 @@ class Server {
   }
 
   _processAssetsRequest(req, res) {
-    const urlObj = url.parse(req.url, true);
+    const urlObj = url.parse(decodeURI(req.url), true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
     const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
