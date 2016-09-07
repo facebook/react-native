@@ -59,7 +59,7 @@ var Switch = React.createClass({
     testID: React.PropTypes.string,
 
     /**
-     * Background color when the switch is turned off.
+     * Border color when the switch is turned off.
      * @platform ios
      */
     tintColor: ColorPropType,

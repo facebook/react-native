@@ -788,6 +788,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
 
     this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
     NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
@@ -1070,11 +1071,16 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    NativeAnimatedHelper.validateInterpolation(this._config);
+    if (__DEV__) {
+      NativeAnimatedHelper.validateInterpolation(this._config);
+    }
+
     return {
-      ...this._config,
+      inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
       outputRange: this.__transformDataType(this._config.outputRange),
+      extrapolateLeft: this._config.extrapolateLeft || this._config.extrapolate || 'extend',
+      extrapolateRight: this._config.extrapolateRight || this._config.extrapolate || 'extend',
       type: 'interpolation',
     };
   }
@@ -1222,6 +1228,11 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
     this._value = this._lastValue = this._a.__getValue();
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
     return new AnimatedInterpolation(this, config);
   }
@@ -1240,6 +1251,15 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'diffclamp',
+      input: this._a.__getNativeTag(),
+      min: this._min,
+      max: this._max,
+    };
   }
 }
 

@@ -1273,8 +1273,8 @@ describe('DependencyGraph', function() {
           `Failed to build DependencyGraph: @providesModule naming collision:\n` +
           `  Duplicate module name: index\n` +
           `  Paths: /root/b.js collides with /root/index.js\n\n` +
-          `This error is caused by a @providesModule declaration ` +
-          `with the same name across two different files.`
+          'This error is caused by a @providesModule declaration ' +
+          'with the same name across two different files.'
         );
         expect(err.type).toEqual('DependencyGraphError');
       });
@@ -2608,15 +2608,17 @@ describe('DependencyGraph', function() {
     let DependencyGraph;
     beforeEach(function() {
       process.platform = 'win32';
-      DependencyGraph = require('../index'); // force reload with fastpath
+
+      // force reload with fastpath
+      jest.resetModules();
+      DependencyGraph = require('../index');
     });
 
     afterEach(function() {
       process.platform = realPlatform;
     });
 
-    pit('should get dependencies', function() {
-      process.platform = 'win32';
+    it('should get dependencies', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
@@ -6080,7 +6082,7 @@ describe('DependencyGraph', function() {
     });
   });
 
-  fdescribe('Deterministic order of dependencies', () => {
+  describe('Deterministic order of dependencies', () => {
     let callDeferreds, dependencyGraph, moduleReadDeferreds;
     let moduleRead;
     let DependencyGraph;

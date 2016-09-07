@@ -251,7 +251,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   [self createBatchedBridge];
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)createBatchedBridge

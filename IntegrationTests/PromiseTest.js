@@ -28,9 +28,7 @@ class PromiseTest extends React.Component {
       this.testShouldSucceedAsync(),
       this.testShouldThrowAsync(),
     ]).then(() => TestModule.markTestPassed(
-      // $FlowFixMe found when converting React.createClass to ES6
       this.shouldResolve && this.shouldReject &&
-      // $FlowFixMe found when converting React.createClass to ES6
       this.shouldSucceedAsync && this.shouldThrowAsync
     ));
   }

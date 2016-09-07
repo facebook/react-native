@@ -102,10 +102,10 @@ function TextAlignmentExample(props) {
          Left-to-Right language without text alignment.
        </Text>
        <Text style={props.style}>
-         من اليمين إلى اليسار اللغة دون محاذاة النص .
+        {'\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631 \u0627\u0644\u0644\u063A\u0629 \u062F\u0648\u0646 \u0645\u062D\u0627\u0630\u0627\u0629 \u0627\u0644\u0646\u0635'}
        </Text>
        <Text style={props.style}>
-        מימין לשמאל השפה בלי יישור טקסט .
+        {'\u05DE\u05D9\u05DE\u05D9\u05DF \u05DC\u05E9\u05DE\u05D0\u05DC \u05D4\u05E9\u05E4\u05D4 \u05D1\u05DC\u05D9 \u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
        </Text>
      </View>
    </UIExplorerBlock>
@@ -233,11 +233,10 @@ class RTLExample extends React.Component {
           </UIExplorerBlock>
           <UIExplorerBlock
             title={'Controlling Animation'}
-            description={'Animation direction according to layout'}
-          >
+            description={'Animation direction according to layout'}>
             <View Style={styles.view}>
               <AnimationBlock
-                onPress={this._linearTap.bind(this)}
+                onPress={this._linearTap}
                 imgStyle={{transform: [{translateX: this.state.linear}, {scaleX: IS_RTL ? -1 : 1}]}}
               />
             </View>
@@ -271,13 +270,11 @@ class RTLExample extends React.Component {
       },
     });
     const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
-    const toMaxDistance =
-      IS_RTL ?
-      -this.state.windowWidth / 2 + offset :
-      this.state.windowWidth / 2 - offset;
+    const toMaxDistance = (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
     Animated.timing(this.state.linear, {
       toValue: this.state.toggleStatus[refName] ? toMaxDistance : 0,
       duration: 2000,
+      useNativeDriver: true,
     }).start();
   };
 
