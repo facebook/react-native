@@ -761,8 +761,8 @@ const TextInput = React.createClass({
     // that we have in JS.
     const nativeProps = {};
 
-    if (this._lastNativeText !== this.props.value && typeof this.props.value === 'string') {
-      nativeProps.text = this.props.value;
+    if (this._lastNativeText !== this.props.value && typeof this.props.value !== 'string') {
+      nativeProps.text = (this.props.value === null ? '' : this.props.value);
     }
 
     // Selection is also a controlled prop, if the native value doesn't match
