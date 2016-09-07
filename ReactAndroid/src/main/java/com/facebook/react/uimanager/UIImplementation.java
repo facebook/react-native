@@ -46,6 +46,9 @@ public class UIImplementation {
   private final int[] mMeasureBuffer = new int[4];
   private final ReactApplicationContext mReactContext;
 
+  private double mLayoutCount = 0.0;
+  private double mLayoutTimer = 0.0;
+
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
   }
@@ -144,6 +147,14 @@ public class UIImplementation {
     if (mOperationsQueue.isEmpty()) {
       dispatchViewUpdates(eventDispatcher, -1); // -1 = no associated batch id
     }
+  }
+
+  public double getLayoutCount() {
+    return mLayoutCount;
+  }
+
+  public double getLayoutTimer() {
+    return mLayoutTimer;
   }
 
   /**
@@ -739,10 +750,13 @@ public class UIImplementation {
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
         .arg("rootTag", cssRoot.getReactTag())
         .flush();
+    double startTime = (double) System.nanoTime();
     try {
       cssRoot.calculateLayout(mLayoutContext);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutCount = mLayoutCount + 1;
     }
   }
 

@@ -99,7 +99,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     [self showLoadingView];
   }
 
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   return self;
 }
@@ -236,6 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
+  RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
   [bridge enqueueJSCall:@"AppRegistry"
                  method:@"runApplication"
                    args:@[moduleName, appParameters]

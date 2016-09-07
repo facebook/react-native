@@ -97,8 +97,8 @@ var Site = React.createClass({
         <head>
           <title>{title}</title>
           {
-            metaTags.map((tag) =>
-              <meta {...tag} />)
+            metaTags.map((tag, index) =>
+              <meta key={index} {...tag} />)
           }
 
           <base href={basePath} />

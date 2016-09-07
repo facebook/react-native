@@ -125,10 +125,19 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     return URL ? [NSURLRequest requestWithURL:URL] : nil;
   }
   if ([json isKindOfClass:[NSDictionary class]]) {
-    NSURL *URL = [self NSURL:json[@"uri"] ?: json[@"url"]];
+    NSString *URLString = json[@"uri"] ?: json[@"url"];
+
+    NSURL *URL;
+    NSString *bundleName = json[@"bundle"];
+    if (bundleName) {
+      URLString = [NSString stringWithFormat:@"%@.bundle/%@", bundleName, URLString];
+    }
+
+    URL = [self NSURL:URLString];
     if (!URL) {
       return nil;
     }
+
     NSData *body = [self NSData:json[@"body"]];
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];

@@ -26,7 +26,7 @@ const EVENT_EMITTER = new events.EventEmitter();
 function startEvent(
   name: string,
   data: any = null,
-  options?: EventOptions = {telemetric: false},
+  options?: EventOptions = {},
 ): number {
   if (name == null) {
     throw new Error('No event name specified!');
@@ -64,7 +64,7 @@ function forgetEvent(id: number): void {
 }
 
 function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
-  const event = EVENT_INDEX[id];
+  const event = getEvent(id);
   EVENT_EMITTER.emit(phase, id);
 
   if (!ENABLED) {
@@ -80,20 +80,24 @@ function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
 
   const logTimeStamp = new Date().toLocaleString();
   const dataString = data ? ': ' + JSON.stringify(data) : '';
-  const {telemetric} = options;
+  const {telemetric, silent} = options;
 
   switch (phase) {
     case 'startEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      }
       break;
 
     case 'endEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(
-        chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString} `) +
-        (telemetric ? chalk.reset.cyan(`(${+durationMs}ms)`) : chalk.dim(`(${+durationMs}ms)`))
-      );
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(
+          chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString} `) +
+          (telemetric ? chalk.reset.cyan(`(${+durationMs}ms)`) : chalk.dim(`(${+durationMs}ms)`))
+        );
+      }
       forgetEvent(id);
       break;
 

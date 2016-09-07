@@ -238,11 +238,6 @@ static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef co
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-- (NSError *)errorForJSError:(JSValue *)jsError
-{
-  return RCTNSErrorFromJSError(_jscWrapper, jsError.context.JSGlobalContextRef, jsError.JSValueRef);
-}
-
 #if RCT_DEV
 
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
@@ -319,7 +314,7 @@ static NSThread *newJavaScriptThread(void)
     _javaScriptThread = newJavaScriptThread();
   }
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return self;
 }
 
@@ -434,10 +429,10 @@ static NSThread *newJavaScriptThread(void)
         return nil;
       }
 
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", @{ @"moduleName": moduleName });
       NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
       NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config", @{ @"moduleName": moduleName });
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
       return result;
     };
 
@@ -449,7 +444,19 @@ static NSThread *newJavaScriptThread(void)
 
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeFlushQueueImmediate", nil);
       [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call");
+    };
+
+    context[@"nativeCallSyncHook"] = ^id(NSUInteger module, NSUInteger method, NSArray *args) {
+      RCTJSCExecutor *strongSelf = weakSelf;
+      if (!strongSelf.valid) {
+        return nil;
+      }
+
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeCallSyncHook", nil);
+      id result = [strongSelf->_bridge callNativeModule:module method:method params:args];
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
+      return result;
     };
 
 #if RCT_PROFILE
@@ -536,7 +543,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
     RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, args);
   };
   context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
-    RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
+    RCT_PROFILE_END_EVENT(tag.longLongValue, @"console");
   };
   RCTCookieMap *cookieMap = [RCTCookieMap new];
   context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
@@ -550,7 +557,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
       newCookie = it->second;
       cookieMap->_cookieMap.erase(it);
     }
-    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
+    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async");
   };
 #endif
 }
@@ -647,7 +654,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
       return;
     }
 
-    RCT_PROFILE_BEGIN_EVENT(0, @"executeJSCall", @{@"method": method, @"args": arguments});
+    RCT_PROFILE_BEGIN_EVENT(0, @"executeJSCall", (@{@"method": method, @"args": arguments}));
 
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
     JSContext *context = strongSelf->_context.context;
@@ -704,7 +711,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
       }
     }
 
-    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+    RCT_PROFILE_END_EVENT(0, @"js_call");
 
     onComplete(objcValue, error);
   }];
@@ -778,7 +785,7 @@ static NSData *loadPossiblyBundledApplicationScript(NSData *script, NSURL *sourc
     script = nullTerminatedScript;
   }
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return script;
 }
 
@@ -791,8 +798,9 @@ static void registerNativeRequire(JSContext *context, RCTJSCExecutor *executor)
 static NSError *executeApplicationScript(NSData *script, NSURL *sourceURL, RCTJSCWrapper *jscWrapper,
                                          RCTPerformanceLogger *performanceLogger, JSGlobalContextRef ctx)
 {
-  RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / execute script",
-                          @{ @"url": sourceURL.absoluteString, @"size": @(script.length) });
+  RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / execute script", (@{
+    @"url": sourceURL.absoluteString, @"size": @(script.length)
+  }));
   [performanceLogger markStartForTag:RCTPLScriptExecution];
   JSValueRef jsError = NULL;
   JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
@@ -802,7 +810,7 @@ static NSError *executeApplicationScript(NSData *script, NSURL *sourceURL, RCTJS
   jscWrapper->JSStringRelease(execJSString);
   [performanceLogger markStopForTag:RCTPLScriptExecution];
   NSError *error = result ? nil : RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
-  RCT_PROFILE_END_EVENT(0, @"js_call", nil);
+  RCT_PROFILE_END_EVENT(0, @"js_call");
   return error;
 }
 
@@ -865,7 +873,7 @@ static NSError *executeApplicationScript(NSData *script, NSURL *sourceURL, RCTJS
         error = RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
       }
     }
-    RCT_PROFILE_END_EVENT(0, @"js_call,json_call", nil);
+    RCT_PROFILE_END_EVENT(0, @"js_call,json_call");
 
     if (onComplete) {
       onComplete(error);
@@ -916,8 +924,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
 
   [_performanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
   [_performanceLogger appendStartForTag:RCTPLRAMNativeRequires];
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          [@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID], nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([@"nativeRequire_" stringByAppendingFormat:@"%@", moduleID]), nil);
 
   const uint32_t ID = [moduleID unsignedIntValue];
 
@@ -934,7 +941,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
     executeRandomAccessModule(self, ID, NSSwapLittleIntToHost(moduleData->offset), size);
   }
 
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call");
   [_performanceLogger appendStopForTag:RCTPLRAMNativeRequires];
 }
 
