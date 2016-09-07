@@ -64,8 +64,9 @@ class PickerAndroid extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this._stateFromProps = this._stateFromProps.bind(this);
+    this._onChange = this._onChange.bind(this);
     var state = this._stateFromProps(props);
-
     this.state = {
       ...state,
       initialSelectedIndex: state.selectedIndex,
@@ -77,7 +78,7 @@ class PickerAndroid extends React.Component {
   }
 
   // Translate prop and children into stuff that the native picker understands.
-  _stateFromProps = (props) => {
+  _stateFromProps(props) {
     var selectedIndex = 0;
     const items = ReactChildren.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
@@ -112,7 +113,7 @@ class PickerAndroid extends React.Component {
     return <Picker ref={REF_PICKER} {...nativeProps} />;
   }
 
-  _onChange = (event: Event) => {
+  _onChange(event: Event) {
     if (this.props.onValueChange) {
       var position = event.nativeEvent.position;
       if (position >= 0) {
