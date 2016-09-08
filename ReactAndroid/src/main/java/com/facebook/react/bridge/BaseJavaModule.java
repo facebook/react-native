@@ -50,9 +50,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
-  static final public String METHOD_TYPE_REMOTE = "remote";
-  static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
-  static final public String METHOD_TYPE_SYNC_HOOK = "syncHook";
+  static final public String METHOD_TYPE_ASYNC = "async";
+  static final public String METHOD_TYPE_PROMISE= "promise";
+  static final public String METHOD_TYPE_SYNC = "sync";
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -164,7 +164,7 @@ public abstract class BaseJavaModule implements NativeModule {
     private final ArgumentExtractor[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
-    private String mType = METHOD_TYPE_REMOTE;
+    private String mType = METHOD_TYPE_ASYNC;
     private final int mJSArgumentsNeeded;
     private final String mTraceName;
 
@@ -203,7 +203,7 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (paramClass == Promise.class) {
           Assertions.assertCondition(
             i == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         }
         builder.append(paramTypeToChar(paramClass));
       }
@@ -254,7 +254,7 @@ public abstract class BaseJavaModule implements NativeModule {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
           Assertions.assertCondition(
               paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         } else if (argumentClass == ReadableMap.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
         } else if (argumentClass == ReadableArray.class) {
@@ -339,8 +339,8 @@ public abstract class BaseJavaModule implements NativeModule {
 
     /**
      * Determines how the method is exported in JavaScript:
-     * METHOD_TYPE_REMOTE for regular methods
-     * METHOD_TYPE_REMOTE_ASYNC for methods that return a promise object to the caller.
+     * METHOD_TYPE_ASYNC for regular methods
+     * METHOD_TYPE_PROMISE for methods that return a promise object to the caller.
      */
     @Override
     public String getType() {
