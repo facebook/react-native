@@ -8,6 +8,7 @@
  *
  * @providesModule AnimatedImplementation
  * @flow
+ * @preventMunge
  */
 'use strict';
 
