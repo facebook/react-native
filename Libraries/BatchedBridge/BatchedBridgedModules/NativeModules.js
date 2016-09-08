@@ -20,6 +20,7 @@ function normalizePrefix(moduleName: string): string {
 
 /**
  * Dirty hack to support old (RK) and new (RCT) native module name conventions.
+ * TODO 10487027: kill this behaviour
  */
 Object.keys(RemoteModules).forEach((moduleName) => {
   const strippedName = normalizePrefix(moduleName);
@@ -46,11 +47,7 @@ Object.keys(RemoteModules).forEach((moduleName) => {
     get: () => {
       let module = RemoteModules[moduleName];
       if (module && typeof module.moduleID === 'number' && global.nativeRequireModuleConfig) {
-        // The old bridge (still used by iOS) will send the config as
-        //  a JSON string that needs parsing, so we set config according
-        //  to the type of response we got.
-        const rawConfig = global.nativeRequireModuleConfig(moduleName);
-        const config = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
+        const config = global.nativeRequireModuleConfig(moduleName);
         module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
         RemoteModules[moduleName] = module;
       }
