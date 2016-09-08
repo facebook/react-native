@@ -29,10 +29,11 @@ var BlogPostHeader = React.createClass({
       hero = <a href={href}>{hero}</a>;
     }
 
-    if (post.youtube_video) {
+    if (post.youtubeVideoId) {
+      var embedURL = "https://www.youtube.com/embed/" + post.youtubeVideoId;
       hero = <div className="video-container youtube">
                <iframe id="ytplayer" type="text/html" width="650" height="345"
-        src={post.youtube_video}
+        src={embedURL}
         frameBorder="0"></iframe>
               </div>;
     }
