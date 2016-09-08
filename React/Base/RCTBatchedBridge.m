@@ -69,12 +69,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                       moduleProvider:bridge.moduleProvider
                        launchOptions:bridge.launchOptions]) {
     _parentBridge = bridge;
+    _performanceLogger = [bridge performanceLogger];
 
     RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
-
-    _performanceLogger = [RCTPerformanceLogger new];
-    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-    [_performanceLogger markStartForTag:RCTPLTTI];
 
     /**
      * Set Initial State
