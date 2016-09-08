@@ -34,9 +34,9 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 const DEBUG_INFO_LIMIT = 32;
 
 const MethodTypes = keyMirror({
-  remote: null,
-  remoteAsync: null,
-  syncHook: null,
+  async: null,
+  promise: null,
+  sync: null,
 });
 
 const guard = (fn) => {
@@ -78,15 +78,7 @@ class MessageQueue {
     lazyProperty(this, 'RemoteModules', () => {
       const {remoteModuleConfig} = configProvider();
       const modulesConfig = remoteModuleConfig;
-      const modules = this._genModules(modulesConfig);
-
-      if (__DEV__) {
-        this._genLookupTables(
-          modulesConfig, this._remoteModuleTable, this._remoteMethodTable
-        );
-      }
-
-      return modules;
+      return this._genModules(modulesConfig);
     });
   }
 
@@ -148,7 +140,7 @@ class MessageQueue {
     const info = this._genModule(config, moduleID);
     this.RemoteModules[info.name] = info.module;
     if (__DEV__) {
-      this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
+      this._createDebugLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
     }
     return info.module;
   }
@@ -157,10 +149,13 @@ class MessageQueue {
     return new Date().getTime() - this._eventLoopStartTime;
   }
 
+  registerCallableModule(name, methods) {
+    this._callableModules[name] = methods;
+  }
+
   /**
    * "Private" methods
    */
-
   __callImmediates() {
     Systrace.beginEvent('JSTimersExecution.callImmediates()');
     guard(() => JSTimersExecution.callImmediates());
@@ -181,7 +176,6 @@ class MessageQueue {
       onSucc && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onSucc;
     }
-    var preparedParams = this._serializeNativeParams ? JSON.stringify(params) : params;
 
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
@@ -191,6 +185,8 @@ class MessageQueue {
 
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
+
+    const preparedParams = this._serializeNativeParams ? JSON.stringify(params) : params;
     this._queue[PARAMS].push(preparedParams);
 
     const now = new Date().getTime();
@@ -279,13 +275,91 @@ class MessageQueue {
    * Private helper methods
    */
 
-  _genLookupTables(modulesConfig, moduleTable, methodTable) {
-    modulesConfig.forEach((config, moduleID) => {
-      this._genLookup(config, moduleID, moduleTable, methodTable);
+  _genModules(remoteModules) {
+    const modules = {};
+    remoteModules.forEach((config, moduleID) => {
+      // Initially this config will only contain the module name when running in JSC. The actual
+      // configuration of the module will be lazily loaded (see NativeModules.js) and updated
+      // through processModuleConfig.
+      const info = this._genModule(config, moduleID);
+      if (info) {
+        modules[info.name] = info.module;
+      }
+
+      if (__DEV__) {
+        this._createDebugLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
+      }
     });
+    return modules;
   }
 
-  _genLookup(config, moduleID, moduleTable, methodTable) {
+  _genModule(config, moduleID): ?Object {
+    if (!config) {
+      return null;
+    }
+
+    let moduleName, constants, methods, promiseMethods, syncMethods;
+    if (moduleHasConstants(config)) {
+      [moduleName, constants, methods, promiseMethods, syncMethods] = config;
+    } else {
+      [moduleName, methods, promiseMethods, syncMethods] = config;
+    }
+
+    const module = {};
+    methods && methods.forEach((methodName, methodID) => {
+      const isPromise = promiseMethods && arrayContains(promiseMethods, methodID);
+      const isSync = syncMethods && arrayContains(syncMethods, methodID);
+      invariant(!isPromise || !isSync, 'Cannot have a method that is both async and a sync hook');
+      const methodType = isPromise ? MethodTypes.promise :
+        isSync ? MethodTypes.sync : MethodTypes.async;
+      module[methodName] = this._genMethod(moduleID, methodID, methodType);
+    });
+    Object.assign(module, constants);
+
+    if (!constants && !methods && !promiseMethods) {
+      module.moduleID = moduleID;
+    }
+
+    return { name: moduleName, module };
+  }
+
+  _genMethod(module, method, type) {
+    let fn = null;
+    const self = this;
+    if (type === MethodTypes.promise) {
+      fn = function(...args) {
+        return new Promise((resolve, reject) => {
+          self.__nativeCall(module, method, args,
+            (data) => resolve(data),
+            (errorData) => reject(createErrorFromErrorData(errorData)));
+        });
+      };
+    } else if (type === MethodTypes.sync) {
+      fn = function(...args) {
+        return global.nativeCallSyncHook(module, method, args);
+      };
+    } else {
+      fn = function(...args) {
+        const lastArg = args.length > 0 ? args[args.length - 1] : null;
+        const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
+        const hasSuccessCallback = typeof lastArg === 'function';
+        const hasErrorCallback = typeof secondLastArg === 'function';
+        hasErrorCallback && invariant(
+          hasSuccessCallback,
+          'Cannot have a non-function arg after a function arg.'
+        );
+        const onSuccess = hasSuccessCallback ? lastArg : null;
+        const onFail = hasErrorCallback ? secondLastArg : null;
+        const callbackCount = hasSuccessCallback + hasErrorCallback;
+        args = args.slice(0, args.length - callbackCount);
+        return self.__nativeCall(module, method, args, onFail, onSuccess);
+      };
+    }
+    fn.type = type;
+    return fn;
+  }
+
+  _createDebugLookup(config, moduleID, moduleTable, methodTable) {
     if (!config) {
       return;
     }
@@ -300,99 +374,6 @@ class MessageQueue {
     moduleTable[moduleID] = moduleName;
     methodTable[moduleID] = Object.assign({}, methods);
   }
-
-  _genModules(remoteModules) {
-    const modules = {};
-
-    remoteModules.forEach((config, moduleID) => {
-      const info = this._genModule(config, moduleID);
-      if (info) {
-        modules[info.name] = info.module;
-      }
-    });
-
-    return modules;
-  }
-
-  _genModule(config, moduleID): ?Object {
-    if (!config) {
-      return null;
-    }
-
-    let moduleName, constants, methods, asyncMethods, syncHooks;
-    if (moduleHasConstants(config)) {
-      [moduleName, constants, methods, asyncMethods, syncHooks] = config;
-    } else {
-      [moduleName, methods, asyncMethods, syncHooks] = config;
-    }
-
-    const module = {};
-    methods && methods.forEach((methodName, methodID) => {
-      const isAsync = asyncMethods && arrayContains(asyncMethods, methodID);
-      const isSyncHook = syncHooks && arrayContains(syncHooks, methodID);
-      invariant(!isAsync || !isSyncHook, 'Cannot have a method that is both async and a sync hook');
-      const methodType = isAsync ? MethodTypes.remoteAsync :
-          isSyncHook ? MethodTypes.syncHook :
-          MethodTypes.remote;
-      module[methodName] = this._genMethod(moduleID, methodID, methodType);
-    });
-    Object.assign(module, constants);
-
-    if (!constants && !methods && !asyncMethods) {
-      module.moduleID = moduleID;
-    }
-
-    return { name: moduleName, module };
-  }
-
-  _genMethod(module, method, type) {
-    let fn = null;
-    const self = this;
-    if (type === MethodTypes.remoteAsync) {
-      fn = function(...args) {
-        return new Promise((resolve, reject) => {
-          self.__nativeCall(
-            module,
-            method,
-            args,
-            (data) => {
-              resolve(data);
-            },
-            (errorData) => {
-              var error = createErrorFromErrorData(errorData);
-              reject(error);
-            });
-        });
-      };
-    } else if (type === MethodTypes.syncHook) {
-      return function(...args) {
-        return global.nativeCallSyncHook(module, method, args);
-      };
-    } else {
-      fn = function(...args) {
-        const lastArg = args.length > 0 ? args[args.length - 1] : null;
-        const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
-        const hasSuccCB = typeof lastArg === 'function';
-        const hasErrorCB = typeof secondLastArg === 'function';
-        hasErrorCB && invariant(
-          hasSuccCB,
-          'Cannot have a non-function arg after a function arg.'
-        );
-        const numCBs = hasSuccCB + hasErrorCB;
-        const onSucc = hasSuccCB ? lastArg : null;
-        const onFail = hasErrorCB ? secondLastArg : null;
-        args = args.slice(0, args.length - numCBs);
-        return self.__nativeCall(module, method, args, onFail, onSucc);
-      };
-    }
-    fn.type = type;
-    return fn;
-  }
-
-  registerCallableModule(name, methods) {
-    this._callableModules[name] = methods;
-  }
-
 }
 
 function moduleHasConstants(moduleArray: Array<Object|Array<>>): boolean {

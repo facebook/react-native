@@ -423,15 +423,14 @@ static NSThread *newJavaScriptThread(void)
 
     __weak RCTJSCExecutor *weakSelf = self;
 
-    context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
+    context[@"nativeRequireModuleConfig"] = ^NSArray *(NSString *moduleName) {
       RCTJSCExecutor *strongSelf = weakSelf;
       if (!strongSelf.valid) {
         return nil;
       }
 
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", @{ @"moduleName": moduleName });
-      NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
-      NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
+      NSArray *result = [strongSelf->_bridge configForModuleName:moduleName];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
       return result;
     };
