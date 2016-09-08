@@ -53,9 +53,9 @@ public:
 
   std::string getType() {
     if (method_->func) {
-      return "remote";
+      return "async";
     } else {
-      return "syncHook";
+      return "sync";
     }
   }
 
