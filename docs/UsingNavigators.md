@@ -100,7 +100,7 @@ navigator.push({
 navigator.pop();
 ```
 
-A more complete example that demonstrates the pushing and popping of routes. Edit your index*.js file to therefore look something like this:
+A more complete example that demonstrates the pushing and popping of routes. Edit your index*.js file to look something like this:
 
 ```javascript
 import React, { Component } from 'react';
