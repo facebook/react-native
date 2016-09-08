@@ -14,9 +14,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -39,6 +41,7 @@ import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -75,6 +78,8 @@ public class ReactEditText extends EditText {
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
+
+  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -476,6 +481,52 @@ public class ReactEditText extends EditText {
         span.onFinishTemporaryDetach();
       }
     }
+  }
+
+  @Override
+  public void setBackgroundColor(int color) {
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
+  public void setBorderWidth(int position, float width) {
+    getOrCreateReactViewBackground().setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mReactBackgroundDrawable == null) {
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      Drawable backgroundDrawable = getBackground();
+      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      // drawable back as a part of LayerDrawable
+      if (backgroundDrawable == null) {
+        super.setBackground(mReactBackgroundDrawable);
+      } else {
+        LayerDrawable layerDrawable =
+            new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
+        super.setBackground(layerDrawable);
+      }
+    }
+    return mReactBackgroundDrawable;
   }
 
   /**
