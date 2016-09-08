@@ -33,8 +33,8 @@ type GeoOptions = {
 /**
  * The Geolocation API follows the web spec:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
- * 
- * As a browser polyfill, this API is available through the `navigator.geolocation` 
+ *
+ * As a browser polyfill, this API is available through the `navigator.geolocation`
  * global - you do not need to `import` it.
  *
  * ### iOS
