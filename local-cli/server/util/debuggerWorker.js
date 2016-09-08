@@ -15,16 +15,21 @@ var messageHandlers = {
     for (var key in message.inject) {
       self[key] = JSON.parse(message.inject[key]);
     }
-    importScripts(message.url);
-    sendReply();
+    let error;
+    try {
+      importScripts(message.url);
+    } catch (err) {
+      error = JSON.stringify(err);
+    }
+    sendReply(null /* result */, error);
   }
 };
 
 onmessage = function(message) {
   var object = message.data;
 
-  var sendReply = function(result) {
-    postMessage({replyID: object.id, result: result});
+  var sendReply = function(result, error) {
+    postMessage({replyID: object.id, result: result, error: error});
   };
 
   var handler = messageHandlers[object.method];
