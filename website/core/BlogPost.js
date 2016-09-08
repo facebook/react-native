@@ -15,7 +15,7 @@ var Marked = require('Marked');
 var React = require('React');
 var BlogPostHeader = require('BlogPostHeader');
 var BlogPostFooter = require('BlogPostFooter');
-var ReadMoreLink = require('ReadMoreLink');
+var ExcerptLink = require('ExcerptLink');
 
 var BlogPost = React.createClass({
   render: function() {
@@ -37,7 +37,7 @@ var BlogPost = React.createClass({
 
     if (this.props.excerpt) {
       content = content.trim().split('\n')[0];
-      footer = <ReadMoreLink href={'/react-native/blog/' + post.path} />;
+      footer = <ExcerptLink href={'/react-native/blog/' + post.path} category={post.category} />;
     }
 
     return (

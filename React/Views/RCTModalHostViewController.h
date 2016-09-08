@@ -13,4 +13,6 @@
 
 @property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds);
 
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
+
 @end

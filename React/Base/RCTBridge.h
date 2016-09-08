@@ -21,8 +21,9 @@
 
 /**
  * This notification triggers a reload of all bridges currently running.
+ * Deprecated, use RCTBridge::requestReload instead.
  */
-RCT_EXTERN NSString *const RCTReloadNotification;
+RCT_EXTERN NSString *const RCTReloadNotification DEPRECATED_ATTRIBUTE;
 
 /**
  * This notification fires when the bridge starts loading the JS bundle.
@@ -182,6 +183,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;
+
+/**
+ * Inform the bridge, and anything subscribing to it, that it should reload.
+ */
+- (void)requestReload;
 
 /**
  * Says whether bridge has started recieving calls from javascript.

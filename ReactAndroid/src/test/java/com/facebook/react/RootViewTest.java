@@ -149,7 +149,7 @@ public class RootViewTest {
             0.,
             "target",
             rootViewId,
-            "timeStamp",
+            "timestamp",
             (double) ts,
             "identifier",
             0.));
@@ -186,7 +186,7 @@ public class RootViewTest {
             0.,
             "target",
             rootViewId,
-            "timeStamp",
+            "timestamp",
             (double) ts,
             "identifier",
             0.));

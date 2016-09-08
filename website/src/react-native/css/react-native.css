@@ -1793,3 +1793,22 @@ article li {
 .btn:hover {
   text-decoration: none !important;
 }
+
+.video-container {
+  border-radius: 4px;
+  background-clip: padding-box;
+  margin: 0 0 18px;
+  height: 180px;
+  width: 100%;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  height: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 760px) {
+  .video-container {
+    height: 345px;
+  }
+}
