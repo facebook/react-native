@@ -127,5 +127,4 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
-
 @end

@@ -25,19 +25,12 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 
 @end
 
-#if TARGET_OS_TV
 @interface RCTAlertManager()
-#else
-@interface RCTAlertManager() <UIAlertViewDelegate>
-#endif
 
 @end
 
 @implementation RCTAlertManager
 {
-#if !TARGET_OS_TV
-  NSMutableArray<UIAlertView *> *_alerts;
-#endif
   NSMutableArray<UIAlertController *> *_alertControllers;
   NSMutableArray<RCTResponseSenderBlock> *_alertCallbacks;
   NSMutableArray<NSArray<NSString *> *> *_alertButtonKeys;
@@ -52,11 +45,6 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-#if !TARGET_OS_TV
-  for (UIAlertView *alert in _alerts) {
-    [alert dismissWithClickedButtonIndex:0 animated:YES];
-  }
-#endif
   for (UIAlertController *alertController in _alertControllers) {
     [alertController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
   }
@@ -190,42 +178,5 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 
   [presentingController presentViewController:alertController animated:YES completion:nil];
 }
-
-#if !TARGET_OS_TV
-
-#pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-  NSUInteger index = [_alerts indexOfObject:alertView];
-  RCTAssert(index != NSNotFound, @"Dismissed alert was not recognised");
-
-  RCTResponseSenderBlock callback = _alertCallbacks[index];
-  NSArray<NSString *> *buttonKeys = _alertButtonKeys[index];
-
-  switch (alertView.alertViewStyle) {
-    case UIAlertViewStylePlainTextInput:
-    case UIAlertViewStyleSecureTextInput:
-      callback(@[buttonKeys[buttonIndex], [alertView textFieldAtIndex:0].text]);
-      break;
-    case UIAlertViewStyleLoginAndPasswordInput: {
-      NSDictionary<NSString *, NSString *> *loginCredentials = @{
-        @"login": [alertView textFieldAtIndex:0].text,
-        @"password": [alertView textFieldAtIndex:1].text,
-      };
-      callback(@[buttonKeys[buttonIndex], loginCredentials]);
-      break;
-    }
-    case UIAlertViewStyleDefault:
-      callback(@[buttonKeys[buttonIndex]]);
-      break;
-  }
-
-  [_alerts removeObjectAtIndex:index];
-  [_alertCallbacks removeObjectAtIndex:index];
-  [_alertButtonKeys removeObjectAtIndex:index];
-}
-
-#endif
 
 @end

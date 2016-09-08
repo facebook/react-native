@@ -17,8 +17,6 @@
 
 RCT_EXPORT_MODULE()
 
-#if !TARGET_OS_TV
-
 - (UIView *)view
 {
   return [RCTPicker new];
@@ -45,7 +43,5 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
 {
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
-
-#endif //TARGET_OS_TV
 
 @end

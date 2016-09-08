@@ -9,9 +9,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTComponent.h"
-
-
 @interface RCTTabBar : UIView
 
 @property (nonatomic, strong) UIColor *unselectedTintColor;
