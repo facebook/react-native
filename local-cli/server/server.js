@@ -64,7 +64,7 @@ function server(argv, config, args) {
     }
     console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
     console.log('for common problems and solutions.');
-    process.exit(1);
+    process.exit(11);
   });
 
   runServer(args, config, () => console.log('\nReact packager ready.\n'));
