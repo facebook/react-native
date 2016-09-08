@@ -621,6 +621,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   [_parentBridge reload];
 }
 
+- (void)requestReload
+{
+  [_parentBridge requestReload];
+}
+
 - (Class)executorClass
 {
   return _parentBridge.executorClass ?: [RCTJSCExecutor class];
