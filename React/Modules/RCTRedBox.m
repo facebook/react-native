@@ -450,7 +450,7 @@ RCT_EXPORT_METHOD(dismiss)
 }
 
 - (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
+  [_bridge requestReload];
 }
 
 @end
