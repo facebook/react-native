@@ -238,8 +238,8 @@ class WebView extends React.Component {
     /**
      * @ios
      *
-     * A function that is invoked when the webview calls `window.postMessage`.
-     * Requires `messagingEnabled` to be true.
+     * A function that is invoked when the webview calls `window.postMessage`. Setting
+     * this property will inject a `postMessage` global into your webview.
      *
      * The argument passed to postMessage is available on `event.nativeEvent.message`.
      *
@@ -280,13 +280,6 @@ class WebView extends React.Component {
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
-
-    /**
-     * @ios
-     *
-     * Injects a postMessage global into the webview. Required to use onMessage.
-     */
-    messagingEnabled: PropTypes.bool,
 
     /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
@@ -403,6 +396,8 @@ class WebView extends React.Component {
       source.uri = this.props.url;
     }
 
+    const messagingEnabled = typeof this.props.onMessage === 'function';
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -418,7 +413,7 @@ class WebView extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
-        messagingEnabled={this.props.messagingEnabled}
+        messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}

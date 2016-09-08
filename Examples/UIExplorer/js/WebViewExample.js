@@ -254,7 +254,6 @@ class MessagingTest extends React.Component {
             }}
             source={require('./messagingtest.html')}
             onMessage={this.onMessage}
-            messagingEnabled
           />
         </View>
       </View>
