@@ -21,7 +21,7 @@ const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 function server(argv, config, args) {
   args.projectRoots = args.projectRoots.concat(
     args.root,
-    findSymlinksPaths(NODE_MODULES)
+    findSymlinksPaths(NODE_MODULES, args.projectRoots)
   );
 
   console.log(formatBanner(
