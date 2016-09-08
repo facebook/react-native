@@ -16,13 +16,17 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * Manages instances of spannable {@link TextView}.
@@ -36,6 +40,10 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
+
+  private static final int[] SPACING_TYPES = {
+          Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+  };
 
   @Override
   public String getName() {
@@ -85,7 +93,54 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   public void setSelectable(ReactTextView view, boolean isSelectable) {
     view.setTextIsSelectable(isSelectable);
   }
+  
+  @ReactPropGroup(names = {
+          ViewProps.BORDER_RADIUS,
+          ViewProps.BORDER_TOP_LEFT_RADIUS,
+          ViewProps.BORDER_TOP_RIGHT_RADIUS,
+          ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+          ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
+    if (!CSSConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
 
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
+  }
+
+  @ReactProp(name = "borderStyle")
+  public void setBorderStyle(ReactTextView view, @Nullable String borderStyle) {
+    view.setBorderStyle(borderStyle);
+  }
+
+  @ReactPropGroup(names = {
+          ViewProps.BORDER_WIDTH,
+          ViewProps.BORDER_LEFT_WIDTH,
+          ViewProps.BORDER_RIGHT_WIDTH,
+          ViewProps.BORDER_TOP_WIDTH,
+          ViewProps.BORDER_BOTTOM_WIDTH,
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderWidth(ReactTextView view, int index, float width) {
+    if (!CSSConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(SPACING_TYPES[index], width);
+  }
+
+  @ReactPropGroup(names = {
+          "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
+  }, customType = "Color")
+  public void setBorderColor(ReactTextView view, int index, Integer color) {
+    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  }
+  
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;
