@@ -21,4 +21,6 @@ public class ReactMarkerConstants {
   public static final String CREATE_CATALYST_INSTANCE_END = "CREATE_CATALYST_INSTANCE_END";
   public static final String RUN_JS_BUNDLE_START = "RUN_JS_BUNDLE_START";
   public static final String RUN_JS_BUNDLE_END = "RUN_JS_BUNDLE_END";
+  public static final String NATIVE_MODULE_INITIALIZE_START = "NativeModule_start";
+  public static final String NATIVE_MODULE_INITIALIZE_END = "NativeModule_end";
 }

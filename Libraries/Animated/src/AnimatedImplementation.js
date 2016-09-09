@@ -8,6 +8,7 @@
  *
  * @providesModule AnimatedImplementation
  * @flow
+ * @preventMunge
  */
 'use strict';
 
@@ -963,7 +964,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     };
   }
 
-  stopAnimation(callback?: ?() => number): void {
+  stopAnimation(callback?: (value: {x: number, y: number}) => void): void {
     this.x.stopAnimation();
     this.y.stopAnimation();
     callback && callback(this.__getValue());
