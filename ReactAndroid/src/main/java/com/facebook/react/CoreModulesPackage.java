@@ -20,6 +20,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
@@ -41,6 +42,9 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
+
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
@@ -182,6 +186,7 @@ import com.facebook.systrace.Systrace;
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
       List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
@@ -194,6 +199,7 @@ import com.facebook.systrace.Systrace;
           viewManagersList));
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
   }
 }
