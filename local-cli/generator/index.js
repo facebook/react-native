@@ -125,6 +125,15 @@ module.exports = yeoman.generators.NamedBase.extend({
         ),
         '{\n"presets": ["react-native"]\n}'
       );
+
+      this.fs.copy(
+        this.templatePath('__tests__'),
+        this.destinationPath('__tests__'),
+        {
+          nodir: false
+        }
+      );
+
       var packageJSONPath = path.join(
         this.destinationRoot(),
         'package.json'
