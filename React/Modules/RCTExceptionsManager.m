@@ -57,7 +57,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+    [_bridge requestReload];
   } else {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
     NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
