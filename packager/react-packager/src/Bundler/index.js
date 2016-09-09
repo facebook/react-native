@@ -11,7 +11,6 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
 const ProgressBar = require('progress');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
