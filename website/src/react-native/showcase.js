@@ -323,7 +323,7 @@ var featured = [
     infoTitle: 'React Native at Artsy',
   },
   {
-    name: '惠首尔- 你的私人美肤顾问 韩国化妆品海淘直邮',
+    name: 'Huiseoul(惠首尔)',
     icon: 'https://cdn.huiseoul.com/icon.png',
     linkAppStore: 'https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8',
     infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
