@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.33.0-rc.1",
+  "version": "0.33.0",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
