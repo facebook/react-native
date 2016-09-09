@@ -174,11 +174,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 #endif
 }
 
-- (RCTPerformanceLogger *)performanceLogger
-{
-  return self.batchedBridge.performanceLogger;
-}
-
 - (NSArray<Class> *)moduleClasses
 {
   return self.batchedBridge.moduleClasses;
@@ -238,6 +233,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setUp
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
+
+  _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+  [_performanceLogger markStartForTag:RCTPLTTI];
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;

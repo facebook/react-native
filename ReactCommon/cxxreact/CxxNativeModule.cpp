@@ -37,14 +37,10 @@ std::string CxxNativeModule::getName() {
 }
 
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
-  // Same as MessageQueue.MethodTypes.remote
-  static const auto kMethodTypeRemote = "remote";
-  static const auto kMethodTypeSyncHook = "syncHook";
-
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
     assert(method.func || method.syncFunc);
-    descs.emplace_back(method.name, method.func ? kMethodTypeRemote : kMethodTypeSyncHook);
+    descs.emplace_back(method.name, method.func ? "async" : "sync");
   }
   return descs;
 }

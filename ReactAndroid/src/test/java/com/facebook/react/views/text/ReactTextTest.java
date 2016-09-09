@@ -38,6 +38,7 @@ import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -343,7 +344,7 @@ public class ReactTextTest {
         JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     Drawable backgroundDrawable = ((TextView) rootView.getChildAt(0)).getBackground();
-    assertThat(((ColorDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
+    assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
   }
 
   // JELLY_BEAN is needed for TextView#getMaxLines(), which is OK, because in the actual code we

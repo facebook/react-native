@@ -43,7 +43,7 @@ import com.facebook.csslayout.Spacing;
  * {@code mBorderWidthResult} and similar. When only background color is set we won't allocate any
  * extra/unnecessary objects.
  */
-/* package */ class ReactViewBackgroundDrawable extends Drawable {
+public class ReactViewBackgroundDrawable extends Drawable {
 
   private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
   private static final int DEFAULT_BORDER_RGB = 0x00FFFFFF & DEFAULT_BORDER_COLOR;
