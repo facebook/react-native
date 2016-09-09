@@ -2073,7 +2073,7 @@ class AnimatedEvent {
           nativeEventPath: path,
           animatedValueTag: value.__getNativeTag(),
         });
-      } else {
+      } else if (typeof value === 'object') {
         for (const key in value) {
           traverse(value[key], path.concat(key));
         }
