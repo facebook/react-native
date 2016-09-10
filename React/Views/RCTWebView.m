@@ -19,8 +19,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if !TARGET_OS_TV
-
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
@@ -265,5 +263,3 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 @end
-
-#endif //TARGET_OS_TV

@@ -9,8 +9,6 @@
 
 #import "RCTView.h"
 
-#if !TARGET_OS_TV
-
 @class RCTWebView;
 
 /**
@@ -45,5 +43,3 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 - (void)stopLoading;
 
 @end
-
-#endif //TARGET_OS_TV

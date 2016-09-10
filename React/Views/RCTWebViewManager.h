@@ -9,10 +9,6 @@
 
 #import "RCTViewManager.h"
 
-#if !TARGET_OS_TV
-
 @interface RCTWebViewManager : RCTViewManager
 
 @end
-
-#endif
