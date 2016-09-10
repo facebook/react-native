@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.ReactWebViewBridge;
 
 /**
  * Manages instances of {@link WebView}
@@ -74,6 +75,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   private static final String HTML_ENCODING = "UTF-8";
   private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+  private static final String BRIDGE_NAME = "__REACT_WEB_VIEW_BRIDGE";
 
   private static final String HTTP_METHOD_POST = "POST";
 
@@ -81,10 +83,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_GO_FORWARD = 2;
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
+  public static final int COMMAND_POST_MESSAGE = 5;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
   private static final String BLANK_URL = "about:blank";
+
+  private boolean hasJavascriptInterface = false;
 
   private WebViewConfig mWebViewConfig;
   private @Nullable WebView.PictureListener mPictureListener;
@@ -100,6 +105,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (!mLastLoadFailed) {
         ReactWebView reactWebView = (ReactWebView) webView;
         reactWebView.callInjectedJavaScript();
+        reactWebView.linkBridge();
         emitFinishEvent(webView, url);
       }
     }
@@ -229,6 +235,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
+    private void linkBridge() {
+      if (getSettings().getMessagingEnabled()) {
+        loadUrl("javascript:(window.postMessage = function(message) {" +
+          BRIDGE_NAME + ".postMessage(message);" +
+        "})", null);
+      }
+    }
+
     private void cleanupCallbacksAndDestroy() {
       setWebViewClient(null);
       destroy();
@@ -308,6 +322,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "messagingEnabled")
+  public void setMessagingEnabled(WebView view, boolean enabled) {
+    if (hasJavascriptInterface == enabled) {
+      return;
+    }
+
+    hasJavascriptInterface = enabled;
+    if (enabled) {
+      view.addJavascriptInterface(new ReactWebViewBridge(this), BRIDGE_NAME);
+      linkBridge();
+    } else {
+      view.removeJavascriptInterface(BRIDGE_NAME);
+    }
   }
 
   @ReactProp(name = "source")
@@ -402,6 +431,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_STOP_LOADING:
         root.stopLoading();
+        break;
+      case COMMAND_POST_MESSAGE:
+        root.evaluateJavascript("if (typeof window.onload === 'function') {" +
+          "window.onload(" + args[0] ")" +
+        "}")
         break;
     }
   }

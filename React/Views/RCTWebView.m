@@ -87,7 +87,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)postMessage:(id)json
 {
   NSString *serialized = RCTJSONStringify(json, NULL);
-  NSString *source = [NSString stringWithFormat:@"if (typeof onmessage === 'function') window.onmessage(%@);", serialized];
+  NSString *source = [NSString
+    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage(%@);",
+    serialized
+  ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
 }
 

@@ -236,8 +236,6 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
-     * @ios
-     *
      * A function that is invoked when the webview calls `window.postMessage`. Setting
      * this property will inject a `postMessage` global into your webview.
      *
