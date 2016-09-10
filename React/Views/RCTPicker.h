@@ -23,5 +23,3 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
-
-

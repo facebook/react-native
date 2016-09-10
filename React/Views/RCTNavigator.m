@@ -181,8 +181,9 @@ NSInteger kNeverProgressed = -10000;
       // recognizer when we lock the navigation.
       RCTAssert(NO, @"Should never receive gesture start while JS locks navigator");
     }
-  } else {
+  } else 
 #endif //TARGET_OS_TV
+  {
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
@@ -201,9 +202,7 @@ NSInteger kNeverProgressed = -10000;
       // length (`currentReactCount` - 1).
       return [super navigationBar:navigationBar shouldPopItem:item];
     }
-#if !TARGET_OS_TV
   }
-#endif
   return [super navigationBar:navigationBar shouldPopItem:item];
 }
 

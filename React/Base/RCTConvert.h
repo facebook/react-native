@@ -24,25 +24,6 @@
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
-// This must match the native enum UIBarStyle
-
-typedef NS_ENUM(NSInteger, RCTBarStyle) {
-  RCTBarStyleDefault          = 0,
-  RCTBarStyleBlack            = 1,
-};
-
-// This must match the native enum UIDataDetectorTypes
-
-typedef NS_OPTIONS(NSUInteger, RCTDataDetectorTypes) {
-  RCTDataDetectorTypePhoneNumber                              = 1 << 0,          // Phone number detection
-  RCTDataDetectorTypeLink                                     = 1 << 1,          // URL detection
-  RCTDataDetectorTypeAddress                                  = 1 << 2,          // Street address detection
-  RCTDataDetectorTypeCalendarEvent                            = 1 << 3,          // Event detection
-  
-  RCTDataDetectorTypeNone          = 0,               // No detection at all
-  RCTDataDetectorTypeAll           = NSUIntegerMax    // All types
-};
-
 /**
  * This class provides a collection of conversion functions for mapping
  * JSON objects to native types and classes. These are useful when writing
@@ -91,10 +72,14 @@ typedef NSURL RCTFileURL;
 + (UIKeyboardType)UIKeyboardType:(id)json;
 + (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
-+ (RCTDataDetectorTypes)UIDataDetectorTypes:(id)json;
+#if !TARGET_OS_TV
++ (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
+#endif
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
-+ (RCTBarStyle)UIBarStyle:(id)json;
+#if !TARGET_OS_TV
++ (UIBarStyle)UIBarStyle:(id)json;
+#endif
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;

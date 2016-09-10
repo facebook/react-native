@@ -12,8 +12,6 @@
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
-#if !TARGET_OS_TV
-
 @implementation RCTSwitch
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated {
@@ -22,5 +20,3 @@
 }
 
 @end
-
-#endif

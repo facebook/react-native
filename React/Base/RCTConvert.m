@@ -330,14 +330,16 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
-RCT_MULTI_ENUM_CONVERTER(RCTDataDetectorTypes, (@{
-  @"phoneNumber": @(RCTDataDetectorTypePhoneNumber),
-  @"link": @(RCTDataDetectorTypeLink),
-  @"address": @(RCTDataDetectorTypeAddress),
-  @"calendarEvent": @(RCTDataDetectorTypeCalendarEvent),
-  @"none": @(RCTDataDetectorTypeNone),
-  @"all": @(RCTDataDetectorTypeAll),
-}), RCTDataDetectorTypePhoneNumber, unsignedLongLongValue)
+#if !TARGET_OS_TV
+RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
+  @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
+  @"link": @(UIDataDetectorTypeLink),
+  @"address": @(UIDataDetectorTypeAddress),
+  @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
+  @"none": @(UIDataDetectorTypeNone),
+  @"all": @(UIDataDetectorTypeAll),
+}), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+#endif
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -379,10 +381,12 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"stretch": @(UIViewContentModeScaleToFill),
 }), UIViewContentModeScaleAspectFill, integerValue)
 
-RCT_ENUM_CONVERTER(RCTBarStyle, (@{
-  @"default": @(RCTBarStyleDefault),
-  @"black": @(RCTBarStyleBlack),
-}), RCTBarStyleDefault, integerValue)
+#if !TARGET_OS_TV
+RCT_ENUM_CONVERTER(UIBarStyle, (@{
+  @"default": @(UIBarStyleDefault),
+  @"black": @(UIBarStyleBlack),
+}), UIBarStyleDefault, integerValue)
+#endif
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
 static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
