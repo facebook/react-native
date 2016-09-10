@@ -322,6 +322,13 @@ var featured = [
     infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
     infoTitle: 'React Native at Artsy',
   },
+  {
+    name: 'Huiseoul(惠首尔)',
+    icon: 'https://cdn.huiseoul.com/icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8',
+    infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
+    infoTitle: 'Building a conversational E-commerce app in 6 weeks with React Native',
+  },
 ];
 
 featured.sort(function(a, b) {

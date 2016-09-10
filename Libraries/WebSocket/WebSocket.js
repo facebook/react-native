@@ -189,6 +189,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         if (ev.id !== this._socketId) {
           return;
         }
+        this.readyState = this.CLOSED;
         this.dispatchEvent(new WebSocketEvent('error', {
           message: ev.message,
         }));

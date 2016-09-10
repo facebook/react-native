@@ -7,16 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTViewManager.h"
+package com.facebook.react.views.image;
 
-#import "RCTConvert.h"
-
-@interface RCTConvert (BarButtonSystemItem)
-
-+ (UIBarButtonSystemItem)UIBarButtonSystemItem:(id)json;
-
-@end
-
-@interface RCTNavItemManager : RCTViewManager
-
-@end
+public enum ImageResizeMethod {
+  AUTO,
+  RESIZE,
+  SCALE
+}
