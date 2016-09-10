@@ -366,6 +366,12 @@ var Navigator = React.createClass({
     navigationBar: PropTypes.node,
 
     /**
+     * Optionally choose the position to render navigation bar at.
+     * It defaults to 'bottom'
+     */
+    navigationBarPosition: PropTypes.oneOf(['bottom' ,'top']),
+
+    /**
      * Optionally pass in the navigator object from a parent `Navigator`.
      */
     navigator: PropTypes.object,
@@ -388,6 +394,7 @@ var Navigator = React.createClass({
     return {
       configureScene: () => NavigatorSceneConfigs.PushFromRight,
       sceneStyle: styles.defaultSceneStyle,
+      navigationBarPosition: 'bottom',
     };
   },
 
@@ -1291,8 +1298,11 @@ var Navigator = React.createClass({
       return renderedScene;
     });
     this._renderedSceneMap = newRenderedSceneMap;
+    const { navigationBarPosition } = this.props
+    const navigationBar = this._renderNavigationBar()
     return (
       <View style={[styles.container, this.props.style]}>
+      { navigationBarPosition === 'top' ? navigationBar : null }
         <View
           style={styles.transitioner}
           {...this.panGesture.panHandlers}
@@ -1302,7 +1312,7 @@ var Navigator = React.createClass({
           }>
           {scenes}
         </View>
-        {this._renderNavigationBar()}
+      { navigationBarPosition === 'bottom' ? navigationBar : null }
       </View>
     );
   },
