@@ -1298,8 +1298,8 @@ var Navigator = React.createClass({
       return renderedScene;
     });
     this._renderedSceneMap = newRenderedSceneMap;
-    const { navigationBarPosition } = this.props
-    const navigationBar = this._renderNavigationBar()
+    const { navigationBarPosition } = this.props;
+    const navigationBar = this._renderNavigationBar();
     return (
       <View style={[styles.container, this.props.style]}>
       { navigationBarPosition === 'top' ? navigationBar : null }
