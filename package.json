@@ -23,7 +23,8 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "local-cli/generator/templates/"
     ],
     "haste": {
       "defaultPlatform": "ios",
