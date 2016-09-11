@@ -48,7 +48,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
-import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
@@ -83,7 +82,7 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
+public class DevSupportManagerImpl implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -120,6 +119,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   private @Nullable StackFrame[] mLastErrorStack;
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
+
 
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
@@ -178,7 +178,19 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(mDevSettings);
+    mDevServerHelper = new DevServerHelper(
+        mDevSettings,
+        new DevServerHelper.PackagerCommandListener() {
+          @Override
+          public void onReload() {
+            UiThreadUtil.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                handleReloadJS();
+              }
+            });
+          }
+        });
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -225,11 +237,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       if (e instanceof JSException) {
         FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
         // TODO #11638796: convert the stack into something useful
-        showNewError(
-            e.getMessage() + "\n\n" + ((JSException) e).getStack(),
-            new StackFrame[] {},
-            JSEXCEPTION_ERROR_COOKIE,
-            ErrorType.JS);
+        showNewError(e.getMessage() + "\n\n" + ((JSException) e).getStack(), new StackFrame[] {},
+                     JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
       } else {
         showNewJavaError(e.getMessage(), e);
       }
@@ -379,7 +388,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
               }
             });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_element_inspector),
+      mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -665,16 +674,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     return mLastErrorStack;
   }
 
-  @Override
-  public void onPackagerReloadCommand() {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        handleReloadJS();
-      }
-    });
-  }
-
   private void updateLastErrorInfo(
       final String message,
       final StackFrame[] stack,
@@ -803,7 +802,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         mIsReceiverRegistered = true;
       }
 
-      mDevServerHelper.openPackagerConnection(this);
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -843,7 +841,6 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         mDevOptionsDialog.dismiss();
       }
 
-      mDevServerHelper.closePackagerConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }
