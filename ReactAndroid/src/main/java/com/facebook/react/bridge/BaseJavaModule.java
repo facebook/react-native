@@ -9,16 +9,19 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -49,9 +52,18 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
-  static final public String METHOD_TYPE_ASYNC = "async";
-  static final public String METHOD_TYPE_PROMISE= "promise";
+  private static final String METHOD_TYPE_ASYNC = "async";
+  private static final String METHOD_TYPE_PROMISE= "promise";
   static final public String METHOD_TYPE_SYNC = "sync";
+  private final List<? extends ArgumentExtractor.Factory> mArgumentExtractorFactories;
+
+  public BaseJavaModule() {
+    this(Collections.<ArgumentExtractor.Factory>emptyList());
+  }
+
+  public BaseJavaModule(List<? extends ArgumentExtractor.Factory> argumentExtractorFactories) {
+    mArgumentExtractorFactories = argumentExtractorFactories;
+  }
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -60,6 +72,10 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public abstract @Nullable T extractArgument(
         CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
+
+    interface Factory {
+      ArgumentExtractor<?> get(Type type);
+    }
   }
 
   static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
@@ -159,17 +175,17 @@ public abstract class BaseJavaModule implements NativeModule {
 
   public class JavaMethod implements NativeMethod {
 
-    private Method mMethod;
-    private final ArgumentExtractor[] mArgumentExtractors;
+    private final Method mMethod;
+    private final ArgumentExtractor<?>[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
     private String mType = METHOD_TYPE_ASYNC;
     private final int mJSArgumentsNeeded;
     private final String mTraceName;
 
-    public JavaMethod(Method method) {
+    JavaMethod(Method method) {
       mMethod = method;
-      Class[] parameterTypes = method.getParameterTypes();
+      Class<?>[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
       mSignature = buildSignature(parameterTypes);
       // Since native methods are invoked from a message queue executed on a single thread, it is
@@ -187,11 +203,11 @@ public abstract class BaseJavaModule implements NativeModule {
       return mSignature;
     }
 
-    private String buildSignature(Class[] paramTypes) {
+    private String buildSignature(Class<?>[] paramTypes) {
       StringBuilder builder = new StringBuilder(paramTypes.length);
       builder.append("v.");
       for (int i = 0; i < paramTypes.length; i++) {
-        Class paramClass = paramTypes[i];
+        Class<?> paramClass = paramTypes[i];
         if (paramClass == ExecutorToken.class) {
           if (!BaseJavaModule.this.supportsWebWorkers()) {
             throw new RuntimeException(
@@ -220,7 +236,7 @@ public abstract class BaseJavaModule implements NativeModule {
       return builder.toString();
     }
 
-    private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {
+    private ArgumentExtractor<?>[] buildArgumentExtractors(Class<?>[] paramTypes) {
       // Modules that support web workers are expected to take an ExecutorToken as the first
       // parameter to all their @ReactMethod-annotated methods. We compensate for that here.
       int executorTokenOffset = 0;
@@ -233,10 +249,10 @@ public abstract class BaseJavaModule implements NativeModule {
         executorTokenOffset = 1;
       }
 
-      ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
+      ArgumentExtractor<?>[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
       for (int i = 0; i < paramTypes.length - executorTokenOffset; i += argumentExtractors[i].getJSArgumentsNeeded()) {
         int paramIndex = i + executorTokenOffset;
-        Class argumentClass = paramTypes[paramIndex];
+        Class<?> argumentClass = paramTypes[paramIndex];
         if (argumentClass == Boolean.class || argumentClass == boolean.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
         } else if (argumentClass == Integer.class || argumentClass == int.class) {
@@ -259,16 +275,31 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (argumentClass == ReadableArray.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_ARRAY;
         } else {
-          throw new RuntimeException(
+          ArgumentExtractor<?> argumentExtractor = findArgumentExtractorForType(argumentClass);
+          if (argumentExtractor != null) {
+            argumentExtractors[i] = argumentExtractor;
+          } else {
+            throw new RuntimeException(
               "Got unknown argument class: " + argumentClass.getSimpleName());
+          }
         }
       }
       return argumentExtractors;
     }
 
+    private ArgumentExtractor<?> findArgumentExtractorForType(Class<?> argumentClass) {
+      for (ArgumentExtractor.Factory argumentExtractorFactory : mArgumentExtractorFactories) {
+        ArgumentExtractor<?> argumentExtractor = argumentExtractorFactory.get(argumentClass);
+        if (argumentExtractor != null) {
+          return argumentExtractor;
+        }
+      }
+      return null;
+    }
+
     private int calculateJSArgumentsNeeded() {
       int n = 0;
-      for (ArgumentExtractor extractor : mArgumentExtractors) {
+      for (ArgumentExtractor<?> extractor : mArgumentExtractors) {
         n += extractor.getJSArgumentsNeeded();
       }
       return n;
@@ -349,10 +380,10 @@ public abstract class BaseJavaModule implements NativeModule {
 
   public class SyncJavaHook implements SyncNativeHook {
 
-    private Method mMethod;
+    private final Method mMethod;
     private final String mSignature;
 
-    public SyncJavaHook(Method method) {
+    SyncJavaHook(Method method) {
       mMethod = method;
       mSignature = buildSignature(method);
     }
@@ -366,14 +397,14 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     private String buildSignature(Method method) {
-      Class[] paramTypes = method.getParameterTypes();
+      Class<?>[] paramTypes = method.getParameterTypes();
       StringBuilder builder = new StringBuilder(paramTypes.length + 2);
 
       builder.append(returnTypeToChar(method.getReturnType()));
       builder.append('.');
 
       for (int i = 0; i < paramTypes.length; i++) {
-        Class paramClass = paramTypes[i];
+        Class<?> paramClass = paramTypes[i];
         if (paramClass == ExecutorToken.class) {
           if (!BaseJavaModule.this.supportsWebWorkers()) {
             throw new RuntimeException(
@@ -467,7 +498,7 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  private static char paramTypeToChar(Class paramClass) {
+  private static char paramTypeToChar(Class<?> paramClass) {
     char tryCommon = commonTypeToChar(paramClass);
     if (tryCommon != '\0') {
       return tryCommon;
@@ -488,7 +519,7 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private static char returnTypeToChar(Class returnClass) {
+  private static char returnTypeToChar(Class<?> returnClass) {
     char tryCommon = commonTypeToChar(returnClass);
     if (tryCommon != '\0') {
       return tryCommon;
@@ -505,7 +536,7 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private static char commonTypeToChar(Class typeClass) {
+  private static char commonTypeToChar(Class<?> typeClass) {
     if (typeClass == boolean.class) {
       return 'z';
     } else if (typeClass == Boolean.class) {
