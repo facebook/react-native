@@ -770,11 +770,6 @@ static NSData *loadPossiblyBundledApplicationScript(NSData *script, NSURL *sourc
     script = loadRAMBundle(sourceURL, error, randomAccessBundle);
     [performanceLogger markStopForTag:RCTPLRAMBundleLoad];
     [performanceLogger setValue:script.length forTag:RCTPLRAMStartupCodeSize];
-
-    // Reset the counters that the native require implementation uses
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequires];
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
   } else {
     // JSStringCreateWithUTF8CString expects a null terminated C string.
     // RAM Bundling already provides a null terminated one.
@@ -936,7 +931,6 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
       return;
     }
 
-    [_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
     executeRandomAccessModule(self, ID, NSSwapLittleIntToHost(moduleData->offset), size);
   }
 

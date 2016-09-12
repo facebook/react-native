@@ -26,7 +26,7 @@ public class ReactMarkerConstants {
   public static final String SETUP_REACT_CONTEXT_START = "SETUP_REACT_CONTEXT_START";
   public static final String SETUP_REACT_CONTEXT_END = "SETUP_REACT_CONTEXT_END";
   public static final String CREATE_UI_MANAGER_MODULE_START = "CREATE_UI_MANAGER_MODULE_START";
-  public static final String CREATE_UI_MANAGER_MODULE_END = "CREATE_UI_MANAGER_MODULE_START";
+  public static final String CREATE_UI_MANAGER_MODULE_END = "CREATE_UI_MANAGER_MODULE_END";
   public static final String CREATE_VIEW_MANAGERS_START = "CREATE_VIEW_MANAGERS_START";
   public static final String CREATE_VIEW_MANAGERS_END = "CREATE_VIEW_MANAGERS_END";
   public static final String CREATE_UI_MANAGER_MODULE_CONSTANTS_START =
