@@ -41,7 +41,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * 2/ {@link String} mapped from JS string
  * 3/ {@link ReadableArray} mapped from JS Array
  * 4/ {@link ReadableMap} mapped from JS Object
- * 5/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
+ * 5/ Any {@link Type} that can be handled by a {@link ArgumentExtractor.Factory} that was
+ * previously registered via this module's constructor.
+ * 6/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
  * case when it express success & error callback pair as two last arguments respecively.
  *
  * All methods exposed as native to JS with {@link ReactMethod} annotation must return
@@ -65,7 +67,7 @@ public abstract class BaseJavaModule implements NativeModule {
     mArgumentExtractorFactories = argumentExtractorFactories;
   }
 
-  private static abstract class ArgumentExtractor<T> {
+  public static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
       return 1;
     }
@@ -73,8 +75,13 @@ public abstract class BaseJavaModule implements NativeModule {
     public abstract @Nullable T extractArgument(
         CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
 
-    interface Factory {
-      ArgumentExtractor<?> get(Type type);
+    /**
+     * Returns an instance of {@link ArgumentExtractor} that is able to handle extracting arguments
+     * to {@link ReactMethod} annotated methods with the given {@code Type}. Return {@code null} if
+     * this factory can't handle the provided type.
+     */
+    public interface Factory {
+      @Nullable ArgumentExtractor<?> get(Class<?> type);
     }
   }
 

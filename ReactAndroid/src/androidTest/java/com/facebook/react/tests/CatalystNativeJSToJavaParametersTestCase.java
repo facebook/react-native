@@ -8,25 +8,21 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.InvalidIteratorException;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NoSuchKeyException;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.UnexpectedNativeTypeException;
+import com.facebook.react.bridge.ReadableNativeArray;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
@@ -37,6 +33,18 @@ import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+
+import static android.R.attr.type;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
@@ -297,6 +305,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertEquals(ReadableType.Array, array.getType(4));
     assertEquals(ReadableType.Boolean, array.getType(5));
     assertEquals(ReadableType.Null, array.getType(6));
+  }
+
+  public void testCustomTypeViaArgumentExtractor() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnCustomType();
   }
 
   public void testGetTypeFromMap() {
@@ -668,11 +680,44 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
+  private static class CustomType {
+    private final int foo;
+    private final String bar;
+    private final boolean baz;
+
+    CustomType(int foo, String bar, boolean baz) {
+      this.foo = foo;
+      this.bar = bar;
+      this.baz = baz;
+    }
+  }
+
   private class RecordingTestModule extends BaseJavaModule {
+    RecordingTestModule() {
+      super(Collections.singletonList(new ArgumentExtractor.Factory() {
+        @Nullable @Override public ArgumentExtractor<?> get(Class<?> type) {
+          if (CustomType.class.isAssignableFrom(type)) {
+            return new ArgumentExtractor<CustomType>() {
+              @Nullable @Override
+              public CustomType extractArgument(
+                CatalystInstance catalystInstance, ExecutorToken executorToken,
+                ReadableNativeArray jsArguments, int atIndex) {
+                ReadableNativeMap map = jsArguments.getMap(0);
+                return new CustomType(map.getInt("foo"), map.getString("bar"),
+                  map.getBoolean("baz"));
+              }
+            };
+          } else {
+            return null;
+          }
+        }
+      }));
+    }
 
     private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
     private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
+    private final List<CustomType> mCustomTypeCalls = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -687,6 +732,11 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     @ReactMethod
     public void receiveArray(ReadableArray array) {
       mArrayCalls.add(array);
+    }
+
+    @ReactMethod
+    public void receiveCustomType(CustomType type) {
+      mCustomTypeCalls.add(type);
     }
 
     @ReactMethod
