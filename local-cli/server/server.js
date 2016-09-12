@@ -109,8 +109,7 @@ module.exports = {
     description: 'Disable file watcher'
   }, {
     command: '--transformer [string]',
-    default: require.resolve('../../packager/transformer'),
-    description: 'Specify a custom transformer to be used (absolute path)'
+    description: 'Specify a custom transformer to be used'
   }, {
     command: '--reset-cache, --resetCache',
     description: 'Removes cached files',

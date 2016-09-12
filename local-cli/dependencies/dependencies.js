@@ -89,7 +89,6 @@ module.exports = {
       description: 'The platform extension used for selecting modules',
     }, {
       command: '--transformer [path]',
-      default: null,
       description: 'Specify a custom transformer to be used'
     }, {
       command: '--verbose',
