@@ -39,8 +39,16 @@ RCT_EXPORT_MODULE()
   }
 
   if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    if (textField.autocorrectionType == UITextAutocorrectionTypeYes) {
+      if (range.length > 0 && ![string isEqualToString:@""]) {
+        textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        [textField textFieldDidChange];
+        return NO;
+      }
+    }
     return YES;
   }
+
   NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
   if (string.length > allowedLength) {
     if (string.length > 1) {
