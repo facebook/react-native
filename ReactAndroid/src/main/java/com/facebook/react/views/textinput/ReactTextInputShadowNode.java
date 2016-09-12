@@ -87,6 +87,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         (int) Math.ceil(getPadding().get(Spacing.END)),
         (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
 
+    editText.setLetterSpacing(getLetterSpacing());
+
+
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
     }
@@ -129,6 +132,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           mJsEventCount,
           mContainsImages,
           getPadding(),
+          getLetterSpacing(),
+          getFontSize(),
           getEffectiveLineHeight(),
           mTextAlign
         );
