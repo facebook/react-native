@@ -21,7 +21,6 @@ class Bundle extends BundleBase {
     super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
-    this._shouldCombineSourceMaps = false;
     this._numRequireCalls = 0;
     this._dev = dev;
     this._minify = minify;
@@ -41,12 +40,6 @@ class Bundle extends BundleBase {
       minify: this._minify,
       dev: this._dev,
     }).then(({code, map}) => {
-      // If we get a map from the transformer we'll switch to a mode
-      // were we're combining the source maps as opposed to
-      if (!this._shouldCombineSourceMaps && map != null) {
-        this._shouldCombineSourceMaps = true;
-      }
-
       this.replaceModuleAt(
         index, new ModuleTransport({...moduleTransport, code, map}));
     });
@@ -137,8 +130,8 @@ class Bundle extends BundleBase {
     this.getModules().forEach(module => {
       let map = module.map;
 
-      if (module.virtual) {
-        map = generateSourceMapForVirtualModule(module);
+      if (module.virtual || !map) {
+        map = generateMissingSourceMapForModule(module);
       }
 
       if (options.excludeSource) {
@@ -159,23 +152,7 @@ class Bundle extends BundleBase {
 
   getSourceMap(options) {
     super.assertFinalized();
-
-    if (this._shouldCombineSourceMaps) {
-      return this._getCombinedSourceMaps(options);
-    }
-
-    const mappings = this._getMappings();
-    const modules = this.getModules();
-    const map = {
-      file: this._getSourceMapFile(),
-      sources: modules.map(module => module.sourcePath),
-      version: 3,
-      names: [],
-      mappings: mappings,
-      sourcesContent: options.excludeSource
-        ? [] : modules.map(module => module.sourceCode)
-    };
-    return map;
+    return this._getCombinedSourceMaps(options);
   }
 
   getEtag() {
@@ -187,53 +164,6 @@ class Bundle extends BundleBase {
     return this._sourceMapUrl
       ? this._sourceMapUrl.replace('.map', '.bundle')
       : 'bundle.js';
-  }
-
-  _getMappings() {
-    const modules = super.getModules();
-
-    // The first line mapping in our package is basically the base64vlq code for
-    // zeros (A).
-    const firstLine = 'AAAA';
-
-    // Most other lines in our mappings are all zeros (for module, column etc)
-    // except for the lineno mappinp: curLineno - prevLineno = 1; Which is C.
-    const line = 'AACA';
-
-    const moduleLines = Object.create(null);
-    let mappings = '';
-    for (let i = 0; i < modules.length; i++) {
-      const module = modules[i];
-      const code = module.code;
-      let lastCharNewLine  = false;
-      moduleLines[module.sourcePath] = 0;
-      for (let t = 0; t < code.length; t++) {
-        if (t === 0 && i === 0) {
-          mappings += firstLine;
-        } else if (t === 0) {
-          mappings += 'AC';
-
-          // This is the only place were we actually don't know the mapping ahead
-          // of time. When it's a new module (and not the first) the lineno
-          // mapping is 0 (current) - number of lines in prev module.
-          mappings += base64VLQ.encode(
-            0 - moduleLines[modules[i - 1].sourcePath]
-          );
-          mappings += 'A';
-        } else if (lastCharNewLine) {
-          moduleLines[module.sourcePath]++;
-          mappings += line;
-        }
-        lastCharNewLine = code[t] === '\n';
-        if (lastCharNewLine) {
-          mappings += ';';
-        }
-      }
-      if (i !== modules.length - 1) {
-        mappings += ';';
-      }
-    }
-    return mappings;
   }
 
   getJSModulePaths() {
@@ -272,7 +202,6 @@ class Bundle extends BundleBase {
       ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
       numRequireCalls: this._numRequireCalls,
-      shouldCombineSourceMaps: this._shouldCombineSourceMaps,
     };
   }
 
@@ -281,7 +210,6 @@ class Bundle extends BundleBase {
 
     bundle._sourceMapUrl = json.sourceMapUrl;
     bundle._numRequireCalls = json.numRequireCalls;
-    bundle._shouldCombineSourceMaps = json.shouldCombineSourceMaps;
 
     BundleBase.fromJSON(bundle, json);
 
@@ -289,7 +217,7 @@ class Bundle extends BundleBase {
   }
 }
 
-function generateSourceMapForVirtualModule(module) {
+function generateMissingSourceMapForModule(module) {
   // All lines map 1-to-1
   let mappings = 'AAAA;';
 

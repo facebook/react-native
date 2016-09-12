@@ -114,6 +114,16 @@ function forEachRef(refs, callback) {
   }
 }
 
+function firstRef(refs, callback) {
+  for (const id in refs) {
+    const ref = refs[id];
+    if (callback(id, ref)) {
+      return new RefVisitor(refs, id);
+    }
+  }
+  return new RefVisitor(refs, undefined);
+}
+
 function getInternalInstanceName(visitor) {
   const type = visitor.clone().moveToEdge('_currentElement').moveToEdge('type');
   if (type.getType() === 'string') { // element.type is string
@@ -203,8 +213,49 @@ function markReactComponentTree(refs, registry) {
   });
 }
 
+function functionUrlFileName(visitor) {
+  const executable = visitor.clone().moveToEdge('@Executable');
+  const ref = executable.getRef();
+  if (ref && ref.value && ref.value.url) {
+    const url = ref.value.url;
+    let file = url.substring(url.lastIndexOf('/') + 1);
+    if (file.endsWith('.js')) {
+      file = file.substring(0, file.length - 3);
+    }
+    return file;
+  }
+  return undefined;
+}
+
+function markModules(refs) {
+  const modules = firstRef(refs, (id, ref) => ref.type === 'CallbackGlobalObject');
+  modules.moveToEdge('require');
+  modules.moveToFirst((name, visitor) => visitor.getType() === 'JSActivation');
+  modules.moveToEdge('modules');
+  modules.forEachEdge((name, visitor) => {
+    const ref = visitor.getRef();
+    visitor.moveToEdge('exports');
+    if (visitor.getType() === 'Object') {
+      visitor.moveToFirst((memberName, member) => member.getType() === 'Function');
+      if (visitor.isDefined()) {
+        ref.module = functionUrlFileName(visitor);
+      }
+    } else if (visitor.getType() === 'Function') {
+      const displayName = visitor.clone().moveToEdge('displayName');
+      if (displayName.isDefined()) {
+        ref.module = displayName.getValue();
+      }
+      ref.module = functionUrlFileName(visitor);
+    }
+    if (ref && !ref.module) {
+      ref.module = '#unknown ' + name;
+    }
+  });
+}
+
 function registerPathToRoot(refs, registry) {
   markReactComponentTree(refs, registry);
+  markModules(refs);
   let breadth = [];
   forEachRef(refs, (visitor) => {
     const ref = visitor.getRef();
@@ -227,7 +278,10 @@ function registerPathToRoot(refs, registry) {
           }
           edgeRef.rootPath = registry.insert(ref.rootPath, pathName);
           nextBreadth.push(edgeVisitor.clone());
-          // copy react tree forward
+          // copy module and react tree forward
+          if (edgeRef.module === undefined) {
+            edgeRef.module = ref.module;
+          }
           if (edgeRef.reactTree === undefined) {
             edgeRef.reactTree = ref.reactTree;
           }
@@ -250,7 +304,8 @@ function captureRegistry() {
   const pathField = 4;
   const reactField = 5;
   const valueField = 6;
-  const numFields = 7;
+  const moduleField = 7;
+  const numFields = 8;
 
   return {
     strings: strings,
@@ -277,6 +332,7 @@ function captureRegistry() {
 
       registerPathToRoot(capture.refs, this.stacks);
       const internedCaptureId = this.strings.intern(captureId);
+      const noneString = this.strings.intern('#none');
       const noneStack = this.stacks.insert(this.stacks.root, '#none');
       forEachRef(capture.refs, (visitor) => {
         const ref = visitor.getRef();
@@ -296,6 +352,11 @@ function captureRegistry() {
           newData[dataOffset + reactField] = ref.reactTree.id;
         }
         newData[dataOffset + valueField] = this.strings.intern(visitor.getValue());
+        if (ref.module) {
+          newData[dataOffset + moduleField] = this.strings.intern(ref.module);
+        } else {
+          newData[dataOffset + moduleField] = noneString;
+        }
         dataOffset += numFields;
       });
       for (const id in capture.markedBlocks) {
@@ -311,6 +372,7 @@ function captureRegistry() {
           ', size: ' + block.size +
           ', granularity: ' + block.cellSize
         );
+        newData[dataOffset + moduleField] = noneString;
         dataOffset += numFields;
       }
       this.data = newData;
@@ -364,6 +426,12 @@ function captureRegistry() {
           return agData[rowA * numFields + valueField] - agData[rowB * numFields + valueField];
         });
 
+      const moduleExpander = ag.addFieldExpander('Module',
+        function getModule(row) { return agStrings.get(agData[row * numFields + moduleField]); },
+        function compareModule(rowA, rowB) {
+          return agData[rowA * numFields + moduleField] - agData[rowB * numFields + moduleField];
+        });
+
       const sizeAggregator = ag.addAggregator('Size',
         function aggregateSize(indices) {
           let size = 0;
@@ -386,6 +454,7 @@ function captureRegistry() {
       ag.setActiveExpanders([
         pathExpander,
         reactExpander,
+        moduleExpander,
         typeExpander,
         idExpander,
         traceExpander,

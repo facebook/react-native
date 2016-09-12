@@ -20,7 +20,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.csslayout.FloatUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
@@ -64,16 +63,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       (int) Math.ceil(update.getPaddingTop()),
       (int) Math.ceil(update.getPaddingRight()),
       (int) Math.ceil(update.getPaddingBottom()));
-
-    float nextLineHeight = update.getLineHeight();
-    if (!FloatUtil.floatsEqual(mLineHeight, nextLineHeight)) {
-      mLineHeight = nextLineHeight;
-      if (Float.isNaN(mLineHeight)) { // NaN will be used if property gets reset
-        setLineSpacing(0, 1);
-      } else {
-        setLineSpacing(mLineHeight, 0);
-      }
-    }
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {

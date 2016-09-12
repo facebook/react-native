@@ -220,7 +220,7 @@ describe('Bundler', function() {
           transform: {
             dev: true,
             hot: false,
-            generateSourceMaps: false,
+            generateSourceMaps: true,
             projectRoots,
           }
         },
