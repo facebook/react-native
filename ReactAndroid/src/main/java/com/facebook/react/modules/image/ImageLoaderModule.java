@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.fresco.FrescoModule;
 
 @ReactModule(name = "ImageLoader")
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
@@ -58,6 +59,19 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
   }
 
   @Override
+  public void initialize() {
+    super.initialize();
+    initializeFresco();
+  }
+
+  private void initializeFresco() {
+    if (!FrescoModule.hasBeenInitialized()) {
+      ReactApplicationContext reactContext = this.getReactApplicationContext();
+      reactContext.getNativeModule(FrescoModule.class).initializeFresco();
+    }
+  }
+
+  @Override
   public String getName() {
     return "ImageLoader";
   }
@@ -77,6 +91,8 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
       return;
     }
+
+    this.initializeFresco();
 
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
@@ -138,6 +154,9 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
       promise.reject(ERROR_INVALID_URI, "Cannot prefetch an image for an empty URI");
       return;
     }
+
+    // TODO(xxx) find out why ImageLoader.prefetchImage can be called before ImageLoader.initialize
+    this.initializeFresco();
 
     Uri uri = Uri.parse(uriString);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();

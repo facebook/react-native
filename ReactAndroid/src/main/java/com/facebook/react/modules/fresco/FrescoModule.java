@@ -9,13 +9,11 @@
 
 package com.facebook.react.modules.fresco;
 
-import java.util.HashSet;
-
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.common.logging.FLog;
+import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
@@ -28,6 +26,8 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
+import java.util.HashSet;
+
 /**
  * Module to initialize the Fresco library.
  *
@@ -38,7 +38,6 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable {
 
   private @Nullable ImagePipelineConfig mConfig;
-
   private static boolean sHasBeenInitialized = false;
 
   /**
@@ -63,29 +62,39 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
    */
   public FrescoModule(ReactApplicationContext reactContext, @Nullable ImagePipelineConfig config) {
     super(reactContext);
+    setConfig(config);
+  }
+
+  public void setConfig(@Nullable ImagePipelineConfig config) {
+    if (hasBeenInitialized()) {
+      FLog.w(ReactConstants.TAG,
+        "Fresco has already been initialized with a different config."
+        + "The new Fresco configuration will be ignored!");
+      return;
+    }
+
+    if (config == null) {
+      config = getDefaultConfig(this.getReactApplicationContext());
+    }
     mConfig = config;
+  }
+
+  public void initializeFresco() {
+    if (!hasBeenInitialized()) {
+      // Make sure the SoLoaderShim is configured to use our loader for native libraries.
+      // This code can be removed if using Fresco from Maven rather than from source
+      SoLoaderShim.setHandler(new FrescoHandler());
+      Fresco.initialize(this.getReactApplicationContext(), mConfig);
+      sHasBeenInitialized = true;
+    } else {
+      FLog.w(ReactConstants.TAG, "Fresco has already been initialized!");
+    }
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    if (!hasBeenInitialized()) {
-      // Make sure the SoLoaderShim is configured to use our loader for native libraries.
-      // This code can be removed if using Fresco from Maven rather than from source
-      SoLoaderShim.setHandler(new FrescoHandler());
-      if (mConfig == null) {
-        mConfig = getDefaultConfig(getReactApplicationContext());
-      }
-      Context context = getReactApplicationContext().getApplicationContext();
-      Fresco.initialize(context, mConfig);
-      sHasBeenInitialized = true;
-    } else if (mConfig != null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Fresco has already been initialized with a different config. "
-          + "The new Fresco configuration will be ignored!");
-    }
-    mConfig = null;
+    initializeFresco();
   }
 
   @Override
