@@ -385,7 +385,6 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle,
       });
     }
 
@@ -444,7 +443,7 @@ class Bundler {
     dev = true,
     minify = !dev,
     hot = false,
-    generateSourceMaps = false,
+    generateSourceMaps = true,
   }) {
     return this.getTransformOptions(
       entryFile,
@@ -482,7 +481,7 @@ class Bundler {
     minify = !dev,
     hot = false,
     recursive = true,
-    generateSourceMaps = false,
+    generateSourceMaps = true,
     isolateModuleIDs = false,
     onProgress,
   }) {
