@@ -36,7 +36,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * class ModalExample extends Component {
  *
  *   state = {
- *    modalVisible: false,
+ *     modalVisible: false,
  *   }
  *
  *   setModalVisible(visible) {
