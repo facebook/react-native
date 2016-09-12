@@ -22,6 +22,12 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  *
  * There is also a function `showWithGravity` to specify the layout gravity. May be
  * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER
+ * 
+ * Basic usage:
+ * ```javascript
+ * import { ToastAndroid } from 'react-native';
+ * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
+ * ```
  */
 
 var ToastAndroid = {
