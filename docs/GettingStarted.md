@@ -64,76 +64,104 @@ block { display: none; }
 
 <!-- ######### MAC for iOS ##################### -->
 
+<block class="mac ios android" />
+
+## Dependencies
+
 <block class="mac ios" />
 
-## Dependencies for Mac + iOS
-
-You will need Xcode, node.js, the React Native command line tools, and Watchman.
+You will need Xcode, Node.js, the React Native command line tools, and Watchman.
 
 <block class="mac android" />
 
-## Dependencies for Mac + Android
-
-You will need Android Studio, node.js, the React Native command line tools, and Watchman.
+You will need Android Studio, Node.js, the React Native command line tools, and Watchman.
 
 <block class="mac ios android" />
 
-We recommend installing node and watchman via [Homebrew](http://brew.sh/).
+### Node, Watchman
+
+We recommend installing Node and Watchman via [Homebrew](http://brew.sh/).
 
 ```
 brew install node
 brew install watchman
 ```
 
+> [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
+changes in the filesystem. It is highly recommended you install it for better performance.
+
+### The React Native CLI
+
 Node comes with npm, which lets you install the React Native command line interface.
 
 ```
 npm install -g react-native-cli
 ```
 
-If you get a permission error, try with sudo: `sudo npm install -g react-native-cli`.
+> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
 
-If you get error `Cannot find module 'npmlog'`, try this before: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
 <block class="mac ios" />
 
-The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12).
+### Xcode
+
+The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.
 
 <block class="mac android" />
 
+### Android Studio
+
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
-If you plan to make changes in Java code, we recommend [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) which speeds up the build.
+Ensure the ANDROID_HOME environment variable points to your existing Android SDK. To do that, add this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and re-open your terminal:
 
+```
+export ANDROID_HOME=~/Library/Android/sdk
+```
+
+> The Android SDK will be installed at `/usr/local/opt/android-sdk` if Homebrew is used. Please make sure you export the correct path above if you did not install the Android SDK using Android Studio.
+
+### Gradle
+
+If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) to speed up builds.
+
+```
+touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+```
 
 <!-- ######### LINUX and WINDOWS for ANDROID ##################### -->
 
-<block class="linux android" />
+<block class="windows linux android" />
 
-## Dependencies for Linux + Android
-
-<block class="windows android" />
-
-## Dependencies for Windows + Android
-
-<block class="linux windows android" />
-
-You will need node.js, the React Native command line tools, Watchman, and Android Studio.
+## Dependencies
 
 <block class="linux android" />
+
+You will need Node.js, the React Native command line tools, Watchman, and Android Studio.
+
+### Node
 
 Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node.js 4 or newer.
 
 <block class='windows android' />
 
-We recommend installing node.js and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run:
+You will need Node.js, the React Native command line tools, and Android Studio.
+
+### Node
+
+We recommend installing Node.js and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run:
 
 ```
 choco install nodejs.install
 choco install python2
 ```
 
+> You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
+
 <block class="windows linux android" />
+
+### The React Native CLI
 
 Node comes with npm, which lets you install the React Native command line interface.
 
@@ -141,18 +169,59 @@ Node comes with npm, which lets you install the React Native command line interf
 npm install -g react-native-cli
 ```
 
-<block class="windows linux android" />
+### Android Studio
 
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
+Ensure the ANDROID_HOME environment variable points to your existing Android SDK.
+
 <block class="linux android" />
 
-[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. Installing it should
-improve performance, but you can also try not installing it, if the installation process is too annoying. You can follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#installing-from-source) to compile and install from source.
+To do that, add this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and re-open your terminal (or `source` the relevant file):
+
+```
+export ANDROID_HOME=~/Android/Sdk
+```
+
+> Please make sure you export the correct path above if you did not install the Android SDK using Android Studio.
+
+<block class="windows android" />
+
+Go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` ->
+`Advanced System Settings` -> `Environment variables` -> `New`, then enter the path to your Android SDK.
+
+![env variable](img/react-native-android-sdk-environment-variable-windows.png)
+
+> Your path to the SDK will vary to the one shown above.
+
+Restart the Command Prompt to apply the new environment variable.
 
 <block class="windows linux android" />
 
-If you plan to make changes in Java code, we recommend [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) which speeds up the build.
+### Gradle
+
+If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) to speed up builds.
+
+This command will enable the Daemon for the current user:
+
+<block class="windows android" />
+
+```
+(if not exist "%USERPROFILE%/.gradle" mkdir "%USERPROFILE%/.gradle") && (echo org.gradle.daemon=true >> "%USERPROFILE%/.gradle/gradle.properties")
+```
+
+<block class="linux android" />
+
+```
+touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+```
+
+### Watchman
+
+You can follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#installing-from-source) to compile and install from source.
+
+> [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
+changes in the filesystem. It is highly recommended you install it for better performance.
 
 <block class="mac ios android" />
 
