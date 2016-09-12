@@ -138,6 +138,50 @@ describe('Bundle', () => {
   });
 
   describe('sourcemap bundle', () => {
+    pit('should create sourcemap', () => {
+      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
+
+      return Promise.resolve().then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: [
+            'transformed foo',
+            'transformed foo',
+            'transformed foo',
+          ].join('\n'),
+          sourceCode: [
+            'source foo',
+            'source foo',
+            'source foo',
+          ].join('\n'),
+          sourcePath: 'foo path',
+        });
+      }).then(() => {
+        return addModule({
+          bundle: otherBundle,
+          code: [
+            'transformed bar',
+            'transformed bar',
+            'transformed bar',
+          ].join('\n'),
+          sourceCode: [
+            'source bar',
+            'source bar',
+            'source bar',
+          ].join('\n'),
+          sourcePath: 'bar path',
+        });
+      }).then(() => {
+        otherBundle.setMainModuleId('foo');
+        otherBundle.finalize({
+          runBeforeMainModule: [],
+          runMainModule: true,
+        });
+        const sourceMap = otherBundle.getSourceMap({dev: true});
+        expect(sourceMap).toEqual(genSourceMap(otherBundle.getModules()));
+      });
+    });
+
     pit('should combine sourcemaps', () => {
       const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
