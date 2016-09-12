@@ -12,7 +12,6 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import android.util.SparseArray;

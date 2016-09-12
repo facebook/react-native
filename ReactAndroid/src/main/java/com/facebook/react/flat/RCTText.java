@@ -175,7 +175,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     Spacing padding = getPadding();
 
-    left += padding.get(Spacing.LEFT);
+    left += padding.get(Spacing.START);
     top += padding.get(Spacing.TOP);
 
     // these are actual right/bottom coordinates where this DrawCommand will draw.
