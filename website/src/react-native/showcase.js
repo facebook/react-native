@@ -56,6 +56,14 @@ var featured = [
     infoTitle: 'Building the F8 App',
   },
   {
+    name: 'PlaceAVote',
+    icon: 'https://s12.postimg.org/nr79mplq5/pav_Icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/placeavote/id1120628991?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.placeavote.androidapp&hl=en',
+    infoLink: 'https://techcrunch.com/2016/05/10/placeavote-wants-to-give-voters-a-say-in-congress/',
+    infoTitle: 'PlaceAVote wants to give voters a say in Congress',
+  },
+  {
     name: 'FanVision Bolt',
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
