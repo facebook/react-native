@@ -74,6 +74,7 @@ function buildBabelConfig(filename, options) {
   const extraConfig = {
     filename,
     sourceFileName: filename,
+    sourceMaps: options.generateSourceMaps,
   };
 
   let config = Object.assign({}, babelRC, extraConfig);
