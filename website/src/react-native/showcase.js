@@ -329,6 +329,13 @@ var featured = [
     infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
     infoTitle: 'Building a conversational E-commerce app in 6 weeks with React Native',
   },
+  {
+    name: '手机百度',
+    icon: 'https://ss0.bdstatic.com/-0U0bnSm1A5BphGlnYG/tam-ogel/8b8eb88700776fe293f4f9a74a73aa18_121_121.jpg',
+    linkAppStore: 'http://shouji.baidu.com/software/9896302.html',
+    infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
+    infoTitle: '手机百度是一款有6亿用户在使用的手机搜索客户端，依托百度网页、百度图片、百度新闻、百度知道、百度百科、百度地图、百度音乐、百度视频等专业垂直搜索频道，方便用户随时随地使用百度搜索服务',
+  }
 ];
 
 featured.sort(function(a, b) {
