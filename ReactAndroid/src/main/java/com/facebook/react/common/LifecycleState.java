@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react;
+package com.facebook.react.common;
 
 /**
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
