@@ -58,6 +58,7 @@ class WebView extends React.Component {
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
+    messagingEnabled: PropTypes.bool,
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
@@ -219,6 +220,8 @@ class WebView extends React.Component {
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
+        messagingEnabled={typeof this.props.onMessage === 'function'}
+        onMessage={this.onMessage}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onContentSizeChange={this.props.onContentSizeChange}
@@ -322,6 +325,7 @@ class WebView extends React.Component {
 
   onMessage = (event: Event) => {
     var {onMessage} = this.props;
+    event.message = JSON.parse(event.nativeEvent.message);
     onMessage && onMessage(event);
   }
 }

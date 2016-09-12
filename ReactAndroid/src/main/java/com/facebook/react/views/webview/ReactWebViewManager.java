@@ -26,6 +26,7 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.JavascriptInterface;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -46,7 +47,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
-import com.facebook.react.views.webview.ReactWebViewBridge;
+import com.facebook.react.views.webview.events.TopMessageEvent;
 
 /**
  * Manages instances of {@link WebView}
@@ -88,8 +89,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
   private static final String BLANK_URL = "about:blank";
-
-  private boolean hasJavascriptInterface = false;
 
   private WebViewConfig mWebViewConfig;
   private @Nullable WebView.PictureListener mPictureListener;
@@ -171,7 +170,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     private void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
           webView,
-          new TopLoadingFinishEvent(
+          new TopMessageEvent(
               webView.getId(),
               createWebViewEvent(webView, url)));
     }
@@ -196,6 +195,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private boolean messagingEnabled = false;
+
+    private class ReactWebViewBridge {
+      ReactWebView mContext;
+
+      ReactWebViewBridge(ReactWebView c) {
+        mContext = c;
+      }
+
+      @JavascriptInterface
+      public void postMessage(String message) {
+        mContext.onMessage(message);
+      }
+    }
 
     /**
      * WebView must be created with an context of the current activity
@@ -227,6 +240,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       injectedJS = js;
     }
 
+    public void setMessagingEnabled(boolean enabled) {
+      if (messagingEnabled == enabled) {
+        return;
+      }
+
+      messagingEnabled = enabled;
+      if (enabled) {
+        addJavascriptInterface(new ReactWebViewBridge(this), BRIDGE_NAME);
+        linkBridge();
+      } else {
+        removeJavascriptInterface(BRIDGE_NAME);
+      }
+    }
+
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
           injectedJS != null &&
@@ -235,12 +262,22 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
-    private void linkBridge() {
-      if (getSettings().getMessagingEnabled()) {
+    public void linkBridge() {
+      if (messagingEnabled) {
         loadUrl("javascript:(window.postMessage = function(message) {" +
-          BRIDGE_NAME + ".postMessage(message);" +
-        "})", null);
+          BRIDGE_NAME + ".postMessage(JSON.stringify(message));" +
+        "})");
       }
+    }
+
+    public void onMessage(String message) {
+      WritableMap event = Arguments.createMap();
+      event.putDouble("target", getId());
+      // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
+      // like onPageFinished
+      event.putString("message", message);
+
+      dispatchEvent(this, new TopMessageEvent(this.getId(), event));
     }
 
     private void cleanupCallbacksAndDestroy() {
@@ -326,17 +363,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "messagingEnabled")
   public void setMessagingEnabled(WebView view, boolean enabled) {
-    if (hasJavascriptInterface == enabled) {
-      return;
-    }
-
-    hasJavascriptInterface = enabled;
-    if (enabled) {
-      view.addJavascriptInterface(new ReactWebViewBridge(this), BRIDGE_NAME);
-      linkBridge();
-    } else {
-      view.removeJavascriptInterface(BRIDGE_NAME);
-    }
+    ((ReactWebView) view).setMessagingEnabled(enabled);
   }
 
   @ReactProp(name = "source")
@@ -414,7 +441,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
-        "stopLoading", COMMAND_STOP_LOADING);
+        "stopLoading", COMMAND_STOP_LOADING,
+        "postMessage", COMMAND_POST_MESSAGE);
   }
 
   @Override
@@ -433,9 +461,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         root.stopLoading();
         break;
       case COMMAND_POST_MESSAGE:
-        root.evaluateJavascript("if (typeof window.onload === 'function') {" +
-          "window.onload(" + args[0] ")" +
-        "}")
+        root.evaluateJavascript("if (typeof window.onmessage === 'function') {" +
+          "window.onmessage(" + args.getString(0) + ")" +
+        "}", null);
         break;
     }
   }
