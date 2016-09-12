@@ -172,7 +172,7 @@ var featured = [
   },
   {
     name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple62/v4/7f/b3/66/7fb366c4-79fd-34e1-3037-ffc02d8a93f7/icon350x350.png',
     linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
     linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
     infoLink: 'http://www.phonearena.com/news/Fixt-is-an-app-that-promises-a-hassle-free-smartphone-repairy-service_id81069',
