@@ -11,6 +11,6 @@
  */
 'use strict';
 
-type ImageSource = {
-  uri: string;
+export type ImageSource = {
+  uri: string,
 };

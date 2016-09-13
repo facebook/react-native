@@ -20,7 +20,7 @@
 
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
-static const NSUInteger RCTInlineValueThreshold = 100;
+static const NSUInteger RCTInlineValueThreshold = 1024;
 
 #pragma mark - Static helper functions
 
@@ -117,7 +117,7 @@ static dispatch_queue_t RCTGetMethodQueue()
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+    queue = dispatch_queue_create("com.facebook.react.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
   });
   return queue;
 }
@@ -169,7 +169,7 @@ RCT_EXPORT_MODULE()
 - (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
-    [_manifest removeAllObjects];
+    [self->_manifest removeAllObjects];
     [RCTGetCache() removeAllObjects];
     RCTDeleteStorageDirectory();
   });
@@ -319,7 +319,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Exported JS Functions
 
-RCT_EXPORT_METHOD(multiGet:(NSStringArray *)keys
+RCT_EXPORT_METHOD(multiGet:(NSArray<NSString *> *)keys
                   callback:(RCTResponseSenderBlock)callback)
 {
   NSDictionary *errorOut = [self _ensureSetup];
@@ -338,7 +338,7 @@ RCT_EXPORT_METHOD(multiGet:(NSStringArray *)keys
   callback(@[RCTNullIfNil(errors), result]);
 }
 
-RCT_EXPORT_METHOD(multiSet:(NSStringArrayArray *)kvPairs
+RCT_EXPORT_METHOD(multiSet:(NSArray<NSArray<NSString *> *> *)kvPairs
                   callback:(RCTResponseSenderBlock)callback)
 {
   NSDictionary *errorOut = [self _ensureSetup];
@@ -358,7 +358,7 @@ RCT_EXPORT_METHOD(multiSet:(NSStringArrayArray *)kvPairs
   callback(@[RCTNullIfNil(errors)]);
 }
 
-RCT_EXPORT_METHOD(multiMerge:(NSStringArrayArray *)kvPairs
+RCT_EXPORT_METHOD(multiMerge:(NSArray<NSArray<NSString *> *> *)kvPairs
                     callback:(RCTResponseSenderBlock)callback)
 {
   NSDictionary *errorOut = [self _ensureSetup];
@@ -394,7 +394,7 @@ RCT_EXPORT_METHOD(multiMerge:(NSStringArrayArray *)kvPairs
   callback(@[RCTNullIfNil(errors)]);
 }
 
-RCT_EXPORT_METHOD(multiRemove:(NSStringArray *)keys
+RCT_EXPORT_METHOD(multiRemove:(NSArray<NSString *> *)keys
                   callback:(RCTResponseSenderBlock)callback)
 {
   NSDictionary *errorOut = [self _ensureSetup];

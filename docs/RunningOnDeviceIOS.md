@@ -4,50 +4,35 @@ title: Running On Device
 layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-device-ios.html
-next: embedded-app-ios
+next: running-on-simulator-ios
+previous: linking-libraries-ios
 ---
 
-Note that running on device requires [Apple Developer account](https://developer.apple.com/register) and provisioning your iPhone. This guide covers only React Native specific topic.
+Running an iOS app on a device requires only an Apple ID and a Mac. This guide covers only React Native specific topics.
 
-## Accessing development server from device
+## Accessing the development server from device
 
-You can iterate quickly on device using development server. To do that, your laptop and your phone have to be on the same wifi network.
+You can iterate quickly on device using the development server. First, ensure that you are on the same Wi-Fi network as your computer.
 
-1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
-2. Change the IP in the URL from `localhost` to your laptop's IP. On Mac, you can find the IP address in System Preferences / Network.
-3. In Xcode select your phone as build target and press "Build and run"
+In Xcode, select your phone as build target and press "Build and run"
 
 > Hint
 >
-> Shake the device to open development menu (reload, debug, etc.)
+> Shake the device to open the [developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
 
-## Using offline bundle
+## Building your app for production
 
-You can also pack all the JavaScript code within the app itself. This way you can test it without development server running and submit the app to the AppStore.
+You have built a great app using React Native, and you are now itching to release it in the App Store. The process is the same as any other native iOS app, with some additional considerations to take into account.
 
-1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
-2. Follow the instructions for "OPTION 2":
-  * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-  * Run the `react-native bundle` command in terminal from the root directory of your app
+Building an app for distribution in the App Store requires using the `Release` scheme in Xcode. Apps built for `Release` will automatically disable the in-app developer menu. This will prevent your users from inadvertently accessing the menu in production.
+This way you can test the app independently of the development server, and will allow you to distribute the app to beta testers and submit the app to the App Store.
 
-The bundle script supports a couple of flags:
+### App Transport Security
 
-* `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
-* `--minify` - pipe the JS code through UglifyJS.
+App Transport Security is a security feature, added in iOS 9, that rejects all HTTP requests that are not sent over HTTPS. This can result in HTTP traffic being blocked, including the developer React Native server.
 
-Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
+ATS is disabled by default in projects generated using the React Native CLI in order to make development easier. You should re-enable ATS prior to building your app for production by removing the `NSAllowsArbitraryLoads` entry from your `Info.plist` file in the `ios/` folder.
 
-* API is now `entry-file <path>` based instead of url based.
-* Need to specify which platform you're bundling for `--platform <ios|android>`.
-* Option `--out` has been renamed for `--bundle-output`.
-* Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` 
+To learn more about how to configure ATS on your own Xcode projects, see [this post on ATS][cats].
 
-## Disabling in-app developer menu
-
-When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](/react-native/docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
-
-## Troubleshooting
-
-If `curl` command fails make sure the packager is running. Also try adding `--ipv4` flag to the end of it.
-
-If you started your project a while ago, `main.jsbundle` might not be included into Xcode project. To add it, right click on your project directory and click "Add Files to ..." - choose the `main.jsbundle` file that you generated.
+[cats]: http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/

@@ -12,7 +12,7 @@ package com.facebook.react.views.view;
 import android.graphics.Rect;
 import android.view.View;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Interface that should be implemented by {@link View} subclasses that support
@@ -28,7 +28,7 @@ public interface ReactClippingViewGroup {
 
   /**
    * Notify view that clipping area may have changed and it should recalculate the list of children
-   * that shold be attached/detached. This method should be called only when property
+   * that should be attached/detached. This method should be called only when property
    * {@code removeClippedSubviews} is set to {@code true} on a view.
    *
    * CAUTION: Views are responsible for calling {@link #updateClippingRect} on it's children. This
@@ -52,7 +52,7 @@ public interface ReactClippingViewGroup {
    *
    * Helper method {@link ReactClippingViewGroupHelper#applyRemoveClippedSubviewsProperty} may be
    * used by {@link ViewManager} subclass to apply this property based on property update map
-   * {@link CatalystStylesDiffMap}.
+   * {@link ReactStylesDiffMap}.
    */
   void setRemoveClippedSubviews(boolean removeClippedSubviews);
 

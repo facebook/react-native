@@ -15,7 +15,8 @@
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
+#import "RCTBridge+Private.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 60;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
@@ -44,12 +45,12 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
 
-#if RUNNING_ON_CI
-    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
-    RCTAssert(_scriptURL != nil, @"Could not locate main.jsBundle");
-#else
-    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
-#endif
+    if (getenv("CI_USE_PACKAGER")) {
+      _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    } else {
+      _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+    }
+    RCTAssert(_scriptURL != nil, @"No scriptURL set");
   }
   return self;
 }
@@ -112,11 +113,11 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
     rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
 
-    NSString *testModuleName = RCTBridgeModuleNameForClass([RCTTestModule class]);
-    RCTTestModule *testModule = rootView.bridge.modules[testModuleName];
+    RCTTestModule *testModule = [rootView.bridge moduleForClass:[RCTTestModule class]];
     RCTAssert(_testController != nil, @"_testController should not be nil");
     testModule.controller = _testController;
     testModule.testSelector = test;
+    testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
     UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
@@ -135,9 +136,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     // Take a weak reference to the JS context, so we track its deallocation later
     // (we can only do this now, since it's been lazily initialized)
-    id jsExecutor = [bridge valueForKeyPath:@"batchedBridge.javaScriptExecutor"];
-    if ([jsExecutor isKindOfClass:[RCTContextExecutor class]]) {
-      weakJSContext = [jsExecutor valueForKey:@"context"];
+    id jsExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
+    if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+      weakJSContext = [jsExecutor valueForKey:@"_context"];
     }
     [rootView removeFromSuperview];
 

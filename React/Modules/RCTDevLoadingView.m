@@ -13,6 +13,7 @@
 #import "RCTDevLoadingView.h"
 #import "RCTDefines.h"
 #import "RCTUtils.h"
+#import "RCTModalHostViewController.h"
 
 #if RCT_DEV
 
@@ -34,95 +35,108 @@ RCT_EXPORT_MODULE()
   isEnabled = enabled;
 }
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidLoadNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidFailToLoadNotification
-                                               object:nil];
-  }
-  return self;
-}
-
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (instancetype)init
+{
+  // We're only overriding this to ensure the module gets created at startup
+  // TODO (t11106126): Remove once we have more declarative control over module setup.
+  return [super init];
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  [self showWithURL:bridge.bundleURL];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidLoadNotification
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidFailToLoadNotification
+                                             object:nil];
+
+  if (bridge.loading) {
+    [self showWithURL:bridge.bundleURL];
+  }
 }
 
-- (void)showWithURL:(NSURL *)URL
+RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
   if (!isEnabled) {
     return;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-
-    _showDate = [NSDate date];
-    if (!_window && !RCTRunningInTestEnvironment()) {
+    self->_showDate = [NSDate date];
+    if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
-      _window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
-      _window.backgroundColor = [UIColor blackColor];
-      _window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
 
-      _label = [[UILabel alloc] initWithFrame:_window.bounds];
-      _label.font = [UIFont systemFontOfSize:12.0];
-      _label.textColor = [UIColor grayColor];
-      _label.textAlignment = NSTextAlignmentCenter;
+      // set a root VC so rotation is supported
+      self->_window.rootViewController = [UIViewController new];
 
-      [_window addSubview:_label];
-      [_window makeKeyAndVisible];
+      self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
+      self->_label.font = [UIFont systemFontOfSize:12.0];
+      self->_label.textAlignment = NSTextAlignmentCenter;
+
+      [self->_window addSubview:self->_label];
     }
 
-    NSString *source;
-    if (URL.fileURL) {
-      source = @"pre-bundled file";
-    } else {
-      source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
-    }
-
-    _label.text = [NSString stringWithFormat:@"Loading from %@...", source];
-    _window.hidden = NO;
-
+    self->_label.text = message;
+    self->_label.textColor = color;
+    self->_window.backgroundColor = backgroundColor;
+    self->_window.hidden = NO;
   });
 }
 
-- (void)hide
+RCT_EXPORT_METHOD(hide)
 {
   if (!isEnabled) {
     return;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
-    NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:_showDate];
+    NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-
-    CGRect windowFrame = _window.frame;
+    CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
                           delay:delay
                         options:0
                      animations:^{
-                       _window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
+                       self->_window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
                      } completion:^(__unused BOOL finished) {
-                       _window.frame = windowFrame;
-                       _window.hidden = YES;
-                       _window = nil;
+                       self->_window.frame = windowFrame;
+                       self->_window.hidden = YES;
+                       self->_window = nil;
                      }];
   });
+}
+
+- (void)showWithURL:(NSURL *)URL
+{
+  UIColor *color;
+  UIColor *backgroundColor;
+  NSString *source;
+  if (URL.fileURL) {
+    color = [UIColor grayColor];
+    backgroundColor = [UIColor blackColor];
+    source = @"pre-bundled file";
+  } else {
+    color = [UIColor whiteColor];
+    backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
+    source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
+  }
+
+  [self showMessage:[NSString stringWithFormat:@"Loading from %@...", source]
+              color:color
+    backgroundColor:backgroundColor];
 }
 
 @end

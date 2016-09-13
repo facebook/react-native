@@ -8,7 +8,9 @@
  */
 'use strict';
 
-jest.dontMock('../getAssetDestPathAndroid');
+jest
+  .dontMock('../getAssetDestPathAndroid')
+  .dontMock('../assetPathUtils');
 
 const getAssetDestPathAndroid = require('../getAssetDestPathAndroid');
 

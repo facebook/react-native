@@ -5,376 +5,409 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- */
+*/
+
+/*
+Thousands of applications use React Native, so we can't list all of them
+in our showcase. To be useful to someone looking through the showcase,
+either the app must be something that most readers would recognize, or the makers of the application must have
+posted useful technical content about the making of the app. It also must be useful considering that the majority
+of readers only speak English. So, each app in the showcase should link to either:
+
+1/ An English-language news article discussing the app, built either by a funded startup or for a public company
+2/ An English-language technical post on a funded startup or public company blog discussing React Native
+
+For each app in the showcase, use infoLink and infoTitle to reference this content.
+*/
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');
 
-var apps = [
+var featured = [
   {
-    name: 'AIGA Design Conference 2015: New Orleans',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
-    author: 'W&Co',
-  },
-  {
-    name: 'Beetroot',
-    icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
-    link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
-    author: 'Alex Duckmanton',
-  },
-  {
-    name: 'Bionic eStore',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
-    author: 'Digidemon',
-  },
-  {
-    name: 'CANDDi',
-    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.canddi',
-    author: 'CANDDi LTD.',
-  },
-  {
-    name: 'Company name search',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
-    author: 'The Formations Factory Ltd',
-  },
-  {
-    name: 'Discord',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
-    link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
-    author: 'Hammer & Chisel',
-  },
-  {
-    name: 'Discovery VR',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
-    author: 'Discovery Communications',
-  },
-  {
-    name: 'DropBot',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
-    author: 'Peach Labs',
-  },
-  {
-    name: 'Exponent',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
-    link:  'https://itunes.apple.com/ca/app/exponent/id982107779?mt=8',
-    author: 'Exponent',
-  },
-  {
-    name: 'F8',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple5/v4/bf/d9/50/bfd9504e-a1bd-67c5-b50b-24e97016dae9/pr_source.jpg',
-    link: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
-    author: 'Facebook',
+    name: 'Facebook',
+    icon: 'https://lh3.googleusercontent.com/ZZPdzvlpK9r_Df9C3M7j1rNRi7hhHRvPhlklJ3lfi5jk86Jd1s0Y5wcQ1QgbVaAP5Q=w300',
+    linkAppStore: 'https://itunes.apple.com/app/facebook/id284882215',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en',
+    infoLink: 'https://code.facebook.com/posts/895897210527114/dive-into-react-native-performance/',
+    infoTitle: 'Using React Native in the Facebook App',
   },
   {
     name: 'Facebook Groups',
     icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple69/v4/57/f8/4c/57f84c0c-793d-5f9a-95ee-c212d0369e37/mzl.ugjwfhzx.png',
-    link: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
-    author: 'Facebook',
+    linkAppStore: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
+    infoLink: 'https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/',
+    infoTitle: 'React Native: Bringing Modern Web Techniques to Mobile',
   },
   {
     name: 'Facebook Ads Manager',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
     linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    author: 'Facebook',
+    infoLink: 'https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/',
+    infoTitle: 'How We Built the First Cross-Platform React Native App',
   },
   {
-    name: 'Fan of it',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
-    link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
-    author: 'Fan of it (Pty) Ltd',
+    name: 'F8',
+    icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
+    infoLink: 'http://makeitopen.com/tutorials/building-the-f8-app/planning/',
+    infoTitle: 'Building the F8 App',
   },
   {
-    name: 'FastPaper',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/72/b4/d8/72b4d866-90d2-3aad-d1dc-0315f2d9d045/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/fast-paper/id1001174614',
-    author: 'Liubomyr Mykhalchenko (@liubko)',
+    name: 'FanVision Bolt',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
+    infoLink: 'https://www.youtube.com/watch?v=oWOcAXyDf0w',
+    infoTitle: 'FanVision Bolt accessory + app provide live audio/video and stats at NASCAR events',
   },
   {
-    name: 'Foodstand',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/33/c1/3b/33c13b88-8ec2-23c1-56bb-712ad9938290/icon350x350.jpeg',
-    link: 'https://www.thefoodstand.com/download',
-    author: 'Foodstand, Inc.',
+    name: 'Gyroscope',
+    icon: 'https://media.gyrosco.pe/images/magneto/180x180.png',
+    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
+    infoLink: 'https://blog.gyrosco.pe/building-the-app-1dac1a97d253',
+    infoTitle: '"Building a visualization experience with React Native."',
+
   },
   {
-    name: 'Go Fire',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
-    link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
-    author: 'beijing qingfengyun Technology Co., Ltd.',
+    name: 'Discord',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
+    linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
+    infoLink: 'https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof',
+    infoTitle: 'Using React Native: One Year Later',
   },
   {
-    name: 'Harmonizome',
-    icon: 'http://is1.mzstatic.com/image/thumb/Purple6/v4/18/a9/bc/18a9bcde-d2d9-7574-2664-e82fff7b7208/pr_source.png/350x350-75.png',
-    link: 'https://itunes.apple.com/us/app/harmonizome/id1046990905?mt=8',
-    author: 'Michael McDermott (@_mgmcdermott)',
+    name: 'Discovery VR',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR',
+    infoLink: 'https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0',
+    infoTitle: '"I may never write an iOS app in Objective-C or Swift again."',
   },
   {
-    name: 'Hashley',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
-    link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
-    author: 'Elephant, LLC',
-  },
-  {
-    name: 'Hey, Neighbor!',
-    icon: 'https://raw.githubusercontent.com/scrollback/io.scrollback.neighborhoods/master/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
-    link: 'https://play.google.com/store/apps/details?id=io.scrollback.neighborhoods',
-    author: 'Scrollback',
-  },
-  {
-    name: 'HSK Level 1 Chinese Flashcards',
-    icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
-    link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
-    author: 'HS Schaaf',
-  },
-  {
-    name: 'Kakapo',
-    icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
-    author: 'Daniel Levitt',
-  },
-  {
-    name: 'Leanpub',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
-    author: 'Leanpub',
-  },
-  {
-    name: 'LoadDocs',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/b5/ca/78/b5ca78ca-392d-6874-48bf-762293482d42/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
-    author: 'LoadDocs',
-  },
-  {
-    name: 'Lrn',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
-    link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
-    author: 'Lrn Labs, Inc',
-  },
-  {
-    name: 'Lumpen Radio',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/46/43/00/464300b1-fae3-9640-d4a2-0eb050ea3ff2/mzl.xjjawige.png',
-    link: 'https://itunes.apple.com/us/app/lumpen-radio/id1002193127?mt=8',
-    author: 'Joshua Habdas',
-  },
-  {
-    name: 'Makerist Mediathek',
-    icon: 'http://a5.mzstatic.com/eu/r30/Purple3/v4/fa/5f/4c/fa5f4ce8-5aaa-5a4b-ddcc-a0c6f681d08a/icon175x175.png',
-    link: 'https://itunes.apple.com/de/app/makerist-mediathek/id1019504544',
-    author: 'Railslove',
-  },
-  {
-    name: 'MaxReward - Android',
-    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
-    link: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
-    author: 'Neil Ma',
-  },
-  {
-    name: 'MaxReward - iOS',
-    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
-    link: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
-    author: 'Neil Ma',
-  },
-  {
-    name: 'MinTrain',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/51/51/68/51516875-1323-3100-31a8-cd1853d9a2c0/mzl.gozwmstp.png',
-    link: 'https://itunes.apple.com/us/app/mintrain/id1015739031?mt=8',
-    author: 'Peter Cottle',
-  },
-  {
-    name: 'Mr. Dapper',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
-    link: 'https://itunes.apple.com/us/app/mr.-dapper-men-fashion-app/id989735184?ls=1&mt=8',
-    author: 'wei ping woon',
+    name: 'Movie Trailers by MovieLaLa',
+    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
+    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
+    infoLink: 'http://variety.com/2016/digital/news/movielala-1-4-million-seed-round-hollywood-angel-investors-1201678139/',
+    infoTitle: 'MovieLaLa Closes $1.4 Million Seed Round',
   },
   {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
-    link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
-    author: 'Myntra Designs',
+    linkAppStore: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
+    infoLink: 'https://techcrunch.com/2014/05/22/flipkart-myntra-acqusition/',
+    infoTitle: 'Flipkart Buys Fashion E-tailer Myntra To Fight Amazon',
   },
   {
-    name: 'Ncredible',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple2/v4/a9/00/74/a9007400-7ccf-df10-553b-3b6cb67f3f5f/icon350x350.png',
-    link: 'https://itunes.apple.com/ca/app/ncredible/id1019662810?mt=8',
-    author: 'NBC News Digital, LLC',
-  },
-  {
-    name: 'Noodler',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/noodler-noodle-soup-oracle/id1013183002?mt=8',
-    author: 'Michele Humes & Joshua Sierles',
-  },
-  {
-    name: 'Night Light',
-    icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
-    link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
-    author: 'Tian Yuan',
-  },
-  {
-    name: 'Okanagan News',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
-    author: 'Levi Cabral',
-  },
-  {
-    name: 'Posyt - Tinder for ideas',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/a5/b3/86/a5b38618-a5e9-6089-7425-7fa51ecd5d30/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/posyt-anonymously-meet-right/id1037842845?mt=8',
-    author: 'Posyt.com',
-  },
-  {
-    name: 'Raindrop.io',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/f0/a4/57/f0a4574e-4a59-033f-05ff-5c421f0a0b00/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/raindrop.io-keep-your-favorites/id1021913807',
-    author: 'Mussabekov Rustem',
-  },
-  {
-    name: 'ReactTo36',
-    icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple5/v4/e3/c8/79/e3c87934-70c6-4974-f20d-4adcfc68d71d/mzl.wevtbbkq.png',
-    link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',
-    author: 'Jonathan Solichin',
-  },
-  {
-    name: 'RenovationFind',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
-    link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
-    author: 'Christopher Lord'
-  },
-  {
-    name: 'RepairShopr',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/fa/96/ee/fa96ee57-c5f0-0c6f-1a34-64c9d3266b86/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/repairshopr-payments-lite/id1023262888?mt=8',
-    author: 'Jed Tiotuico',
-  },
-  {
-    name: 'RN Playground',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
-    author: 'Joshua Sierles',
-  },
-  {
-    name: 'Rota Employer - Hire On Demand',
-    link: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
-    icon: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
-    author: 'Rota',
-  },
-  {
-    name: 'Rota Worker - Shifts On Demand',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
-    author: 'Rota',
-  },
-  {
-    name: 'SG Toto 4d',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
-    author: 'Steve Ng'
-  },
-  {
-    name: 'Spero for Cancer',
-    icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
-    link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
-    author: 'Spero.io',
+    name: 'SoundCloud Pulse',
+    icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
+    infoLink: 'https://blog.soundcloud.com/2016/02/23/soundcloud-pulse-now-on-iphone/',
+    infoTitle: 'SoundCloud Pulse: now on iPhone',
   },
   {
     name: 'Start - medication manager for depression',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
-    author: 'Iodine Inc.',
+    linkAppStore: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
+    infoLink: 'http://www.nytimes.com/2014/09/24/technology/to-gather-drug-information-a-health-start-up-turns-to-consumers.html?_r=0',
+    infoTitle: 'NYT: A Health Startup Turns to Consumers',
   },
   {
-    name: 'Tabtor Parent',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/80/50/9d/80509d05-18f4-a0b8-0cbb-9ba927d04477/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/tabtor-math/id1018651199?utm_source=ParentAppLP',
-    author: 'PrazAs Learning Inc.',
+    name: 'Taxfyle - taxes filed on-demand via licensed CPA',
+    icon: 'https://s3.amazonaws.com/taxfyle-public/images/taxfyle-icon-1024px.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/taxfyle/id1058033104?mt=8',
+    infoLink: 'http://www.techinsider.io/taxfyle-wants-to-be-the-uber-for-taxes-2016-4',
+    infoTitle: 'Taxfyle: the Uber for filing taxes',
   },
   {
-    name: 'Tong Xing Wang',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
-    author: 'Ho Yin Tsun Eugene',
+    name: 'This AM',
+    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
+    infoLink: 'https://techcrunch.com/2016/02/01/refinery29-debuts-its-first-app-a-morning-news-round-up-called-refinery29-am/',
+    infoTitle: 'Refinery29 debuts its first app',
   },
   {
-    name: 'WOOP',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
-    author: 'Moritz Schwörer (@mosch)',
+    name: 'TRED - Sell your car for more',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/0c/07/b00c07d2-a057-06bc-6044-9fdab97f370f/icon175x175.jpeg',
+    linkAppStore:  'https://itunes.apple.com/us/app/tred-sell-my-car-for-more!/id1070071394?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=com.tredmobile&hl=en',
+    infoLink: 'http://www.geekwire.com/2015/mobile-dealership-tred-raises-another-1m-to-help-used-car-owners-make-more-money/',
+    infoTitle: 'Sell your car for thousands more than Craigslist or the dealer with TRED',
   },
   {
-    name: 'WPV',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/f1/ae/51/f1ae516b-d8e9-1b6d-acfe-755623a88327/icon350x350.png',
-    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
-    author: 'Yamill Vallecillo (@yamill3)',
+    name: 'Bitt Wallet',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/bitt-wallet/id1081954916?mt=8',
+    infoLink: 'https://bitcoinmagazine.com/articles/overstock-invests-in-bitt-to-launch-official-digital-currencies-in-the-caribbean-islands-1459961581',
+    infoTitle: 'Overstock invests in Bitt to launch digital currencies',
   },
   {
-    name: 'Yoloci',
-    icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/fa/e5/26/fae52635-b97c-bd53-2ade-89e2a4326745/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/de/app/yoloci/id991323225?mt=8',
-    author: 'Yonduva GmbH (@PhilippKrone)',
+    name: 'Calor - Field Pro',
+    icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
+    infoLink: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
+    infoTitle: 'React Native: a game changer for Enterprise Mobile Development',
   },
   {
-    name: 'youmeyou',
-    icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple7/v4/7c/42/30/7c423042-8945-7733-8af3-1523468706a8/mzl.qlecxphf.png',
-    link: 'https://itunes.apple.com/us/app/youmeyou/id949540333?mt=8',
-    author: 'youmeyou, LLC',
+    name: 'CBS Sports Franchise Football',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
+    infoLink: 'http://www.cbssports.com/fantasy/football/games/franchise/2015',
+    infoTitle: 'The award winning Fantasy Football league manager.',
   },
   {
-    name: 'Ziliun',
-    icon: 'https://lh3.googleusercontent.com/c6ot13BVlU-xONcQi-llFmKXZCLRGbfrCv1RnctWtOELtPYMc0A52srXAfkU897QIg=w300',
-    link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
-    author: 'Sonny Lazuardi',
+    name: 'Codementor - Live 1:1 Expert Developer Help',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
+    infoLink: 'https://techcrunch.com/2015/08/26/codementor-live-classes/',
+    infoTitle: 'Codementor, a Learning Platform for Developers',
   },
   {
-    name: 'YazBoz',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/80/4f/43/804f431d-2828-05aa-2593-99cfb0475351/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
-    author: 'Melih Mucuk',
+    name: 'Coiney窓口',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
+    infoLink: 'https://www.techinasia.com/japan-startup-coiney-aims-for-ipo',
+    infoTitle: 'Japanese startup Coiney aims for IPO',
+  },
+  {
+    name: 'Convoy Driver',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    infoLink: 'http://www.theverge.com/2015/10/27/9620352/convoy-uber-for-trucking',
+    infoTitle: 'Convoy, a Seattle-based "Uber for trucking"',
+  },
+  {
+    name: 'Fixt',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
+    infoLink: 'http://www.phonearena.com/news/Fixt-is-an-app-that-promises-a-hassle-free-smartphone-repairy-service_id81069',
+    infoTitle: 'A hassle-free smartphone repair service',
+  },
+  {
+    name: 'Leanpub',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
+    infoLink: 'http://techland.time.com/2011/06/23/how-to-turn-your-blog-into-an-instant-e-book/',
+    infoTitle: 'Leanpub: How to Turn Your Blog into an Instant E-Book',
+  },
+  {
+    name: 'li.st',
+    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=st.li.listapp',
+    infoLink: 'https://www.youtube.com/watch?v=cI9bDvDEsYE',
+    infoTitle: 'Building li.st for Android with React Native',
+  },
+  {
+    name: 'Lugg – Your On-Demand Mover',
+    icon: 'https://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.lugg',
+    infoLink: 'https://techcrunch.com/2015/08/26/lugg-an-app-for-on-demand-short-distance-moves-raises-3-8-million/',
+    infoTitle: 'Lugg, An App for Short-Distance Moves, Raises $3.8 Million',
+  },
+  {
+    name: 'Pimmr',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
+    infoLink: 'https://www.crunchbase.com/organization/pimmr#/entity',
+    infoTitle: 'Pimmr helps you find the needle in the haystack',
+  },
+  {
+    name: 'Project September',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple30/v4/95/51/b7/9551b72a-d80a-5b1c-5c6d-7fc77d745d31/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/project-september/id1074075331?ls=1&mt=8&_branch_match_id=273849075056044546',
+    infoLink: 'http://fortune.com/2016/04/14/project-september-alexis-maybank/',
+    infoTitle: 'Former Gilt CEO Launches New Mobile App',
+  },
+  {
+    name: 'QQ',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
+    infoLink: 'https://en.wikipedia.org/wiki/Tencent_QQ',
+    infoTitle: 'QQ is a Chinese messaging service with 829 million active accounts',
+  },
+  {
+    name: 'QQ空间',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
+    infoLink: 'https://en.wikipedia.org/wiki/Qzone',
+    infoTitle: 'Qzone is a Chinese social network with over 600 million users',
+  },
+  {
+    name: 'QQ音乐',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic',
+    infoLink: 'http://www.wsj.com/articles/tencent-customers-come-for-the-music-stay-for-the-perks-1433869369',
+    infoTitle: 'Internet giant tries to get people to pay for digital music',
+  },
+  {
+    name: 'Samanage',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/ed/e9/ff/ede9ff34-a9f6-5eb6-2a23-fcb014b326f2/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/samanage/id1033018362',
+    infoLink: 'https://techcrunch.com/2015/05/20/samanage-raises-16m-as-asset-management-business-grows/',
+    infoTitle: 'Samanage raises $16M as Asset Management Expands',
+  },
+  {
+    name: 'ShareWis',
+    icon: 'https://s3-ap-northeast-1.amazonaws.com/sw-misc/sharewis3_app.png',
+    linkAppStore: 'https://itunes.apple.com/jp/app/id585517208',
+    infoLink: 'https://www.crunchbase.com/organization/sharewis#/entity',
+    infoTitle: 'The concept is to turn learning into an adventure',
+  },
+  {
+    name: 'sneat',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
+    infoLink: 'http://www.internetsansfrontieres.com/sneat-application-mobile-reserver-restaurant/',
+    infoTitle: 'Application mobile pour réserver un restaurant',
+  },
+  {
+    name: 'Ticketea',
+    icon: 'http://f.cl.ly/items/0n3g3x2t0W0a0d0b1F0C/tkt-icon.png',
+    linkAppStore: 'https://itunes.apple.com/es/app/entradas-teatro-y-conciertos/id1060067658?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.ticketea.geminis',
+    infoLink: 'https://techcrunch.com/2013/05/27/ticket-to-ride/',
+    infoTitle: 'Ticketea raises $4 Million to Beat Ticketmaster',
+  },
+  {
+    name: 'Townske',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
+    infoLink: 'https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c',
+    infoTitle: '"I would recommend React Native in a heartbeat."',
+  },
+  {
+    name: 'uSwitch - Energy switching app',
+    icon: 'https://lh3.googleusercontent.com/NpkGlwFWdj7VsK2ueVwlgdrrBrNJ-yN-4TkEHjjSjDUu7NpMcfyAp10p97f0zci0CSFQ=w300',
+    linkAppStore: 'https://itunes.apple.com/gb/app/uswitch-compare-switch-save/id935325621?mt=8&ct=react',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.uswitchmobileapp',
+    infoLink: 'https://en.wikipedia.org/wiki/USwitch',
+    infoTitle: 'uSwitch: a UK-based price comparison service',
+  },
+  {
+    name: 'WEARVR',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
+    infoLink: 'http://venturebeat.com/2015/04/07/virtual-reality-app-store-wear-vr-secures-1-5m-in-funding/',
+    infoTitle: 'Wear VR secures $1.5M in funding',
+  },
+  {
+    name: 'wego concerts',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/03/91/2d/03912daa-fae7-6a25-5f11-e6b19290b3f4/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/wego-concerts-follow-friends/id869478093?mt=8',
+    infoLink: 'http://www.nydailynews.com/life-style/wego-concerts-app-links-music-fans-article-1.2066776',
+    infoTitle: 'Wego Concerts: Like the love child of Tinder and StubHub',
+  },
+  {
+    name: 'Bdsdiet',
+    icon: 'http://s3.ap-northeast-2.amazonaws.com/bdsdiet-bucket/media/store-icon.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bdsdiet_app',
+    infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
+    infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
+  },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
+    linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
+    infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
+    infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
+  },
+  {
+    name: '昨日热推',
+    icon: 'https://frontbin.com/images/apple-touch-icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/zuo-ri-re-tui/id1137163693?l=en&mt=8',
+    infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
+    infoTitle: 'Developing the react-native-image-viewer library',
+  },
+  {
+    name: 'Artsy – Collect and Bid on Fine Art & Design',
+    icon: 'https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8',
+    infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
+    infoTitle: 'React Native at Artsy',
   },
 ];
 
-var showcase = React.createClass({
-  renderLinks: function(app) {
+featured.sort(function(a, b) {
+  return a.name.localeCompare(b.name);
+});
+
+var AppList = React.createClass({
+
+  render: function() {
     return (
-      <p><a href={app.linkAppStore} target="blank">iOS</a> - <a href={app.linkPlayStore} target="blank">Android</a></p>
+      <div>
+        {this.props.apps.map(this._renderApp)}
+      </div>
     );
   },
+
+  _renderApp: function(app, i) {
+    var inner = (
+      <div>
+        <img src={app.icon} alt={app.name} />
+        <h3>{app.name}</h3>
+        {app.linkAppStore || app.linkPlayStore ? this._renderLinks(app) : null}
+        {this._renderInfo(app)}
+      </div>
+    );
+
+    if (app.linkAppStore && app.linkPlayStore) {
+      return (<div className="showcase" key={i}>{inner}</div>);
+    }
+
+    return (
+      <div className="showcase" key={i}>
+        {inner}
+      </div>
+    );
+  },
+
+  _renderInfo: function(app) {
+    if (!app.infoLink) {
+      return;
+    }
+
+    return (
+      <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>
+    );
+  },
+
+  _renderLinks: function(app) {
+    var linkAppStore = app.linkAppStore ? <a href={app.linkAppStore} target="_blank">iOS</a> : '';
+    var linkPlayStore = app.linkPlayStore ? <a href={app.linkPlayStore} target="_blank">Android</a> : '';
+
+    return (
+      <p>
+        {linkAppStore}
+        {linkAppStore && linkPlayStore ? ' · ' : ''}
+        {linkPlayStore}
+      </p>
+    );
+  },
+});
+
+var showcase = React.createClass({
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
-        <section className="content wrap documentationContent nosidebar">
+        <section className="content wrap documentationContent nosidebar showcaseSection">
           <div className="inner-content showcaseHeader">
-            <h1>Apps using React Native</h1>
+            <h1 style={{textAlign: 'center'}}>The React Native Showcase</h1>
             <div className="subHeader"></div>
-            <p>
-              Here is a list of apps using <strong>React Native</strong>. Submit a pull request on <a href="https://github.com/facebook/react-native">GitHub</a> to list your app.
-            </p>
+            <p>Thousands of apps are using React Native in production, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!</p>
+
+            <div className="inner-content">
+              <AppList apps={featured} />
+            </div>
+
+            <div className="inner-content showcaseHeader">
+              <p>If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
+            </div>
           </div>
-          {
-            apps.map((app, i) => {
-              var inner = (
-                <div>
-                  <img src={app.icon} alt={app.name} />
-                  <h3>{app.name}</h3>
-                  {app.linkAppStore && app.linkPlayStore ? this.renderLinks(app) : null}
-                  <p>By {app.author}</p>
-                </div>
-              );
-              if (app.linkAppStore && app.linkPlayStore) {
-                return (<div className="showcase" key={i}>{inner}</div>);
-              }
-              return (<a href={app.link} className="showcase" key={i} target="blank">{inner}</a>);
-            })
-          }
+
         </section>
       </Site>
     );

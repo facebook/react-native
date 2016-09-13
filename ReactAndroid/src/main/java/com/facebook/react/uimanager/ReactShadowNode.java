@@ -12,12 +12,12 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Map;
 
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -42,6 +42,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
  * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
  * information.
  */
+@ReactPropertyHolder
 public class ReactShadowNode extends CSSNode {
 
   private int mReactTag;
@@ -60,6 +61,8 @@ public class ReactShadowNode extends CSSNode {
   private float mAbsoluteTop;
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
+  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -95,7 +98,7 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
-  protected void markUpdated() {
+  public void markUpdated() {
     if (mNodeUpdated) {
       return;
     }
@@ -106,10 +109,56 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
+  public boolean hasUnseenUpdates() {
+    return mNodeUpdated;
+  }
+
   @Override
-  protected void dirty() {
+  public void dirty() {
     if (!isVirtual()) {
       super.dirty();
+    }
+  }
+
+  public void setDefaultPadding(int spacingType, float padding) {
+    mDefaultPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  @Override
+  public void setPadding(int spacingType, float padding) {
+    mPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  private void updatePadding() {
+    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
+      if (spacingType == Spacing.LEFT ||
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      }
     }
   }
 
@@ -169,18 +218,8 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public final void updateProperties(CatalystStylesDiffMap props) {
-    Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
-        ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
-      if (setter != null) {
-        setter.updateShadowNodeProp(this, props);
-      }
-    }
+  public final void updateProperties(ReactStylesDiffMap props) {
+    ViewManagerPropertyUpdater.updateProps(this, props);
     onAfterUpdateTransaction();
   }
 
@@ -256,7 +295,7 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
@@ -264,7 +303,7 @@ public class ReactShadowNode extends CSSNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 

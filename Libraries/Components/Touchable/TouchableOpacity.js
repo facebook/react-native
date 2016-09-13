@@ -7,13 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableOpacity
+ * @noflow
  */
 'use strict';
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -40,7 +41,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *     <TouchableOpacity onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableOpacity>
  *   );
@@ -54,7 +55,7 @@ var TouchableOpacity = React.createClass({
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
-     * active.
+     * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
   },
@@ -80,7 +81,10 @@ var TouchableOpacity = React.createClass({
     ensurePositiveDelayProps(nextProps);
   },
 
-  setOpacityTo: function(value) {
+  /**
+   * Animate the touchable to a new opacity.
+   */
+  setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
       {toValue: value, duration: 150}
@@ -123,6 +127,10 @@ var TouchableOpacity = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function() {
     return this.props.delayPressIn || 0;
   },
@@ -152,12 +160,14 @@ var TouchableOpacity = React.createClass({
   render: function() {
     return (
       <Animated.View
-        accessible={true}
+        accessible={this.props.accessible !== false}
+        accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
@@ -165,6 +175,7 @@ var TouchableOpacity = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   },

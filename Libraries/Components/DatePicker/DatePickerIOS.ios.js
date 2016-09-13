@@ -13,19 +13,16 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const PropTypes = require('react/lib/ReactPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
-
-var DATEPICKER = 'datepicker';
+const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  mode: 'date' | 'time' | 'datetime';
+  mode: 'date' | 'time' | 'datetime',
 };
 
 type Event = Object;
@@ -37,10 +34,14 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-var DatePickerIOS = React.createClass({
+const DatePickerIOS = React.createClass({
+  // TOOD: Put a better type for _picker
+  _picker: (undefined: ?$FlowFixMe),
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The currently selected date.
      */
@@ -96,7 +97,7 @@ var DatePickerIOS = React.createClass({
   },
 
   _onChange: function(event: Event) {
-    var nativeTimeStamp = event.nativeEvent.timestamp;
+    const nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange && this.props.onDateChange(
       new Date(nativeTimeStamp)
     );
@@ -106,20 +107,20 @@ var DatePickerIOS = React.createClass({
     // prop. That way they can also disallow/undo/mutate the selection of
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
-    var propsTimeStamp = this.props.date.getTime();
-    if (nativeTimeStamp !== propsTimeStamp) {
-      this.refs[DATEPICKER].setNativeProps({
+    const propsTimeStamp = this.props.date.getTime();
+    if (this._picker && nativeTimeStamp !== propsTimeStamp) {
+      this._picker.setNativeProps({
         date: propsTimeStamp,
       });
     }
   },
 
   render: function() {
-    var props = this.props;
+    const props = this.props;
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={DATEPICKER}
+          ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={
@@ -138,15 +139,21 @@ var DatePickerIOS = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   datePickerIOS: {
-    height: RCTDatePickerIOSConsts.ComponentHeight,
-    width: RCTDatePickerIOSConsts.ComponentWidth,
+    height: 216,
   },
 });
 
-var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS, {
-  nativeOnly: { onChange: true },
+const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
+  propTypes: {
+    ...DatePickerIOS.propTypes,
+    date: PropTypes.number,
+    minimumDate: PropTypes.number,
+    maximumDate: PropTypes.number,
+    onDateChange: () => null,
+    onChange: PropTypes.func,
+  }
 });
 
 module.exports = DatePickerIOS;

@@ -11,10 +11,10 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
-#import "RCTComponent.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "UIView+React.h"
 
 @class RCTBridge;
 @class RCTShadowView;
@@ -42,15 +42,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 - (UIView *)view;
 
 /**
- * This method instantiates a native view using the props passed into the component.
- * This method should be used when you need to know about specific props in order to
- * initialize a view. By default, this just calls the -view method. Each prop will
- * still be set individually, after the view is created. Like the -view method,
- * -viewWithProps: should return a fresh instance each time it is called.
- */
-- (UIView *)viewWithProps:(NSDictionary<NSString *, id> *)props;
-
-/**
  * This method instantiates a shadow view to be managed by the module. If omitted,
  * an ordinary RCTShadowView instance will be created, which is typically fine for
  * most view types. As with the -view method, the -shadowView method should return
@@ -70,7 +61,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSArray<NSString *> *)customBubblingEventTypes;
+- (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
  * DEPRECATED: declare properties of type RCTDirectEventBlock instead
@@ -83,7 +74,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSArray<NSString *> *)customDirectEventTypes;
+- (NSArray<NSString *> *)customDirectEventTypes __deprecated_msg("Use RCTDirectEventBlock props instead.");
 
 /**
  * Called to notify manager that layout has finished, in case any calculated
@@ -94,7 +85,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 /**
  * Called after view hierarchy manipulation has finished, and all shadow props
  * have been set, but before layout has been performed. Useful for performing
- * custo  layout logic or tasks that involve walking the view hierarchy.
+ * custom layout logic or tasks that involve walking the view hierarchy.
  * To be deprecated, hopefully.
  */
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;

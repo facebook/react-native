@@ -15,10 +15,10 @@
  */
 'use strict';
 
-var React = require('react-native');
+var ReactNative = require('react-native');
 var {
   StyleSheet,
-} = React;
+} = ReactNative;
 
 var MAX_VALUE = 200;
 

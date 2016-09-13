@@ -11,12 +11,12 @@
 const fetch = require('node-fetch');
 
 /**
- * Indicates whether or not the packager is running. It ruturns a promise that
+ * Indicates whether or not the packager is running. It returns a promise that
  * when fulfilled can returns one out of these possible values:
  *   - `running`: the packager is running
  *   - `not_running`: the packager nor any process is running on the expected
  *                    port.
- *   - `unrecognized`: one other process is running on the port ew expect the
+ *   - `unrecognized`: one other process is running on the port we expect the
  *                     packager to be running.
  */
 function isPackagerRunning() {

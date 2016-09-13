@@ -30,9 +30,10 @@ var React = require('React');
 var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
 var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 var Platform = require('Platform');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
+
+var guid = require('guid');
 
 var { Map } = require('immutable');
 
@@ -49,9 +50,8 @@ var navStatePresentedIndex = function(navState) {
   return navState.observedTopOfStack;
 };
 
-var NavigatorNavigationBar = React.createClass({
-
-  propTypes: {
+class NavigatorNavigationBar extends React.Component {
+  static propTypes = {
     navigator: React.PropTypes.object,
     routeMapper: React.PropTypes.shape({
       Title: React.PropTypes.func.isRequired,
@@ -64,21 +64,32 @@ var NavigatorNavigationBar = React.createClass({
     }),
     navigationStyles: React.PropTypes.object,
     style: View.propTypes.style,
-  },
+  };
 
-  statics: {
-    Styles: NavigatorNavigationBarStyles,
-    StylesAndroid: NavigatorNavigationBarStylesAndroid,
-    StylesIOS: NavigatorNavigationBarStylesIOS,
-  },
+  static Styles = NavigatorNavigationBarStyles;
+  static StylesAndroid = NavigatorNavigationBarStylesAndroid;
+  static StylesIOS = NavigatorNavigationBarStylesIOS;
 
-  getDefaultProps() {
-    return {
-      navigationStyles: NavigatorNavigationBarStyles,
-    };
-  },
+  static defaultProps = {
+    navigationStyles: NavigatorNavigationBarStyles,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
+    this._reset();
+  }
+
+  /**
+   * Stop transtion, immediately resets the cached state and re-render the
+   * whole view.
+   */
+  immediatelyRefresh = () => {
+    this._reset();
+    this.forceUpdate();
+  };
+
+  _reset = () => {
+    this._key = guid();
+    this._reusableProps = {};
     this._components = {};
     this._descriptors = {};
 
@@ -86,15 +97,9 @@ var NavigatorNavigationBar = React.createClass({
       this._components[componentName] = new Map();
       this._descriptors[componentName] = new Map();
     });
-  },
+  };
 
-  _getReusableProps: function(
-    /*string*/componentName,
-    /*number*/index
-  ) /*object*/ {
-    if (!this._reusableProps) {
-      this._reusableProps = {};
-    }
+  _getReusableProps = (/*string*/componentName, /*number*/index) => /*object*/ {
     var propStack = this._reusableProps[componentName];
     if (!propStack) {
       propStack = this._reusableProps[componentName] = [];
@@ -104,14 +109,14 @@ var NavigatorNavigationBar = React.createClass({
       props = propStack[index] = {style:{}};
     }
     return props;
-  },
+  };
 
-  _updateIndexProgress: function(
+  _updateIndexProgress = (
     /*number*/progress,
     /*number*/index,
     /*number*/fromIndex,
-    /*number*/toIndex
-  ) {
+    /*number*/toIndex,
+  ) => {
     var amount = toIndex > fromIndex ? progress : (1 - progress);
     var oldDistToCenter = index - fromIndex;
     var newDistToCenter = index - toIndex;
@@ -132,46 +137,41 @@ var NavigatorNavigationBar = React.createClass({
       var component = this._components[componentName].get(this.props.navState.routeStack[index]);
       var props = this._getReusableProps(componentName, index);
       if (component && interpolate[componentName](props.style, amount)) {
+        props.pointerEvents = props.style.opacity === 0 ? 'none' : 'box-none';
         component.setNativeProps(props);
       }
     }, this);
-  },
+  };
 
-  updateProgress: function(
-    /*number*/progress,
-    /*number*/fromIndex,
-    /*number*/toIndex
-  ) {
+  updateProgress = (/*number*/progress, /*number*/fromIndex, /*number*/toIndex) => {
     var max = Math.max(fromIndex, toIndex);
     var min = Math.min(fromIndex, toIndex);
     for (var index = min; index <= max; index++) {
       this._updateIndexProgress(progress, index, fromIndex, toIndex);
     }
-  },
+  };
 
-  render: function() {
+  render() {
     var navBarStyle = {
       height: this.props.navigationStyles.General.TotalNavHeight,
     };
     var navState = this.props.navState;
-    var components = COMPONENT_NAMES.map(function (componentName) {
-      return navState.routeStack.map(
-        this._getComponent.bind(this, componentName)
-      );
-    }, this);
+    var components = navState.routeStack.map((route, index) =>
+      COMPONENT_NAMES.map(componentName =>
+        this._getComponent(componentName, route, index)
+      )
+    );
 
     return (
-      <View style={[styles.navBarContainer, navBarStyle, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.navBarContainer, navBarStyle, this.props.style]}>
         {components}
       </View>
     );
-  },
+  }
 
-  _getComponent: function(
-    /*string*/componentName,
-    /*object*/route,
-    /*number*/index
-  ) /*?Object*/ {
+  _getComponent = (/*string*/componentName, /*object*/route, /*number*/index) => /*?Object*/ {
     if (this._descriptors[componentName].includes(route)) {
       return this._descriptors[componentName].get(route);
     }
@@ -188,7 +188,8 @@ var NavigatorNavigationBar = React.createClass({
       return null;
     }
 
-    var initialStage = index === navStatePresentedIndex(this.props.navState) ?
+    var componentIsActive = index === navStatePresentedIndex(this.props.navState);
+    var initialStage = componentIsActive ?
       this.props.navigationStyles.Stages.Center :
       this.props.navigationStyles.Stages.Left;
     rendered = (
@@ -196,6 +197,7 @@ var NavigatorNavigationBar = React.createClass({
         ref={(ref) => {
           this._components[componentName] = this._components[componentName].set(route, ref);
         }}
+        pointerEvents={componentIsActive ? 'box-none' : 'none'}
         style={initialStage[componentName]}>
         {content}
       </View>
@@ -203,9 +205,8 @@ var NavigatorNavigationBar = React.createClass({
 
     this._descriptors[componentName] = this._descriptors[componentName].set(route, rendered);
     return rendered;
-  },
-
-});
+  };
+}
 
 
 var styles = StyleSheet.create({

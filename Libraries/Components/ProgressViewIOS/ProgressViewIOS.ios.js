@@ -12,11 +12,11 @@
 'use strict';
 
 var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var PropTypes = require('ReactPropTypes');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -27,6 +27,7 @@ var ProgressViewIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The progress bar style.
      */
@@ -70,7 +71,7 @@ var ProgressViewIOS = React.createClass({
 
 var styles = StyleSheet.create({
   progressView: {
-    height: NativeModules.ProgressViewManager.ComponentHeight
+    height: 2,
   },
 });
 

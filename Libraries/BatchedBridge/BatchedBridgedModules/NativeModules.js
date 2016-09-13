@@ -11,10 +11,57 @@
  */
 'use strict';
 
-var NativeModules = require('BatchedBridge').RemoteModules;
+const BatchedBridge = require('BatchedBridge');
+const RemoteModules = BatchedBridge.RemoteModules;
 
-var nativeModulePrefixNormalizer = require('nativeModulePrefixNormalizer');
+function normalizePrefix(moduleName: string): string {
+  return moduleName.replace(/^(RCT|RK)/, '');
+}
 
-nativeModulePrefixNormalizer(NativeModules);
+/**
+ * Dirty hack to support old (RK) and new (RCT) native module name conventions.
+ */
+Object.keys(RemoteModules).forEach((moduleName) => {
+  const strippedName = normalizePrefix(moduleName);
+  if (RemoteModules['RCT' + strippedName] && RemoteModules['RK' + strippedName]) {
+    throw new Error(
+      'Module cannot be registered as both RCT and RK: ' + moduleName
+    );
+  }
+  if (strippedName !== moduleName) {
+    RemoteModules[strippedName] = RemoteModules[moduleName];
+    delete RemoteModules[moduleName];
+  }
+});
+
+/**
+ * Define lazy getters for each module.
+ * These will return the module if already loaded, or load it if not.
+ */
+const NativeModules = {};
+Object.keys(RemoteModules).forEach((moduleName) => {
+  Object.defineProperty(NativeModules, moduleName, {
+    configurable: true,
+    enumerable: true,
+    get: () => {
+      let module = RemoteModules[moduleName];
+      if (module && typeof module.moduleID === 'number' && global.nativeRequireModuleConfig) {
+        // The old bridge (still used by iOS) will send the config as
+        //  a JSON string that needs parsing, so we set config according
+        //  to the type of response we got.
+        const rawConfig = global.nativeRequireModuleConfig(moduleName);
+        const config = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
+        module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
+        RemoteModules[moduleName] = module;
+      }
+      Object.defineProperty(NativeModules, moduleName, {
+        configurable: true,
+        enumerable: true,
+        value: module,
+      });
+      return module;
+    },
+  });
+});
 
 module.exports = NativeModules;

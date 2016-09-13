@@ -49,6 +49,9 @@ module.exports = yeoman.generators.NamedBase.extend({
   end: function() {
     var projectPath = path.resolve(this.destinationRoot(), 'ios', this.name);
     this.log(chalk.white.bold('To run your app on iOS:'));
+    this.log(chalk.white('   cd ' + this.destinationRoot()));
+    this.log(chalk.white('   react-native run-ios'));
+    this.log(chalk.white('   - or -'));
     this.log(chalk.white('   Open ' + projectPath + '.xcodeproj in Xcode'));
     this.log(chalk.white('   Hit the Run button'));
   }

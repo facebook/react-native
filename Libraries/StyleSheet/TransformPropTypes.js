@@ -11,7 +11,8 @@
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
+var ReactPropTypes = require('react/lib/ReactPropTypes');
+var deprecatedPropType = require('deprecatedPropType');
 
 var ArrayOfNumberPropType = ReactPropTypes.arrayOf(ReactPropTypes.number);
 
@@ -20,13 +21,25 @@ var TransformMatrixPropType = function(
   propName : string,
   componentName : string
 ) : ?Error {
-  if (props.transform && props.transformMatrix) {
+  if (props[propName]) {
     return new Error(
-      'transformMatrix and transform styles cannot be used on the same ' +
-      'component'
+      'The transformMatrix style property is deprecated. ' +
+      'Use `transform: [{ matrix: ... }]` instead.'
     );
   }
-  return ArrayOfNumberPropType(props, propName, componentName);
+};
+
+var DecomposedMatrixPropType = function(
+  props : Object,
+  propName : string,
+  componentName : string
+) : ?Error {
+  if (props[propName]) {
+    return new Error(
+      'The decomposedMatrix style property is deprecated. ' +
+      'Use `transform: [...]` instead.'
+    );
+  }
 };
 
 var TransformPropTypes = {
@@ -46,14 +59,17 @@ var TransformPropTypes = {
       ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
+
+  /* Deprecated */
   transformMatrix: TransformMatrixPropType,
+  decomposedMatrix: DecomposedMatrixPropType,
 
   /* Deprecated transform props used on Android only */
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  rotation: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
+  scaleX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  scaleY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  rotation: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
 };
 
 module.exports = TransformPropTypes;

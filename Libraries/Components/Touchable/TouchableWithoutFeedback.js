@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -12,25 +11,30 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var React = require('React');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var View = require('View');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var invariant = require('invariant');
-var onlyChild = require('onlyChild');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const React = require('React');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const View = require('View');
+
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const onlyChild = require('react/lib/onlyChild');
+const warning = require('fbjs/lib/warning');
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Do not use unless you have a very good reason. All the elements that
  * respond to press should have a visual feedback when touched. This is
  * one of the primary reason a "web" app doesn't feel "native".
+ *
+ * > **NOTE**: TouchableWithoutFeedback supports only one child
+ * >
+ * > If you wish to have several child components, wrap them in a View.
  */
-var TouchableWithoutFeedback = React.createClass({
+const TouchableWithoutFeedback = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
@@ -40,6 +44,10 @@ var TouchableWithoutFeedback = React.createClass({
       React.PropTypes.oneOf(View.AccessibilityTraits),
       React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
     ]),
+    /**
+     * If true, disable all interactions for this component.
+     */
+    disabled: React.PropTypes.bool,
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
@@ -76,6 +84,15 @@ var TouchableWithoutFeedback = React.createClass({
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
     pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * This defines how far your touch can start away from the button. This is
+     * added to `pressRetentionOffset` when moving off of the button.
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function() {
@@ -114,6 +131,10 @@ var TouchableWithoutFeedback = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function(): ?Object {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function(): number {
     return this.props.delayPressIn || 0;
   },
@@ -127,20 +148,40 @@ var TouchableWithoutFeedback = React.createClass({
     return this.props.delayPressOut || 0;
   },
 
-  render: function(): ReactElement {
+  render: function(): ReactElement<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    return (React: any).cloneElement(onlyChild(this.props.children), {
+    const child = onlyChild(this.props.children);
+    let children = child.props.children;
+    warning(
+      !child.type || child.type.displayName !== 'Text',
+      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
+        ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
+    );
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
+      if (!Array.isArray(children)) {
+        children = [children];
+      }
+      children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
+    }
+    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
+      [child.props.style, {color: 'red'}] :
+      child.props.style;
+    return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate
+      onResponderTerminate: this.touchableHandleResponderTerminate,
+      style,
+      children,
     });
   }
 });

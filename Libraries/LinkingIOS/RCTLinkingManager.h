@@ -9,13 +9,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
 
-@interface RCTLinkingManager : NSObject <RCTBridgeModule>
+@interface RCTLinkingManager : RCTEventEmitter
 
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation;
+
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+  restorationHandler:(void (^)(NSArray *))restorationHandler;
 
 @end

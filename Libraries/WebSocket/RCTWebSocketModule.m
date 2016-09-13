@@ -9,9 +9,9 @@
 
 #import "RCTWebSocketModule.h"
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
+#import <objc/runtime.h>
+
+#import "RCTConvert.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -28,10 +28,6 @@
 
 @end
 
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
-
-@end
-
 @implementation RCTWebSocketModule
 {
     NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
@@ -39,14 +35,12 @@
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (instancetype)init
+- (NSArray *)supportedEvents
 {
-  if ((self = [super init])) {
-    _sockets = [NSMutableDictionary new];
-  }
-  return self;
+  return @[@"websocketMessage",
+           @"websocketOpen",
+           @"websocketFailed",
+           @"websocketClosed"];
 }
 
 - (void)dealloc
@@ -57,11 +51,19 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
 {
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+  }];
+
+  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
+  if (!_sockets) {
+    _sockets = [NSMutableDictionary new];
+  }
   _sockets[socketID] = webSocket;
   [webSocket open];
 }
@@ -69,6 +71,17 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
 RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] send:message];
+}
+
+RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber *)socketID)
+{
+  NSData *message = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+  [_sockets[socketID] send:message];
+}
+
+RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
+{
+  [_sockets[socketID] sendPing:NULL];
 }
 
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
@@ -81,22 +94,24 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
-    @"data": message,
+  BOOL binary = [message isKindOfClass:[NSData class]];
+  [self sendEventWithName:@"websocketMessage" body:@{
+    @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
+    @"type": binary ? @"binary" : @"text",
     @"id": webSocket.reactTag
   }];
 }
 
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketOpen" body:@{
+  [self sendEventWithName:@"websocketOpen" body:@{
     @"id": webSocket.reactTag
   }];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketFailed" body:@{
+  [self sendEventWithName:@"websocketFailed" body:@{
     @"message":error.localizedDescription,
     @"id": webSocket.reactTag
   }];
@@ -105,7 +120,7 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code
            reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
+  [self sendEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
     @"reason": RCTNullIfNil(reason),
     @"clean": @(wasClean),

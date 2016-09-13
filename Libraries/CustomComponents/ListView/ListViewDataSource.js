@@ -28,9 +28,9 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var isEmpty = require('isEmpty');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
   dataBlob: any,
@@ -50,10 +50,10 @@ function defaultGetSectionHeaderData(
 type differType = (data1: any, data2: any) => bool;
 
 type ParamType = {
-  rowHasChanged: differType;
-  getRowData: ?typeof defaultGetRowData;
-  sectionHeaderHasChanged: ?differType;
-  getSectionHeaderData: ?typeof defaultGetSectionHeaderData;
+  rowHasChanged: differType,
+  getRowData?: ?typeof defaultGetRowData,
+  sectionHeaderHasChanged?: ?differType,
+  getSectionHeaderData?: ?typeof defaultGetSectionHeaderData,
 }
 
 /**
@@ -141,11 +141,11 @@ class ListViewDataSource {
 
   /**
    * Clones this `ListViewDataSource` with the specified `dataBlob` and
-   * `rowIdentities`. The `dataBlob` is just an aribitrary blob of data. At
+   * `rowIdentities`. The `dataBlob` is just an arbitrary blob of data. At
    * construction an extractor to get the interesting information was defined
    * (or the default was used).
    *
-   * The `rowIdentities` is is a 2D array of identifiers for rows.
+   * The `rowIdentities` is a 2D array of identifiers for rows.
    * ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
    * assumed that the keys of the section data are the row identities.
    *
@@ -186,6 +186,11 @@ class ListViewDataSource {
       typeof this._sectionHeaderHasChanged === 'function',
       'Must provide a sectionHeaderHasChanged function with section data.'
     );
+    invariant(
+      !sectionIdentities || !rowIdentities || sectionIdentities.length === rowIdentities.length,
+      'row and section ids lengths must be the same'
+    );
+
     var newSource = new ListViewDataSource({
       getRowData: this._getRowData,
       getSectionHeaderData: this._getSectionHeaderData,
@@ -219,6 +224,10 @@ class ListViewDataSource {
 
   getRowCount(): number {
     return this._cachedRowCount;
+  }
+
+  getRowAndSectionCount(): number {
+   return (this._cachedRowCount + this.sectionIdentities.length);
   }
 
   /**

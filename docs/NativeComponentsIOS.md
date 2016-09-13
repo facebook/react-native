@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/native-components-ios.html
 next: linking-libraries-ios
+previous: native-modules-ios
 ---
 
 There are tons of native UI widgets out there ready to be used in the latest apps - some of them are part of the platform, others are available as third-party libraries, and still more might be in use in your very own portfolio.  React Native has several of the most critical platform components already wrapped, like `ScrollView` and `TextInput`, but not all of them, and certainly not ones you might have written yourself for a previous app.  Fortunately, it's quite easy to wrap up these existing components for seamless integration with your React Native application.
@@ -21,7 +22,7 @@ Vending a view is simple:
 
 - Create the basic subclass.
 - Add the `RCT_EXPORT_MODULE()` marker macro.
-- Implement the `-(UIView *)view` method
+- Implement the `-(UIView *)view` method.
 
 ```objective-c
 // RCTMapManager.m
@@ -43,13 +44,14 @@ RCT_EXPORT_MODULE()
 
 @end
 ```
+**Note:** Do not attempt to set the `frame` or `backgroundColor` properties on the `UIView` instance that you vend through the `-view` method. React Native will overwrite the values set by your custom class in order to match your JavaScript component's layout props. If you need this granularity of control it might be better to wrap the `UIView` instance you want to style in another `UIView` and return the wrapper `UIView` instead. See [Issue 2948](https://github.com/facebook/react-native/issues/2948) for more context.
 
 Then you just need a little bit of JavaScript to make this a usable React component:
 
 ```javascript
 // MapView.js
 
-var { requireNativeComponent } = require('react-native');
+import { requireNativeComponent } from 'react-native';
 
 // requireNativeComponent automatically resolves this to "RCTMapManager"
 module.exports = requireNativeComponent('RCTMap', null);
@@ -79,8 +81,8 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
-var React = require('react-native');
-var { requireNativeComponent } = React;
+import React from 'react';
+import { requireNativeComponent } from 'react-native';
 
 class MapView extends React.Component {
   render() {
@@ -222,7 +224,31 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 ## Events
 
-So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to make the `RCTMapManager` a delegate for all the views it vends, and forward the events to JS via the event dispatcher.  This looks like so (simplified from the full implementation):
+So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RCTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
+
+```objective-c
+// RCTMap.h
+
+#import <MapKit/MapKit.h>
+
+#import "RCTComponent.h"
+
+@interface RCTMap: MKMapView
+
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+
+@end
+```
+
+```objective-c
+// RCTMap.m
+
+#import "RCTMap.h"
+
+@implementation RCTMap
+
+@end
+```
 
 ```objective-c
 // RCTMapManager.m
@@ -231,8 +257,7 @@ So now we have a native map component that we can control easily from JS, but ho
 
 #import <MapKit/MapKit.h>
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import "RCTMap.h"
 #import "UIView+React.h"
 
 @interface RCTMapManager() <MKMapViewDelegate>
@@ -242,9 +267,11 @@ So now we have a native map component that we can control easily from JS, but ho
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+
 - (UIView *)view
 {
-  MKMapView *map = [[MKMapView alloc] init];
+  RCTMap *map = [RCTMap new];
   map.delegate = self;
   return map;
 }
@@ -253,21 +280,23 @@ RCT_EXPORT_MODULE()
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(BOOL)animated
 {
+  if (!mapView.onChange) {
+    return;
+  }
+
   MKCoordinateRegion region = mapView.region;
-  NSDictionary *event = @{
-    @"target": mapView.reactTag,
+  mapView.onChange(@{
     @"region": @{
       @"latitude": @(region.center.latitude),
       @"longitude": @(region.center.longitude),
       @"latitudeDelta": @(region.span.latitudeDelta),
       @"longitudeDelta": @(region.span.longitudeDelta),
     }
-  };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  });
 }
 ```
 
-You can see we're setting the manager as the delegate for every view that it vends, then in the delegate method `-mapView:regionDidChangeAnimated:` the region is combined with the `reactTag` target to make an event that is dispatched to the corresponding React component instance in your application via `sendInputEventWithName:body:`.  The event name `@"topChange"` maps to the `onChange` callback prop in JavaScript (mappings are [here](https://github.com/facebook/react-native/blob/master/React/Modules/RCTUIManager.m#L1165)).  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
+You can see we're adding an event handler property to the view by subclassing `MKMapView`.  Then we're exposing the `onChange` event handler property and setting the manager as the delegate for every view that it vends. Finally, in the delegate method `-mapView:regionDidChangeAnimated:` the event handler block is called on the corresponding view with the region data.  Calling the `onChange` event handler block results in calling the same callback prop in JavaScript.  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
 
 ```javascript
 // MapView.js
@@ -302,7 +331,8 @@ Since all our native react views are subclasses of `UIView`, most style attribut
 ```javascript
 // DatePickerIOS.ios.js
 
-var RCTDatePickerIOSConsts = require('react-native').NativeModules.UIManager.RCTDatePicker.Constants;
+import { UIManager } from 'react-native';
+var RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
 ...
   render: function() {
     return (

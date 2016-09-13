@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBorderStyle.h"
 #import "RCTComponent.h"
 #import "RCTPointerEvents.h"
 
@@ -39,6 +40,13 @@
  * Find the first view controller whose view, or any subview is the specified view.
  */
 + (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
+
+/**
+ * z-index, used to override sibling order in didUpdateReactSubviews. This is
+ * inherited from UIView+React, but we override it here to reduce the boxing
+ * and associated object overheads.
+ */
+@property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
  * This is an optimization used to improve performance
@@ -83,5 +91,15 @@
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderWidth;
+
+/**
+ * Border styles.
+ */
+@property (nonatomic, assign) RCTBorderStyle borderStyle;
+
+/**
+ *  Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
 @end

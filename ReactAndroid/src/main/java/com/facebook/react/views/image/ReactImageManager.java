@@ -11,14 +11,22 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
-import android.graphics.Color;
+import java.util.Map;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
@@ -29,7 +37,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
-  private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
   public ReactImageManager(
@@ -40,23 +48,40 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   }
 
   public ReactImageManager() {
+    // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+  }
+
+  public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
+    if (mDraweeControllerBuilder == null) {
+      mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+    }
+    return mDraweeControllerBuilder;
+  }
+
+  public Object getCallerContext() {
+    return mCallerContext;
   }
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
     return new ReactImageView(
         context,
-        mDraweeControllerBuilder == null ?
-            Fresco.newDraweeControllerBuilder() : mDraweeControllerBuilder,
-        mCallerContext);
+        getDraweeControllerBuilder(),
+        getCallerContext());
   }
 
-  // In JS this is Image.props.source.uri
+  // In JS this is Image.props.source
   @ReactProp(name = "src")
-  public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source);
+  public void setSource(ReactImageView view, @Nullable ReadableArray sources) {
+    view.setSource(sources);
+  }
+
+  // In JS this is Image.props.loadingIndicatorSource.uri
+  @ReactProp(name = "loadingIndicatorSrc")
+  public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
+    view.setLoadingIndicatorSource(source);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
@@ -68,14 +93,37 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
+  @ReactProp(name = "overlayColor")
+  public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
+    if (overlayColor == null) {
+      view.setOverlayColor(Color.TRANSPARENT);
+    } else {
+      view.setOverlayColor(overlayColor);
+    }
+  }
+
   @ReactProp(name = "borderWidth")
   public void setBorderWidth(ReactImageView view, float borderWidth) {
     view.setBorderWidth(borderWidth);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactImageView view, float borderRadius) {
-    view.setBorderRadius(borderRadius);
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
+    if (!CSSConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
   }
 
   @ReactProp(name = ViewProps.RESIZE_MODE)
@@ -88,7 +136,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     if (tintColor == null) {
       view.clearColorFilter();
     } else {
-      view.setColorFilter(tintColor);
+      view.setColorFilter(tintColor, Mode.SRC_IN);
     }
   }
 
@@ -100,6 +148,22 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "fadeDuration")
   public void setFadeDuration(ReactImageView view, int durationMs) {
     view.setFadeDuration(durationMs);
+  }
+
+  @ReactProp(name = "shouldNotifyLoadEvents")
+  public void setLoadHandlersRegistered(ReactImageView view, boolean shouldNotifyLoadEvents) {
+    view.setShouldNotifyLoadEvents(shouldNotifyLoadEvents);
+  }
+
+  @Override
+  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.of(
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+        MapBuilder.of("registrationName", "onLoadStart"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+        MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+        MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

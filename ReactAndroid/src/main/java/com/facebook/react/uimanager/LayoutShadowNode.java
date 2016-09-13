@@ -12,6 +12,8 @@ import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.CSSWrap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * Supply setters for base view layout properties such as width, height, flex properties,
@@ -24,29 +26,29 @@ public class LayoutShadowNode extends ReactShadowNode {
     setStyleWidth(CSSConstants.isUndefined(width) ? width : PixelUtil.toPixelFromDIP(width));
   }
 
+  @ReactProp(name = ViewProps.MIN_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMinWidth(float minWidth) {
+    setStyleMinWidth(CSSConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
+  }
+
+  @ReactProp(name = ViewProps.MAX_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMaxWidth(float maxWidth) {
+    setStyleMaxWidth(CSSConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
+  }
+
   @ReactProp(name = ViewProps.HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
   public void setHeight(float height) {
     setStyleHeight(CSSConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
   }
 
-  @ReactProp(name = ViewProps.LEFT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setLeft(float left) {
-    setPositionLeft(CSSConstants.isUndefined(left) ? left : PixelUtil.toPixelFromDIP(left));
+  @ReactProp(name = ViewProps.MIN_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMinHeight(float minHeight) {
+    setStyleMinHeight(CSSConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
   }
 
-  @ReactProp(name = ViewProps.TOP, defaultFloat = CSSConstants.UNDEFINED)
-  public void setTop(float top) {
-    setPositionTop(CSSConstants.isUndefined(top) ? top : PixelUtil.toPixelFromDIP(top));
-  }
-
-  @ReactProp(name = ViewProps.BOTTOM, defaultFloat = CSSConstants.UNDEFINED)
-  public void setBottom(float bottom) {
-    setPositionBottom(CSSConstants.isUndefined(bottom) ? bottom : PixelUtil.toPixelFromDIP(bottom));
-  }
-
-  @ReactProp(name = ViewProps.RIGHT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setRight(float right) {
-    setPositionRight(CSSConstants.isUndefined(right) ? right : PixelUtil.toPixelFromDIP(right));
+  @ReactProp(name = ViewProps.MAX_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
+  public void setMaxHeight(float maxHeight) {
+    setStyleMaxHeight(CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
   }
 
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
@@ -54,11 +56,26 @@ public class LayoutShadowNode extends ReactShadowNode {
     super.setFlex(flex);
   }
 
+  @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
+  public void setFlexGrow(float flexGrow) {
+    super.setFlexGrow(flexGrow);
+  }
+
+  @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
+  public void setFlexShrink(float flexShrink) {
+    super.setFlexShrink(flexShrink);
+  }
+
+  @ReactProp(name = ViewProps.FLEX_BASIS, defaultFloat = 0f)
+  public void setFlexBasis(float flexBasis) {
+    super.setFlexBasis(flexBasis);
+  }
+
   @ReactProp(name = ViewProps.FLEX_DIRECTION)
   public void setFlexDirection(@Nullable String flexDirection) {
     setFlexDirection(
         flexDirection == null ? CSSFlexDirection.COLUMN : CSSFlexDirection.valueOf(
-            flexDirection.toUpperCase(Locale.US)));
+            flexDirection.toUpperCase(Locale.US).replace("-", "_")));
   }
 
   @ReactProp(name = ViewProps.FLEX_WRAP)
@@ -93,7 +110,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.MARGIN_RIGHT,
       ViewProps.MARGIN_TOP,
       ViewProps.MARGIN_BOTTOM,
-  }, defaultFloat = 0f)
+  }, defaultFloat = CSSConstants.UNDEFINED)
   public void setMargins(int index, float margin) {
     setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(margin));
   }
@@ -119,9 +136,21 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = 0f)
+  }, defaultFloat = CSSConstants.UNDEFINED)
   public void setBorderWidths(int index, float borderWidth) {
     setBorder(ViewProps.BORDER_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(borderWidth));
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.LEFT,
+      ViewProps.RIGHT,
+      ViewProps.TOP,
+      ViewProps.BOTTOM,
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setPositionValues(int index, float position) {
+    setPosition(
+      ViewProps.POSITION_SPACING_TYPES[index],
+      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position));
   }
 
   @ReactProp(name = ViewProps.POSITION)

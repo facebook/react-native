@@ -36,7 +36,8 @@ var View = require('View');
 
 var { Map } = require('immutable');
 
-var invariant = require('invariant');
+var guid = require('guid');
+var invariant = require('fbjs/lib/invariant');
 
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var NavigatorNavigationBarStyles = Platform.OS === 'android' ?
@@ -46,11 +47,11 @@ var PropTypes = React.PropTypes;
 /**
  * Reusable props objects.
  */
-var CRUMB_PROPS = Interpolators.map(() => {return {style: {}};});
-var ICON_PROPS = Interpolators.map(() => {return {style: {}};});
-var SEPARATOR_PROPS = Interpolators.map(() => {return {style: {}};});
-var TITLE_PROPS = Interpolators.map(() => {return {style: {}};});
-var RIGHT_BUTTON_PROPS = Interpolators.map(() => {return {style: {}};});
+var CRUMB_PROPS = Interpolators.map(() => ({style: {}}));
+var ICON_PROPS = Interpolators.map(() => ({style: {}}));
+var SEPARATOR_PROPS = Interpolators.map(() => ({style: {}}));
+var TITLE_PROPS = Interpolators.map(() => ({style: {}}));
+var RIGHT_BUTTON_PROPS = Interpolators.map(() => ({style: {}}));
 
 
 var navStatePresentedIndex = function(navState) {
@@ -75,8 +76,8 @@ var initStyle = function(index, presentedIndex) {
     NavigatorBreadcrumbNavigationBarStyles.Right[index];
 };
 
-var NavigatorBreadcrumbNavigationBar = React.createClass({
-  propTypes: {
+class NavigatorBreadcrumbNavigationBar extends React.Component {
+  static propTypes = {
     navigator: PropTypes.shape({
       push: PropTypes.func,
       pop: PropTypes.func,
@@ -94,13 +95,11 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       presentedIndex: React.PropTypes.number,
     }),
     style: View.propTypes.style,
-  },
+  };
 
-  statics: {
-    Styles: NavigatorBreadcrumbNavigationBarStyles,
-  },
+  static Styles = NavigatorBreadcrumbNavigationBarStyles;
 
-  _updateIndexProgress: function(progress, index, fromIndex, toIndex) {
+  _updateIndexProgress = (progress, index, fromIndex, toIndex) => {
     var amount = toIndex > fromIndex ? progress : (1 - progress);
     var oldDistToCenter = index - fromIndex;
     var newDistToCenter = index - toIndex;
@@ -134,36 +133,40 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       this._setPropsIfExists('title_' + index, TITLE_PROPS[index]);
     }
     var right = this.refs['right_' + index];
-    if (right &&
-        interpolate.RightItem(RIGHT_BUTTON_PROPS[index].style, amount)) {
-      right.setNativeProps(RIGHT_BUTTON_PROPS[index]);
-    }
-  },
 
-  updateProgress: function(progress, fromIndex, toIndex) {
+    const rightButtonStyle = RIGHT_BUTTON_PROPS[index].style;
+    if (right && interpolate.RightItem(rightButtonStyle, amount)) {
+      right.setNativeProps({
+        style: rightButtonStyle,
+        pointerEvents: rightButtonStyle.opacity === 0 ? 'none' : 'auto',
+      });
+    }
+  };
+
+  updateProgress = (progress, fromIndex, toIndex) => {
     var max = Math.max(fromIndex, toIndex);
     var min = Math.min(fromIndex, toIndex);
     for (var index = min; index <= max; index++) {
       this._updateIndexProgress(progress, index, fromIndex, toIndex);
     }
-  },
+  };
 
-  onAnimationStart: function(fromIndex, toIndex) {
+  onAnimationStart = (fromIndex, toIndex) => {
     var max = Math.max(fromIndex, toIndex);
     var min = Math.min(fromIndex, toIndex);
     for (var index = min; index <= max; index++) {
       this._setRenderViewsToHardwareTextureAndroid(index, true);
     }
-  },
+  };
 
-  onAnimationEnd: function() {
+  onAnimationEnd = () => {
     var max = this.props.navState.routeStack.length - 1;
     for (var index = 0; index <= max; index++) {
       this._setRenderViewsToHardwareTextureAndroid(index, false);
     }
-  },
+  };
 
-  _setRenderViewsToHardwareTextureAndroid: function(index, renderToHardwareTexture) {
+  _setRenderViewsToHardwareTextureAndroid = (index, renderToHardwareTexture) => {
     var props = {
       renderToHardwareTextureAndroid: renderToHardwareTexture,
     };
@@ -172,31 +175,43 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     this._setPropsIfExists('separator_' + index, props);
     this._setPropsIfExists('title_' + index, props);
     this._setPropsIfExists('right_' + index, props);
-  },
+  };
 
-  componentWillMount: function() {
-    this._descriptors = {
-      crumb: new Map(),
-      title: new Map(),
-      right: new Map(),
-    };
-  },
+  componentWillMount() {
+    this._reset();
+  }
 
-  render: function() {
+  render() {
     var navState = this.props.navState;
     var icons = navState && navState.routeStack.map(this._getBreadcrumb);
     var titles = navState.routeStack.map(this._getTitle);
     var buttons = navState.routeStack.map(this._getRightButton);
     return (
-      <View style={[styles.breadCrumbContainer, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.breadCrumbContainer, this.props.style]}>
         {titles}
         {icons}
         {buttons}
       </View>
     );
-  },
+  }
 
-  _getBreadcrumb: function(route, index) {
+  immediatelyRefresh = () => {
+    this._reset();
+    this.forceUpdate();
+  };
+
+  _reset = () => {
+    this._key = guid();
+    this._descriptors = {
+      crumb: new Map(),
+      title: new Map(),
+      right: new Map(),
+    };
+  };
+
+  _getBreadcrumb = (route, index) => {
     if (this._descriptors.crumb.has(route)) {
       return this._descriptors.crumb.get(route);
     }
@@ -205,7 +220,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
 
     var breadcrumbDescriptor = (
-      <View ref={'crumb_' + index} style={firstStyles.Crumb}>
+      <View
+        key={'crumb_' + index}
+        ref={'crumb_' + index}
+        style={firstStyles.Crumb}>
         <View ref={'icon_' + index} style={firstStyles.Icon}>
           {navBarRouteMapper.iconForRoute(route, this.props.navigator)}
         </View>
@@ -217,9 +235,9 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
     this._descriptors.crumb = this._descriptors.crumb.set(route, breadcrumbDescriptor);
     return breadcrumbDescriptor;
-  },
+  };
 
-  _getTitle: function(route, index) {
+  _getTitle = (route, index) => {
     if (this._descriptors.title.has(route)) {
       return this._descriptors.title.get(route);
     }
@@ -231,15 +249,18 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
 
     var titleDescriptor = (
-      <View ref={'title_' + index} style={firstStyles.Title}>
+      <View
+        key={'title_' + index}
+        ref={'title_' + index}
+        style={firstStyles.Title}>
         {titleContent}
       </View>
     );
     this._descriptors.title = this._descriptors.title.set(route, titleDescriptor);
     return titleDescriptor;
-  },
+  };
 
-  _getRightButton: function(route, index) {
+  _getRightButton = (route, index) => {
     if (this._descriptors.right.has(route)) {
       return this._descriptors.right.get(route);
     }
@@ -253,19 +274,22 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
     var rightButtonDescriptor = (
-      <View ref={'right_' + index} style={firstStyles.RightItem}>
+      <View
+        key={'right_' + index}
+        ref={'right_' + index}
+        style={firstStyles.RightItem}>
         {rightContent}
       </View>
     );
     this._descriptors.right = this._descriptors.right.set(route, rightButtonDescriptor);
     return rightButtonDescriptor;
-  },
+  };
 
-  _setPropsIfExists: function(ref, props) {
+  _setPropsIfExists = (ref, props) => {
     var ref = this.refs[ref];
     ref && ref.setNativeProps(props);
-  },
-});
+  };
+}
 
 var styles = StyleSheet.create({
   breadCrumbContainer: {

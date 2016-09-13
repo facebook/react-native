@@ -1,28 +1,44 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Switch
  * @flow
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  value: boolean;
-  disabled: boolean;
+  value: boolean,
+  disabled: boolean,
 };
 
 /**
- * Universal two-state toggle component.
+ * Renders a boolean input.
+ *
+ * This is a controlled component that requires an `onValueChange` callback that
+ * updates the `value` prop in order for the component to reflect user actions.
+ * If the `value` prop is not updated, the component will continue to render
+ * the supplied `value` prop instead of the expected result of any user actions.
+ *
+ * @keyword checkbox
+ * @keyword toggle
  */
 var Switch = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.
@@ -34,7 +50,7 @@ var Switch = React.createClass({
      */
     disabled: React.PropTypes.bool,
     /**
-     * Invoked with the new value when the value chages.
+     * Invoked with the new value when the value changes.
      */
     onValueChange: React.PropTypes.func,
     /**
@@ -46,17 +62,17 @@ var Switch = React.createClass({
      * Background color when the switch is turned off.
      * @platform ios
      */
-    tintColor: React.PropTypes.string,
+    tintColor: ColorPropType,
     /**
      * Background color when the switch is turned on.
      * @platform ios
      */
-    onTintColor: React.PropTypes.string,
+    onTintColor: ColorPropType,
     /**
      * Color of the foreground switch grip.
      * @platform ios
      */
-    thumbTintColor: React.PropTypes.string,
+    thumbTintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {
@@ -70,16 +86,14 @@ var Switch = React.createClass({
 
   _rctSwitch: {},
   _onChange: function(event: Object) {
-    this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
-
-    // The underlying switch might have changed, but we're controlled,
-    // and so want to ensure it represents our value.
     if (Platform.OS === 'android') {
       this._rctSwitch.setNativeProps({on: this.props.value});
     } else {
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
+    //Change the props after the native props are set in case the props change removes the component
+    this.props.onChange && this.props.onChange(event);
+    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
 
   render: function() {
@@ -89,7 +103,7 @@ var Switch = React.createClass({
     if (Platform.OS === 'android') {
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
-      props.style = [styles.rctSwitchAndroid, this.props.style];
+      props.style = this.props.style;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
     }
@@ -107,15 +121,11 @@ var styles = StyleSheet.create({
   rctSwitchIOS: {
     height: 31,
     width: 51,
-  },
-  rctSwitchAndroid: {
-    height: 27,
-    width: 40,
-  },
+  }
 });
 
 if (Platform.OS === 'android') {
-  var RCTSwitch = requireNativeComponent('AndroidSwitch', null, {
+  var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
     nativeOnly: { onChange: true, on: true, enabled: true }
   });
 } else {

@@ -10,6 +10,7 @@
 #import "ARTGroupManager.h"
 
 #import "ARTGroup.h"
+#import "RCTConvert+ART.h"
 
 @implementation ARTGroupManager
 
@@ -19,5 +20,7 @@ RCT_EXPORT_MODULE()
 {
   return [ARTGroup new];
 }
+
+RCT_EXPORT_VIEW_PROPERTY(clipping, CGRect)
 
 @end

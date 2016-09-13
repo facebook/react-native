@@ -1,0 +1,141 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This file exists because react-native.js started using getters and setters
+ * and Flow doesn't have a good way to enable getters and setters for
+ * react-native without forcing all react-native users to also enable getters
+ * and setters. Until we solve that issue, we can use this .flow file to
+ * pretend like react-native doesn't use getters and setters
+ *
+ * @flow
+ */
+'use strict';
+
+// Export some ReactNative properties, plus native additions.
+//
+
+// Our ReactNative.js has had its types stripped, so here we
+// need to enumerate and type the properties we need access to.
+//
+var ReactNativeInternal = (require('react/lib/ReactNative'): {
+  // render
+  render: (
+    element: ReactElement<any>,
+    mountInto: number,
+    callback?: ?(() => void)
+  ) => ?ReactComponent<any, any, any>,
+  // findNodeHandle
+  findNodeHandle: (componentOrHandle: any) => ?number,
+});
+
+// export
+var ReactNative = {
+  // from ReactNative internal
+  findNodeHandle: ReactNativeInternal.findNodeHandle,
+  render: ReactNativeInternal.render,
+  // Components
+  ActivityIndicator: require('ActivityIndicator'),
+  ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  ART: require('ReactNativeART'),
+  DatePickerIOS: require('DatePickerIOS'),
+  DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
+  Image: require('Image'),
+  ImageEditor: require('ImageEditor'),
+  ImageStore: require('ImageStore'),
+  KeyboardAvoidingView: require('KeyboardAvoidingView'),
+  ListView: require('ListView'),
+  MapView: require('MapView'),
+  Modal: require('Modal'),
+  Navigator: require('Navigator'),
+  NavigatorIOS: require('NavigatorIOS'),
+  Picker: require('Picker'),
+  PickerIOS: require('PickerIOS'),
+  ProgressBarAndroid: require('ProgressBarAndroid'),
+  ProgressViewIOS: require('ProgressViewIOS'),
+  ScrollView: require('ScrollView'),
+  SegmentedControlIOS: require('SegmentedControlIOS'),
+  SliderIOS: require('SliderIOS'),
+  Slider: require('Slider'),
+  SnapshotViewIOS: require('SnapshotViewIOS'),
+  StatusBar: require('StatusBar'),
+  SwipeableListView: require('SwipeableListView'),
+  Switch: require('Switch'),
+  RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
+  RefreshControl: require('RefreshControl'),
+  SwitchAndroid: require('SwitchAndroid'),
+  SwitchIOS: require('SwitchIOS'),
+  TabBarIOS: require('TabBarIOS'),
+  Text: require('Text'),
+  TextInput: require('TextInput'),
+  ToastAndroid: require('ToastAndroid'),
+  ToolbarAndroid: require('ToolbarAndroid'),
+  Touchable: require('Touchable'),
+  TouchableHighlight: require('TouchableHighlight'),
+  TouchableNativeFeedback: require('TouchableNativeFeedback'),
+  TouchableOpacity: require('TouchableOpacity'),
+  TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
+  View: require('View'),
+  ViewPagerAndroid: require('ViewPagerAndroid'),
+  WebView: require('WebView'),
+
+  // APIs
+  ActionSheetIOS: require('ActionSheetIOS'),
+  AdSupportIOS: require('AdSupportIOS'),
+  Alert: require('Alert'),
+  AlertIOS: require('AlertIOS'),
+  Animated: require('Animated'),
+  AppRegistry: require('AppRegistry'),
+  AppState: require('AppState'),
+  AppStateIOS: require('AppStateIOS'),
+  AsyncStorage: require('AsyncStorage'),
+  BackAndroid: require('BackAndroid'),
+  CameraRoll: require('CameraRoll'),
+  Clipboard: require('Clipboard'),
+  DatePickerAndroid: require('DatePickerAndroid'),
+  Dimensions: require('Dimensions'),
+  Easing: require('Easing'),
+  I18nManager: require('I18nManager'),
+  ImagePickerIOS: require('ImagePickerIOS'),
+  IntentAndroid: require('IntentAndroid'),
+  InteractionManager: require('InteractionManager'),
+  Keyboard: require('Keyboard'),
+  LayoutAnimation: require('LayoutAnimation'),
+  Linking: require('Linking'),
+  LinkingIOS: require('LinkingIOS'),
+  NativeEventEmitter: require('NativeEventEmitter'),
+  NavigationExperimental: require('NavigationExperimental'),
+  NetInfo: require('NetInfo'),
+  PanResponder: require('PanResponder'),
+  PermissionsAndroid: require('PermissionsAndroid'),
+  PixelRatio: require('PixelRatio'),
+  PushNotificationIOS: require('PushNotificationIOS'),
+  Settings: require('Settings'),
+  Share: require('Share'),
+  StatusBarIOS: require('StatusBarIOS'),
+  StyleSheet: require('StyleSheet'),
+  Systrace: require('Systrace'),
+  TimePickerAndroid: require('TimePickerAndroid'),
+  UIManager: require('UIManager'),
+  Vibration: require('Vibration'),
+  VibrationIOS: require('VibrationIOS'),
+
+  // Plugins
+  DeviceEventEmitter: require('RCTDeviceEventEmitter'),
+  NativeAppEventEmitter: require('RCTNativeAppEventEmitter'),
+  NativeModules: require('NativeModules'),
+  Platform: require('Platform'),
+  processColor: require('processColor'),
+  requireNativeComponent: require('requireNativeComponent'),
+
+  // Prop Types
+  ColorPropType: require('ColorPropType'),
+  EdgeInsetsPropType: require('EdgeInsetsPropType'),
+  PointPropType: require('PointPropType'),
+};
+
+module.exports = ReactNative;

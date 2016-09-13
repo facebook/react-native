@@ -19,15 +19,20 @@
     "__DEV__": true,
     "__dirname": false,
     "__fbBatchedBridgeConfig": false,
+    "alert": false,
     "cancelAnimationFrame": false,
+    "cancelIdleCallback": false,
     "clearImmediate": true,
     "clearInterval": false,
     "clearTimeout": false,
     "console": false,
     "document": false,
     "escape": false,
+    "Event": false,
+    "EventTarget": false,
     "exports": false,
     "fetch": false,
+    "FormData": false,
     "global": false,
     "jest": false,
     "Map": true,
@@ -36,6 +41,7 @@
     "process": false,
     "Promise": true,
     "requestAnimationFrame": true,
+    "requestIdleCallback": true,
     "require": false,
     "Set": true,
     "setImmediate": true,
@@ -43,7 +49,29 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false
+    "pit": false,
+
+    // Flow global types.
+    "ReactComponent": false,
+    "ReactClass": false,
+    "ReactElement": false,
+    "ReactPropsCheckType": false,
+    "ReactPropsChainableTypeChecker": false,
+    "ReactPropTypes": false,
+    "SyntheticEvent": false,
+    "$Either": false,
+    "$All": false,
+    "$Tuple": false,
+    "$Supertype": false,
+    "$Subtype": false,
+    "$Shape": false,
+    "$Diff": false,
+    "$Keys": false,
+    "$Enum": false,
+    "$Exports": false,
+    "$FlowIssue": false,
+    "$FlowFixMe": false,
+    "$FixMe": false
   },
 
   "rules": {
@@ -81,13 +109,12 @@
     "curly": 1,                      // specify curly brace conventions for all control statements
     "default-case": 0,               // require default case in switch statements (off by default)
     "dot-notation": 1,               // encourages use of dot notation whenever possible
-    "eqeqeq": 1,                     // require the use of === and !==
+    "eqeqeq": [1, "allow-null"],     // require the use of === and !==
     "guard-for-in": 0,               // make sure for-in loops have an if statement (off by default)
     "no-alert": 1,                   // disallow the use of alert, confirm, and prompt
     "no-caller": 1,                  // disallow use of arguments.caller or arguments.callee
     "no-div-regex": 1,               // disallow division operators explicitly at beginning of regular expression (off by default)
     "no-else-return": 0,             // disallow else after a return in an if (off by default)
-    "no-empty-label": 1,             // disallow use of labels for anything other then loops and switches
     "no-eq-null": 0,                 // disallow comparisons to null without a type-checking operator (off by default)
     "no-eval": 1,                    // disallow use of eval()
     "no-extend-native": 1,           // disallow adding to native types
@@ -122,11 +149,6 @@
     "wrap-iife": 0,                  // require immediate function invocation to be wrapped in parentheses (off by default)
     "yoda": 1,                       // require or disallow Yoda conditions
 
-  // Strict Mode
-  // These rules relate to using strict mode.
-
-    "strict": [2, "global"],         // require or disallow the "use strict" pragma in the global scope (off by default in the node environment)
-
   // Variables
   // These rules have to do with variable declarations.
 
@@ -156,6 +178,8 @@
   // These rules are purely matters of style and are quite subjective.
 
     "key-spacing": 0,
+    "keyword-spacing": 1,            // enforce spacing before and after keywords
+    "jsx-quotes": [1, "prefer-double"],
     "comma-spacing": 0,
     "no-multi-spaces": 0,
     "brace-style": 0,                // enforce one true brace style (off by default)
@@ -179,11 +203,9 @@
     "quote-props": 0,                // require quotes around object literal property names (off by default)
     "semi": 1,                       // require or disallow use of semicolons instead of ASI
     "sort-vars": 0,                  // sort variables within the same declaration block (off by default)
-    "space-after-keywords": 1,       // require a space after certain keywords (off by default)
     "space-in-brackets": 0,          // require or disallow spaces inside brackets (off by default)
     "space-in-parens": 0,            // require or disallow spaces inside parentheses (off by default)
     "space-infix-ops": 1,            // require spaces around operators
-    "space-return-throw-case": 1,    // require a space after return, throw, and case
     "space-unary-ops": [1, { "words": true, "nonwords": false }], // require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
     "max-nested-callbacks": 0,       // specify the maximum depth callbacks can be nested (off by default)
     "one-var": 0,                    // allow just one var statement per function (off by default)
@@ -201,18 +223,19 @@
 
     "react/display-name": 0,
     "react/jsx-boolean-value": 0,
-    "react/jsx-quotes": [1, "double", "avoid-escape"],
+    "react/jsx-no-duplicate-props": 2,
     "react/jsx-no-undef": 1,
     "react/jsx-sort-props": 0,
-    "react/jsx-uses-react": 0,
+    "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,
     "react/no-did-mount-set-state": [1, "allow-in-func"],
     "react/no-did-update-set-state": [1, "allow-in-func"],
     "react/no-multi-comp": 0,
+    "react/no-string-refs": 1,
     "react/no-unknown-property": 0,
     "react/prop-types": 0,
-    "react/react-in-jsx-scope": 0,
+    "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0
+    "react/wrap-multilines": 0,
   }
 }

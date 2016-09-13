@@ -8,22 +8,31 @@
  */
 'use strict';
 
-require('babel-polyfill');
-
-var fs = require('fs');
-var path = require('path');
+Array.prototype.values || require('core-js/fn/array/values');
+Object.entries || require('core-js/fn/object/entries');
+Object.values || require('core-js/fn/object/values');
 
 var _only = [];
 
-function readBabelRC() {
-  var rcpath = path.join(__dirname, 'react-packager', '.babelrc');
-  var source = fs.readFileSync(rcpath).toString();
-  return JSON.parse(source);
+function registerOnly(onlyList) {
+  require('babel-register')(config(onlyList));
 }
 
-module.exports = function(onlyList) {
+function config(onlyList) {
   _only = _only.concat(onlyList);
-  var config = readBabelRC();
-  config.only = _only;
-  require('babel-core/register')(config);
-};
+  return {
+    presets: ['es2015-node'],
+    plugins: [
+      'transform-flow-strip-types',
+      'syntax-trailing-function-commas',
+      'transform-object-rest-spread',
+    ],
+    only: _only,
+    retainLines: true,
+    sourceMaps: 'inline',
+    babelrc: false,
+  };
+}
+
+module.exports = exports = registerOnly;
+exports.config = config;

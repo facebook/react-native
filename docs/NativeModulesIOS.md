@@ -5,6 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/native-modules-ios.html
 next: native-components-ios
+previous: gesture-responder-system
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -50,7 +51,8 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 Now, from your JavaScript file you can call the method like this:
 
 ```javascript
-var CalendarManager = require('react-native').NativeModules.CalendarManager;
+import { NativeModules } from 'react-native';
+var CalendarManager = NativeModules.CalendarManager;
 CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
@@ -58,7 +60,7 @@ CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 >
 > The name of the method exported to JavaScript is the native method's name up to the first colon. React Native also defines a macro called `RCT_REMAP_METHOD()` to specify the JavaScript method's name. This is useful when multiple native methods are the same up to the first colon and would have conflicting JavaScript names.
 
-The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
+The CalendarManager module is instantiated on the Objective-C side using a [CalendarManager new] call. The return type of bridge methods is always `void`. React Native bridge is asynchronous, so the only way to pass a result to JavaScript is by using callbacks or emitting events (see below).
 
 ## Argument Types
 
@@ -68,7 +70,7 @@ The return type of bridge methods is always `void`. React Native bridge is async
 - number (`NSInteger`, `float`, `double`, `CGFloat`, `NSNumber`)
 - boolean (`BOOL`, `NSNumber`)
 - array (`NSArray`) of any types from this list
-- map (`NSDictionary`) with string keys and values of any type from this list
+- object (`NSDictionary`) with string keys and values of any type from this list
 - function (`RCTResponseSenderBlock`)
 
 But it also works with any type that is supported by the `RCTConvert` class (see [`RCTConvert`](https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h) for details). The `RCTConvert` helper functions all accept a JSON value as input and map it to a native Objective-C type or class.
@@ -76,7 +78,7 @@ But it also works with any type that is supported by the `RCTConvert` class (see
 In our `CalendarManager` example, we need to pass the event date to the native method. We can't send JavaScript Date objects over the bridge, so we need to convert the date to a string or number. We could write our native function like this:
 
 ```objective-c
-RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSNumber *)secondsSinceUnixEpoch)
+RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(nonnull NSNumber *)secondsSinceUnixEpoch)
 {
   NSDate *date = [RCTConvert NSDate:secondsSinceUnixEpoch];
 }
@@ -132,7 +134,7 @@ and call it from JavaScript:
 ```javascript
 CalendarManager.addEvent('Birthday Party', {
   location: '4 Privet Drive, Surrey',
-  time: date.toTime(),
+  time: date.getTime(),
   description: '...'
 })
 ```
@@ -172,6 +174,43 @@ CalendarManager.findEvents((error, events) => {
 A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates. See [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m) for an example.
 
 If you want to pass error-like objects to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h).  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript `Error` objects in the future.
+
+## Promises
+
+Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's `async/await` syntax. When the last parameters of a bridged native method are an `RCTPromiseResolveBlock` and `RCTPromiseRejectBlock`, its corresponding JS method will return a JS Promise object.
+
+Refactoring the above code to use a promise instead of callbacks looks like this:
+
+```objective-c
+RCT_REMAP_METHOD(findEvents,
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSArray *events = ...
+  if (events) {
+    resolve(events);
+  } else {
+    NSError *error = ...
+    reject(@"no_events", @"There were no events", error);
+  }
+}
+```
+
+The JavaScript counterpart of this method returns a Promise. This means you can use the `await` keyword within an async function to call it and wait for its result:
+
+```js
+async function updateEvents() {
+  try {
+    var events = await CalendarManager.findEvents();
+
+    this.setState({ events });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+updateEvents();
+```
 
 ## Threading
 
@@ -250,7 +289,7 @@ You must create a class extension of RCTConvert like so:
 @implementation RCTConvert (StatusBarAnimation)
   RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
                                                @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)},
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)}),
                       UIStatusBarAnimationNone, integerValue)
 @end
 ```
@@ -297,7 +336,7 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-var { NativeAppEventEmitter } = require('react-native');
+import { NativeAppEventEmitter } from 'react-native';
 
 var subscription = NativeAppEventEmitter.addListener(
   'EventReminder',
@@ -338,7 +377,7 @@ Then create a private implementation file that will register the required inform
 
 @interface RCT_EXTERN_MODULE(CalendarManager, NSObject)
 
-RCT_EXTERN_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSNumber *)date)
+RCT_EXTERN_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(nonnull NSNumber *)date)
 
 @end
 ```
