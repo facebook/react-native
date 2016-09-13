@@ -335,7 +335,7 @@ var featured = [
     linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
     infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
-    infoTitle: 'Baidu is a Search Engine APP that has been used by 600 millions users.',
+    infoTitle: 'Baidu is a search engine that has 600 million users.',
   }
 ];
 
