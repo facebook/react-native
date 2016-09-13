@@ -192,7 +192,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
             new Runnable() {
               @Override
               public void run() {
-                updateRootNodeSize(tag, width, height);
+                updateNodeSize(tag, width, height);
               }
             });
         }
@@ -206,10 +206,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeRootView(rootViewTag);
   }
 
-  private void updateRootNodeSize(int rootViewTag, int newWidth, int newHeight) {
+  public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
-    mUIImplementation.updateRootNodeSize(rootViewTag, newWidth, newHeight, mEventDispatcher);
+    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight, mEventDispatcher);
   }
 
   @ReactMethod
