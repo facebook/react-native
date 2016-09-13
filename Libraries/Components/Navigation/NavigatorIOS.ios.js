@@ -25,6 +25,8 @@ var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
+const keyMirror = require('fbjs/lib/keyMirror');
+
 var TRANSITIONER_REF = 'transitionerRef';
 
 var PropTypes = React.PropTypes;
@@ -50,6 +52,34 @@ class NavigatorTransitionerIOS extends React.Component {
   }
 }
 
+const SystemIconLabels = {
+  done: true,
+  cancel: true,
+  edit: true,
+  save: true,
+  add: true,
+  compose: true,
+  reply: true,
+  action: true,
+  organize: true,
+  bookmarks: true,
+  search: true,
+  refresh: true,
+  stop: true,
+  camera: true,
+  trash: true,
+  play: true,
+  pause: true,
+  rewind: true,
+  'fast-forward': true,
+  undo: true,
+  redo: true,
+  'page-curl': true,
+};
+const SystemIcons = keyMirror(SystemIconLabels);
+
+type SystemButtonType = $Enum<typeof SystemIconLabels>;
+
 type Route = {
   component: Function,
   title: string,
@@ -59,9 +89,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
+  leftButtonSystemIcon?: SystemButtonType;
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
+  rightButtonSystemIcon?: SystemButtonType;
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -337,6 +369,16 @@ var NavigatorIOS = React.createClass({
       leftButtonTitle: PropTypes.string,
 
       /**
+       * If set, the left header button will appear with this system icon
+       *
+       * Supported icons are `done`, `cancel`, `edit`, `save`, `add`,
+       * `compose`, `reply`, `action`, `organize`, `bookmarks`, `search`,
+       * `refresh`, `stop`, `camera`, `trash`, `play`, `pause`, `rewind`,
+       * `fast-forward`, `undo`, `redo`, and `page-curl`
+       */
+      leftButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemIcons)),
+
+      /**
        * This function will be invoked when the left navigation bar item is
        * pressed.
        */
@@ -352,6 +394,13 @@ var NavigatorIOS = React.createClass({
        * If set, the right navigation button will display this text.
        */
       rightButtonTitle: PropTypes.string,
+
+      /**
+       * If set, the right header button will appear with this system icon
+       *
+       * See leftButtonSystemIcon for supported icons
+       */
+      rightButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemIcons)),
 
       /**
        * This function will be invoked when the right navigation bar item is

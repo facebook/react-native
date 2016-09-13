@@ -50,16 +50,18 @@ class Button extends React.Component {
 
 class NotificationExample extends React.Component {
   componentWillMount() {
-    // Add listener for push notifications
-    PushNotificationIOS.addEventListener('notification', this._onNotification);
-    // Add listener for local notifications
+    PushNotificationIOS.addEventListener('register', this._onRegistered);
+    PushNotificationIOS.addEventListener('registrationError', this._onRegistrationError);
+    PushNotificationIOS.addEventListener('notification', this._onRemoteNotification);
     PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
+
+    PushNotificationIOS.requestPermissions();
   }
 
   componentWillUnmount() {
-    // Remove listener for push notifications
-    PushNotificationIOS.removeEventListener('notification', this._onNotification);
-    // Remove listener for local notifications
+    PushNotificationIOS.removeEventListener('register', this._onRegistered);
+    PushNotificationIOS.removeEventListener('registrationError', this._onRegistrationError);
+    PushNotificationIOS.removeEventListener('notification', this._onRemoteNotification);
     PushNotificationIOS.removeEventListener('localNotification', this._onLocalNotification);
   }
 
@@ -101,7 +103,29 @@ class NotificationExample extends React.Component {
     });
   }
 
-  _onNotification(notification) {
+  _onRegistered(deviceToken) {
+    AlertIOS.alert(
+      'Registered For Remote Push',
+      `Device Token: ${deviceToken}`,
+      [{
+        text: 'Dismiss',
+        onPress: null,
+      }]
+    );
+  }
+
+  _onRegistrationError(error) {
+    AlertIOS.alert(
+      'Failed To Register For Remote Push',
+      `Error (${error.code}): ${error.message}`,
+      [{
+        text: 'Dismiss',
+        onPress: null,
+      }]
+    );
+  }
+
+  _onRemoteNotification(notification) {
     AlertIOS.alert(
       'Push Notification Received',
       'Alert message: ' + notification.getMessage(),
@@ -170,8 +194,6 @@ exports.examples = [
 {
   title: 'Badge Number',
   render(): ReactElement<any> {
-    PushNotificationIOS.requestPermissions();
-
     return (
       <View>
         <Button

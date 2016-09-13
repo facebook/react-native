@@ -567,3 +567,16 @@ describe('Animated Listeners', () => {
     expect(listener.mock.calls.length).toBe(4);
   });
 });
+
+describe('Animated Diff Clamp', () => {
+  it('should get the proper value', () => {
+    const inputValues = [0, 20, 40, 30, 0, -40, -10, -20, 0];
+    const expectedValues = [0, 20, 20, 10, 0, 0, 20, 10, 20];
+    const value = new Animated.Value(0);
+    const diffClampValue = Animated.diffClamp(value, 0, 20);
+    for (let i = 0; i < inputValues.length; i++) {
+      value.setValue(inputValues[i]);
+      expect(diffClampValue.__getValue()).toBe(expectedValues[i]);
+    }
+  });
+});

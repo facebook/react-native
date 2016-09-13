@@ -21,7 +21,7 @@ const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
 });
 function timeoutableDenodeify(fsFunc, timeout) {
   return function raceWrapper(...args) {
-    return new Promise.race([
+    return Promise.race([
       createTimeoutPromise(timeout),
       Promise.denodeify(fsFunc).apply(this, args)
     ]);

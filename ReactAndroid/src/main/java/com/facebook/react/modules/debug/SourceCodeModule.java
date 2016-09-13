@@ -14,15 +14,13 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
+@ReactModule(name = "RCTSourceCode")
 public class SourceCodeModule extends BaseJavaModule {
 
   private final String mSourceUrl;
@@ -38,7 +36,7 @@ public class SourceCodeModule extends BaseJavaModule {
 
   @Override
   public @Nullable Map<String, Object> getConstants() {
-    HashMap<String, Object> constants = new HashMap<String, Object>();
+    HashMap<String, Object> constants = new HashMap<>();
     constants.put("scriptURL", mSourceUrl);
     return constants;
   }

@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
@@ -24,6 +25,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -43,6 +45,9 @@ public class UIImplementation {
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
   private final ReactApplicationContext mReactContext;
+
+  private double mLayoutCount = 0.0;
+  private double mLayoutTimer = 0.0;
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
@@ -125,16 +130,17 @@ public class UIImplementation {
   }
 
   /**
-   * Invoked when native view that corresponds to a root node has its size changed.
+   * Invoked when native view that corresponds to a root node, or acts as a root view (ie. Modals)
+   * has its size changed.
    */
-  public void updateRootNodeSize(
-      int rootViewTag,
+  public void updateNodeSize(
+      int nodeViewTag,
       int newWidth,
       int newHeight,
       EventDispatcher eventDispatcher) {
-    ReactShadowNode rootCSSNode = mShadowNodeRegistry.getNode(rootViewTag);
-    rootCSSNode.setStyleWidth(newWidth);
-    rootCSSNode.setStyleHeight(newHeight);
+    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    cssNode.setStyleWidth(newWidth);
+    cssNode.setStyleHeight(newHeight);
 
     // If we're in the middle of a batch, the change will automatically be dispatched at the end of
     // the batch. As all batches are executed as a single runnable on the event queue this should
@@ -142,6 +148,14 @@ public class UIImplementation {
     if (mOperationsQueue.isEmpty()) {
       dispatchViewUpdates(eventDispatcher, -1); // -1 = no associated batch id
     }
+  }
+
+  public double getLayoutCount() {
+    return mLayoutCount;
+  }
+
+  public double getLayoutTimer() {
+    return mLayoutTimer;
   }
 
   /**
@@ -575,7 +589,6 @@ public class UIImplementation {
     mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
   }
 
-
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
@@ -738,10 +751,13 @@ public class UIImplementation {
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
         .arg("rootTag", cssRoot.getReactTag())
         .flush();
+    double startTime = (double) System.nanoTime();
     try {
       cssRoot.calculateLayout(mLayoutContext);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutCount = mLayoutCount + 1;
     }
   }
 
@@ -788,5 +804,23 @@ public class UIImplementation {
 
   public void addUIBlock(UIBlock block) {
     mOperationsQueue.enqueueUIBlock(block);
+  }
+
+  public int resolveRootTagFromReactTag(int reactTag) {
+    if (mShadowNodeRegistry.isRootNode(reactTag)) {
+      return reactTag;
+    }
+
+    ReactShadowNode node = resolveShadowNode(reactTag);
+    int rootTag = 0;
+    if (node != null) {
+      rootTag = node.getRootNode().getReactTag();
+    } else {
+      FLog.w(
+        ReactConstants.TAG,
+        "Warning : attempted to resolve a non-existent react shadow node. reactTag=" + reactTag);
+    }
+
+    return rootTag;
   }
 }

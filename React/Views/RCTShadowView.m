@@ -626,12 +626,16 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 }
 
 RCT_STYLE_PROPERTY(Flex, flex, Flex, CGFloat)
+RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, CGFloat)
+RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, CGFloat)
+RCT_STYLE_PROPERTY(FlexBasis, flexBasis, FlexBasis, CGFloat)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, CSSFlexDirection)
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
 
 - (void)setBackgroundColor:(UIColor *)color
 {

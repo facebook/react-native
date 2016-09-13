@@ -1,7 +1,10 @@
 ---
 title: Right-to-Left Layout Support For React Native Apps
 author: Mengjue (Mandy) Wang
+authorTitle: Software Engineer Intern at Facebook
 authorURL: https://github.com/MengjueW
+authorImage: https://avatars0.githubusercontent.com/u/13987140?v=3&s=128
+category: engineering
 ---
 After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.
 

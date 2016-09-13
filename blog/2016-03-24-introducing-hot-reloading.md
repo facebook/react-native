@@ -1,7 +1,11 @@
 ---
 title: Introducing Hot Reloading
 author: Martín Bigio
+authorTitle: Software Engineer at Instagram
 authorURL: https://twitter.com/martinbigio
+authorImage: https://avatars3.githubusercontent.com/u/535661?v=3&s=128
+authorTwitter: martinbigio
+category: announcements
 ---
 
 React Native's goal is to give you the best possible developer experience. A big part of it is the time it takes between you save a file and be able to see the changes. Our goal is to get this feedback loop to be under 1 second, even as your app grows.

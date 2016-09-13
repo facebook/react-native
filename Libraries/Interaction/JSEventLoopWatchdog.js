@@ -11,11 +11,12 @@
  */
 'use strict';
 
-const performanceNow = require('performanceNow');
+const infoLog = require('infoLog');
+const performanceNow = require('fbjs/lib/performanceNow');
 
 type Handler = {
   onIterate?: () => void,
-  onStall: (params: {lastInterval: number}) => string,
+  onStall: (params: {lastInterval: number, busyTime: number}) => ?string,
 };
 
 /**
@@ -35,7 +36,7 @@ const JSEventLoopWatchdog = {
     return {stallCount, totalStallTime, longestStall, acceptableBusyTime};
   },
   reset: function() {
-    console.log('JSEventLoopWatchdog: reset');
+    infoLog('JSEventLoopWatchdog: reset');
     totalStallTime = 0;
     stallCount = 0;
     longestStall = 0;
@@ -62,9 +63,9 @@ const JSEventLoopWatchdog = {
         let msg = `JSEventLoopWatchdog: JS thread busy for ${busyTime}ms. ` +
           `${totalStallTime}ms in ${stallCount} stalls so far. `;
         handlers.forEach((handler) => {
-          msg += handler.onStall({lastInterval});
+          msg += handler.onStall({lastInterval, busyTime}) || '';
         });
-        console.log(msg);
+        infoLog(msg);
       }
       handlers.forEach((handler) => {
         handler.onIterate && handler.onIterate();
