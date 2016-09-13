@@ -58,7 +58,6 @@ class WebView extends React.Component {
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
-    messagingEnabled: PropTypes.bool,
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
@@ -330,7 +329,11 @@ class WebView extends React.Component {
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView);
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
+  nativeOnly: {
+    messagingEnabled: PropTypes.bool,
+  },
+});
 
 var styles = StyleSheet.create({
   container: {
