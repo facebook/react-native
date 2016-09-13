@@ -24,6 +24,7 @@
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
+      "/website/",
       "local-cli/generator/templates/"
     ],
     "haste": {

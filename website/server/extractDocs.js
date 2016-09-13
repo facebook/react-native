@@ -298,12 +298,12 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   };
   // Babel transform
   const code = babel.transform(fileContent, babelRC).code;
-  // Parse via jsdocs
+  // Parse via jsdoc-api
   let jsonParsed = jsdocApi.explainSync({
     source: code,
     configure: './jsdocs/jsdoc-conf.json'
   });
-  // Cleanup jsdocs return
+  // Clean up jsdoc-api return
   jsonParsed = jsonParsed.filter(i => {
     return !i.undocumented && !/package|file/.test(i.kind);
   });
@@ -331,12 +331,20 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   return json;
 }
 
+// Given some source code, returns data about the exported value.
+// May either throw or return falsy when it fails.
+// TODO(lacker): replace this with something other than the jsDocs method,
+// so that we can stop depending on esprima-fb.
+function parseSource(source) {
+  return jsDocs(source);
+}
+
 function parseAPIInferred(filepath, fileContent) {
   let json;
   try {
-    json = jsDocs(fileContent);
+    json = parseSource(fileContent);
     if (!json) {
-      throw new Error('jsDocs returned falsy');
+      throw new Error('parseSource returned falsy');
     }
   } catch (e) {
     console.error('Cannot parse file', filepath, e);
@@ -595,7 +603,7 @@ const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   return docs;
 }, {});
 
-module.exports = function() {
+function extractAll() {
   componentCount = 0;
   return [].concat(
     components.map(renderComponent),
@@ -604,4 +612,9 @@ module.exports = function() {
     }),
     stylesWithPermalink.map(renderStyle)
   );
+}
+
+module.exports = {
+  extractAll: extractAll,
+  parseSource: parseSource,
 };

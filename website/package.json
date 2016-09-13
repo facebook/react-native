@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "RN_VERSION=next node server/server.js",
+    "test": "jest",
     "gh-pages": "node publish-gh-pages.js"
   },
   "dependencies": {
@@ -25,5 +26,8 @@
     "babel-types": "^6.6.4",
     "jsdoc-api": "^1.1.0",
     "deep-assign": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^15.1.1"
   }
 }
