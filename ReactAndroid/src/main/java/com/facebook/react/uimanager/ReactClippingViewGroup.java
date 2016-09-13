@@ -7,12 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.view;
+package com.facebook.react.uimanager;
 
 import android.graphics.Rect;
 import android.view.View;
-
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Interface that should be implemented by {@link View} subclasses that support
