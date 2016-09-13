@@ -36,6 +36,8 @@ type DefaultProps = {
  */
 const ActivityIndicator = React.createClass({
 
+  _root: (undefined: ?any),
+
   propTypes: {
     ...View.propTypes,
     /**
@@ -71,7 +73,7 @@ const ActivityIndicator = React.createClass({
     };
   },
 
-  setNativeProps(nativeProps) {
+  setNativeProps(nativeProps: Object) {
     if (this._root) {
       this._root.setNativeProps(nativeProps);
     }
