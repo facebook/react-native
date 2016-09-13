@@ -16,6 +16,7 @@ import java.util.Map;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.SoundEffectConstants;
 import android.view.View;
 
 import com.facebook.csslayout.CSSConstants;
@@ -42,6 +43,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
+  private static final int CMD_PLAY_CLICK_SOUND = 3;
 
   @ReactProp(name = "accessible")
   public void setAccessible(ReactViewGroup view, boolean accessible) {
@@ -154,7 +156,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @Override
   public Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("hotspotUpdate", CMD_HOTSPOT_UPDATE, "setPressed", CMD_SET_PRESSED);
+    return MapBuilder.of(
+        "hotspotUpdate", CMD_HOTSPOT_UPDATE,
+        "setPressed", CMD_SET_PRESSED,
+        "playClickSound", CMD_PLAY_CLICK_SOUND);
   }
 
   @Override
@@ -178,6 +183,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
               "Illegal number of arguments for 'setPressed' command");
         }
         root.setPressed(args.getBoolean(0));
+        break;
+      }
+      case CMD_PLAY_CLICK_SOUND: {
+        root.playSoundEffect(SoundEffectConstants.CLICK);
         break;
       }
     }
