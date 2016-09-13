@@ -10,6 +10,7 @@
 package com.facebook.react.views.webview.events;
 
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -19,11 +20,11 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 public class TopMessageEvent extends Event<TopMessageEvent> {
 
   public static final String EVENT_NAME = "topMessage";
-  private WritableMap mEventData;
+  private final String mMessage;
 
-  public TopMessageEvent(int viewId, WritableMap eventData) {
+  public TopMessageEvent(int viewId, String message) {
     super(viewId);
-    mEventData = eventData;
+    mMessage = message;
   }
 
   @Override
@@ -44,6 +45,8 @@ public class TopMessageEvent extends Event<TopMessageEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), mEventData);
+    WritableMap data = Arguments.createMap();
+    data.putString("message", mMessage);
+    rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, data);
   }
 }

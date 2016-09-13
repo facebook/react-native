@@ -325,7 +325,7 @@ class WebView extends React.Component {
 
   onMessage = (event: Event) => {
     var {onMessage} = this.props;
-    event.message = JSON.parse(event.nativeEvent.message);
+    event.nativeEvent.message = JSON.parse(event.nativeEvent.message);
     onMessage && onMessage(event);
   }
 }

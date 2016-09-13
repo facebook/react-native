@@ -170,7 +170,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     private void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
           webView,
-          new TopMessageEvent(
+          new TopLoadingFinishEvent(
               webView.getId(),
               createWebViewEvent(webView, url)));
     }
@@ -271,13 +271,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     public void onMessage(String message) {
-      WritableMap event = Arguments.createMap();
-      event.putDouble("target", getId());
-      // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
-      // like onPageFinished
-      event.putString("message", message);
-
-      dispatchEvent(this, new TopMessageEvent(this.getId(), event));
+      dispatchEvent(this, new TopMessageEvent(this.getId(), message));
     }
 
     private void cleanupCallbacksAndDestroy() {
