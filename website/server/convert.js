@@ -14,7 +14,7 @@ var glob = require('glob');
 var mkdirp = require('mkdirp');
 var optimist = require('optimist');
 var path = require('path');
-var extractAll = require('./extractDocs').extractAll;
+var extractDocs = require('./extractDocs');
 var argv = optimist.argv;
 
 function splitHeader(content) {
@@ -134,7 +134,7 @@ function execute() {
     );
   }
 
-  extractAll().forEach(function(content) {
+  extractDocs().forEach(function(content) {
     handleMarkdown(content, null);
   });
 

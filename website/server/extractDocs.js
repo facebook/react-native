@@ -9,6 +9,8 @@
 
 'use strict';
 
+const assert = require('assert');
+
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
 const fs = require('fs');
@@ -331,18 +333,23 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   return json;
 }
 
-// Given some source code, returns data about the exported value.
-// May either throw or return falsy when it fails.
-// TODO(lacker): replace this with something other than the jsDocs method,
-// so that we can stop depending on esprima-fb.
-function parseSource(source) {
-  return jsDocs(source);
+function debugDeepEqual(object1, object2) {
+  let lines1 = JSON.stringify(object1, null, 2).split('\n');
+  let lines2 = JSON.stringify(object2, null, 2).split('\n');
+  for (let i = 0; i < lines1.length; i++) {
+    if (lines1[i] == lines2[i]) {
+      console.log('OK', i, lines1[i]);
+    } else {
+      console.log('XXXXXX OLD', i, lines1[i]);
+      console.log('XXXXXX NEW', i, lines2[i]);
+    }
+  }
 }
 
 function parseAPIInferred(filepath, fileContent) {
   let json;
   try {
-    json = parseSource(fileContent);
+    json = jsDocs(fileContent);
     if (!json) {
       throw new Error('parseSource returned falsy');
     }
@@ -603,7 +610,7 @@ const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   return docs;
 }, {});
 
-function extractAll() {
+function extractDocs() {
   componentCount = 0;
   return [].concat(
     components.map(renderComponent),
@@ -614,7 +621,4 @@ function extractAll() {
   );
 }
 
-module.exports = {
-  extractAll: extractAll,
-  parseSource: parseSource,
-};
+module.exports = extractDocs;
