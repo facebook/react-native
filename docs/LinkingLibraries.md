@@ -27,8 +27,7 @@ error as soon as you try to use the library._
 
 ### Automatic linking
 
-The React Native CLI has the ability to link and unlink libraries to your project.
-First install the library which you are planning to use:
+The React Native CLI can link and unlink libraries with native dependencies automatically. To link a library, first install it under your project:
 
 ```bash
 $ npm install <library-with-native-dependencies> --save
