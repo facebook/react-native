@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.views.view.ReactDrawableHelper;
 
 /**

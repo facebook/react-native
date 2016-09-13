@@ -12,9 +12,6 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -24,7 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * Abstract class for a {@link DrawCommandManager} with directional clipping.  Allows support for

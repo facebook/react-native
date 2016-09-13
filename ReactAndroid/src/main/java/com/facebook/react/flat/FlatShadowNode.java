@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import android.graphics.Rect;
 
 import com.facebook.csslayout.CSSNode;
-import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;
@@ -22,7 +21,7 @@ import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * FlatShadowNode is a base class for all shadow node used in FlatUIImplementation. It extends

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -41,7 +40,7 @@ import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.image.ImageLoadEvent;
-import com.facebook.react.views.view.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
 
 /**
  * A view that the {@link FlatShadowNode} hierarchy maps to.  Can mount and draw native views as
