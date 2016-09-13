@@ -474,8 +474,6 @@ class WebView extends React.Component {
   };
 
   /**
-   * @ios
-   *
    * Posts a message to the web view, which will invoke the global `onmessage` function.
    *
    * See note on object conversion in onMessage.
