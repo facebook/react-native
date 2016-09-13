@@ -96,6 +96,14 @@ class ResolutionResponse {
     this._assertFinalized();
     return this._mappings[module.hash()];
   }
+
+  getRootDependency() {
+    if (this.dependencies.length === 0) {
+      return null;
+    }
+
+    return this.dependencies[0];
+  }
 }
 
 module.exports = ResolutionResponse;

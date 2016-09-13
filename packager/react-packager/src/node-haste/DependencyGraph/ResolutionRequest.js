@@ -54,7 +54,7 @@ class ResolutionRequest {
     });
   }
 
-  resolveDependency(fromModule, toModuleName) {
+  resolveDependency(fromModule, toModuleName, rootModule) {
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
     if (this._immediateResolutionCache[resHash]) {
@@ -94,14 +94,14 @@ class ResolutionRequest {
         && !(isRelativeImport(toModuleName) || isAbsolutePath(toModuleName))) {
       return this._tryResolve(
         () => this._resolveHasteDependency(fromModule, toModuleName),
-        () => this._resolveNodeDependency(fromModule, toModuleName)
+        () => this._resolveNodeDependency(fromModule, toModuleName, rootModule)
       ).then(
         cacheResult,
         forgive,
       );
     }
 
-    return this._resolveNodeDependency(fromModule, toModuleName)
+    return this._resolveNodeDependency(fromModule, toModuleName, rootModule)
       .then(
         cacheResult,
         forgive,
@@ -120,6 +120,8 @@ class ResolutionRequest {
       const mocks = Object.create(null);
 
       response.pushDependency(entry);
+      const rootModule = response.getRootDependency();
+
       let totalModules = 1;
       let finishedModules = 0;
 
@@ -127,7 +129,7 @@ class ResolutionRequest {
         module.getDependencies(transformOptions)
           .then(dependencyNames =>
             Promise.all(
-              dependencyNames.map(name => this.resolveDependency(module, name))
+              dependencyNames.map(name => this.resolveDependency(module, name, rootModule))
             ).then(dependencies => [dependencyNames, dependencies])
           );
 
@@ -305,21 +307,38 @@ class ResolutionRequest {
     });
   }
 
-  _redirectRequire(fromModule, modulePath) {
-    return Promise.resolve(fromModule.getPackage()).then(p => {
+  _redirectRequire(fromModule, modulePath, rootModule) {
+
+    const resolveRoot = (p) => {
       if (p) {
         return p.redirectRequire(modulePath);
       }
       return modulePath;
-    });
+    };
+
+    const resolveLocal = (name) => {
+      if(name === modulePath) {
+        return Promise.resolve(fromModule.getPackage()).then(p => {
+          if (p) {
+            return p.redirectRequire(modulePath);
+          }
+          return modulePath;
+        });
+      }
+      return name;
+    };
+
+    return Promise.resolve(rootModule.getPackage())
+    .then(resolveRoot)
+    .then(resolveLocal);
   }
 
-  _resolveFileOrDir(fromModule, toModuleName) {
+  _resolveFileOrDir(fromModule, toModuleName, rootModule) {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
         toModuleName :
         path.join(path.dirname(fromModule.path), toModuleName);
 
-    return this._redirectRequire(fromModule, potentialModulePath).then(
+    return this._redirectRequire(fromModule, potentialModulePath, rootModule).then(
       realModuleName => {
         if (realModuleName === false) {
           return null;
@@ -333,11 +352,11 @@ class ResolutionRequest {
     );
   }
 
-  _resolveNodeDependency(fromModule, toModuleName) {
+  _resolveNodeDependency(fromModule, toModuleName, rootModule) {
     if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
-      return this._resolveFileOrDir(fromModule, toModuleName);
+      return this._resolveFileOrDir(fromModule, toModuleName, rootModule);
     } else {
-      return this._redirectRequire(fromModule, toModuleName).then(
+      return this._redirectRequire(fromModule, toModuleName, rootModule).then(
         realModuleName => {
           // exclude
           if (realModuleName === false) {
@@ -349,7 +368,7 @@ class ResolutionRequest {
             const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules/') + 13;
             const fromModuleDir = fromModule.path.slice(0, fromModule.path.indexOf('/', fromModuleParentIdx));
             const absPath = path.join(fromModuleDir, realModuleName);
-            return this._resolveFileOrDir(fromModule, absPath);
+            return this._resolveFileOrDir(fromModule, absPath, rootModule);
           }
 
           const searchQueue = [];
