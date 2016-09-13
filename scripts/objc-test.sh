@@ -25,7 +25,7 @@ XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
 XCODE_SCHEME="UIExplorer"
 XCODE_SDK="iphonesimulator"
 if [ -z "$XCODE_DESTINATION" ]; then
-  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10"
+  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.0"
 fi
 
 # Support for environments without xcpretty installed
