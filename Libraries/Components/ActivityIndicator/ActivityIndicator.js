@@ -12,7 +12,6 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
@@ -36,7 +35,6 @@ type DefaultProps = {
  * Displays a circular loading indicator.
  */
 const ActivityIndicator = React.createClass({
-  mixins: [NativeMethodsMixin],
 
   propTypes: {
     ...View.propTypes,
@@ -73,6 +71,12 @@ const ActivityIndicator = React.createClass({
     };
   },
 
+  setNativeProps(nativeProps) {
+    if (this._root) {
+      this._root.setNativeProps(nativeProps);
+    }
+  },
+
   render() {
     const {onLayout, style, ...props} = this.props;
     let sizeStyle;
@@ -95,6 +99,7 @@ const ActivityIndicator = React.createClass({
         style={[styles.container, style]}>
         <RCTActivityIndicator
           {...props}
+          ref={(ref) => { this._root = ref; }}
           style={sizeStyle}
           styleAttr="Normal"
           indeterminate
