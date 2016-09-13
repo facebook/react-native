@@ -66,33 +66,33 @@ block { display: none; }
 
 <block class="mac ios android" />
 
-## Dependencies
+## Installing Dependencies
 
 <block class="mac ios" />
 
-You will need Xcode, Node.js, the React Native command line tools, and Watchman.
+You will need Node.js, Watchman, the React Native command line interface, and Xcode.
 
 <block class="mac android" />
 
-You will need Android Studio, Node.js, the React Native command line tools, and Watchman.
+You will need Node.js, Watchman, the React Native command line interface, and Android Studio.
 
 <block class="mac ios android" />
 
 ### Node, Watchman
 
-We recommend installing Node and Watchman via [Homebrew](http://brew.sh/).
+We recommend installing Node and Watchman using [Homebrew](http://brew.sh/). Run the following commands in a Terminal after installing Homebrew:
 
 ```
 brew install node
 brew install watchman
 ```
 
-> [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
+> [Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching
 changes in the filesystem. It is highly recommended you install it for better performance.
 
 ### The React Native CLI
 
-Node comes with npm, which lets you install the React Native command line interface.
+Node.js comes with npm, which lets you install the React Native command line interface. Run the following command in a Terminal:
 
 ```
 npm install -g react-native-cli
@@ -110,35 +110,70 @@ The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple
 
 <block class="mac android" />
 
-### Android Studio
+### Android Development Environment
+
+Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
+
+#### 1. Install Android Studio
 
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
-Ensure the ANDROID_HOME environment variable points to your existing Android SDK. To do that, add this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and re-open your terminal:
+#### 2. Confirm the Android SDK is installed
+
+Android Studio installs `Android 7.0 (Nougat)` by default. You can confirm that the SDK was installed by clicking on "Configure" in the last screen in the Android Studio Setup Wizard, or by opening "Preferences" from the Android Studio menu, then choosing `Appearance and Behavior` → `System Settings` → `Android SDK`.
+
+![Android Studio SDK Manager](img/react-native-android-studio-configure-sdk.png)
+
+Select "SDK Platforms" from within the SDK Manager and you should see a blue checkmark next to "Android 7.0 (Nougat)". In case it is not, click on the checkbox and then "Apply".
+
+![Android Studio SDK Manager](img/react-native-sdk-platforms.png)
+
+> If you wish to support older versions of Android, you can install additional Android SDKs from this screen.
+
+#### 3. Set up paths
+
+The React Native command line interface requires the `ANDROID_HOME` environment variable to be set up. You can configure it in a Terminal using the following command:
 
 ```
 export ANDROID_HOME=~/Library/Android/sdk
 ```
 
-> The Android SDK will be installed at `/usr/local/opt/android-sdk` if Homebrew is used. Please make sure you export the correct path above if you did not install the Android SDK using Android Studio.
-
-### Gradle
-
-If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) to speed up builds.
+To avoid doing this every time you open a new Terminal, create (or edit) `~/.bashrc` using your favorite text editor and add the following lines:
 
 ```
-touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+export ANDROID_HOME=~/Library/Android/sdk
+export PATH=${PATH}:${ANDROID_HOME}/tools
 ```
+
+The second line will add the `android` tool to your path, which will come in handy in the next step.
+
+> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio. If you install the Android SDK using Homebrew, it will be located at `/usr/local/opt/android-sdk`.
+
+#### 4. Set up your Android Virtual Device
+
+Android Studio should have set up an Android Virtual Device for you during installation, but it is very common to run into an issue where Android Studio fails to install the AVD.
+
+![Android Studio AVD Manager](img/react-native-tools-avd.png)
+
+To see the list of available AVDs, launch the "AVD Manager" from within Android Studio or run the following command in a Terminal:
+
+```
+android avd
+```
+
+You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD if needed.
+
+> If you see "No system images installed for this target." under CPU/ABI, go back to your "SDK Manager" and click on "Show Package Details" under "SDK Platforms". You will then be able to install any missing system images, such as "Google APIs Intel Atom (x86)".
 
 <!-- ######### LINUX and WINDOWS for ANDROID ##################### -->
 
 <block class="windows linux android" />
 
-## Dependencies
+## Installing Dependencies
 
 <block class="linux android" />
 
-You will need Node.js, the React Native command line tools, Watchman, and Android Studio.
+You will need Node.js, the React Native command line interface, and Android Studio.
 
 ### Node
 
@@ -146,7 +181,7 @@ Follow the [installation instructions for your Linux distribution](https://nodej
 
 <block class='windows android' />
 
-You will need Node.js, the React Native command line tools, and Android Studio.
+You will need Node.js, the React Native command line interface, and Android Studio.
 
 ### Node
 
@@ -169,59 +204,80 @@ Node comes with npm, which lets you install the React Native command line interf
 npm install -g react-native-cli
 ```
 
-### Android Studio
+### Android Development Environment
+
+Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
+
+#### 1. Install Android Studio
 
 Download and install [Android Studio](https://developer.android.com/studio/install.html).
 
-Ensure the ANDROID_HOME environment variable points to your existing Android SDK.
+#### 2. Confirm the Android SDK is installed
+
+Android Studio installs `Android 7.0 (Nougat)` by default. You can confirm that the SDK was installed by clicking on "Configure" in the last screen in the Android Studio Setup Wizard, or by opening "Preferences" from the Android Studio menu, then choosing `Appearance and Behavior` → `System Settings` → `Android SDK`.
+
+![Android Studio SDK Manager](img/react-native-android-studio-configure-sdk-windows.png)
+
+Select "SDK Platforms" from within the SDK Manager and you should see a blue checkmark next to "Android 7.0 (Nougat)". In case it is not, click on the checkbox and then "Apply".
+
+![Android Studio SDK Manager](img/react-native-sdk-platforms.png)
+
+> If you wish to support older versions of Android, you can install additional Android SDKs from this screen.
+
+#### 3. Set up paths
+
+The React Native command line interface requires the `ANDROID_HOME` environment variable to be set up.
 
 <block class="linux android" />
 
-To do that, add this to your `~/.bashrc`, `~/.bash_profile` (or whatever your shell uses) and re-open your terminal (or `source` the relevant file):
+Create or edit your `~/.bashrc` file and add the following lines:
 
 ```
 export ANDROID_HOME=~/Android/Sdk
+export PATH=${PATH}:${ANDROID_HOME}/tools
 ```
 
-> Please make sure you export the correct path above if you did not install the Android SDK using Android Studio.
+The second line will add the `android` tool to your path, which will come in handy in the next step.
+
+> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 
 <block class="windows android" />
 
-Go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` ->
-`Advanced System Settings` -> `Environment variables` -> `New`, then enter the path to your Android SDK.
+Go to `Control Panel` → `System and Security` → `System` → `Change settings` →
+`Advanced System Settings` → `Environment variables` → `New`, then enter the path to your Android SDK.
 
 ![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
-> Your path to the SDK will vary to the one shown above.
+> Please make sure you use the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 
 Restart the Command Prompt to apply the new environment variable.
 
-<block class="windows linux android" />
+<block class="linux windows android" />
 
-### Gradle
+#### 4. Set up your Android Virtual Device
 
-If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) to speed up builds.
+Android Studio should have set up an Android Virtual Device for you during installation, but it is very common to run into an issue where Android Studio fails to install the AVD.
 
-This command will enable the Daemon for the current user:
+![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-<block class="windows android" />
+To see the list of available AVDs, launch the "AVD Manager" from within Android Studio or run the following command in a terminal:
 
 ```
-(if not exist "%USERPROFILE%/.gradle" mkdir "%USERPROFILE%/.gradle") && (echo org.gradle.daemon=true >> "%USERPROFILE%/.gradle/gradle.properties")
+android avd
 ```
+
+You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD if needed.
+
+> If you see "No system images installed for this target." under CPU/ABI, go back to your "SDK Manager" and click on "Show Package Details" under "SDK Platforms". You will then be able to install any missing system images, such as "Google APIs Intel Atom (x86)".
 
 <block class="linux android" />
 
-```
-touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
-```
+### Watchman (optional)
 
-### Watchman
-
-You can follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#installing-from-source) to compile and install from source.
+Follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#build-install) to compile and install Watchman from source.
 
 > [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
-changes in the filesystem. It is highly recommended you install it for better performance.
+changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
 
 <block class="mac ios android" />
 
@@ -229,7 +285,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 <block class="mac ios" />
 
-Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
 
 ```
 react-native init AwesomeProject
@@ -237,11 +293,13 @@ cd AwesomeProject
 react-native run-ios
 ```
 
-You should see your new app running in the iOS Simulator shortly. `react-native run-ios` is just one way to run your app - you can also run it directly from within Xcode or Nuclide.
+You should see your new app running in the iOS Simulator shortly.
+
+`react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or Nuclide.
 
 <block class="mac android" />
 
-Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
 
 ```
 react-native init AwesomeProject
@@ -279,7 +337,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ## Testing your React Native Installation
 
-Use the React Native command line tools to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
 
 ```
 react-native init AwesomeProject
