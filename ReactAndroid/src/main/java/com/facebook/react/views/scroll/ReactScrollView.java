@@ -29,6 +29,12 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.views.view.ReactViewGroup;
+import com.facebook.react.views.view.ReactViewManager;
+
+import java.lang.reflect.Field;
+
+import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
