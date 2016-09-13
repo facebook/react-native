@@ -9,7 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
+//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
+#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
+#else
+#import "CSSLayout.h"
+#endif
+
 #import "RCTComponent.h"
 #import "RCTRootView.h"
 

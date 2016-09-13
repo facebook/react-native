@@ -114,195 +114,182 @@ function forEachRef(refs, callback) {
   }
 }
 
-function getTypeName(ref) {
-  if (ref.type === 'Function' && !!ref.value) {
-    return 'Function ' + ref.value.name;
-  }
-  return ref.type;
-}
-
-function idGetProp(refs, id, prop) {
-  const ref = refs[id];
-  if (ref && ref.edges) {
-    const edges = ref.edges;
-    for (const edgeId in edges) {
-      if (edges[edgeId] === prop) {
-        return edgeId;
-      }
+function firstRef(refs, callback) {
+  for (const id in refs) {
+    const ref = refs[id];
+    if (callback(id, ref)) {
+      return new RefVisitor(refs, id);
     }
   }
-  return undefined;
+  return new RefVisitor(refs, undefined);
 }
 
-function idPropForEach(refs, id, callback) {
-  const ref = refs[id];
-  if (ref && ref.edges) {
-    const edges = ref.edges;
-    for (const edgeId in edges) {
-      callback(edges[edgeId], edgeId);
+function getInternalInstanceName(visitor) {
+  const type = visitor.clone().moveToEdge('_currentElement').moveToEdge('type');
+  if (type.getType() === 'string') { // element.type is string
+    return type.getValue();
+  } else if (type.getType() === 'Function') { // element.type is function
+    const displayName = type.clone().moveToEdge('displayName');
+    if (displayName.isDefined()) {
+      return displayName.getValue(); // element.type.displayName
     }
-  }
-}
-
-function getInternalInstanceName(refs, id) {
-  const elementId = idGetProp(refs, id, '_currentElement');
-  const typeId = idGetProp(refs, elementId, 'type');
-  const typeRef = refs[typeId];
-  if (typeRef) {
-    if (typeRef.type === 'string') {  // element.type is string
-      if (typeRef.value) {
-        return typeRef.value;
-      }
-    } else if (typeRef.type === 'Function') { // element.type is function
-      const displayNameId = idGetProp(refs, typeId, 'displayName');
-      if (displayNameId) {
-        const displayNameRef = refs[displayNameId];
-        if (displayNameRef && displayNameRef.value) {
-          return displayNameRef.value;  // element.type.displayName
-        }
-      }
-      const nameId = idGetProp(refs, typeId, 'name');
-      if (nameId) {
-        const nameRef = refs[nameId];
-        if (nameRef && nameRef.value) {
-          return nameRef.value; // element.type.name
-        }
-      }
-      if (typeRef.value && typeRef.value.name) {
-        return typeRef.value.name;  // element.type symbolicated function name
-      }
+    const name = type.clone().moveToEdge('name');
+    if (name.isDefined()) {
+      return name.getValue(); // element.type.name
+    }
+    type.moveToEdge('@Executable');
+    if (type.getType() === 'FunctionExecutable') {
+      return type.getRef().value.name;  // element.type symbolicated name
     }
   }
   return '#unknown';
 }
 
-function registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id) {
-  if (parents[id] === undefined) {
-    // not a component
-  } else if (parents[id] === null) {
-    trees[id] = registry.insert(registry.root, getInternalInstanceName(refs, id));
-  } else {
-    const parent = parents[id];
-    const inEdgeName = inEdgeNames[id];
-    let parentTree = trees[parent];
-    if (parentTree === undefined) {
-      parentTree = registerReactComponentTreeImpl(
-        refs,
-        registry,
-        parents,
-        inEdgeNames,
-        trees,
-        parent);
-    }
-    trees[id] = registry.insert(parentTree, inEdgeName);
+function buildReactComponentTree(visitor, registry) {
+  const ref = visitor.getRef();
+  if (ref.reactTree || ref.reactParent === undefined) {
+    return; // has one or doesn't need one
   }
-  return trees[id];
+  const parentVisitor = ref.reactParent;
+  if (parentVisitor === null) {
+    ref.reactTree = registry.insert(registry.root, getInternalInstanceName(visitor));
+  } else if (parentVisitor) {
+    const parentRef = parentVisitor.getRef();
+    buildReactComponentTree(parentVisitor, registry);
+    let relativeName = getInternalInstanceName(visitor);
+    if (ref.reactKey) {
+      relativeName = ref.reactKey + ': ' + relativeName;
+    }
+    ref.reactTree = registry.insert(parentRef.reactTree, relativeName);
+  } else {
+    throw 'non react instance parent of react instance';
+  }
 }
 
-// TODO: make it easier to query the heap graph, it's super annoying to deal with edges directly
-function registerReactComponentTree(refs, registry) {
-  // build list of parents for react interal instances, so we can connect a tree
-  const parents = {};
-  const inEdgeNames = {};
-  for (const id in refs) {
-    idPropForEach(refs, id, (name, propId) => {
-      if (propId !== '0x0') {
-        if (name === '_renderedChildren') {
-          if (parents[id] === undefined) {
-            // mark that we are a react component, even if we don't have a parent
-            parents[id] = null;
+function markReactComponentTree(refs, registry) {
+  // annotate all refs that are react internal instances with their parent and name
+  // ref.reactParent = visitor that points to parent instance,
+  //   null if we know it's an instance, but don't have a parent yet
+  // ref.reactKey = if a key is used to distinguish siblings
+  forEachRef(refs, (visitor) => {
+    const visitorClone = visitor.clone(); // visitor will get stomped on next iteration
+    const ref = visitor.getRef();
+    visitor.forEachEdge((edgeName, edgeVisitor) => {
+      const edgeRef = edgeVisitor.getRef();
+      if (edgeRef) {
+        if (edgeName === '_renderedChildren') {
+          if (ref.reactParent === undefined) {
+            // ref is react component, even if we don't have a parent yet
+            ref.reactParent = null;
           }
-          idPropForEach(refs, propId, (childName, childPropId) => {
-            if (childName.startsWith('.')) {
-              parents[childPropId] = id;
-              inEdgeNames[childPropId] = childName + ': '
-                + getInternalInstanceName(refs, childPropId);
+          edgeVisitor.forEachEdge((childName, childVisitor) => {
+            const childRef = childVisitor.getRef();
+            if (childRef && childName.startsWith('.')) {
+              childRef.reactParent = visitorClone;
+              childRef.reactKey = childName;
             }
           });
-        } else if (name === '_renderedComponent') {
-          if (parents[id] === undefined) {
-            parents[id] = null;
+        } else if (edgeName === '_renderedComponent') {
+          if (ref.reactParent === undefined) {
+            ref.reactParent = null;
           }
-          parents[propId] = id;
-          inEdgeNames[propId] = getInternalInstanceName(refs, propId);
+          edgeRef.reactParent = visitorClone;
         }
       }
     });
-  }
+  });
   // build tree of react internal instances (since that's what has the structure)
-  const trees = {};
-  for (const id in refs) {
-    registerReactComponentTreeImpl(refs, registry, parents, inEdgeNames, trees, id);
-  }
+  // fill in ref.reactTree = path registry node
+  forEachRef(refs, (visitor) => {
+    buildReactComponentTree(visitor, registry);
+  });
   // hook in components by looking at their _reactInternalInstance fields
-  for (const id in refs) {
-    const internalInstance = idGetProp(refs, id, '_reactInternalInstance');
-    if (internalInstance && trees[internalInstance]) {
-      trees[id] = trees[internalInstance];
+  forEachRef(refs, (visitor) => {
+    const ref = visitor.getRef();
+    const instanceRef = visitor.moveToEdge('_reactInternalInstance').getRef();
+    if (instanceRef) {
+      ref.reactTree = instanceRef.reactTree;
     }
-  }
-  return trees;
+  });
 }
 
-function registerPathToRoot(roots, refs, registry, reactComponentTree) {
-  const visited = {};
-  let breadth = [];
-  for (let i = 0; i < roots.length; i++) {
-    const id = roots[i];
-    if (visited[id] === undefined) {
-      const ref = refs[id];
-      visited[id] = registry.insert(registry.root, getTypeName(ref));
-      breadth.push(id);
+function functionUrlFileName(visitor) {
+  const executable = visitor.clone().moveToEdge('@Executable');
+  const ref = executable.getRef();
+  if (ref && ref.value && ref.value.url) {
+    const url = ref.value.url;
+    let file = url.substring(url.lastIndexOf('/') + 1);
+    if (file.endsWith('.js')) {
+      file = file.substring(0, file.length - 3);
     }
+    return file;
   }
+  return undefined;
+}
 
+function markModules(refs) {
+  const modules = firstRef(refs, (id, ref) => ref.type === 'CallbackGlobalObject');
+  modules.moveToEdge('require');
+  modules.moveToFirst((name, visitor) => visitor.getType() === 'JSActivation');
+  modules.moveToEdge('modules');
+  modules.forEachEdge((name, visitor) => {
+    const ref = visitor.getRef();
+    visitor.moveToEdge('exports');
+    if (visitor.getType() === 'Object') {
+      visitor.moveToFirst((memberName, member) => member.getType() === 'Function');
+      if (visitor.isDefined()) {
+        ref.module = functionUrlFileName(visitor);
+      }
+    } else if (visitor.getType() === 'Function') {
+      const displayName = visitor.clone().moveToEdge('displayName');
+      if (displayName.isDefined()) {
+        ref.module = displayName.getValue();
+      }
+      ref.module = functionUrlFileName(visitor);
+    }
+    if (ref && !ref.module) {
+      ref.module = '#unknown ' + name;
+    }
+  });
+}
+
+function registerPathToRoot(refs, registry) {
+  markReactComponentTree(refs, registry);
+  markModules(refs);
+  let breadth = [];
+  forEachRef(refs, (visitor) => {
+    const ref = visitor.getRef();
+    if (ref.type === 'CallbackGlobalObject') {
+      ref.rootPath = registry.insert(registry.root, ref.type);
+      breadth.push(visitor.clone());
+    }
+  });
   while (breadth.length > 0) {
     const nextBreadth = [];
     for (let i = 0; i < breadth.length; i++) {
-      const id = breadth[i];
-      const ref = refs[id];
-      const node = visited[id];
-      // TODO: make edges map id -> name, (empty for none) seems that would be better
-
-      const edges = Object.getOwnPropertyNames(ref.edges);
-      edges.sort(function putUnknownLast(a, b) {
-        const aName = ref.edges[a];
-        const bName = ref.edges[b];
-        if (aName === null && bName !== null) {
-          return 1;
-        } else if (aName !== null && bName === null) {
-          return -1;
-        } else if (aName === null && bName === null) {
-          return 0;
-        } else {
-          return a.localeCompare(b);
-        }
-      });
-
-      for (let j = 0; j < edges.length; j++) {
-        const edgeId = edges[j];
-        let edgeName = '';
-        if (ref.edges[edgeId]) {
-          edgeName = ref.edges[edgeId] + ': ';
-        }
-        if (visited[edgeId] === undefined) {
-          const edgeRef = refs[edgeId];
-          if (edgeRef === undefined) {
-            // TODO: figure out why we have edges that point to things not JSCell
-            //console.log('registerPathToRoot unable to follow edge from ' + id + ' to ' + edgeId);
-          } else {
-            visited[edgeId] = registry.insert(node, edgeName + getTypeName(edgeRef));
-            nextBreadth.push(edgeId);
-            if (reactComponentTree[edgeId] === undefined) {
-              reactComponentTree[edgeId] = reactComponentTree[id];
-            }
+      const visitor = breadth[i];
+      const ref = visitor.getRef();
+      visitor.forEachEdge((edgeName, edgeVisitor) => {
+        const edgeRef = edgeVisitor.getRef();
+        if (edgeRef && edgeRef.rootPath === undefined) {
+          let pathName = edgeRef.type;
+          if (edgeName) {
+            pathName = edgeName + ': ' + pathName;
+          }
+          edgeRef.rootPath = registry.insert(ref.rootPath, pathName);
+          nextBreadth.push(edgeVisitor.clone());
+          // copy module and react tree forward
+          if (edgeRef.module === undefined) {
+            edgeRef.module = ref.module;
+          }
+          if (edgeRef.reactTree === undefined) {
+            edgeRef.reactTree = ref.reactTree;
           }
         }
-      }
+      });
     }
     breadth = nextBreadth;
   }
-  return visited;
 }
 
 function captureRegistry() {
@@ -317,7 +304,8 @@ function captureRegistry() {
   const pathField = 4;
   const reactField = 5;
   const valueField = 6;
-  const numFields = 7;
+  const moduleField = 7;
+  const numFields = 8;
 
   return {
     strings: strings,
@@ -342,14 +330,9 @@ function captureRegistry() {
       let dataOffset = this.data.length;
       this.data = null;
 
-      const reactComponentTreeMap = registerReactComponentTree(capture.refs, this.stacks);
-      const rootPathMap = registerPathToRoot(
-        capture.roots,
-        capture.refs,
-        this.stacks,
-        reactComponentTreeMap
-      );
+      registerPathToRoot(capture.refs, this.stacks);
       const internedCaptureId = this.strings.intern(captureId);
+      const noneString = this.strings.intern('#none');
       const noneStack = this.stacks.insert(this.stacks.root, '#none');
       forEachRef(capture.refs, (visitor) => {
         const ref = visitor.getRef();
@@ -358,18 +341,22 @@ function captureRegistry() {
         newData[dataOffset + typeField] = this.strings.intern(ref.type);
         newData[dataOffset + sizeField] = ref.size;
         newData[dataOffset + traceField] = internedCaptureId;
-        const pathNode = rootPathMap[id];
-        if (pathNode === undefined) {
-          throw 'did not find path for ref!';
+        if (ref.rootPath === undefined) {
+          newData[dataOffset + pathField] = noneStack.id;
+        } else {
+          newData[dataOffset + pathField] = ref.rootPath.id;
         }
-        newData[dataOffset + pathField] = pathNode.id;
-        const reactTree = reactComponentTreeMap[id];
-        if (reactTree === undefined) {
+        if (ref.reactTree === undefined) {
           newData[dataOffset + reactField] = noneStack.id;
         } else {
-          newData[dataOffset + reactField] = reactTree.id;
+          newData[dataOffset + reactField] = ref.reactTree.id;
         }
         newData[dataOffset + valueField] = this.strings.intern(visitor.getValue());
+        if (ref.module) {
+          newData[dataOffset + moduleField] = this.strings.intern(ref.module);
+        } else {
+          newData[dataOffset + moduleField] = noneString;
+        }
         dataOffset += numFields;
       });
       for (const id in capture.markedBlocks) {
@@ -385,6 +372,7 @@ function captureRegistry() {
           ', size: ' + block.size +
           ', granularity: ' + block.cellSize
         );
+        newData[dataOffset + moduleField] = noneString;
         dataOffset += numFields;
       }
       this.data = newData;
@@ -438,6 +426,12 @@ function captureRegistry() {
           return agData[rowA * numFields + valueField] - agData[rowB * numFields + valueField];
         });
 
+      const moduleExpander = ag.addFieldExpander('Module',
+        function getModule(row) { return agStrings.get(agData[row * numFields + moduleField]); },
+        function compareModule(rowA, rowB) {
+          return agData[rowA * numFields + moduleField] - agData[rowB * numFields + moduleField];
+        });
+
       const sizeAggregator = ag.addAggregator('Size',
         function aggregateSize(indices) {
           let size = 0;
@@ -460,6 +454,7 @@ function captureRegistry() {
       ag.setActiveExpanders([
         pathExpander,
         reactExpander,
+        moduleExpander,
         typeExpander,
         idExpander,
         traceExpander,

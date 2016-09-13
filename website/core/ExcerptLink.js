@@ -6,23 +6,29 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReadMoreLink
+ * @providesModule ExcerptLink
  */
 
 'use strict';
 
 var React = require('React');
 
-var ReadMoreLink = React.createClass({
+var ExcerptLink = React.createClass({
   render: function() {
+    var cta = "Read more";
+
+    if (this.props.category === "videos") {
+      cta = "Watch video";
+    }
+
     return (
       <footer className="entry-readmore">
         <a href={this.props.href} className="btn">
-          Read more
+          {cta}
         </a>
       </footer>
     );
   }
 });
 
-module.exports = ReadMoreLink;
+module.exports = ExcerptLink;

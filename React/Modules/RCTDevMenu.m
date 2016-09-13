@@ -566,9 +566,13 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                      object:nil
-                                                    userInfo:nil];
+  [_bridge requestReload];
+}
+
+RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
+{
+  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  self.executorClass = enableDebug ? jsDebuggingExecutorClass : nil;
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow
@@ -577,7 +581,7 @@ RCT_EXPORT_METHOD(reload)
   [self updateSetting:@"shakeToShow" value:@(_shakeToShow)];
 }
 
-- (void)setProfilingEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
 {
   _profilingEnabled = enabled;
   [self updateSetting:@"profilingEnabled" value:@(_profilingEnabled)];
@@ -593,7 +597,7 @@ RCT_EXPORT_METHOD(reload)
   }
 }
 
-- (void)setLiveReloadEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
 {
   _liveReloadEnabled = enabled;
   [self updateSetting:@"liveReloadEnabled" value:@(_liveReloadEnabled)];
@@ -611,7 +615,7 @@ RCT_EXPORT_METHOD(reload)
   return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
-- (void)setHotLoadingEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
   _hotLoadingEnabled = enabled;
   [self updateSetting:@"hotLoadingEnabled" value:@(_hotLoadingEnabled)];

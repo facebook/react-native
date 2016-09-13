@@ -224,7 +224,7 @@ function run(root, projectName, rnPackage) {
 
     checkNodeVersion();
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }

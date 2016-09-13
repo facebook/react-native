@@ -14,7 +14,7 @@ var path = require('path');
 var yeoman = require('yeoman-generator');
 
 function validatePackageName(name) {
-  if (!name.match(/^([a-zA-Z_$][a-zA-Z\d_$]*\.)+([a-zA-Z_$][a-zA-Z\d_$]*)$/)) {
+  if (!name.match(/^([a-zA-Z][a-zA-Z\d_]*\.)+([a-zA-Z_][a-zA-Z\d_]*)$/)) {
     return false;
   }
   return true;

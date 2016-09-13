@@ -144,7 +144,7 @@ function isWarningIgnored(warning: string): boolean {
   return (
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(
-      ignorePrefix => warning.startsWith(ignorePrefix)
+      ignorePrefix => warning.startsWith(String(ignorePrefix))
     )
   );
 }

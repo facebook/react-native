@@ -161,28 +161,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainQueue();
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(reload)
-                                               name:RCTReloadNotification
-                                             object:nil];
-
 #if TARGET_IPHONE_SIMULATOR
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   // reload in current mode
+  __weak typeof(self) weakSelf = self;
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                        object:nil
-                                                      userInfo:nil];
+    [weakSelf requestReload];
   }];
 #endif
-}
-
-- (RCTPerformanceLogger *)performanceLogger
-{
-  return self.batchedBridge.performanceLogger;
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -235,9 +224,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   });
 }
 
+- (void)requestReload
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
+  [self reload];
+}
+
 - (void)setUp
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
+
+  _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+  [_performanceLogger markStartForTag:RCTPLTTI];
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
@@ -251,7 +250,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   [self createBatchedBridge];
 
-  RCT_PROFILE_END_EVENT(0, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)createBatchedBridge

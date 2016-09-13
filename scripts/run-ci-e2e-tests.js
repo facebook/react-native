@@ -200,6 +200,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+    if (exec(`npm test`).code) {
+      echo('Jest test failure');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
 

@@ -424,6 +424,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
     errorInfo[@"domain"] = RCTErrorDomain;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  errorInfo[@"userInfo"] = RCTNullIfNil(error.userInfo);
+
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
 
@@ -520,16 +522,6 @@ NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-}
-
-id RCTNullIfNil(id __nullable value)
-{
-  return value ?: (id)kCFNull;
-}
-
-id __nullable RCTNilIfNull(id __nullable value)
-{
-  return value == (id)kCFNull ? nil : value;
 }
 
 double RCTZeroIfNaN(double value)

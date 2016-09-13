@@ -23,7 +23,8 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "local-cli/generator/templates/"
     ],
     "haste": {
       "defaultPlatform": "ios",
@@ -207,7 +208,7 @@
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
     "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.31.1",
+    "flow-bin": "^0.32.0",
     "jest": "15.1.0",
     "jest-repl": "15.1.0",
     "jest-runtime": "15.1.0",

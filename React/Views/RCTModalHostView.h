@@ -27,6 +27,9 @@
 
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
+@property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
+@property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end

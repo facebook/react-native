@@ -157,12 +157,6 @@ var featured = [
     infoTitle: 'The award winning Fantasy Football league manager.',
   },
   {
-    name: 'Codementor - Live 1:1 Expert Developer Help',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
-    infoLink: 'https://techcrunch.com/2015/08/26/codementor-live-classes/',
-    infoTitle: 'Codementor, a Learning Platform for Developers',
-  },
-  {
     name: 'Coiney窓口',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
@@ -178,7 +172,7 @@ var featured = [
   },
   {
     name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple62/v4/7f/b3/66/7fb366c4-79fd-34e1-3037-ffc02d8a93f7/icon350x350.png',
     linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
     linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
     infoLink: 'http://www.phonearena.com/news/Fixt-is-an-app-that-promises-a-hassle-free-smartphone-repairy-service_id81069',
@@ -328,6 +322,21 @@ var featured = [
     infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
     infoTitle: 'React Native at Artsy',
   },
+  {
+    name: 'Huiseoul(惠首尔)',
+    icon: 'https://cdn.huiseoul.com/icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8',
+    infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
+    infoTitle: 'Building a conversational E-commerce app in 6 weeks with React Native',
+  },
+  {
+    name: 'Baidu(手机百度)',
+    icon: 'https://ss0.bdstatic.com/-0U0bnSm1A5BphGlnYG/tam-ogel/8b8eb88700776fe293f4f9a74a73aa18_121_121.jpg',
+    linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
+    linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
+    infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
+    infoTitle: 'Baidu is a search engine that has 600 million users.',
+  }
 ];
 
 featured.sort(function(a, b) {
