@@ -16,6 +16,7 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 
@@ -88,6 +89,10 @@ public abstract class ReactNativeHost {
    */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
     return null;
+  }
+
+  protected final Application getApplication() {
+    return mApplication;
   }
 
   /**

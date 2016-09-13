@@ -82,6 +82,12 @@ describe('processRequest', () => {
     };
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.getResolver =
+      jest.fn().mockReturnValue({
+        getDependecyGraph: jest.fn().mockReturnValue({
+          getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+        }),
+      });
 
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
@@ -363,6 +369,18 @@ describe('processRequest', () => {
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
+    });
+
+    it('should serve assets files\'s name contain non-latin letter', () => {
+      const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
+      const res = {end: jest.fn()};
+
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/主页/logo.png', undefined);
+      expect(res.end).toBeCalledWith('i am image');
     });
   });
 

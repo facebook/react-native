@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -91,8 +91,20 @@ class DependencyGraph {
     }
 
     const {activity} = this._opts;
-    const depGraphActivity = activity.startEvent('Building Dependency Graph');
-    const crawlActivity = activity.startEvent('Crawling File System');
+    const depGraphActivity = activity.startEvent(
+      'Building Dependency Graph',
+      null,
+      {
+        telemetric: true,
+      },
+    );
+    const crawlActivity = activity.startEvent(
+      'Crawling File System',
+      null,
+      {
+        telemetric: true,
+      },
+    );
     const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
     this._crawling = crawl(allRoots, {
       ignore: this._opts.ignoreFilePath,
@@ -122,7 +134,7 @@ class DependencyGraph {
       depGraphHelpers: this._helpers,
       assetDependencies: this._assetDependencies,
       moduleOptions: this._opts.moduleOptions,
-    }, this._opts.platfomrs);
+    }, this._opts.platforms);
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,
@@ -148,7 +160,13 @@ class DependencyGraph {
     this._loading = Promise.all([
       this._fastfs.build()
         .then(() => {
-          const hasteActivity = activity.startEvent('Building Haste Map');
+          const hasteActivity = activity.startEvent(
+            'Building Haste Map',
+            null,
+            {
+              telemetric: true,
+            },
+          );
           return this._hasteMap.build().then(map => {
             activity.endEvent(hasteActivity);
             return map;
@@ -303,6 +321,10 @@ class DependencyGraph {
 
   createPolyfill(options) {
     return this._moduleCache.createPolyfill(options);
+  }
+
+  getHasteMap() {
+    return this._hasteMap;
   }
 }
 

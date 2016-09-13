@@ -38,6 +38,8 @@ class TreeTransformator {
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
       tree.columnNumber = original.column;
+    } else if (tree.deoptReason === 'outside_vm') {
+      tree.functionName = 'OUTSIDE VM';
     }
     tree.children = tree.children.map((t) => this.transformNode(t));
     return tree;

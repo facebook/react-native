@@ -51,9 +51,7 @@ function setUpConsole(): void {
   const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
 
-  if (__DEV__) {
-    require('RCTLog');
-  }
+  require('RCTLog');
 }
 
 /**
@@ -209,6 +207,7 @@ function setUpCollections(): void {
 function setUpDevTools(): void {
   if (__DEV__) {
     // not when debugging in chrome
+    // TODO(t12832058) This check is broken
     if (!window.document) {
       const setupDevtools = require('setupDevtools');
       setupDevtools();

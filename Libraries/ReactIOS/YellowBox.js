@@ -16,10 +16,11 @@ const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+
 const infoLog = require('infoLog');
+const openFileInEditor = require('openFileInEditor');
 const parseErrorStack = require('parseErrorStack');
 const symbolicateStackTrace = require('symbolicateStackTrace');
-const openFileInEditor = require('openFileInEditor');
 
 import type EmitterSubscription from 'EmitterSubscription';
 import type {StackFrame} from 'parseErrorStack';
@@ -143,7 +144,7 @@ function isWarningIgnored(warning: string): boolean {
   return (
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(
-      ignorePrefix => warning.startsWith(ignorePrefix)
+      ignorePrefix => warning.startsWith(String(ignorePrefix))
     )
   );
 }
@@ -198,9 +199,9 @@ const WarningInspector = ({
   warningInfo,
   warning,
   stacktraceVisible,
-  onClose,
   onDismiss,
   onDismissAll,
+  onMinimize,
   toggleStacktrace,
 }) => {
   const ScrollView = require('ScrollView');
@@ -222,50 +223,53 @@ const WarningInspector = ({
   }
 
   return (
-    <TouchableHighlight
-      activeOpacity={0.95}
-      underlayColor={backgroundColor(0.8)}
-      onPress={onClose}
-      style={styles.inspector}>
-      <View style={styles.inspectorContent}>
-        <View style={styles.inspectorCount}>
-          <Text style={styles.inspectorCountText}>{countSentence}</Text>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={toggleStacktrace}
-            style={styles.toggleStacktraceButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>
-              {stacktraceVisible ? 'Hide' : 'Show'} Stacktrace
-            </Text>
-          </TouchableHighlight>
-        </View>
-        <ScrollView style={styles.inspectorWarning}>
-          {stacktraceList}
-          <Text style={styles.inspectorWarningText}>{warning}</Text>
-        </ScrollView>
-        <View style={styles.inspectorButtons}>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onDismiss}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>
-              Dismiss
-            </Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onDismissAll}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>
-              Dismiss All
-            </Text>
-          </TouchableHighlight>
-        </View>
+    <View style={styles.inspector}>
+      <View style={styles.inspectorCount}>
+        <Text style={styles.inspectorCountText}>{countSentence}</Text>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={toggleStacktrace}
+          style={styles.toggleStacktraceButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>
+            {stacktraceVisible ? 'Hide' : 'Show'} Stacktrace
+          </Text>
+        </TouchableHighlight>
       </View>
-    </TouchableHighlight>
+      <ScrollView style={styles.inspectorWarning}>
+        {stacktraceList}
+        <Text style={styles.inspectorWarningText}>{warning}</Text>
+      </ScrollView>
+      <View style={styles.inspectorButtons}>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onMinimize}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>
+            Minimize
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onDismiss}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>
+            Dismiss
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.5}
+          onPress={onDismissAll}
+          style={styles.inspectorButton}
+          underlayColor="transparent">
+          <Text style={styles.inspectorButtonText}>
+            Dismiss All
+          </Text>
+        </TouchableHighlight>
+      </View>
+    </View>
   );
 };
 
@@ -339,9 +343,9 @@ class YellowBox extends React.Component {
         warningInfo={this.state.warningMap.get(inspecting)}
         warning={inspecting}
         stacktraceVisible={stacktraceVisible}
-        onClose={() => this.setState({inspecting: null})}
         onDismiss={() => this.dismissWarning(inspecting)}
         onDismissAll={() => this.dismissWarning(null)}
+        onMinimize={() => this.setState({inspecting: null})}
         toggleStacktrace={() => this.setState({stacktraceVisible: !stacktraceVisible})}
       /> :
       null;
@@ -394,17 +398,14 @@ var styles = StyleSheet.create({
   inspector: {
     backgroundColor: backgroundColor(0.95),
     flex: 1,
+    paddingTop: 5,
   },
   inspectorButtons: {
     flexDirection: 'row',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   inspectorButton: {
     flex: 1,
-    padding: 22,
+    paddingVertical: 22,
     backgroundColor: backgroundColor(1),
   },
   toggleStacktraceButton: {
@@ -420,10 +421,6 @@ var styles = StyleSheet.create({
     opacity: 0.8,
     textAlign: 'center',
   },
-  inspectorContent: {
-    flex: 1,
-    paddingTop: 5,
-  },
   openInEditorButton: {
     paddingTop: 5,
     paddingBottom: 5,
@@ -437,6 +434,7 @@ var styles = StyleSheet.create({
     fontSize: 14,
   },
   inspectorWarning: {
+    flex: 1,
     paddingHorizontal: 15,
   },
   inspectorWarningText: {

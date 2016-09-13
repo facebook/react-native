@@ -78,6 +78,8 @@ import javax.annotation.Nullable;
       node = new AdditionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("diffclamp".equals(type)) {
+      node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
       node = new TransformAnimatedNode(config, this);
     } else {
@@ -139,6 +141,8 @@ import javax.annotation.Nullable;
       animation = new FrameBasedAnimationDriver(animationConfig);
     } else if ("spring".equals(type)) {
       animation = new SpringAnimation(animationConfig);
+    } else if ("decay".equals(type)) {
+      animation = new DecayAnimation(animationConfig);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported animation type: " + type);
     }

@@ -111,6 +111,18 @@ class Modal extends React.Component {
       PropTypes.bool,
       'Use the `animationType` prop instead.'
     ),
+    /**
+     * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
+     * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
+     * @platform ios
+     */
+    supportedOrientations: PropTypes.arrayOf(PropTypes.oneOf(['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'])),
+    /**
+     * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
+     * The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.
+     * @platform ios
+     */
+    onOrientationChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -144,6 +156,8 @@ class Modal extends React.Component {
         onShow={this.props.onShow}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
+        supportedOrientations={this.props.supportedOrientations}
+        onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
           {this.props.children}

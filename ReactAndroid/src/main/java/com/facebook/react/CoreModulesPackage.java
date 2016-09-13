@@ -13,16 +13,19 @@ import javax.inject.Provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
+import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -40,11 +43,26 @@ import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
+
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
+@ReactModuleList({
+  AnimationsDebugModule.class,
+  AndroidInfoModule.class,
+  DeviceEventManagerModule.class,
+  ExceptionsManagerModule.class,
+  Timing.class,
+  SourceCodeModule.class,
+  UIManagerModule.class,
+  DebugComponentOwnershipModule.class,
+  JSCHeapCapture.class,
+  JSCSamplingProfiler.class,
+})
 /* package */ class CoreModulesPackage extends LazyReactPackage {
 
   private final ReactInstanceManager mReactInstanceManager;
@@ -62,7 +80,7 @@ import com.facebook.systrace.Systrace;
 
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
-    List<ModuleSpec> moduleSpecList = new ArrayList();
+    List<ModuleSpec> moduleSpecList = new ArrayList<>();
     moduleSpecList.add(
       new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
         @Override
@@ -164,10 +182,11 @@ import com.facebook.systrace.Systrace;
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList<>(0);
+    return Collections.emptyList();
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
       List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
@@ -180,6 +199,7 @@ import com.facebook.systrace.Systrace;
           viewManagersList));
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
   }
 }

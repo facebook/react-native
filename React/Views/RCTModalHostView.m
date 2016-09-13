@@ -16,6 +16,8 @@
 #import "RCTUIManager.h"
 #import "UIView+React.h"
 
+#import <UIKit/UIKit.h>
+
 @implementation RCTModalHostView
 {
   __weak RCTBridge *_bridge;
@@ -23,6 +25,7 @@
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
+  UIInterfaceOrientation _lastKnownOrientation;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -52,7 +55,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 {
   if (_reactSubview && _isPresented) {
     [_bridge.uiManager setFrame:newBounds forView:_reactSubview];
+    [self notifyForOrientationChange];
   }
+}
+
+- (void)notifyForOrientationChange
+{
+  if (!_onOrientationChange) {
+    return;
+  }
+
+  UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  if (currentOrientation == _lastKnownOrientation) {
+    return;
+  }
+  _lastKnownOrientation = currentOrientation;
+
+  BOOL isPortrait = currentOrientation == UIInterfaceOrientationPortrait || currentOrientation == UIInterfaceOrientationPortraitUpsideDown;
+  NSDictionary *eventPayload =
+  @{
+    @"orientation": isPortrait ? @"portrait" : @"landscape",
+    };
+  _onOrientationChange(eventPayload);
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
@@ -83,7 +107,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    [_modalViewController dismissViewControllerAnimated:[self hasAnimationType] completion:nil];
+    [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = NO;
   }
 }
@@ -95,16 +119,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
+    _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     } else if ([self.animationType isEqualToString:@"slide"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
-    [self.reactViewController presentViewController:_modalViewController animated:[self hasAnimationType] completion:^{
-      if (self->_onShow) {
-        self->_onShow(nil);
-      }
-    }];
+    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
 }
@@ -138,6 +159,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)setTransparent:(BOOL)transparent
 {
   _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationCustom : UIModalPresentationFullScreen;
+}
+
+- (UIInterfaceOrientationMask)supportedOrientationsMask
+{
+  if (_supportedOrientations.count == 0) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+      return UIInterfaceOrientationMaskAll;
+    } else {
+      return UIInterfaceOrientationMaskPortrait;
+    }
+  }
+
+  UIInterfaceOrientationMask supportedOrientations = 0;
+  for (NSString *orientation in _supportedOrientations) {
+    if ([orientation isEqualToString:@"portrait"]) {
+      supportedOrientations |= UIInterfaceOrientationMaskPortrait;
+    } else if ([orientation isEqualToString:@"portrait-upside-down"]) {
+      supportedOrientations |= UIInterfaceOrientationMaskPortraitUpsideDown;
+    } else if ([orientation isEqualToString:@"landscape"]) {
+      supportedOrientations |= UIInterfaceOrientationMaskLandscape;
+    } else if ([orientation isEqualToString:@"landscape-left"]) {
+      supportedOrientations |= UIInterfaceOrientationMaskLandscapeLeft;
+    } else if ([orientation isEqualToString:@"landscape-right"]) {
+      supportedOrientations |= UIInterfaceOrientationMaskLandscapeRight;
+    }
+  }
+  return supportedOrientations;
 }
 
 @end

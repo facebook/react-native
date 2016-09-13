@@ -102,6 +102,7 @@ if (cli) {
       );
       process.exit(1);
     } else {
+      if (!argv.verbose) console.log('This may take some time...');
       init(commands[1], argv.verbose, argv.version);
     }
     break;
@@ -223,7 +224,7 @@ function run(root, projectName, rnPackage) {
 
     checkNodeVersion();
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
@@ -263,7 +264,7 @@ function checkForVersionArgument() {
     try {
       console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
     } catch (e) {
-      console.log('react-native: n/a - not inside a React Native project directory')
+      console.log('react-native: n/a - not inside a React Native project directory');
     }
     process.exit();
   }
