@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <CSSLayout/CSSLayout.h>
-#include <CSSLayout/CSSMacros.h>
+#include "CSSLayout.h"
+#include "CSSMacros.h"
 
 CSS_EXTERN_C_BEGIN
 

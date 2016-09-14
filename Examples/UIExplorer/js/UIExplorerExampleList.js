@@ -30,43 +30,41 @@ const TextInput = require('TextInput');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
-
-const createExamplePage = require('./createExamplePage');
+const UIExplorerStatePersister = require('./UIExplorerStatePersister');
 
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios';
+
+import type {
+  PassProps,
+} from './UIExplorerStatePersister';
+
+import type {
+  StyleObj,
+} from 'StyleSheetTypes';
 
 const ds = new ListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2,
   sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
 });
 
+type Props = {
+  onNavigate: Function,
+  list: {
+    ComponentExamples: Array<UIExplorerExample>,
+    APIExamples: Array<UIExplorerExample>,
+  },
+  persister: PassProps<*>,
+  searchTextInputStyle: StyleObj,
+  style?: ?StyleObj,
+};
+
 class UIExplorerExampleList extends React.Component {
-
-  state = {filter: ''};
-
-  constructor(props: {
-    disableTitleRow: ?boolean,
-    onNavigate: Function,
-    filter: ?string,
-    list: {
-      ComponentExamples: Array<UIExplorerExample>,
-      APIExamples: Array<UIExplorerExample>,
-    },
-    style: ?any,
-  }) {
-    super(props);
-  }
-
-  static makeRenderable(example: any): ReactClass<any> {
-    return example.examples ?
-      createExamplePage(null, example) :
-      example;
-  }
+  props: Props
 
   render(): ?ReactElement<any> {
-    const filterText = this.state.filter || '';
+    const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) => filterRegex.test(example.module.title);
 
@@ -119,12 +117,13 @@ class UIExplorerExampleList extends React.Component {
           autoCorrect={false}
           clearButtonMode="always"
           onChangeText={text => {
-            this.setState({filter: text});
+            this.props.persister.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
+          underlineColorAndroid="transparent"
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
-          value={this.state.filter}
+          value={this.props.persister.state.filter}
         />
       </View>
     );
@@ -170,6 +169,11 @@ class UIExplorerExampleList extends React.Component {
   }
 }
 
+UIExplorerExampleList = UIExplorerStatePersister.createContainer(UIExplorerExampleList, {
+  cacheKeySuffix: () => 'mainList',
+  getInitialState: () => ({filter: ''}),
+});
+
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
@@ -181,9 +185,6 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
-  },
-  group: {
-    backgroundColor: 'white',
   },
   row: {
     backgroundColor: 'white',
@@ -215,6 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     paddingLeft: 8,
+    paddingVertical: 0,
     height: 35,
   },
 });

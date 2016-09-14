@@ -9,25 +9,18 @@
 
 package com.facebook.react.cxxbridge;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.Nullable;
-
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
-import com.facebook.react.bridge.ReadableNativeArray;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SetBuilder;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -80,7 +73,7 @@ public class NativeModuleRegistry {
   /* package */ void notifyCatalystInstanceInitialized() {
     UiThreadUtil.assertOnUiThread();
 
-    ReactMarker.logMarker("NativeModule_start");
+    ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "NativeModuleRegistry_notifyCatalystInstanceInitialized");
@@ -90,7 +83,7 @@ public class NativeModuleRegistry {
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker("NativeModule_end");
+      ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_END);
     }
   }
 
@@ -130,7 +123,7 @@ public class NativeModuleRegistry {
     public NativeModuleRegistry build() {
       Map<Class<NativeModule>, NativeModule> moduleInstances = new HashMap<>();
       for (NativeModule module : mModules.values()) {
-        moduleInstances.put((Class<NativeModule>)module.getClass(), module);
+        moduleInstances.put((Class<NativeModule>) module.getClass(), module);
       }
       return new NativeModuleRegistry(moduleInstances);
     }

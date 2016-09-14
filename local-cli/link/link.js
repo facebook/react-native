@@ -1,7 +1,17 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 const log = require('npmlog');
 const path = require('path');
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
+const chalk = require('chalk');
 
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
@@ -14,15 +24,13 @@ const copyAssetsIOS = require('./ios/copyAssets');
 const getProjectDependencies = require('./getProjectDependencies');
 const getDependencyConfig = require('./getDependencyConfig');
 const pollParams = require('./pollParams');
+const commandStub = require('./commandStub');
+const promisify = require('./promisify');
 
 log.heading = 'rnpm-link';
 
-const commandStub = (cb) => cb();
 const dedupeAssets = (assets) => uniq(assets, asset => path.basename(asset));
 
-const promisify = (func) => new Promise((resolve, reject) =>
-  func((err, res) => err ? reject(err) : resolve(res))
-);
 
 const linkDependencyAndroid = (androidProject, dependency) => {
   if (!androidProject || !dependency.config.android) {
@@ -32,7 +40,7 @@ const linkDependencyAndroid = (androidProject, dependency) => {
   const isInstalled = isInstalledAndroid(androidProject, dependency.name);
 
   if (isInstalled) {
-    log.info(`Android module ${dependency.name} is already linked`);
+    log.info(chalk.grey(`Android module ${dependency.name} is already linked`));
     return null;
   }
 
@@ -58,7 +66,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
   const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios);
 
   if (isInstalled) {
-    log.info(`iOS module ${dependency.name} is already linked`);
+    log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
     return;
   }
 
@@ -84,7 +92,7 @@ const linkAssets = (project, assets) => {
     copyAssetsAndroid(assets, project.android.assetsPath);
   }
 
-  log.info(`Assets have been successfully linked to your project`);
+  log.info('Assets have been successfully linked to your project');
 };
 
 /**
@@ -128,11 +136,11 @@ function link(args, config) {
   return promiseWaterfall(tasks).catch(err => {
     log.error(
       `It seems something went wrong while linking. Error: ${err.message} \n`
-      + `Please file an issue here: https://github.com/facebook/react-native/issues`
+      + 'Please file an issue here: https://github.com/facebook/react-native/issues'
     );
     throw err;
   });
-};
+}
 
 module.exports = {
   func: link,

@@ -10,7 +10,6 @@
 package com.facebook.react.views.text;
 
 import android.text.Spannable;
-import android.view.Gravity;
 
 import com.facebook.csslayout.Spacing;
 
@@ -28,7 +27,6 @@ public class ReactTextUpdate {
   private final float mPaddingTop;
   private final float mPaddingRight;
   private final float mPaddingBottom;
-  private final float mLineHeight;
   private final int mTextAlign;
 
   public ReactTextUpdate(
@@ -36,7 +34,6 @@ public class ReactTextUpdate {
     int jsEventCounter,
     boolean containsImages,
     Spacing padding,
-    float lineHeight,
     int textAlign) {
     mText = text;
     mJsEventCounter = jsEventCounter;
@@ -45,7 +42,6 @@ public class ReactTextUpdate {
     mPaddingTop = padding.get(Spacing.TOP);
     mPaddingRight = padding.get(Spacing.END);
     mPaddingBottom = padding.get(Spacing.BOTTOM);
-    mLineHeight = lineHeight;
     mTextAlign = textAlign;
   }
 
@@ -75,10 +71,6 @@ public class ReactTextUpdate {
 
   public float getPaddingBottom() {
     return mPaddingBottom;
-  }
-
-  public float getLineHeight() {
-    return mLineHeight;
   }
 
   public int getTextAlign() {

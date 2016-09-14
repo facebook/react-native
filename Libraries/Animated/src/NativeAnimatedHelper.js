@@ -135,6 +135,9 @@ function validateInterpolation(config: Object): void {
   var SUPPORTED_INTERPOLATION_PARAMS = {
     inputRange: true,
     outputRange: true,
+    extrapolate: true,
+    extrapolateRight: true,
+    extrapolateLeft: true,
   };
   for (var key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {

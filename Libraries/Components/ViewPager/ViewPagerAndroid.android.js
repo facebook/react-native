@@ -141,7 +141,7 @@ class ViewPagerAndroid extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.initialPage) {
+    if (this.props.initialPage != null) {
       this.setPageWithoutAnimation(this.props.initialPage);
     }
   }

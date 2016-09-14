@@ -48,7 +48,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
 
   NativeModule* module = modules_[it->second].get();
 
-  // string name, [object constants,] array methodNames (methodId is index), [array asyncMethodIds]
+  // string name, [object constants,] array methodNames (methodId is index), [array promiseMethodIds], [array syncMethodIds]
   folly::dynamic config = folly::dynamic::array(name);
 
   {
@@ -64,23 +64,26 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;
-    folly::dynamic asyncMethodIds = folly::dynamic::array;
-    folly::dynamic syncHookIds = folly::dynamic::array;
+    folly::dynamic promiseMethodIds = folly::dynamic::array;
+    folly::dynamic syncMethodIds = folly::dynamic::array;
 
     for (auto& descriptor : methods) {
+      // TODO: #10487027 compare tags instead of doing string comparison?
       methodNames.push_back(std::move(descriptor.name));
-      if (descriptor.type == "remoteAsync") {
-        asyncMethodIds.push_back(methodNames.size() - 1);
-      } else if (descriptor.type == "syncHook") {
-        syncHookIds.push_back(methodNames.size() - 1);
+      if (descriptor.type == "promise") {
+        promiseMethodIds.push_back(methodNames.size() - 1);
+      } else if (descriptor.type == "sync") {
+        syncMethodIds.push_back(methodNames.size() - 1);
       }
     }
 
     if (!methodNames.empty()) {
       config.push_back(std::move(methodNames));
-      config.push_back(std::move(asyncMethodIds));
-      if (!syncHookIds.empty()) {
-        config.push_back(std::move(syncHookIds));
+      if (!promiseMethodIds.empty() || !syncMethodIds.empty()) {
+        config.push_back(std::move(promiseMethodIds));
+        if (!syncMethodIds.empty()) {
+          config.push_back(std::move(syncMethodIds));
+        }
       }
     }
   }

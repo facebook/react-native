@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -60,6 +60,10 @@ class DeprecatedAssetMap {
         if (activity) {
           processAsset_DEPRECATEDActivity = activity.startEvent(
             'Building (deprecated) Asset Map',
+            null,
+            {
+              telemetric: true,
+            },
           );
         }
 

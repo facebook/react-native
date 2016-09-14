@@ -172,6 +172,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                     textCSSNode.mTextShadowRadius,
                     textCSSNode.mTextShadowColor)));
       }
+      if (!Float.isNaN(textCSSNode.getEffectiveLineHeight())) {
+        ops.add(new SetSpanOperation(
+                start,
+                end,
+                new CustomLineHeightSpan(textCSSNode.getEffectiveLineHeight())));
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
     }
   }
@@ -235,14 +241,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           // technically, width should never be negative, but there is currently a bug in
           boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
 
-          float effectiveLineHeight = reactCSSNode.getEffectiveLineHeight();
-          float lineSpacingExtra = 0;
-          float lineSpacingMultiplier = 1;
-          if (!Float.isNaN(effectiveLineHeight)) {
-            lineSpacingExtra = effectiveLineHeight;
-            lineSpacingMultiplier = 0;
-          }
-
           if (boring == null &&
               (unconstrainedWidth ||
                   (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -253,8 +251,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) Math.ceil(desiredWidth),
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 true);
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
@@ -264,8 +262,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 boring.width,
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 boring,
                 true);
           } else {
@@ -275,8 +273,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 true);
           }
 
@@ -588,7 +586,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           UNSET,
           mContainsImages,
           getPadding(),
-          getEffectiveLineHeight(),
           getTextAlign()
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

@@ -9,20 +9,16 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.annotations.ReactModule;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.systrace.Systrace;
-import com.facebook.systrace.SystraceMessage;
-
 import javax.annotation.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -53,9 +49,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
-  static final public String METHOD_TYPE_REMOTE = "remote";
-  static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
-  static final public String METHOD_TYPE_SYNC_HOOK = "syncHook";
+  static final public String METHOD_TYPE_ASYNC = "async";
+  static final public String METHOD_TYPE_PROMISE= "promise";
+  static final public String METHOD_TYPE_SYNC = "sync";
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -167,7 +163,7 @@ public abstract class BaseJavaModule implements NativeModule {
     private final ArgumentExtractor[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
-    private String mType = METHOD_TYPE_REMOTE;
+    private String mType = METHOD_TYPE_ASYNC;
     private final int mJSArgumentsNeeded;
     private final String mTraceName;
 
@@ -206,7 +202,7 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (paramClass == Promise.class) {
           Assertions.assertCondition(
             i == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         }
         builder.append(paramTypeToChar(paramClass));
       }
@@ -257,7 +253,7 @@ public abstract class BaseJavaModule implements NativeModule {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
           Assertions.assertCondition(
               paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         } else if (argumentClass == ReadableMap.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
         } else if (argumentClass == ReadableArray.class) {
@@ -342,8 +338,8 @@ public abstract class BaseJavaModule implements NativeModule {
 
     /**
      * Determines how the method is exported in JavaScript:
-     * METHOD_TYPE_REMOTE for regular methods
-     * METHOD_TYPE_REMOTE_ASYNC for methods that return a promise object to the caller.
+     * METHOD_TYPE_ASYNC for regular methods
+     * METHOD_TYPE_PROMISE for methods that return a promise object to the caller.
      */
     @Override
     public String getType() {
@@ -451,32 +447,6 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
-  public final void writeConstantsField(JsonWriter writer, String fieldName) throws IOException {
-    Map<String, Object> constants = getConstants();
-    if (constants == null || constants.isEmpty()) {
-      return;
-    }
-
-    writer.name(fieldName).beginObject();
-    for (Map.Entry<String, Object> constant : constants.entrySet()) {
-      writer.name(constant.getKey());
-      JsonWriterHelper.value(writer, constant.getValue());
-    }
-    writer.endObject();
-  }
-
-  @Override
-  public String getName() {
-    ReactModule module = getClass().getAnnotation(ReactModule.class);
-    if (module == null) {
-      throw new IllegalStateException(
-        getClass().getSimpleName() +
-          "module must have @ReactModule annotation or override getName()");
-    }
-    return module.name();
-  }
-
-  @Override
   public void initialize() {
     // do nothing
   }
@@ -488,22 +458,13 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
-  public void onReactBridgeInitialized(ReactBridge bridge) {
-    // do nothing
-  }
-
-  @Override
   public void onCatalystInstanceDestroy() {
     // do nothing
   }
 
   @Override
   public boolean supportsWebWorkers() {
-    ReactModule module = getClass().getAnnotation(ReactModule.class);
-    if (module == null) {
-      return false;
-    }
-    return module.supportsWebWorkers();
+    return false;
   }
 
   private static char paramTypeToChar(Class paramClass) {
