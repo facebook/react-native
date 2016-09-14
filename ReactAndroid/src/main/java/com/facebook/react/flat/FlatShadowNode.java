@@ -151,9 +151,10 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
     invalidate();
   }
 
-  @ReactProp(name = "overflow")
-  public final void setOverflow(String overflow) {
-    mClipToBounds = "hidden".equals(overflow);
+  @Override
+  public void setOverflow(String overflow) {
+    super.setOverflow(overflow);
+    mClipToBounds = !"visible".equals(overflow);
     if (mClipToBounds) {
       mOverflowsContainer = false;
       if (mClipRadius > DrawView.MINIMUM_ROUNDED_CLIPPING_VALUE) {
