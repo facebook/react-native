@@ -28,7 +28,6 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
  * ToastAndroid.showWithGravity('All Your Base Are Belong To Us', ToastAndroid.SHORT, ToastAndroid.CENTER);
  * ```
- *
  */
 
 var ToastAndroid = {
