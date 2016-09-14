@@ -333,19 +333,6 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   return json;
 }
 
-function debugDeepEqual(object1, object2) {
-  let lines1 = JSON.stringify(object1, null, 2).split('\n');
-  let lines2 = JSON.stringify(object2, null, 2).split('\n');
-  for (let i = 0; i < lines1.length; i++) {
-    if (lines1[i] == lines2[i]) {
-      console.log('OK', i, lines1[i]);
-    } else {
-      console.log('XXXXXX OLD', i, lines1[i]);
-      console.log('XXXXXX NEW', i, lines2[i]);
-    }
-  }
-}
-
 function parseAPIInferred(filepath, fileContent) {
   let json;
   try {
