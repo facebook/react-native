@@ -21,7 +21,15 @@ function setStatus(status) {
   document.getElementById('status').innerHTML = status;
 }
 
-var INITIAL_MESSAGE = 'Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.';
+var isMacLike = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+var refresh_shortcut = isMacLike ? '⌘R' : 'Ctrl R';
+window.onload = function() {
+  if (!isMacLike) {
+    document.getElementById('dev_tools_shortcut').innerHTML = 'Ctrl⇧J';
+  }
+}
+
+var INITIAL_MESSAGE = 'Waiting, press <span class="shortcut">' + refresh_shortcut + '</span> in simulator to reload and connect.';
 
 function connectToDebuggerProxy() {
   var worker;
@@ -37,7 +45,7 @@ function connectToDebuggerProxy() {
     };
     window.onbeforeunload = function() {
       return 'If you reload this page, it is going to break the debugging session. ' +
-        'You should press ⌘R in simulator to reload.';
+        'You should press' + refresh_shortcut + 'in simulator to reload.';
     };
   }
 
@@ -61,7 +69,7 @@ function connectToDebuggerProxy() {
 
     if (object.$event === 'client-disconnected') {
       shutdownJSRuntime();
-      setStatus('Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.');
+      setStatus('Waiting, press <span class="shortcut">' + refresh_shortcut + '</span> in simulator to reload and connect.');
       return;
     }
 
@@ -127,7 +135,7 @@ connectToDebuggerProxy();
     <p>
       React Native JS code runs inside this Chrome tab.
     </p>
-    <p>Press <kbd class="shortcut">⌘⌥J</kbd> to open Developer Tools. Enable <a href="http://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
+    <p>Press <kbd id='dev_tools_shortcut' class="shortcut">⌘⌥J</kbd> to open Developer Tools. Enable <a href="https://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
     <p>Status: <span id="status">Loading...</span></p>
   </div>
 </body>
