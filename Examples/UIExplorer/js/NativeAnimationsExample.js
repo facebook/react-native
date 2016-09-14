@@ -50,7 +50,6 @@ class Tester extends React.Component {
       toValue: this.current,
     };
 
-    // $FlowIssue #0000000
     Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
