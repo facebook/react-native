@@ -547,12 +547,10 @@ const styles = StyleSheet.create({
   baseVertical: {
     flex: 1,
     flexDirection: 'column',
-    overflow: 'scroll',
   },
   baseHorizontal: {
     flex: 1,
     flexDirection: 'row',
-    overflow: 'scroll',
   },
   contentContainerHorizontal: {
     flexDirection: 'row',
