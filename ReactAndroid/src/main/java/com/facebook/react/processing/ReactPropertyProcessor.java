@@ -245,6 +245,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     MethodSpec getMethods = MethodSpec.methodBuilder("getProperties")
         .addModifiers(PUBLIC)
         .addAnnotation(Override.class)
+        .addParameter(PROPERTY_MAP_TYPE, "props")
         .returns(PROPERTY_MAP_TYPE)
         .addCode(generateGetProperties(properties))
         .build();
@@ -399,16 +400,11 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       throws ReactPropertyException {
     if (properties.isEmpty()) {
       return CodeBlock.builder()
-          .addStatement("return $T.emptyMap()", Collections.class)
+          .addStatement("return props")
           .build();
     }
 
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement(
-            "$T props = new $T($L)",
-            PROPERTY_MAP_TYPE,
-            CONCRETE_PROPERTY_MAP_TYPE,
-            properties.size());
+    CodeBlock.Builder builder = CodeBlock.builder();
 
     for (PropertyInfo propertyInfo : properties) {
       try {
