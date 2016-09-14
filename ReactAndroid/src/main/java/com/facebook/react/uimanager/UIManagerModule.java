@@ -23,6 +23,7 @@ import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -33,7 +34,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
-/**
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+
+  /**
  * <p>Native module to allow JS to create and update native Views.</p>
  *
  * <p>
@@ -131,11 +135,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
 
@@ -186,7 +192,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
             new Runnable() {
               @Override
               public void run() {
-                updateRootNodeSize(tag, width, height);
+                updateNodeSize(tag, width, height);
               }
             });
         }
@@ -200,10 +206,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeRootView(rootViewTag);
   }
 
-  private void updateRootNodeSize(int rootViewTag, int newWidth, int newHeight) {
+  public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
-    mUIImplementation.updateRootNodeSize(rootViewTag, newWidth, newHeight, mEventDispatcher);
+    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight, mEventDispatcher);
   }
 
   @ReactMethod

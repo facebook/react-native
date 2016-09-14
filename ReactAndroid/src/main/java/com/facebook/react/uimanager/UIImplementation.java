@@ -130,16 +130,17 @@ public class UIImplementation {
   }
 
   /**
-   * Invoked when native view that corresponds to a root node has its size changed.
+   * Invoked when native view that corresponds to a root node, or acts as a root view (ie. Modals)
+   * has its size changed.
    */
-  public void updateRootNodeSize(
-      int rootViewTag,
+  public void updateNodeSize(
+      int nodeViewTag,
       int newWidth,
       int newHeight,
       EventDispatcher eventDispatcher) {
-    ReactShadowNode rootCSSNode = mShadowNodeRegistry.getNode(rootViewTag);
-    rootCSSNode.setStyleWidth(newWidth);
-    rootCSSNode.setStyleHeight(newHeight);
+    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    cssNode.setStyleWidth(newWidth);
+    cssNode.setStyleHeight(newHeight);
 
     // If we're in the middle of a batch, the change will automatically be dispatched at the end of
     // the batch. As all batches are executed as a single runnable on the event queue this should

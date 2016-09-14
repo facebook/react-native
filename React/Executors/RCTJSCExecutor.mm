@@ -329,7 +329,7 @@ static NSThread *newJavaScriptThread(void)
     *JSContext = data.context;
   }
   RCTJSCExecutor *executor = [[RCTJSCExecutor alloc] initWithJSContextData:data];
-  if (![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
+  if (applicationScript && ![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
     return nil; // error has been set by _synchronouslyExecuteApplicationScript:
   }
   return executor;
@@ -423,15 +423,14 @@ static NSThread *newJavaScriptThread(void)
 
     __weak RCTJSCExecutor *weakSelf = self;
 
-    context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
+    context[@"nativeRequireModuleConfig"] = ^NSArray *(NSString *moduleName) {
       RCTJSCExecutor *strongSelf = weakSelf;
       if (!strongSelf.valid) {
         return nil;
       }
 
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", @{ @"moduleName": moduleName });
-      NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
-      NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
+      NSArray *result = [strongSelf->_bridge configForModuleName:moduleName];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
       return result;
     };
@@ -771,11 +770,6 @@ static NSData *loadPossiblyBundledApplicationScript(NSData *script, NSURL *sourc
     script = loadRAMBundle(sourceURL, error, randomAccessBundle);
     [performanceLogger markStopForTag:RCTPLRAMBundleLoad];
     [performanceLogger setValue:script.length forTag:RCTPLRAMStartupCodeSize];
-
-    // Reset the counters that the native require implementation uses
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequires];
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresCount];
-    [performanceLogger setValue:0 forTag:RCTPLRAMNativeRequiresSize];
   } else {
     // JSStringCreateWithUTF8CString expects a null terminated C string.
     // RAM Bundling already provides a null terminated one.
@@ -937,7 +931,6 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
       return;
     }
 
-    [_performanceLogger addValue:size forTag:RCTPLRAMNativeRequiresSize];
     executeRandomAccessModule(self, ID, NSSwapLittleIntToHost(moduleData->offset), size);
   }
 

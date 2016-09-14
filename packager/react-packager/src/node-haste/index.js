@@ -134,7 +134,7 @@ class DependencyGraph {
       depGraphHelpers: this._helpers,
       assetDependencies: this._assetDependencies,
       moduleOptions: this._opts.moduleOptions,
-    }, this._opts.platfomrs);
+    }, this._opts.platforms);
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,

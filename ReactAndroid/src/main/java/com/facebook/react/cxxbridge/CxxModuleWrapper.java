@@ -2,20 +2,15 @@
 
 package com.facebook.react.cxxbridge;
 
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ExecutorToken;
-import com.facebook.react.bridge.JsonWriter;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactBridge;
-import com.facebook.react.bridge.ReadableNativeArray;
+import java.util.Map;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.ExecutorToken;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.soloader.SoLoader;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * A Java Object which represents a cross-platform C++ module
@@ -44,8 +39,10 @@ public class CxxModuleWrapper implements NativeModule
     public native HybridData initHybrid();
 
     @Override
-    public native void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken,
-                              ReadableNativeArray args);
+    public native void invoke(
+        CatalystInstance catalystInstance,
+        ExecutorToken executorToken,
+        ReadableNativeArray args);
 
     @Override
     public native String getType();
@@ -63,16 +60,6 @@ public class CxxModuleWrapper implements NativeModule
   @Override
   public native Map<String, NativeMethod> getMethods();
 
-  @Override
-  public void writeConstantsField(JsonWriter writer, String fieldName) throws IOException {
-    String constants = getConstantsJson();
-    if (constants == null || constants.isEmpty()) {
-      return;
-    }
-
-    writer.name(fieldName).rawValue(constants);
-  }
-
   public native String getConstantsJson();
 
   @Override
@@ -88,11 +75,6 @@ public class CxxModuleWrapper implements NativeModule
   @Override
   public boolean supportsWebWorkers() {
     return false;
-  }
-
-  @Override
-  public void onReactBridgeInitialized(ReactBridge bridge) {
-    // do nothing
   }
 
   @Override

@@ -69,12 +69,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                       moduleProvider:bridge.moduleProvider
                        launchOptions:bridge.launchOptions]) {
     _parentBridge = bridge;
+    _performanceLogger = [bridge performanceLogger];
 
     RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
-
-    _performanceLogger = [RCTPerformanceLogger new];
-    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-    [_performanceLogger markStartForTag:RCTPLTTI];
 
     /**
      * Set Initial State
@@ -436,7 +433,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   }
 
   // Set up modules that require main thread init or constants export
-  [_performanceLogger setValue:0 forTag:RCTPLNativeModuleMainThread];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if (whitelistedModules && ![whitelistedModules containsObject:[moduleData moduleClass]]) {
       continue;
@@ -543,6 +539,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     // Register the display link to start sending js calls after everything is setup
     NSRunLoop *targetRunLoop = [self->_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
     [self->_displayLink addToRunLoop:targetRunLoop];
+
+    // Log metrics about native requires during the bridge startup.
+    uint64_t nativeRequiresCount = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequiresCount];
+    [self->_performanceLogger setValue:nativeRequiresCount forTag:RCTPLRAMStartupNativeRequiresCount];
+    uint64_t nativeRequires = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequires];
+    [self->_performanceLogger setValue:nativeRequires forTag:RCTPLRAMStartupNativeRequires];
 
     [self->_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
