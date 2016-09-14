@@ -715,17 +715,19 @@ public class LayoutEngine {
             childHeightMeasureMode = CSSMeasureMode.EXACTLY;
           }
 
-          // The W3C spec doesn't say anything about the 'overflow' property,
-          // but all major browsers appear to implement the following logic.
-          if ((!isMainAxisRow && node.style.overflow == CSSOverflow.SCROLL) || node.style.overflow != CSSOverflow.SCROLL) {
-            if (Float.isNaN(childWidth) && !Float.isNaN(availableInnerWidth)) {
-              childWidth = availableInnerWidth;
-              childWidthMeasureMode = CSSMeasureMode.AT_MOST;
-            }
+          // According to the spec, if the main size is not definite and the
+          // child's inline axis is parallel to the main axis (i.e. it's
+          // horizontal), the child should be sized using "UNDEFINED" in
+          // the main size. Otherwise use "AT_MOST" in the cross axis.
+          if (!isMainAxisRow && Float.isNaN(childWidth) && !Float.isNaN(availableInnerWidth)) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureMode.AT_MOST;
           }
 
-          if ((isMainAxisRow && node.style.overflow == CSSOverflow.SCROLL) || node.style.overflow != CSSOverflow.SCROLL) {
-            if (Float.isNaN(childHeight) && !Float.isNaN(availableInnerHeight)) {
+          // The W3C spec doesn't say anything about the 'overflow' property,
+          // but all major browsers appear to implement the following logic.
+          if (node.style.overflow == CSSOverflow.HIDDEN) {
+            if (isMainAxisRow && Float.isNaN(childHeight) && !Float.isNaN(availableInnerHeight)) {
               childHeight = availableInnerHeight;
               childHeightMeasureMode = CSSMeasureMode.AT_MOST;
             }
