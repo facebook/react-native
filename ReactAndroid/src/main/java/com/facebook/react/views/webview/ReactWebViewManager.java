@@ -265,7 +265,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public void linkBridge() {
       if (messagingEnabled) {
         loadUrl("javascript:(window.postMessage = function(message) {" +
-          BRIDGE_NAME + ".postMessage(JSON.stringify(message));" +
+          BRIDGE_NAME + ".postMessage(String(message));" +
         "})");
       }
     }
@@ -456,7 +456,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_POST_MESSAGE:
         root.evaluateJavascript("if (typeof window.onmessage === 'function') {" +
-          "window.onmessage(" + args.getString(0) + ")" +
+          "window.onmessage('" + args.getString(0) + "')" +
         "}", null);
         break;
     }

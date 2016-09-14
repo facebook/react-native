@@ -236,15 +236,13 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
-     * A function that is invoked when the webview calls `window.postMessage`. Setting
-     * this property will inject a `postMessage` global into your webview.
+     * A function that is invoked when the webview calls `window.postMessage`.
+     * Setting this property will inject a `postMessage` global into your
+     * webview, overriding any previous values.
      *
-     * The argument passed to postMessage is available on `event.nativeEvent.message`.
-     *
-     * Note that if you pass an object to postMessage, an object is received in the
-     * event handler. However, this object has been passed through JSON.stringify, so
-     * undefined values are missing from objects, and NaN and Infinity values are
-     * converted to null.
+     * `window.postMessage` accepts one argument, `message`, which will be
+     * available on the event object, `event.nativeEvent.message`. `message`
+     * must be a string.
      */
     onMessage: PropTypes.func,
     /**
@@ -474,9 +472,8 @@ class WebView extends React.Component {
   };
 
   /**
-   * Posts a message to the web view, which will invoke the global `onmessage` function.
-   *
-   * See note on object conversion in onMessage.
+   * Posts a message to the web view, which will invoke the global `onmessage`
+   * function. Accepts one argument, `message`, which must be a string.
    *
    * In your webview, you'll need to something like the following.
    *
@@ -488,7 +485,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [message]
+      [String(message)]
     );
   };
 
@@ -550,6 +547,7 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingError: true,
     onLoadingFinish: true,
     onMessage: true,
+    messagingEnabled: PropTypes.bool,
   },
 });
 

@@ -230,7 +230,7 @@ class MessagingTest extends React.Component {
 
   postMessage = () => {
     if (this.webview) {
-      this.webview.postMessage({ message: 'Hello from React Native!' });
+      this.webview.postMessage('Hello from React Native!');
     }
   }
 

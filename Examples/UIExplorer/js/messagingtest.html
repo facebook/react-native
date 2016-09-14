@@ -19,7 +19,7 @@
         'Messages recieved from React Native: ' + messagesReceivedFromReactNative;
     };
     document.getElementsByTagName('button')[0].addEventListener('click', function() {
-      window.postMessage({ message: 'Hello from the web view' });
+      window.postMessage('Hello from the web view');
     });
   </script>
 </html>

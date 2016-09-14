@@ -275,7 +275,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [JSON.stringify(message)]
+      [String(message)]
     );
   };
 
@@ -324,7 +324,6 @@ class WebView extends React.Component {
 
   onMessage = (event: Event) => {
     var {onMessage} = this.props;
-    event.nativeEvent.message = JSON.parse(event.nativeEvent.message);
     onMessage && onMessage(event);
   }
 }

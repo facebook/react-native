@@ -84,12 +84,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView stopLoading];
 }
 
-- (void)postMessage:(id)json
+- (void)postMessage:(NSString *)message
 {
-  NSString *serialized = RCTJSONStringify(json, NULL);
   NSString *source = [NSString
-    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage(%@);",
-    serialized
+    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage('%@');",
+    message
   ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
 }
@@ -234,11 +233,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   if (isJSNavigation && [request.URL.host isEqualToString:RCTJSPostMessageHost]) {
-    NSString *query = request.URL.query;
-    query = [query stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-    query = [query stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *message = request.URL.query;
+    message = [message stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    message = [message stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    id message = RCTJSONParse(query, NULL);
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
       @"message": message,
@@ -276,7 +274,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (_messagingEnabled) {
     NSString *source = [NSString stringWithFormat:
       @"window.postMessage = function(message) {"
-      "  window.location = '%@://%@?' + encodeURIComponent(JSON.stringify(message));"
+      "  window.location = '%@://%@?' + encodeURIComponent(String(message));"
       "};", RCTJSNavigationScheme, RCTJSPostMessageHost];
     [webView stringByEvaluatingJavaScriptFromString:source];
   }
