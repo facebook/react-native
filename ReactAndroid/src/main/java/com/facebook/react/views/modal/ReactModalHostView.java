@@ -265,6 +265,21 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
 
     @Override
+    protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
+      super.onSizeChanged(w, h, oldw, oldh);
+      if (getChildCount() > 0) {
+        ((ReactContext) getContext()).runOnNativeModulesQueueThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
+                .updateNodeSize(getChildAt(0).getId(), w, h);
+            }
+          });
+      }
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
       mJSTouchDispatcher.handleTouchEvent(event, getEventDispatcher());
       return super.onInterceptTouchEvent(event);
