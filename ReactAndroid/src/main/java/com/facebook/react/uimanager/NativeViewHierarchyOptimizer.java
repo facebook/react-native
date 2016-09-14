@@ -96,8 +96,7 @@ public class NativeViewHierarchyOptimizer {
 
     boolean isLayoutOnly = node.getViewClass().equals(ViewProps.VIEW_CLASS_NAME) &&
         isLayoutOnlyAndCollapsable(initialProps) &&
-        node.getParent() != null &&
-        node.getParent().shouldCollapseChildren();
+        (node.getParent() == null || node.getParent().shouldCollapseChildren());
     node.setIsLayoutOnly(isLayoutOnly);
 
     if (!isLayoutOnly) {
