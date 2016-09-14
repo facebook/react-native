@@ -451,6 +451,8 @@ print_css_node_rec(const CSSNodeRef node, const CSSPrintOptions options, const u
       printf("overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
       printf("overflow: 'visible', ");
+    } else if (node->style.overflow == CSSOverflowScroll) {
+      printf("overflow: 'scroll', ");
     }
 
     if (four_equal(node->style.margin)) {
@@ -555,8 +557,7 @@ static bool isColumnDirection(const CSSFlexDirection flexDirection) {
 }
 
 static float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.margin[CSSEdgeStart])) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSEdgeStart])) {
     return node->style.margin[CSSEdgeStart];
   }
 
@@ -564,8 +565,7 @@ static float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis
 }
 
 static float getTrailingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.margin[CSSEdgeEnd])) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSEdgeEnd])) {
     return node->style.margin[CSSEdgeEnd];
   }
 
@@ -573,8 +573,7 @@ static float getTrailingMargin(const CSSNodeRef node, const CSSFlexDirection axi
 }
 
 static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.padding[CSSEdgeStart]) &&
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSEdgeStart]) &&
       node->style.padding[CSSEdgeStart] >= 0) {
     return node->style.padding[CSSEdgeStart];
   }
@@ -587,8 +586,7 @@ static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axi
 }
 
 static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.padding[CSSEdgeEnd]) &&
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSEdgeEnd]) &&
       node->style.padding[CSSEdgeEnd] >= 0) {
     return node->style.padding[CSSEdgeEnd];
   }
@@ -601,8 +599,7 @@ static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection ax
 }
 
 static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.border[CSSEdgeStart]) &&
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSEdgeStart]) &&
       node->style.border[CSSEdgeStart] >= 0) {
     return node->style.border[CSSEdgeStart];
   }
@@ -615,8 +612,7 @@ static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis
 }
 
 static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isRowDirection(axis) &&
-      !CSSValueIsUndefined(node->style.border[CSSEdgeEnd]) &&
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSEdgeEnd]) &&
       node->style.border[CSSEdgeEnd] >= 0) {
     return node->style.border[CSSEdgeEnd];
   }
@@ -1140,21 +1136,17 @@ static void layoutNodeImpl(const CSSNodeRef node,
           childHeightMeasureMode = CSSMeasureModeExactly;
         }
 
-        // According to the spec, if the main size is not definite and the
-        // child's inline axis is parallel to the main axis (i.e. it's
-        // horizontal), the child should be sized using "UNDEFINED" in
-        // the main size. Otherwise use "AT_MOST" in the cross axis.
-        if (!isMainAxisRow && CSSValueIsUndefined(childWidth) &&
-            !CSSValueIsUndefined(availableInnerWidth)) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
         // The W3C spec doesn't say anything about the 'overflow' property,
         // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) &&
-              !CSSValueIsUndefined(availableInnerHeight)) {
+        if ((!isMainAxisRow && node->style.overflow == CSSOverflowScroll) || node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(availableInnerWidth)) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureModeAtMost;
+          }
+        }
+
+        if ((isMainAxisRow && node->style.overflow == CSSOverflowScroll) || node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(availableInnerHeight)) {
             childHeight = availableInnerHeight;
             childHeightMeasureMode = CSSMeasureModeAtMost;
           }
