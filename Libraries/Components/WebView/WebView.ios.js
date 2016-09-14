@@ -275,6 +275,12 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android only, controls whether or not to enforce CORS on file:/// urls
+     * @platform android
+     */
+    allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
      * Android.
      * @platform android
