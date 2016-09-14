@@ -28,8 +28,8 @@ import android.widget.ScrollView;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.facebook.react.views.view.ReactClippingViewGroup;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
 
 /**

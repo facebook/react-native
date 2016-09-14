@@ -16,8 +16,8 @@ import java.util.Map;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
