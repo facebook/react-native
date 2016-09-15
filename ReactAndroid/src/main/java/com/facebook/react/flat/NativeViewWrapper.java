@@ -16,6 +16,7 @@ import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 
@@ -68,6 +69,14 @@ import com.facebook.react.uimanager.ViewManager;
   }
 
   @Override
+  public void setReactTag(int reactTag) {
+    super.setReactTag(reactTag);
+    if (mReactShadowNode != null) {
+      mReactShadowNode.setReactTag(reactTag);
+    }
+  }
+
+  @Override
   public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
 
@@ -96,6 +105,14 @@ import com.facebook.react.uimanager.ViewManager;
     if (getPadding().set(spacingType, padding)) {
       mPaddingChanged = true;
       dirty();
+    }
+  }
+
+  @Override
+  public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
+    if (mReactShadowNode != null && mReactShadowNode.hasUnseenUpdates()) {
+      mReactShadowNode.onCollectExtraUpdates(uiViewOperationQueue);
+      markUpdateSeen();
     }
   }
 }
