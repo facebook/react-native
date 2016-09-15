@@ -10,9 +10,9 @@
 /*jslint node: true */
 'use strict';
 
-var esprima = require('esprima-fb');
+var flowParser = require('flow-parser');
 var fs = require('fs');
-var Syntax = esprima.Syntax;
+var Syntax = require('./syntax');
 
 var findExportDefinition = require('./findExportDefinition');
 var genericTransform = require('./generic-function-visitor');
@@ -76,7 +76,7 @@ function stripStaticUpstreamWarning(docblock) {
   if (!docblock) {
     return docblock;
   }
-  // Esprima strips out the starting and ending tokens, so add them back
+  // The parser strips out the starting and ending tokens, so add them back
   docblock = '/*' + docblock + '*/\n';
   return docblock;
 }
@@ -196,8 +196,8 @@ function getModuleName(commentsForFile) {
 }
 
 /**
- * Esprima includes the leading colon (and possibly spaces) as part of the
- * typehint, so we have to strip those out.
+ * The parser includes the leading colon (and possibly spaces) as part of
+ * the typehint, so we have to strip those out.
  */
 function sanitizeTypehint(string) {
   for (var i = 0; i < string.length; i++) {
@@ -229,7 +229,7 @@ function getFunctionData(
   var typechecks = commentsForFile.typechecks;
   var typehintsFromBlock = null;
   if (typechecks) {
-    // esprima has trouble with some params so ignore them (e.g. $__0)
+    // The parser has trouble with some params so ignore them (e.g. $__0)
     if (!node.params.some(function(param) { return !param.name; })) {
       try {
         typehintsFromBlock = genericTransform.getTypeHintsFromDocBlock(
@@ -497,7 +497,7 @@ function getRequireData(node) {
  */
 function parseSource(source) {
   var lines = source.split('\n');
-  var ast = esprima.parse(source, {
+  var ast = flowParser.parse(source, {
     loc: true,
     comment: true,
     range: true,

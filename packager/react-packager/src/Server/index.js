@@ -219,8 +219,9 @@ class Server {
       : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
-      projectRoots: opts.projectRoots,
       assetExts: opts.assetExts,
+      fileWatcher: this._fileWatcher,
+      projectRoots: opts.projectRoots,
     });
 
     const bundlerOpts = Object.create(opts);

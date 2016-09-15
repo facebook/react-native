@@ -10,7 +10,7 @@
 /*global exports:true*/
 'use strict';
 
-var Syntax = require('esprima-fb').Syntax;
+var Syntax = require('./syntax');
 
 function toObject(/*array*/ array) /*object*/ {
   var object = {};

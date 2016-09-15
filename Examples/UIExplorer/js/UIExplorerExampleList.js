@@ -120,6 +120,7 @@ class UIExplorerExampleList extends React.Component {
             this.props.persister.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
+          underlineColorAndroid="transparent"
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
           value={this.props.persister.state.filter}
@@ -215,6 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     paddingLeft: 8,
+    paddingVertical: 0,
     height: 35,
   },
 });
