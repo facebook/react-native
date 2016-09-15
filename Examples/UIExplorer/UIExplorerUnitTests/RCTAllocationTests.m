@@ -235,6 +235,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   // Wait to complete the test until the new batchedbridge is also deallocated
   @autoreleasepool {
     batchedBridge = bridge.batchedBridge;
+    [bridge invalidate];
     bridge = nil;
   }
 
