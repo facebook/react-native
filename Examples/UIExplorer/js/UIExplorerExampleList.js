@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
+    backgroundColor: '#eeeeee',
   },
   row: {
     backgroundColor: 'white',
