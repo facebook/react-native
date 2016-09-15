@@ -28,7 +28,6 @@ public class ViewProps {
   public static final String ALIGN_SELF = "alignSelf";
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
-  public static final String COLLAPSE_CHILDREN = "collapseChildren";
   public static final String FLEX = "flex";
   public static final String FLEX_GROW = "flexGrow";
   public static final String FLEX_SHRINK = "flexShrink";
