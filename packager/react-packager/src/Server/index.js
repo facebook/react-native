@@ -150,6 +150,10 @@ const bundleOpts = declareOpts({
   resolutionResponse: {
     type: 'object',
   },
+  generateSourceMaps: {
+    type: 'boolean',
+    required: false,
+  }
 });
 
 const dependencyOpts = declareOpts({
@@ -814,7 +818,7 @@ class Server {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
-      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
+      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify', false),
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
@@ -828,11 +832,12 @@ class Server {
         'entryModuleOnly',
         false,
       ),
+      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
     };
   }
 
   _getBoolOptionFromQuery(query, opt, defaultVal) {
-    if (query[opt] == null && defaultVal != null) {
+    if (query[opt] == null) {
       return defaultVal;
     }
 

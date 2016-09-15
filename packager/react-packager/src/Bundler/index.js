@@ -257,6 +257,7 @@ class Bundler {
     entryModuleOnly,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -301,6 +302,7 @@ class Bundler {
       onResolutionResponse,
       finalizeBundle,
       isolateModuleIDs,
+      generateSourceMaps,
     });
   }
 
@@ -352,6 +354,7 @@ class Bundler {
     unbundle,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
@@ -385,7 +388,7 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle,
+        generateSourceMaps: unbundle || generateSourceMaps,
       });
     }
 
