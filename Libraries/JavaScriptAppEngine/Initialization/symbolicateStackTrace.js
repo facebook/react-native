@@ -22,8 +22,8 @@ async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<St
   if (!devServer.bundleLoadedFromServer) {
     throw new Error('Bundle was not loaded from the packager');
   }
-  if (SourceCode.scriptURL){
-    for(let i = 0; i < stack.length; ++i) {
+  if (SourceCode.scriptURL) {
+    for (let i = 0; i < stack.length; ++i) {
       // If the sources exist on disk rather than appearing to come from the packager,
       // replace the location with the packager URL until we reach an internal source
       // which does not have a path (no slashes), indicating a switch from within
