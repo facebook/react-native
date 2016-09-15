@@ -20,9 +20,7 @@ import android.view.View;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
@@ -31,7 +29,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 
@@ -50,7 +47,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private static Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
-  private static boolean sHasWarnedAboutStickyHeaders = false;
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final OverScroller mScroller;
@@ -67,7 +63,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private @Nullable int[] mStickyHeaderIndices;
-  private ViewGroupManager mViewManager;
+  private ReactViewManager mViewManager;
 
   private final ReactViewGroup.ChildDrawingOrderDelegate mContentDrawingOrderDelegate =
     new ReactViewGroup.ChildDrawingOrderDelegate() {
@@ -85,7 +81,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     super(context);
 
     UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-    mViewManager = (ViewGroupManager) uiManager.getUIImplementation().getViewManager(ReactViewManager.REACT_CLASS);
+    mViewManager = (ReactViewManager) uiManager.getUIImplementation().getViewManager(ReactViewManager.REACT_CLASS);
 
     mFpsListener = fpsListener;
 
@@ -354,19 +350,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     View previousHeader = null;
     View currentHeader = null;
     View nextHeader = null;
-    View firstChild = getChildAt(0);
-
-    if (!(firstChild instanceof ReactViewGroup)) {
-      if (!sHasWarnedAboutStickyHeaders) {
-        FLog.w(
-          ReactConstants.TAG,
-          "'stickyHeaderIndices' isn't a supported prop type for this UIImplementation (nodes). " +
-            "It'd be awesome if you could help us support it by sending a diff or PR :)");
-        sHasWarnedAboutStickyHeaders = true;
-      }
-      return;
-    }
-
     ReactViewGroup contentView = (ReactViewGroup) getChildAt(0);
     if (contentView == null) {
       return;
