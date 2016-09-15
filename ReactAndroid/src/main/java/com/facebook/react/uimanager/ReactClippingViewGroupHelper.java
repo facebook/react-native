@@ -7,15 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.view;
+package com.facebook.react.uimanager;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
-
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Provides implementation of common tasks for view and it's view manager supporting property

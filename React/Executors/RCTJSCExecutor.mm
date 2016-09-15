@@ -329,7 +329,7 @@ static NSThread *newJavaScriptThread(void)
     *JSContext = data.context;
   }
   RCTJSCExecutor *executor = [[RCTJSCExecutor alloc] initWithJSContextData:data];
-  if (![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
+  if (applicationScript && ![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
     return nil; // error has been set by _synchronouslyExecuteApplicationScript:
   }
   return executor;

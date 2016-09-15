@@ -13,7 +13,9 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.animation.Animation;
@@ -26,22 +28,25 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
-import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.*;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView, DrawingOrderViewGroup {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
-  private static final Rect sHelperRect = new Rect();
+  private static final RectF sHelperRect = new RectF();
+
+  public interface ChildDrawingOrderDelegate {
+    int getChildDrawingOrder(ReactViewGroup view, int i);
+  }
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -94,6 +99,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private @Nullable ChildDrawingOrderDelegate mChildDrawingOrderDelegate;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -225,7 +231,8 @@ public class ReactViewGroup extends ViewGroup implements
     mRemoveClippedSubviews = removeClippedSubviews;
     if (removeClippedSubviews) {
       mClippingRect = new Rect();
-      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      com.facebook.react.uimanager.ReactClippingViewGroupHelper
+        .calculateClippingRect(this, mClippingRect);
       mAllChildrenCount = getChildCount();
       int initialSize = Math.max(12, mAllChildrenCount);
       mAllChildren = new View[initialSize];
@@ -290,8 +297,15 @@ public class ReactViewGroup extends ViewGroup implements
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
-    boolean intersects = clippingRect
-        .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
+    Matrix matrix = child.getMatrix();
+    if (!matrix.isIdentity()) {
+      matrix.mapRect(sHelperRect);
+    }
+    boolean intersects = clippingRect.intersects(
+      (int) sHelperRect.left,
+      (int) sHelperRect.top,
+      (int) Math.ceil(sHelperRect.right),
+      (int) Math.ceil(sHelperRect.bottom));
     boolean needUpdateClippingRecursive = false;
     // We never want to clip children that are being animated, as this can easily break layout :
     // when layout animation changes size and/or position of views contained inside a listview that
@@ -315,10 +329,11 @@ public class ReactViewGroup extends ViewGroup implements
       needUpdateClippingRecursive = true;
     }
     if (needUpdateClippingRecursive) {
-      if (child instanceof ReactClippingViewGroup) {
+      if (child instanceof com.facebook.react.uimanager.ReactClippingViewGroup) {
         // we don't use {@link sHelperRect} until the end of this loop, therefore it's safe
         // to call this method that may write to the same {@link sHelperRect} object.
-        ReactClippingViewGroup clippingChild = (ReactClippingViewGroup) child;
+        com.facebook.react.uimanager.ReactClippingViewGroup
+          clippingChild = (com.facebook.react.uimanager.ReactClippingViewGroup) child;
         if (clippingChild.getRemoveClippedSubviews()) {
           clippingChild.updateClippingRect();
         }
@@ -336,8 +351,15 @@ public class ReactViewGroup extends ViewGroup implements
 
     // do fast check whether intersect state changed
     sHelperRect.set(subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
-    boolean intersects = mClippingRect
-        .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
+    Matrix matrix = subview.getMatrix();
+    if (!matrix.isIdentity()) {
+      matrix.mapRect(sHelperRect);
+    }
+    boolean intersects = mClippingRect.intersects(
+      (int) sHelperRect.left,
+      (int) sHelperRect.top,
+      (int) Math.ceil(sHelperRect.right),
+      (int) Math.ceil(sHelperRect.bottom));
 
     // If it was intersecting before, should be attached to the parent
     boolean oldIntersects = (subview.getParent() != null);
@@ -530,4 +552,27 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
+  @Override
+  public int getDrawingOrder(int i) {
+    return getChildDrawingOrder(getChildCount(), i);
+  }
+
+  @Override
+  public boolean isDrawingOrderEnabled() {
+    return isChildrenDrawingOrderEnabled();
+  }
+
+  @Override
+  protected int getChildDrawingOrder(int childCount, int i) {
+    if (mChildDrawingOrderDelegate == null) {
+      return super.getChildDrawingOrder(childCount, i);
+    } else {
+      return mChildDrawingOrderDelegate.getChildDrawingOrder(this, i);
+    }
+  }
+
+  public void setChildDrawingOrderDelegate(@Nullable ChildDrawingOrderDelegate delegate) {
+    setChildrenDrawingOrderEnabled(delegate != null);
+    mChildDrawingOrderDelegate = delegate;
+  }
 }

@@ -132,6 +132,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final JSCConfig mJSCConfig;
+  private final boolean mLazyNativeModulesEnabled;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -289,7 +290,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     UIImplementationProvider uiImplementationProvider,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     JSCConfig jscConfig,
-    @Nullable RedBoxHandler redBoxHandler) {
+    @Nullable RedBoxHandler redBoxHandler,
+    boolean lazyNativeModulesEnabled) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -316,6 +318,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mJSCConfig = jscConfig;
+    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
   @Override

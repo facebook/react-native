@@ -124,8 +124,12 @@ public class TouchTargetHelper {
    */
   private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
     int childrenCount = viewGroup.getChildCount();
+    final boolean useCustomOrder = (viewGroup instanceof DrawingOrderViewGroup) &&
+      ((DrawingOrderViewGroup) viewGroup).isDrawingOrderEnabled();
     for (int i = childrenCount - 1; i >= 0; i--) {
-      View child = viewGroup.getChildAt(i);
+      int childIndex = useCustomOrder ?
+        ((DrawingOrderViewGroup) viewGroup).getDrawingOrder(i) : i;
+      View child = viewGroup.getChildAt(childIndex);
       PointF childPoint = mTempPoint;
       if (isTransformedTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
         // If it is contained within the child View, the childPoint value will contain the view
