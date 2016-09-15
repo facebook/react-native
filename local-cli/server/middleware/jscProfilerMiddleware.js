@@ -33,7 +33,7 @@ class TreeTransformator {
         column: tree.columnNumber,
       });
       tree.functionName = original.name
-        || (path.posix.basename(original.source) + ':' + original.line);
+        || (path.posix.basename(original.source || '') + ':' + original.line);
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
