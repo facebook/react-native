@@ -13,7 +13,7 @@
 
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
-var dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('dismissKeyboard');
 
 let keyboard = new NativeEventEmitter(KeyboardObserver);
 // Add dismissKeyboard helper function
