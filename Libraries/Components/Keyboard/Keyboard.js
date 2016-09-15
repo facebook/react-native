@@ -11,9 +11,14 @@
  */
 'use strict';
 
+const React = require('React');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
+
+const Keyboard = new NativeEventEmitter(KeyboardObserver);
+// Add dismissKeyboard helper function
+Keyboard.dismiss = dismissKeyboard;
 
 /**
  * `Keyboard` component to control keyboard events.
@@ -55,24 +60,45 @@ const dismissKeyboard = require('dismissKeyboard');
  *   }
  * }
  *```
- *
- * ### `addListener` method
- *
- * Connects a JavaScript function to an identified native Keyboard notification event.
- * The event string can be any of:
- * - keyboardWillShow
- * - keyboardDidShow
- * - keyboardWillHide
- * - keyboardDidHide
- * - keyboardWillChangeFrame
- * - keyboardDidChangeFrame
- *
- * ### `dismiss` method
- *
- * Dismisses the active keyboard and removes focus.
  */
-const Keyboard = new NativeEventEmitter(KeyboardObserver);
-// Add dismissKeyboard helper function
-Keyboard.dismiss = dismissKeyboard;
+class DocsKeyboard extends React.Component {
 
+  static propTypes = {
+    none: 'This Component should not be given props',
+  };
+
+  /**
+   * The `addListener` function connects a JavaScript function to an identified native
+   * keyboard notification event.
+   *
+   * This function then returns the reference to the listener.
+   *
+   * @param {string} nativeEvent The `nativeEvent` is the string that identifies the event you're listening for.  This
+   *can be any of the following
+   * - `keyboardWillShow`
+   * - `keyboardDidShow`
+   * - `keyboardWillHide`
+   * - `keyboardDidHide`
+   * - `keyboardWillChangeFrame`
+   * - `keyboardDidChangeFrame`
+   * @param {function} jsFunction function to be called when the event fires.
+   */
+  addListener (nativeEvent, jsFunction) {
+    return Keyboard.addListener(nativeEvent, jsFunction);
+  }
+
+  /**
+   * Dismisses the active keyboard and removes focus.
+   */
+  dismiss () {
+    dismissKeyboard();
+  }
+
+  render() {
+    return null;
+  }
+
+}
+
+// We're not the the documentation component
 module.exports = Keyboard;
