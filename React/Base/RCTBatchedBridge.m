@@ -530,6 +530,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     }
 
     if (loadError) {
+      RCTLogError(@"Failed to execute source code: %@", [loadError localizedDescription]);
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
       });
