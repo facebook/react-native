@@ -333,6 +333,114 @@ describe('Bundle', () => {
       expect(deserialized.getMainModuleId()).toEqual(id);
     });
   });
+
+  describe('random access bundle groups:', () => {
+    let moduleTransports;
+    beforeEach(() => {
+      moduleTransports = [
+        transport('Product1', ['React', 'Relay']),
+        transport('React', ['ReactFoo', 'ReactBar']),
+        transport('ReactFoo', ['invariant']),
+        transport('invariant', []),
+        transport('ReactBar', ['cx']),
+        transport('cx', []),
+        transport('OtherFramework', ['OtherFrameworkFoo', 'OtherFrameworkBar']),
+        transport('OtherFrameworkFoo', ['invariant']),
+        transport('OtherFrameworkBar', ['crc32']),
+        transport('crc32', ['OtherFrameworkBar']),
+      ];
+    });
+
+    it('can create a single group', () => {
+      bundle = createBundle([fsLocation('React')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('React'), new Set(['ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))],
+      ]));
+    });
+
+    it('can create two groups', () => {
+      bundle = createBundle([fsLocation('ReactFoo'), fsLocation('ReactBar')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('ReactFoo'), new Set([idFor('invariant')])],
+        [idFor('ReactBar'), new Set([idFor('cx')])],
+      ]));
+    });
+
+    it('can handle circular dependencies', () => {
+      bundle = createBundle([fsLocation('OtherFramework')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([[
+        idFor('OtherFramework'),
+        new Set(['OtherFrameworkFoo', 'invariant', 'OtherFrameworkBar', 'crc32'].map(idFor)),
+      ]]));
+    });
+
+    it('omits modules that are contained by more than one group', () => {
+      bundle = createBundle([fsLocation('React'), fsLocation('OtherFramework')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('React'),
+          new Set(['ReactFoo', 'ReactBar', 'cx'].map(idFor))],
+        [idFor('OtherFramework'),
+          new Set(['OtherFrameworkFoo', 'OtherFrameworkBar', 'crc32'].map(idFor))],
+      ]));
+    });
+
+    it('ignores missing dependencies', () => {
+      bundle = createBundle([fsLocation('Product1')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([[
+        idFor('Product1'),
+        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))
+      ]]));
+    });
+
+    it('throws for group roots that do not exist', () => {
+      bundle = createBundle([fsLocation('DoesNotExist')]);
+      expect(() => {
+        const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
+      }).toThrow(new Error(`Group root ${fsLocation('DoesNotExist')} is not part of the bundle`));
+    });
+
+    function idFor(name) {
+      const {map} = idFor;
+      if (!map) {
+        idFor.map = new Map([[name, 0]]);
+        idFor.next = 1;
+        return 0;
+      }
+
+      if (map.has(name)) {
+        return map.get(name);
+      }
+
+      const id = idFor.next++;
+      map.set(name, id);
+      return id;
+    }
+    function createBundle(ramGroups, options = {}) {
+      const b = new Bundle(Object.assign(options, {ramGroups}));
+      moduleTransports.forEach(t => addModule({bundle: b, ...t}));
+      b.finalize();
+      return b;
+    }
+    function fsLocation(name) {
+      return `/fs/${name}.js`;
+    }
+    function module(name) {
+      return {path: fsLocation(name)};
+    }
+    function transport(name, deps) {
+      return createModuleTransport({
+        name,
+        id: idFor(name),
+        sourcePath: fsLocation(name),
+        meta: {dependencyPairs: deps.map(d => [d, module(d)])},
+      });
+    }
+  });
 });
 
 
@@ -375,7 +483,7 @@ function resolverFor(code, map) {
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill, meta, id = ''}) {
   return bundle.addModule(
     resolverFor(code, map),
     null,
@@ -384,7 +492,9 @@ function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill
       code,
       sourceCode,
       sourcePath,
+      id,
       map,
+      meta,
       virtual,
       polyfill,
     }),
@@ -394,9 +504,9 @@ function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill
 function createModuleTransport(data) {
   return new ModuleTransport({
     code: '',
-    id: '',
     sourceCode: '',
     sourcePath: '',
+    id: 'id' in data ? data.id : '',
     ...data,
   });
 }
