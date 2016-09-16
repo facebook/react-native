@@ -122,6 +122,18 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android only, controls whether or not to allow cookies for file:/// urls
+     * @platform android
+     */
+    acceptFileSchemeCookies: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether or not to allow third party cookies
+     * @platform android
+     */
+    acceptThirdPartyCookies: PropTypes.bool,
+
+    /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
@@ -217,6 +229,8 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        acceptFileSchemeCookies={this.props.acceptFileSchemeCookies}
+        acceptThirdPartyCookies={this.props.acceptThirdPartyCookies}
         domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
