@@ -30,9 +30,9 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 #import "RCTJSCWrapper.h"
+#import "RCTJSCErrorHandling.h"
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
-
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
@@ -162,81 +162,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
-
-static NSString *RCTJSValueToNSString(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef value, JSValueRef *exception)
-{
-  JSStringRef JSString = jscWrapper->JSValueToStringCopy(context, value, exception);
-  if (!JSString) {
-    return nil;
-  }
-
-  CFStringRef string = jscWrapper->JSStringCopyCFString(kCFAllocatorDefault, JSString);
-  jscWrapper->JSStringRelease(JSString);
-
-  return (__bridge_transfer NSString *)string;
-}
-
-static NSString *RCTJSValueToJSONString(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef value, JSValueRef *exception, unsigned indent)
-{
-  JSStringRef jsString = jscWrapper->JSValueCreateJSONString(context, value, indent, exception);
-  CFStringRef string = jscWrapper->JSStringCopyCFString(kCFAllocatorDefault, jsString);
-  jscWrapper->JSStringRelease(jsString);
-
-  return (__bridge_transfer NSString *)string;
-}
-
-static NSError *RCTNSErrorFromJSError(RCTJSCWrapper *jscWrapper, JSContextRef context, JSValueRef jsError)
-{
-  NSMutableDictionary *errorInfo = [NSMutableDictionary new];
-
-  NSString *description = jsError ? RCTJSValueToNSString(jscWrapper, context, jsError, NULL) : @"Unknown JS error";
-  errorInfo[NSLocalizedDescriptionKey] = [@"Unhandled JS Exception: " stringByAppendingString:description];
-
-  NSString *details = jsError ? RCTJSValueToJSONString(jscWrapper, context, jsError, NULL, 0) : nil;
-  if (details) {
-    errorInfo[NSLocalizedFailureReasonErrorKey] = details;
-
-    // Format stack as used in RCTFormatError
-    id json = RCTJSONParse(details, NULL);
-    if ([json isKindOfClass:[NSDictionary class]]) {
-      if (json[@"stack"]) {
-        NSError *regexError;
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([^@]+)@(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
-        if (regexError) {
-          RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
-        }
-
-        NSMutableArray *stackTrace = [NSMutableArray array];
-        for (NSString *stackLine in [json[@"stack"] componentsSeparatedByString:@"\n"]) {
-          NSTextCheckingResult *result = [regex firstMatchInString:stackLine options:0 range:NSMakeRange(0, stackLine.length)];
-          if (result) {
-            [stackTrace addObject:@{
-              @"methodName": [stackLine substringWithRange:[result rangeAtIndex:1]],
-              @"file": [stackLine substringWithRange:[result rangeAtIndex:2]],
-              @"lineNumber": [stackLine substringWithRange:[result rangeAtIndex:3]],
-              @"column": [stackLine substringWithRange:[result rangeAtIndex:4]]
-            }];
-          }
-        }
-        if ([stackTrace count]) {
-          errorInfo[RCTJSStackTraceKey] = stackTrace;
-        }
-      }
-
-      // Fall back to just logging the line number
-      if (!errorInfo[RCTJSStackTraceKey] && json[@"line"]) {
-        errorInfo[RCTJSStackTraceKey] = @[@{
-          @"methodName": @"",
-          @"file": RCTNullIfNil(json[@"sourceURL"]),
-          @"lineNumber": RCTNullIfNil(json[@"line"]),
-          @"column": @0,
-        }];
-      }
-    }
-  }
-
-  return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
-}
 
 #if RCT_DEV
 
@@ -699,7 +624,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
     id objcValue;
     if (errorJSRef || error) {
       if (!error) {
-        error = RCTNSErrorFromJSError(jscWrapper, contextJSRef, errorJSRef);
+        error = RCTNSErrorFromJSError([jscWrapper->JSValue valueWithJSValueRef:errorJSRef inContext:context]);
       }
     } else {
       // We often return `null` from JS when there is nothing for native side. [JSValue toValue]
@@ -799,11 +724,12 @@ static NSError *executeApplicationScript(NSData *script, NSURL *sourceURL, RCTJS
   JSValueRef jsError = NULL;
   JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)script.bytes);
   JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
-  JSValueRef result = jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
+  jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
   jscWrapper->JSStringRelease(bundleURL);
   jscWrapper->JSStringRelease(execJSString);
   [performanceLogger markStopForTag:RCTPLScriptExecution];
-  NSError *error = result ? nil : RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
+
+  NSError *error = jsError ? RCTNSErrorFromJSErrorRef(jsError, ctx, jscWrapper) : nil;
   RCT_PROFILE_END_EVENT(0, @"js_call");
   return error;
 }
@@ -864,7 +790,7 @@ static NSError *executeApplicationScript(NSData *script, NSURL *sourceURL, RCTJS
       jscWrapper->JSStringRelease(JSName);
 
       if (jsError) {
-        error = RCTNSErrorFromJSError(jscWrapper, ctx, jsError);
+        error = RCTNSErrorFromJSErrorRef(jsError, ctx, jscWrapper);
       }
     }
     RCT_PROFILE_END_EVENT(0, @"js_call,json_call");
@@ -904,7 +830,7 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
 
   if (!result) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      RCTFatal(RCTNSErrorFromJSError(jscWrapper, ctx, jsError));
+      RCTFatal(RCTNSErrorFromJSErrorRef(jsError, ctx, jscWrapper));
       [executor invalidate];
     });
   }
