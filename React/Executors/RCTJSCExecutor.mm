@@ -613,23 +613,23 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 - (void)_callFunctionOnModule:(NSString *)module
                        method:(NSString *)method
                     arguments:(NSArray *)args
-                   flushQueue:(BOOL)flushQueue
+                  returnValue:(BOOL)returnValue
                  unwrapResult:(BOOL)unwrapResult
                      callback:(RCTJavaScriptCallback)onComplete
 {
   // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
-  NSString *bridgeMethod = flushQueue ? @"callFunctionReturnFlushedQueue" : @"callFunction";
+  NSString *bridgeMethod = returnValue ? @"callFunctionReturnFlushedQueue" : @"callFunctionReturnResultAndFlushedQueue";
   [self _executeJSCall:bridgeMethod arguments:@[module, method, args] unwrapResult:unwrapResult callback:onComplete];
 }
 
 - (void)callFunctionOnModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args callback:(RCTJavaScriptCallback)onComplete
 {
-  [self _callFunctionOnModule:module method:method arguments:args flushQueue:YES unwrapResult:YES callback:onComplete];
+  [self _callFunctionOnModule:module method:method arguments:args returnValue:YES unwrapResult:YES callback:onComplete];
 }
 
 - (void)callFunctionOnModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args jsValueCallback:(RCTJavaScriptValueCallback)onComplete
 {
-  [self _callFunctionOnModule:module method:method arguments:args flushQueue:NO unwrapResult:NO callback:onComplete];
+  [self _callFunctionOnModule:module method:method arguments:args returnValue:NO unwrapResult:NO callback:onComplete];
 }
 
 - (void)invokeCallbackID:(NSNumber *)cbID
