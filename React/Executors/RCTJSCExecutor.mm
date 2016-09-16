@@ -582,15 +582,14 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 
     RCTJSCWrapper *jscWrapper = strongSelf->_jscWrapper;
     JSContext *context = strongSelf->_context.context;
-    JSGlobalContextRef ctx = context.JSGlobalContextRef;
-    JSGlobalContextRef contextJSRef = jscWrapper->JSContextGetGlobalContext(ctx);
+    JSGlobalContextRef contextJSRef = context.JSGlobalContextRef;
 
     // get the BatchedBridge object
     JSValueRef errorJSRef = NULL;
     JSValueRef batchedBridgeRef = strongSelf->_batchedBridgeRef;
     if (!batchedBridgeRef) {
       JSStringRef moduleNameJSStringRef = jscWrapper->JSStringCreateWithUTF8CString("__fbBatchedBridge");
-      JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(ctx);
+      JSObjectRef globalObjectJSRef = jscWrapper->JSContextGetGlobalObject(contextJSRef);
       batchedBridgeRef = jscWrapper->JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
       jscWrapper->JSStringRelease(moduleNameJSStringRef);
       strongSelf->_batchedBridgeRef = batchedBridgeRef;
