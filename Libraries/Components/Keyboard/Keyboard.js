@@ -20,6 +20,9 @@ const Keyboard = new NativeEventEmitter(KeyboardObserver);
 // Add dismissKeyboard helper function
 Keyboard.dismiss = dismissKeyboard;
 
+// The following object exists for documentation purposes
+// Actual work happens in
+// https://github.com/facebook/react-native/blob/master/Libraries/EventEmitter/NativeEventEmitter.js
 /**
  * `Keyboard` component to control keyboard events.
  *
@@ -61,7 +64,7 @@ Keyboard.dismiss = dismissKeyboard;
  * }
  *```
  */
-class DocsKeyboard extends React.Component {
+class DocsKeyboard {
 
   static propTypes = {
     none: 'This Component should not be given props',
@@ -74,7 +77,7 @@ class DocsKeyboard extends React.Component {
    * This function then returns the reference to the listener.
    *
    * @param {string} nativeEvent The `nativeEvent` is the string that identifies the event you're listening for.  This
-   *can be any of the following
+   *can be any of the following:
    * - `keyboardWillShow`
    * - `keyboardDidShow`
    * - `keyboardWillHide`
@@ -85,6 +88,22 @@ class DocsKeyboard extends React.Component {
    */
   addListener (nativeEvent, jsFunction) {
     return Keyboard.addListener(nativeEvent, jsFunction);
+  }
+
+  /**
+   * Removes all listeners for a specific event type.
+   * @param {string} eventType The native event string listeners are watching which will be removed.
+   */
+  removeAllListeners (eventType) {
+    Keyboard.removeAllListeners(eventType)
+  }
+
+  /**
+   * Removes a specific subscription.
+   * @param {EmitterSubscription} subscription The subscription emitter to be removed.
+   */
+  removeSubscription (subscription) {
+    Keyboard.removeSubscription(subscription)
   }
 
   /**
