@@ -71,7 +71,7 @@ class MessageQueue {
     [
       'invokeCallbackAndReturnFlushedQueue',
       'callFunctionReturnFlushedQueue',
-      'callFunction',
+      'callFunctionReturnResultAndFlushedQueue',
       'flushedQueue',
     ].forEach((fn) => (this[fn] = this[fn].bind(this)));
 
@@ -109,14 +109,14 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  callFunction(module, method, args) {
+  callFunctionReturnResultAndFlushedQueue(module, method, args) {
     let result;
     guard(() => {
       result = this.__callFunction(module, method, args);
       this.__callImmediates();
     });
 
-    return result;
+    return [result, this.flushedQueue()];
   }
 
   invokeCallbackAndReturnFlushedQueue(cbID, args) {
