@@ -103,6 +103,7 @@ newCursor-=row.height-1;
 }
 this.state.aggrow.contract(row);
 this.setState({cursor:newCursor});
+console.log('-'+row.top);
 }},{key:'_expandRow',value:function _expandRow(
 
 row){
@@ -112,6 +113,7 @@ if(newCursor>row.top){// below expanded section
 newCursor+=row.height-1;
 }
 this.setState({cursor:newCursor});
+console.log('+'+row.top);
 }},{key:'_keepCursorInViewport',value:function _keepCursorInViewport()
 
 

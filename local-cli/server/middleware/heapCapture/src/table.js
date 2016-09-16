@@ -103,6 +103,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     }
     this.state.aggrow.contract(row);
     this.setState({cursor: newCursor});
+    console.log('-' + row.top);
   }
 
   _expandRow(row) {
@@ -112,6 +113,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       newCursor += row.height - 1;
     }
     this.setState({cursor: newCursor});
+    console.log('+' + row.top);
   }
 
   _scrollDiv: null;
