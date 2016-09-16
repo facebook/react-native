@@ -75,6 +75,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+    _touchHandlerEnabled = YES;
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -218,6 +219,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                                     bridge:bridge
                                                   reactTag:self.reactTag
                                             sizeFlexiblity:_sizeFlexibility];
+  [[_contentView touchHandler] setEnabled:self.touchHandlerEnabled];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
@@ -303,6 +305,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_contentView invalidate];
+}
+
+- (void)setTouchHandlerEnabled:(BOOL)touchHandlerEnabled
+{
+  _touchHandlerEnabled = touchHandlerEnabled;
+  if (_contentView) {
+    [[_contentView touchHandler] setEnabled:touchHandlerEnabled];
+  }
 }
 
 - (void)cancelTouches

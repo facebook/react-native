@@ -199,6 +199,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   }
 
   RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                         reactTag:self.view.reactTag
                                                      reactTouches:reactTouches
                                                    changedIndexes:changedIndexes
                                                     coalescingKey:_coalescingKey];
@@ -325,8 +326,10 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 
 - (void)cancel
 {
-  self.enabled = NO;
-  self.enabled = YES;
+  if (self.enabled) {
+    self.enabled = NO;
+    self.enabled = YES;
+  }
 }
 
 @end

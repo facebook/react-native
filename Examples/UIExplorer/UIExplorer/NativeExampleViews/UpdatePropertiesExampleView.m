@@ -53,6 +53,8 @@ RCT_EXPORT_MODULE();
     _rootView = [[RCTRootView alloc] initWithBridge:appDelegate.bridge
                                          moduleName:@"SetPropertiesExampleApp"
                                   initialProperties:@{@"color":@"beige"}];
+    
+    [_rootView setTouchHandlerEnabled:NO];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];

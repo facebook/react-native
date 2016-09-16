@@ -117,6 +117,12 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, strong) UIView *loadingView;
 
 /**
+ * Should this RCTRootView sends touch events to js, default is YES. You may want
+ * to turn this off if this rootView is nested in another one.
+ */
+@property (nonatomic, assign) BOOL touchHandlerEnabled;
+
+/**
  * Calling this will result in emitting a "touches cancelled" event to js,
  * which effectively cancels all js "gesture recognizers" such as as touchable
  * (unless they explicitely ignore cancellation events, but noone should do that).
