@@ -101,7 +101,7 @@ var InteractionManager = {
       then: promise.then.bind(promise),
       done: (...args) => {
         if (promise.done) {
-          promise.done(...args);
+          return promise.done(...args);
         } else {
           console.warn('Tried to call done when not supported by current Promise implementation.');
         }
