@@ -17,6 +17,8 @@ const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
+const emptyModule = require.resolve('./assets/empty-module.js');
+
 class ResolutionRequest {
   constructor({
     platform,
@@ -193,7 +195,7 @@ class ResolutionRequest {
 
         if (recursive) {
           // doesn't block the return of this function invocation, but defers
-          // the resulution of collectionsInProgress.done.then(…)
+          // the resulution of collectionsInProgress.done.then(...)
           dependencyModules
             .forEach(dependency => collectedDependencies.get(dependency));
         }
@@ -322,7 +324,7 @@ class ResolutionRequest {
     return this._redirectRequire(fromModule, potentialModulePath).then(
       realModuleName => {
         if (realModuleName === false) {
-          return null;
+          return this._loadAsFile(emptyModule, fromModule, toModuleName);
         }
 
         return this._tryResolve(
@@ -341,7 +343,7 @@ class ResolutionRequest {
         realModuleName => {
           // exclude
           if (realModuleName === false) {
-            return null;
+            return this._loadAsFile(emptyModule, fromModule, toModuleName);
           }
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
