@@ -185,12 +185,14 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           CGSize dimensions = [result defaultRepresentation].dimensions;
           CLLocation *loc = [result valueForProperty:ALAssetPropertyLocation];
           NSDate *date = [result valueForProperty:ALAssetPropertyDate];
+          NSString *name = [result defaultRepresentation].filename;
           [assets addObject:@{
             @"node": @{
               @"type": [result valueForProperty:ALAssetPropertyType],
               @"group_name": [group valueForProperty:ALAssetsGroupPropertyName],
               @"image": @{
                 @"uri": uri,
+                @"name" : name,
                 @"height": @(dimensions.height),
                 @"width": @(dimensions.width),
                 @"isStored": @YES,
