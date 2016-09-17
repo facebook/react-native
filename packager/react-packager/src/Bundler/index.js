@@ -393,6 +393,8 @@ class Bundler {
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
+      bundle.setRamGroups(response.transformOptions.transform.ramGroups);
+
       Activity.endEvent(findEventId);
       onResolutionResponse(response);
 
