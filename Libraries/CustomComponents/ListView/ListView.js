@@ -358,6 +358,14 @@ var ListView = React.createClass({
     this.setState({highlightedRow: {sectionID, rowID}});
   },
 
+  _hasHeader: function(header) {
+    if (Array.isArray(header)) {
+      return !!header.length;
+    }
+
+    return !!header;
+  },
+
   render: function() {
     var bodyComponents = [];
 
@@ -368,7 +376,7 @@ var ListView = React.createClass({
 
     var header = this.props.renderHeader && this.props.renderHeader();
     var footer = this.props.renderFooter && this.props.renderFooter();
-    var totalIndex = header ? 1 : 0;
+    var totalIndex = this._hasHeader(header) ? 1 : 0;
 
     for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
       var sectionID = dataSource.sectionIdentities[sectionIdx];
@@ -587,7 +595,7 @@ var ListView = React.createClass({
     var allRowIDs = dataSource.rowIdentities;
 
     var header = this.props.renderHeader && this.props.renderHeader();
-    var totalIndex = header ? 1 : 0;
+    var totalIndex = this._hasHeader(header) ? 1 : 0;
     var visibilityChanged = false;
     var changedRows = {};
     for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
