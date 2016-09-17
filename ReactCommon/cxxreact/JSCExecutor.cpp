@@ -109,7 +109,6 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
 
   {
     SystraceSection s("collectNativeModuleNames");
-    std::vector<std::string> names = delegate->moduleNames();
     for (auto& name : delegate->moduleNames()) {
       nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
     }
