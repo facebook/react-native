@@ -15,6 +15,7 @@
 #include <folly/dynamic.h>
 
 #include "noncopyable.h"
+#include "Unicode.h"
 
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
@@ -85,12 +86,24 @@ public:
     return JSStringGetMaximumUTF8CStringSize(m_string);
   }
 
+  /*
+   * JavaScriptCore is built with strict utf16 -> utf8 conversion.
+   * This means if JSC's built-in conversion function encounters a JavaScript
+   * string which contains half of a 32-bit UTF-16 symbol, it produces an error
+   * rather than returning a string.
+   *
+   * Instead of relying on this, we use our own utf16 -> utf8 conversion function
+   * which is more lenient and always returns a string. When an invalid UTF-16
+   * string is provided, it'll likely manifest as a rendering glitch in the app for
+   * the invalid symbol.
+   *
+   * For details on JavaScript's unicode support see:
+   * https://mathiasbynens.be/notes/javascript-unicode
+   */
   std::string str() const {
-    size_t reserved = utf8Size();
-    char* bytes = new char[reserved];
-    size_t length = JSStringGetUTF8CString(m_string, bytes, reserved) - 1;
-    std::unique_ptr<char[]> retainedBytes(bytes);
-    return std::string(bytes, length);
+    const JSChar* utf16 = JSStringGetCharactersPtr(m_string);
+    int stringLength = JSStringGetLength(m_string);
+    return unicode::utf16toUTF8(utf16, stringLength);
   }
 
   // Assumes that utf8 is null terminated
@@ -282,13 +295,14 @@ public:
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const throw(JSException);
-  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
-  static Value fromDynamic(JSContextRef ctx, folly::dynamic value) throw(JSException);
+  std::string toJSONString(unsigned indent = 0) const;
+  static Value fromJSON(JSContextRef ctx, const String& json);
+  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   JSContextRef context() const;
 protected:
   JSContextRef m_context;
   JSValueRef m_value;
+  static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
 };
 
 } }

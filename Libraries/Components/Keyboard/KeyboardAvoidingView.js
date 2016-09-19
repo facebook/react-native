@@ -22,37 +22,46 @@ const View = require('View');
 import type EmitterSubscription from 'EmitterSubscription';
 
 type Rect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 };
 type ScreenRect = {
-  screenX: number;
-  screenY: number;
-  width: number;
-  height: number;
+  screenX: number,
+  screenY: number,
+  width: number,
+  height: number,
 };
 type KeyboardChangeEvent = {
-  startCoordinates?: ScreenRect;
-  endCoordinates: ScreenRect;
-  duration?: number;
-  easing?: string;
+  startCoordinates?: ScreenRect,
+  endCoordinates: ScreenRect,
+  duration?: number,
+  easing?: string,
 };
 type LayoutEvent = {
   nativeEvent: {
-    layout: Rect;
+    layout: Rect,
   }
 };
 
 const viewRef = 'VIEW';
 
+/**
+ * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
+ * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
+ */
 const KeyboardAvoidingView = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
     ...View.propTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
+
+    /**
+     * The style of the content container(View) when behavior is 'position'.
+     */
+    contentContainerStyle: View.propTypes.style,
 
     /**
      * This is the distance between the top of the user screen and the react native view,
@@ -160,9 +169,11 @@ const KeyboardAvoidingView = React.createClass({
 
       case 'position':
         const positionStyle = {bottom: this.state.bottom};
+        const { contentContainerStyle } = this.props;
+
         return (
           <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
-            <View style={positionStyle}>
+            <View style={[contentContainerStyle, positionStyle]}>
               {children}
             </View>
           </View>

@@ -58,7 +58,11 @@ function handleException(e: Error, isFatal: boolean) {
     e = new Error(e);
   }
 
-  (console._errorOriginal || console.error)(e.message);
+  if (typeof console._errorOriginal === 'function') {
+    console._errorOriginal(e.message);
+  } else {
+    console.error(e.message);
+  }
   reportException(e, isFatal);
 }
 
@@ -71,9 +75,11 @@ function installConsoleErrorReporter() {
   if (console._errorOriginal) {
     return; // already installed
   }
-  console._errorOriginal = console.error.bind(console);
+  // Flow doesn't like it when you set arbitrary values on a global object
+  (console: any)._errorOriginal = console.error.bind(console);
   console.error = function reactConsoleError() {
-    console._errorOriginal.apply(null, arguments);
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any)._errorOriginal.apply(null, arguments);
     if (!console.reportErrorsAsExceptions) {
       return;
     }
@@ -95,7 +101,8 @@ function installConsoleErrorReporter() {
     }
   };
   if (console.reportErrorsAsExceptions === undefined) {
-    console.reportErrorsAsExceptions = true; // Individual apps can disable this
+    // Flow doesn't like it when you set arbitrary values on a global object
+    (console: any).reportErrorsAsExceptions = true; // Individual apps can disable this
   }
 }
 

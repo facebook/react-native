@@ -44,15 +44,13 @@ exports.examples = [
   }
 ];
 
-var AdSupportIOSExample = React.createClass({
-  getInitialState: function() {
-    return {
-      deviceID: 'No IDFA yet',
-      hasAdvertiserTracking: 'unset',
-    };
-  },
+class AdSupportIOSExample extends React.Component {
+  state = {
+    deviceID: 'No IDFA yet',
+    hasAdvertiserTracking: 'unset',
+  };
 
-  componentDidMount: function() {
+  componentDidMount() {
     AdSupportIOS.getAdvertisingId(
       this._onDeviceIDSuccess,
       this._onDeviceIDFailure
@@ -62,33 +60,33 @@ var AdSupportIOSExample = React.createClass({
       this._onHasTrackingSuccess,
       this._onHasTrackingFailure
     );
-  },
+  }
 
-  _onHasTrackingSuccess: function(hasTracking) {
+  _onHasTrackingSuccess = (hasTracking) => {
     this.setState({
       'hasAdvertiserTracking': hasTracking,
     });
-  },
+  };
 
-  _onHasTrackingFailure: function(e) {
+  _onHasTrackingFailure = (e) => {
     this.setState({
       'hasAdvertiserTracking': 'Error!',
     });
-  },
+  };
 
-  _onDeviceIDSuccess: function(deviceID) {
+  _onDeviceIDSuccess = (deviceID) => {
     this.setState({
       'deviceID': deviceID,
     });
-  },
+  };
 
-  _onDeviceIDFailure: function(e) {
+  _onDeviceIDFailure = (e) => {
     this.setState({
       'deviceID': 'Error!',
     });
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <View>
         <Text>
@@ -102,7 +100,7 @@ var AdSupportIOSExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   title: {

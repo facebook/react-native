@@ -9,8 +9,6 @@
 
 package com.facebook.csslayout;
 
-import javax.annotation.Nullable;
-
 import java.util.Arrays;
 
 /**
@@ -37,22 +35,22 @@ public class Spacing {
    */
   public static final int BOTTOM = 3;
   /**
-   * Spacing type that represents vertical direction (top and bottom). E.g. {@code marginVertical}.
+   * Spacing type that represents start direction e.g. left in left-to-right, right in right-to-left.
    */
-  public static final int VERTICAL = 4;
+  public static final int START = 4;
+  /**
+   * Spacing type that represents end direction e.g. right in left-to-right, left in right-to-left.
+   */
+  public static final int END = 5;
   /**
    * Spacing type that represents horizontal direction (left and right). E.g.
    * {@code marginHorizontal}.
    */
-  public static final int HORIZONTAL = 5;
+  public static final int HORIZONTAL = 6;
   /**
-   * Spacing type that represents start direction e.g. left in left-to-right, right in right-to-left.
+   * Spacing type that represents vertical direction (top and bottom). E.g. {@code marginVertical}.
    */
-  public static final int START = 6;
-  /**
-   * Spacing type that represents end direction e.g. right in left-to-right, left in right-to-left.
-   */
-  public static final int END = 7;
+  public static final int VERTICAL = 7;
   /**
    * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
    */
@@ -63,17 +61,25 @@ public class Spacing {
     2, /*TOP*/
     4, /*RIGHT*/
     8, /*BOTTOM*/
-    16, /*VERTICAL*/
-    32, /*HORIZONTAL*/
-    64, /*START*/
-    128, /*END*/
+    16, /*START*/
+    32, /*END*/
+    64, /*HORIZONTAL*/
+    128, /*VERTICAL*/
     256, /*ALL*/
   };
 
   private final float[] mSpacing = newFullSpacingArray();
-  @Nullable private float[] mDefaultSpacing = null;
   private int mValueFlags = 0;
+  private float mDefaultValue;
   private boolean mHasAliasesSet;
+
+  public Spacing() {
+    this(0);
+  }
+
+  public Spacing(float defaultValue) {
+    mDefaultValue = defaultValue;
+  }
 
   /**
    * Set a spacing value.
@@ -101,25 +107,7 @@ public class Spacing {
 
       return true;
     }
-    return false;
-  }
 
-  /**
-   * Set a default spacing value. This is used as a fallback when no spacing has been set for a
-   * particular direction.
-   *
-   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
-   * @param value the default value for this direction
-   * @return
-   */
-  public boolean setDefault(int spacingType, float value) {
-    if (mDefaultSpacing == null) {
-      mDefaultSpacing = newSpacingResultArray();
-    }
-    if (!FloatUtil.floatsEqual(mDefaultSpacing[spacingType], value)) {
-      mDefaultSpacing[spacingType] = value;
-      return true;
-    }
     return false;
   }
 
@@ -129,9 +117,9 @@ public class Spacing {
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
    */
   public float get(int spacingType) {
-    float defaultValue = (mDefaultSpacing != null)
-        ? mDefaultSpacing[spacingType]
-        : (spacingType == START || spacingType == END ? CSSConstants.UNDEFINED : 0);
+    float defaultValue = (spacingType == START || spacingType == END
+        ? CSSConstants.UNDEFINED
+        : mDefaultValue);
 
     if (mValueFlags == 0) {
       return defaultValue;
@@ -168,9 +156,8 @@ public class Spacing {
    * Resets the spacing instance to its default state. This method is meant to be used when
    * recycling {@link Spacing} instances.
    */
-  void reset() {
+  public void reset() {
     Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
-    mDefaultSpacing = null;
     mHasAliasesSet = false;
     mValueFlags = 0;
   }
@@ -198,24 +185,6 @@ public class Spacing {
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
-    };
-  }
-
-  private static float[] newSpacingResultArray() {
-    return newSpacingResultArray(0);
-  }
-
-  private static float[] newSpacingResultArray(float defaultValue) {
-    return new float[] {
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        defaultValue,
     };
   }
 }

@@ -26,24 +26,20 @@ const {
 const UIExplorerBlock = require('./UIExplorerBlock');
 const UIExplorerPage = require('./UIExplorerPage');
 
-const KeyboardAvoidingViewExample = React.createClass({
-  statics: {
-    title: '<KeyboardAvoidingView>',
-    description: 'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.',
-  },
+class KeyboardAvoidingViewExample extends React.Component {
+  static title = '<KeyboardAvoidingView>';
+  static description = 'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
 
-  getInitialState() {
-    return {
-      behavior: 'padding',
-      modalOpen: false,
-    };
-  },
+  state = {
+    behavior: 'padding',
+    modalOpen: false,
+  };
 
-  onSegmentChange(segment: String) {
+  onSegmentChange = (segment: String) => {
     this.setState({behavior: segment.toLowerCase()});
-  },
+  };
 
-  renderExample() {
+  renderExample = () => {
     return (
       <View style={styles.outerContainer}>
         <Modal animationType="fade" visible={this.state.modalOpen}>
@@ -69,7 +65,7 @@ const KeyboardAvoidingViewExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
+  };
 
   render() {
     return (
@@ -79,8 +75,8 @@ const KeyboardAvoidingViewExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   outerContainer: {

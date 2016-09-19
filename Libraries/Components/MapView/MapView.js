@@ -34,23 +34,23 @@ export type AnnotationDragState = $Enum<{
   /**
    * Annotation is not being touched.
    */
-  idle: string;
+  idle: string,
   /**
    * Annotation dragging has began.
    */
-  starting: string;
+  starting: string,
   /**
    * Annotation is being dragged.
    */
-  dragging: string;
+  dragging: string,
   /**
    * Annotation dragging is being canceled.
    */
-  canceling: string;
+  canceling: string,
   /**
    * Annotation dragging has ended.
    */
-  ending: string;
+  ending: string,
 }>;
 
 /**
@@ -60,8 +60,8 @@ export type AnnotationDragState = $Enum<{
  * `MKMapView`.
  *
  * For a cross-platform solution, check out
- * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
- * by Leland Richardson.
+ * [react-native-maps](https://github.com/airbnb/react-native-maps)
+ * by Airbnb.
  *
  * ```
  * import React, { Component } from 'react';
@@ -412,7 +412,7 @@ const MapView = React.createClass({
         }));
       }
 
-      let result = {
+      const result = {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),
         image,
@@ -430,8 +430,8 @@ const MapView = React.createClass({
       return result;
     });
     overlays = overlays && overlays.map((overlay: Object) => {
-      let {id, fillColor, strokeColor} = overlay;
-      let result = {
+      const {id, fillColor, strokeColor} = overlay;
+      const result = {
         ...overlay,
         strokeColor: strokeColor && processColor(strokeColor),
         fillColor: fillColor && processColor(fillColor),

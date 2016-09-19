@@ -9,7 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
+//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
+#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
+#else
+#import "CSSLayout.h"
+#endif
+
 #import "RCTComponent.h"
 #import "RCTRootView.h"
 
@@ -44,10 +50,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
-@property (nonatomic, assign, readonly) css_node_t *cssNode;
+@property (nonatomic, assign, readonly) CSSNodeRef cssNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
-@property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
@@ -127,18 +132,26 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * Flexbox properties. All zero/disabled by default
  */
-@property (nonatomic, assign) css_flex_direction_t flexDirection;
-@property (nonatomic, assign) css_justify_t justifyContent;
-@property (nonatomic, assign) css_align_t alignSelf;
-@property (nonatomic, assign) css_align_t alignItems;
-@property (nonatomic, assign) css_position_type_t position;
-@property (nonatomic, assign) css_wrap_type_t flexWrap;
+@property (nonatomic, assign) CSSFlexDirection flexDirection;
+@property (nonatomic, assign) CSSJustify justifyContent;
+@property (nonatomic, assign) CSSAlign alignSelf;
+@property (nonatomic, assign) CSSAlign alignItems;
+@property (nonatomic, assign) CSSPositionType position;
+@property (nonatomic, assign) CSSWrapType flexWrap;
 @property (nonatomic, assign) CGFloat flex;
+@property (nonatomic, assign) CGFloat flexGrow;
+@property (nonatomic, assign) CGFloat flexShrink;
+@property (nonatomic, assign) CGFloat flexBasis;
 
 /**
  * z-index, used to override sibling order in the view
  */
 @property (nonatomic, assign) NSInteger zIndex;
+
+/**
+ * Clipping properties
+ */
+@property (nonatomic, assign) CSSOverflow overflow;
 
 /**
  * Calculate property changes that need to be propagated to the view.
@@ -172,23 +185,23 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * is split into two methods so subclasses can override `applyLayoutToChildren:`
  * while using default implementation of `applyLayoutNode:`.
  */
-- (void)applyLayoutNode:(css_node_t *)node
+- (void)applyLayoutNode:(CSSNodeRef)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
 /**
  * Enumerate the child nodes and tell them to apply layout.
  */
-- (void)applyLayoutToChildren:(css_node_t *)node
+- (void)applyLayoutToChildren:(CSSNodeRef)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * The following are implementation details exposed to subclasses. Do not call them directly
+ * Return whether or not this node acts as a leaf node in the eyes of CSSLayout. For example
+ * RCTShadowText has children which it does not want CSSLayout to lay out so in the eyes of
+ * CSSLayout it is a leaf node.
  */
-- (void)fillCSSNode:(css_node_t *)node NS_REQUIRES_SUPER;
-- (void)dirtyLayout NS_REQUIRES_SUPER;
-- (BOOL)isLayoutDirty;
+- (BOOL)isCSSLeafNode;
 
 - (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
@@ -212,5 +225,10 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * transforms or anchor points.
  */
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor;
+
+/**
+ * Checks if the current shadow view is a descendant of the provided `ancestor`
+ */
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
 
 @end

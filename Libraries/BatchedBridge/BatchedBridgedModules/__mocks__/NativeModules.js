@@ -68,6 +68,9 @@ var NativeModules = {
   Clipboard: {
     setString: jest.fn(),
   },
+  FbRelayNativeAdapter: {
+    updateCLC: jest.fn(),
+  },
 };
 
 module.exports = NativeModules;

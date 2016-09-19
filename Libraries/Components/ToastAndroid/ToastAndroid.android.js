@@ -19,12 +19,27 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  *
  * 1. String message: A string with the text to toast
  * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
+ *
+ * There is also a function `showWithGravity` to specify the layout gravity. May be
+ * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
+ *
+ * Basic usage:
+ * ```javascript
+ * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
+ * ToastAndroid.showWithGravity('All Your Base Are Belong To Us', ToastAndroid.SHORT, ToastAndroid.CENTER);
+ * ```
  */
 
 var ToastAndroid = {
 
+  // Toast duration constants
   SHORT: RCTToastAndroid.SHORT,
   LONG: RCTToastAndroid.LONG,
+
+  // Toast gravity constants
+  TOP: RCTToastAndroid.TOP,
+  BOTTOM: RCTToastAndroid.BOTTOM,
+  CENTER: RCTToastAndroid.CENTER,
 
   show: function (
     message: string,
@@ -33,6 +48,13 @@ var ToastAndroid = {
     RCTToastAndroid.show(message, duration);
   },
 
+  showWithGravity: function (
+    message: string,
+    duration: number,
+    gravity: number,
+  ): void {
+    RCTToastAndroid.showWithGravity(message, duration, gravity);
+  },
 };
 
 module.exports = ToastAndroid;

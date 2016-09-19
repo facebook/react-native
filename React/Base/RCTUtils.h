@@ -104,8 +104,8 @@ RCT_EXTERN UIAlertView *__nullable RCTAlertView(NSString *title,
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id __nullable RCTNilIfNull(id __nullable value);
-RCT_EXTERN id RCTNullIfNil(id __nullable value);
+#define RCTNullIfNil(value) (value ?: (id)kCFNull)
+#define RCTNilIfNull(value) (value == (id)kCFNull ? nil : value)
 
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);
@@ -120,8 +120,8 @@ RCT_EXTERN NSData *__nullable RCTGzipData(NSData *__nullable data, float level);
 // (or nil, if the URL does not specify a path within the main bundle)
 RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
 
-// Determines if a given image URL actually refers to an XCAsset
-RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL);
+// Determines if a given image URL refers to a local image
+RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);
 
 // Creates a new, unique temporary file path with the specified extension
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);

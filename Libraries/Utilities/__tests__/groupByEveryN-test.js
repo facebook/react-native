@@ -14,7 +14,7 @@ jest.unmock('groupByEveryN');
 describe('groupByEveryN', () => {
   var groupByEveryN = require('groupByEveryN');
 
-  it ('should group by with different n', () => {
+  it('should group by with different n', () => {
     expect(groupByEveryN([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))
       .toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
     expect(groupByEveryN([1, 2, 3, 4, 5, 6, 7, 8, 9], 2))
@@ -25,7 +25,7 @@ describe('groupByEveryN', () => {
       .toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9, null, null, null]]);
   });
 
-  it ('should fill with null', () => {
+  it('should fill with null', () => {
     expect(groupByEveryN([], 4))
       .toEqual([]);
     expect(groupByEveryN([1], 4))

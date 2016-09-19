@@ -109,7 +109,7 @@ iOS saves multiple sizes for the same image in your Camera Roll, it is very impo
 For example, the result of `require('./my-icon.png')` might be:
 
 ```javascript
-{"__packager_asset":true,"path":"/Users/react/HelloWorld/my-icon.png","uri":"my-icon.png","width":591,"height":573}
+{"__packager_asset":true,"uri":"my-icon.png","width":591,"height":573}
 ```
 
 ## Source as an object

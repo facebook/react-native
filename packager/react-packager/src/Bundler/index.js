@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
-const Cache = require('node-haste').Cache;
+const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -89,7 +89,17 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  allowBundleUpdates: {
+    type: 'boolean',
+    default: false,
+  },
 });
+
+const assetPropertyBlacklist = new Set([
+  'files',
+  'fileSystemLocation',
+  'path',
+]);
 
 class Bundler {
 
@@ -247,6 +257,7 @@ class Bundler {
     entryModuleOnly,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -274,6 +285,7 @@ class Bundler {
         bundle.finalize({
           runMainModule,
           runBeforeMainModule: runBeforeMainModuleIds,
+          allowUpdates: this._opts.allowBundleUpdates,
         });
         return bundle;
       });
@@ -290,6 +302,7 @@ class Bundler {
       onResolutionResponse,
       finalizeBundle,
       isolateModuleIDs,
+      generateSourceMaps,
     });
   }
 
@@ -341,24 +354,30 @@ class Bundler {
     unbundle,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
   }) {
-    const findEventId = Activity.startEvent('find dependencies');
+    const findEventId = Activity.startEvent(
+      'Finding dependencies',
+      null,
+      {
+        telemetric: true,
+      },
+    );
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
       let onProgress = noop;
       if (process.stdout.isTTY && !this._opts.silent) {
-        const bar = new ProgressBar(
-          'transformed :current/:total (:percent)',
-          {complete: '=', incomplete: ' ', width: 40, total: 1},
-        );
-        onProgress = (_, total) => {
-          bar.total = total;
-          bar.tick();
-        };
+        const bar = new ProgressBar('transformed :current/:total (:percent)', {
+          complete: '=',
+          incomplete: ' ',
+          width: 40,
+          total: 1,
+        });
+        onProgress = debouncedTick(bar);
       }
 
       resolutionResponse = this.getDependencies({
@@ -369,11 +388,13 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle,
+        generateSourceMaps: unbundle || generateSourceMaps,
       });
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
+      bundle.setRamGroups(response.transformOptions.transform.ramGroups);
+
       Activity.endEvent(findEventId);
       onResolutionResponse(response);
 
@@ -397,6 +418,7 @@ class Bundler {
           entryFilePath,
           transformOptions: response.transformOptions,
           getModuleId: response.getModuleId,
+          dependencyPairs: response.getResolvedDependencyPairs(module),
         }).then(transformed => {
           modulesByName[transformed.name] = module;
           onModuleTransformed({
@@ -528,7 +550,14 @@ class Bundler {
     );
   }
 
-  _toModuleTransport({module, bundle, entryFilePath, transformOptions, getModuleId}) {
+  _toModuleTransport({
+    module,
+    bundle,
+    entryFilePath,
+    transformOptions,
+    getModuleId,
+    dependencyPairs,
+  }) {
     let moduleTransport;
     const moduleId = getModuleId(module);
 
@@ -561,7 +590,7 @@ class Bundler {
         id: moduleId,
         code,
         map,
-        meta: {dependencies, dependencyOffsets, preloaded},
+        meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
         sourcePath: module.path
       });
@@ -584,7 +613,10 @@ class Bundler {
 
       bundle.addAsset(img);
 
-      const code = 'module.exports=' + JSON.stringify(img) + ';';
+      const code =
+        'module.exports=' +
+        JSON.stringify(filterObject(img, assetPropertyBlacklist))
+        + ';';
 
       return new ModuleTransport({
         name: id,
@@ -631,7 +663,7 @@ class Bundler {
         type: assetData.type,
       };
 
-      const json = JSON.stringify(asset);
+      const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
         `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
@@ -672,6 +704,10 @@ class Bundler {
     return Promise.resolve(extraOptions)
       .then(extraOptions => Object.assign(options, extraOptions));
   }
+
+  getResolver() {
+    return this._resolver;
+  }
 }
 
 function getPathRelativeToRoot(roots, absPath) {
@@ -706,6 +742,33 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
+}
+
+function debouncedTick(progressBar) {
+  let n = 0;
+  let start, total;
+
+  return (_, t) => {
+    total = t;
+    n += 1;
+    if (start) {
+      if (progressBar.curr + n >= total || Date.now() - start > 200) {
+        progressBar.total = total;
+        progressBar.tick(n);
+        start = n = 0;
+      }
+    } else {
+      start = Date.now();
+    }
+  };
+}
+
+function filterObject(object, blacklist) {
+  const copied = Object.assign({}, object);
+  for (const key of blacklist) {
+    delete copied[key];
+  }
+  return copied;
 }
 
 module.exports = Bundler;

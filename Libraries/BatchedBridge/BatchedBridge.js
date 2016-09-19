@@ -12,12 +12,7 @@
 
 const MessageQueue = require('MessageQueue');
 
-const serializeNativeParams = typeof global.__fbBatchedBridgeSerializeNativeParams !== 'undefined';
-
-const BatchedBridge = new MessageQueue(
-  () => global.__fbBatchedBridgeConfig,
-  serializeNativeParams
-);
+const BatchedBridge = new MessageQueue(() => global.__fbBatchedBridgeConfig);
 
 // TODO: Move these around to solve the cycle in a cleaner way.
 
@@ -27,6 +22,7 @@ const JSTimersExecution = require('JSTimersExecution');
 BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
 BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
+BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
 
 if (__DEV__) {
   BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));

@@ -26,7 +26,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -188,25 +187,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     @Override
     public void onDrawerSlide(View view, float v) {
       mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), v));
+          new DrawerSlideEvent(mDrawerLayout.getId(), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
       mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
+        new DrawerOpenedEvent(mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerClosed(View view) {
       mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getId(), SystemClock.nanoTime()));
+          new DrawerClosedEvent(mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
       mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getId(), SystemClock.nanoTime(), i));
+          new DrawerStateChangedEvent(mDrawerLayout.getId(), i));
     }
   }
 }

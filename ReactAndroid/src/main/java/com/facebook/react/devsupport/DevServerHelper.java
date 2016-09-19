@@ -9,24 +9,24 @@
 
 package com.facebook.react.devsupport;
 
-import android.content.Context;
-import android.os.Handler;
-import android.text.TextUtils;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSPackagerWebSocketClient;
-import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.network.OkHttpCallUtil;
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.text.TextUtils;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,6 +62,7 @@ public class DevServerHelper {
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
+  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -79,7 +80,7 @@ public class DevServerHelper {
   }
 
   public interface PackagerCommandListener {
-    void onReload();
+    void onPackagerReloadCommand();
   }
 
   public interface PackagerStatusCallback {
@@ -88,15 +89,15 @@ public class DevServerHelper {
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
-  private final JSPackagerWebSocketClient mPackagerConnection;
   private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
+  private @Nullable JSPackagerWebSocketClient mPackagerConnection;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private @Nullable Call mDownloadBundleFromURLCall;
 
-  public DevServerHelper(DevInternalSettings settings, final PackagerCommandListener commandListener) {
+  public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -105,16 +106,42 @@ public class DevServerHelper {
       .build();
 
     mRestartOnChangePollingHandler = new Handler();
-    mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
-        new JSPackagerWebSocketClient.JSPackagerCallback() {
-          @Override
-          public void onMessage(String target, String action) {
-            if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-              commandListener.onReload();
+  }
+
+  public void openPackagerConnection(final PackagerCommandListener commandListener) {
+    if (mPackagerConnection != null) {
+      FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
+      return;
+    }
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+          new JSPackagerWebSocketClient.JSPackagerCallback() {
+            @Override
+            public void onMessage(String target, String action) {
+              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+                commandListener.onPackagerReloadCommand();
+              }
             }
-          }
-        });
-    mPackagerConnection.connect();
+          });
+        mPackagerConnection.connect();
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  public void closePackagerConnection() {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        if (mPackagerConnection != null) {
+          mPackagerConnection.closeQuietly();
+          mPackagerConnection = null;
+        }
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /** Intent action for reloading the JS */
@@ -128,6 +155,10 @@ public class DevServerHelper {
 
   private String getPackagerConnectionURL() {
     return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
+  }
+
+  public String getHeapCaptureUploadUrl() {
+    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
   }
 
   /**
@@ -383,7 +414,7 @@ public class DevServerHelper {
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
   }
 
   public void launchJSDevtools() {

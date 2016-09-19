@@ -30,12 +30,12 @@ import type {Context} from 'Incremental';
  * See Incremental.js for more info.
  */
 type Props = {
-  name: string;
-  disabled?: boolean;
-  onDone?: () => void;
-  onLayout?: (event: Object) => void;
-  style?: mixed;
-  children?: any;
+  name: string,
+  disabled?: boolean,
+  onDone?: () => void,
+  onLayout?: (event: Object) => void,
+  style?: mixed,
+  children?: any,
 }
 class IncrementalPresenter extends React.Component {
   props: Props;

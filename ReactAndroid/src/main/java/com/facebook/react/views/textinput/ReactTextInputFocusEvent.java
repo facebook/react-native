@@ -21,10 +21,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private static final String EVENT_NAME = "topFocus";
 
-  public ReactTextInputFocusEvent(
-      int viewId,
-      long timestampMs) {
-    super(viewId, timestampMs);
+  public ReactTextInputFocusEvent(int viewId) {
+    super(viewId);
   }
 
   @Override

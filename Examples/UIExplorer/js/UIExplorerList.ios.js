@@ -23,8 +23,8 @@
 'use strict';
 
 export type UIExplorerExample = {
-  key: string;
-  module: Object;
+  key: string,
+  module: Object,
 };
 
 const ComponentExamples: Array<UIExplorerExample> = [
@@ -69,10 +69,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
-  },
-  {
     key: 'NavigatorExample',
     module: require('./Navigator/NavigatorExample'),
   },
@@ -115,6 +111,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
   },
   {
     key: 'SwitchExample',
@@ -224,12 +224,20 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./LinkingExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
   {
     key: 'NetInfoExample',
     module: require('./NetInfoExample'),
+  },
+  {
+    key: 'OrientationChangeExample',
+    module: require('./OrientationChangeExample'),
   },
   {
     key: 'PanResponderExample',
@@ -246,6 +254,14 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'RCTRootViewIOSExample',
     module: require('./RCTRootViewIOSExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'SnapshotExample',

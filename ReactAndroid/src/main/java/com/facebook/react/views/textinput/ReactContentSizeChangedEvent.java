@@ -21,15 +21,14 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
 
   public static final String EVENT_NAME = "topContentSizeChange";
 
-  private int mContentWidth;
-  private int mContentHeight;
+  private float mContentWidth;
+  private float mContentHeight;
 
   public ReactContentSizeChangedEvent(
     int viewId,
-    long timestampMs,
-    int contentSizeWidth,
-    int contentSizeHeight) {
-    super(viewId, timestampMs);
+    float contentSizeWidth,
+    float contentSizeHeight) {
+    super(viewId);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }

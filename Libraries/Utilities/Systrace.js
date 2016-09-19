@@ -31,11 +31,25 @@ let _enabled = false;
 let _asyncCookie = 0;
 
 const ReactSystraceDevtool = __DEV__ ? {
-  onBeginReconcilerTimer(debugID, timerType) {
+  onBeforeMountComponent(debugID) {
     const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.${timerType}(${displayName})`);
+    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
   },
-  onEndReconcilerTimer(debugID, timerType) {
+  onMountComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUpdateComponent(debugID) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
+  },
+  onUpdateComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUnmountComponent(debugID) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
+  },
+  onUnmountComponent(debugID) {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {

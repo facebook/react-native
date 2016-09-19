@@ -8,7 +8,7 @@ next: running-on-simulator-ios
 previous: linking-libraries-ios
 ---
 
-Running an iOS app on a device requires an [Apple Developer account](https://developer.apple.com/) and provisioning your iPhone. This guide covers only React Native specific topics.
+Running an iOS app on a device requires only an Apple ID and a Mac. This guide covers only React Native specific topics.
 
 ## Accessing the development server from device
 
@@ -24,16 +24,11 @@ In Xcode, select your phone as build target and press "Build and run"
 
 You have built a great app using React Native, and you are now itching to release it in the App Store. The process is the same as any other native iOS app, with some additional considerations to take into account.
 
-### Disabling the developer menu
+Building an app for distribution in the App Store requires using the `Release` scheme in Xcode. To do this, go to `Project -> Scheme -> Edit Scheme (cmd + <)`, make sure you're in the `Run` tab from the side, and set the Build Configuration dropdown to `release`.
 
-Building an app for distribution in the App Store requires using the `Release` scheme in Xcode. Apps built for `Release` will automatically disable the in-app developer menu. This will prevent your users from inadvertently accessing the menu in production.
+Apps built for `Release` will automatically disable the in-app developer menu, which will prevent your users from inadvertently accessing the menu in production. It will also load the JavaScript locally, so you can put the app on a device and test whilst not connected to the computer.
 
-### Using the offline bundle
-
-Set up your app to load your JavaScript, images, and other static assets from its resource bundle rather than the development server. This way you can test the app independently of the development server, and will allow you to distribute the app to beta testers and submit the app to the App Store.
-
-1. Open `ios/YourApp/AppDelegate.m`
-2. Uncomment the line, `jsCodeLocation = [[NSBundle mainBundle] ...`
+Once built for release, you'll be able to distribute the app to beta testers and submit the app to the App Store.
 
 ### App Transport Security
 

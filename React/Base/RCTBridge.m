@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 
 #import <objc/runtime.h>
@@ -17,6 +18,7 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
+#import "RCTProfile.h"
 #import "RCTUtils.h"
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
@@ -26,7 +28,6 @@ NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailT
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
 static NSMutableArray<Class> *RCTModuleClasses;
-NSArray<Class> *RCTGetModuleClasses(void);
 NSArray<Class> *RCTGetModuleClasses(void)
 {
   return RCTModuleClasses;
@@ -57,7 +58,7 @@ void RCTRegisterModule(Class moduleClass)
  */
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
-#if RCT_DEV
+#if RCT_DEBUG
   RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
             @"Bridge module `%@` does not conform to RCTBridgeModule", cls);
 #endif
@@ -71,6 +72,49 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   }
   return name;
 }
+
+#if RCT_DEBUG
+void RCTVerifyAllModulesExported(NSArray *extraModules)
+{
+  // Check for unexported modules
+  unsigned int classCount;
+  Class *classes = objc_copyClassList(&classCount);
+
+  NSMutableSet *moduleClasses = [NSMutableSet new];
+  [moduleClasses addObjectsFromArray:RCTGetModuleClasses()];
+  [moduleClasses addObjectsFromArray:[extraModules valueForKeyPath:@"class"]];
+
+  for (unsigned int i = 0; i < classCount; i++) {
+    Class cls = classes[i];
+    Class superclass = cls;
+    while (superclass) {
+      if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
+        if ([moduleClasses containsObject:cls]) {
+          break;
+        }
+
+        // Verify it's not a super-class of one of our moduleClasses
+        BOOL isModuleSuperClass = NO;
+        for (Class moduleClass in moduleClasses) {
+          if ([moduleClass isSubclassOfClass:cls]) {
+            isModuleSuperClass = YES;
+            break;
+          }
+        }
+        if (isModuleSuperClass) {
+          break;
+        }
+
+        RCTLogWarn(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
+        break;
+      }
+      superclass = class_getSuperclass(superclass);
+    }
+  }
+
+  free(classes);
+}
+#endif
 
 @implementation RCTBridge
 {
@@ -132,15 +176,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
-    _performanceLogger = [RCTPerformanceLogger new];
-    [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-    [_performanceLogger markStartForTag:RCTPLTTI];
-
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+
     [self setUp];
+
     RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
@@ -162,23 +204,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainQueue();
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(reload)
-                                               name:RCTReloadNotification
-                                             object:nil];
-
 #if TARGET_IPHONE_SIMULATOR
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   // reload in current mode
+  __weak typeof(self) weakSelf = self;
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                        object:nil
-                                                      userInfo:nil];
+    [weakSelf requestReload];
   }];
-
 #endif
 }
 
@@ -216,6 +251,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+- (void)whitelistedModulesDidChange
+{
+  [self.batchedBridge whitelistedModulesDidChange];
+}
+
 - (void)reload
 {
   /**
@@ -227,8 +267,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   });
 }
 
+- (void)requestReload
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
+  [self reload];
+}
+
 - (void)setUp
 {
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
+
+  _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+  [_performanceLogger markStartForTag:RCTPLTTI];
+
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];
@@ -240,6 +292,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   [self createBatchedBridge];
+
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)createBatchedBridge

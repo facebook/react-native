@@ -10,7 +10,8 @@
  */
 
 var DocsSidebar = require('DocsSidebar');
-var HeaderWithGithub = require('HeaderWithGithub');
+var Header = require('Header');
+var Footer = require('Footer');
 var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
@@ -33,21 +34,20 @@ var DocsLayout = React.createClass({
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
-      <Site section="docs" title={metadata.title}>
+      <Site
+        section="docs"
+        title={metadata.title} >
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <HeaderWithGithub
-              title={metadata.title}
-              level={1}
-              path={'docs/' + metadata.filename}
-            />
+            <Header level={1}>{metadata.title}</Header>
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
+            <Footer path={'docs/' + metadata.filename} />
             <div className="survey">
               <div className="survey-image" />
               <p>

@@ -12,6 +12,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
+#import "RCTTextSelection.h"
 #import "UIView+React.h"
 
 @implementation RCTTextField
@@ -28,7 +29,6 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
-    _previousSelectionRange = self.selectedTextRange;
     [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
@@ -62,6 +62,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textWasPasted = YES;
   [super paste:sender];
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  UITextRange *currentSelection = self.selectedTextRange;
+  UITextPosition *start = [self positionFromPosition:self.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [self positionFromPosition:self.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [self textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    self.selectedTextRange = selectedTextRange;
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
 }
 
 - (void)setText:(NSString *)text
@@ -173,16 +193,19 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldBeginEditing
 {
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self selectAll:nil];
-    });
-  }
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self->_selectTextOnFocus) {
+      [self selectAll:nil];
+    }
+
+    [self sendSelectionEvent];
+  });
 }
 
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
