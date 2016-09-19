@@ -1106,6 +1106,9 @@ var Navigator = React.createClass({
     var presentedRoute = this.state.routeStack[this.state.presentedIndex];
     var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
+    // This is needed because scene at the pop index may be transformed
+    // with a configuration different from the configuration on the presented
+    // route.
     this._clearTransformations(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
