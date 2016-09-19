@@ -1486,6 +1486,8 @@ class AnimatedProps extends Animated {
           // JS may not be up to date.
           props[key] = value.__getValue();
         }
+      } else if (value instanceof AnimatedEvent) {
+        props[key] = value.__getHandler();
       } else {
         props[key] = value;
       }
@@ -1596,6 +1598,7 @@ function createAnimatedComponent(Component: any): any {
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
+      this._detachNativeEvents(this.props);
     }
 
     setNativeProps(props) {
@@ -1603,14 +1606,50 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentWillMount() {
-      this.attachProps(this.props);
+      this._attachProps(this.props);
     }
 
     componentDidMount() {
       this._propsAnimated.setNativeView(this._component);
+
+      this._attachNativeEvents(this.props);
     }
 
-    attachProps(nextProps) {
+    _attachNativeEvents(newProps) {
+      if (newProps !== this.props) {
+        this._detachNativeEvents(this.props);
+      }
+
+      // Make sure to get the scrollable node for components that implement
+      // `ScrollResponder.Mixin`.
+      const ref = this._component.getScrollableNode ?
+        this._component.getScrollableNode() :
+        this._component;
+
+      for (const key in newProps) {
+        const prop = newProps[key];
+        if (prop instanceof AnimatedEvent && prop.__isNative) {
+          prop.__attach(ref, key);
+        }
+      }
+    }
+
+    _detachNativeEvents(props) {
+      // Make sure to get the scrollable node for components that implement
+      // `ScrollResponder.Mixin`.
+      const ref = this._component.getScrollableNode ?
+        this._component.getScrollableNode() :
+        this._component;
+
+      for (const key in props) {
+        const prop = props[key];
+        if (prop instanceof AnimatedEvent && prop.__isNative) {
+          prop.__detach(ref, key);
+        }
+      }
+    }
+
+    _attachProps(nextProps) {
       var oldPropsAnimated = this._propsAnimated;
 
       // The system is best designed when setNativeProps is implemented. It is
@@ -1640,7 +1679,6 @@ function createAnimatedComponent(Component: any): any {
         callback,
       );
 
-
       if (this._component) {
         this._propsAnimated.setNativeView(this._component);
       }
@@ -1657,7 +1695,8 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentWillReceiveProps(nextProps) {
-      this.attachProps(nextProps);
+      this._attachProps(nextProps);
+      this._attachNativeEvents(nextProps);
     }
 
     render() {
@@ -1694,7 +1733,7 @@ function createAnimatedComponent(Component: any): any {
           );
         }
       }
-    }
+    },
   };
 
   return AnimatedComponent;
@@ -1998,21 +2037,108 @@ var stagger = function(
 };
 
 type Mapping = {[key: string]: Mapping} | AnimatedValue;
+type EventConfig = {
+  listener?: ?Function;
+  useNativeDriver?: bool;
+};
 
-type EventConfig = {listener?: ?Function};
-var event = function(
-  argMapping: Array<?Mapping>,
-  config?: ?EventConfig,
-): () => void {
-  return function(...args): void {
-    var traverse = function(recMapping, recEvt, key) {
+class AnimatedEvent {
+  _argMapping: Array<?Mapping>;
+  _listener: ?Function;
+  __isNative: bool;
+
+  constructor(
+    argMapping: Array<?Mapping>,
+    config?: EventConfig = {}
+  ) {
+    this._argMapping = argMapping;
+    this._listener = config.listener;
+    this.__isNative = config.useNativeDriver || false;
+
+    if (this.__isNative) {
+      invariant(!this._listener, 'Listener is not supported for native driven events.');
+    }
+
+    if (__DEV__) {
+      this._validateMapping();
+    }
+  }
+
+  __attach(viewRef, eventName) {
+    invariant(this.__isNative, 'Only native driven events need to be attached.');
+
+    // Find animated values in `argMapping` and create an array representing their
+    // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
+    const eventMappings = [];
+
+    const traverse = (value, path) => {
+      if (value instanceof AnimatedValue) {
+        value.__makeNative();
+
+        eventMappings.push({
+          nativeEventPath: path,
+          animatedValueTag: value.__getNativeTag(),
+        });
+      } else if (typeof value === 'object') {
+        for (const key in value) {
+          traverse(value[key], path.concat(key));
+        }
+      }
+    };
+
+    invariant(
+      this._argMapping[0] && this._argMapping[0].nativeEvent,
+      'Native driven events only support animated values contained inside `nativeEvent`.'
+    );
+
+    // Assume that the event containing `nativeEvent` is always the first argument.
+    traverse(this._argMapping[0].nativeEvent, []);
+
+    const viewTag = findNodeHandle(viewRef);
+
+    eventMappings.forEach((mapping) => {
+      NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
+    });
+  }
+
+  __detach(viewTag, eventName) {
+    invariant(this.__isNative, 'Only native driven events need to be detached.');
+
+    NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+  }
+
+  __getHandler() {
+    return (...args) => {
+      const traverse = (recMapping, recEvt, key) => {
+        if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
+          recMapping.setValue(recEvt);
+        } else if (typeof recMapping === 'object') {
+          for (const mappingKey in recMapping) {
+            traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
+          }
+        }
+      };
+
+      if (!this.__isNative) {
+        this._argMapping.forEach((mapping, idx) => {
+          traverse(mapping, args[idx], 'arg' + idx);
+        });
+      }
+
+      if (this._listener) {
+        this._listener.apply(null, args);
+      }
+    };
+  }
+
+  _validateMapping() {
+    const traverse = (recMapping, recEvt, key) => {
       if (typeof recEvt === 'number') {
         invariant(
           recMapping instanceof AnimatedValue,
           'Bad mapping of type ' + typeof recMapping + ' for key ' + key +
             ', event value must map to AnimatedValue'
         );
-        recMapping.setValue(recEvt);
         return;
       }
       invariant(
@@ -2023,17 +2149,23 @@ var event = function(
         typeof recEvt === 'object',
         'Bad event of type ' + typeof recEvt + ' for key ' + key
       );
-      for (var key in recMapping) {
-        traverse(recMapping[key], recEvt[key], key);
+      for (const mappingKey in recMapping) {
+        traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
       }
     };
-    argMapping.forEach((mapping, idx) => {
-      traverse(mapping, args[idx], 'arg' + idx);
-    });
-    if (config && config.listener) {
-      config.listener.apply(null, args);
-    }
-  };
+  }
+}
+
+var event = function(
+  argMapping: Array<?Mapping>,
+  config?: EventConfig,
+): any {
+  const animatedEvent = new AnimatedEvent(argMapping, config);
+  if (animatedEvent.__isNative) {
+    return animatedEvent;
+  } else {
+    return animatedEvent.__getHandler();
+  }
 };
 
 /**
