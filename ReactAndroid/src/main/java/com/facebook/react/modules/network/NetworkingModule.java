@@ -38,7 +38,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
-import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
