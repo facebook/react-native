@@ -9,8 +9,8 @@ will advise your app to show a rationale for needing the permission. The
 optional <code>rationale</code> argument will show a dialog prompt only if
 necessary - otherwise the normal permission prompt will appear.</p><h3><a class="anchor" name="example"></a>Example <a class="hash-link" href="docs/permissionsandroid.html#example">#</a></h3><div class="prism language-javascript">async <span class="token keyword">function</span> <span class="token function">requestCameraPermission<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
-    const granted <span class="token operator">=</span> await AndroidPermissions<span class="token punctuation">.</span><span class="token function">requestPermission<span class="token punctuation">(</span></span>
-      AndroidPermissions<span class="token punctuation">.</span>PERMISSIONS<span class="token punctuation">.</span>CAMERA<span class="token punctuation">,</span>
+    const granted <span class="token operator">=</span> await PermissionsAndroid<span class="token punctuation">.</span><span class="token function">requestPermission<span class="token punctuation">(</span></span>
+      PermissionsAndroid<span class="token punctuation">.</span>PERMISSIONS<span class="token punctuation">.</span>CAMERA<span class="token punctuation">,</span>
       <span class="token punctuation">{</span>
         <span class="token string">&#x27;title&#x27;</span><span class="token punctuation">:</span> <span class="token string">&#x27;Cool Photo App Camera Permission&#x27;</span><span class="token punctuation">,</span>
         <span class="token string">&#x27;message&#x27;</span><span class="token punctuation">:</span> <span class="token string">&#x27;Cool Photo App needs access to your camera &#x27;</span> <span class="token operator">+</span>
