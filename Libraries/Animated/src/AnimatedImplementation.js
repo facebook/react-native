@@ -1672,6 +1672,12 @@ function createAnimatedComponent(Component: any): any {
     _setComponentRef(c) {
       this._component = c;
     }
+
+    // A third party library can use getNode()
+    // to get the node reference of the decorated component
+    getNode () {
+      return this._component;
+    }
   }
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
