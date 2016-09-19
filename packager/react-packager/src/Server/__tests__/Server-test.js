@@ -337,30 +337,32 @@ describe('processRequest', () => {
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should parse the platform option', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should serve range request', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
-      const res = {end: jest.fn(), writeHead: jest.fn()};
+      const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
@@ -368,18 +370,20 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
     it('should serve assets files\'s name contain non-latin letter', () => {
       const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/主页/logo.png', undefined);
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });
