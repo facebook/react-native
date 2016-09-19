@@ -12,6 +12,12 @@
 @class RCTModuleData;
 @protocol RCTJavaScriptExecutor;
 
+RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
+
+#if RCT_DEBUG
+RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
+#endif
+
 @interface RCTBridge ()
 
 // Private designated initializer
