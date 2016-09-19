@@ -56,7 +56,7 @@ class Instance {
   void handleMemoryPressureCritical();
 
  private:
-  void callNativeModules(ExecutorToken token, const std::string& calls, bool isEndOfBatch);
+  void callNativeModules(ExecutorToken token, folly::dynamic&& calls, bool isEndOfBatch);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
