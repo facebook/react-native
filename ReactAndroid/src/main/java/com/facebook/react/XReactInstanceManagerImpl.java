@@ -45,6 +45,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ApplicationHolder;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.cxxbridge.Arguments;
@@ -131,6 +132,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final JSCConfig mJSCConfig;
+  private final boolean mLazyNativeModulesEnabled;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -288,7 +290,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     UIImplementationProvider uiImplementationProvider,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     JSCConfig jscConfig,
-    @Nullable RedBoxHandler redBoxHandler) {
+    @Nullable RedBoxHandler redBoxHandler,
+    boolean lazyNativeModulesEnabled) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -315,6 +318,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mJSCConfig = jscConfig;
+    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
   @Override

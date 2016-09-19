@@ -58,9 +58,6 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
-  setGlobalVariable(
-    "__fbBatchedBridgeSerializeNativeParams",
-    folly::make_unique<JSBigStdString>("1"));
 }
 
 ProxyExecutor::~ProxyExecutor() {
@@ -95,7 +92,7 @@ void ProxyExecutor::callFunction(const std::string& moduleId, const std::string&
     std::move(arguments),
   };
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
-  m_delegate->callNativeModules(*this, result, true);
+  m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
@@ -104,7 +101,7 @@ void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic
     std::move(arguments)
   };
   std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_delegate->callNativeModules(*this, result, true);
+  m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::setGlobalVariable(std::string propName,

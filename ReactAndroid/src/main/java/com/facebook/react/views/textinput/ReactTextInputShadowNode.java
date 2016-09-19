@@ -82,10 +82,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
     mComputedPadding = spacingToFloatArray(getPadding());
     editText.setPadding(
-        (int) Math.ceil(getPadding().get(Spacing.START)),
-        (int) Math.ceil(getPadding().get(Spacing.TOP)),
-        (int) Math.ceil(getPadding().get(Spacing.END)),
-        (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
+        (int) Math.floor(getPadding().get(Spacing.START)),
+        (int) Math.floor(getPadding().get(Spacing.TOP)),
+        (int) Math.floor(getPadding().get(Spacing.END)),
+        (int) Math.floor(getPadding().get(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -129,7 +129,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           mJsEventCount,
           mContainsImages,
           getPadding(),
-          getEffectiveLineHeight(),
           mTextAlign
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

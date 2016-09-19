@@ -24,7 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImageSpan;
+import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageSpan;
 
 /**
  * {@link CSSNode} that represents an inline image. Loading is done using Fresco.

@@ -32,10 +32,11 @@ function getSourceMapForUrl(url, onFailure, onSuccess) {
   }
 
   const parsedUrl = urlLib.parse(url);
+  const mapPath = parsedUrl.pathname.replace(/\.bundle$/, '.map');
   const options = {
     host: 'localhost',
     port: parsedUrl.port,
-    path: parsedUrl.pathname.replace(/\.bundle$/, '.map') + parsedUrl.search,
+    path: mapPath + parsedUrl.search + '&babelSourcemap=true',
   };
 
   http.get(options, (res) => {

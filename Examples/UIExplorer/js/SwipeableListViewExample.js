@@ -66,9 +66,7 @@ var SwipeableListViewSimpleExample = React.createClass({
           dataSource={this.state.dataSource}
           maxSwipeDistance={100}
           renderQuickActions={
-            /* $FlowFixMe(>=0.31.0) */
             (rowData: Object, sectionID: string, rowID: string) => {
-            /* $FlowFixMe(>=0.31.0) */
             return (<View style={styles.actionsContainer}>
               <TouchableHighlight onPress={() => {
                 Alert.alert('Tips', 'You could do something with this row: ' + rowData.text);

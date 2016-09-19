@@ -150,6 +150,10 @@ const bundleOpts = declareOpts({
   resolutionResponse: {
     type: 'object',
   },
+  generateSourceMaps: {
+    type: 'boolean',
+    required: false,
+  }
 });
 
 const dependencyOpts = declareOpts({
@@ -219,8 +223,9 @@ class Server {
       : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
-      projectRoots: opts.projectRoots,
       assetExts: opts.assetExts,
+      fileWatcher: this._fileWatcher,
+      projectRoots: opts.projectRoots,
     });
 
     const bundlerOpts = Object.create(opts);
@@ -488,7 +493,12 @@ class Server {
     const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
+        data => {
+          // Tell clients to cache this for 1 year.
+          // This is safe as the asset url contains a hash of the asset.
+          res.setHeader('Cache-Control', 'max-age=31536000');
+          res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
+        },
         error => {
           console.error(error.stack);
           res.writeHead('404');
@@ -813,7 +823,7 @@ class Server {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
-      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
+      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify', false),
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
@@ -827,11 +837,12 @@ class Server {
         'entryModuleOnly',
         false,
       ),
+      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
     };
   }
 
   _getBoolOptionFromQuery(query, opt, defaultVal) {
-    if (query[opt] == null && defaultVal != null) {
+    if (query[opt] == null) {
       return defaultVal;
     }
 

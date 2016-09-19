@@ -45,7 +45,7 @@ class ExecutorDelegate {
   virtual std::vector<std::string> moduleNames() = 0;
   virtual folly::dynamic getModuleConfig(const std::string& name) = 0;
   virtual void callNativeModules(
-    JSExecutor& executor, std::string callJSON, bool isEndOfBatch) = 0;
+    JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
 };
