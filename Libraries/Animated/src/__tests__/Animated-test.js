@@ -13,6 +13,7 @@ jest
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
+  .setMock('ScrollView', {})
   .setMock('React', {Component: class {}});
 
 var Animated = require('Animated');
@@ -86,6 +87,7 @@ describe('Animated', () => {
     c.componentWillMount();
 
     expect(anim.__detach).not.toBeCalled();
+    c._component = {};
     c.componentWillReceiveProps({
       style: {
         opacity: anim,
@@ -116,7 +118,7 @@ describe('Animated', () => {
     c.componentWillMount();
 
     Animated.timing(anim, {toValue: 10, duration: 1000}).start(callback);
-
+    c._component = {};
     c.componentWillUnmount();
 
     expect(callback).toBeCalledWith({finished: false});
