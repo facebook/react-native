@@ -88,6 +88,8 @@ class BundleBase {
     }
   }
 
+  setRamGroups() {}
+
   toJSON() {
     return {
       modules: this._modules,

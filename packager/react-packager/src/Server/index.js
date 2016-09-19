@@ -493,7 +493,12 @@ class Server {
     const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
+        data => {
+          // Tell clients to cache this for 1 year.
+          // This is safe as the asset url contains a hash of the asset.
+          res.setHeader('Cache-Control', 'max-age=31536000');
+          res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
+        },
         error => {
           console.error(error.stack);
           res.writeHead('404');
