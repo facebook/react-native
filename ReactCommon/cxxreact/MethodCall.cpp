@@ -40,6 +40,11 @@ std::vector<MethodCall> parseMethodCalls(const std::string& json) throw(std::inv
           folly::to<std::string>("Did not get valid calls back from JS: ", json.c_str()));
   }
 
+  if (moduleIds.size() != methodIds.size() || moduleIds.size() != params.size()) {
+    throw std::invalid_argument(
+          folly::to<std::string>("Did not get valid calls back from JS: ", json.c_str()));
+  }
+
   if (jsonData.size() > REQUEST_CALLID) {
     if (!jsonData[REQUEST_CALLID].isInt()) {
       throw std::invalid_argument(
@@ -51,16 +56,20 @@ std::vector<MethodCall> parseMethodCalls(const std::string& json) throw(std::inv
 
   std::vector<MethodCall> methodCalls;
   for (size_t i = 0; i < moduleIds.size(); i++) {
-    auto paramsValue = params[i];
+    if (!params[i].isString()) {
+      throw std::invalid_argument(
+          folly::to<std::string>("Call argument isn't a string"));
+    }
+    auto paramsValue = folly::parseJson(params[i].asString());
     if (!paramsValue.isArray()) {
       throw std::invalid_argument(
-          folly::to<std::string>("Call argument isn't an array"));
+          folly::to<std::string>("Parsed params isn't an array"));
     }
 
     methodCalls.emplace_back(
       moduleIds[i].getInt(),
       methodIds[i].getInt(),
-      std::move(params[i]),
+      std::move(paramsValue),
       callId);
 
     // only incremement callid if contains valid callid as callid is optional

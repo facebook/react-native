@@ -13,11 +13,29 @@
 #import "RCTURLRequestHandler.h"
 #import "RCTResizeMode.h"
 
-@class ALAssetsLibrary;
-
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
-typedef void (^RCTImageLoaderCancellationBlock)(void);
+typedef dispatch_block_t RCTImageLoaderCancellationBlock;
+
+/**
+ * Provides an interface to use for providing a image caching strategy.
+ */
+@protocol RCTImageCache <NSObject>
+
+- (UIImage *)imageForUrl:(NSString *)url
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(RCTResizeMode)resizeMode
+            responseDate:(NSString *)responseDate;
+
+- (void)addImageToCache:(UIImage *)image
+                    URL:(NSString *)url
+                   size:(CGSize)size
+                  scale:(CGFloat)scale
+             resizeMode:(RCTResizeMode)resizeMode
+           responseDate:(NSString *)responseDate;
+
+@end
 
 @interface UIImage (React)
 
@@ -94,47 +112,12 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
 
-@end
-
-@interface RCTImageLoader (Deprecated)
-
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                           callback:(RCTImageLoaderCompletionBlock)callback
-__deprecated_msg("Use loadImageWithURLRequest:callback: instead");
-
-- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
-                                               size:(CGSize)size
-                                              scale:(CGFloat)scale
-                                         resizeMode:(RCTResizeMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
-                                                       size:(CGSize)size
-                                                      scale:(CGFloat)scale
-                                                 resizeMode:(RCTResizeMode)resizeMode
-                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
-                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use loadImageWithURLRequest:size:scale:clipped:resizeMode:progressBlock:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)decodeImageDataWithoutClipping:(NSData *)data
-                                                             size:(CGSize)size
-                                                            scale:(CGFloat)scale
-                                                       resizeMode:(RCTResizeMode)resizeMode
-                                                  completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
-__deprecated_msg("Use decodeImageData:size:scale:clipped:resizeMode:completionBlock: instead");
-
-- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
-                                          block:(void(^)(NSError *error, CGSize size))completionBlock
-__deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
+/**
+ * Allows developers to set their own caching implementation for
+ * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * protocol. This method should be called in bridgeDidInitializeModule.
+ */
+- (void)setImageCache:(id<RCTImageCache>)cache;
 
 @end
 
@@ -185,6 +168,22 @@ __deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
  */
 - (float)loaderPriority;
 
+/**
+ * If the loader must be called on the serial url cache queue, and whether the completion
+ * block should be dispatched off the main thread. If this is NO, the loader will be
+ * called from the main queue. Defaults to YES.
+ *
+ * Use with care: disabling scheduling will reduce RCTImageLoader's ability to throttle
+ * network requests.
+ */
+- (BOOL)requiresScheduling;
+
+/**
+ * If images loaded by the loader should be cached in the decoded image cache.
+ * Defaults to YES.
+ */
+- (BOOL)shouldCacheLoadedImages;
+
 @end
 
 /**
@@ -204,6 +203,9 @@ __deprecated_msg("Use getImageSizeWithURLRequest:block: instead");
  * Decode an image from the data object. The method should call the
  * completionHandler when the decoding operation  has finished. The method
  * should also return a cancellation block, if applicable.
+ *
+ * If you provide a custom image decoder, you most implement scheduling yourself,
+ * to avoid decoding large amounts of images at the same time.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size

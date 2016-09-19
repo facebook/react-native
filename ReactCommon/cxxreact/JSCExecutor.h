@@ -9,6 +9,7 @@
 #include <JavaScriptCore/JSContextRef.h>
 
 #include <folly/json.h>
+#include <folly/Optional.h>
 
 #include "Executor.h"
 #include "ExecutorToken.h"
@@ -58,18 +59,24 @@ public:
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) throw(JSException) override;
+#ifdef WITH_FBJSCEXTENSIONS
+  virtual void loadApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) override;
+#endif
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,
-    const folly::dynamic& arguments) throw(JSException) override;
+    const folly::dynamic& arguments) override;
   virtual void invokeCallback(
     const double callbackId,
-    const folly::dynamic& arguments) throw(JSException) override;
+    const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
     std::string propName,
-    std::unique_ptr<const JSBigString> jsonValue) throw(JSException) override;
+    std::unique_ptr<const JSBigString> jsonValue) override;
   virtual void* getJavaScriptContext() override;
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
@@ -91,6 +98,10 @@ private:
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   folly::dynamic m_jscConfig;
 
+  folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
+  folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
+  folly::Optional<Object> m_flushedQueueJS;
+
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
    */
@@ -105,7 +116,9 @@ private:
 
   void initOnJSVMThread() throw(JSException);
   void terminateOnJSVMThread();
-  void flush() throw(JSException);
+  void bindBridge() throw(JSException);
+  void callNativeModules(Value&&);
+  void flush();
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
 

@@ -1,0 +1,23 @@
+cxx_library(
+  name = 'microprofiler',
+  force_static = True,
+  compiler_flags = [
+    '-Wall',
+    '-Werror',
+    '-std=c++11',
+    '-fexceptions',
+  ],
+  exported_headers = [
+    'MicroProfiler.h',
+  ],
+  srcs = [
+    'MicroProfiler.cpp',
+  ],
+  header_namespace = 'microprofiler',
+  deps = [
+    '//xplat/third-party/glog:glog',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

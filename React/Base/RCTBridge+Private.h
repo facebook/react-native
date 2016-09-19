@@ -10,8 +10,15 @@
 #import "RCTBridge.h"
 
 @class RCTModuleData;
+@protocol RCTJavaScriptExecutor;
 
 @interface RCTBridge ()
+
+// Private designated initializer
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                       bundleURL:(NSURL *)bundleURL
+                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;
@@ -56,7 +63,9 @@
 @interface RCTBridge (RCTBatchedBridge)
 
 /**
- * Used for unit testing, to detect when executor has been invalidated.
+ * Access the underlying JavaScript executor. You can use this in unit tests to detect
+ * when the executor has been invalidated, or when you want to schedule calls on the
+ * JS VM outside of React Native. Use with care!
  */
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
 
@@ -91,15 +100,17 @@
 - (void)stopProfiling:(void (^)(NSData *))callback;
 
 /**
- * Executes native calls sent by JavaScript. Exposed for testing purposes only
- */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer;
-
-/**
  * Exposed for the RCTJSCExecutor for sending native methods called from
  * JavaScript in the middle of a batch.
  */
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
+
+/**
+ * Synchronously call a specific native module's method and return the result
+ */
+- (id)callNativeModule:(NSUInteger)moduleID
+                method:(NSUInteger)methodID
+                params:(NSArray *)params;
 
 /**
  * Exposed for the RCTJSCExecutor for lazily loading native modules
@@ -120,9 +131,9 @@
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
+@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

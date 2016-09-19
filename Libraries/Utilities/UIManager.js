@@ -15,7 +15,10 @@ const Platform = require('Platform');
 const NativeModules = require('NativeModules');
 const { UIManager } = NativeModules;
 
-const findNodeHandle = require('findNodeHandle');
+const findNodeHandle = require('react/lib/findNodeHandle');
+const invariant = require('fbjs/lib/invariant');
+
+invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
 
 const _takeSnapshot = UIManager.takeSnapshot;
 
@@ -39,10 +42,10 @@ const _takeSnapshot = UIManager.takeSnapshot;
 UIManager.takeSnapshot = async function(
   view ?: 'window' | ReactElement<any> | number,
   options ?: {
-    width ?: number;
-    height ?: number;
-    format ?: 'png' | 'jpeg';
-    quality ?: number;
+    width ?: number,
+    height ?: number,
+    format ?: 'png' | 'jpeg',
+    quality ?: number,
   },
 ) {
   if (!_takeSnapshot) {

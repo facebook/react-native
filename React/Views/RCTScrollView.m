@@ -383,8 +383,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSHashTable *_scrollListeners;
 }
 
-@synthesize nativeScrollDelegate = _nativeScrollDelegate;
-
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
@@ -528,6 +526,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
+  if (UIEdgeInsetsEqualToEdgeInsets(contentInset, _contentInset)) {
+    return;
+  }
+
   CGPoint contentOffset = _scrollView.contentOffset;
 
   _contentInset = contentInset;
@@ -588,19 +590,6 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
-- (void)setNativeScrollDelegate:(NSObject<UIScrollViewDelegate> *)nativeScrollDelegate
-{
-  if (nativeScrollDelegate != _nativeScrollDelegate) {
-    if (_nativeScrollDelegate) {
-      [_scrollListeners removeObject:_nativeScrollDelegate];
-    }
-    if (nativeScrollDelegate) {
-      [_scrollListeners addObject:nativeScrollDelegate];
-    }
-    _nativeScrollDelegate = nativeScrollDelegate;
-  }
-}
-
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
   [_scrollListeners addObject:scrollListener];
@@ -608,11 +597,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
 - (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
-  if (scrollListener == _nativeScrollDelegate) {
-    [self setNativeScrollDelegate:nil];
-  } else {
-    [_scrollListeners removeObject:scrollListener];
-  }
+  [_scrollListeners removeObject:scrollListener];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -653,12 +638,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
       // Check if new or changed
       CGRect newFrame = subview.frame;
       BOOL frameChanged = NO;
-      if (_cachedChildFrames.count <= idx) {
+      if (self->_cachedChildFrames.count <= idx) {
         frameChanged = YES;
-        [_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-      } else if (!CGRectEqualToRect(newFrame, [_cachedChildFrames[idx] CGRectValue])) {
+        [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
+      } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
         frameChanged = YES;
-        _cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
+        self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
       }
 
       // Create JS frame object

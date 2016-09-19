@@ -14,6 +14,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
@@ -92,13 +93,13 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                object:self];
 
     if (!_bridge.loading) {
-      [self bundleFinishedLoading:_bridge.batchedBridge];
+      [self bundleFinishedLoading:[_bridge batchedBridge]];
     }
 
     [self showLoadingView];
   }
 
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   return self;
 }
@@ -158,12 +159,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      dispatch_get_main_queue(), ^{
 
                        [UIView transitionWithView:self
-                                         duration:_loadingViewFadeDuration
+                                         duration:self->_loadingViewFadeDuration
                                           options:UIViewAnimationOptionTransitionCrossDissolve
                                        animations:^{
-                                         _loadingView.hidden = YES;
+                                         self->_loadingView.hidden = YES;
                                        } completion:^(__unused BOOL finished) {
-                                         [_loadingView removeFromSuperview];
+                                         [self->_loadingView removeFromSuperview];
                                        }];
                      });
     } else {
@@ -199,6 +200,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
   RCTAssertMainQueue();
+
+  // Use the (batched) bridge that's sent in the notification payload, so the
+  // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   [self bundleFinishedLoading:bridge];
 }
@@ -213,11 +217,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
                                                   reactTag:self.reactTag
-                                            sizeFlexiblity:self.sizeFlexibility];
+                                            sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
+
+  if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
+    self.intrinsicSize = self.bounds.size;
+  }
 }
 
 - (void)runApplication:(RCTBridge *)bridge
@@ -228,8 +236,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
-  [bridge enqueueJSCall:@"AppRegistry.runApplication"
-                   args:@[moduleName, appParameters]];
+  RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
+  [bridge enqueueJSCall:@"AppRegistry"
+                 method:@"runApplication"
+                   args:@[moduleName, appParameters]
+             completion:NULL];
 }
 
 - (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
@@ -259,7 +270,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _appProperties = [appProperties copy];
 
   if (_contentView && _bridge.valid && !_bridge.loading) {
-    [self runApplication:_bridge.batchedBridge];
+    [self runApplication:_bridge];
   }
 }
 
@@ -340,10 +351,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:subview atIndex:atIndex];
-  RCTPerformanceLoggerEnd(RCTPLTTI);
+  [_bridge.performanceLogger markStopForTag:RCTPLTTI];
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!_contentHasAppeared) {
-      _contentHasAppeared = YES;
+    if (!self->_contentHasAppeared) {
+      self->_contentHasAppeared = YES;
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
                                                           object:self.superview];
     }
@@ -376,8 +387,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]];
+    [_bridge enqueueJSCall:@"AppRegistry"
+                    method:@"unmountApplicationComponentAtRootTag"
+                      args:@[self.reactTag]
+                completion:NULL];
   }
 }
 

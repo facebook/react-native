@@ -58,6 +58,9 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
     folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+  setGlobalVariable(
+    "__fbBatchedBridgeSerializeNativeParams",
+    folly::make_unique<JSBigStdString>("1"));
 }
 
 ProxyExecutor::~ProxyExecutor() {
@@ -75,7 +78,8 @@ void ProxyExecutor::loadApplicationScript(
   loadApplicationScript(
     m_executor.get(),
     jni::make_jstring(sourceURL).get());
-  executeJSCallWithProxy(m_executor.get(), "flushedQueue", std::vector<folly::dynamic>());
+  // We can get pending calls here to native but the queue will be drained when
+  // we launch the application.
 }
 
 void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {

@@ -17,8 +17,6 @@ import android.content.DialogInterface;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.SystemClock;
-import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -50,16 +48,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   }
 
   @Override
-  public LayoutShadowNode createShadowNodeInstance() {
-    return new ModalHostShadowNode();
-  }
-
-  @Override
-  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
-    return ModalHostShadowNode.class;
-  }
-
-  @Override
   public void onDropViewInstance(ReactModalHostView view) {
     super.onDropViewInstance(view);
     view.onDropInstance();
@@ -85,14 +73,14 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       new ReactModalHostView.OnRequestCloseListener() {
         @Override
         public void onRequestClose(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId(), SystemClock.nanoTime()));
+          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
         }
       });
     view.setOnShowListener(
       new DialogInterface.OnShowListener() {
         @Override
         public void onShow(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new ShowEvent(view.getId(), SystemClock.nanoTime()));
+          dispatcher.dispatchEvent(new ShowEvent(view.getId()));
         }
       });
   }
@@ -113,8 +101,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       0;
 
     return MapBuilder.<String, Object>of(
-      "StatusBarHeight", height
-    );
+      "StatusBarHeight", height);
   }
 
   @Override

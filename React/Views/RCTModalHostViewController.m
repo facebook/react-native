@@ -9,9 +9,25 @@
 
 #import "RCTModalHostViewController.h"
 
+#import "RCTModalHostView.h"
+
 @implementation RCTModalHostViewController
 {
   CGRect _lastViewFrame;
+  UIStatusBarStyle _preferredStatusBarStyle;
+  BOOL _preferredStatusBarHidden;
+}
+
+- (instancetype)init
+{
+  if (!(self = [super init])) {
+    return nil;
+  }
+
+  _preferredStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
+  _preferredStatusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
+
+  return self;
 }
 
 - (void)viewDidLayoutSubviews
@@ -24,14 +40,14 @@
   }
 }
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+- (UIStatusBarStyle)preferredStatusBarStyle
 {
-  // Picking some defaults here, we should probably make this configurable
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-    return UIInterfaceOrientationMaskAll;
-  } else {
-    return UIInterfaceOrientationMaskPortrait;
-  }
+  return _preferredStatusBarStyle;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+  return _preferredStatusBarHidden;
 }
 
 @end

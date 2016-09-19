@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/testing.html
 next: javascript-environment
+previous: debugging
 ---
 
 ## Running Tests and Contributing
@@ -23,34 +24,7 @@ npm test
 
 from the react-native root, and we encourage you to add your own tests for any components you want to contribute to.  See [`getImageSource-test.js`](https://github.com/facebook/react-native/blob/master/Examples/Movies/__tests__/getImageSource-test.js) for a basic example.
 
-Note: In order to run your own tests, you will have to first follow the Getting Started instructions on the Jest page and then include the `jest` objects below in `package.json` so that the scripts are pre-processed before execution.
-
-```
-...
-"scripts": {
-  ...
-  "test": "jest"
-},
-...
-"jest": {
-  "scriptPreprocessor": "node_modules/react-native/jestSupport/preprocessor.js",
-  "setupEnvScriptFile": "node_modules/react-native/jestSupport/env.js",
-  "testPathIgnorePatterns": [
-    "/node_modules/",
-    "packager/react-packager/src/Activity/"
-  ],
-  "testFileExtensions": [
-    "js"
-  ],
-  "unmockedModulePathPatterns": [
-    "promise",
-    "source-map"
-  ]
-},
-...
-```
-
-Note: you may have to install/upgrade/link Node.js and other parts of your environment in order for the tests to run correctly.  Check out the latest setup in [.travis.yml](https://github.com/facebook/react-native/blob/master/.travis.yml#L11-24)
+To use Jest for your react-native projects we recommend following the [React-Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
 
 ## Unit tests (Android)
 
@@ -77,7 +51,7 @@ React Native provides facilities to make it easier to test integrated components
 
 You can run integration tests locally with cmd+U in the IntegrationTest and UIExplorer apps in Xcode.
 
-## Snapshot Tests (iOS)
+## Screenshot/Snapshot Tests (iOS)
 
 A common type of integration test is the snapshot test.  These tests render a component, and verify snapshots of the screen against reference images using `TestModule.verifySnapshot()`, using the [`FBSnapshotTestCase`](https://github.com/facebook/ios-snapshot-test-case) library behind the scenes.  Reference images are recorded by setting `recordMode = YES` on the `RCTTestRunner`, then running the tests.  Snapshots will differ slightly between 32 and 64 bit, and various OS versions, so it's recommended that you enforce tests are run with the correct configuration.  It's also highly recommended that all network data be mocked out, along with other potentially troublesome dependencies.  See [`SimpleSnapshotTest`](https://github.com/facebook/react-native/blob/master/IntegrationTests/SimpleSnapshotTest.js) for a basic example.
 

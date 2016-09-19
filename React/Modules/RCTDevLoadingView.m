@@ -55,12 +55,14 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(hide)
                                                name:RCTJavaScriptDidLoadNotification
                                              object:nil];
-
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(hide)
                                                name:RCTJavaScriptDidFailToLoadNotification
                                              object:nil];
-  [self showWithURL:bridge.bundleURL];
+
+  if (bridge.loading) {
+    [self showWithURL:bridge.bundleURL];
+  }
 }
 
 RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
@@ -70,26 +72,26 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    _showDate = [NSDate date];
-    if (!_window && !RCTRunningInTestEnvironment()) {
+    self->_showDate = [NSDate date];
+    if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
-      _window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
-      _window.windowLevel = UIWindowLevelStatusBar + 1;
+      self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
+      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
 
       // set a root VC so rotation is supported
-      _window.rootViewController = [UIViewController new];
+      self->_window.rootViewController = [UIViewController new];
 
-      _label = [[UILabel alloc] initWithFrame:_window.bounds];
-      _label.font = [UIFont systemFontOfSize:12.0];
-      _label.textAlignment = NSTextAlignmentCenter;
+      self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
+      self->_label.font = [UIFont systemFontOfSize:12.0];
+      self->_label.textAlignment = NSTextAlignmentCenter;
 
-      [_window addSubview:_label];
+      [self->_window addSubview:self->_label];
     }
 
-    _label.text = message;
-    _label.textColor = color;
-    _window.backgroundColor = backgroundColor;
-    _window.hidden = NO;
+    self->_label.text = message;
+    self->_label.textColor = color;
+    self->_window.backgroundColor = backgroundColor;
+    self->_window.hidden = NO;
   });
 }
 
@@ -101,18 +103,18 @@ RCT_EXPORT_METHOD(hide)
 
   dispatch_async(dispatch_get_main_queue(), ^{
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
-    NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:_showDate];
+    NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-    CGRect windowFrame = _window.frame;
+    CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
                           delay:delay
                         options:0
                      animations:^{
-                       _window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
+                       self->_window.frame = CGRectOffset(windowFrame, 0, -windowFrame.size.height);
                      } completion:^(__unused BOOL finished) {
-                       _window.frame = windowFrame;
-                       _window.hidden = YES;
-                       _window = nil;
+                       self->_window.frame = windowFrame;
+                       self->_window.hidden = YES;
+                       self->_window = nil;
                      }];
   });
 }

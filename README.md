@@ -2,7 +2,7 @@
 
 React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](https://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
 
-Supported operating systems are >= Android 4.1 (API 16) and >= iOS 7.0.
+Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 - [Getting Started](#getting-started)
 - [Getting Help](#getting-help)
@@ -40,7 +40,7 @@ Please use these community resources for getting help. We use the GitHub issues 
 ## Documentation
 
 [The website’s documentation](https://facebook.github.io/react-native/docs/) is divided into multiple sections.
-- There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/embedded-app-ios.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
+- There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
 - The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Navigator`](https://facebook.github.io/react-native/docs/navigator.html).
 - The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
 - Finally, React Native provides a small number of **Polyfills** that offer web-like APIs.

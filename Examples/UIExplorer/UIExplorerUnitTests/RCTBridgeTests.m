@@ -33,6 +33,10 @@
   } \
 }
 
+static const NSUInteger kNameIndex = 0;
+static const NSUInteger kConstantsIndex = 1;
+static const NSUInteger kMethodsIndex = 2;
+
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
 @property (nonatomic, readonly, copy) NSMutableDictionary<NSString *, id> *injectedStuff;
@@ -88,6 +92,11 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  block();
+}
+
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
   block();
 }
@@ -151,8 +160,9 @@ RCT_EXPORT_MODULE(TestModule)
   [super setUp];
 
   _unregisteredTestModule = [UnregisteredTestModule new];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:nil
-                                  moduleProvider:^{ return @[self, _unregisteredTestModule]; }
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+                                  moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
@@ -189,10 +199,10 @@ RCT_EXPORT_MODULE(TestModule)
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, BOOL *stop) {
-    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testConstants = moduleConfig[1];
-      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      testConstants = moduleConfig[kConstantsIndex];
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
@@ -215,9 +225,9 @@ RCT_EXPORT_MODULE(TestModule)
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
-    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
@@ -228,11 +238,11 @@ RCT_EXPORT_MODULE(TestModule)
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
 
-  [_bridge.batchedBridge handleBuffer:buffer];
+  [_bridge.batchedBridge handleBuffer:buffer batchEnded:YES];
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue
-    XCTAssertTrue(_testMethodCalled);
+    XCTAssertTrue(self->_testMethodCalled);
   });
 }
 
@@ -247,9 +257,9 @@ RCT_EXPORT_MODULE(TestModule)
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
-    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"UnregisteredTestModule"]) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"UnregisteredTestModule"]) {
       testModuleID = @(i);
-      testMethodID = @([moduleConfig[1] indexOfObject:@"testMethod"]);
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
@@ -260,10 +270,10 @@ RCT_EXPORT_MODULE(TestModule)
   NSArray *args = @[];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
 
-  [_bridge.batchedBridge handleBuffer:buffer];
+  [_bridge.batchedBridge handleBuffer:buffer batchEnded:YES];
 
   dispatch_sync(_unregisteredTestModule.methodQueue, ^{
-    XCTAssertTrue(_unregisteredTestModule.testMethodCalled);
+    XCTAssertTrue(self->_unregisteredTestModule.testMethodCalled);
   });
 }
 

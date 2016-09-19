@@ -13,7 +13,7 @@
 
 var util = require('util');
 
-var Syntax = require('esprima-fb').Syntax;
+var Syntax = require('./syntax');
 var utils = require('jstransform/src/utils');
 
 // Transforms

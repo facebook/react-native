@@ -9,7 +9,15 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -19,13 +27,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,7 +48,6 @@ import okio.Sink;
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
 public class DevServerHelper {
-
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
@@ -60,7 +60,9 @@ public class DevServerHelper {
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
+  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -77,6 +79,10 @@ public class DevServerHelper {
     void onServerContentChanged();
   }
 
+  public interface PackagerCommandListener {
+    void onPackagerReloadCommand();
+  }
+
   public interface PackagerStatusCallback {
     void onPackagerStatusFetched(boolean packagerIsRunning);
   }
@@ -86,6 +92,7 @@ public class DevServerHelper {
   private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
+  private @Nullable JSPackagerWebSocketClient mPackagerConnection;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private @Nullable Call mDownloadBundleFromURLCall;
@@ -101,6 +108,42 @@ public class DevServerHelper {
     mRestartOnChangePollingHandler = new Handler();
   }
 
+  public void openPackagerConnection(final PackagerCommandListener commandListener) {
+    if (mPackagerConnection != null) {
+      FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
+      return;
+    }
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+          new JSPackagerWebSocketClient.JSPackagerCallback() {
+            @Override
+            public void onMessage(String target, String action) {
+              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+                commandListener.onPackagerReloadCommand();
+              }
+            }
+          });
+        mPackagerConnection.connect();
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  public void closePackagerConnection() {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        if (mPackagerConnection != null) {
+          mPackagerConnection.closeQuietly();
+          mPackagerConnection = null;
+        }
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
   /** Intent action for reloading the JS */
   public static String getReloadAppAction(Context context) {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
@@ -108,6 +151,14 @@ public class DevServerHelper {
 
   public String getWebsocketProxyURL() {
     return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
+  }
+
+  private String getPackagerConnectionURL() {
+    return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
+  }
+
+  public String getHeapCaptureUploadUrl() {
+    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
   }
 
   /**
@@ -185,15 +236,10 @@ public class DevServerHelper {
         }
         mDownloadBundleFromURLCall = null;
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Could not connect to development server.\n\n")
-          .append("Try the following to fix the issue:\n")
-          .append("\u2022 Ensure that the packager server is running\n")
-          .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
-          .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
-          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081\n\n")
-          .append("URL: ").append(call.request().url().toString());
-        callback.onFailure(new DebugServerException(sb.toString()));
+        callback.onFailure(DebugServerException.makeGeneric(
+            "Could not connect to development server.",
+            "URL: " + call.request().url().toString(),
+            e));
       }
 
       @Override
@@ -368,7 +414,7 @@ public class DevServerHelper {
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
   }
 
   public void launchJSDevtools() {

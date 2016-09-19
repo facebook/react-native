@@ -12,7 +12,10 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 
+#include <folly/dynamic.h>
+
 #include "noncopyable.h"
+#include "Unicode.h"
 
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
@@ -51,7 +54,9 @@ public:
 
   String(String&& other) :
     m_string(other.m_string)
-  {}
+  {
+    other.m_string = nullptr;
+  }
 
   String(const String& other) :
     m_string(other.m_string)
@@ -81,12 +86,24 @@ public:
     return JSStringGetMaximumUTF8CStringSize(m_string);
   }
 
+  /*
+   * JavaScriptCore is built with strict utf16 -> utf8 conversion.
+   * This means if JSC's built-in conversion function encounters a JavaScript
+   * string which contains half of a 32-bit UTF-16 symbol, it produces an error
+   * rather than returning a string.
+   *
+   * Instead of relying on this, we use our own utf16 -> utf8 conversion function
+   * which is more lenient and always returns a string. When an invalid UTF-16
+   * string is provided, it'll likely manifest as a rendering glitch in the app for
+   * the invalid symbol.
+   *
+   * For details on JavaScript's unicode support see:
+   * https://mathiasbynens.be/notes/javascript-unicode
+   */
   std::string str() const {
-    size_t reserved = utf8Size();
-    char* bytes = new char[reserved];
-    size_t length = JSStringGetUTF8CString(m_string, bytes, reserved) - 1;
-    std::unique_ptr<char[]> retainedBytes(bytes);
-    return std::string(bytes, length);
+    const JSChar* utf16 = JSStringGetCharactersPtr(m_string);
+    int stringLength = JSStringGetLength(m_string);
+    return unicode::utf16toUTF8(utf16, stringLength);
   }
 
   // Assumes that utf8 is null terminated
@@ -94,17 +111,17 @@ public:
     return JSStringIsEqualToUTF8CString(m_string, utf8);
   }
 
-  static String createExpectingAscii(const char* utf8, size_t len) {
-  #if WITH_FBJSCEXTENSIONS
-    return String(
-      JSStringCreateWithUTF8CStringExpectAscii(utf8, len), true);
-  #else
-    return String(JSStringCreateWithUTF8CString(utf8), true);
-  #endif
+  // This assumes ascii is nul-terminated.
+  static String createExpectingAscii(const char* ascii, size_t len) {
+#if WITH_FBJSCEXTENSIONS
+    return String(JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+#else
+    return String(JSStringCreateWithUTF8CString(ascii), true);
+#endif
   }
 
-  static String createExpectingAscii(std::string const &utf8) {
-    return String::createExpectingAscii(utf8.c_str(), utf8.size());
+  static String createExpectingAscii(std::string const &ascii) {
+    return createExpectingAscii(ascii.c_str(), ascii.size());
   }
 
   static String ref(JSStringRef string) {
@@ -148,6 +165,13 @@ public:
     }
   }
 
+  Object& operator=(Object&& other) {
+    std::swap(m_context, other.m_context);
+    std::swap(m_obj, other.m_obj);
+    std::swap(m_isProtected, other.m_isProtected);
+    return *this;
+  }
+
   operator JSObjectRef() const {
     return m_obj;
   }
@@ -158,14 +182,19 @@ public:
     return JSObjectIsFunction(m_context, m_obj);
   }
 
-  Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction(std::initializer_list<JSValueRef> args) const;
+  Value callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const;
+  Value callAsFunction(int nArgs, const JSValueRef args[]) const;
+  Value callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const;
+
+  Object callAsConstructor(std::initializer_list<JSValueRef> args) const;
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
   Value getPropertyAtIndex(unsigned index) const;
   void setProperty(const String& propName, const Value& value) const;
   void setProperty(const char *propName, const Value& value) const;
-  std::vector<std::string> getPropertyNames() const;
+  std::vector<String> getPropertyNames() const;
   std::unordered_map<std::string, std::string> toJSONMap() const;
 
   void makeProtected() {
@@ -173,6 +202,15 @@ public:
       JSValueProtect(m_context, m_obj);
       m_isProtected = true;
     }
+  }
+
+  template<typename ReturnType>
+  ReturnType* getPrivate() const {
+    return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
+  }
+
+  JSContextRef context() const {
+    return m_context;
   }
 
   static Object getGlobalObject(JSContextRef ctx) {
@@ -189,6 +227,8 @@ private:
   JSContextRef m_context;
   JSObjectRef m_obj;
   bool m_isProtected = false;
+
+  Value callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const;
 };
 
 class Value : public noncopyable {
@@ -199,6 +239,10 @@ public:
 
   operator JSValueRef() const {
     return m_value;
+  }
+
+  JSType getType() const {
+    return JSValueGetType(m_context, m_value);
   }
 
   bool isBoolean() const {
@@ -251,12 +295,14 @@ public:
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const throw(JSException);
-  static Value fromJSON(JSContextRef ctx, const String& json) throw(JSException);
-protected:
+  std::string toJSONString(unsigned indent = 0) const;
+  static Value fromJSON(JSContextRef ctx, const String& json);
+  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   JSContextRef context() const;
+protected:
   JSContextRef m_context;
   JSValueRef m_value;
+  static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
 };
 
 } }

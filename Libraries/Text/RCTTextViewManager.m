@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTTextView.h"
+#import "RCTFont.h"
 
 @implementation RCTTextViewManager
 
@@ -35,31 +36,35 @@ RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
 RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, textView.keyboardAppearance, UIKeyboardAppearance)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, textView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(selectionColor, tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
+  view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withWeight:json]; // defaults to normal
+  view.font = [RCTFont updateFont:view.font withWeight:json]; // defaults to normal
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withStyle:json]; // defaults to normal
+  view.font = [RCTFont updateFont:view.font withStyle:json]; // defaults to normal
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
+  view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
+RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDetectorTypes)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

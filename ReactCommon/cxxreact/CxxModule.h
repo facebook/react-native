@@ -42,13 +42,22 @@ namespace facebook { namespace xplat { namespace module {
  */
 
 class CxxModule {
+  class AsyncTagType {};
+  class SyncTagType {};
+
 public:
   typedef std::function<void(std::vector<folly::dynamic>)> Callback;
 
+  constexpr static AsyncTagType AsyncTag = AsyncTagType();
+  constexpr static SyncTagType SyncTag = SyncTagType();
+
   struct Method {
     std::string name;
+
     size_t callbacks;
     std::function<void(folly::dynamic, Callback, Callback)> func;
+
+    std::function<folly::dynamic(folly::dynamic)> syncFunc;
 
     // std::function/lambda ctors
 
@@ -101,6 +110,29 @@ public:
       : name(std::move(aname))
       , callbacks(2)
       , func(std::bind(method, t, _1, _2, _3)) {}
+
+    // sync std::function/lambda ctors
+
+    // Overloads for functions returning void give ambiguity errors.
+    // I am not sure if this is a runtime/compiler bug, or a
+    // limitation I do not understand.
+
+    Method(std::string aname,
+           std::function<folly::dynamic()>&& afunc,
+           SyncTagType)
+      : name(std::move(aname))
+      , callbacks(0)
+      , syncFunc([afunc=std::move(afunc)] (const folly::dynamic&)
+                 { return afunc(); })
+    {}
+
+    Method(std::string aname,
+           std::function<folly::dynamic(folly::dynamic)>&& afunc,
+           SyncTagType)
+      : name(std::move(aname))
+      , callbacks(0)
+      , syncFunc(std::move(afunc))
+      {}
   };
 
   /**

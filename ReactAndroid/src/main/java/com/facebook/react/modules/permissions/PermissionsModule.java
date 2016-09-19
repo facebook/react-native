@@ -16,15 +16,18 @@ import android.os.Process;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
  * Module that exposes the Android M Permission system to JS.
  */
+@ReactModule(name = "PermissionsAndroid")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private final SparseArray<Callback> mCallbacks;
@@ -37,7 +40,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
 
   @Override
   public String getName() {
-    return "AndroidPermissions";
+    return "PermissionsAndroid";
   }
 
   /**
@@ -45,21 +48,14 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
    * permission had been granted, false otherwise. See {@link Activity#checkSelfPermission}.
    */
   @ReactMethod
-  public void checkPermission(
-      final String permission,
-      final Callback successCallback,
-      final Callback errorCallback) {
+  public void checkPermission(final String permission, final Promise promise) {
     PermissionAwareActivity activity = getPermissionAwareActivity();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      successCallback.invoke(
-          permission,
-          activity.checkPermission(permission, Process.myPid(), Process.myUid()) ==
-              PackageManager.PERMISSION_GRANTED);
+      promise.resolve(activity.checkPermission(permission, Process.myPid(), Process.myUid()) ==
+        PackageManager.PERMISSION_GRANTED);
       return;
     }
-    successCallback.invoke(
-        permission,
-        activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+    promise.resolve(activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
   }
 
   /**
@@ -71,17 +67,12 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
    * See {@link Activity#shouldShowRequestPermissionRationale}.
    */
   @ReactMethod
-  public void shouldShowRequestPermissionRationale(
-      final String permission,
-      final Callback successCallback,
-      final Callback errorCallback) {
+  public void shouldShowRequestPermissionRationale(final String permission, final Promise promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      successCallback.invoke(permission, false);
+      promise.resolve(false);
       return;
     }
-    successCallback.invoke(
-        permission,
-        getPermissionAwareActivity().shouldShowRequestPermissionRationale(permission));
+    promise.resolve(getPermissionAwareActivity().shouldShowRequestPermissionRationale(permission));
   }
 
   /**
@@ -91,20 +82,15 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
    * See {@link Activity#checkSelfPermission}.
    */
   @ReactMethod
-  public void requestPermission(
-      final String permission,
-      final Callback successCallback,
-      final Callback errorCallback) {
+  public void requestPermission(final String permission, final Promise promise) {
     PermissionAwareActivity activity = getPermissionAwareActivity();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      successCallback.invoke(
-          permission,
-          activity.checkPermission(permission, Process.myPid(), Process.myUid()) ==
+      promise.resolve(activity.checkPermission(permission, Process.myPid(), Process.myUid()) ==
               PackageManager.PERMISSION_GRANTED);
       return;
     }
     if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
-      successCallback.invoke(permission, true);
+      promise.resolve(true);
       return;
     }
 
@@ -112,7 +98,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
         mRequestCode, new Callback() {
           @Override
           public void invoke(Object... args) {
-            successCallback.invoke(permission, args[0].equals(PackageManager.PERMISSION_GRANTED));
+            promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
           }
         });
 

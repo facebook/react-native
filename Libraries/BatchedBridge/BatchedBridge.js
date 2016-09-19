@@ -12,8 +12,11 @@
 
 const MessageQueue = require('MessageQueue');
 
+const serializeNativeParams = typeof global.__fbBatchedBridgeSerializeNativeParams !== 'undefined';
+
 const BatchedBridge = new MessageQueue(
-  () => global.__fbBatchedBridgeConfig
+  () => global.__fbBatchedBridgeConfig,
+  serializeNativeParams
 );
 
 // TODO: Move these around to solve the cycle in a cleaner way.
@@ -24,6 +27,7 @@ const JSTimersExecution = require('JSTimersExecution');
 BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
 BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
+BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
 
 if (__DEV__) {
   BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
@@ -35,6 +39,9 @@ if (__DEV__) {
 // would export it. A possible fix would be to trim the dependencies in
 // MessageQueue to its minimal features and embed that in the native runtime.
 
-Object.defineProperty(global, '__fbBatchedBridge', { value: BatchedBridge });
+Object.defineProperty(global, '__fbBatchedBridge', {
+  configurable: true,
+  value: BatchedBridge,
+});
 
 module.exports = BatchedBridge;

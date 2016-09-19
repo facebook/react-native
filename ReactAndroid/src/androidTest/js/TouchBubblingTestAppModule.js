@@ -18,11 +18,12 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var TouchBubblingTestApp = React.createClass({
-  handlePress: function(record) {
+class TouchBubblingTestApp extends React.Component {
+  handlePress = (record) => {
     Recording.record(record);
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={this.handlePress.bind(this, 'outer')} testID="D">
@@ -40,8 +41,8 @@ var TouchBubblingTestApp = React.createClass({
         </TouchableWithoutFeedback>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {
