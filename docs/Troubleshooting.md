@@ -22,7 +22,7 @@ Then run the following to terminate the process:
 
 `$ kill -9 <PID>`
 
-On Windows you can find the process using port 8081 using [Resource Monitor](https://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) and stop using Task Manager
+On Windows you can find the process using port 8081 using [Resource Monitor](https://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) and stop it using Task Manager.
 
 #### Using a port other than 8081
 
