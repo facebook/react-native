@@ -40,7 +40,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
 
 /**
  * Detect hardware back button presses, and programmatically invoke the default back button
- * functionality to exit the app if there are no listeners or if none of the listeners return true.
+ * functionality to exit the app if there are no listeners or if none of the listeners return true. BackAndroid is component that must be imported from react-native.
  *
  * Example:
  *
