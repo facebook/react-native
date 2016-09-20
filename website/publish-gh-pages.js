@@ -85,8 +85,9 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
       exit(1);
     }
     cd(`build/react-native-gh-pages`);
+    // blog, showcase, support are copied separately
     let toCopy = ls(`../react-native`)
-      .filter(file => file !== `blog`)
+      .filter(file => (file !== `blog`) && (file !== `showcase.html`) && (file !== `support.html`))
       .map(file => `../react-native/${file}`);
     cp(`-R`, toCopy, `releases/${version}`);
     // versions.html is located in root of website and updated with every release
@@ -96,7 +97,7 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
   if (currentCommit === latestTagCommit) {
     echo(`------------ DEPLOYING latest`);
     // leave only releases and blog folder
-    rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') && (name !== 'blog')));
+    rm(`-rf`, ls(`*`).filter(name => (name !== 'releases') && (name !== 'blog') && (name !== 'showcase.html') && (name !== 'support.html')));
     cd(`../..`);
     if (exec(`RN_VERSION=${version} RN_LATEST_VERSION=${latestVersion} \
     RN_AVAILABLE_DOCS_VERSIONS=${versions} node server/generate.js`).code !== 0) {
@@ -104,9 +105,9 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
       exit(1);
     }
     cd(`build/react-native-gh-pages`);
-    // blog is copied separately
+    // blog, showcase, support are copied separately
     let toCopy = ls(`../react-native`)
-      .filter(file => file !== `blog`)
+      .filter(file => (file !== `blog`) && (file !== `showcase.html`) && (file !== `support.html`))
       .map(file => `../react-native/${file}`);
     cp(`-R`, toCopy, `.`);
   }
