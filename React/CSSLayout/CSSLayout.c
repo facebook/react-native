@@ -1497,25 +1497,27 @@ static void layoutNodeImpl(const CSSNodeRef node,
       remainingFreeSpace = 0;
     }
 
-    // Use justifyContent to figure out how to allocate the remaining space
-    // available in the main axis.
-    if (justifyContent != CSSJustifyFlexStart) {
-      if (justifyContent == CSSJustifyCenter) {
+    switch (justifyContent) {
+      case CSSJustifyCenter:
         leadingMainDim = remainingFreeSpace / 2;
-      } else if (justifyContent == CSSJustifyFlexEnd) {
+        break;
+      case CSSJustifyFlexEnd:
         leadingMainDim = remainingFreeSpace;
-      } else if (justifyContent == CSSJustifySpaceBetween) {
-        remainingFreeSpace = fmaxf(remainingFreeSpace, 0);
+        break;
+      case CSSJustifySpaceBetween:
         if (itemsOnLine > 1) {
-          betweenMainDim = remainingFreeSpace / (itemsOnLine - 1);
+          betweenMainDim = fmaxf(remainingFreeSpace, 0) / (itemsOnLine - 1);
         } else {
           betweenMainDim = 0;
         }
-      } else if (justifyContent == CSSJustifySpaceAround) {
+        break;
+      case CSSJustifySpaceAround:
         // Space on the edges is half of the space between elements
         betweenMainDim = remainingFreeSpace / itemsOnLine;
         leadingMainDim = betweenMainDim / 2;
-      }
+        break;
+      default:
+        break;
     }
 
     float mainDim = leadingPaddingAndBorderMain + leadingMainDim;
