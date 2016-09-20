@@ -19,6 +19,7 @@ const JSTimersExecution = require('JSTimersExecution');
 
 const invariant = require('fbjs/lib/invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
+const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 const stringifySafe = require('stringifySafe');
 
 const MODULE_IDS = 0;
@@ -52,7 +53,7 @@ type Config = {
 };
 
 class MessageQueue {
-  constructor(configProvider: () => Config, serializeNativeParams: boolean) {
+  constructor(configProvider: () => Config) {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
     this._callbacks = [];
@@ -60,7 +61,6 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
-    this._serializeNativeParams = serializeNativeParams;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -165,7 +165,7 @@ class MessageQueue {
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        let callId = this._callbackID >> 1;
+        const callId = this._callbackID >> 1;
         this._debugInfo[callId] = [module, method];
         if (callId > DEBUG_INFO_LIMIT) {
           delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
@@ -186,8 +186,14 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
 
-    const preparedParams = this._serializeNativeParams ? JSON.stringify(params) : params;
-    this._queue[PARAMS].push(preparedParams);
+    if (__DEV__) {
+      // Any params sent over the bridge should be encodable as JSON
+      JSON.stringify(params);
+
+      // The params object should not be mutated after being queued
+      deepFreezeAndThrowOnMutationInDev(params);
+    }
+    this._queue[PARAMS].push(params);
 
     const now = new Date().getTime();
     if (global.nativeFlushQueueImmediate &&

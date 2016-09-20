@@ -53,6 +53,9 @@ elif THIS_IS_FBOBJC:
       frameworks = [
         '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
       ],
+      tests = [
+        react_native_xplat_target('cxxreact/tests:tests')
+      ],
       **kwargs_add(
         kwargs,
         preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,

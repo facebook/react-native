@@ -40,6 +40,8 @@ describe('DependencyGraph', function() {
   }
 
   beforeEach(function() {
+    jest.resetModules();
+
     Module = require('../Module');
     const fileWatcher = {
       on: function() {
@@ -245,7 +247,7 @@ describe('DependencyGraph', function() {
         ...defaults,
         roots: [root],
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, false).then(function(deps) {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, false).then((deps) => {
         expect(deps)
           .toEqual([
             {
@@ -1918,7 +1920,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping of a package to a file ("' + fieldName + '")', function() {
+      pit('should support browser mapping of a package to a file ("' + fieldName + '")', () => {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2337,7 +2339,8 @@ describe('DependencyGraph', function() {
                 'node-package-c': 'rn-package-c',
               },
             }),
-            'index.js': 'require("node-package-a"); require("node-package-b"); require("node-package-c");',
+            'index.js':
+              'require("node-package-a"); require("node-package-b"); require("node-package-c");',
             'node_modules': {
               'node-package-a': {
                 'package.json': JSON.stringify({
@@ -2510,50 +2513,53 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should only use `extraNodeModules` after checking all possible filesystem locations', () => {
-      const root = '/root';
-      setMockFileSystem({
-        [root.slice(1)]: {
-          'index.js': 'require("bar")',
-          'node_modules': { 'bar.js': '' },
-          'provides-bar': { 'index.js': '' },
-        },
-      });
+    pit(
+      'should only use `extraNodeModules` after checking all possible filesystem locations',
+      () => {
+        const root = '/root';
+        setMockFileSystem({
+          [root.slice(1)]: {
+            'index.js': 'require("bar")',
+            'node_modules': { 'bar.js': '' },
+            'provides-bar': { 'index.js': '' },
+          },
+        });
 
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        extraNodeModules: {
-          'bar': root + '/provides-bar',
-        },
-      });
+        var dgraph = new DependencyGraph({
+          ...defaults,
+          roots: [root],
+          extraNodeModules: {
+            'bar': root + '/provides-bar',
+          },
+        });
 
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
-        expect(deps)
-          .toEqual([
-            {
-              id: '/root/index.js',
-              path: '/root/index.js',
-              dependencies: ['bar'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: '/root/node_modules/bar.js',
-              path: '/root/node_modules/bar.js',
-              dependencies: [],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-          ]);
-      });
-    });
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
+          expect(deps)
+            .toEqual([
+              {
+                id: '/root/index.js',
+                path: '/root/index.js',
+                dependencies: ['bar'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: '/root/node_modules/bar.js',
+                path: '/root/node_modules/bar.js',
+                dependencies: [],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+            ]);
+        });
+      }
+    );
 
     pit('should be able to resolve paths within `extraNodeModules`', () => {
       const root = '/root';

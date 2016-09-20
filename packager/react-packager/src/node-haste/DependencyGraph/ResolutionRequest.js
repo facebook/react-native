@@ -358,9 +358,12 @@ class ResolutionRequest {
           for (let currDir = path.dirname(fromModule.path);
                currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
-            searchQueue.push(
-              path.join(currDir, 'node_modules', realModuleName)
-            );
+            let searchPath = path.join(currDir, 'node_modules');
+            if (this._fastfs.dirExists(searchPath)) {
+              searchQueue.push(
+                path.join(searchPath, realModuleName)
+              );
+            }
           }
 
           if (this._extraNodeModules) {
