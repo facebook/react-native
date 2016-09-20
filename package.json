@@ -149,7 +149,7 @@
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.8.2",
-    "base64-js": "^0.0.8",
+    "base64-js": "^1.1.2",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",

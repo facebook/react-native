@@ -828,8 +828,9 @@ static void executeRandomAccessModule(RCTJSCExecutor *executor, uint32_t moduleI
   jscWrapper->JSStringRelease(sourceURL);
 
   if (!result) {
+    NSError *error = RCTNSErrorFromJSErrorRef(jsError, ctx, jscWrapper);
     dispatch_async(dispatch_get_main_queue(), ^{
-      RCTFatal(RCTNSErrorFromJSErrorRef(jsError, ctx, jscWrapper));
+      RCTFatal(error);
       [executor invalidate];
     });
   }
