@@ -99,7 +99,13 @@ var InteractionManager = {
     });
     return {
       then: promise.then.bind(promise),
-      done: promise.done.bind(promise),
+      done: (...args) => {
+        if (promise.done) {
+          return promise.done(...args);
+        } else {
+          console.warn('Tried to call done when not supported by current Promise implementation.');
+        }
+      },
       cancel: function() {
         _taskQueue.cancelTasks(tasks);
       },

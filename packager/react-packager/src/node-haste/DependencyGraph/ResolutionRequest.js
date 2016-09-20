@@ -17,6 +17,8 @@ const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
+const emptyModule = require.resolve('./assets/empty-module.js');
+
 class ResolutionRequest {
   constructor({
     platform,
@@ -193,7 +195,7 @@ class ResolutionRequest {
 
         if (recursive) {
           // doesn't block the return of this function invocation, but defers
-          // the resulution of collectionsInProgress.done.then(…)
+          // the resulution of collectionsInProgress.done.then(...)
           dependencyModules
             .forEach(dependency => collectedDependencies.get(dependency));
         }
@@ -322,7 +324,7 @@ class ResolutionRequest {
     return this._redirectRequire(fromModule, potentialModulePath).then(
       realModuleName => {
         if (realModuleName === false) {
-          return null;
+          return this._loadAsFile(emptyModule, fromModule, toModuleName);
         }
 
         return this._tryResolve(
@@ -341,7 +343,7 @@ class ResolutionRequest {
         realModuleName => {
           // exclude
           if (realModuleName === false) {
-            return null;
+            return this._loadAsFile(emptyModule, fromModule, toModuleName);
           }
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
@@ -356,9 +358,12 @@ class ResolutionRequest {
           for (let currDir = path.dirname(fromModule.path);
                currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
-            searchQueue.push(
-              path.join(currDir, 'node_modules', realModuleName)
-            );
+            let searchPath = path.join(currDir, 'node_modules');
+            if (this._fastfs.dirExists(searchPath)) {
+              searchQueue.push(
+                path.join(searchPath, realModuleName)
+              );
+            }
           }
 
           if (this._extraNodeModules) {

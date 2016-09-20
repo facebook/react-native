@@ -19,9 +19,9 @@ const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(
-    args.root,
-    findSymlinksPaths(NODE_MODULES, args.projectRoots)
+  const roots = args.projectRoots.concat(args.root);
+  args.projectRoots = roots.concat(
+    findSymlinksPaths(NODE_MODULES, roots)
   );
 
   console.log(formatBanner(

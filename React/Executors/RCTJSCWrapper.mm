@@ -44,13 +44,10 @@ static void *RCTCustomLibraryHandler(void)
 
 static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
 {
-  wrapper->JSValueToStringCopy = JSValueToStringCopy;
   wrapper->JSStringCreateWithCFString = JSStringCreateWithCFString;
-  wrapper->JSStringCopyCFString = JSStringCopyCFString;
   wrapper->JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString;
   wrapper->JSStringRelease = JSStringRelease;
   wrapper->JSGlobalContextSetName = JSGlobalContextSetName;
-  wrapper->JSContextGetGlobalContext = JSContextGetGlobalContext;
   wrapper->JSObjectSetProperty = JSObjectSetProperty;
   wrapper->JSContextGetGlobalObject = JSContextGetGlobalObject;
   wrapper->JSObjectGetProperty = JSObjectGetProperty;
@@ -74,13 +71,10 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
     return;
   }
 
-  wrapper->JSValueToStringCopy = (JSValueToStringCopyFuncType)dlsym(libraryHandle, "JSValueToStringCopy");
   wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
-  wrapper->JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString");
   wrapper->JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString");
   wrapper->JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease");
   wrapper->JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName");
-  wrapper->JSContextGetGlobalContext = (JSContextGetGlobalContextFuncType)dlsym(libraryHandle, "JSContextGetGlobalContext");
   wrapper->JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty");
   wrapper->JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject");
   wrapper->JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty");

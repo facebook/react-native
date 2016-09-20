@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 
 #import <objc/runtime.h>
@@ -27,7 +28,6 @@ NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailT
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
 static NSMutableArray<Class> *RCTModuleClasses;
-NSArray<Class> *RCTGetModuleClasses(void);
 NSArray<Class> *RCTGetModuleClasses(void)
 {
   return RCTModuleClasses;
@@ -58,7 +58,7 @@ void RCTRegisterModule(Class moduleClass)
  */
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
-#if RCT_DEV
+#if RCT_DEBUG
   RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
             @"Bridge module `%@` does not conform to RCTBridgeModule", cls);
 #endif
@@ -72,6 +72,49 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   }
   return name;
 }
+
+#if RCT_DEBUG
+void RCTVerifyAllModulesExported(NSArray *extraModules)
+{
+  // Check for unexported modules
+  unsigned int classCount;
+  Class *classes = objc_copyClassList(&classCount);
+
+  NSMutableSet *moduleClasses = [NSMutableSet new];
+  [moduleClasses addObjectsFromArray:RCTGetModuleClasses()];
+  [moduleClasses addObjectsFromArray:[extraModules valueForKeyPath:@"class"]];
+
+  for (unsigned int i = 0; i < classCount; i++) {
+    Class cls = classes[i];
+    Class superclass = cls;
+    while (superclass) {
+      if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
+        if ([moduleClasses containsObject:cls]) {
+          break;
+        }
+
+        // Verify it's not a super-class of one of our moduleClasses
+        BOOL isModuleSuperClass = NO;
+        for (Class moduleClass in moduleClasses) {
+          if ([moduleClass isSubclassOfClass:cls]) {
+            isModuleSuperClass = YES;
+            break;
+          }
+        }
+        if (isModuleSuperClass) {
+          break;
+        }
+
+        RCTLogWarn(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
+        break;
+      }
+      superclass = class_getSuperclass(superclass);
+    }
+  }
+
+  free(classes);
+}
+#endif
 
 @implementation RCTBridge
 {

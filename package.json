@@ -17,13 +17,13 @@
       "jestSupport/env.js"
     ],
     "timers": "fake",
-    "resetModules": true,
     "moduleNameMapper": {
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
+      "/website/",
       "local-cli/generator/templates/"
     ],
     "haste": {
@@ -96,7 +96,8 @@
       "source-map",
       "fastpath",
       "denodeify",
-      "fbjs"
+      "fbjs",
+      "sinon"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -130,11 +131,12 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.3.1-rc.2"
+    "react": "~15.3.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
+    "async": "^2.0.1",
     "babel-core": "^6.10.4",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.5.0",
@@ -214,7 +216,8 @@
     "jest-runtime": "15.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "15.3.1-rc.2",
-    "shelljs": "0.6.0"
+    "react": "~15.3.1",
+    "shelljs": "0.6.0",
+    "sinon": "^2.0.0-pre.2"
   }
 }
