@@ -23,12 +23,12 @@ if (!which(`git`)) {
 }
 
 let version;
-let isBlogToBeDeployed = false;
+let areVersionlessSectionsToBeDeployed = false;
 if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   version = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
 } else if (CIRCLE_BRANCH === `master`) {
   version = `next`;
-  isBlogToBeDeployed = true;
+  areVersionlessSectionsToBeDeployed = true;
 }
 
 rm(`-rf`, `build`);
@@ -110,11 +110,15 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
       .map(file => `../react-native/${file}`);
     cp(`-R`, toCopy, `.`);
   }
-  // blog is versionless, we always build it in root file
-  if (isBlogToBeDeployed) {
+  // blog, showcase, support are versionless, we always build them in root file
+  if (areVersionlessSectionsToBeDeployed) {
     echo(`------------ COPYING blog`);
     rm(`-rf`, `blog`);
     cp(`-R`, `../react-native/blog`, `.`);
+    echo(`------------ COPYING showcase`);
+    cp(`../react-native/showcase.html`, `.`);
+    echo(`------------ COPYING support`);
+    cp(`../react-native/support.html`, `.`);
   }
   if (currentCommit === latestTagCommit || version) {
     exec(`git status`);
