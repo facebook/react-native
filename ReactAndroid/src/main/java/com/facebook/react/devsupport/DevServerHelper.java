@@ -9,7 +9,15 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -19,13 +27,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -112,23 +113,35 @@ public class DevServerHelper {
       FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
       return;
     }
-    mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
-        new JSPackagerWebSocketClient.JSPackagerCallback() {
-          @Override
-          public void onMessage(String target, String action) {
-            if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-              commandListener.onPackagerReloadCommand();
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+          new JSPackagerWebSocketClient.JSPackagerCallback() {
+            @Override
+            public void onMessage(String target, String action) {
+              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+                commandListener.onPackagerReloadCommand();
+              }
             }
-          }
-        });
-    mPackagerConnection.connect();
+          });
+        mPackagerConnection.connect();
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   public void closePackagerConnection() {
-    if (mPackagerConnection != null) {
-      mPackagerConnection.closeQuietly();
-      mPackagerConnection = null;
-    }
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        if (mPackagerConnection != null) {
+          mPackagerConnection.closeQuietly();
+          mPackagerConnection = null;
+        }
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   /** Intent action for reloading the JS */

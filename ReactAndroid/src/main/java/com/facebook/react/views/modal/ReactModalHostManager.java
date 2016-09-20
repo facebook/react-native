@@ -112,8 +112,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       0;
 
     return MapBuilder.<String, Object>of(
-      "StatusBarHeight", height
-    );
+      "StatusBarHeight", height);
   }
 
   @Override

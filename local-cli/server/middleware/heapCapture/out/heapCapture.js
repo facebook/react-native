@@ -114,6 +114,16 @@ callback(visitor);
 }
 }
 
+function firstRef(refs,callback){
+for(var id in refs){
+var ref=refs[id];
+if(callback(id,ref)){
+return new RefVisitor(refs,id);
+}
+}
+return new RefVisitor(refs,undefined);
+}
+
 function getInternalInstanceName(visitor){
 var type=visitor.clone().moveToEdge('_currentElement').moveToEdge('type');
 if(type.getType()==='string'){// element.type is string
@@ -203,8 +213,49 @@ ref.reactTree=instanceRef.reactTree;
 });
 }
 
+function functionUrlFileName(visitor){
+var executable=visitor.clone().moveToEdge('@Executable');
+var ref=executable.getRef();
+if(ref&&ref.value&&ref.value.url){
+var url=ref.value.url;
+var file=url.substring(url.lastIndexOf('/')+1);
+if(file.endsWith('.js')){
+file=file.substring(0,file.length-3);
+}
+return file;
+}
+return undefined;
+}
+
+function markModules(refs){
+var modules=firstRef(refs,function(id,ref){return ref.type==='CallbackGlobalObject';});
+modules.moveToEdge('require');
+modules.moveToFirst(function(name,visitor){return visitor.getType()==='JSActivation';});
+modules.moveToEdge('modules');
+modules.forEachEdge(function(name,visitor){
+var ref=visitor.getRef();
+visitor.moveToEdge('exports');
+if(visitor.getType()==='Object'){
+visitor.moveToFirst(function(memberName,member){return member.getType()==='Function';});
+if(visitor.isDefined()){
+ref.module=functionUrlFileName(visitor);
+}
+}else if(visitor.getType()==='Function'){
+var displayName=visitor.clone().moveToEdge('displayName');
+if(displayName.isDefined()){
+ref.module=displayName.getValue();
+}
+ref.module=functionUrlFileName(visitor);
+}
+if(ref&&!ref.module){
+ref.module='#unknown '+name;
+}
+});
+}
+
 function registerPathToRoot(refs,registry){
 markReactComponentTree(refs,registry);
+markModules(refs);
 var breadth=[];
 forEachRef(refs,function(visitor){
 var ref=visitor.getRef();
@@ -227,7 +278,10 @@ pathName=edgeName+': '+pathName;
 }
 edgeRef.rootPath=registry.insert(ref.rootPath,pathName);
 nextBreadth.push(edgeVisitor.clone());
-// copy react tree forward
+// copy module and react tree forward
+if(edgeRef.module===undefined){
+edgeRef.module=ref.module;
+}
 if(edgeRef.reactTree===undefined){
 edgeRef.reactTree=ref.reactTree;
 }
@@ -250,7 +304,8 @@ var traceField=3;
 var pathField=4;
 var reactField=5;
 var valueField=6;
-var numFields=7;
+var moduleField=7;
+var numFields=8;
 
 return{
 strings:strings,
@@ -277,6 +332,7 @@ this.data=null;
 
 registerPathToRoot(capture.refs,this.stacks);
 var internedCaptureId=this.strings.intern(captureId);
+var noneString=this.strings.intern('#none');
 var noneStack=this.stacks.insert(this.stacks.root,'#none');
 forEachRef(capture.refs,function(visitor){
 var ref=visitor.getRef();
@@ -296,6 +352,11 @@ newData[dataOffset+reactField]=noneStack.id;
 newData[dataOffset+reactField]=ref.reactTree.id;
 }
 newData[dataOffset+valueField]=_this2.strings.intern(visitor.getValue());
+if(ref.module){
+newData[dataOffset+moduleField]=_this2.strings.intern(ref.module);
+}else{
+newData[dataOffset+moduleField]=noneString;
+}
 dataOffset+=numFields;
 });
 for(var _id2 in capture.markedBlocks){
@@ -311,6 +372,7 @@ newData[dataOffset+valueField]=this.strings.intern(
 ', size: '+block.size+
 ', granularity: '+block.cellSize);
 
+newData[dataOffset+moduleField]=noneString;
 dataOffset+=numFields;
 }
 this.data=newData;
@@ -364,6 +426,12 @@ function compareValue(rowA,rowB){
 return agData[rowA*numFields+valueField]-agData[rowB*numFields+valueField];
 });
 
+var moduleExpander=ag.addFieldExpander('Module',
+function getModule(row){return agStrings.get(agData[row*numFields+moduleField]);},
+function compareModule(rowA,rowB){
+return agData[rowA*numFields+moduleField]-agData[rowB*numFields+moduleField];
+});
+
 var sizeAggregator=ag.addAggregator('Size',
 function aggregateSize(indices){
 var size=0;
@@ -386,6 +454,7 @@ function sortCount(a,b){return b-a;});
 ag.setActiveExpanders([
 pathExpander,
 reactExpander,
+moduleExpander,
 typeExpander,
 idExpander,
 traceExpander,

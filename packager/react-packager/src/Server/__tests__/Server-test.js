@@ -26,6 +26,7 @@ let FileWatcher;
 describe('processRequest', () => {
   let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
   beforeEach(() => {
+    jest.resetModules();
     SourceMapConsumer = require('source-map').SourceMapConsumer;
     Bundler = require('../../Bundler');
     Server = require('../');
@@ -159,6 +160,7 @@ describe('processRequest', () => {
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
+        assetPlugins: [],
       });
     });
   });
@@ -182,6 +184,31 @@ describe('processRequest', () => {
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
+        assetPlugins: [],
+      });
+    });
+  });
+
+  pit('passes in the assetPlugin param', function() {
+    return makeRequest(
+      requestHandler,
+      'index.bundle?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2'
+    ).then(function(response) {
+      expect(response.body).toEqual('this is the source');
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.js',
+        inlineSourceMap: false,
+        minify: false,
+        hot: false,
+        runModule: true,
+        sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
+        dev: true,
+        platform: undefined,
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        unbundle: false,
+        entryModuleOnly: false,
+        isolateModuleIDs: false,
+        assetPlugins: ['assetPlugin1', 'assetPlugin2'],
       });
     });
   });
@@ -253,52 +280,55 @@ describe('processRequest', () => {
       jest.runAllTicks();
     });
 
-    it('does not rebuild the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
-      const bundleFunc = jest.fn();
-      bundleFunc
-        .mockReturnValueOnce(
-          Promise.resolve({
-            getSource: () => 'this is the first source',
-            getSourceMap: () => {},
-            getEtag: () => () => 'this is an etag',
-          })
-        )
-        .mockReturnValue(
-          Promise.resolve({
-            getSource: () => 'this is the rebuilt source',
-            getSourceMap: () => {},
-            getEtag: () => () => 'this is an etag',
-          })
-        );
+    it(
+      'does not rebuild the bundles that contain a file ' +
+      'when that file is changed, even when hot loading is enabled',
+      () => {
+        const bundleFunc = jest.fn();
+        bundleFunc
+          .mockReturnValueOnce(
+            Promise.resolve({
+              getSource: () => 'this is the first source',
+              getSourceMap: () => {},
+              getEtag: () => () => 'this is an etag',
+            })
+          )
+          .mockReturnValue(
+            Promise.resolve({
+              getSource: () => 'this is the rebuilt source',
+              getSourceMap: () => {},
+              getEtag: () => () => 'this is an etag',
+            })
+          );
 
-      Bundler.prototype.bundle = bundleFunc;
+        Bundler.prototype.bundle = bundleFunc;
 
-      server = new Server(options);
-      server.setHMRFileChangeListener(() => {});
+        server = new Server(options);
+        server.setHMRFileChangeListener(() => {});
 
-      requestHandler = server.processRequest.bind(server);
+        requestHandler = server.processRequest.bind(server);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the first source');
-          expect(bundleFunc.mock.calls.length).toBe(1);
-        });
+        makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+          .done(response => {
+            expect(response.body).toEqual('this is the first source');
+            expect(bundleFunc.mock.calls.length).toBe(1);
+          });
 
-      jest.runAllTicks();
+        jest.runAllTicks();
 
-      triggerFileChange('all','path/file.js', options.projectRoots[0]);
-      jest.runAllTimers();
-      jest.runAllTicks();
+        triggerFileChange('all','path/file.js', options.projectRoots[0]);
+        jest.runAllTimers();
+        jest.runAllTicks();
 
-      expect(bundleFunc.mock.calls.length).toBe(1);
-      server.setHMRFileChangeListener(null);
+        expect(bundleFunc.mock.calls.length).toBe(1);
+        server.setHMRFileChangeListener(null);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the rebuilt source');
-          expect(bundleFunc.mock.calls.length).toBe(2);
-        });
-      jest.runAllTicks();
+        makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+          .done(response => {
+            expect(response.body).toEqual('this is the rebuilt source');
+            expect(bundleFunc.mock.calls.length).toBe(2);
+          });
+        jest.runAllTicks();
     });
   });
 
@@ -337,30 +367,32 @@ describe('processRequest', () => {
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should parse the platform option', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should serve range request', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
-      const res = {end: jest.fn(), writeHead: jest.fn()};
+      const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
@@ -368,18 +400,23 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
     it('should serve assets files\'s name contain non-latin letter', () => {
       const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
-      const res = {end: jest.fn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
-      expect(AssetServer.prototype.get).toBeCalledWith('imgs/主页/logo.png', undefined);
+      expect(AssetServer.prototype.get).toBeCalledWith(
+        'imgs/\u{4E3B}\u{9875}/logo.png',
+        undefined
+      );
+      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });
@@ -401,6 +438,7 @@ describe('processRequest', () => {
           unbundle: false,
           entryModuleOnly: false,
           isolateModuleIDs: false,
+          assetPlugins: [],
         })
       );
     });
@@ -423,6 +461,7 @@ describe('processRequest', () => {
             unbundle: false,
             entryModuleOnly: false,
             isolateModuleIDs: false,
+            assetPlugins: [],
           })
         );
     });

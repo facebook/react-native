@@ -45,7 +45,7 @@ var PickerIOS = React.createClass({
   _stateFromProps: function(props) {
     var selectedIndex = 0;
     var items = [];
-    ReactChildren.forEach(props.children, function (child, index) {
+    ReactChildren.toArray(props.children).forEach(function (child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }

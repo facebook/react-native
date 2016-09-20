@@ -119,7 +119,7 @@ private:
   void bindBridge() throw(JSException);
   void callNativeModules(Value&&);
   void flush();
-  void flushQueueImmediate(std::string queueJSON);
+  void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
 
   int addWebWorker(std::string scriptURL, JSValueRef workerRef, JSValueRef globalObjRef);

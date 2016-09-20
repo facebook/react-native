@@ -260,7 +260,7 @@ public class ReactShadowNode extends CSSNode {
     return mReactTag;
   }
 
-  /* package */ final void setReactTag(int reactTag) {
+  public void setReactTag(int reactTag) {
     mReactTag = reactTag;
   }
 

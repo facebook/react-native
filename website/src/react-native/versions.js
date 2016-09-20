@@ -36,7 +36,7 @@ var versions = React.createClass({
       return {
         title: title,
         path: isLatest ? '/react-native' : '/react-native/releases/' + version,
-        release: 'https://github.com/facebook/react-native/releases/tag/v' + version + '.0' + (isRC ? '-rc' : '')
+        release: 'https://github.com/facebook/react-native/releases/tag/v' + version + '.0' + (isRC ? '-rc.0' : '')
       }
     }));
 
