@@ -960,12 +960,8 @@ static void layoutNodeImpl(const CSSNodeRef node,
           boundAxis(node, CSSFlexDirectionColumn, 0);
     } else {
       // Measure the text under the current constraints.
-      const CSSSize measuredSize = node->measure(node->context,
-
-                                                 innerWidth,
-                                                 widthMeasureMode,
-                                                 innerHeight,
-                                                 heightMeasureMode);
+      const CSSSize measuredSize =
+          node->measure(node->context, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
 
       node->layout.measuredDimensions[CSSDimensionWidth] =
           boundAxis(node,
