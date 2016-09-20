@@ -375,11 +375,7 @@ class ResolutionRequest {
             }
           }
 
-          let p = Promise.reject(new UnableToResolveError(
-            fromModule,
-            toModuleName,
-            'Node module not found',
-          ));
+          let p = Promise.reject(new UnableToResolveError(fromModule, toModuleName));
           searchQueue.forEach(potentialModulePath => {
             p = this._tryResolve(
               () => this._tryResolve(
@@ -390,7 +386,22 @@ class ResolutionRequest {
             );
           });
 
-          return p;
+          return p.catch(error => {
+            if (error.type !== 'UnableToResolveError') {
+              throw error;
+            }
+            throw new UnableToResolveError(
+              fromModule,
+              toModuleName,
+              `Module does not exist in the module map ${searchQueue.length ? 'or in these directories:' : ''}\n` +
+                searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`) + '\n' +
+              `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
+              `To resolve try the following:\n` +
+              `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
+              `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
+              `  3. Reset packager cache: \`rm -fr $TMPDIR/react-*\` or \`npm start -- --reset-cache\`.`
+            );
+          });
         });
     }
   }
@@ -458,13 +469,7 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-`Unable to find this module in its module map or any of the node_modules directories under ${potentialDirPath} and its parent directories
-
-This might be related to https://github.com/facebook/react-native/issues/4968
-To resolve try the following:
-  1. Clear watchman watches: \`watchman watch-del-all\`.
-  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.
-  3. Reset packager cache: \`rm -fr $TMPDIR/react-*\` or \`npm start -- --reset-cache\`.`,
+          `Directory ${potentialDirPath} doesnt exist`,
         );
       }
 
