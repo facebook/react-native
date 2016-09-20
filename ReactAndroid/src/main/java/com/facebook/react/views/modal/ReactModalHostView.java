@@ -17,10 +17,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -267,8 +265,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
-    private final Point mMinPoint = new Point();
-    private final Point mMaxPoint = new Point();
 
     public DialogRootViewGroup(Context context) {
       super(context);
@@ -282,33 +278,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
           new Runnable() {
             @Override
             public void run() {
-              // To get the size of the screen, we use information from the WindowManager and
-              // default Display. We don't use DisplayMetricsHolder, or Display#getSize() because
-              // they return values that include the status bar. We only want the values of what
-              // will actually be shown on screen.
-              Context context = getContext();
-              WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-              Display display = Assertions.assertNotNull(wm.getDefaultDisplay());
-              // getCurrentSizeRange will return the min and max width and height that the window
-              // can be
-              display.getCurrentSizeRange(mMinPoint, mMaxPoint);
-
-              int width, height;
-              int rotation = display.getRotation();
-              if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
-                // If we are vertical the width value comes from min width and height comes from
-                // max height
-                width = mMinPoint.x;
-                height = mMaxPoint.y;
-              } else {
-                // If we are horizontal the width value comes from max width and height comes from
-                // min height
-                width = mMaxPoint.x;
-                height = mMinPoint.y;
-              }
-
+              Point modalSize = ModalHostHelper.getModalHostSize(getContext());
               ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(getChildAt(0).getId(), width, height);
+                .updateNodeSize(getChildAt(0).getId(), modalSize.x, modalSize.y);
             }
           });
       }
