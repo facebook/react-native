@@ -464,18 +464,18 @@ exports.examples = [
     },
   },
   {
-    title: 'Internal Settings',
-    render: function() {
-      return (
-        <InternalSettings />
-      );
-    },
-  },
-  {
     title: 'Animated events',
     render: function() {
       return (
         <EventExample />
+      );
+    },
+  },
+  {
+    title: 'Internal Settings',
+    render: function() {
+      return (
+        <InternalSettings />
       );
     },
   },
