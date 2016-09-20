@@ -1545,6 +1545,10 @@ input#algolia-doc-search {
   outline: none;
   border: none;
   width: 170px;
+  transition: .5s width ease;
+  -webkit-transition: .5s width ease;
+  -moz-transition: .5s width ease;
+  -o-transition: .5s width ease;
 }
 
 input#algolia-doc-search:focus {
