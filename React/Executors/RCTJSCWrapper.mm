@@ -16,11 +16,10 @@
 
 #include <dlfcn.h>
 
-#if HAS_FBGLOG
-#import <FBGLog/FBGLogSink.h>
 
-typedef void (*configureJSCLoggingForIOSFuncType)(int32_t, std::unique_ptr<google::LogSink>, void (*)());
-#endif
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(void *handle) {
+  return;
+}
 
 static void *RCTCustomLibraryHandler(void)
 {
@@ -89,17 +88,10 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
   wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
 
-#if HAS_FBGLOG
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    void *handle = dlsym(libraryHandle, "configureJSCLoggingForIOS");
-
-    if (handle) {
-      configureJSCLoggingForIOSFuncType logConfigFunc = (configureJSCLoggingForIOSFuncType)handle;
-      logConfigFunc(google::GLOG_INFO, FBGLogSink(), FBGLogFailureFunction);
-    }
+    RCTCustomJSCInit(libraryHandle);
   });
-#endif
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
