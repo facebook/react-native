@@ -1700,16 +1700,17 @@ static void layoutNodeImpl(const CSSNodeRef node,
       float lineHeight = 0;
       for (ii = startIndex; ii < childCount; ii++) {
         const CSSNodeRef child = CSSNodeListGet(node->children, ii);
-        if (child->style.positionType != CSSPositionTypeRelative) {
-          continue;
-        }
-        if (child->lineIndex != i) {
-          break;
-        }
-        if (isLayoutDimDefined(child, crossAxis)) {
-          lineHeight = fmaxf(lineHeight,
-                             child->layout.measuredDimensions[dim[crossAxis]] +
-                                 getMarginAxis(child, crossAxis));
+
+        if (child->style.positionType == CSSPositionTypeAbsolute) {
+          if (child->lineIndex != i) {
+            break;
+          }
+
+          if (isLayoutDimDefined(child, crossAxis)) {
+            lineHeight = fmaxf(lineHeight,
+                               child->layout.measuredDimensions[dim[crossAxis]] +
+                                   getMarginAxis(child, crossAxis));
+          }
         }
       }
       endIndex = ii;
@@ -1718,26 +1719,32 @@ static void layoutNodeImpl(const CSSNodeRef node,
       if (performLayout) {
         for (ii = startIndex; ii < endIndex; ii++) {
           const CSSNodeRef child = CSSNodeListGet(node->children, ii);
-          if (child->style.positionType != CSSPositionTypeRelative) {
-            continue;
-          }
 
-          const CSSAlign alignContentAlignItem = getAlignItem(node, child);
-          if (alignContentAlignItem == CSSAlignFlexStart) {
-            child->layout.position[pos[crossAxis]] =
-                currentLead + getLeadingMargin(child, crossAxis);
-          } else if (alignContentAlignItem == CSSAlignFlexEnd) {
-            child->layout.position[pos[crossAxis]] =
-                currentLead + lineHeight - getTrailingMargin(child, crossAxis) -
-                child->layout.measuredDimensions[dim[crossAxis]];
-          } else if (alignContentAlignItem == CSSAlignCenter) {
-            childHeight = child->layout.measuredDimensions[dim[crossAxis]];
-            child->layout.position[pos[crossAxis]] = currentLead + (lineHeight - childHeight) / 2;
-          } else if (alignContentAlignItem == CSSAlignStretch) {
-            child->layout.position[pos[crossAxis]] =
-                currentLead + getLeadingMargin(child, crossAxis);
-            // TODO(prenaux): Correctly set the height of items with indefinite
-            //                (auto) crossAxis dimension.
+          if (child->style.positionType == CSSPositionTypeAbsolute) {
+            switch (getAlignItem(node, child)) {
+              case CSSAlignFlexStart:
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + getLeadingMargin(child, crossAxis);
+                break;
+              case CSSAlignFlexEnd:
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + lineHeight - getTrailingMargin(child, crossAxis) -
+                    child->layout.measuredDimensions[dim[crossAxis]];
+                break;
+              case CSSAlignCenter:
+                childHeight = child->layout.measuredDimensions[dim[crossAxis]];
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + (lineHeight - childHeight) / 2;
+                break;
+              case CSSAlignStretch:
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + getLeadingMargin(child, crossAxis);
+                // TODO(prenaux): Correctly set the height of items with indefinite
+                //                (auto) crossAxis dimension.
+                break;
+              default:
+                break;
+            }
           }
         }
       }
