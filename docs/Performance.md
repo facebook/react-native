@@ -86,12 +86,17 @@ but their receipt is not necessary for the scroll to occur).
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
 
-> Here we have a little trick to disable console.log only in release version. Just put the following in the top of your "index.*.js":
-```js
-if (!__DEV__) {
-  console.log = () => {}; 
+> There is a [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) can remove all console.* calls. You need to install it first using `npm install babel-plugin-transform-remove-console --save`, and then edit (or create) `.babelrc` under your project directory like the following:
+```json
+{
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
 }
 ```
+Then it will automatically remove all console.* calls in release (production) version. And it still works in debug version!
 
 
 #### Development mode (dev=true)
