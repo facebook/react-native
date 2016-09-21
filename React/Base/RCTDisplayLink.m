@@ -127,7 +127,7 @@
 
   RCTProfileImmediateEvent(RCTProfileTagAlways, @"JS Thread Tick", displayLink.timestamp, 'g');
 
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call");
 }
 
 - (void)updateJSDisplayLinkState

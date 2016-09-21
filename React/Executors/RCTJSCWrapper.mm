@@ -16,11 +16,10 @@
 
 #include <dlfcn.h>
 
-#if HAS_FBGLOG
-#import <FBGLog/FBGLogSink.h>
 
-typedef void (*configureJSCLoggingForIOSFuncType)(int32_t, std::unique_ptr<google::LogSink>, void (*)());
-#endif
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(void *handle) {
+  return;
+}
 
 static void *RCTCustomLibraryHandler(void)
 {
@@ -44,13 +43,10 @@ static void *RCTCustomLibraryHandler(void)
 
 static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
 {
-  wrapper->JSValueToStringCopy = JSValueToStringCopy;
   wrapper->JSStringCreateWithCFString = JSStringCreateWithCFString;
-  wrapper->JSStringCopyCFString = JSStringCopyCFString;
   wrapper->JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString;
   wrapper->JSStringRelease = JSStringRelease;
   wrapper->JSGlobalContextSetName = JSGlobalContextSetName;
-  wrapper->JSContextGetGlobalContext = JSContextGetGlobalContext;
   wrapper->JSObjectSetProperty = JSObjectSetProperty;
   wrapper->JSContextGetGlobalObject = JSContextGetGlobalObject;
   wrapper->JSObjectGetProperty = JSObjectGetProperty;
@@ -74,13 +70,10 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
     return;
   }
 
-  wrapper->JSValueToStringCopy = (JSValueToStringCopyFuncType)dlsym(libraryHandle, "JSValueToStringCopy");
   wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
-  wrapper->JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString");
   wrapper->JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString");
   wrapper->JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease");
   wrapper->JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName");
-  wrapper->JSContextGetGlobalContext = (JSContextGetGlobalContextFuncType)dlsym(libraryHandle, "JSContextGetGlobalContext");
   wrapper->JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty");
   wrapper->JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject");
   wrapper->JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty");
@@ -95,17 +88,10 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
   wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
 
-#if HAS_FBGLOG
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    void *handle = dlsym(libraryHandle, "configureJSCLoggingForIOS");
-
-    if (handle) {
-      configureJSCLoggingForIOSFuncType logConfigFunc = (configureJSCLoggingForIOSFuncType)handle;
-      logConfigFunc(google::GLOG_INFO, FBGLogSink(), FBGLogFailureFunction);
-    }
+    RCTCustomJSCInit(libraryHandle);
   });
-#endif
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)

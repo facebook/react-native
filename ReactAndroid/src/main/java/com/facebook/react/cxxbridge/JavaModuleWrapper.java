@@ -108,7 +108,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         mModule.getSyncHooks().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
-      md.type = BaseJavaModule.METHOD_TYPE_SYNC_HOOK;
+      md.type = BaseJavaModule.METHOD_TYPE_SYNC;
 
       BaseJavaModule.SyncJavaHook method = (BaseJavaModule.SyncJavaHook) entry.getValue();
       md.method = method.getMethod();

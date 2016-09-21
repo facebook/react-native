@@ -10,7 +10,7 @@
  */
 'use strict';
 
-type IOSSimulatorInfo = {
+type IOSDeviceInfo = {
   name: string;
   udid: string;
   version: string;
@@ -19,31 +19,20 @@ type IOSSimulatorInfo = {
 /**
  * Parses the output of `xcrun simctl list devices` command
  */
-function parseIOSSimulatorsList(text: string): Array<IOSSimulatorInfo> {
+function parseIOSDevicesList(text: string): Array<IOSDeviceInfo> {
   const devices = [];
-  var currentOS = null;
-
   text.split('\n').forEach((line) => {
-    var section = line.match(/^-- (.+) --$/);
-    if (section) {
-      var header = section[1].match(/^iOS (.+)$/);
-      if (header) {
-        currentOS = header[1];
-      } else {
-        currentOS = null;
-      }
-      return;
-    }
-
-    const device = line.match(/^[ ]*([^()]+) \(([^()]+)\)/);
-    if (device && currentOS) {
+    const device = line.match(/(.*?) \((.*?)\) \[(.*?)\]/);
+    const noSimulator = line.match(/(.*?) \((.*?)\) \[(.*?)\] \((.*?)\)/);
+    if (device != null && noSimulator == null){
       var name = device[1];
-      var udid = device[2];
-      devices.push({udid, name, version: currentOS});
+      var version = device[2];
+      var udid = device[3];
+      devices.push({udid, name, version});
     }
   });
 
   return devices;
 }
 
-module.exports = parseIOSSimulatorsList;
+module.exports = parseIOSDevicesList;

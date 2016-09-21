@@ -26,12 +26,15 @@ var React = require('react');
 var ReactNative = require('react-native');
 var {
   Modal,
+  Picker,
   StyleSheet,
   Switch,
   Text,
   TouchableHighlight,
   View,
 } = ReactNative;
+
+const Item = Picker.Item;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -68,11 +71,22 @@ class Button extends React.Component {
   }
 }
 
+const supportedOrientationsPickerValues = [
+  ['portrait'],
+  ['landscape'],
+  ['landscape-left'],
+  ['portrait', 'landscape-right'],
+  ['portrait', 'landscape'],
+  [],
+];
+
 class ModalExample extends React.Component {
   state = {
     animationType: 'none',
     modalVisible: false,
     transparent: false,
+    selectedSupportedOrientation: 0,
+    currentOrientation: 'unknown',
   };
 
   _setModalVisible = (visible) => {
@@ -104,11 +118,14 @@ class ModalExample extends React.Component {
           animationType={this.state.animationType}
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
-          onRequestClose={() => {this._setModalVisible(false)}}
+          onRequestClose={() => this._setModalVisible(false)}
+          supportedOrientations={supportedOrientationsPickerValues[this.state.selectedSupportedOrientation]}
+          onOrientationChange={evt => this.setState({currentOrientation: evt.nativeEvent.orientation})}
           >
           <View style={[styles.container, modalBackgroundStyle]}>
             <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
               <Text>This modal was presented {this.state.animationType === 'none' ? 'without' : 'with'} animation.</Text>
+              <Text>It is currently displayed in {this.state.currentOrientation} mode.</Text>
               <Button
                 onPress={this._setModalVisible.bind(this, false)}
                 style={styles.modalButton}>
@@ -133,6 +150,22 @@ class ModalExample extends React.Component {
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>
           <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+        </View>
+
+        <View>
+          <Text style={styles.rowTitle}>Supported orientations</Text>
+          <Picker
+            selectedValue={this.state.selectedSupportedOrientation}
+            onValueChange={(_, i) => this.setState({selectedSupportedOrientation: i})}
+            itemStyle={styles.pickerItem}
+            >
+            <Item label="Portrait" value={0} />
+            <Item label="Landscape" value={1} />
+            <Item label="Landscape left" value={2} />
+            <Item label="Portrait and landscape right" value={3} />
+            <Item label="Portrait and landscape" value={4} />
+            <Item label="Default supportedOrientations" value={5} />
+          </Picker>
         </View>
 
         <Button onPress={this._setModalVisible.bind(this, true)}>
@@ -186,5 +219,8 @@ var styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 10,
+  },
+  pickerItem: {
+    fontSize: 16,
   },
 });

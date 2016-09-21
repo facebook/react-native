@@ -60,8 +60,8 @@ export type AnnotationDragState = $Enum<{
  * `MKMapView`.
  *
  * For a cross-platform solution, check out
- * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
- * by Leland Richardson.
+ * [react-native-maps](https://github.com/airbnb/react-native-maps)
+ * by Airbnb.
  *
  * ```
  * import React, { Component } from 'react';

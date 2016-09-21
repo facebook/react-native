@@ -12,6 +12,37 @@
 #import "RCTConvert.h"
 #import "RCTNavItem.h"
 
+@implementation RCTConvert (BarButtonSystemItem)
+
+RCT_ENUM_CONVERTER(UIBarButtonSystemItem, (@{
+  @"done": @(UIBarButtonSystemItemDone),
+  @"cancel": @(UIBarButtonSystemItemCancel),
+  @"edit": @(UIBarButtonSystemItemEdit),
+  @"save": @(UIBarButtonSystemItemSave),
+  @"add": @(UIBarButtonSystemItemAdd),
+  @"flexible-space": @(UIBarButtonSystemItemFlexibleSpace),
+  @"fixed-space": @(UIBarButtonSystemItemFixedSpace),
+  @"compose": @(UIBarButtonSystemItemCompose),
+  @"reply": @(UIBarButtonSystemItemReply),
+  @"action": @(UIBarButtonSystemItemAction),
+  @"organize": @(UIBarButtonSystemItemOrganize),
+  @"bookmarks": @(UIBarButtonSystemItemBookmarks),
+  @"search": @(UIBarButtonSystemItemSearch),
+  @"refresh": @(UIBarButtonSystemItemRefresh),
+  @"stop": @(UIBarButtonSystemItemStop),
+  @"camera": @(UIBarButtonSystemItemCamera),
+  @"trash": @(UIBarButtonSystemItemTrash),
+  @"play": @(UIBarButtonSystemItemPlay),
+  @"pause": @(UIBarButtonSystemItemPause),
+  @"rewind": @(UIBarButtonSystemItemRewind),
+  @"fast-forward": @(UIBarButtonSystemItemFastForward),
+  @"undo": @(UIBarButtonSystemItemUndo),
+  @"redo": @(UIBarButtonSystemItemRedo),
+  @"page-curl": @(UIBarButtonSystemItemPageCurl)
+}), NSNotFound, integerValue);
+
+@end
+
 @implementation RCTNavItemManager
 
 RCT_EXPORT_MODULE()
@@ -36,9 +67,11 @@ RCT_EXPORT_VIEW_PROPERTY(backButtonTitle, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(leftButtonTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(leftButtonIcon, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(leftButtonSystemIcon, UIBarButtonSystemItem)
 
 RCT_EXPORT_VIEW_PROPERTY(rightButtonIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(rightButtonTitle, NSString)
+RCT_EXPORT_VIEW_PROPERTY(rightButtonSystemIcon, UIBarButtonSystemItem)
 
 RCT_EXPORT_VIEW_PROPERTY(onLeftButtonPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onRightButtonPress, RCTBubblingEventBlock)

@@ -19,7 +19,7 @@ var Site = require('Site');
 
 var BlogPageLayout = React.createClass({
   getPageURL: function(page) {
-    var url = '/jest/blog/';
+    var url = '/react-native/blog/';
     if (page > 0) {
       url += 'page' + (page + 1) + '/';
     }

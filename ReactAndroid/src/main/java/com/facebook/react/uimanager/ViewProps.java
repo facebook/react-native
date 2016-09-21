@@ -75,9 +75,10 @@ public class ViewProps {
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
-  public static final String LINE_BREAK_MODE = "ellipsizeMode";
+  public static final String ELLIPSIZE_MODE = "ellipsizeMode";
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
+  public static final String RESIZE_METHOD = "resizeMethod";
   public static final String TEXT_ALIGN = "textAlign";
   public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";

@@ -23,26 +23,31 @@ import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
-/**
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+
+  /**
  * <p>Native module to allow JS to create and update native Views.</p>
  *
  * <p>
  * <h2>== Transactional Requirement ==</h2>
- * A requirement of this class is to make sure that transactional UI updates occur all at once, meaning
- * that no intermediate state is ever rendered to the screen. For example, if a JS application
- * update changes the background of View A to blue and the width of View B to 100, both need to
- * appear at once. Practically, this means that all UI update code related to a single transaction
- * must be executed as a single code block on the UI thread. Executing as multiple code blocks
- * could allow the platform UI system to interrupt and render a partial UI state.
+ * A requirement of this class is to make sure that transactional UI updates occur all at once,
+ * meaning that no intermediate state is ever rendered to the screen. For example, if a JS
+ * application update changes the background of View A to blue and the width of View B to 100, both
+ * need to appear at once. Practically, this means that all UI update code related to a single
+ * transaction must be executed as a single code block on the UI thread. Executing as multiple code
+ * blocks could allow the platform UI system to interrupt and render a partial UI state.
  * </p>
  *
  * <p>To facilitate this, this module enqueues operations that are then applied to native view
@@ -61,6 +66,7 @@ import com.facebook.systrace.SystraceMessage;
  *                consider implementing a pool
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
+@ReactModule(name = "RKUIManager")
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
@@ -129,11 +135,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
 
@@ -184,7 +192,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
             new Runnable() {
               @Override
               public void run() {
-                updateRootNodeSize(tag, width, height);
+                updateNodeSize(tag, width, height);
               }
             });
         }
@@ -198,10 +206,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeRootView(rootViewTag);
   }
 
-  private void updateRootNodeSize(int rootViewTag, int newWidth, int newHeight) {
+  public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
-    mUIImplementation.updateRootNodeSize(rootViewTag, newWidth, newHeight, mEventDispatcher);
+    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight, mEventDispatcher);
   }
 
   @ReactMethod

@@ -7,10 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-const NavigationRootContainer = {
-  getBackAction: () => {
-    return { type: 'BackAction' };
-  }
-};
+#import "RCTValueAnimatedNode.h"
 
-module.exports = NavigationRootContainer;
+@interface RCTDiffClampAnimatedNode : RCTValueAnimatedNode
+
+@end

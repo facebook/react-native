@@ -10,13 +10,14 @@
 
 const {combineSourceMaps, joinModules} = require('./util');
 
-module.exports = ({startupModules, lazyModules}) => {
+module.exports = ({startupModules, lazyModules, moduleGroups}) => {
   const startupModule = {
     code: joinModules(startupModules),
     map: combineSourceMaps({modules: startupModules}),
   };
   return combineSourceMaps({
     modules: [startupModule].concat(lazyModules),
+    moduleGroups,
     withCustomOffsets: true,
   });
 };

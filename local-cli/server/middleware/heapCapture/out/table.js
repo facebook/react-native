@@ -75,13 +75,104 @@ dropFilter:React.PropTypes.func.isRequired,
 dropAction:React.PropTypes.func.isRequired};var
 
 
-Table=function(_React$Component3){_inherits(Table,_React$Component3);// eslint-disable-line no-unused-vars
-function Table(props){_classCallCheck(this,Table);var _this3=_possibleConstructorReturn(this,Object.getPrototypeOf(Table).call(this,
+TableHeader=function(_React$Component3){_inherits(TableHeader,_React$Component3);
+function TableHeader(props){_classCallCheck(this,TableHeader);return _possibleConstructorReturn(this,Object.getPrototypeOf(TableHeader).call(this,
 props));
-_this3.state={
+}_createClass(TableHeader,[{key:'render',value:function render()
+{
+var aggrow=this.props.aggrow;
+var aggregators=aggrow.getActiveAggregators();
+var expanders=aggrow.getActiveExpanders();
+var headers=[];
+for(var i=0;i<aggregators.length;i++){
+var name=aggrow.getAggregatorName(aggregators[i]);
+headers.push(
+React.createElement(DropTarget,{
+id:'aggregate:insert:'+i.toString(),
+dropFilter:function dropFilter(s){return s.startsWith('aggregate');},
+dropAction:this.props.dropAction},
+
+React.createElement('div',{style:{
+width:'16px',
+height:'inherit',
+backgroundColor:'darkGray',
+flexShrink:'0'}})));
+
+
+headers.push(React.createElement(Draggable,{id:'aggregate:active:'+i.toString()},
+React.createElement('div',{style:{width:'128px',textAlign:'center',flexShrink:'0'}},name)));
+
+}
+headers.push(
+React.createElement(DropTarget,{
+id:'divider:insert',
+dropFilter:function dropFilter(s){return s.startsWith('aggregate')||s.startsWith('expander');},
+dropAction:this.props.dropAction},
+
+React.createElement('div',{style:{
+width:'16px',
+height:'inherit',
+backgroundColor:'gold',
+flexShrink:'0'}})));
+
+
+for(var _i=0;_i<expanders.length;_i++){
+var _name=aggrow.getExpanderName(expanders[_i]);
+var bg=_i%2===0?'white':'lightGray';
+headers.push(React.createElement(Draggable,{id:'expander:active:'+_i.toString()},
+React.createElement('div',{style:{
+width:'128px',
+textAlign:'center',
+backgroundColor:bg,
+flexShrink:'0'}},
+
+_name)));
+
+
+var sep=_i+1<expanders.length?'->':'...';
+headers.push(
+React.createElement(DropTarget,{
+id:'expander:insert:'+(_i+1).toString(),
+dropFilter:function dropFilter(){return true;},
+dropAction:this.props.dropAction},
+
+React.createElement('div',{style:{
+height:'inherit',
+backgroundColor:'darkGray',
+flexShrink:'0'}},
+
+sep)));
+
+
+
+}
+return(
+React.createElement('div',{style:{
+width:'100%',
+height:'26px',
+display:'flex',
+flexDirection:'row',
+alignItems:'center',
+borderBottom:'2px solid black'}},
+
+headers));
+
+
+}}]);return TableHeader;}(React.Component);
+
+
+TableHeader.propTypes={
+aggrow:React.PropTypes.object.isRequired,
+dropAction:React.PropTypes.func.isRequired};var
+
+
+Table=function(_React$Component4){_inherits(Table,_React$Component4);// eslint-disable-line no-unused-vars
+function Table(props){_classCallCheck(this,Table);var _this4=_possibleConstructorReturn(this,Object.getPrototypeOf(Table).call(this,
+props));
+_this4.state={
 aggrow:props.aggrow,
 viewport:{top:0,height:100},
-cursor:0};return _this3;
+cursor:0};return _this4;
 
 }_createClass(Table,[{key:'scroll',value:function scroll(
 
@@ -103,6 +194,7 @@ newCursor-=row.height-1;
 }
 this.state.aggrow.contract(row);
 this.setState({cursor:newCursor});
+console.log('-'+row.top);
 }},{key:'_expandRow',value:function _expandRow(
 
 row){
@@ -112,6 +204,7 @@ if(newCursor>row.top){// below expanded section
 newCursor+=row.height-1;
 }
 this.setState({cursor:newCursor});
+console.log('+'+row.top);
 }},{key:'_keepCursorInViewport',value:function _keepCursorInViewport()
 
 
@@ -171,7 +264,7 @@ this._keepCursorInViewport();
 e.preventDefault();
 break;}
 
-}},{key:'dropAggregator',value:function dropAggregator(
+}},{key:'dropAction',value:function dropAction(
 
 s,d){
 var aggrow=this.state.aggrow;
@@ -217,95 +310,18 @@ this.setState({cursor:0});
 }
 }},{key:'render',value:function render()
 
-{var _this4=this;
-var headers=[];
-var aggrow=this.state.aggrow;
-var aggregators=aggrow.getActiveAggregators();
-var expanders=aggrow.getActiveExpanders();
-// aggregators
-for(var i=0;i<aggregators.length;i++){
-var name=aggrow.getAggregatorName(aggregators[i]);
-headers.push(
-React.createElement(DropTarget,{
-id:'aggregate:insert:'+i.toString(),
-dropFilter:function dropFilter(){return true;},
-dropAction:function dropAction(s,d){_this4.dropAggregator(s,d);}},
-
-React.createElement('div',{style:{
-width:'16px',
-height:'inherit',
-backgroundColor:'darkGray',
-flexShrink:'0'}})));
-
-
-headers.push(React.createElement(Draggable,{id:'aggregate:active:'+i.toString()},
-React.createElement('div',{style:{width:'128px',textAlign:'center',flexShrink:'0'}},name)));
-
-}
-headers.push(
-React.createElement(DropTarget,{
-id:'divider:insert',
-dropFilter:function dropFilter(){return true;},
-dropAction:function dropAction(s,d){_this4.dropAggregator(s,d);}},
-
-React.createElement('div',{style:{
-width:'16px',
-height:'inherit',
-backgroundColor:'gold',
-flexShrink:'0'}})));
-
-
-for(var _i=0;_i<expanders.length;_i++){
-var _name=aggrow.getExpanderName(expanders[_i]);
-var bg=_i%2===0?'white':'lightGray';
-headers.push(React.createElement(Draggable,{id:'expander:active:'+_i.toString()},
-React.createElement('div',{style:{
-width:'128px',
-textAlign:'center',
-backgroundColor:bg,
-flexShrink:'0'}},
-
-_name)));
-
-
-var sep=_i+1<expanders.length?'->':'...';
-headers.push(
-React.createElement(DropTarget,{
-id:'expander:insert:'+(_i+1).toString(),
-dropFilter:function dropFilter(){return true;},
-dropAction:function dropAction(s,d){_this4.dropAggregator(s,d);}},
-
-React.createElement('div',{style:{
-height:'inherit',
-backgroundColor:'darkGray',
-flexShrink:'0'}},
-
-sep)));
-
-
-
-}
-
+{var _this5=this;
 return(
 React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',flexDirection:'column'}},
-React.createElement('div',{style:{
-width:'100%',
-height:'26px',
-display:'flex',
-flexDirection:'row',
-alignItems:'center',
-borderBottom:'2px solid black'}},
-
-headers),
-
+React.createElement(TableHeader,{aggrow:this.state.aggrow,dropAction:function dropAction(s,d){return _this5.dropAction(s,d);}}),
 React.createElement('div',{
 style:{
 width:'100%',
 flexGrow:'1',
 overflow:'scroll'},
 
-onScroll:function onScroll(e){return _this4.scroll(e);},
-ref:function ref(div){_this4._scrollDiv=div;}},
+onScroll:function onScroll(e){return _this5.scroll(e);},
+ref:function ref(div){_this5._scrollDiv=div;}},
 React.createElement('div',{style:{position:'relative'}},
 this.renderVirtualizedRows()))));
 
@@ -314,7 +330,7 @@ this.renderVirtualizedRows()))));
 
 }},{key:'renderVirtualizedRows',value:function renderVirtualizedRows()
 
-{var _this5=this;
+{var _this6=this;
 var aggrow=this.state.aggrow;
 var viewport=this.state.viewport;
 var rows=aggrow.getRows(viewport.top,viewport.height);
@@ -324,12 +340,12 @@ position:'absolute',
 width:'100%',
 height:(rowHeight*(aggrow.getHeight()+20)).toString()+'px'}},
 
-rows.map(function(child){return _this5.renderRow(child);})));
+rows.map(function(child){return _this6.renderRow(child);})));
 
 
 }},{key:'renderRow',value:function renderRow(
 
-row){var _this6=this;
+row){var _this7=this;
 if(row===null){
 return null;
 }
@@ -383,7 +399,7 @@ width:'12px',
 textAlign:'center',
 border:'1px solid gray'},
 
-onClick:function onClick(){return _this6._expandRow(row);}},'+'));
+onClick:function onClick(){return _this7._expandRow(row);}},'+'));
 
 
 }else if(aggrow.canContract(row)){
@@ -396,7 +412,7 @@ width:'12px',
 textAlign:'center',
 border:'1px solid gray'},
 
-onClick:function onClick(){return _this6._contractRow(row);}},'-'));
+onClick:function onClick(){return _this7._contractRow(row);}},'-'));
 
 
 }else{
@@ -432,7 +448,7 @@ backgroundColor:bg,
 borderBottom:'1px solid gray'},
 
 onClick:function onClick(){
-_this6.setState({cursor:row.top});
+_this7.setState({cursor:row.top});
 }},
 columns));
 

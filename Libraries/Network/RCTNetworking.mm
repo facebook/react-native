@@ -9,6 +9,8 @@
 
 #import "RCTNetworking.h"
 
+#include <mutex>
+
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTNetworkTask.h"
@@ -48,7 +50,7 @@ static NSString *RCTGenerateFormBoundary()
   const size_t boundaryLength = 70;
   const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./";
 
-  char *bytes = malloc(boundaryLength);
+  char *bytes = (char*)malloc(boundaryLength);
   size_t charCount = strlen(boundaryChars);
   for (int i = 0; i < boundaryLength; i++) {
     bytes[i] = boundaryChars[arc4random_uniform((u_int32_t)charCount)];
@@ -126,6 +128,7 @@ static NSString *RCTGenerateFormBoundary()
 @implementation RCTNetworking
 {
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
+  std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
 }
 
@@ -149,19 +152,23 @@ RCT_EXPORT_MODULE()
     return nil;
   }
 
-  if (!_handlers) {
-    // Get handlers, sorted in reverse priority order (highest priority first)
-    _handlers = [[self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
-      float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
-      float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
-      if (priorityA > priorityB) {
-        return NSOrderedAscending;
-      } else if (priorityA < priorityB) {
-        return NSOrderedDescending;
-      } else {
-        return NSOrderedSame;
-      }
-    }];
+  {
+    std::lock_guard<std::mutex> lock(_handlersLock);
+
+    if (!_handlers) {
+      // Get handlers, sorted in reverse priority order (highest priority first)
+      _handlers = [[self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+        float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
+        float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
+        if (priorityA > priorityB) {
+          return NSOrderedAscending;
+        } else if (priorityA < priorityB) {
+          return NSOrderedDescending;
+        } else {
+          return NSOrderedSame;
+        }
+      }];
+    }
   }
 
   if (RCT_DEBUG) {
@@ -236,9 +243,14 @@ RCT_EXPORT_MODULE()
       return (RCTURLRequestCancellationBlock)nil;
     }
     request.HTTPBody = result[@"body"];
-    NSString *contentType = result[@"contentType"];
-    if (contentType) {
-      [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
+    NSString *dataContentType = result[@"contentType"];
+    NSString *requestContentType = [request valueForHTTPHeaderField:@"Content-Type"];
+    BOOL isMultipart = [dataContentType hasPrefix:@"multipart"];
+    
+    // For multipart requests we need to override caller-specified content type with one
+    // from the data object, because it contains the boundary string
+    if (dataContentType && ([requestContentType length] == 0 || isMultipart)) {
+      [request setValue:dataContentType forHTTPHeaderField:@"Content-Type"];
     }
 
     // Gzip the request body
@@ -331,17 +343,11 @@ RCT_EXPORT_MODULE()
   // Attempt to decode text
   NSString *encodedResponse = [[NSString alloc] initWithData:data encoding:encoding];
   if (!encodedResponse && data.length) {
-    // We don't have an encoding, or the encoding is incorrect, so now we
-    // try to guess (unfortunately, this feature is available in iOS 8+ only)
-    if ([NSString respondsToSelector:@selector(stringEncodingForData:
-                                               encodingOptions:
-                                               convertedString:
-                                               usedLossyConversion:)]) {
-      [NSString stringEncodingForData:data
-                      encodingOptions:nil
-                      convertedString:&encodedResponse
-                  usedLossyConversion:NULL];
-    }
+    // We don't have an encoding, or the encoding is incorrect, so now we try to guess
+    [NSString stringEncodingForData:data
+                    encodingOptions:nil
+                    convertedString:&encodedResponse
+                usedLossyConversion:NULL];
   }
   return encodedResponse;
 }

@@ -23,8 +23,9 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.LifecycleState;
+import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -220,7 +221,7 @@ public abstract class ReactInstanceManager {
 
     protected final List<ReactPackage> mPackages = new ArrayList<>();
 
-    protected @Nullable String mJSBundleFile;
+    protected @Nullable String mJSBundleAssetUrl;
     protected @Nullable JSBundleLoader mJSBundleLoader;
     protected @Nullable String mJSMainModuleName;
     protected @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
@@ -233,6 +234,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable Activity mCurrentActivity;
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
+    protected boolean mLazyNativeModulesEnabled;
 
     protected Builder() {
     }
@@ -252,7 +254,9 @@ public abstract class ReactInstanceManager {
      * Example: {@code "index.android.js"}
      */
     public Builder setBundleAssetName(String bundleAssetName) {
-      return this.setJSBundleFile(bundleAssetName == null ? null : "assets://" + bundleAssetName);
+      mJSBundleAssetUrl = (bundleAssetName == null ? null : "assets://" + bundleAssetName);
+      mJSBundleLoader = null;
+      return this;
     }
 
     /**
@@ -261,9 +265,12 @@ public abstract class ReactInstanceManager {
      * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle"}
      */
     public Builder setJSBundleFile(String jsBundleFile) {
-      mJSBundleFile = jsBundleFile;
-      mJSBundleLoader = null;
-      return this;
+      if (jsBundleFile.startsWith("assets://")) {
+        mJSBundleAssetUrl = jsBundleFile;
+        mJSBundleLoader = null;
+        return this;
+      }
+      return setJSBundleLoader(JSBundleLoader.createFileLoader(jsBundleFile));
     }
 
     /**
@@ -274,7 +281,7 @@ public abstract class ReactInstanceManager {
      */
     public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
       mJSBundleLoader = jsBundleLoader;
-      mJSBundleFile = null;
+      mJSBundleAssetUrl = null;
       return this;
     }
 
@@ -360,6 +367,11 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setLazyNativeModulesEnabled(boolean lazyNativeModulesEnabled) {
+      mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -372,16 +384,16 @@ public abstract class ReactInstanceManager {
      */
     public ReactInstanceManager build() {
       Assertions.assertNotNull(
-          mApplication,
-          "Application property has not been set with this builder");
+        mApplication,
+        "Application property has not been set with this builder");
 
       Assertions.assertCondition(
-          mUseDeveloperSupport || mJSBundleFile != null || mJSBundleLoader != null,
-          "JS Bundle File has to be provided when dev support is disabled");
+        mUseDeveloperSupport || mJSBundleAssetUrl != null || mJSBundleLoader != null,
+        "JS Bundle File or Asset URL has to be provided when dev support is disabled");
 
       Assertions.assertCondition(
-          mJSMainModuleName != null || mJSBundleFile != null || mJSBundleLoader != null,
-          "Either MainModuleName or JS Bundle File needs to be provided");
+        mJSMainModuleName != null || mJSBundleAssetUrl != null || mJSBundleLoader != null,
+        "Either MainModuleName or JS Bundle File needs to be provided");
 
       if (mUIImplementationProvider == null) {
         // create default UIImplementationProvider if the provided one is null.
@@ -389,20 +401,21 @@ public abstract class ReactInstanceManager {
       }
 
       return new XReactInstanceManagerImpl(
-          mApplication,
-          mCurrentActivity,
-          mDefaultHardwareBackBtnHandler,
-          (mJSBundleLoader == null && mJSBundleFile != null) ?
-            JSBundleLoader.createFileLoader(mApplication, mJSBundleFile) : mJSBundleLoader,
-          mJSMainModuleName,
-          mPackages,
-          mUseDeveloperSupport,
-          mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler,
-          mJSCConfig,
-          mRedBoxHandler);
+        mApplication,
+        mCurrentActivity,
+        mDefaultHardwareBackBtnHandler,
+        (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
+          JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        mJSMainModuleName,
+        mPackages,
+        mUseDeveloperSupport,
+        mBridgeIdleDebugListener,
+        Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+        mUIImplementationProvider,
+        mNativeModuleCallExceptionHandler,
+        mJSCConfig,
+        mRedBoxHandler,
+        mLazyNativeModulesEnabled);
     }
   }
 }

@@ -2,13 +2,15 @@
 
 #include <gtest/gtest.h>
 #include <cxxreact/MethodCall.h>
+#include <folly/json.h>
 
 using namespace facebook;
 using namespace facebook::react;
+using namespace folly;
 
 TEST(parseMethodCalls, SingleReturnCallNoArgs) {
-  auto jsText = "[[7],[3],[\"[]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[7],[3],[[]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(0, returnedCall.arguments.size());
@@ -18,31 +20,40 @@ TEST(parseMethodCalls, SingleReturnCallNoArgs) {
 
 TEST(parseMethodCalls, InvalidReturnFormat) {
   try {
-    parseMethodCalls("{\"foo\":1}");
+    auto input = dynamic::object("foo", 1);
+    parseMethodCalls(std::move(input));
     ADD_FAILURE();
   } catch (const std::invalid_argument&) {
     // ignored
   }
   try {
-    parseMethodCalls("[{\"foo\":1}]");
+    auto input = dynamic::array(dynamic::object("foo", 1));
+    parseMethodCalls(std::move(input));
     ADD_FAILURE();
   } catch (const std::invalid_argument&) {
     // ignored
   }
   try {
-    parseMethodCalls("[1,4,{\"foo\":2}]");
+    auto input = dynamic::array(1, 4, dynamic::object("foo", 2));
+    parseMethodCalls(std::move(input));
     ADD_FAILURE();
   } catch (const std::invalid_argument&) {
     // ignored
   }
   try {
-    parseMethodCalls("[[1],[4],{\"foo\":2}]");
+    auto input = dynamic::array(dynamic::array(1),
+                                dynamic::array(4),
+                                dynamic::object("foo", 2));
+    parseMethodCalls(std::move(input));
     ADD_FAILURE();
   } catch (const std::invalid_argument&) {
     // ignored
   }
   try {
-    parseMethodCalls("[[1],[4],[]]");
+    auto input = dynamic::array(dynamic::array(1),
+                                dynamic::array(4),
+                                dynamic::array());
+    parseMethodCalls(std::move(input));
     ADD_FAILURE();
   } catch (const std::invalid_argument&) {
     // ignored
@@ -50,8 +61,8 @@ TEST(parseMethodCalls, InvalidReturnFormat) {
 }
 
 TEST(parseMethodCalls, NumberReturn) {
-  auto jsText = "[[0],[0],[\"[\\\"foobar\\\"]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[\"foobar\"]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -60,8 +71,8 @@ TEST(parseMethodCalls, NumberReturn) {
 }
 
 TEST(parseMethodCalls, StringReturn) {
-  auto jsText = "[[0],[0],[\"[42.16]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[42.16]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -70,8 +81,8 @@ TEST(parseMethodCalls, StringReturn) {
 }
 
 TEST(parseMethodCalls, BooleanReturn) {
-  auto jsText = "[[0],[0],[\"[false]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[false]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -80,8 +91,8 @@ TEST(parseMethodCalls, BooleanReturn) {
 }
 
 TEST(parseMethodCalls, NullReturn) {
-  auto jsText = "[[0],[0],[\"[null]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[null]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -89,8 +100,8 @@ TEST(parseMethodCalls, NullReturn) {
 }
 
 TEST(parseMethodCalls, MapReturn) {
-  auto jsText = "[[0],[0],[\"[{\\\"foo\\\": \\\"hello\\\", \\\"bar\\\": 4.0, \\\"baz\\\": true}]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[{\"foo\": \"hello\", \"bar\": 4.0, \"baz\": true}]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -105,8 +116,8 @@ TEST(parseMethodCalls, MapReturn) {
 }
 
 TEST(parseMethodCalls, ArrayReturn) {
-  auto jsText = "[[0],[0],[\"[[\\\"foo\\\", 42.0, false]]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[[\"foo\", 42.0, false]]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(1, returnedCall.arguments.size());
@@ -119,8 +130,8 @@ TEST(parseMethodCalls, ArrayReturn) {
 }
 
 TEST(parseMethodCalls, ReturnMultipleParams) {
-  auto jsText = "[[0],[0],[\"[\\\"foo\\\", 14, null, false]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0],[0],[[\"foo\", 14, null, false]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
   auto returnedCall = returnedCalls[0];
   ASSERT_EQ(4, returnedCall.arguments.size());
@@ -131,7 +142,7 @@ TEST(parseMethodCalls, ReturnMultipleParams) {
 }
 
 TEST(parseMethodCalls, ParseTwoCalls) {
-  auto jsText = "[[0,0],[1,1],[\"[]\",\"[]\"]]";
-  auto returnedCalls = parseMethodCalls(jsText);
+  auto jsText = "[[0,0],[1,1],[[],[]]]";
+  auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(2, returnedCalls.size());
 }

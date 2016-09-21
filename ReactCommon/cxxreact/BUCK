@@ -53,6 +53,9 @@ elif THIS_IS_FBOBJC:
       frameworks = [
         '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
       ],
+      tests = [
+        react_native_xplat_target('cxxreact/tests:tests')
+      ],
       **kwargs_add(
         kwargs,
         preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
@@ -91,7 +94,7 @@ cxx_library(
     '-fno-omit-frame-pointer',
     '-Wall',
     '-Werror',
-    '-std=c++11',
+    '-std=c++1y',
     '-fexceptions',
   ],
   deps = [
@@ -167,6 +170,7 @@ react_library(
     '-fexceptions',
     '-fvisibility=hidden',
     '-frtti',
+    '-std=c++1y',
   ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
   deps = [
     ':module',
