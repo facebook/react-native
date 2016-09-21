@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE()
   _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
-  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
+  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
 
   NSURLSession *session = [NSURLSession sharedSession];
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[NSURLRequest requestWithURL:startDevToolsURL]
