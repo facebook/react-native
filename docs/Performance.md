@@ -96,7 +96,7 @@ When running a bundled app, these statements can cause a big bottleneck in the J
   }
 }
 ```
-Then it will automatically remove all console.* calls in release (production) version. And it still works in debug version!
+Then it will automatically remove all console.* calls in release (production) version. And the console.* calls still work in debug version!
 
 
 #### Development mode (dev=true)
