@@ -109,6 +109,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   __block NSData *sourceCode;
   [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
     if (error) {
+      RCTLogWarn(@"Failed to load source: %@", error);
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf stopLoadingWithError:error];
       });
@@ -153,6 +154,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
       [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
         [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
         if (error) {
+          RCTLogWarn(@"Failed to inject config: %@", error);
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf stopLoadingWithError:error];
           });
@@ -502,7 +504,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     }
 
     if (loadError) {
-      RCTLogError(@"Failed to execute source code: %@", [loadError localizedDescription]);
+      RCTLogWarn(@"Failed to execute source code: %@", [loadError localizedDescription]);
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
       });

@@ -153,7 +153,11 @@ const bundleOpts = declareOpts({
   generateSourceMaps: {
     type: 'boolean',
     required: false,
-  }
+  },
+  assetPlugins: {
+    type: 'array',
+    default: [],
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -797,9 +801,6 @@ class Server {
   _getOptionsFromUrl(reqUrl) {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
-    // node v0.11.14 bug see https://github.com/facebook/react-native/issues/218
-    urlObj.query = urlObj.query || {};
-
     const pathname = decodeURIComponent(urlObj.pathname);
 
     // Backwards compatibility. Options used to be as added as '.' to the
@@ -818,6 +819,11 @@ class Server {
     // try to get the platform from the url
     const platform = urlObj.query.platform ||
       getPlatformExtension(pathname);
+
+    const assetPlugin = urlObj.query.assetPlugin;
+    const assetPlugins = Array.isArray(assetPlugin) ?
+      assetPlugin :
+      (typeof assetPlugin === 'string') ? [assetPlugin] : [];
 
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
@@ -838,6 +844,7 @@ class Server {
         false,
       ),
       generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
+      assetPlugins,
     };
   }
 
