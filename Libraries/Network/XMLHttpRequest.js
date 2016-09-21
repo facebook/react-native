@@ -340,7 +340,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     var headers = this.responseHeaders || {};
     return Object.keys(headers).map((headerName) => {
       return headerName + ': ' + headers[headerName];
-    }).join('\n');
+    }).join('\r\n');
   }
 
   getResponseHeader(header: string): ?string {
