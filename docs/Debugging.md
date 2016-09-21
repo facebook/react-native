@@ -94,14 +94,14 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android 
 
-1. In ```android/app/build.gradle``` , add
+1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
 
    ```gradle
    compile 'com.facebook.stetho:stetho:1.3.1'
    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports : 
+2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports: 
 
    ```java
    import com.facebook.react.modules.network.ReactCookieJarContainer;
@@ -131,6 +131,10 @@ The debugger will receive a list of all project roots, separated by a space. For
 4. Run  ```react-native run-android ```
 
 5. In a new chrome tab, open : ```chrome://inspect```, click on 'Inspect device' (the one followed by "Powered by Stetho")
+
+## Debugging native code
+
+When working with native code (e.g. when writing native modules) you can launch the app from Android Studio or Xcode and take advantage of the debugging features (setup breakpoints, etc.) as you would in case of building a standard native app.
 
 ## Performance Monitor
 

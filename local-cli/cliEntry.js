@@ -5,171 +5,181 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-const bundle = require('./bundle/bundle');
-const childProcess = require('child_process');
-const Config = require('./util/Config');
-const defaultConfig = require('./default.config');
-const dependencies = require('./dependencies/dependencies');
-const generate = require('./generate/generate');
-const library = require('./library/library');
-const link = require('./rnpm/link/src/link');
-const path = require('path');
-const Promise = require('promise');
-const runAndroid = require('./runAndroid/runAndroid');
-const logAndroid = require('./logAndroid/logAndroid');
-const runIOS = require('./runIOS/runIOS');
-const logIOS = require('./logIOS/logIOS');
-const server = require('./server/server');
-const TerminalAdapter = require('yeoman-environment/lib/adapter.js');
-const yeoman = require('yeoman-environment');
-const unbundle = require('./bundle/unbundle');
-const upgrade = require('./upgrade/upgrade');
-const version = require('./version/version');
+const commander = require('commander');
 
+const Config = require('./util/Config');
+const childProcess = require('child_process');
+const Promise = require('promise');
+const chalk = require('chalk');
+const minimist = require('minimist');
+const path = require('path');
 const fs = require('fs');
 const gracefulFs = require('graceful-fs');
 
-// Just a helper to proxy 'react-native link' to rnpm
-const linkWrapper = (args, config) => {
-  const rnpmConfig = require('./rnpm/core/src/config');
-  return new Promise((resolve, reject) => {
-    link(rnpmConfig, args.slice(1)).then(resolve, reject);
-  });
-}
+const init = require('./init/init');
+const commands = require('./commands');
+const assertRequiredOptions = require('./util/assertRequiredOptions');
+const pkg = require('../package.json');
+const defaultConfig = require('./default.config');
+
+import type { Command } from './commands';
 
 // graceful-fs helps on getting an error when we run out of file
 // descriptors. When that happens it will enqueue the operation and retry it.
 gracefulFs.gracefulify(fs);
 
-const documentedCommands = {
-  'start': [server, 'starts the webserver'],
-  'bundle': [bundle, 'builds the javascript bundle for offline use'],
-  'unbundle': [unbundle, 'builds javascript as "unbundle" for offline use'],
-  'new-library': [library, 'generates a native library bridge'],
-  'android': [generateWrapper, 'generates an Android project for your app'],
-  'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device'],
-  'log-android': [logAndroid, 'print Android logs'],
-  'run-ios': [runIOS, 'builds your app and starts it on iOS simulator'],
-  'log-ios': [logIOS, 'print iOS logs'],
-  'upgrade': [upgrade, 'upgrade your app\'s template files to the latest version; run this after ' +
-                       'updating the react-native version in your package.json and running npm install'],
-  'link': [linkWrapper, 'link a library'],
+commander.version(pkg.version);
+
+const defaultOptParser = (val) => val;
+
+const handleError = (err) => {
+  console.error();
+  console.error(err.message || err);
+  console.error();
+  process.exit(1);
 };
 
-const exportedCommands = {dependencies: dependencies};
-Object.keys(documentedCommands).forEach(function(command) {
-  exportedCommands[command] = documentedCommands[command][0];
-});
-
-const undocumentedCommands = {
-  '--version': [version, ''],
-  'init': [printInitWarning, ''],
-};
-
-const commands = Object.assign({}, documentedCommands, undocumentedCommands);
-
-/**
- * Parses the command line and runs a command of the CLI.
- */
-function run() {
-  const args = process.argv.slice(2);
-  if (args.length === 0) {
-    printUsage();
+// Custom printHelpInformation command inspired by internal Commander.js
+// one modified to suit our needs
+function printHelpInformation() {
+  let cmdName = this._name;
+  if (this._alias) {
+    cmdName = cmdName + '|' + this._alias;
   }
 
+  const sourceInformation = this.pkg
+    ? [
+      `  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`,
+      '',
+    ]
+    : [];
+
+  let output = [
+    '',
+    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
+    `  ${this._description}`,
+    '',
+    ...sourceInformation,
+    `  ${chalk.bold('Options:')}`,
+    '',
+    this.optionHelp().replace(/^/gm, '    '),
+    '',
+  ];
+
+  if (this.examples && this.examples.length > 0) {
+    const formattedUsage = this.examples.map(
+      example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
+    ).join('\n\n');
+
+    output = output.concat([
+      chalk.bold('  Example usage:'),
+      '',
+      formattedUsage,
+    ]);
+  }
+
+  return output.concat([
+    '',
+    '',
+  ]).join('\n');
+}
+
+function printUnknownCommand(cmdName) {
+  console.log([
+    '',
+    cmdName
+      ? chalk.red(`  Unrecognized command '${cmdName}'`)
+      : chalk.red('  You didn\'t pass any command'),
+    `  Run ${chalk.cyan('react-native --help')} to see list of all available commands`,
+    '',
+  ].join('\n'));
+}
+
+const addCommand = (command: Command, config: Config) => {
+  const options = command.options || [];
+
+  const cmd = commander
+    .command(command.name, undefined, {
+      noHelp: !command.description,
+    })
+    .description(command.description)
+    .action(function runAction() {
+      const passedOptions = this.opts();
+      const argv: Array<string> = Array.from(arguments).slice(0, -1);
+
+      Promise.resolve()
+        .then(() => {
+          assertRequiredOptions(options, passedOptions);
+          return command.func(argv, config, passedOptions);
+        })
+        .catch(handleError);
+    });
+
+    cmd.helpInformation = printHelpInformation.bind(cmd);
+    cmd.examples = command.examples;
+    cmd.pkg = command.pkg;
+
+  options
+    .forEach(opt => cmd.option(
+      opt.command,
+      opt.description,
+      opt.parse || defaultOptParser,
+      typeof opt.default === 'function' ? opt.default(config) : opt.default,
+    ));
+
+  // Placeholder option for --config, which is parsed before any other option,
+  // but needs to be here to avoid "unknown option" errors when specified
+  cmd.option('--config [string]', 'Path to the CLI configuration file');
+};
+
+function getCliConfig() {
+  // Use a lightweight option parser to look up the CLI configuration file,
+  // which we need to set up the parser for the other args and options
+  let cliArgs = minimist(process.argv.slice(2));
+
+  let cwd;
+  let configPath;
+  if (cliArgs.config != null) {
+    cwd = process.cwd();
+    configPath = cliArgs.config;
+  } else {
+    cwd = __dirname;
+    configPath = Config.findConfigPath(cwd);
+  }
+
+  return Config.get(cwd, defaultConfig, configPath);
+}
+
+function run() {
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';
+
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  const command = commands[args[0]];
-  if (!command) {
-    console.error('Command `%s` unrecognized', args[0]);
-    printUsage();
+  const config = getCliConfig();
+  commands.forEach(cmd => addCommand(cmd, config));
+
+  commander.parse(process.argv);
+
+  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
+
+  if (!isValidCommand) {
+    printUnknownCommand(process.argv[2]);
     return;
   }
 
-  command[0](args, Config.get(__dirname, defaultConfig)).done();
-}
-
-function generateWrapper(args, config) {
-  return generate([
-    '--platform', 'android',
-    '--project-path', process.cwd(),
-    '--project-name', JSON.parse(
-      fs.readFileSync('package.json', 'utf8')
-    ).name
-  ], config);
-}
-
-function printUsage() {
-  console.log([
-    'Usage: react-native <command>',
-    '',
-    'Commands:'
-  ].concat(Object.keys(documentedCommands).map(function(name) {
-    return '  - ' + name + ': ' + documentedCommands[name][1];
-  })).join('\n'));
-  process.exit(1);
-}
-
-// The user should never get here because projects are inited by
-// using `react-native-cli` from outside a project directory.
-function printInitWarning() {
-  return Promise.resolve().then(function() {
-    console.log([
-      'Looks like React Native project already exists in the current',
-      'folder. Run this command from a different folder or remove node_modules/react-native'
-    ].join('\n'));
-    process.exit(1);
-  });
-}
-
-class CreateSuppressingTerminalAdapter extends TerminalAdapter {
-  constructor() {
-    super();
-    // suppress 'create' output generated by yeoman
-    this.log.create = function() {};
+  if (!commander.args.length) {
+    commander.help();
   }
-}
-
-/**
- * Creates the template for a React Native project given the provided
- * parameters:
- *   - projectDir: templates will be copied here.
- *   - argsOrName: project name or full list of custom arguments to pass to the
- *                 generator.
- */
-function init(projectDir, argsOrName) {
-  console.log('Setting up new React Native app in ' + projectDir);
-  const env = yeoman.createEnv(
-    undefined,
-    undefined,
-    new CreateSuppressingTerminalAdapter()
-  );
-
-  env.register(
-    require.resolve(path.join(__dirname, 'generator')),
-    'react:app'
-  );
-
-  // argv is for instance
-  // ['node', 'react-native', 'init', 'AwesomeApp', '--verbose']
-  // args should be ['AwesomeApp', '--verbose']
-  const args = Array.isArray(argsOrName)
-    ? argsOrName
-    : [argsOrName].concat(process.argv.slice(4));
-
-  const generator = env.create('react:app', {args: args});
-  generator.destinationRoot(projectDir);
-  generator.run();
 }
 
 module.exports = {
   run: run,
   init: init,
-  commands: exportedCommands
 };

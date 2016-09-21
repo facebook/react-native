@@ -31,10 +31,13 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   private final int mPosition;
   private final float mOffset;
 
-  protected PageScrollEvent(int viewTag, long timestampMs, int position, float offset) {
-    super(viewTag, timestampMs);
+  protected PageScrollEvent(int viewTag, int position, float offset) {
+    super(viewTag);
     mPosition = position;
-    mOffset = offset;
+
+    // folly::toJson default options don't support serialize NaN or Infinite value
+    mOffset = (Float.isInfinite(offset) || Float.isNaN(offset))
+      ? 0.0f : offset;
   }
 
   @Override

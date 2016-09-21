@@ -17,8 +17,8 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var DummyProgressViewIOS = React.createClass({
-  render: function() {
+class DummyProgressViewIOS extends React.Component {
+  render() {
     return (
       <View style={[styles.dummy, this.props.style]}>
         <Text style={styles.text}>
@@ -26,8 +26,8 @@ var DummyProgressViewIOS = React.createClass({
         </Text>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   dummy: {

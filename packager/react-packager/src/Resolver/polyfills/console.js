@@ -422,7 +422,7 @@ function setupConsole(global) {
     columns.forEach(function(k, i) {
       columnWidths[i] = k.length;
       for (var j = 0; j < rows.length; j++) {
-        var cellStr = rows[j][k].toString();
+        var cellStr = (rows[j][k] || '?').toString();
         stringRows[j] = stringRows[j] || [];
         stringRows[j][i] = cellStr;
         columnWidths[i] = Math.max(columnWidths[i], cellStr.length);

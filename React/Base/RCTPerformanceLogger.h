@@ -14,9 +14,10 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptExecution,
   RCTPLRAMBundleLoad,
   RCTPLRAMStartupCodeSize,
+  RCTPLRAMStartupNativeRequires,
+  RCTPLRAMStartupNativeRequiresCount,
   RCTPLRAMNativeRequires,
   RCTPLRAMNativeRequiresCount,
-  RCTPLRAMNativeRequiresSize,
   RCTPLNativeModuleInit,
   RCTPLNativeModuleMainThread,
   RCTPLNativeModulePrepareConfig,
@@ -85,7 +86,7 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
 - (NSArray<NSNumber *> *)valuesForTags;
 
 /**
- * Returns a duration (stop_time - start_time) for given RCTPLTag.
+ * Returns a duration in ms (stop_time - start_time) for given RCTPLTag.
  */
 - (int64_t)durationForTag:(RCTPLTag)tag;
 

@@ -30,14 +30,12 @@ var {
   Text,
 } = ReactNative;
 
-var ClipboardExample = React.createClass({
-  getInitialState() {
-    return {
-      content: 'Content will appear here'
-    };
-  },
+class ClipboardExample extends React.Component {
+  state = {
+    content: 'Content will appear here'
+  };
 
-  async _setClipboardContent(){
+  _setClipboardContent = async () => {
     Clipboard.setString('Hello World');
     try {
       var content = await Clipboard.getString();
@@ -45,7 +43,7 @@ var ClipboardExample = React.createClass({
     } catch (e) {
       this.setState({content:e.message});
     }
-  },
+  };
 
   render() {
     return (
@@ -59,7 +57,7 @@ var ClipboardExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 exports.title = 'Clipboard';
 exports.description = 'Show Clipboard contents.';

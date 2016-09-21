@@ -51,9 +51,7 @@ function setUpConsole(): void {
   const ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
 
-  if (__DEV__) {
-    require('RCTLog');
-  }
+  require('RCTLog');
 }
 
 /**
@@ -77,13 +75,16 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
       value: object[name],
     });
   }
-  const {enumerable, writable} = descriptor || {};
-  Object.defineProperty(object, name, {
-    configurable: true,
-    enumerable: enumerable !== false,
-    writable: writable !== false,
-    value: newValue,
-  });
+
+  const {enumerable, writable, configurable} = descriptor || {};
+  if (!descriptor || configurable) {
+    Object.defineProperty(object, name, {
+      configurable: true,
+      enumerable: enumerable !== false,
+      writable: writable !== false,
+      value: newValue,
+    });
+  }
 }
 
 function defineLazyProperty<T>(
@@ -98,11 +99,15 @@ function defineLazyProperty<T>(
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
-  defineLazyObjectProperty(object, name, {
-    get: getNewValue,
-    enumerable: descriptor ? descriptor.enumerable !== false : true,
-    writable: descriptor ? descriptor.writable !== false : true,
-  });
+
+  const {configurable} = descriptor || {};
+  if (!descriptor || configurable) {
+    defineLazyObjectProperty(object, name, {
+      get: getNewValue,
+      enumerable: descriptor ? descriptor.enumerable !== false : true,
+      writable: descriptor ? descriptor.writable !== false : true,
+    });
+  }
 }
 
 function setUpErrorHandler(): void {
@@ -202,6 +207,7 @@ function setUpCollections(): void {
 function setUpDevTools(): void {
   if (__DEV__) {
     // not when debugging in chrome
+    // TODO(t12832058) This check is broken
     if (!window.document) {
       const setupDevtools = require('setupDevtools');
       setupDevtools();

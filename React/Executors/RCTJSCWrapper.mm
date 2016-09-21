@@ -16,33 +16,37 @@
 
 #include <dlfcn.h>
 
+
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(void *handle) {
+  return;
+}
+
 static void *RCTCustomLibraryHandler(void)
 {
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    const char *path = [[[NSBundle mainBundle] pathForResource:@"JavaScriptCore"
-                                                        ofType:nil
-                                                   inDirectory:@"Frameworks/JavaScriptCore.framework"] UTF8String];
-    if (path) {
-      handler = dlopen(path, RTLD_LAZY);
-      if (!handler) {
-        RCTLogWarn(@"Can't load custom JSC library: %s", dlerror());
+    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
+    if (!handler) {
+      const char *err = dlerror();
+
+      // Ignore the dlopen failure if custom JSC wasn't included in our app
+      // bundle. Unfortunately dlopen only provides string based errors.
+      if (err != nullptr && strstr(err, "image not found") == nullptr) {
+        RCTLogWarn(@"Can't load custom JSC library: %s", err);
       }
     }
   });
+
   return handler;
 }
 
 static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
 {
-  wrapper->JSValueToStringCopy = JSValueToStringCopy;
   wrapper->JSStringCreateWithCFString = JSStringCreateWithCFString;
-  wrapper->JSStringCopyCFString = JSStringCopyCFString;
   wrapper->JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString;
   wrapper->JSStringRelease = JSStringRelease;
   wrapper->JSGlobalContextSetName = JSGlobalContextSetName;
-  wrapper->JSContextGetGlobalContext = JSContextGetGlobalContext;
   wrapper->JSObjectSetProperty = JSObjectSetProperty;
   wrapper->JSContextGetGlobalObject = JSContextGetGlobalObject;
   wrapper->JSObjectGetProperty = JSObjectGetProperty;
@@ -66,13 +70,10 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
     return;
   }
 
-  wrapper->JSValueToStringCopy = (JSValueToStringCopyFuncType)dlsym(libraryHandle, "JSValueToStringCopy");
   wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
-  wrapper->JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString");
   wrapper->JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString");
   wrapper->JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease");
   wrapper->JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName");
-  wrapper->JSContextGetGlobalContext = (JSContextGetGlobalContextFuncType)dlsym(libraryHandle, "JSContextGetGlobalContext");
   wrapper->JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty");
   wrapper->JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject");
   wrapper->JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty");
@@ -86,12 +87,17 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
   wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
+
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    RCTCustomJSCInit(libraryHandle);
+  });
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
   RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC && [UIDevice currentDevice].systemVersion.floatValue >= 8) {
+  if (useCustomJSC) {
     RCTSetUpCustomLibraryPointers(wrapper);
   } else {
     RCTSetUpSystemLibraryPointers(wrapper);

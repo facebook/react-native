@@ -17,6 +17,9 @@ var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');
 
+export type Styles = {[key: string]: Object};
+export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
+
 var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
@@ -92,6 +95,8 @@ module.exports = {
    * on the underlying platform. However, you should not rely on it being a
    * constant size, because on different platforms and screen densities its
    * value may be calculated differently.
+   * 
+   * A line with hairline width may not be visible if your simulator is downscaled.
    */
   hairlineWidth,
 
@@ -160,8 +165,8 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<T: Object, U>(obj: T): {[key:$Keys<T>]: number} {
-    var result: T = (({}: any): T);
+  create<S: Styles>(obj: S): StyleSheet<S> {
+    const result: StyleSheet<S> = {};
     for (var key in obj) {
       StyleSheetValidation.validateStyle(key, obj);
       result[key] = ReactNativePropRegistry.register(obj[key]);

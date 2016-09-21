@@ -9,7 +9,9 @@
 
 package com.facebook.react.modules.websocket;
 
+import android.net.Uri;
 import android.util.Base64;
+import android.webkit.CookieManager;
 
 import java.io.IOException;
 import java.lang.IllegalStateException;
@@ -27,6 +29,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import okhttp3.OkHttpClient;
@@ -47,9 +50,11 @@ import java.util.concurrent.TimeUnit;
 import okio.Buffer;
 import okio.ByteString;
 
+@ReactModule(name = "WebSocketModule")
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
-  private Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
+  private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
+
   private ReactContext mReactContext;
 
   public WebSocketModule(ReactApplicationContext context) {
@@ -69,7 +74,11 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap headers, final int id) {
+  public void connect(
+    final String url,
+    @Nullable final ReadableArray protocols,
+    @Nullable final ReadableMap headers,
+    final int id) {
     OkHttpClient client = new OkHttpClient.Builder()
       .connectTimeout(10, TimeUnit.SECONDS)
       .writeTimeout(10, TimeUnit.SECONDS)
@@ -79,6 +88,27 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     Request.Builder builder = new Request.Builder()
         .tag(id)
         .url(url);
+
+    if (url != null) {
+      // Use the shared CookieManager to access the cookies
+      // set by WebViews inside the same app
+      CookieManager cookieManager = CookieManager.getInstance();
+
+      Uri parsedUrl = Uri.parse(url);
+      Uri.Builder builtUrl = parsedUrl.buildUpon();
+
+      // To get HTTPS-only cookies for wss URLs,
+      // replace wss with http in the URL.
+      if (parsedUrl.getScheme().equals("wss")) {
+        builtUrl.scheme("https");
+      }
+
+      String cookie = cookieManager.getCookie(builtUrl.build().toString());
+
+      if (cookie != null) {
+        builder.addHeader("Cookie", cookie);
+      }
+    }
 
     if (headers != null) {
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
@@ -219,7 +249,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
     }
     try {
-      client.sendMessage(RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
+      client.sendMessage(
+        RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
     } catch (IOException | IllegalStateException e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
@@ -267,16 +298,18 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       if (requestURI.getPort() != -1) {
-        defaultOrigin = String.format("%s://%s:%s", scheme, requestURI.getHost(), requestURI.getPort());
+        defaultOrigin = String.format(
+          "%s://%s:%s",
+          scheme,
+          requestURI.getHost(),
+          requestURI.getPort());
       } else {
         defaultOrigin = String.format("%s://%s/", scheme, requestURI.getHost());
       }
 
       return defaultOrigin;
-
-    } catch(URISyntaxException e) {
+    } catch (URISyntaxException e) {
         throw new IllegalArgumentException("Unable to set " + uri + " as default origin header.");
     }
   }
-
 }

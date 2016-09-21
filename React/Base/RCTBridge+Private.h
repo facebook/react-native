@@ -10,14 +10,15 @@
 #import "RCTBridge.h"
 
 @class RCTModuleData;
-@class RCTPerformanceLogger;
 @protocol RCTJavaScriptExecutor;
 
+RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
+
+#if RCT_DEBUG
+RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
+#endif
+
 @interface RCTBridge ()
-{
-@public
-  RCTPerformanceLogger *_performanceLogger;
-}
 
 // Private designated initializer
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
@@ -105,15 +106,17 @@
 - (void)stopProfiling:(void (^)(NSData *))callback;
 
 /**
- * Executes native calls sent by JavaScript. Exposed for testing purposes only
- */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer;
-
-/**
  * Exposed for the RCTJSCExecutor for sending native methods called from
  * JavaScript in the middle of a batch.
  */
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
+
+/**
+ * Synchronously call a specific native module's method and return the result
+ */
+- (id)callNativeModule:(NSUInteger)moduleID
+                method:(NSUInteger)methodID
+                params:(NSArray *)params;
 
 /**
  * Exposed for the RCTJSCExecutor for lazily loading native modules
@@ -134,9 +137,9 @@
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
-@property (nonatomic, weak) RCTBridge *parentBridge;
-@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign) BOOL moduleSetupComplete;
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
+@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

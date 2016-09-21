@@ -43,13 +43,12 @@ const {
 } = ReactNative;
 
 type Props = {
-  children: ReactElement<any>;
-  style?: any;
-  textStyle?: any;
-  viewProps?: any;
+  children?: ReactElement<any>,
+  style?: any,
+  textStyle?: any,
+  viewProps?: any,
 }
 
-// $FlowIssue(>=0.26.0) #11432532
 const NavigationHeaderTitle = ({ children, style, textStyle, viewProps }: Props) => (
   <View style={[ styles.title, style ]} {...viewProps}>
     <Text style={[ styles.titleText, textStyle ]}>{children}</Text>
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
 });
 
 NavigationHeaderTitle.propTypes = {
-  children: React.PropTypes.string.isRequired,
+  children: React.PropTypes.node.isRequired,
   style: View.propTypes.style,
   textStyle: Text.propTypes.style
 };

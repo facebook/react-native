@@ -10,10 +10,12 @@
 /*
 Thousands of applications use React Native, so we can't list all of them
 in our showcase. To be useful to someone looking through the showcase,
-either the app must be something that most readers would recognize, or the makers of the application must have posted useful technical content about the making of the app. It also must be useful considering that the majority of readers only speak English. So, each app in the showcase should link to either:
+either the app must be something that most readers would recognize, or the makers of the application must have
+posted useful technical content about the making of the app. It also must be useful considering that the majority
+of readers only speak English. So, each app in the showcase should link to either:
 
 1/ An English-language news article discussing the app, built either by a funded startup or for a public company
-2/ An English-language technical blog post by the app creators specifically discussing React Native
+2/ An English-language technical post on a funded startup or public company blog discussing React Native
 
 For each app in the showcase, use infoLink and infoTitle to reference this content.
 */
@@ -52,6 +54,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
     infoLink: 'http://makeitopen.com/tutorials/building-the-f8-app/planning/',
     infoTitle: 'Building the F8 App',
+  },
+  {
+    name: 'PlaceAVote',
+    icon: 'https://s12.postimg.org/nr79mplq5/pav_Icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/placeavote/id1120628991?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.placeavote.androidapp&hl=en',
+    infoLink: 'https://techcrunch.com/2016/05/10/placeavote-wants-to-give-voters-a-say-in-congress/',
+    infoTitle: 'PlaceAVote wants to give voters a say in Congress',
   },
   {
     name: 'FanVision Bolt',
@@ -127,6 +137,14 @@ var featured = [
     infoTitle: 'Refinery29 debuts its first app',
   },
   {
+    name: 'TRED - Sell your car for more',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/0c/07/b00c07d2-a057-06bc-6044-9fdab97f370f/icon175x175.jpeg',
+    linkAppStore:  'https://itunes.apple.com/us/app/tred-sell-my-car-for-more!/id1070071394?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=com.tredmobile&hl=en',
+    infoLink: 'http://www.geekwire.com/2015/mobile-dealership-tred-raises-another-1m-to-help-used-car-owners-make-more-money/',
+    infoTitle: 'Sell your car for thousands more than Craigslist or the dealer with TRED',
+  },
+  {
     name: 'Bitt Wallet',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/5b/00/34/5b003497-cc85-a0d0-0d3e-4fb3bc6f95cd/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/bitt-wallet/id1081954916?mt=8',
@@ -147,12 +165,6 @@ var featured = [
     infoTitle: 'The award winning Fantasy Football league manager.',
   },
   {
-    name: 'Codementor - Live 1:1 Expert Developer Help',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
-    infoLink: 'https://techcrunch.com/2015/08/26/codementor-live-classes/',
-    infoTitle: 'Codementor, a Learning Platform for Developers',
-  },
-  {
     name: 'Coiney窓口',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
@@ -168,7 +180,7 @@ var featured = [
   },
   {
     name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple62/v4/7f/b3/66/7fb366c4-79fd-34e1-3037-ffc02d8a93f7/icon350x350.png',
     linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
     linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
     infoLink: 'http://www.phonearena.com/news/Fixt-is-an-app-that-promises-a-hassle-free-smartphone-repairy-service_id81069',
@@ -296,6 +308,43 @@ var featured = [
     infoLink: 'https://www.crunchbase.com/organization/bds-diet#/entity',
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
+  {
+    name: '蜂鸟众包',
+    icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
+    linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
+    linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
+    infoLink: 'https://elelogistics.github.io/about/Crowdsource-App-Write-In-React-Native.html',
+    infoTitle: '"Fengniao Crowdsource app" is a mobile app, developed by Eleme, Inc, for Fengniao Crowdsource, the largest crowdsourced logistics platform in China.',
+  },
+  {
+    name: '昨日热推',
+    icon: 'https://frontbin.com/images/apple-touch-icon.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/zuo-ri-re-tui/id1137163693?l=en&mt=8',
+    infoLink: 'https://www.zfanw.com/blog/developing-react-native-image-viewer-library.html',
+    infoTitle: 'Developing the react-native-image-viewer library',
+  },
+  {
+    name: 'Artsy – Collect and Bid on Fine Art & Design',
+    icon: 'https://raw.githubusercontent.com/artsy/eigen/master/Artsy/Resources/Images.xcassets/AppIcon.appiconset/AppIcon167.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/artsy-collect-bid-on-fine/id703796080?mt=8',
+    infoLink: 'https://artsy.github.io/series/react-native-at-artsy/',
+    infoTitle: 'React Native at Artsy',
+  },
+  {
+    name: 'Huiseoul(惠首尔)',
+    icon: 'https://cdn.huiseoul.com/icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8',
+    infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
+    infoTitle: 'Building a conversational E-commerce app in 6 weeks with React Native',
+  },
+  {
+    name: 'Baidu(手机百度)',
+    icon: 'https://ss0.bdstatic.com/-0U0bnSm1A5BphGlnYG/tam-ogel/8b8eb88700776fe293f4f9a74a73aa18_121_121.jpg',
+    linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
+    linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
+    infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
+    infoTitle: 'Baidu is a search engine that has 600 million users.',
+  }
 ];
 
 featured.sort(function(a, b) {

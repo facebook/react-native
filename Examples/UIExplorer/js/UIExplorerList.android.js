@@ -22,21 +22,15 @@
  */
 'use strict';
 
-const React = require('React');
-
 export type UIExplorerExample = {
-  key: string;
-  module: React.Component;
+  key: string,
+  module: Object,
 };
 
-var ComponentExamples: Array<UIExplorerExample> = [
+const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ActivityIndicatorExample',
     module: require('./ActivityIndicatorExample'),
-  },
-  {
-    key: 'SliderExample',
-    module: require('./SliderExample'),
   },
   {
     key: 'ImageExample',
@@ -47,12 +41,16 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewExample'),
   },
   {
-    key: 'ModalExample',
-    module: require('./ModalExample'),
+    key: 'ListViewGridLayoutExample',
+    module: require('./ListViewGridLayoutExample'),
   },
   {
-    key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
+    key: 'ListViewPagingExample',
+    module: require('./ListViewPagingExample'),
+  },
+  {
+    key: 'ModalExample',
+    module: require('./ModalExample'),
   },
   {
     key: 'PickerExample',
@@ -71,8 +69,16 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ScrollViewSimpleExample'),
   },
   {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
+  },
+  {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
   },
   {
     key: 'SwitchExample',
@@ -108,7 +114,7 @@ var ComponentExamples: Array<UIExplorerExample> = [
   },
 ];
 
-const APIExamples = [
+const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'AccessibilityAndroidExample',
     module: require('./AccessibilityAndroidExample'),
@@ -116,6 +122,10 @@ const APIExamples = [
   {
     key: 'AlertExample',
     module: require('./AlertExample').AlertExample,
+  },
+  {
+    key: 'AnimatedExample',
+    module: require('./AnimatedExample'),
   },
   {
     key: 'AppStateExample',
@@ -162,12 +172,20 @@ const APIExamples = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'NativeAnimationsExample',
+    module: require('./NativeAnimationsExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
   {
     key: 'NetInfoExample',
     module: require('./NetInfoExample'),
+  },
+  {
+    key: 'OrientationChangeExample',
+    module: require('./OrientationChangeExample'),
   },
   {
     key: 'PanResponderExample',
@@ -180,6 +198,14 @@ const APIExamples = [
   {
     key: 'PointerEventsExample',
     module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'RTLExample',
+    module: require('./RTLExample'),
+  },
+  {
+    key: 'ShareExample',
+    module: require('./ShareExample'),
   },
   {
     key: 'TimePickerAndroidExample',

@@ -174,7 +174,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
 {
-  [self checkLocationConfig];
+  checkLocationConfig();
 
   // Select best options
   _observerOptions = options;
@@ -201,7 +201,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
                   withSuccessCallback:(RCTResponseSenderBlock)successBlock
                   errorCallback:(RCTResponseSenderBlock)errorBlock)
 {
-  [self checkLocationConfig];
+  checkLocationConfig();
 
   if (!successBlock) {
     RCTLogError(@"%@.getCurrentPosition called with nil success parameter.", [self class]);
@@ -339,12 +339,14 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
 }
 
-- (void)checkLocationConfig
+static void checkLocationConfig()
 {
+#if RCT_DEV
   if (!([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] ||
     [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"])) {
     RCTLogError(@"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.");
   }
+#endif
 }
 
 @end

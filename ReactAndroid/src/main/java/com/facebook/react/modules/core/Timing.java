@@ -22,9 +22,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ReactChoreographer;
 
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 /**
  * Native module for JS timer execution. Timers fire on frame boundaries.
  */
+@ReactModule(name = "RCTTiming", supportsWebWorkers = true)
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener {
 
@@ -105,7 +106,13 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
             timer.mTargetTime = frameTimeMillis + timer.mInterval;
             mTimers.add(timer);
           } else {
-            mTimerIdsToTimers.remove(timer.mCallbackID);
+            SparseArray<Timer> timers = mTimerIdsToTimers.get(timer.mExecutorToken);
+            if (timers != null) {
+              timers.remove(timer.mCallbackID);
+              if (timers.size() == 0) {
+                mTimerIdsToTimers.remove(timer.mExecutorToken);
+              }
+            }
           }
         }
       }
@@ -163,7 +170,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       long time = SystemClock.currentTimeMillis();
       long absoluteFrameStartTime = time - frameTimeElapsed;
 
-      if (FRAME_DURATION_MS - (float)frameTimeElapsed < IDLE_CALLBACK_FRAME_DEADLINE_MS) {
+      if (FRAME_DURATION_MS - (float) frameTimeElapsed < IDLE_CALLBACK_FRAME_DEADLINE_MS) {
         return;
       }
 
@@ -386,7 +393,10 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         return;
       }
       // We may have already called/removed it
-      mTimerIdsToTimers.remove(timerId);
+      timersForContext.remove(timerId);
+      if (timersForContext.size() == 0) {
+        mTimerIdsToTimers.remove(executorToken);
+      }
       mTimers.remove(timer);
     }
   }
