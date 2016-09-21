@@ -378,7 +378,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad) {
+    if (cancelLoad && !cancelled) {
       cancelLoad();
       cancelLoad = nil;
     }
