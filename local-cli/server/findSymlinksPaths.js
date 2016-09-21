@@ -1,28 +1,50 @@
 const path = require('path');
 const fs = require('fs');
 
-function isSubPathOfPath(parentPath, subPath) {
-  return !path.relative(parentPath, subPath).startsWith('..' + path.sep);
-}
-
-function isSubPathOfPaths(parentPaths, subPath) {
-  return parentPaths.some(parentPath => isSubPathOfPath(parentPath, subPath));
-}
-
 /**
- * Find and resolve symlinks in `lookupFolder`, filtering out any
- * paths that are subpaths of `existingSearchPaths`.
+ * Find and resolve symlinks in `lookupFolder`.
+ * Ignore any descendants of the paths in `ignoredRoots`.
  */
-module.exports = function findSymlinksPaths(lookupFolder, existingSearchPaths) {
+module.exports = function findSymlinksPaths(lookupFolder, ignoredRoots) {
   const timeStart = Date.now();
   const folders = fs.readdirSync(lookupFolder);
-  const resolvedSymlinks = folders.map(folder => path.resolve(lookupFolder, folder))
-    .filter(folderPath => fs.lstatSync(folderPath).isSymbolicLink())
-    .map(symlink => path.resolve(process.cwd(), fs.readlinkSync(symlink)))
-    .filter(symlinkPath => !isSubPathOfPaths(existingSearchPaths, symlinkPath));
-  const timeEnd = Date.now();
 
+  const resolvedSymlinks = [];
+  folders.forEach(folder => {
+    const visited = [];
+
+    let symlink = path.resolve(lookupFolder, folder);
+    while (fs.lstatSync(symlink).isSymbolicLink()) {
+      const index = visited.indexOf(symlink);
+      if (index !== -1) {
+        throw Error(
+          `Infinite symlink recursion detected:\n  ` +
+            visited.slice(index).join(`\n  `)
+        );
+      }
+
+      visited.push(symlink);
+      symlink = path.resolve(
+        path.dirname(symlink),
+        fs.readlinkSync(symlink)
+      );
+    }
+
+    if (visited.length && !rootExists(ignoredRoots, symlink)) {
+      resolvedSymlinks.push(symlink);
+    }
+  });
+
+  const timeEnd = Date.now();
   console.log(`Scanning ${folders.length} folders for symlinks in ${lookupFolder} (${timeEnd - timeStart}ms)`);
 
   return resolvedSymlinks;
 };
+
+function rootExists(roots, child) {
+  return roots.some(root => isDescendant(root, child));
+}
+
+function isDescendant(root, child) {
+  return root === child || child.startsWith(root + path.sep);
+}

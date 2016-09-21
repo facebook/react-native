@@ -378,32 +378,31 @@ RCT_EXPORT_MODULE()
   if (details) {
     combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
   }
-  [self showErrorMessage:combinedMessage];
+  [self showErrorMessage:combinedMessage withStack:nil isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
 {
   NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
-  [self _showErrorMessage:message withStack:stack isUpdate:NO];
+  [self showErrorMessage:message withStack:stack isUpdate:NO];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:NO];
 }
 
-- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:YES];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack isUpdate:(BOOL)isUpdate
 {
-  [self _showErrorMessage:message withStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:isUpdate];
-}
+  if (![[stack firstObject] isKindOfClass:[RCTJSStackFrame class]]) {
+    stack = [RCTJSStackFrame stackFramesWithDictionaries:stack];
+  }
 
-- (void)_showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
-{
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_window) {
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

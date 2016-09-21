@@ -126,7 +126,7 @@ We will add the package dependencies to a `package.json` file. Create this file 
 
 Below is an example of what your `package.json` file should minimally contain.
 
-> Version numbers will vary according to your needs. Normally the latest versions for both [React](https://github.com/facebook/react/releases) and [React Native](https://github.com/facebook/react/releases) will be sufficient.
+> Version numbers will vary according to your needs. Normally the latest versions for both [React](https://github.com/facebook/react/releases) and [React Native](https://github.com/facebook/react-native/releases) will be sufficient.
 
 <block class="objc" />
 

@@ -17,7 +17,6 @@
       "jestSupport/env.js"
     ],
     "timers": "fake",
-    "resetModules": true,
     "moduleNameMapper": {
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
@@ -132,7 +131,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.3.1-rc.2"
+    "react": "~15.3.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -150,7 +149,7 @@
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.8.2",
-    "base64-js": "^0.0.8",
+    "base64-js": "^1.1.2",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
@@ -217,7 +216,7 @@
     "jest-runtime": "15.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "15.3.1-rc.2",
+    "react": "~15.3.1",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
   }
