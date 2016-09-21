@@ -86,8 +86,7 @@ but their receipt is not necessary for the scroll to occur).
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
 
-Here we have a little trick to disable console.log only in release version. Just put the following in the top of your "index.*.js":
-
+> Here we have a little trick to disable console.log only in release version. Just put the following in the top of your "index.*.js":
 ```js
 if (!__DEV__) {
   console.log = () => {}; 
