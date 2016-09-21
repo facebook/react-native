@@ -341,7 +341,7 @@ function * filter(iterator, predicate) {
 
 function * subtree(moduleTransport, moduleTransportsByPath, seen = new Set()) {
   seen.add(moduleTransport.id);
-  for (const [, {path}] of moduleTransport.meta.dependencyPairs) {
+  for (const [, {path}] of moduleTransport.meta.dependencyPairs || []) {
     const dependency = moduleTransportsByPath.get(path);
     if (dependency && !seen.has(dependency.id)) {
       yield dependency.id;

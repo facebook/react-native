@@ -153,7 +153,11 @@ const bundleOpts = declareOpts({
   generateSourceMaps: {
     type: 'boolean',
     required: false,
-  }
+  },
+  assetPlugins: {
+    type: 'array',
+    default: [],
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -493,7 +497,12 @@ class Server {
     const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
-        data => res.end(this._rangeRequestMiddleware(req, res, data, assetPath)),
+        data => {
+          // Tell clients to cache this for 1 year.
+          // This is safe as the asset url contains a hash of the asset.
+          res.setHeader('Cache-Control', 'max-age=31536000');
+          res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
+        },
         error => {
           console.error(error.stack);
           res.writeHead('404');
@@ -792,9 +801,6 @@ class Server {
   _getOptionsFromUrl(reqUrl) {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
-    // node v0.11.14 bug see https://github.com/facebook/react-native/issues/218
-    urlObj.query = urlObj.query || {};
-
     const pathname = decodeURIComponent(urlObj.pathname);
 
     // Backwards compatibility. Options used to be as added as '.' to the
@@ -813,6 +819,11 @@ class Server {
     // try to get the platform from the url
     const platform = urlObj.query.platform ||
       getPlatformExtension(pathname);
+
+    const assetPlugin = urlObj.query.assetPlugin;
+    const assetPlugins = Array.isArray(assetPlugin) ?
+      assetPlugin :
+      (typeof assetPlugin === 'string') ? [assetPlugin] : [];
 
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
@@ -833,6 +844,7 @@ class Server {
         false,
       ),
       generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
+      assetPlugins,
     };
   }
 

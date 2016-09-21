@@ -82,7 +82,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     if (sScrollerField != null) {
       try {
-        mScroller = (OverScroller) sScrollerField.get(this);
+        Object scroller = sScrollerField.get(this);
+        if (scroller instanceof OverScroller) {
+          mScroller = (OverScroller) scroller;
+        } else {
+          Log.w(
+            ReactConstants.TAG,
+            "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
+              "This app will exhibit the bounce-back scrolling bug :(");
+          mScroller = null;
+        }
       } catch (IllegalAccessException e) {
         throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
       }
