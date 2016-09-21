@@ -360,9 +360,7 @@ class ResolutionRequest {
                currDir = path.dirname(currDir)) {
             let searchPath = path.join(currDir, 'node_modules');
             if (this._fastfs.dirExists(searchPath)) {
-              searchQueue.push(
-                path.join(searchPath, realModuleName)
-              );
+              searchQueue.push(searchPath);
             }
           }
 
@@ -376,7 +374,8 @@ class ResolutionRequest {
           }
 
           let p = Promise.reject(new UnableToResolveError(fromModule, toModuleName));
-          searchQueue.forEach(potentialModulePath => {
+          searchQueue.forEach(searchPath => {
+            const potentialModulePath = path.join(searchPath, realModuleName);
             p = this._tryResolve(
               () => this._tryResolve(
                 () => p,
@@ -393,8 +392,8 @@ class ResolutionRequest {
             throw new UnableToResolveError(
               fromModule,
               toModuleName,
-              `Module does not exist in the module map ${searchQueue.length ? 'or in these directories:' : ''}\n` +
-                searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`) + '\n' +
+              `Module does not exist in the module map ${searchQueue.length ? 'or in these directories:' : ''}\n  ` +
+              `  ${searchQueue.join('\n  ')}\n\n` +
               `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
