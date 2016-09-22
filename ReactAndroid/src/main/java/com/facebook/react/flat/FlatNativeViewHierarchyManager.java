@@ -186,13 +186,31 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     resolveView(reactTag).setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
   }
 
-  /* package */ void dropViews(int[] viewsToDrop) {
-    for (int viewToDrop : viewsToDrop) {
+  /* package */ void dropViews(SparseIntArray viewsToDrop) {
+    for (int i = 0, count = viewsToDrop.size(); i < count; i++) {
+      int viewToDrop = viewsToDrop.keyAt(i);
+      View view = null;
       if (viewToDrop > 0) {
-        dropView(resolveView(viewToDrop));
+        view = resolveView(viewToDrop);
+        dropView(view);
       } else {
         // Root views are noted with a negative tag from StateBuilder.
         removeRootView(-viewToDrop);
+      }
+
+      int parentTag = viewsToDrop.valueAt(i);
+      // this only happens for clipped, non-root views - clipped because there is no parent, and
+      // not a root view (because we explicitly pass -1 for root views).
+      if (parentTag > 0 && view != null && view.getParent() == null) {
+        // this can only happen if the parent exists (if the parent were removed first, it'd also
+        // remove the child, so trying to explicitly remove the child afterwards would crash at
+        // the resolveView call above) - we also explicitly check for a null parent, implying that
+        // we are either clipped (or that we already removed the child from its parent, in which
+        // case this will essentially be a no-op).
+        View parent = resolveView(parentTag);
+        if (parent instanceof FlatViewGroup) {
+          ((FlatViewGroup) parent).onViewDropped(view);
+        }
       }
     }
   }
@@ -211,11 +229,8 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
         SparseArray<View> detachedViews = flatViewGroup.getDetachedViews();
         for (int i = 0, size = detachedViews.size(); i < size; i++) {
           View detachedChild = detachedViews.valueAt(i);
-          // we can do super here because removeClippedSubviews is currently not recursive. if/when
-          // we become recursive one day, this should call vanilla dropView to be recursive as well.
-          super.dropView(detachedChild);
-          // trigger onDetachedFromWindow - this is currently needed due to using attach/detach
-          // instead of add/remove. if we move to add/remove in the future, we can remove this.
+          dropView(detachedChild);
+          // trigger onDetachedFromWindow and clean up this detached/clipped view
           flatViewGroup.removeDetachedView(detachedChild);
         }
       }

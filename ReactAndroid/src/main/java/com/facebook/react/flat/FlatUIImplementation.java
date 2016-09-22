@@ -342,7 +342,9 @@ public class FlatUIImplementation extends UIImplementation {
         --moveFromIndex;
         moveFromChildIndex = (moveFromIndex == -1) ? -1 : mMoveProxy.getMoveFrom(moveFromIndex);
       } else if (removeFromChildIndex > moveFromChildIndex) {
-        removeChild(removeChildAt(parentNode, removeFromChildIndex, prevIndex));
+        removeChild(
+            removeChildAt(parentNode, removeFromChildIndex, prevIndex),
+            parentNode.getReactTag());
         prevIndex = removeFromChildIndex;
 
         --removeFromIndex;
@@ -359,19 +361,19 @@ public class FlatUIImplementation extends UIImplementation {
    * Unregisters given element and all of its children from ShadowNodeRegistry,
    * and drops all Views used by it and its children.
    */
-  private void removeChild(ReactShadowNode child) {
+  private void removeChild(ReactShadowNode child, int parentReactTag) {
     if (child instanceof FlatShadowNode) {
       FlatShadowNode node = (FlatShadowNode) child;
       if (node.mountsToView() && node.isBackingViewCreated()) {
         // this will recursively drop all subviews
-        mStateBuilder.dropView(node);
+        mStateBuilder.dropView(node, parentReactTag);
         removeShadowNode(node);
         return;
       }
     }
 
     for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
-      removeChild(child.getChildAt(i));
+      removeChild(child.getChildAt(i), child.getReactTag());
     }
 
     removeShadowNode(child);

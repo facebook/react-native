@@ -205,9 +205,9 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
   private final class DropViews implements UIOperation {
 
-    private final int[] mViewsToDrop;
+    private final SparseIntArray mViewsToDrop;
 
-    private DropViews(int[] viewsToDrop) {
+    private DropViews(SparseIntArray viewsToDrop) {
       mViewsToDrop = viewsToDrop;
     }
 
@@ -478,7 +478,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
         new SetPadding(reactTag, paddingLeft, paddingTop, paddingRight, paddingBottom));
   }
 
-  public void enqueueDropViews(int[] viewsToDrop) {
+  public void enqueueDropViews(SparseIntArray viewsToDrop) {
     enqueueUIOperation(new DropViews(viewsToDrop));
   }
 

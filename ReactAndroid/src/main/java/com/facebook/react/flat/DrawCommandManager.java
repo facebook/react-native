@@ -11,8 +11,6 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import java.util.Collection;
-
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.SparseArray;
@@ -124,6 +122,13 @@ import android.view.ViewParent;
    * @return Matching node region, or null if none are found.
    */
   abstract @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY);
+
+  /**
+   * Event that is fired when a clipped view is dropped.
+   *
+   * @param view the view that is dropped
+   */
+  abstract void onClippedViewDropped(View view);
 
   /**
    * Throw a runtime exception if a view we are trying to attach is already parented.

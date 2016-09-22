@@ -302,6 +302,12 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   }
 
   @Override
+  void onClippedViewDropped(View view) {
+    unclip(view.getId());
+    mFlatViewGroup.removeDetachedView(view);
+  }
+
+  @Override
   public void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
     for (int viewToAdd : viewsToAdd) {
       // Views that are just temporarily detached are marked with a negative value.

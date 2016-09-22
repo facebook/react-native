@@ -764,6 +764,22 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
   }
 
   /**
+   * Handle a subview being dropped
+   * In most cases, we are informed about a subview being dropped via mountViews, but in some
+   * cases (such as when both the child and parent get explicit removes in the same frame),
+   * we may not find out, so this is called when the child is dropped so the parent can clean up
+   * strong references to the child.
+   *
+   * @param view the view being dropped
+   */
+  void onViewDropped(View view) {
+    if (mDrawCommandManager != null) {
+      // for now, we only care about clearing clipped subview references
+      mDrawCommandManager.onClippedViewDropped(view);
+    }
+  }
+
+  /**
    * Return the NodeRegion which matches a reactTag, or EMPTY if none match.
    *
    * @param reactTag The reactTag to look for
