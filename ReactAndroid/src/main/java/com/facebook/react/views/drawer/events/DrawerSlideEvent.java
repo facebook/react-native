@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.drawer.events;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -23,8 +25,20 @@ public class DrawerSlideEvent extends Event<DrawerSlideEvent> {
 
   private final float mOffset;
 
-  public DrawerSlideEvent(int viewId, float offset) {
-    super(viewId);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param offset
+   */
+  @Deprecated
+  public DrawerSlideEvent(int viewTag, float offset) {
+    super(viewTag);
+    mOffset = offset;
+  }
+
+  public DrawerSlideEvent(View view, float offset) {
+    super(view);
     mOffset = offset;
   }
 

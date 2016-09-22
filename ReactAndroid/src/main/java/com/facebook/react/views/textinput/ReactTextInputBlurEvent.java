@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.textinput;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -21,8 +23,18 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private static final String EVENT_NAME = "topBlur";
 
-  public ReactTextInputBlurEvent(int viewId) {
-    super(viewId);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   */
+  @Deprecated
+  public ReactTextInputBlurEvent(int viewTag) {
+    super(viewTag);
+  }
+
+  public ReactTextInputBlurEvent(View view) {
+    super(view);
   }
 
   @Override

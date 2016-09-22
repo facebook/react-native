@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.switchview;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -23,8 +25,20 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
     private final boolean mIsChecked;
 
-    public ReactSwitchEvent(int viewId, boolean isChecked) {
-        super(viewId);
+    /**
+     * See {@link Event#Event(int)}.
+     *
+     * @param viewTag
+     * @param isChecked
+     */
+    @Deprecated
+    public ReactSwitchEvent(int viewTag, boolean isChecked) {
+        super(viewTag);
+        mIsChecked = isChecked;
+    }
+
+    public ReactSwitchEvent(View view, boolean isChecked) {
+        super(view);
         mIsChecked = isChecked;
     }
 

@@ -12,6 +12,7 @@ package com.facebook.react.views.image;
 import javax.annotation.Nullable;
 
 import android.support.annotation.IntDef;
+import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -39,21 +40,68 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final int mWidth;
   private final int mHeight;
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
-    this(viewId, eventType, null);
+
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param eventType
+   */
+  @Deprecated
+  public ImageLoadEvent(int viewTag, @ImageEventType int eventType) {
+    this(viewTag, eventType, null);
   }
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType, String imageUri) {
-    this(viewId, eventType, imageUri, 0, 0);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param eventType
+   * @param imageUri
+   */
+  @Deprecated
+  public ImageLoadEvent(int viewTag, @ImageEventType int eventType, String imageUri) {
+    this(viewTag, eventType, imageUri, 0, 0);
+  }
+
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param eventType
+   * @param imageUri
+   * @param width
+   * @param height
+   */
+  @Deprecated
+  public ImageLoadEvent(
+          int viewTag,
+          @ImageEventType int eventType,
+          @Nullable String imageUri,
+          int width,
+          int height) {
+    super(viewTag);
+    mEventType = eventType;
+    mImageUri = imageUri;
+    mWidth = width;
+    mHeight = height;
+  }
+
+  public ImageLoadEvent(View view, @ImageEventType int eventType) {
+    this(view, eventType, null);
+  }
+
+  public ImageLoadEvent(View view, @ImageEventType int eventType, String imageUri) {
+    this(view, eventType, imageUri, 0, 0);
   }
 
   public ImageLoadEvent(
-    int viewId,
+    View view,
     @ImageEventType int eventType,
     @Nullable String imageUri,
     int width,
     int height) {
-    super(viewId);
+    super(view);
     mEventType = eventType;
     mImageUri = imageUri;
     mWidth = width;

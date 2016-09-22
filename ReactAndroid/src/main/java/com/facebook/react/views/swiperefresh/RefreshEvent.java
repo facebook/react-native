@@ -9,13 +9,25 @@
 
 package com.facebook.react.views.swiperefresh;
 
+import android.view.View;
+
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class RefreshEvent extends Event<RefreshEvent> {
 
+    /**
+     * See {@link Event#Event(int)}.
+     *
+     * @param viewTag
+     */
+    @Deprecated
     protected RefreshEvent(int viewTag) {
         super(viewTag);
+    }
+
+    protected RefreshEvent(View view) {
+        super(view);
     }
 
     @Override

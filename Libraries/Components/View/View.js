@@ -259,6 +259,35 @@ const View = React.createClass({
      * Used to locate this view in end-to-end tests.
      *
      * > This disables the 'layout-only view removal' optimization for this view!
+     *
+     * ### Android Specifics
+     *
+     * By default this value is passed to the underlying View's
+     * [setTag](https://developer.android.com/reference/android/view/View.html#setTag(java.lang.Object)
+     * method.  Very few testing frameworks support looking up
+     * a View by tag, let alone `uiautomatorviewer` which only supports `content-description`, `resource-id`, `text`, and `XPath`.
+     *
+     * While React Native does *not* utilize XML based layouts for android Views it
+     * is still possible to add [android:id](https://developer.android.com/reference/android/view/View.html#attr_android:id)
+     * to the underlying View in order to support
+     * [findViewById](https://developer.android.com/reference/android/app/Activity.html#findViewById(int)).
+     *
+     * This is achieved by:
+     *
+     * 1. Defining a resource id in your android project's `res` folder (typically at
+     *    `./android/app/src/main/res/values/ids.xml`).
+     *
+     * 2. Adding your resource ids to `ids.xml` E.G.
+     *
+     *    ```xml
+     *    <?xml version="1.0" encoding="utf-8"?>
+     *    <resources>
+     *      <item name="something" type="id"/>
+     *    </resources>
+     *
+     *    ```
+     * 3. Using the resource id as `testID` E.G. `<View testID="something">`.
+     *
      */
     testID: PropTypes.string,
 

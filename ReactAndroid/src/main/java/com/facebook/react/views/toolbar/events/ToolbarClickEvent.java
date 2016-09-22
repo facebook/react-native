@@ -8,6 +8,8 @@
  */
 package com.facebook.react.views.toolbar.events;
 
+import android.view.View;
+
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.events.Event;
@@ -22,8 +24,20 @@ public class ToolbarClickEvent extends Event<ToolbarClickEvent> {
   private static final String EVENT_NAME = "topSelect";
   private final int position;
 
-  public ToolbarClickEvent(int viewId, int position) {
-    super(viewId);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param position
+   */
+  @Deprecated
+  public ToolbarClickEvent(int viewTag, int position) {
+    super(viewTag);
+    this.position = position;
+  }
+
+  public ToolbarClickEvent(View view, int position) {
+    super(view);
     this.position = position;
   }
 

@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.viewpager;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -26,8 +28,20 @@ class PageScrollStateChangedEvent extends Event<PageScrollStateChangedEvent> {
 
   private final String mPageScrollState;
 
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param pageScrollState
+   */
+  @Deprecated
   protected PageScrollStateChangedEvent(int viewTag, String pageScrollState) {
     super(viewTag);
+    mPageScrollState = pageScrollState;
+  }
+
+  protected PageScrollStateChangedEvent(View view, String pageScrollState) {
+    super(view);
     mPageScrollState = pageScrollState;
   }
 

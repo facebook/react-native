@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.modal;
 
+import android.view.View;
+
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -19,8 +21,18 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public static final String EVENT_NAME = "topShow";
 
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   */
+  @Deprecated
   protected ShowEvent(int viewTag) {
     super(viewTag);
+  }
+
+  protected ShowEvent(View view) {
+    super(view);
   }
 
   @Override

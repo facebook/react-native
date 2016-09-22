@@ -130,7 +130,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), -1));
+                new ToolbarClickEvent(view, -1));
           }
         });
 
@@ -140,7 +140,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           public boolean onMenuItemClick(MenuItem menuItem) {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
-                    view.getId(),
+                    view,
                     menuItem.getOrder()));
             return true;
           }

@@ -192,7 +192,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
+              new ImageLoadEvent(getThisReactImageView(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -202,19 +202,19 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD,
+              new ImageLoadEvent(getThisReactImageView(), ImageLoadEvent.ON_LOAD,
                 mImageSource.getSource(), imageInfo.getWidth(), imageInfo.getHeight()));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+              new ImageLoadEvent(getThisReactImageView(), ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
+            new ImageLoadEvent(getThisReactImageView(), ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getThisReactImageView(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
@@ -439,6 +439,10 @@ public class ReactImageView extends GenericDraweeView {
 
   private boolean hasMultipleSources() {
     return mSources.size() > 1;
+  }
+
+  private ReactImageView getThisReactImageView() {
+    return this;
   }
 
   private void setSourceImage() {

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -294,6 +295,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     @Override
     public long getItemId(int position) {
+      // this should return the view's actual ID to work properly with the view we're extending.
       return mViews.get(position).getId();
     }
 
@@ -342,7 +344,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
-                getId(),
+                this,
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -356,7 +358,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     if (mSendContentSizeChangeEvents) {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
-                  getId(),
+                  this,
                   getWidth(),
                   newTotalChildrenHeight));
     }

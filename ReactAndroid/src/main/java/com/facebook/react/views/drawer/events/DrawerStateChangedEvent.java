@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.drawer.events;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -20,8 +22,20 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
   private final int mDrawerState;
 
-  public DrawerStateChangedEvent(int viewId, int drawerState) {
-    super(viewId);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param drawerState
+   */
+  @Deprecated
+  public DrawerStateChangedEvent(int viewTag, int drawerState) {
+    super(viewTag);
+    mDrawerState = drawerState;
+  }
+
+  public DrawerStateChangedEvent(View view, int drawerState) {
+    super(view);
     mDrawerState = drawerState;
   }
 

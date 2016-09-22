@@ -2,6 +2,8 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -16,8 +18,22 @@ public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
   private final int mWidth;
   private final int mHeight;
 
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   * @param width
+   * @param height
+   */
+  @Deprecated
   public ContentSizeChangeEvent(int viewTag, int width, int height) {
     super(viewTag);
+    mWidth = width;
+    mHeight = height;
+  }
+
+  public ContentSizeChangeEvent(View view, int width, int height) {
+    super(view);
     mWidth = width;
     mHeight = height;
   }

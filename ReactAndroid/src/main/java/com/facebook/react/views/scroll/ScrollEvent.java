@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.lang.Override;
 
 import android.support.v4.util.Pools;
+import android.view.View;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -39,7 +40,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private @Nullable ScrollEventType mScrollEventType;
 
   public static ScrollEvent obtain(
-      int viewTag,
+      View view,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
@@ -52,7 +53,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
       event = new ScrollEvent();
     }
     event.init(
-        viewTag,
+        view,
         scrollEventType,
         scrollX,
         scrollY,
@@ -72,7 +73,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   private void init(
-      int viewTag,
+      View view,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
@@ -80,7 +81,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int contentHeight,
       int scrollViewWidth,
       int scrollViewHeight) {
-    super.init(viewTag);
+    super.init(view);
     mScrollEventType = scrollEventType;
     mScrollX = scrollX;
     mScrollY = scrollY;

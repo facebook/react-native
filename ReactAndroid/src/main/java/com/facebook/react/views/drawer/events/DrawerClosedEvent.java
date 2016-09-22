@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.drawer.events;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -17,8 +19,18 @@ public class DrawerClosedEvent extends Event<DrawerClosedEvent> {
 
   public static final String EVENT_NAME = "topDrawerClosed";
 
-  public DrawerClosedEvent(int viewId) {
-    super(viewId);
+  /**
+   * See {@link Event#Event(int)}.
+   *
+   * @param viewTag
+   */
+  @Deprecated
+  public DrawerClosedEvent(int viewTag) {
+    super(viewTag);
+  }
+
+  public DrawerClosedEvent(View view) {
+    super(view);
   }
 
   @Override
