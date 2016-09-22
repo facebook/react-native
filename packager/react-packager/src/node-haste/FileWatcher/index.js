@@ -17,7 +17,7 @@ const MAX_WAIT_TIME = 120000;
 
 const detectWatcherClass = () => {
   try {
-    execSync('watchman version', {stdio: 'ignore'});
+    execSync('watchman --version', {stdio: 'ignore'});
     return sane.WatchmanWatcher;
   } catch (e) {}
   return sane.NodeWatcher;
