@@ -229,6 +229,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                clipped:YES
                             resizeMode:RCTResizeModeStretch
                          progressBlock:nil
+                      partialLoadBlock:nil
                        completionBlock:callback];
 }
 
@@ -292,6 +293,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                             scale:(CGFloat)scale
                                                        resizeMode:(RCTResizeMode)resizeMode
                                                     progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                                 partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                                   completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate))completionBlock
 {
   {
@@ -343,6 +345,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                   scale:scale
                              resizeMode:resizeMode
                         progressHandler:progressHandler
+                     partialLoadHandler:partialLoadHandler
                       completionHandler:^(NSError *error, UIImage *image){
                         completionHandler(error, image, nil);
                       }];
@@ -366,6 +369,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           scale:scale
                                      resizeMode:resizeMode
                                 progressHandler:progressHandler
+                             partialLoadHandler:partialLoadHandler
                               completionHandler:^(NSError *error, UIImage *image) {
                                 completionHandler(error, image, nil);
                               }];
@@ -378,7 +382,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad) {
+    if (cancelLoad && !cancelled) {
       cancelLoad();
       cancelLoad = nil;
     }
@@ -469,7 +473,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     });
   }];
 
-  task.downloadProgressBlock = progressHandler;
+  task.downloadProgressBlock = ^(int64_t progress, int64_t total) {
+    if (progressHandler) {
+      progressHandler(progress, total);
+    }
+  };
 
   if (task) {
     if (!_pendingTasks) {
@@ -491,6 +499,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                    clipped:(BOOL)clipped
                                                 resizeMode:(RCTResizeMode)resizeMode
                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   __block volatile uint32_t cancelled = 0;
@@ -557,6 +566,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                               scale:scale
                                          resizeMode:resizeMode
                                       progressBlock:progressBlock
+                                   partialLoadBlock:partialLoadBlock
                                     completionBlock:completionHandler];
   return cancellationBlock;
 }
@@ -693,6 +703,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                         scale:1
                                    resizeMode:RCTResizeModeStretch
                                 progressBlock:NULL
+                             partialLoadBlock:NULL
                               completionBlock:completion];
 }
 

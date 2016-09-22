@@ -21,6 +21,10 @@ let __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
+type EventMapping = {
+  nativeEventPath: Array<string>;
+  animatedValueTag: number;
+};
 
 let nativeEventEmitter;
 
@@ -73,6 +77,14 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
+  addAnimatedEventToView: function(viewTag: number, eventName: string, eventMapping: EventMapping) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
+  },
+  removeAnimatedEventFromView(viewTag: number, eventName: string) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
+  }
 };
 
 /**

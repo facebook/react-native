@@ -33,16 +33,20 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ActivityIndicatorExample'),
   },
   {
-    key: 'SliderExample',
-    module: require('./SliderExample'),
-  },
-  {
     key: 'ImageExample',
     module: require('./ImageExample'),
   },
   {
     key: 'ListViewExample',
     module: require('./ListViewExample'),
+  },
+  {
+    key: 'ListViewGridLayoutExample',
+    module: require('./ListViewGridLayoutExample'),
+  },
+  {
+    key: 'ListViewPagingExample',
+    module: require('./ListViewPagingExample'),
   },
   {
     key: 'ModalExample',
@@ -63,6 +67,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewSimpleExample',
     module: require('./ScrollViewSimpleExample'),
+  },
+  {
+    key: 'SliderExample',
+    module: require('./SliderExample'),
   },
   {
     key: 'StatusBarExample',

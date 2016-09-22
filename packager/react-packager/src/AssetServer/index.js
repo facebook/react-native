@@ -43,6 +43,10 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  fileWatcher: {
+    type: 'object',
+    required: true,
+  }
 });
 
 class AssetServer {
@@ -50,6 +54,11 @@ class AssetServer {
     const opts = validateOpts(options);
     this._roots = opts.projectRoots;
     this._assetExts = opts.assetExts;
+    this._hashes = new Map();
+    this._files = new Map();
+
+    opts.fileWatcher
+      .on('all', (type, root, file) => this._onFileChange(type, root, file));
   }
 
   get(assetPath, platform = null) {
@@ -76,19 +85,31 @@ class AssetServer {
       data.scales = record.scales;
       data.files = record.files;
 
-      return Promise.all(
-        record.files.map(file => stat(file))
-      );
-    }).then(stats => {
-      const hash = crypto.createHash('md5');
 
-      stats.forEach(fstat =>
-        hash.update(fstat.mtime.getTime().toString())
-      );
+      if (this._hashes.has(assetPath)) {
+        data.hash = this._hashes.get(assetPath);
+        return data;
+      }
 
-      data.hash = hash.digest('hex');
-      return data;
+      return new Promise((resolve, reject) => {
+        const hash = crypto.createHash('md5');
+        hashFiles(data.files.slice(), hash, error => {
+          if (error) {
+            reject(error);
+          } else {
+            data.hash = hash.digest('hex');
+            this._hashes.set(assetPath, data.hash);
+            data.files.forEach(f => this._files.set(f, assetPath));
+            resolve(data);
+          }
+        });
+      });
     });
+  }
+
+  _onFileChange(type, root, file) {
+    const asset = this._files.get(path.join(root, file));
+    this._hashes.delete(asset);
   }
 
   /**
@@ -211,6 +232,18 @@ function getAssetKey(assetName, platform) {
   } else {
     return assetName;
   }
+}
+
+function hashFiles(files, hash, callback) {
+  if (!files.length) {
+    callback(null);
+    return;
+  }
+
+  fs.createReadStream(files.shift())
+    .on('data', data => hash.update(data))
+    .once('end', () => hashFiles(files, hash, callback))
+    .once('error', error => callback(error));
 }
 
 module.exports = AssetServer;
