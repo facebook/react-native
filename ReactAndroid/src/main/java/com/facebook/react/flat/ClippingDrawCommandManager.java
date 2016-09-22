@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
@@ -170,6 +171,9 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   private final SparseArray<View> mViewsToRemove = new SparseArray<>();
   private final ArrayList<View> mViewsToKeep = new ArrayList<>();
 
+  // Currently clipping ViewGroups
+  private final ArrayList<ReactClippingViewGroup> mClippingViewGroups = new ArrayList<>();
+
   ClippingDrawCommandManager(FlatViewGroup flatViewGroup, DrawCommand[] drawCommands) {
     mFlatViewGroup = flatViewGroup;
     initialSetup(drawCommands);
@@ -309,16 +313,25 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
   @Override
   public void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
+    mClippingViewGroups.clear();
     for (int viewToAdd : viewsToAdd) {
       // Views that are just temporarily detached are marked with a negative value.
       boolean newView = viewToAdd > 0;
       if (!newView) {
         viewToAdd = -viewToAdd;
       }
+
       int commandArrayIndex = mDrawViewIndexMap.get(viewToAdd);
       DrawView drawView = (DrawView) mDrawCommands[commandArrayIndex];
       View view = viewResolver.getView(drawView.reactTag);
       ensureViewHasNoParent(view);
+
+      // these views need to support recursive clipping of subviews
+      if (view instanceof ReactClippingViewGroup &&
+          ((ReactClippingViewGroup) view).getRemoveClippedSubviews()) {
+        mClippingViewGroups.add((ReactClippingViewGroup) view);
+      }
+
       if (newView) {
         // This view was not previously attached to this parent.
         drawView.mWasMounted = true;
@@ -409,6 +422,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
     if (mStart <= start && stop <= mStop) {
       // We would only be removing children, don't invalidate and don't bother changing the
       // attached children.
+      updateClippingRecursively();
       return false;
     }
 
@@ -416,8 +430,17 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
     mStop = stop;
 
     updateClippingToCurrentRect();
-
+    updateClippingRecursively();
     return true;
+  }
+
+  private void updateClippingRecursively() {
+    for (int i = 0, children = mClippingViewGroups.size(); i < children; i++) {
+      ReactClippingViewGroup view = mClippingViewGroups.get(i);
+      if (isNotClipped(((View) view).getId())) {
+        view.updateClippingRect();
+      }
+    }
   }
 
   /**
