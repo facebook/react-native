@@ -20,6 +20,25 @@ exports.valid = {
   },
 };
 
+exports.validMultipleManifests = {
+  src: {
+    main: {
+      'AndroidManifest.xml': manifest,
+      com: {
+        some: {
+          example: {
+            'Main.java': mainJavaClass,
+            'ReactPackage.java': fs.readFileSync(path.join(__dirname, './files/ReactPackage.java')),
+          },
+        },
+      },
+    },
+    debug: {
+      'AndroidManifest.xml': manifest
+    },
+  },
+};
+
 exports.corrupted = {
   src: {
     'AndroidManifest.xml': manifest,
