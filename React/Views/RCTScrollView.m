@@ -140,6 +140,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
 @property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
+@property (nonatomic, assign) BOOL pinchEnabled;
 #endif
 
 @end
@@ -158,6 +159,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
+
+    #if !TARGET_OS_TV
+    _pinchEnabled = YES;
+    #endif
   }
   return self;
 }
@@ -308,6 +313,19 @@ static inline BOOL isRectInvalid(CGRect rect) {
   }
   _rctRefreshControl = refreshControl;
   [self addSubview:_rctRefreshControl];
+}
+
+- (void)setPinchEnabled:(BOOL)pinchEnabled
+{
+  self.pinchGestureRecognizer.enabled = pinchEnabled;
+  _pinchEnabled = pinchEnabled;
+}
+
+- (void)didMoveToWindow
+{
+  // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
+  // in the setter gets overriden when the view loads.
+  self.pinchGestureRecognizer.enabled = _pinchEnabled;
 }
 #endif //TARGET_OS_TV
 
