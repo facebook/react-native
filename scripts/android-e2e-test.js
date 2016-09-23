@@ -165,7 +165,6 @@ const selectDeveloperOption = (driver, xPath) => driver
 const performFileChange = (func) => {
   let iteration = 0;
   return setInterval(() => {
-    console.log('called');
     func(iteration++);
   }, 3000);
 };
