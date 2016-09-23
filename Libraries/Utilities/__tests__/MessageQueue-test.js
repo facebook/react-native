@@ -11,6 +11,7 @@
 
 const MessageQueueTestConfig = require('MessageQueueTestConfig');
 jest.unmock('MessageQueue');
+jest.unmock('defineLazyObjectProperty');
 
 let MessageQueue;
 let MessageQueueTestModule1;
