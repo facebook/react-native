@@ -344,6 +344,22 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
     infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
     infoTitle: 'Baidu is a search engine that has 600 million users.',
+  },
+  {
+    name: 'Barmap《酒吧地圖》',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple41/v4/13/bc/bf/13bcbfba-121d-6e02-b5da-1b68a54dd2d9/icon350x350.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.barmap_v2',
+    linkAppStore: 'https://itunes.apple.com/hk/app/barmap-jiu-ba-de-tu/id1138178269?mt=8',
+    infoLink: 'http://news.wenweipo.com/2016/08/15/IN1608150054.htm',
+    infoTitle: 'Barmap App to promote Hong Kong Wines and Bars industry.',
+  },
+  {
+    name: '點・教',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/35/d2/4f/35d24f6d-c1f2-4051-638a-4794fb8fa7c1/icon350x350.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.appwant.freeteach&hl=zh_TW',
+    linkAppStore: 'https://itunes.apple.com/hk/app/dian-jiao/id1069765453?l=zh&mt=8',
+    infoLink: 'http://ec.elchk.org.hk/',
+    infoTitle: 'An application supported by Hong Kong Beat Drugs Fund Association to promote a drug-free society.',
   }
 ];
 
