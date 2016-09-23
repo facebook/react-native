@@ -1883,7 +1883,7 @@ article li {
   border-top: 1px solid #f1eff0;
 }
 
-/** footer **/
+/** Footer **/
 
 footer {
   box-sizing: border-box;
@@ -1922,10 +1922,11 @@ footer .sitemap .nav-home:focus {
   opacity: 1.0;
 }
 @media screen and (max-width: 740px) {
-  footer .sitemap .nav-home {
+  footer .sitemap {
     display: none;
   }
 }
+
 footer .sitemap a {
   color: white;
   display: table;
@@ -1969,9 +1970,4 @@ footer .fbOpenSource:hover {
 footer .copyright {
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
-}
-@media screen and (max-width: 740px) {
-  footer .sitemap {
-    display: none;
-  }
 }
