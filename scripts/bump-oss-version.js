@@ -84,6 +84,7 @@ if (version.indexOf('rc') === -1) {
   exec(`git tag -d latest`);
   exec(`git push origin :latest`);
   exec(`git tag latest`);
+  exec(`git push origin latest`);
 }
 
 exec(`git push origin ${branch} --follow-tags`);
