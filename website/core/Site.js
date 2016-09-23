@@ -151,7 +151,7 @@ var Site = React.createClass({
                   <h5><a href="/react-native/support.html">Help</a></h5>
                   <a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a>
                   <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a>
-                  <a href="https://github.com/facebook/react-native/releases" target="_blank">Latest Releases</a>
+                  <a href="/react-native/versions.html" target="_blank">Latest Releases</a>
                   <a href="https://productpains.com/product/react-native/" target="_blank">Feature Requests</a>
                 </div>
                 <div>
