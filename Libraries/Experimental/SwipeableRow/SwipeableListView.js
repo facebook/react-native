@@ -40,7 +40,6 @@ type Props = {
 
 type State = {
   dataSource: Object,
-  scrollEnabled: boolean,
 };
 
 /**
@@ -107,7 +106,6 @@ class SwipeableListView extends React.Component {
     this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
     this.state = {
       dataSource: this.props.dataSource,
-      scrollEnabled: true,
     };
   }
 
@@ -129,7 +127,6 @@ class SwipeableListView extends React.Component {
         dataSource={this.state.dataSource.getDataSource()}
         onScroll={this._onScroll}
         renderRow={this._renderRow}
-        scrollEnabled={this.state.scrollEnabled}
       />
     );
   }
