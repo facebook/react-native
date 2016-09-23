@@ -27,32 +27,24 @@ error as soon as you try to use the library._
 
 ### Automatic linking
 
-"[rnpm](http://github.com/rnpm/rnpm)" is a community project that allows linking of native dependencies automatically:
+The React Native CLI can link and unlink libraries with native dependencies automatically. To link a library, first install it under your project:
 
-#### Step 1
-
-Install `rnpm`:
-```bash
-$ npm install rnpm -g
-```
-
-**Note:** _`rnpm` requires `node` version 4.1 or higher_
-
-#### Step 2
-
-Install a library with native dependencies:
 ```bash
 $ npm install <library-with-native-dependencies> --save
 ```
 
-**Note:** _`--save` or `--save-dev` flag is very important for this step. `rnpm` will link
-your libs based on `dependencies` and `devDependencies` in your `package.json` file._
+#### Link
 
-#### Step 3
-
-Link your native dependencies:
+Link the library with native dependencies:
 ```bash
-$ rnpm link
+$ react-native link <library-with-native-dependencies>
+```
+
+#### Unlink
+
+Unlink the library with native dependencies:
+```bash
+$ react-native unlink <library-with-native-dependencies>
 ```
 
 Done! All libraries with a native dependencies should be successfully linked to your iOS/Android project.
