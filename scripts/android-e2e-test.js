@@ -71,8 +71,8 @@ describe('Android Test App', function () {
     return driver
       .init(desired)
       .setImplicitWaitTimeout(5000)
-      .waitForElementByXPath('//android.widget.Button[@text="Reload JS"]').
-      then((elem) => {
+      .waitForElementByXPath('//android.widget.Button[@text="Reload JS"]')
+      .then((elem) => {
         elem.click();
       }, (err) => {
         // ignoring if Reload JS button can't be located
@@ -87,40 +87,85 @@ describe('Android Test App', function () {
     return driver.quit();
   });
 
-  it('should have Hot Module Reloading working', function () {
+  it('should have `Live Reload` working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
+
     let intervalToUpdate;
-    return driver
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
-      // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
-      .pressDeviceKey(82)
-      .elementByXPath('//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]')
-      .click()
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
+
+    return selectDeveloperOption(driver, textView('Enable Live Reload'))
       .then(() => {
-        let iteration = 0;
-        // CI environment can be quite slow and we can't guarantee that it can consistently motice a file change
-        // so we change the file every few seconds just in case
-        intervalToUpdate = setInterval(() => {
-          fs.writeFileSync('index.android.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
-        }, 3000);
+        intervalToUpdate = performFileChange(iteration => {
+          fs.writeFileSync(
+            'index.android.js',
+            androidAppCode.replace(
+              'Welcome to React Native!',
+              'Welcome to React Native with Reload JS!' + iteration
+            ),
+          'utf-8');
+        });
       })
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]')
+      .waitForElementByXPath(textView('Welcome to React Native with Reload JS'))
       .finally(() => {
         clearInterval(intervalToUpdate);
         fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
+        return selectDeveloperOption(driver, textView('Disable Live Reload'));
       });
   });
 
-
-  it('should have Debug In Chrome working', function () {
+  it('should have `Hot Module Reloading` working', function () {
     const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
-    // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
-    return driver
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
-      .pressDeviceKey(82)
-      .elementByXPath('//android.widget.TextView[starts-with(@text, "Debug")]')
-      .click()
-      .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]');
+
+    let intervalToUpdate;
+
+    return selectDeveloperOption(driver, textView('Enable Hot Reloading'))
+      .then(() => {
+        intervalToUpdate = performFileChange(iteration => {
+          fs.writeFileSync(
+            'index.android.js',
+            androidAppCode.replace(
+              'Welcome to React Native!',
+              'Welcome to React Native with HMR!' + iteration
+            ),
+          'utf-8'
+          );
+        });
+      })
+      .waitForElementByXPath(textView('Welcome to React Native with HMR'))
+      .finally(() => {
+        clearInterval(intervalToUpdate);
+        fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
+        return selectDeveloperOption(driver, textView('Disable Hot Reloading'));
+      });
+  });
+
+  it('should have `Debug In Chrome` working', () => {
+    return selectDeveloperOption(driver, textView('Debug'));
   });
 });
+
+/**
+ * Creates an xPath that describes a textView containing given string
+ */
+const textView = (str) => `//android.widget.TextView[starts-with(@text, "${str}")]`;
+
+/**
+ * Opens up developer tools and clicks an option described by the xPath passed
+ */
+const selectDeveloperOption = (driver, xPath) => driver
+  .waitForElementByXPath(textView('Welcome to React Native'))
+  .pressDeviceKey(82)
+  .elementByXPath(xPath)
+  .click()
+  .waitForElementByXPath(textView('Welcome to React Native'));
+
+/**
+ * CI environment can be quite slow and we can't guarantee that it can consistently
+ * notice a file change so we change the file every few seconds just in case
+ */
+const performFileChange = (func) => {
+  let iteration = 0;
+  return setInterval(() => {
+    console.log('called');
+    func(iteration++);
+  }, 3000);
+};

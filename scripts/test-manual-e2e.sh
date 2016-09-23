@@ -53,15 +53,6 @@ grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build
 
 success "New sample project generated at /tmp/${project_name}"
 
-info "Test the following on Android:"
-info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
-info "   - Verify 'Reload JS' works"
-info ""
-info "Press any key to run the sample in Android emulator/device"
-info ""
-read -n 1
-cd "/tmp/${project_name}" && react-native run-android
-
 info "Test the following on iOS:"
 info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
 info "   - Verify 'Reload JS' works"
