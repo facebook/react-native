@@ -194,4 +194,17 @@ describe('XMLHttpRequest', function() {
     expect(handleProgress.mock.calls[0][0].total).toBe(100);
   });
 
+  it('should combine response headers with CRLF', function() {
+    xhr.open('GET', 'blabla');
+    xhr.send();
+    xhr.__didReceiveResponse(1, 200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '32',
+    });
+
+    expect(xhr.getAllResponseHeaders()).toBe(
+      'Content-Type: text/plain; charset=utf-8\r\n' +
+      'Content-Length: 32');
+  });
+
 });
