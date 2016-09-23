@@ -53,10 +53,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
 
   {
     SystraceSection s("getConstants");
-    folly::dynamic constants = module->getConstants();
-    if (constants.isObject() && constants.size() > 0) {
-      config.push_back(std::move(constants));
-    }
+    config.push_back(module->getConstants());
   }
 
   {

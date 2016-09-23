@@ -330,12 +330,7 @@ class MessageQueue {
       return null;
     }
 
-    let moduleName, constants, methods, promiseMethods, syncMethods;
-    if (moduleHasConstants(config)) {
-      [moduleName, constants, methods, promiseMethods, syncMethods] = config;
-    } else {
-      [moduleName, methods, promiseMethods, syncMethods] = (config:any);
-    }
+    const [moduleName, constants, methods, promiseMethods, syncMethods] = config;
 
     const module = {};
     methods && methods.forEach((methodName, methodID) => {
@@ -347,7 +342,8 @@ class MessageQueue {
     });
     Object.assign(module, constants);
 
-    if (!constants && !methods && !promiseMethods) {
+    if (!constants && !methods) {
+      // Module contents will be filled in lazily later (see NativeModules)
       module.moduleID = moduleID;
     }
 
@@ -395,20 +391,10 @@ class MessageQueue {
       return;
     }
 
-    let moduleName, methods;
-    if (moduleHasConstants(config)) {
-      [moduleName, , methods] = config;
-    } else {
-      [moduleName, methods] = (config:any);
-    }
-
+    const [moduleName, , methods] = config;
     this._remoteModuleTable[moduleID] = moduleName;
     this._remoteMethodTable[moduleID] = methods;
   }
-}
-
-function moduleHasConstants(moduleArray: ModuleConfig): boolean {
-  return !Array.isArray(moduleArray[1]);
 }
 
 function arrayContains<T>(array: Array<T>, value: T): boolean {
