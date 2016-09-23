@@ -160,6 +160,7 @@ describe('processRequest', () => {
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
+        assetPlugins: [],
       });
     });
   });
@@ -183,6 +184,31 @@ describe('processRequest', () => {
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
+        assetPlugins: [],
+      });
+    });
+  });
+
+  pit('passes in the assetPlugin param', function() {
+    return makeRequest(
+      requestHandler,
+      'index.bundle?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2'
+    ).then(function(response) {
+      expect(response.body).toEqual('this is the source');
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.js',
+        inlineSourceMap: false,
+        minify: false,
+        hot: false,
+        runModule: true,
+        sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
+        dev: true,
+        platform: undefined,
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        unbundle: false,
+        entryModuleOnly: false,
+        isolateModuleIDs: false,
+        assetPlugins: ['assetPlugin1', 'assetPlugin2'],
       });
     });
   });
@@ -412,6 +438,7 @@ describe('processRequest', () => {
           unbundle: false,
           entryModuleOnly: false,
           isolateModuleIDs: false,
+          assetPlugins: [],
         })
       );
     });
@@ -434,6 +461,7 @@ describe('processRequest', () => {
             unbundle: false,
             entryModuleOnly: false,
             isolateModuleIDs: false,
+            assetPlugins: [],
           })
         );
     });

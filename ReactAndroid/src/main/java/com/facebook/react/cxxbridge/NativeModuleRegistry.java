@@ -10,47 +10,85 @@
 package com.facebook.react.cxxbridge;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import android.util.Pair;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 
 /**
   * A set of Java APIs to expose to a particular JavaScript instance.
   */
 public class NativeModuleRegistry {
-  private final Map<Class<NativeModule>, NativeModule> mModuleInstances;
+
+  private final Map<Class<? extends NativeModule>, ModuleHolder> mModules;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
 
-  private NativeModuleRegistry(Map<Class<NativeModule>, NativeModule> moduleInstances) {
-    mModuleInstances = moduleInstances;
-    mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleInstances.size());
-    for (NativeModule module : mModuleInstances.values()) {
-      if (module instanceof OnBatchCompleteListener) {
-        mBatchCompleteListenerModules.add((OnBatchCompleteListener) module);
+  public NativeModuleRegistry(
+    List<ModuleSpec> moduleSpecList,
+    Map<Class, ReactModuleInfo> reactModuleInfoMap) {
+    Map<String, Pair<Class<? extends NativeModule>, ModuleHolder>> namesToSpecs = new HashMap<>();
+    for (ModuleSpec module : moduleSpecList) {
+      Class<? extends NativeModule> type = module.getType();
+      ModuleHolder holder = new ModuleHolder(
+        type,
+        reactModuleInfoMap.get(type),
+        module.getProvider());
+      String name = holder.getInfo().name();
+      Class<? extends NativeModule> existing = namesToSpecs.containsKey(name) ?
+        namesToSpecs.get(name).first :
+        null;
+      if (existing != null && !holder.getInfo().canOverrideExistingModule()) {
+        throw new IllegalStateException("Native module " + type.getSimpleName() +
+          " tried to override " + existing.getSimpleName() + " for module name " + name +
+          ". If this was your intention, set canOverrideExistingModule=true");
+      }
+      namesToSpecs.put(name, new Pair<Class<? extends NativeModule>, ModuleHolder>(type, holder));
+    }
+
+    mModules = new HashMap<>();
+    for (Pair<Class<? extends NativeModule>, ModuleHolder> pair : namesToSpecs.values()) {
+      mModules.put(pair.first, pair.second);
+    }
+
+    mBatchCompleteListenerModules = new ArrayList<>();
+    for (Class<? extends NativeModule> type : mModules.keySet()) {
+      if (OnBatchCompleteListener.class.isAssignableFrom(type)) {
+        final ModuleHolder holder = mModules.get(type);
+        mBatchCompleteListenerModules.add(new OnBatchCompleteListener() {
+          @Override
+          public void onBatchComplete() {
+            OnBatchCompleteListener listener = (OnBatchCompleteListener) holder.getModule();
+            listener.onBatchComplete();
+          }
+        });
       }
     }
   }
 
   /* package */ ModuleRegistryHolder getModuleRegistryHolder(
-      CatalystInstanceImpl catalystInstanceImpl) {
+    CatalystInstanceImpl catalystInstanceImpl) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     ArrayList<CxxModuleWrapper> cxxModules = new ArrayList<>();
-    for (NativeModule module : mModuleInstances.values()) {
-      if (module instanceof BaseJavaModule) {
-        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, (BaseJavaModule) module));
-      } else if (module instanceof CxxModuleWrapper) {
-        cxxModules.add((CxxModuleWrapper) module);
+    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
+      Class<?> type = entry.getKey();
+      ModuleHolder moduleHolder = entry.getValue();
+      if (BaseJavaModule.class.isAssignableFrom(type)) {
+        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, moduleHolder));
+      } else if (CxxModuleWrapper.class.isAssignableFrom(type)) {
+        cxxModules.add((CxxModuleWrapper) moduleHolder.getModule());
       } else {
-        throw new IllegalArgumentException("Unknown module type " + module.getClass());
+        throw new IllegalArgumentException("Unknown module type " + type);
       }
     }
     return new ModuleRegistryHolder(catalystInstanceImpl, javaModules, cxxModules);
@@ -62,8 +100,8 @@ public class NativeModuleRegistry {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "NativeModuleRegistry_notifyCatalystInstanceDestroy");
     try {
-      for (NativeModule nativeModule : mModuleInstances.values()) {
-        nativeModule.onCatalystInstanceDestroy();
+      for (ModuleHolder module : mModules.values()) {
+        module.destroy();
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -78,8 +116,8 @@ public class NativeModuleRegistry {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "NativeModuleRegistry_notifyCatalystInstanceInitialized");
     try {
-      for (NativeModule nativeModule : mModuleInstances.values()) {
-        nativeModule.initialize();
+      for (ModuleHolder module : mModules.values()) {
+        module.initialize();
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -94,38 +132,18 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
-    return mModuleInstances.containsKey(moduleInterface);
+    return mModules.containsKey(moduleInterface);
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
-    return (T) Assertions.assertNotNull(mModuleInstances.get(moduleInterface));
+    return (T) Assertions.assertNotNull(mModules.get(moduleInterface)).getModule();
   }
 
-  public Collection<NativeModule> getAllModules() {
-    return mModuleInstances.values();
-  }
-
-  public static class Builder {
-    private final HashMap<String, NativeModule> mModules = MapBuilder.newHashMap();
-
-    public Builder add(NativeModule module) {
-      NativeModule existing = mModules.get(module.getName());
-      if (existing != null && !module.canOverrideExistingModule()) {
-        throw new IllegalStateException("Native module " + module.getClass().getSimpleName() +
-            " tried to override " + existing.getClass().getSimpleName() + " for module name " +
-            module.getName() + ". If this was your intention, return true from " +
-            module.getClass().getSimpleName() + "#canOverrideExistingModule()");
-      }
-      mModules.put(module.getName(), module);
-      return this;
+  public List<NativeModule> getAllModules() {
+    List<NativeModule> modules = new ArrayList<>();
+    for (ModuleHolder module : mModules.values()) {
+      modules.add(module.getModule());
     }
-
-    public NativeModuleRegistry build() {
-      Map<Class<NativeModule>, NativeModule> moduleInstances = new HashMap<>();
-      for (NativeModule module : mModules.values()) {
-        moduleInstances.put((Class<NativeModule>) module.getClass(), module);
-      }
-      return new NativeModuleRegistry(moduleInstances);
-    }
+    return modules;
   }
 }

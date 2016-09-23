@@ -109,6 +109,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   __block NSData *sourceCode;
   [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
     if (error) {
+      RCTLogWarn(@"Failed to load source: %@", error);
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf stopLoadingWithError:error];
       });
@@ -153,6 +154,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
       [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
         [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
         if (error) {
+          RCTLogWarn(@"Failed to inject config: %@", error);
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf stopLoadingWithError:error];
           });
@@ -233,9 +235,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (!moduleData) {
-    moduleData = _moduleDataByName[[@"RCT" stringByAppendingString:moduleName]];
-  }
   if (moduleData) {
 #if RCT_DEV
     if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
@@ -244,9 +243,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
                 @"Required config for %@, which was not whitelisted", moduleName);
     }
 #endif
-    return moduleData.config;
   }
-  return (id)kCFNull;
+  return moduleData.config;
 }
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -502,7 +500,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     }
 
     if (loadError) {
-      RCTLogError(@"Failed to execute source code: %@", [loadError localizedDescription]);
+      RCTLogWarn(@"Failed to execute source code: %@", [loadError localizedDescription]);
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
       });
