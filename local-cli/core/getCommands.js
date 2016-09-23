@@ -13,7 +13,7 @@ module.exports = function getCommands() {
   const appRoot = process.cwd();
   const plugins = findPlugins([appRoot])
     .map(pathToCommands => {
-      const name = pathToCommands.split('/')[0];
+      const name = pathToCommands.split(path.sep)[0];
 
       return attachPackage(
         require(path.join(appRoot, 'node_modules', pathToCommands)),

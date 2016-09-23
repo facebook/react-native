@@ -12,6 +12,10 @@ Sometimes an app needs access to a platform API that React Native doesn't have a
 
 We designed React Native such that it is possible for you to write real native code and have access to the full power of the platform. This is a more advanced feature and we don't expect it to be part of the usual development process, however it is essential that it exists. If React Native doesn't support a native feature that you need, you should be able to build it yourself.
 
+### Enable Gradle
+
+If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) to speed up builds.
+
 ## The Toast Module
 
 This guide will use the [Toast](http://developer.android.com/reference/android/widget/Toast.html) example. Let's say we would like to be able to create a toast message from JavaScript.
@@ -318,17 +322,21 @@ componentWillMount: function() {
 
 ### Getting activity result from `startActivityForResult`
 
-You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
+You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the you must extend `BaseActivityEventListener` or implement `ActivityEventListener`. The former is preferred as it is more resilient to API changes. Then, you need to register the listener in the module's constructor,
 
 ```java
-reactContext.addActivityEventListener(this);
+reactContext.addActivityEventListener(mActivityResultListener);
 ```
 
 Now you can listen to `onActivityResult` by implementing the following method:
 
 ```java
 @Override
-public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+public void onActivityResult(
+  final Activity activity,
+  final int requestCode,
+  final int resultCode,
+  final Intent intent) {
   // Your logic here
 }
 ```

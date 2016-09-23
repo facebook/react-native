@@ -11,6 +11,8 @@
 
 'use strict';
 
+const assert = require('assert');
+
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
 const fs = require('fs');
@@ -300,12 +302,12 @@ function parseAPIJsDocFormat(filepath, fileContent) {
   };
   // Babel transform
   const code = babel.transform(fileContent, babelRC).code;
-  // Parse via jsdocs
+  // Parse via jsdoc-api
   let jsonParsed = jsdocApi.explainSync({
     source: code,
     configure: './jsdocs/jsdoc-conf.json'
   });
-  // Cleanup jsdocs return
+  // Clean up jsdoc-api return
   jsonParsed = jsonParsed.filter(i => {
     return !i.undocumented && !/package|file/.test(i.kind);
   });
@@ -338,7 +340,7 @@ function parseAPIInferred(filepath, fileContent) {
   try {
     json = jsDocs(fileContent);
     if (!json) {
-      throw new Error('jsDocs returned falsy');
+      throw new Error('parseSource returned falsy');
     }
   } catch (e) {
     console.error('Cannot parse file', filepath, e);
@@ -592,7 +594,7 @@ const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   return docs;
 }, {});
 
-module.exports = function() {
+function extractDocs() {
   componentCount = 0;
   return [].concat(
     components.map(renderComponent),
@@ -601,4 +603,6 @@ module.exports = function() {
     }),
     stylesWithPermalink.map(renderStyle)
   );
-};
+}
+
+module.exports = extractDocs;
