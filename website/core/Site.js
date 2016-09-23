@@ -23,8 +23,6 @@ var Site = React.createClass({
 
     var title = this.props.title ? this.props.title : 'React Native | A framework for building native apps using React';
 
-    var twitterCardType = this.props.image? 'summary_large_image' : 'summary';
-
     var metaTags = [
       { charSet: "utf-8" },
       {
@@ -66,7 +64,7 @@ var Site = React.createClass({
       },
       {
         name: "twitter:card",
-        content: twitterCardType,
+        content: "summary_large_image",
       },
     ];
 
