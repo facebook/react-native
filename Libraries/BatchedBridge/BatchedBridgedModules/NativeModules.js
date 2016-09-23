@@ -14,27 +14,6 @@
 const BatchedBridge = require('BatchedBridge');
 const RemoteModules = BatchedBridge.RemoteModules;
 
-function normalizePrefix(moduleName: string): string {
-  return moduleName.replace(/^(RCT|RK)/, '');
-}
-
-/**
- * Dirty hack to support old (RK) and new (RCT) native module name conventions.
- * TODO 10487027: kill this behaviour
- */
-Object.keys(RemoteModules).forEach((moduleName) => {
-  const strippedName = normalizePrefix(moduleName);
-  if (RemoteModules['RCT' + strippedName] && RemoteModules['RK' + strippedName]) {
-    throw new Error(
-      'Module cannot be registered as both RCT and RK: ' + moduleName
-    );
-  }
-  if (strippedName !== moduleName) {
-    RemoteModules[strippedName] = RemoteModules[moduleName];
-    delete RemoteModules[moduleName];
-  }
-});
-
 /**
  * Define lazy getters for each module.
  * These will return the module if already loaded, or load it if not.

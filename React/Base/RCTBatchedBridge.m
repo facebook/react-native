@@ -235,9 +235,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (!moduleData) {
-    moduleData = _moduleDataByName[[@"RCT" stringByAppendingString:moduleName]];
-  }
   if (moduleData) {
 #if RCT_DEV
     if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
@@ -246,9 +243,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
                 @"Required config for %@, which was not whitelisted", moduleName);
     }
 #endif
-    return moduleData.config;
   }
-  return (id)kCFNull;
+  return moduleData.config;
 }
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
