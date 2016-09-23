@@ -80,7 +80,7 @@ if (exec(`git tag v${version}`).code) {
 exec(`git push origin v${version}`);
 
 // Tag latest if doing stable release
-if (version.indexOf('rc') === -1) {
+if (version.indexOf(`rc`) === -1) {
   exec(`git tag -d latest`);
   exec(`git push origin :latest`);
   exec(`git tag latest`);
