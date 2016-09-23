@@ -344,6 +344,13 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
     infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
     infoTitle: 'Baidu is a search engine that has 600 million users.',
+  },
+  {
+    name: 'Pocket Jam',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple62/v4/3d/d1/58/3dd15851-fc0e-373e-3605-2dbd8f1d9655/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/pocket-jam/id1153284525?ls=1&mt=8',
+    infoLink: 'https://medium.com/@jacobp100/building-an-app-with-react-native-4b1b56d6e44d#.qmelwrx90',
+    infoTitle: 'Building an App with React Native',
   }
 ];
 
