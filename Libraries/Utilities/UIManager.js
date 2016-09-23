@@ -11,8 +11,8 @@
  */
 'use strict';
 
-const Platform = require('Platform');
 const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 const { UIManager } = NativeModules;
 
 const findNodeHandle = require('react/lib/findNodeHandle');
@@ -64,11 +64,6 @@ UIManager.takeSnapshot = async function(
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  // Copied from NativeModules
-  function normalizePrefix(moduleName: string): string {
-    return moduleName.replace(/^(RCT|RK)/, '');
-  }
-
   Object.keys(UIManager).forEach(viewName => {
     const viewConfig = UIManager[viewName];
     if (viewConfig.Manager) {
@@ -82,7 +77,7 @@ if (Platform.OS === 'ios') {
             return constants;
           }
           constants = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          const viewManager = NativeModules[viewConfig.Manager];
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
             if (typeof value !== 'function') {
@@ -102,7 +97,7 @@ if (Platform.OS === 'ios') {
             return commands;
           }
           commands = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          const viewManager = NativeModules[viewConfig.Manager];
           let index = 0;
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
