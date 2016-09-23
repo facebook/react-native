@@ -67,7 +67,7 @@ const KeyboardAvoidingView = React.createClass({
      * This is the distance between the top of the user screen and the react native view,
      * may be non-zero in some use cases.
      */
-    keyboardVerticalOffset: PropTypes.number.isRequired,
+    keyboardVerticalOffset: PropTypes.number,
   },
 
   getDefaultProps() {
