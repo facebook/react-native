@@ -168,11 +168,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         RCTEventEmitter.class,
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
-        com.facebook.react.bridge.Systrace.class));
+        com.facebook.react.bridge.Systrace.class,
+        HMRClient.class));
 
     if (ReactBuildConfig.DEBUG) {
       jsModules.add(DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
-      jsModules.add(HMRClient.class);
       jsModules.add(JSCHeapCapture.HeapCapture.class);
       jsModules.add(JSCSamplingProfiler.SamplingProfiler.class);
     }
