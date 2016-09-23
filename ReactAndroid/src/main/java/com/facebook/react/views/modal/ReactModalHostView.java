@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -211,18 +212,25 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       new DialogInterface.OnKeyListener() {
         @Override
         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-          // We need to stop the BACK button from closing the dialog by default so we capture that
-          // event and instead inform JS so that it can make the decision as to whether or not to
-          // allow the back button to close the dialog.  If it chooses to, it can just set visible
-          // to false on the Modal and the Modal will go away
-          if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (event.getAction() == KeyEvent.ACTION_UP) {
+          if (event.getAction() == KeyEvent.ACTION_UP) {
+            // We need to stop the BACK button from closing the dialog by default so we capture that
+            // event and instead inform JS so that it can make the decision as to whether or not to
+            // allow the back button to close the dialog.  If it chooses to, it can just set visible
+            // to false on the Modal and the Modal will go away
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
               Assertions.assertNotNull(
-                  mOnRequestCloseListener,
-                  "setOnRequestCloseListener must be called by the manager");
+                mOnRequestCloseListener,
+                "setOnRequestCloseListener must be called by the manager");
               mOnRequestCloseListener.onRequestClose(dialog);
+              return true;
+            } else {
+              // We redirect the rest of the key events to the current activity, since the activity
+              // expects to receive those events and react to them, ie. in the case of the dev menu
+              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
+              if (currentActivity != null) {
+                return currentActivity.onKeyUp(keyCode, event);
+              }
             }
-            return true;
           }
           return false;
         }
