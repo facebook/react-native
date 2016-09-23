@@ -13,10 +13,12 @@
 
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const { UIManager } = NativeModules;
 
+const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const findNodeHandle = require('react/lib/findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
+
+const { UIManager } = NativeModules;
 
 invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
 
@@ -67,17 +69,10 @@ if (Platform.OS === 'ios') {
   Object.keys(UIManager).forEach(viewName => {
     const viewConfig = UIManager[viewName];
     if (viewConfig.Manager) {
-      let constants;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Constants', {
-        configurable: true,
-        enumerable: true,
+      defineLazyObjectProperty(viewConfig, 'Constants', {
         get: () => {
-          if (constants) {
-            return constants;
-          }
-          constants = {};
           const viewManager = NativeModules[viewConfig.Manager];
+          const constants = {};
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
             if (typeof value !== 'function') {
@@ -87,17 +82,10 @@ if (Platform.OS === 'ios') {
           return constants;
         },
       });
-      let commands;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Commands', {
-        configurable: true,
-        enumerable: true,
+      defineLazyObjectProperty(viewConfig, 'Commands', {
         get: () => {
-          if (commands) {
-            return commands;
-          }
-          commands = {};
           const viewManager = NativeModules[viewConfig.Manager];
+          const commands = {};
           let index = 0;
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];

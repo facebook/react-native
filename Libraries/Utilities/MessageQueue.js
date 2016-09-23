@@ -19,21 +19,9 @@ const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 const stringifySafe = require('stringifySafe');
 
-export type ConfigProvider = () => {
-  remoteModuleConfig: Array<ModuleConfig>,
-};
-export type MethodType = 'async' | 'promise' | 'sync';
-export type ModuleConfig = [
-  string, /* name */
-  ?Object, /* constants */
-  Array<string>, /* functions */
-  Array<number>, /* promise method IDs */
-  Array<number>, /* sync method IDs */
-];
 export type SpyData = {
   type: number,
   module: ?string,
@@ -63,14 +51,12 @@ const guard = (fn) => {
 
 class MessageQueue {
   _callableModules: {[key: string]: Object};
-  _queue: [Array<number>, Array<number>, Array<any>];
+  _queue: [Array<number>, Array<number>, Array<any>, number];
   _callbacks: [];
   _callbackID: number;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
-
-  RemoteModules: Object;
 
   _debugInfo: Object;
   _remoteModuleTable: Object;
@@ -78,7 +64,7 @@ class MessageQueue {
 
   __spy: ?(data: SpyData) => void;
 
-  constructor(configProvider: ConfigProvider) {
+  constructor() {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
     this._callbacks = [];
@@ -97,11 +83,6 @@ class MessageQueue {
     (this:any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(this);
     (this:any).flushedQueue = this.flushedQueue.bind(this);
     (this:any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(this);
-
-    defineLazyObjectProperty(this, 'RemoteModules', {get: () => {
-      const {remoteModuleConfig} = configProvider();
-      return this._genModules(remoteModuleConfig);
-    }});
   }
 
   /**
@@ -111,7 +92,7 @@ class MessageQueue {
   static spy(spyOrToggle: boolean|(data: SpyData) => void){
     if (spyOrToggle === true){
       MessageQueue.prototype.__spy = info => {
-        console.log(`${info.type == TO_JS ? 'N->JS' : 'JS->N'} : ` +
+        console.log(`${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
                     `${info.module ? (info.module + '.') : ''}${info.method}` +
                     `(${JSON.stringify(info.args)})`);
       };
@@ -158,19 +139,6 @@ class MessageQueue {
     return queue[0].length ? queue : null;
   }
 
-  processModuleConfig(config: ModuleConfig, moduleID: number) {
-    const info = this._genModule(config, moduleID);
-    if (!info) {
-      return null;
-    }
-
-    this.RemoteModules[info.name] = info.module;
-    if (__DEV__) {
-      this._createDebugLookup(config, moduleID);
-    }
-    return info.module;
-  }
-
   getEventLoopRunningTime() {
     return new Date().getTime() - this._eventLoopStartTime;
   }
@@ -179,16 +147,7 @@ class MessageQueue {
     this._callableModules[name] = module;
   }
 
-  /**
-   * "Private" methods
-   */
-  __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
-    Systrace.endEvent();
-  }
-
-  __nativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
+  enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
     if (onFail || onSucc) {
       if (__DEV__) {
         const callId = this._callbackID >> 1;
@@ -237,6 +196,23 @@ class MessageQueue {
             args: params }
         );
     }
+  }
+
+  createDebugLookup(moduleID: number, name: string, methods: Array<string>) {
+    if (__DEV__) {
+      this._remoteModuleTable[moduleID] = name;
+      this._remoteMethodTable[moduleID] = methods;
+    }
+  }
+
+  /**
+   * "Private" methods
+   */
+
+  __callImmediates() {
+    Systrace.beginEvent('JSTimersExecution.callImmediates()');
+    guard(() => JSTimersExecution.callImmediates());
+    Systrace.endEvent();
   }
 
   __callFunction(module: string, method: string, args: Array<any>) {
@@ -302,113 +278,6 @@ class MessageQueue {
       Systrace.endEvent();
     }
   }
-
-  /**
-   * Private helper methods
-   */
-
-  _genModules(remoteModules) {
-    const modules = {};
-    remoteModules.forEach((config, moduleID) => {
-      // Initially this config will only contain the module name when running in JSC. The actual
-      // configuration of the module will be lazily loaded (see NativeModules.js) and updated
-      // through processModuleConfig.
-      const info = this._genModule(config, moduleID);
-      if (info) {
-        modules[info.name] = info.module;
-      }
-
-      if (__DEV__) {
-        this._createDebugLookup(config, moduleID);
-      }
-    });
-    return modules;
-  }
-
-  _genModule(config: ModuleConfig, moduleID: number): ?{name: string, module: Object} {
-    if (!config) {
-      return null;
-    }
-
-    const [moduleName, constants, methods, promiseMethods, syncMethods] = config;
-
-    const module = {};
-    methods && methods.forEach((methodName, methodID) => {
-      const isPromise = promiseMethods && arrayContains(promiseMethods, methodID);
-      const isSync = syncMethods && arrayContains(syncMethods, methodID);
-      invariant(!isPromise || !isSync, 'Cannot have a method that is both async and a sync hook');
-      const methodType = isPromise ? 'promise' : isSync ? 'sync' : 'async';
-      module[methodName] = this._genMethod(moduleID, methodID, methodType);
-    });
-    Object.assign(module, constants);
-
-    if (!constants && !methods) {
-      // Module contents will be filled in lazily later (see NativeModules)
-      module.moduleID = moduleID;
-    }
-
-    return { name: moduleName, module };
-  }
-
-  _genMethod(moduleID: number, methodID: number, type: MethodType) {
-    let fn = null;
-    const self = this;
-    if (type === 'promise') {
-      fn = function(...args: Array<any>) {
-        return new Promise((resolve, reject) => {
-          self.__nativeCall(moduleID, methodID, args,
-            (data) => resolve(data),
-            (errorData) => reject(createErrorFromErrorData(errorData)));
-        });
-      };
-    } else if (type === 'sync') {
-      fn = function(...args: Array<any>) {
-        return global.nativeCallSyncHook(moduleID, methodID, args);
-      };
-    } else {
-      fn = function(...args: Array<any>) {
-        const lastArg = args.length > 0 ? args[args.length - 1] : null;
-        const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
-        const hasSuccessCallback = typeof lastArg === 'function';
-        const hasErrorCallback = typeof secondLastArg === 'function';
-        hasErrorCallback && invariant(
-          hasSuccessCallback,
-          'Cannot have a non-function arg after a function arg.'
-        );
-        const onSuccess = hasSuccessCallback ? lastArg : null;
-        const onFail = hasErrorCallback ? secondLastArg : null;
-        const callbackCount = hasSuccessCallback + hasErrorCallback;
-        args = args.slice(0, args.length - callbackCount);
-        return self.__nativeCall(moduleID, methodID, args, onFail, onSuccess);
-      };
-    }
-    fn.type = type;
-    return fn;
-  }
-
-  _createDebugLookup(config: ModuleConfig, moduleID: number) {
-    if (!config) {
-      return;
-    }
-
-    const [moduleName, , methods] = config;
-    this._remoteModuleTable[moduleID] = moduleName;
-    this._remoteMethodTable[moduleID] = methods;
-  }
-}
-
-function arrayContains<T>(array: Array<T>, value: T): boolean {
-  return array.indexOf(value) !== -1;
-}
-
-function createErrorFromErrorData(errorData: {message: string}): Error {
-  const {
-    message,
-    ...extraErrorInfo,
-  } = errorData;
-  const error = new Error(message);
-  (error:any).framesToPop = 1;
-  return Object.assign(error, extraErrorInfo);
 }
 
 module.exports = MessageQueue;
