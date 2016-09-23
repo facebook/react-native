@@ -271,11 +271,11 @@ class WebView extends React.Component {
     );
   };
 
-  postMessage = (message) => {
+  postMessage = (data) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [String(message)]
+      [String(data)]
     );
   };
 

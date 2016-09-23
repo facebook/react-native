@@ -86,9 +86,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)postMessage:(NSString *)message
 {
+  NSString *escapedString = RCTJSONStringify(message, NULL);
   NSString *source = [NSString
-    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage('%@');",
-    message
+    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage({ data: %@ });",
+    escapedString
   ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
 }
@@ -233,13 +234,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   if (isJSNavigation && [request.URL.host isEqualToString:RCTJSPostMessageHost]) {
-    NSString *message = request.URL.query;
-    message = [message stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-    message = [message stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *data = request.URL.query;
+    data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
-      @"message": message,
+      @"data": data,
     }];
     _onMessage(event);
   }

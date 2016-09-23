@@ -240,8 +240,8 @@ class WebView extends React.Component {
      * Setting this property will inject a `postMessage` global into your
      * webview, overriding any previous values.
      *
-     * `window.postMessage` accepts one argument, `message`, which will be
-     * available on the event object, `event.nativeEvent.message`. `message`
+     * `window.postMessage` accepts one argument, `data`, which will be
+     * available on the event object, `event.nativeEvent.data`. `data`
      * must be a string.
      */
     onMessage: PropTypes.func,
@@ -473,19 +473,19 @@ class WebView extends React.Component {
 
   /**
    * Posts a message to the web view, which will invoke the global `onmessage`
-   * function. Accepts one argument, `message`, which must be a string.
+   * function. Accepts one argument, `data`, which must be a string.
    *
    * In your webview, you'll need to something like the following.
    *
    * ```
-   * window.onmessage = function(message) { ... }
+   * window.onmessage = function(e) { document.title = e.data; }
    * ```
    */
-  postMessage = (message) => {
+  postMessage = (data) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [String(message)]
+      [String(data)]
     );
   };
 

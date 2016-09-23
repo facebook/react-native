@@ -49,6 +49,9 @@ import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
 
+import org.json.JSONObject;
+import org.json.JSONException;
+
 /**
  * Manages instances of {@link WebView}
  *
@@ -264,8 +267,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void linkBridge() {
       if (messagingEnabled) {
-        loadUrl("javascript:(window.postMessage = function(message) {" +
-          BRIDGE_NAME + ".postMessage(String(message));" +
+        loadUrl("javascript:(window.postMessage = function(data) {" +
+          BRIDGE_NAME + ".postMessage(String(data));" +
         "})");
       }
     }
@@ -455,9 +458,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         root.stopLoading();
         break;
       case COMMAND_POST_MESSAGE:
-        root.evaluateJavascript("if (typeof window.onmessage === 'function') {" +
-          "window.onmessage('" + args.getString(0) + "')" +
-        "}", null);
+        try {
+          JSONObject eventJson = new JSONObject();
+          eventJson.put("data", args.getString(0));
+          root.evaluateJavascript("if (typeof window.onmessage === 'function') {" +
+            "window.onmessage(" + eventJson.toString() + ")" +
+          "}", null);
+        } catch (JSONException e) {
+          throw new RuntimeException(e);
+        }
         break;
     }
   }

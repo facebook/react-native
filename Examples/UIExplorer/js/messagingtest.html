@@ -7,19 +7,21 @@
   </head>
   <body>
     <p>Messages recieved from React Native: 0</p>
+    <p>(No messages)</p>
     <button type="button">
       Send message to React Native
     </button>
   </body>
   <script>
     var messagesReceivedFromReactNative = 0;
-    window.onmessage = function(message) {
+    window.onmessage = function(e) {
       messagesReceivedFromReactNative += 1;
       document.getElementsByTagName('p')[0].innerHTML =
         'Messages recieved from React Native: ' + messagesReceivedFromReactNative;
+      document.getElementsByTagName('p')[1].innerHTML = e.data;
     };
     document.getElementsByTagName('button')[0].addEventListener('click', function() {
-      window.postMessage('Hello from the web view');
+      window.postMessage('"Hello" from the web view');
     });
   </script>
 </html>

@@ -222,25 +222,28 @@ class MessagingTest extends React.Component {
 
   state = {
     messagesReceivedFromWebView: 0,
+    message: '',
   }
 
-  onMessage = () => this.setState(state => ({
-    messagesReceivedFromWebView: state.messagesReceivedFromWebView + 1,
-  }))
+  onMessage = e => this.setState({
+    messagesReceivedFromWebView: this.state.messagesReceivedFromWebView + 1,
+    message: e.nativeEvent.data,
+  })
 
   postMessage = () => {
     if (this.webview) {
-      this.webview.postMessage('Hello from React Native!');
+      this.webview.postMessage('"Hello" from React Native!');
     }
   }
 
   render(): ReactElement<any> {
-    const {messagesReceivedFromWebView} = this.state;
+    const {messagesReceivedFromWebView, message} = this.state;
 
     return (
       <View style={[styles.container, { height: 200 }]}>
         <View style={styles.container}>
           <Text>Messages received from web view: {messagesReceivedFromWebView}</Text>
+          <Text>{message || '(No message)'}</Text>
           <View style={styles.buttons}>
             <Button text="Send Message to Web View" enabled onPress={this.postMessage} />
           </View>
