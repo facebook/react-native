@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');

@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
 const declareOpts = require('../lib/declareOpts');
 const os = require('os');
 const util = require('util');

@@ -13,6 +13,8 @@ require('../babelRegisterOnly')([/react-packager\/src/]);
 require('./src/node-haste/fastpath').replace();
 useGracefulFs();
 
+global.Promise = require('promise');
+
 var debug = require('debug');
 var Activity = require('./src/Activity');
 
