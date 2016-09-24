@@ -128,8 +128,45 @@ var Site = React.createClass({
 
             {this.props.children}
 
-            <footer className="wrap">
-              <div className="center">© {currentYear} Facebook Inc.</div>
+            <footer>
+              <section className="sitemap">
+                <a href="/react-native" className="nav-home">
+                  <img src="img/header_logo.png" alt="React Native" width="66" height="58" />
+                </a>
+                <div>
+                  <h5><a href="docs/">Docs</a></h5>
+                  <a href="docs/getting-started.html">Getting Started</a>
+                  <a href="docs/tutorial.html">Tutorial</a>
+                  <a href="docs/integration-with-existing-apps.html">Integration With Existing Apps</a>
+                  <a href="docs/more-resources.html">More Resources</a>
+                </div>
+                <div>
+                <h5><a href="/react-native/support.html">Community</a></h5>
+                  <a href="/react-native/showcase.html">Showcase</a>
+                  <a href="http://www.meetup.com/topics/react-native/" target="_blank">Upcoming Events</a>
+                  <a href="https://www.facebook.com/groups/react.native.community" target="_blank">Facebook Group</a>
+                  <a href="https://twitter.com/reactnative" target="_blank">Twitter</a>
+                </div>
+                <div>
+                  <h5><a href="/react-native/support.html">Help</a></h5>
+                  <a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a>
+                  <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a>
+                  <a href="/react-native/versions.html" target="_blank">Latest Releases</a>
+                  <a href="https://productpains.com/product/react-native/" target="_blank">Feature Requests</a>
+                </div>
+                <div>
+                  <h5>More</h5>
+                  <a href="/react-native/blog">Blog</a>
+                  <a href="https://github.com/facebook/react-native" target="_blank">GitHub</a>
+                  <a href="http://facebook.github.io/react/" target="_blank">React</a>
+                </div>
+              </section>
+              <a href="https://code.facebook.com/projects/" target="_blank" className="fbOpenSource">
+                <img src="img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/>
+              </a>
+              <section className="copyright">
+                Copyright © {currentYear} Facebook Inc.
+              </section>
             </footer>
           </div>
 
