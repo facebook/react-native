@@ -169,12 +169,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
         com.facebook.react.bridge.Systrace.class,
-        HMRClient.class,
-        JSCSamplingProfiler.SamplingProfiler.class,
-        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class));
+        HMRClient.class));
 
     if (ReactBuildConfig.DEBUG) {
+      jsModules.add(DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
       jsModules.add(JSCHeapCapture.HeapCapture.class);
+      jsModules.add(JSCSamplingProfiler.SamplingProfiler.class);
     }
 
     return jsModules;

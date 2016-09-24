@@ -16,6 +16,7 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTBridgeModule.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
@@ -58,11 +59,23 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = RCTBridgeModuleNameForClass(_managerClass);
-    RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
-    if ([_name hasSuffix:@"Manager"]) {
-      _name = [_name substringToIndex:_name.length - @"Manager".length];
+    // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
+    // We want to get rid of RCT and RK prefixes, but a lot of JS code still references
+    // view names by prefix. So, while RCTBridgeModuleNameForClass now drops these
+    // prefixes by default, we'll still keep them around here.
+    NSString *name = [managerClass moduleName];
+    if (name.length == 0) {
+      name = NSStringFromClass(managerClass);
     }
+    if ([name hasPrefix:@"RK"]) {
+      name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
+    }
+    if ([name hasSuffix:@"Manager"]) {
+      name = [name substringToIndex:name.length - @"Manager".length];
+    }
+
+    RCTAssert(name.length, @"Invalid moduleName '%@'", name);
+    _name = name;
 
     _implementsUIBlockToAmendWithShadowViewRegistry = NO;
     Class cls = _managerClass;

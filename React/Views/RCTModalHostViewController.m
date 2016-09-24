@@ -9,6 +9,7 @@
 
 #import "RCTModalHostViewController.h"
 
+#import "RCTLog.h"
 #import "RCTModalHostView.h"
 
 @implementation RCTModalHostViewController
@@ -53,6 +54,23 @@
 - (BOOL)prefersStatusBarHidden
 {
   return _preferredStatusBarHidden;
+}
+#endif
+
+#if RCT_DEV
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  UIInterfaceOrientationMask appSupportedOrientationsMask = [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[[UIApplication sharedApplication] keyWindow]];
+  if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
+    RCTLogError(@"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."
+                @"Add more interface orientations to your app's Info.plist to fix this."
+                @"NOTE: This will crash in non-dev mode.",
+                (unsigned)_supportedInterfaceOrientations,
+                (unsigned)appSupportedOrientationsMask);
+    return UIInterfaceOrientationMaskAll;
+  }
+
+  return _supportedInterfaceOrientations;
 }
 #endif
 
