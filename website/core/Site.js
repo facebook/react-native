@@ -128,7 +128,7 @@ var Site = React.createClass({
 
             {this.props.children}
 
-            <footer>
+            <footer className="nav-footer">
               <section className="sitemap">
                 <a href="/react-native" className="nav-home">
                   <img src="img/header_logo.png" alt="React Native" width="66" height="58" />
