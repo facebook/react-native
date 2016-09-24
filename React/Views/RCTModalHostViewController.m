@@ -55,7 +55,6 @@
 {
   return _preferredStatusBarHidden;
 }
-#endif
 
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -72,6 +71,7 @@
 
   return _supportedInterfaceOrientations;
 }
-#endif
+#endif // RCT_DEV
+#endif // TARGET_OS_TV
 
 @end
