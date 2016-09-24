@@ -92,6 +92,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       protocols = null;
     }
 
+    if (!/^wss?:\/\//.test(url)) {
+      throw new Error(`The URL '${url}' is invalid.`);
+    }
+
     this._eventEmitter = new NativeEventEmitter(RCTWebSocketModule);
     this._socketId = nextWebSocketId++;
     RCTWebSocketModule.connect(url, protocols, options, this._socketId);

@@ -22,4 +22,9 @@ describe('WebSocket', function() {
     expect(new WebSocket('wss://echo.websocket.org').CONNECTING).toEqual(0);
   });
 
+  it('should throw an error if specify invalid url', () => {
+    const url = 'invalid url';
+    expect(() => new WebSocket(url)).toThrowError(`The URL '${url}' is invalid.`);
+  });
+
 });
