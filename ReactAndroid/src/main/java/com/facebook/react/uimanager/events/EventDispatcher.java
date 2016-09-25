@@ -92,6 +92,7 @@ public class EventDispatcher implements LifecycleEventListener {
   private final Map<String, Short> mEventNameToEventId = MapBuilder.newHashMap();
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
+  private final ArrayList<EventDispatcherListener> mListeners = new ArrayList<>();
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
@@ -112,6 +113,19 @@ public class EventDispatcher implements LifecycleEventListener {
    */
   public void dispatchEvent(Event event) {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
+
+    boolean eventHandled = false;
+    for (EventDispatcherListener listener : mListeners) {
+      if (listener.onEventDispatch(event)) {
+        eventHandled = true;
+      }
+    }
+
+    // If the event was handled by one of the event listener don't send it to JS.
+    if (eventHandled) {
+      return;
+    }
+
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
       Systrace.startAsyncFlow(
@@ -129,6 +143,20 @@ public class EventDispatcher implements LifecycleEventListener {
       // touch event dispatch will hit this codepath, and we simply queue them so that they
       // are dispatched once ReactContext creation completes and JS app is running.
     }
+  }
+
+  /**
+   * Add a listener to this EventDispatcher.
+   */
+  public void addListener(EventDispatcherListener listener) {
+    mListeners.add(listener);
+  }
+
+  /**
+   * Remove a listener from this EventDispatcher.
+   */
+  public void removeListener(EventDispatcherListener listener) {
+    mListeners.remove(listener);
   }
 
   @Override
