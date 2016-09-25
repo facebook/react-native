@@ -11,14 +11,10 @@
  */
 'use strict';
 
-const React = require('React');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
-
-const Keyboard = new NativeEventEmitter(KeyboardObserver);
-// Add dismissKeyboard helper function
-Keyboard.dismiss = dismissKeyboard;
+const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
 
 // The following object exists for documentation purposes
 // Actual work happens in
@@ -64,11 +60,7 @@ Keyboard.dismiss = dismissKeyboard;
  * }
  *```
  */
-class DocsKeyboard {
-
-  static propTypes = {
-    none: 'This Component should not be given props',
-  };
+class Keyboard {
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -84,26 +76,29 @@ class DocsKeyboard {
    * - `keyboardDidHide`
    * - `keyboardWillChangeFrame`
    * - `keyboardDidChangeFrame`
+   *
    * @param {function} jsFunction function to be called when the event fires.
    */
-  addListener (nativeEvent, jsFunction) {
-    return Keyboard.addListener(nativeEvent, jsFunction);
+  addListener (nativeEvent: string, jsFunction: Function) {
+    return KeyboardEventEmitter.addListener(nativeEvent, jsFunction);
   }
 
   /**
    * Removes all listeners for a specific event type.
+   *
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
-  removeAllListeners (eventType) {
-    Keyboard.removeAllListeners(eventType)
+  removeAllListeners (eventType: string) {
+    KeyboardEventEmitter.removeAllListeners(eventType);
   }
 
   /**
    * Removes a specific subscription.
+   *
    * @param {EmitterSubscription} subscription The subscription emitter to be removed.
    */
-  removeSubscription (subscription) {
-    Keyboard.removeSubscription(subscription)
+  removeSubscription (subscription: Object) {
+    KeyboardEventEmitter.removeSubscription(subscription);
   }
 
   /**
@@ -113,11 +108,8 @@ class DocsKeyboard {
     dismissKeyboard();
   }
 
-  render() {
-    return null;
-  }
-
 }
 
-// We're not the the documentation component
+Keyboard = new Keyboard();
+
 module.exports = Keyboard;
