@@ -200,6 +200,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./PointerEventsExample'),
   },
   {
+    key: 'RootViewExample',
+    module: require('./RootViewExample'),
+  },
+  {
     key: 'RTLExample',
     module: require('./RTLExample'),
   },

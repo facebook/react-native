@@ -51,6 +51,7 @@ public class ReactShadowNode extends CSSNode {
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
   private boolean mNodeUpdated = true;
+  private int mSizeFlexibility;
 
   // layout-only nodes
   private boolean mIsLayoutOnly;
@@ -111,6 +112,14 @@ public class ReactShadowNode extends CSSNode {
 
   public boolean hasUnseenUpdates() {
     return mNodeUpdated;
+  }
+
+  public int getSizeFlexibility() {
+    return mSizeFlexibility;
+  }
+
+  public void setSizeFlexibility(int sizeFlexibility) {
+    mSizeFlexibility = sizeFlexibility;
   }
 
   @Override
@@ -237,7 +246,7 @@ public class ReactShadowNode extends CSSNode {
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
   }
 
-  /* package */ void dispatchUpdates(
+  /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
@@ -247,13 +256,25 @@ public class ReactShadowNode extends CSSNode {
     }
 
     if (hasNewLayout()) {
-      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
-      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
-      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      int absoluteLeft = Math.round(absoluteX + getLayoutX());
+      int absoluteTop = Math.round(absoluteY + getLayoutY());
+      int absoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      int absoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
 
-      nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+      if (absoluteLeft != mAbsoluteLeft || absoluteTop != mAbsoluteTop ||
+        absoluteRight != mAbsoluteRight || absoluteBottom != mAbsoluteBottom) {
+        mAbsoluteLeft = absoluteLeft;
+        mAbsoluteTop = absoluteTop;
+        mAbsoluteRight = absoluteRight;
+        mAbsoluteBottom = absoluteBottom;
+
+        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+
+        return true;
+      }
     }
+
+    return false;
   }
 
   public final int getReactTag() {

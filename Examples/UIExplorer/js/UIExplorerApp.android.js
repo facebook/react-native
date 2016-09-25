@@ -230,6 +230,8 @@ const styles = StyleSheet.create({
   },
 });
 
+AppRegistry.registerComponent('SetPropertiesExampleApp', () => require('./SetPropertiesExampleApp'));
+AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () => require('./RootViewSizeFlexibilityExampleApp'));
 AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 
 module.exports = UIExplorerApp;
