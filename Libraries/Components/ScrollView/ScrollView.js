@@ -263,6 +263,7 @@ const ScrollView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
+     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
@@ -389,7 +390,7 @@ const ScrollView = React.createClass({
 
   _handleScroll: function(e: Object) {
     if (__DEV__) {
-      if (this.props.onScroll && !this.props.scrollEventThrottle && Platform.OS === 'ios') {
+      if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
         console.log( // eslint-disable-line no-console-disallow
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
@@ -452,8 +453,7 @@ const ScrollView = React.createClass({
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
-        collapsable={false}
-        collapseChildren={!this.props.stickyHeaderIndices}>
+        collapsable={false}>
         {this.props.children}
       </View>;
 

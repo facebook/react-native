@@ -39,8 +39,8 @@ type Rationale = {
  * ```
  * async function requestCameraPermission() {
  *   try {
- *     const granted = await AndroidPermissions.requestPermission(
- *       AndroidPermissions.PERMISSIONS.CAMERA,
+ *     const granted = await PermissionsAndroid.requestPermission(
+ *       PermissionsAndroid.PERMISSIONS.CAMERA,
  *       {
  *         'title': 'Cool Photo App Camera Permission',
  *         'message': 'Cool Photo App needs access to your camera ' +

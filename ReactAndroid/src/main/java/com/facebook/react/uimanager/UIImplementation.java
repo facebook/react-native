@@ -823,8 +823,4 @@ public class UIImplementation {
 
     return rootTag;
   }
-
-  public ViewManager getViewManager(String name) {
-    return mViewManagers.get(name);
-  }
 }

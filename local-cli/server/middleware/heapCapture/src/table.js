@@ -75,6 +75,97 @@ DropTarget.propTypes = {
   dropAction: React.PropTypes.func.isRequired,
 };
 
+class TableHeader extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    const aggrow = this.props.aggrow;
+    const aggregators = aggrow.getActiveAggregators();
+    const expanders = aggrow.getActiveExpanders();
+    const headers = [];
+    for (let i = 0; i < aggregators.length; i++) {
+      const name = aggrow.getAggregatorName(aggregators[i]);
+      headers.push((
+        <DropTarget
+          id={'aggregate:insert:' + i.toString()}
+          dropFilter={(s) => s.startsWith('aggregate')}
+          dropAction={this.props.dropAction}
+        >
+          <div style={{
+            width: '16px',
+            height: 'inherit',
+            backgroundColor: 'darkGray',
+            flexShrink: '0' }}
+          ></div>
+        </DropTarget>));
+      headers.push((<Draggable id={'aggregate:active:' + i.toString()}>
+          <div style={{ width: '128px', textAlign: 'center', flexShrink: '0' }}>{name}</div>
+        </Draggable>));
+    }
+    headers.push((
+      <DropTarget
+        id="divider:insert"
+        dropFilter={(s) => s.startsWith('aggregate') || s.startsWith('expander')}
+        dropAction={this.props.dropAction}
+      >
+        <div style={{
+          width: '16px',
+          height: 'inherit',
+          backgroundColor: 'gold',
+          flexShrink: '0'
+        }}></div>
+      </DropTarget>));
+    for (let i = 0; i < expanders.length; i++) {
+      const name = aggrow.getExpanderName(expanders[i]);
+      const bg = (i % 2 === 0) ? 'white' : 'lightGray';
+      headers.push((<Draggable id={'expander:active:' + i.toString()}>
+          <div style={{
+            width: '128px',
+            textAlign: 'center',
+            backgroundColor: bg,
+            flexShrink: '0'
+          }}>
+            {name}
+          </div>
+        </Draggable>));
+      const sep = i + 1 < expanders.length ? '->' : '...';
+      headers.push((
+        <DropTarget
+          id={'expander:insert:' + (i + 1).toString()}
+          dropFilter={()=>{return true; }}
+          dropAction={this.props.dropAction}
+        >
+          <div style={{
+            height: 'inherit',
+            backgroundColor: 'darkGray',
+            flexShrink: '0'
+          }}>
+            {sep}
+          </div>
+        </DropTarget>)
+      );
+    }
+    return (
+      <div style={{
+        width: '100%',
+        height: '26px',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottom: '2px solid black',
+      }}>
+        {headers}
+      </div>
+    );
+  }
+}
+
+TableHeader.propTypes = {
+  aggrow: React.PropTypes.object.isRequired,
+  dropAction: React.PropTypes.func.isRequired,
+};
+
 class Table extends React.Component { // eslint-disable-line no-unused-vars
   constructor(props) {
     super(props);
@@ -103,6 +194,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     }
     this.state.aggrow.contract(row);
     this.setState({cursor: newCursor});
+    console.log('-' + row.top);
   }
 
   _expandRow(row) {
@@ -112,6 +204,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       newCursor += row.height - 1;
     }
     this.setState({cursor: newCursor});
+    console.log('+' + row.top);
   }
 
   _scrollDiv: null;
@@ -173,7 +266,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     }
   }
 
-  dropAggregator(s, d) {
+  dropAction(s, d) {
     const aggrow = this.state.aggrow;
     console.log('dropped ' + s + ' to ' + d);
     if (s.startsWith('aggregate:active:')) {
@@ -218,86 +311,9 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
   }
 
   render() {
-    const headers = [];
-    const aggrow = this.state.aggrow;
-    const aggregators = aggrow.getActiveAggregators();
-    const expanders = aggrow.getActiveExpanders();
-    // aggregators
-    for (let i = 0; i < aggregators.length; i++) {
-      const name = aggrow.getAggregatorName(aggregators[i]);
-      headers.push((
-        <DropTarget
-          id={'aggregate:insert:' + i.toString()}
-          dropFilter={()=>{return true; }}
-          dropAction={(s, d)=>{ this.dropAggregator(s, d); }}
-        >
-          <div style={{
-            width: '16px',
-            height: 'inherit',
-            backgroundColor: 'darkGray',
-            flexShrink: '0' }}
-          ></div>
-        </DropTarget>));
-      headers.push((<Draggable id={'aggregate:active:' + i.toString()}>
-          <div style={{ width: '128px', textAlign: 'center', flexShrink: '0' }}>{name}</div>
-        </Draggable>));
-    }
-    headers.push((
-      <DropTarget
-        id="divider:insert"
-        dropFilter={()=>{return true; }}
-        dropAction={(s, d)=>{ this.dropAggregator(s, d); }}
-      >
-        <div style={{
-          width: '16px',
-          height: 'inherit',
-          backgroundColor: 'gold',
-          flexShrink: '0'
-        }}></div>
-      </DropTarget>));
-    for (let i = 0; i < expanders.length; i++) {
-      const name = aggrow.getExpanderName(expanders[i]);
-      const bg = (i % 2 === 0) ? 'white' : 'lightGray';
-      headers.push((<Draggable id={'expander:active:' + i.toString()}>
-          <div style={{
-            width: '128px',
-            textAlign: 'center',
-            backgroundColor: bg,
-            flexShrink: '0'
-          }}>
-            {name}
-          </div>
-        </Draggable>));
-      const sep = i + 1 < expanders.length ? '->' : '...';
-      headers.push((
-        <DropTarget
-          id={'expander:insert:' + (i + 1).toString()}
-          dropFilter={()=>{return true; }}
-          dropAction={(s, d)=>{ this.dropAggregator(s, d);}}
-        >
-          <div style={{
-            height: 'inherit',
-            backgroundColor: 'darkGray',
-            flexShrink: '0'
-          }}>
-            {sep}
-          </div>
-        </DropTarget>)
-      );
-    }
-
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{
-          width: '100%',
-          height: '26px',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderBottom: '2px solid black',
-        }}>
-          {headers}
-        </div>
+        <TableHeader aggrow={this.state.aggrow} dropAction={(s, d) => this.dropAction(s, d)} />
         <div
           style={{
             width: '100%',

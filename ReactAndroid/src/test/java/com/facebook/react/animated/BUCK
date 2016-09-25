@@ -9,6 +9,7 @@ robolectric3_test(
     react_native_target('java/com/facebook/react/animated:animated'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react:react'),
 
     react_native_tests_target('java/com/facebook/react/bridge:testhelpers'),

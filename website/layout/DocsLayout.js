@@ -48,15 +48,6 @@ var DocsLayout = React.createClass({
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
             <Footer path={'docs/' + metadata.filename} />
-            <div className="survey">
-              <div className="survey-image" />
-              <p>
-                Recently, we have been working hard to make the documentation better based on your feedback. Your responses to this yes/no style survey will help us gauge whether we moved in the right direction with the improvements. Thank you!
-              </p>
-              <center>
-                <a className="button" href="https://www.facebook.com/survey?oid=516954245168428">Take Survey</a>
-              </center>
-            </div>
           </div>
         </section>
       </Site>
