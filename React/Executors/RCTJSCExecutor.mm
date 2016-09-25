@@ -357,7 +357,7 @@ static NSThread *newJavaScriptThread(void)
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", @{ @"moduleName": moduleName });
       NSArray *result = [strongSelf->_bridge configForModuleName:moduleName];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
-      return result;
+      return RCTNullIfNil(result);
     };
 
     context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
