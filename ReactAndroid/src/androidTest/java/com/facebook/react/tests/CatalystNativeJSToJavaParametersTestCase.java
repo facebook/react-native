@@ -34,7 +34,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,8 +42,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-
-import static android.R.attr.type;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
@@ -55,24 +52,34 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     void returnBasicTypes();
 
     void returnArrayWithBasicTypes();
+
     void returnNestedArray();
+
     void returnArrayWithMaps();
 
     void returnMapWithBasicTypes();
+
     void returnNestedMap();
+
     void returnMapWithArrays();
 
     void returnArrayWithStringDoubleIntMapArrayBooleanNull();
+
     void returnMapWithStringDoubleIntMapArrayBooleanNull();
 
     void returnMapForMerge1();
+
     void returnMapForMerge2();
 
     void returnMapWithMultibyteUTF8CharacterString();
+
     void returnArrayWithMultibyteUTF8CharacterString();
 
     void returnArrayWithLargeInts();
+
     void returnMapWithLargeInts();
+
+    void returnCustomType();
   }
 
   private RecordingTestModule mRecordingTestModule;
@@ -309,11 +316,26 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
   public void testCustomTypeViaArgumentExtractor() {
     mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnCustomType();
+    waitForBridgeAndUIIdle();
+
+    List<CustomType> calls = mRecordingTestModule.getCustomTypeCalls();
+    assertEquals(1, calls.size());
+    CustomType obj = calls.get(0);
+
+    assertEquals(obj.foo, 1);
+    assertEquals(obj.bar, "string");
+    assertEquals(obj.baz, true);
+    assertEquals(obj.obj.innerBool, true);
+    assertEquals(obj.obj.innerStr, "other string");
+    assertEquals(obj.arr.size(), 3);
+    assertEquals(obj.arr.getInt(0), 1);
+    assertEquals(obj.arr.getString(1), "foo");
+    assertEquals(obj.arr.getString(2), "bar");
   }
 
   public void testGetTypeFromMap() {
     mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class)
-        .returnMapWithStringDoubleIntMapArrayBooleanNull();
+      .returnMapWithStringDoubleIntMapArrayBooleanNull();
     waitForBridgeAndUIIdle();
 
     List<ReadableMap> calls = mRecordingTestModule.getMapCalls();
@@ -684,11 +706,25 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     private final int foo;
     private final String bar;
     private final boolean baz;
+    private final Obj obj;
+    private final ReadableArray arr;
 
-    CustomType(int foo, String bar, boolean baz) {
-      this.foo = foo;
-      this.bar = bar;
-      this.baz = baz;
+    CustomType(ReadableMap map) {
+      foo = map.getInt("foo");
+      bar = map.getString("bar");
+      baz = map.getBoolean("baz");
+      obj = new CustomType.Obj(map.getMap("obj"));
+      arr = map.getArray("arr");
+    }
+
+    static class Obj {
+      private final String innerStr;
+      private final boolean innerBool;
+
+      Obj(ReadableMap obj) {
+        this.innerStr = obj.getString("innerStr");
+        this.innerBool = obj.getBoolean("innerBool");
+      }
     }
   }
 
@@ -698,13 +734,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
         @Nullable @Override public ArgumentExtractor<?> get(Class<?> type) {
           if (CustomType.class.isAssignableFrom(type)) {
             return new ArgumentExtractor<CustomType>() {
-              @Nullable @Override
-              public CustomType extractArgument(
+              @Nullable @Override public CustomType extractArgument(
                 CatalystInstance catalystInstance, ExecutorToken executorToken,
                 ReadableNativeArray jsArguments, int atIndex) {
-                ReadableNativeMap map = jsArguments.getMap(0);
-                return new CustomType(map.getInt("foo"), map.getString("bar"),
-                  map.getBoolean("baz"));
+                return new CustomType(jsArguments.getMap(0));
               }
             };
           } else {
@@ -714,9 +747,9 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
       }));
     }
 
-    private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
-    private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
-    private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
+    private final List<Object[]> mBasicTypesCalls = new ArrayList<>();
+    private final List<ReadableArray> mArrayCalls = new ArrayList<>();
+    private final List<ReadableMap> mMapCalls = new ArrayList<>();
     private final List<CustomType> mCustomTypeCalls = new ArrayList<>();
 
     @Override
@@ -754,6 +787,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     public List<ReadableMap> getMapCalls() {
       return mMapCalls;
+    }
+
+    public List<CustomType> getCustomTypeCalls() {
+      return mCustomTypeCalls;
     }
   }
 }
