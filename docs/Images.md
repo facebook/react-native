@@ -34,7 +34,7 @@ And `button.js` code contains
 <Image source={require('./img/check.png')} />
 ```
 
-Packager will bundle and serve the image corresponding to device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
+Packager will bundle and serve the image corresponding to the device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
 
 On Windows, you might need to restart the packager if you add new images to your project.
 
@@ -42,7 +42,7 @@ Here are some benefits that you get:
 
 1. Same system on iOS and Android.
 2. Images live in the same folder as your JS code. Components are self-contained.
-3. No global namespace, i.e. you don't have worry about name collisions.
+3. No global namespace, i.e. you don't have to worry about name collisions.
 4. Only the images that are actually used will be packaged into your app.
 5. Adding and changing images doesn't require app recompilation, just refresh the simulator as you normally do.
 6. The packager knows the image dimensions, no need to duplicate it in the code.
@@ -104,7 +104,7 @@ iOS saves multiple sizes for the same image in your Camera Roll, it is very impo
 
 *In the browser* if you don't give a size to an image, the browser is going to render a 0x0 element, download the image, and then render the image based with the correct size. The big issue with this behavior is that your UI is going to jump all around as images load, this makes for a very bad user experience.
 
-*In React Native* this behavior is intentionally not implemented. It is more work for the developer to know the dimensions (or aspect ratio) of the remote image in advance, but we believe that it leads to a better user experience. Static images loaded from the app bundle via the `require('./my-icon.png')` syntax *can be automatically sized* because their dimensions are available immediately at the time of mounting.
+*In React Native* this behavior is intentionally not implemented. It is more work for the developer to know the dimensions (or aspect ratio) of the remote image in advance, but we believe that it leads to a better user experience. Static images loaded from the app and bundled via the `require('./my-icon.png')` syntax *can be automatically sized* because their dimensions are available immediately at the time of mounting.
 
 For example, the result of `require('./my-icon.png')` might be:
 
@@ -138,4 +138,4 @@ return (
 
 ## Off-thread Decoding
 
-Image decoding can take more than a frame-worth of time. This is one of the major source of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.
+Image decoding can take more than a frame-worth of time. This is one of the major sources of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.
