@@ -726,10 +726,9 @@ class AnimatedValue extends AnimatedWithChildren {
    * things like the start of a pan gesture.
    */
   setOffset(offset: number): void {
+    this._offset = offset;
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeOffset(this.__getNativeTag(), offset);
-    } else {
-      this._offset = offset;
     }
   }
 
@@ -738,11 +737,10 @@ class AnimatedValue extends AnimatedWithChildren {
    * The final output of the value is unchanged.
    */
   flattenOffset(): void {
+    this._value += this._offset;
+    this._offset = 0;
     if (this.__isNative) {
       NativeAnimatedAPI.flattenAnimatedNodeOffset(this.__getNativeTag());
-    } else {
-      this._value += this._offset;
-      this._offset = 0;
     }
   }
 

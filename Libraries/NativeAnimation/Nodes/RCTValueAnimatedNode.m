@@ -29,12 +29,14 @@
   return self;
 }
 
-- (void)flattenOffset {
+- (void)flattenOffset
+{
   _value += _offset;
   _offset = 0;
 }
 
-- (CGFloat)value {
+- (CGFloat)value
+{
   return _value + _offset;
 }
 
