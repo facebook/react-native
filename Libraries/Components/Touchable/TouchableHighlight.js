@@ -32,7 +32,7 @@ var onlyChild = require('react/lib/onlyChild');
 type Event = Object;
 
 var DEFAULT_PROPS = {
-  activeOpacity: 0.8,
+  activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
