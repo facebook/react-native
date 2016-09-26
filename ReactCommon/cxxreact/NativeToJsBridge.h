@@ -44,9 +44,12 @@ public:
 class JsToNativeBridge;
 
 // This class manages calls from native code to JS.  It also manages
-// executors and their threads.  This part is used by both bridges for
-// now, but further refactorings should separate the bridges more
-// fully #11247981.
+// executors and their threads.  All functions here can be called from
+// any thread.
+//
+// Except for loadApplicationScriptSync(), all void methods will queue
+// work to run on the jsQueue passed to the ctor, and return
+// immediately.
 class NativeToJsBridge {
 public:
   friend class JsToNativeBridge;
@@ -83,6 +86,10 @@ public:
    * Otherwise, the script is assumed to include all the modules.
    */
   void loadApplication(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupCode,
+    std::string sourceURL);
+  void loadApplicationSync(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);

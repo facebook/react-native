@@ -152,6 +152,17 @@ void NativeToJsBridge::loadApplication(
   });
 }
 
+void NativeToJsBridge::loadApplicationSync(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL) {
+  if (unbundle) {
+    m_mainExecutor->setJSModulesUnbundle(std::move(unbundle));
+  }
+  m_mainExecutor->loadApplicationScript(std::move(startupScript),
+                                        std::move(startupScriptSourceURL));
+}
+
 void NativeToJsBridge::callFunction(
     ExecutorToken executorToken,
     std::string&& module,
