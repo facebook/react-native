@@ -1,5 +1,20 @@
+/**
+ * The examples provided by Facebook are for non-commercial testing and
+ * evaluation purposes only.
+ *
+ * Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.facebook.react.uiapp;
 
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,6 +48,8 @@ public class FlexibleSizeExampleView extends LinearLayout {
 
     currentSizeTextView = new TextView(context);
     currentSizeTextView.setText("Resizable view has not been resized yet");
+    currentSizeTextView.setBackgroundColor(Color.WHITE);
+    currentSizeTextView.setTextSize(10);
 
     int textViewHeight = (int)PixelUtil.toPixelFromDIP(60);
     LayoutParams textViewLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, textViewHeight);
@@ -61,13 +78,39 @@ public class FlexibleSizeExampleView extends LinearLayout {
           String text = String.format("OnIntrinsicSizeChangedListener: content size has been changed to (%d, %d), updating root view's size.", width, height);
           currentSizeTextView.setText(text);
         }
-
         rootViewLayoutParams.width = width;
         rootViewLayoutParams.height = height;
-
         rootView.setLayoutParams(rootViewLayoutParams);
       }
     });
+  }
+
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+
+    resizableRootView.unmountReactApplication();
+    removeView(resizableRootView);
+    resizableRootView = null;
+  }
+
+  private final Runnable measureAndLayout = new Runnable() {
+    @Override
+    public void run() {
+      measure(
+        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+      layout(getLeft(), getTop(), getRight(), getBottom());
+    }
+  };
+
+  @Override
+  public void requestLayout() {
+    super.requestLayout();
+
+    // Since FlexibleSizeExampleView is managed by react-native,
+    // we need to simulate a measure + layout pass here.
+    post(measureAndLayout);
   }
 
   public static class Manager extends ViewGroupManager<FlexibleSizeExampleView> {
