@@ -727,6 +727,9 @@ class AnimatedValue extends AnimatedWithChildren {
    */
   setOffset(offset: number): void {
     this._offset = offset;
+    if (this.__isNative) {
+      NativeAnimatedAPI.setAnimatedNodeOffset(this.__getNativeTag(), offset);
+    }
   }
 
   /**
@@ -736,6 +739,9 @@ class AnimatedValue extends AnimatedWithChildren {
   flattenOffset(): void {
     this._value += this._offset;
     this._offset = 0;
+    if (this.__isNative) {
+      NativeAnimatedAPI.flattenAnimatedNodeOffset(this.__getNativeTag());
+    }
   }
 
   /**
