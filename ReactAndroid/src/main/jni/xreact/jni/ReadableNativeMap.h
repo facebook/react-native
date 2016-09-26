@@ -36,7 +36,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
 
   using HybridBase::HybridBase;
   friend HybridBase;
-  friend class WritableNativeMap;
+  friend struct WritableNativeMap;
 };
 
 struct ReadableNativeMapKeySetIterator : jni::HybridClass<ReadableNativeMapKeySetIterator> {

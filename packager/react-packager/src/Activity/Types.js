@@ -12,13 +12,14 @@
 'use strict';
 
 export type EventOptions = {
-  telemetric: boolean,
+  telemetric?: boolean,
+  silent?: boolean,
 };
 
 export type Event = {
   id: number,
-  startTimeStamp: number,
-  endTimeStamp?: number,
+  startTimeStamp: [number, number],
+  durationMs?: number,
   name: string,
   data?: any,
   options: EventOptions,

@@ -70,7 +70,7 @@ function watchmanRecReadDir(roots, {ignore, fileWatcher, exts}) {
 }
 
 function isDescendant(root, child) {
-  return child.startsWith(root);
+  return root === child || child.startsWith(root + path.sep);
 }
 
 module.exports = watchmanRecReadDir;

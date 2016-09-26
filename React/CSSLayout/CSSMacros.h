@@ -17,6 +17,12 @@
 #define CSS_EXTERN_C_END
 #endif
 
+#ifdef _WINDLL
+#define WIN_EXPORT __declspec(dllexport)
+#else
+#define WIN_EXPORT
+#endif
+
 #ifndef FB_ASSERTIONS_ENABLED
 #define FB_ASSERTIONS_ENABLED 1
 #endif

@@ -19,7 +19,7 @@ var Site = require('Site');
 
 var BlogPageLayout = React.createClass({
   getPageURL: function(page) {
-    var url = '/jest/blog/';
+    var url = '/react-native/blog/';
     if (page > 0) {
       url += 'page' + (page + 1) + '/';
     }
@@ -32,7 +32,8 @@ var BlogPageLayout = React.createClass({
     return (
       <Site
         section="blog"
-        title="Blog">
+        title="React Native Blog"
+        description="The best place to stay up-to-date with the latest React Native news and events.">
         <section className="content wrap documentationContent">
           <BlogSidebar />
           <div className="inner-content">

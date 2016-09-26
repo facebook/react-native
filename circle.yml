@@ -79,7 +79,8 @@ test:
     # Android e2e test
     - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2
 
-    # testing docs generation is not broken
+    # testing docs generation
+    - cd website && npm test
     - cd website && node ./server/generate.js
   post:
     # copy test report for Circle CI to display

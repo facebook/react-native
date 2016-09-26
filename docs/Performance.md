@@ -73,7 +73,7 @@ out of the box than `Navigator`. The reason for this is that the
 animations for the transitions are done entirely on the main thread, and
 so they are not interrupted by frame drops on the JavaScript thread.
 ([Read about why you should probably use Navigator
-anyways.](docs/navigator-comparison.html))
+anyways.](docs/using-navigators.html)
 
 Similarly, you can happily scroll up and down through a ScrollView when
 the JavaScript thread is locked up because the ScrollView lives on the
@@ -85,6 +85,19 @@ but their receipt is not necessary for the scroll to occur).
 #### Console.log statements
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
+
+> There is a [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) that can remove all `console.*` calls. You need to install it first using `npm install babel-plugin-transform-remove-console --save`, and then edit (or create) `.babelrc` under your project directory like the following:
+```json
+{
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
+}
+```
+Then it will automatically remove all `console.*` calls in a release (production) version of your project. However, the `console.*` calls will still be executed in the debug version of your project.
+
 
 #### Development mode (dev=true)
 

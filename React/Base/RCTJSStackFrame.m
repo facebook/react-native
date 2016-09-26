@@ -9,7 +9,7 @@
 
 #import "RCTJSStackFrame.h"
 #import "RCTLog.h"
-
+#import "RCTUtils.h"
 
 static NSRegularExpression *RCTJSStackFrameRegex()
 {
@@ -41,11 +41,11 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 - (NSDictionary *)toDictionary
 {
   return @{
-           @"methodName": self.methodName,
-           @"file": self.file,
-           @"lineNumber": @(self.lineNumber),
-           @"column": @(self.column)
-           };
+     @"methodName": RCTNullIfNil(self.methodName),
+     @"file": RCTNullIfNil(self.file),
+     @"lineNumber": @(self.lineNumber),
+     @"column": @(self.column)
+  };
 }
 
 + (instancetype)stackFrameWithLine:(NSString *)line

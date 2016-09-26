@@ -26,7 +26,7 @@ const EVENT_EMITTER = new events.EventEmitter();
 function startEvent(
   name: string,
   data: any = null,
-  options?: EventOptions = {telemetric: false},
+  options?: EventOptions = {},
 ): number {
   if (name == null) {
     throw new Error('No event name specified!');
@@ -35,7 +35,7 @@ function startEvent(
   const id = UUID++;
   EVENT_INDEX[id] = {
     id,
-    startTimeStamp: Date.now(),
+    startTimeStamp: process.hrtime(),
     name,
     data,
     options,
@@ -45,7 +45,9 @@ function startEvent(
 }
 
 function endEvent(id: number): void {
-  getEvent(id).endTimeStamp = Date.now();
+  const event = getEvent(id);
+  const delta = process.hrtime(event.startTimeStamp);
+  event.durationMs = Math.round((delta[0] * 1e9 + delta[1]) / 1e6);
   logEvent(id, 'endEvent');
 }
 
@@ -62,7 +64,7 @@ function forgetEvent(id: number): void {
 }
 
 function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
-  const event = EVENT_INDEX[id];
+  const event = getEvent(id);
   EVENT_EMITTER.emit(phase, id);
 
   if (!ENABLED) {
@@ -70,35 +72,32 @@ function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
   }
 
   const {
-    startTimeStamp,
-    endTimeStamp,
     name,
+    durationMs,
     data,
     options,
   } = event;
 
-  const duration = +endTimeStamp - startTimeStamp;
+  const logTimeStamp = new Date().toLocaleString();
   const dataString = data ? ': ' + JSON.stringify(data) : '';
-  const {telemetric} = options;
+  const {telemetric, silent} = options;
 
   switch (phase) {
     case 'startEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(
-        chalk.dim(
-          '[' + new Date(startTimeStamp).toLocaleString() + '] ' +
-          '<START> ' + name + dataString
-        )
-      );
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      }
       break;
 
     case 'endEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(
-        chalk.dim('[' + new Date(endTimeStamp).toLocaleString() + '] ' + '<END>   ' + name) +
-        chalk.dim(dataString) +
-        (telemetric ? chalk.reset.cyan(' (' + (duration) + 'ms)') : chalk.dim(' (' + (duration) + 'ms)'))
-      );
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(
+          chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString} `) +
+          (telemetric ? chalk.reset.cyan(`(${+durationMs}ms)`) : chalk.dim(`(${+durationMs}ms)`))
+        );
+      }
       forgetEvent(id);
       break;
 

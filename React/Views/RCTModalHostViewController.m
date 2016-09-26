@@ -9,9 +9,26 @@
 
 #import "RCTModalHostViewController.h"
 
+#import "RCTLog.h"
+#import "RCTModalHostView.h"
+
 @implementation RCTModalHostViewController
 {
   CGRect _lastViewFrame;
+  UIStatusBarStyle _preferredStatusBarStyle;
+  BOOL _preferredStatusBarHidden;
+}
+
+- (instancetype)init
+{
+  if (!(self = [super init])) {
+    return nil;
+  }
+
+  _preferredStatusBarStyle = [[UIApplication sharedApplication] statusBarStyle];
+  _preferredStatusBarHidden = [[UIApplication sharedApplication] isStatusBarHidden];
+
+  return self;
 }
 
 - (void)viewDidLayoutSubviews
@@ -24,14 +41,31 @@
   }
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+  return _preferredStatusBarStyle;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+  return _preferredStatusBarHidden;
+}
+
+#if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  // Picking some defaults here, we should probably make this configurable
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+  UIInterfaceOrientationMask appSupportedOrientationsMask = [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[[UIApplication sharedApplication] keyWindow]];
+  if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
+    RCTLogError(@"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."
+                @"Add more interface orientations to your app's Info.plist to fix this."
+                @"NOTE: This will crash in non-dev mode.",
+                (unsigned)_supportedInterfaceOrientations,
+                (unsigned)appSupportedOrientationsMask);
     return UIInterfaceOrientationMaskAll;
-  } else {
-    return UIInterfaceOrientationMaskPortrait;
   }
+
+  return _supportedInterfaceOrientations;
 }
+#endif
 
 @end

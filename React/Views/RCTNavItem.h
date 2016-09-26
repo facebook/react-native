@@ -17,8 +17,10 @@
 @property (nonatomic, strong) UIImage *titleImage;
 @property (nonatomic, strong) UIImage *leftButtonIcon;
 @property (nonatomic, copy) NSString *leftButtonTitle;
+@property (nonatomic, assign) UIBarButtonSystemItem leftButtonSystemIcon;
 @property (nonatomic, strong) UIImage *rightButtonIcon;
 @property (nonatomic, copy) NSString *rightButtonTitle;
+@property (nonatomic, assign) UIBarButtonSystemItem rightButtonSystemIcon;
 @property (nonatomic, strong) UIImage *backButtonIcon;
 @property (nonatomic, copy) NSString *backButtonTitle;
 @property (nonatomic, assign) BOOL navigationBarHidden;

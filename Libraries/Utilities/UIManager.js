@@ -11,12 +11,14 @@
  */
 'use strict';
 
-const Platform = require('Platform');
 const NativeModules = require('NativeModules');
-const { UIManager } = NativeModules;
+const Platform = require('Platform');
 
+const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const findNodeHandle = require('react/lib/findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
+
+const { UIManager } = NativeModules;
 
 invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
 
@@ -64,25 +66,13 @@ UIManager.takeSnapshot = async function(
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  // Copied from NativeModules
-  function normalizePrefix(moduleName: string): string {
-    return moduleName.replace(/^(RCT|RK)/, '');
-  }
-
   Object.keys(UIManager).forEach(viewName => {
     const viewConfig = UIManager[viewName];
     if (viewConfig.Manager) {
-      let constants;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Constants', {
-        configurable: true,
-        enumerable: true,
+      defineLazyObjectProperty(viewConfig, 'Constants', {
         get: () => {
-          if (constants) {
-            return constants;
-          }
-          constants = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          const viewManager = NativeModules[viewConfig.Manager];
+          const constants = {};
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];
             if (typeof value !== 'function') {
@@ -92,17 +82,10 @@ if (Platform.OS === 'ios') {
           return constants;
         },
       });
-      let commands;
-      /* $FlowFixMe - nice try. Flow doesn't like getters */
-      Object.defineProperty(viewConfig, 'Commands', {
-        configurable: true,
-        enumerable: true,
+      defineLazyObjectProperty(viewConfig, 'Commands', {
         get: () => {
-          if (commands) {
-            return commands;
-          }
-          commands = {};
-          const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
+          const viewManager = NativeModules[viewConfig.Manager];
+          const commands = {};
           let index = 0;
           viewManager && Object.keys(viewManager).forEach(key => {
             const value = viewManager[key];

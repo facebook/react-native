@@ -21,10 +21,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
 import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
@@ -70,6 +70,7 @@ import java.util.ArrayList;
  * isolates us from the problems that may be caused by concurrent updates of animated graph while UI
  * thread is "executing" the animation loop.
  */
+@ReactModule(name = "NativeAnimatedModule")
 public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener {
 
@@ -93,11 +94,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     mReactChoreographer = ReactChoreographer.getInstance();
 
     ReactApplicationContext reactCtx = getReactApplicationContext();
-    UIImplementation uiImplementation =
-      reactCtx.getNativeModule(UIManagerModule.class).getUIImplementation();
+    UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
 
-    final NativeAnimatedNodesManager nodesManager =
-      new NativeAnimatedNodesManager(uiImplementation);
+    final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
     mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
@@ -136,8 +135,8 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     // from the UIManagerModule) doesn't matter as we only enqueue operations for the UI thread to
     // be executed from here. Thanks to ReactChoreographer all the operations from here are going
     // to be executed *after* all the operations enqueued by UIManager as the callback type that we
-    // use for ReactChoreographer (CallbackType.NATIVE_ANIMATED_MODULE) is run after callbacks that UIManager
-    // use
+    // use for ReactChoreographer (CallbackType.NATIVE_ANIMATED_MODULE) is run after callbacks that
+    // UIManager uses.
     ArrayList<UIThreadOperation> operations = mOperations.isEmpty() ? null : mOperations;
     if (operations != null) {
       mOperations = new ArrayList<>();
@@ -307,6 +306,26 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
         animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void addAnimatedEventToView(final int viewTag, final String eventName, final ReadableMap eventMapping) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
       }
     });
   }
