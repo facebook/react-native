@@ -53,13 +53,13 @@ public:
   }
 
   void callNativeModules(
-      JSExecutor& executor, std::string callJSON, bool isEndOfBatch) override {
+      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
-    m_nativeQueue->runOnQueue([this, token, callJSON=std::move(callJSON), isEndOfBatch] {
+    m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
-      for (auto& call : react::parseMethodCalls(callJSON)) {
+      for (auto& call : react::parseMethodCalls(std::move(calls))) {
         m_registry->callNativeMethod(
           token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
       }

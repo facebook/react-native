@@ -258,6 +258,13 @@ const Image = React.createClass({
      */
     onError: PropTypes.func,
     /**
+     * Invoked when a partial load of the image is complete. The definition of
+     * what constitutes a "partial load" is loader specific though this is meant
+     * for progressive JPEG loads.
+     * @platform ios
+     */
+    onPartialLoad: PropTypes.func,
+    /**
      * Invoked when load completes successfully.
      */
     onLoad: PropTypes.func,

@@ -7,25 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule BatchedBridge
+ * @flow
  */
 'use strict';
 
 const MessageQueue = require('MessageQueue');
-
-const serializeNativeParams = typeof global.__fbBatchedBridgeSerializeNativeParams !== 'undefined';
-
-const BatchedBridge = new MessageQueue(
-  () => global.__fbBatchedBridgeConfig,
-  serializeNativeParams
-);
+const BatchedBridge = new MessageQueue();
 
 // TODO: Move these around to solve the cycle in a cleaner way.
-
-const Systrace = require('Systrace');
-const JSTimersExecution = require('JSTimersExecution');
-
-BatchedBridge.registerCallableModule('Systrace', Systrace);
-BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
+BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
+BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
 BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
 BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
 

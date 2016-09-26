@@ -17,6 +17,7 @@ import android.content.DialogInterface;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -45,6 +46,16 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   @Override
   protected ReactModalHostView createViewInstance(ThemedReactContext reactContext) {
     return new ReactModalHostView(reactContext);
+  }
+
+  @Override
+  public LayoutShadowNode createShadowNodeInstance() {
+    return new ModalHostShadowNode();
+  }
+
+  @Override
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
+    return ModalHostShadowNode.class;
   }
 
   @Override
