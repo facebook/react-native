@@ -11,6 +11,7 @@
 
 #include "Executor.h"
 #include "ExecutorToken.h"
+#include "JSCExecutor.h"
 #include "JSModulesUnbundle.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
@@ -79,6 +80,35 @@ public:
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
   void invokeCallback(ExecutorToken executorToken, double callbackId, folly::dynamic&& args);
+
+  /**
+   * Executes a JS method on the given executor synchronously, returning its
+   * return value.  JSException will be thrown if JS throws an exception;
+   * another standard exception may be thrown for C++ bridge failures, or if
+   * the executor is not capable of synchronous calls.
+   *
+   * This method is experimental, and may be modified or removed.
+   *
+   * loadApplicationScriptSync() must be called and finished executing
+   * before callFunctionSync().
+   */
+  template <typename T>
+  Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
+    if (*m_destroyed) {
+      throw std::logic_error(
+        folly::to<std::string>("Synchronous call to ", module, ".", method,
+                               " after bridge is destroyed"));
+    }
+
+    JSCExecutor *jscExecutor = dynamic_cast<JSCExecutor*>(m_mainExecutor);
+    if (!jscExecutor) {
+      throw std::invalid_argument(
+        folly::to<std::string>("Executor type ", typeid(*m_mainExecutor).name(),
+                               " does not support synchronous calls"));
+    }
+
+    return jscExecutor->callFunctionSync(module, method, std::forward<T>(args));
+  }
 
   /**
    * Starts the JS application.  If unbundle is non-null, then it is
