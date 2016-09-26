@@ -521,8 +521,7 @@ public abstract class BaseJavaModule implements NativeModule {
     } else if (paramClass == ReadableArray.class) {
       return 'A';
     } else {
-      throw new RuntimeException(
-        "Got unknown param class: " + paramClass.getSimpleName());
+      return 'M';
     }
   }
 

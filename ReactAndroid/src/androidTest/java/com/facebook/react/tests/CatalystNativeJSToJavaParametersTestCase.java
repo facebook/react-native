@@ -702,7 +702,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
-  private static class CustomType {
+  static class CustomType {
     private final int foo;
     private final String bar;
     private final boolean baz;
