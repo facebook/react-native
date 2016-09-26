@@ -381,6 +381,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
+  // The last non-zero value of translationAlongAxis from scrollViewWillEndDragging.
+  // Tells if user was scrolling forward or backward and is used to determine a correct
+  // snap index when the user stops scrolling with a tap on the scroll view.
   CGFloat _lastNonZeroTranslationAlongAxis;
 }
 
