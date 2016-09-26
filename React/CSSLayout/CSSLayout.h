@@ -55,6 +55,7 @@ typedef enum CSSJustify {
 typedef enum CSSOverflow {
   CSSOverflowVisible,
   CSSOverflowHidden,
+  CSSOverflowScroll,
 } CSSOverflow;
 
 // Note: auto is only a valid value for alignSelf. It is NOT a valid value for

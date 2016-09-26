@@ -328,6 +328,19 @@ var LayoutPropTypes = {
     'stretch'
   ]),
 
+  /** `overflow` controls how a children are measured and displayed.
+   *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
+   *  causes views to be measured independently of their parents main axis.`
+   *  It works like `overflow` in CSS (default: visible).
+   *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
+   *  for more details.
+   */
+  overflow: ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+    'scroll',
+  ]),
+
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
    *  according to the `css-layout` library

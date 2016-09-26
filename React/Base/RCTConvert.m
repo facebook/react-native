@@ -612,7 +612,8 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
 
 RCT_ENUM_CONVERTER(CSSOverflow, (@{
   @"hidden": @(CSSOverflowHidden),
-  @"visible": @(CSSOverflowVisible)
+  @"visible": @(CSSOverflowVisible),
+  @"scroll": @(CSSOverflowScroll),
 }), CSSOverflowVisible, intValue)
 
 RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
