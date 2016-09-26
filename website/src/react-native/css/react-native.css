@@ -1392,8 +1392,12 @@ div[data-twttr-id] iframe {
   border-radius: 20px;
 }
 
+table.versions  {
+  width: 60%;
+}
+
 .versions th {
-  text-align: right;
+  width: 20%;
 }
 
 .versions td, .versions th {
