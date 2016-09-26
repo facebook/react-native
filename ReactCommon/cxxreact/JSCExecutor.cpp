@@ -118,7 +118,6 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     folly::dynamic::object
       ("remoteModuleConfig", std::move(nativeModuleConfig));
 
-
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
@@ -344,6 +343,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
   m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
   m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
   m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+  m_callFunctionReturnResultAndFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnResultAndFlushedQueue").asObject();
 }
 
 void JSCExecutor::callNativeModules(Value&& value) {
@@ -403,6 +403,26 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   }();
 
   callNativeModules(std::move(result));
+}
+
+Value JSCExecutor::callFunctionSyncWithValue(
+    const std::string& module, const std::string& method, Value args) {
+  SystraceSection s("JSCExecutor::callFunction");
+
+  Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
+    Value(m_context, String::createExpectingAscii(module)),
+    Value(m_context, String::createExpectingAscii(method)),
+    std::move(args),
+  }).asObject();
+
+  Value length = result.getProperty("length");
+
+  if (!length.isNumber() || length.asInteger() != 2) {
+    std::runtime_error("Return value of a callFunction must be an array of size 2");
+  }
+
+  callNativeModules(result.getPropertyAtIndex(1));
+  return result.getPropertyAtIndex(0);
 }
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {

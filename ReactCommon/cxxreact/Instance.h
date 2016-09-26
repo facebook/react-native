@@ -55,6 +55,11 @@ class Instance {
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
   MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
                                               unsigned int methodId, folly::dynamic&& args);
+  // This method is experimental, and may be modified or removed.
+  template <typename T>
+  Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
+    return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
+  }
 
   ExecutorToken getMainExecutorToken();
   void handleMemoryPressureUiHidden();
