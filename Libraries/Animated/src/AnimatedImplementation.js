@@ -1136,6 +1136,54 @@ class AnimatedAddition extends AnimatedWithChildren {
   }
 }
 
+class AnimatedDivision extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated | number, b: Animated | number) {
+    super();
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
+  }
+
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+    this._b.__makeNative();
+  }
+
+  __getValue(): number {
+    const a = this._a.__getValue();
+    const b = this._b.__getValue();
+    if (b === 0) {
+      console.error('Detected division by zero in AnimatedDivision');
+    }
+    return a / b;
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'division',
+      input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+    };
+  }
+}
+
 class AnimatedMultiplication extends AnimatedWithChildren {
   _a: Animated;
   _b: Animated;
@@ -1795,15 +1843,22 @@ type CompositeAnimation = {
 };
 
 var add = function(
-  a: Animated,
-  b: Animated
+  a: Animated | number,
+  b: Animated | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
 };
 
+var divide = function(
+  a: Animated | number,
+  b: Animated | number,
+): AnimatedDivision {
+  return new AnimatedDivision(a, b);
+};
+
 var multiply = function(
-  a: Animated,
-  b: Animated
+  a: Animated | number,
+  b: Animated | number,
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
 };
@@ -2295,6 +2350,13 @@ module.exports = {
    * together.
    */
   add,
+
+  /**
+   * Creates a new Animated value composed by dividing the first Animated value
+   * by the second Animated value.
+   */
+  divide,
+
   /**
    * Creates a new Animated value composed from two Animated values multiplied
    * together.
