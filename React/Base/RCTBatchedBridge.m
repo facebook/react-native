@@ -80,12 +80,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
     _displayLink = [RCTDisplayLink new];
 
     [RCTBridge setCurrentBridge:self];
-
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:RCTJavaScriptWillStartLoadingNotification
-     object:_parentBridge userInfo:@{@"bridge": self}];
-
-    [self start];
   }
   return self;
 }
@@ -97,6 +91,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 
 - (void)start
 {
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:RCTJavaScriptWillStartLoadingNotification
+    object:_parentBridge userInfo:@{@"bridge": self}];
+
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge setUp]", nil);
 
   dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue", DISPATCH_QUEUE_CONCURRENT);
