@@ -472,13 +472,13 @@ class WebView extends React.Component {
   };
 
   /**
-   * Posts a message to the web view, which will invoke the global `onmessage`
-   * function. Accepts one argument, `data`, which must be a string.
+   * Posts a message to the web view, which will emit a `message` event.
+   * Accepts one argument, `data`, which must be a string.
    *
    * In your webview, you'll need to something like the following.
    *
-   * ```
-   * window.onmessage = function(e) { document.title = e.data; }
+   * ```js
+   * document.addEventListener('message', e => { document.title = e.data; });
    * ```
    */
   postMessage = (data) => {

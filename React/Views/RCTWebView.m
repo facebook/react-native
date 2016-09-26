@@ -86,10 +86,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)postMessage:(NSString *)message
 {
-  NSString *escapedString = RCTJSONStringify(message, NULL);
+  NSDictionary *eventInitDict = @{
+    @"data": message,
+  };
   NSString *source = [NSString
-    stringWithFormat:@"if (typeof window.onmessage === 'function') window.onmessage({ data: %@ });",
-    escapedString
+    stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+    RCTJSONStringify(eventInitDict, NULL)
   ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
 }

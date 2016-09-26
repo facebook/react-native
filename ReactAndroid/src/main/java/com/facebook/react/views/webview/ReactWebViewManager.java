@@ -459,11 +459,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_POST_MESSAGE:
         try {
-          JSONObject eventJson = new JSONObject();
-          eventJson.put("data", args.getString(0));
-          root.evaluateJavascript("if (typeof window.onmessage === 'function') {" +
-            "window.onmessage(" + eventJson.toString() + ")" +
-          "}", null);
+          JSONObject eventInitDict = new JSONObject();
+          eventInitDict.put("data", args.getString(0));
+          root.evaluateJavascript(
+            "document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + "))",
+            null
+          );
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
