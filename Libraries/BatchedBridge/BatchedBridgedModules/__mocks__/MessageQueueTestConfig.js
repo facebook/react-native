@@ -10,8 +10,8 @@
  */
 'use strict';
 var remoteModulesConfig = [
-  ['RemoteModule1',['remoteMethod1','remoteMethod2'],[],[]],
-  ['RemoteModule2',['remoteMethod1','remoteMethod2'],[],[]],
+  ['RemoteModule1',null,['remoteMethod','promiseMethod'],[]],
+  ['RemoteModule2',null,['remoteMethod','promiseMethod'],[]],
 ];
 
 var MessageQueueTestConfig = {
