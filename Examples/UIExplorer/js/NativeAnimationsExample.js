@@ -320,7 +320,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
@@ -335,8 +335,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
@@ -453,40 +454,6 @@ exports.examples = [
       );
     },
   },
-  {
-    title: 'Interpolation with clamping',
-    description: 'description',
-    render: function() {
-      return (
-        <Tester
-          type="spring"
-          config={{
-            speed: 8,
-            bounciness: 12,
-          }}
-        >
-          {anim => (
-            <Animated.View
-              style={[
-                styles.block,
-                {
-                  transform: [
-                    {
-                      translateX: anim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, 100],
-                        extrapolateLeft: 'clamp',
-                      })
-                    }
-                  ],
-                }
-              ]}
-            />
-          )}
-        </Tester>
-      );
-    },
-  }
   {
     title: 'Animated value listener',
     render: function() {
