@@ -62,7 +62,6 @@ RCT_EXPORT_MODULE();
                                            initialProperties:@{}];
 
     [_resizableRootView setSizeFlexibility:RCTRootViewSizeFlexibilityHeight];
-    [_resizableRootView setTouchHandlerEnabled:NO];
 
     _currentSizeTextView = [UITextView new];
     _currentSizeTextView.editable = NO;

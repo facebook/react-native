@@ -326,10 +326,8 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 
 - (void)cancel
 {
-  if (self.enabled) {
-    self.enabled = NO;
-    self.enabled = YES;
-  }
+  self.enabled = NO;
+  self.enabled = YES;
 }
 
 @end
