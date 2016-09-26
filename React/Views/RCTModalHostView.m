@@ -37,7 +37,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
     UIView *containerView = [UIView new];
-    containerView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
     _isPresented = NO;
@@ -148,7 +148,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (BOOL)isTransparent
 {
-  return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+  return _modalViewController.modalPresentationStyle == UIModalPresentationOverFullScreen;
 }
 
 - (BOOL)hasAnimationType
@@ -158,7 +158,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
-  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationCustom : UIModalPresentationFullScreen;
+  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
 - (UIInterfaceOrientationMask)supportedOrientationsMask
