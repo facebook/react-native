@@ -151,8 +151,9 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
     invalidate();
   }
 
-  @ReactProp(name = "overflow")
-  public final void setOverflow(String overflow) {
+  @Override
+  public void setOverflow(String overflow) {
+    super.setOverflow(overflow);
     mClipToBounds = "hidden".equals(overflow);
     if (mClipToBounds) {
       mOverflowsContainer = false;
