@@ -97,7 +97,7 @@ const statics = {
  *
  * ### Synthetic Touch Events
  *
- * For `View` repsonder props (e.g., `onResponderMove`), the synthetic touch event passed to them
+ * For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them
  * are of the following form:
  *
  * - `nativeEvent`
