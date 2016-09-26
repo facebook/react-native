@@ -529,7 +529,7 @@ const ScrollView = React.createClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
-          <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
+          <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
         );
@@ -545,12 +545,14 @@ const ScrollView = React.createClass({
 
 const styles = StyleSheet.create({
   baseVertical: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: 'column',
+    overflow: 'scroll',
   },
   baseHorizontal: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: 'row',
+    overflow: 'scroll',
   },
   contentContainerHorizontal: {
     flexDirection: 'row',

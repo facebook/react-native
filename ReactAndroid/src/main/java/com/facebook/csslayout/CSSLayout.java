@@ -51,7 +51,7 @@ public class CSSLayout {
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
     direction = CSSDirection.LTR;
 
-    computedFlexBasis = 0;
+    computedFlexBasis = CSSConstants.UNDEFINED;
 
     generationCount = 0;
     lastParentDirection = null;

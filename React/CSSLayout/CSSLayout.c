@@ -183,6 +183,7 @@ void CSSNodeInit(const CSSNodeRef node) {
   // Such that the comparison is always going to be false
   node->layout.lastParentDirection = (CSSDirection) -1;
   node->layout.nextCachedMeasurementsIndex = 0;
+  node->layout.computedFlexBasis = CSSUndefined;
 
   node->layout.measuredDimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.measuredDimensions[CSSDimensionHeight] = CSSUndefined;
@@ -193,6 +194,7 @@ void CSSNodeInit(const CSSNodeRef node) {
 void _CSSNodeMarkDirty(const CSSNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
+    node->layout.computedFlexBasis = CSSUndefined;
     if (node->parent) {
       _CSSNodeMarkDirty(node->parent);
     }
@@ -451,6 +453,8 @@ _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32
       printf("overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
       printf("overflow: 'visible', ");
+    } else if (node->style.overflow == CSSOverflowScroll) {
+      printf("overflow: 'scroll', ");
     }
 
     if (eqFour(node->style.margin)) {
@@ -1117,8 +1121,10 @@ static void layoutNodeImpl(const CSSNodeRef node,
                   getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
       } else if (!CSSValueIsUndefined(child->style.flexBasis) &&
                  !CSSValueIsUndefined(availableInnerMainDim)) {
-        child->layout.computedFlexBasis =
-            fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+        if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+          child->layout.computedFlexBasis =
+              fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+        }
       } else {
         // Compute the flex basis and hypothetical main size (i.e. the clamped
         // flex basis).
@@ -1138,21 +1144,19 @@ static void layoutNodeImpl(const CSSNodeRef node,
           childHeightMeasureMode = CSSMeasureModeExactly;
         }
 
-        // According to the spec, if the main size is not definite and the
-        // child's inline axis is parallel to the main axis (i.e. it's
-        // horizontal), the child should be sized using "UNDEFINED" in
-        // the main size. Otherwise use "AT_MOST" in the cross axis.
-        if (!isMainAxisRow && CSSValueIsUndefined(childWidth) &&
-            !CSSValueIsUndefined(availableInnerWidth)) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
         // The W3C spec doesn't say anything about the 'overflow' property,
         // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) &&
-              !CSSValueIsUndefined(availableInnerHeight)) {
+        if ((!isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+            node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(availableInnerWidth)) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureModeAtMost;
+          }
+        }
+
+        if ((isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+            node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(availableInnerHeight)) {
             childHeight = availableInnerHeight;
             childHeightMeasureMode = CSSMeasureModeAtMost;
           }
