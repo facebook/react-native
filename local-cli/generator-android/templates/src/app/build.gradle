@@ -29,9 +29,6 @@ import com.android.build.OutputFile
  *   (default : true only if variant contains "release")
  *   Note: this param only apply if JS files are bundled.
  *
- *   // whether to bundle JS and assets in release mode
- *   bundleInRelease: true,
- *
  *   // whether to bundle JS and assets in another build variant (if configured).
  *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
  *   // The configuration property can be in the following formats
