@@ -78,11 +78,14 @@ public:
   void invokeCallback(ExecutorToken executorToken, double callbackId, folly::dynamic&& args);
 
   /**
-   * Starts the JS application from an "bundle", i.e. a JavaScript file that
-   * contains code for all modules and a runtime that resolves and
-   * executes modules.
+   * Starts the JS application.  If unbundle is non-null, then it is
+   * used to fetch JavaScript modules as individual scripts.
+   * Otherwise, the script is assumed to include all the modules.
    */
-  void loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL);
+  void loadApplication(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupCode,
+    std::string sourceURL);
 
   /**
    * Similar to loading a "bundle", but instead of passing js source this method accepts
@@ -90,17 +93,6 @@ public:
    */
   void loadOptimizedApplicationScript(std::string bundlePath, std::string sourceURL, int flags);
 
-  /**
-   * An "unbundle" is a backend that stores and injects JavaScript modules as
-   * individual scripts, rather than bundling all of them into a single scrupt.
-   *
-   * Loading an unbundle means setting the storage backend and executing the
-   * startup script.
-   */
-  void loadApplicationUnbundle(
-    std::unique_ptr<JSModulesUnbundle> unbundle,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool supportsProfiling();
