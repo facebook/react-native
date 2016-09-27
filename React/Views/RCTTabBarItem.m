@@ -32,7 +32,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 @end
 
-@implementation RCTTabBarItem
+@implementation RCTTabBarItem{
+  UITapGestureRecognizer *_selectRecognizer;
+}
 
 @synthesize barItem = _barItem;
 
