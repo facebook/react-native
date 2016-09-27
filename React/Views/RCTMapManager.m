@@ -281,6 +281,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 
   annotationView.draggable = annotation.draggable;
+  annotationView.centerOffset = annotation.centerOffset;
+  annotationView.calloutOffset = annotation.calloutOffset;
 
   return annotationView;
 }

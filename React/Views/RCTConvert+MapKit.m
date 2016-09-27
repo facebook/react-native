@@ -51,6 +51,8 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   annotation.animateDrop = [self BOOL:json[@"animateDrop"]];
   annotation.tintColor = [self UIColor:json[@"tintColor"]];
   annotation.image = [self UIImage:json[@"image"]];
+  annotation.centerOffset = [self CGPoint:json[@"centerOffset"]];
+  annotation.calloutOffset = [self CGPoint:json[@"calloutOffset"]];
   annotation.viewIndex =
     [self NSInteger:json[@"viewIndex"] ?: @(NSNotFound)];
   annotation.leftCalloutViewIndex =

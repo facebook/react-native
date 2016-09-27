@@ -12,6 +12,7 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const PointPropType = require('PointPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
@@ -207,6 +208,16 @@ const MapView = React.createClass({
        * Whether the pin should be draggable or not
        */
       draggable: React.PropTypes.bool,
+
+      /**
+       * The offset at which to display the annotation.
+       */
+      centerOffset: PointPropType,
+
+      /**
+       * The offset at which to place the callout bubble..
+       */
+      calloutOffset: PointPropType,
 
       /**
        * Event that fires when the annotation drag state changes.

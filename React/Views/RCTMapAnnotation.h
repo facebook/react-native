@@ -22,5 +22,7 @@
 @property (nonatomic, assign) NSUInteger rightCalloutViewIndex;
 @property (nonatomic, assign) NSUInteger detailCalloutViewIndex;
 @property (nonatomic, assign) BOOL draggable;
+@property (nonatomic, assign) CGPoint centerOffset;
+@property (nonatomic, assign) CGPoint calloutOffset;
 
 @end
