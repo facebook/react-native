@@ -42,7 +42,7 @@ dependencies:
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
-    - $ANDROID_HOME/tools/emulator -avd circleci-android22 -no-skin -no-audio -no-window:
+    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
             background: true
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
@@ -69,7 +69,7 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - node ./scripts/run-android-ci-instrumentation-tests.js --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+    - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     # gradle may invalidate bridge build cache, so we pass single-threaded setting just in case
     - ./gradlew :ReactAndroid:testDebugUnitTest -Pjobs=1 -Pcom.android.build.threadPoolSize=1
