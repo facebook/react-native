@@ -296,7 +296,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   [self createBatchedBridge];
-  [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
