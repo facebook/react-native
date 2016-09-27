@@ -10,6 +10,7 @@ import com.facebook.csslayout.CSSAlign;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
+import com.facebook.csslayout.CSSOverflow;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.CSSWrap;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -100,6 +101,12 @@ public class LayoutShadowNode extends ReactShadowNode {
   public void setJustifyContent(@Nullable String justifyContent) {
     setJustifyContent(justifyContent == null ? CSSJustify.FLEX_START : CSSJustify.valueOf(
             justifyContent.toUpperCase(Locale.US).replace("-", "_")));
+  }
+
+  @ReactProp(name = ViewProps.OVERFLOW)
+  public void setOverflow(@Nullable String overflow) {
+    setOverflow(overflow == null ? CSSOverflow.VISIBLE : CSSOverflow.valueOf(
+            overflow.toUpperCase(Locale.US).replace("-", "_")));
   }
 
   @ReactPropGroup(names = {

@@ -25,7 +25,9 @@
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
+#if !TARGET_OS_TV
   UIInterfaceOrientation _lastKnownOrientation;
+#endif
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -37,7 +39,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
     UIView *containerView = [UIView new];
-    containerView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
     _isPresented = NO;
@@ -61,6 +63,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)notifyForOrientationChange
 {
+#if !TARGET_OS_TV
   if (!_onOrientationChange) {
     return;
   }
@@ -77,6 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     @"orientation": isPortrait ? @"portrait" : @"landscape",
     };
   _onOrientationChange(eventPayload);
+#endif
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
@@ -119,7 +123,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
+#if !TARGET_OS_TV
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+#endif
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     } else if ([self.animationType isEqualToString:@"slide"]) {
@@ -148,7 +154,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (BOOL)isTransparent
 {
-  return _modalViewController.modalPresentationStyle == UIModalPresentationCustom;
+  return _modalViewController.modalPresentationStyle == UIModalPresentationOverFullScreen;
 }
 
 - (BOOL)hasAnimationType
@@ -158,9 +164,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
-  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationCustom : UIModalPresentationFullScreen;
+  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
+#if !TARGET_OS_TV
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {
   if (_supportedOrientations.count == 0) {
@@ -187,5 +194,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
   return supportedOrientations;
 }
+#endif
 
 @end

@@ -80,12 +80,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
     _displayLink = [RCTDisplayLink new];
 
     [RCTBridge setCurrentBridge:self];
-
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:RCTJavaScriptWillStartLoadingNotification
-     object:_parentBridge userInfo:@{@"bridge": self}];
-
-    [self start];
   }
   return self;
 }
@@ -97,6 +91,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 
 - (void)start
 {
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:RCTJavaScriptWillStartLoadingNotification
+    object:_parentBridge userInfo:@{@"bridge": self}];
+
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBatchedBridge setUp]", nil);
 
   dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue", DISPATCH_QUEUE_CONCURRENT);
@@ -235,9 +233,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (!moduleData) {
-    moduleData = _moduleDataByName[[@"RCT" stringByAppendingString:moduleName]];
-  }
   if (moduleData) {
 #if RCT_DEV
     if ([self.delegate respondsToSelector:@selector(whitelistedModulesForBridge:)]) {
@@ -246,9 +241,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
                 @"Required config for %@, which was not whitelisted", moduleName);
     }
 #endif
-    return moduleData.config;
   }
-  return (id)kCFNull;
+  return moduleData.config;
 }
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -947,8 +941,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 #if RCT_PROFILE
           if (RCT_DEV && callID != -1 && self->_flowIDMap != NULL && RCTProfileIsProfiling()) {
             [self.flowIDMapLock lock];
-            int64_t newFlowID = (int64_t)CFDictionaryGetValue(self->_flowIDMap, (const void *)(self->_flowID + index));
-            _RCTProfileEndFlowEvent(@(newFlowID));
+            NSUInteger newFlowID = (NSUInteger)CFDictionaryGetValue(self->_flowIDMap, (const void *)(self->_flowID + index));
+            _RCTProfileEndFlowEvent(newFlowID);
             CFDictionaryRemoveValue(self->_flowIDMap, (const void *)(self->_flowID + index));
             [self.flowIDMapLock unlock];
           }
@@ -1002,13 +996,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTModuleData *moduleData = _moduleDataByID[moduleID];
   if (RCT_DEBUG && !moduleData) {
     RCTLogError(@"No module found for id '%zd'", moduleID);
-    return NO;
+    return nil;
   }
 
   id<RCTBridgeMethod> method = moduleData.methods[methodID];
   if (RCT_DEBUG && !method) {
     RCTLogError(@"Unknown methodID: %zd for module: %zd (%@)", methodID, moduleID, moduleData.name);
-    return NO;
+    return nil;
   }
 
   @try {
