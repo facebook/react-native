@@ -118,6 +118,12 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
+void NativeToJsBridge::loadApplicationScript(std::unique_ptr<const JSBigString> script,
+                                             std::string sourceURL) {
+  // TODO(t11144533): Add assert that we are on the correct thread
+  m_mainExecutor->loadApplicationScript(std::move(script), std::move(sourceURL));
+}
+
 void NativeToJsBridge::loadOptimizedApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
@@ -132,21 +138,18 @@ void NativeToJsBridge::loadOptimizedApplicationScript(
   });
 }
 
-void NativeToJsBridge::loadApplication(
+void NativeToJsBridge::loadApplicationUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       m_mainExecutorToken,
-      [unbundleWrap=folly::makeMoveWrapper(std::move(unbundle)),
+      [unbundle=folly::makeMoveWrapper(std::move(unbundle)),
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
 
-    auto unbundle = unbundleWrap.move();
-    if (unbundle) {
-      executor->setJSModulesUnbundle(std::move(unbundle));
-    }
+    executor->setJSModulesUnbundle(unbundle.move());
     executor->loadApplicationScript(std::move(*startupScript),
                                     std::move(startupScriptSourceURL));
   });

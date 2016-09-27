@@ -49,7 +49,8 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   callback_->incrementPendingJSCalls();
   SystraceSection s("reactbridge_xplat_loadScriptFromString",
                     "sourceURL", sourceURL);
-  nativeToJsBridge_->loadApplication(nullptr, std::move(string), std::move(sourceURL));
+  // TODO mhorowitz: ReactMarker around loadApplicationScript
+  nativeToJsBridge_->loadApplicationScript(std::move(string), std::move(sourceURL));
 }
 
 void Instance::loadScriptFromFile(const std::string& filename,
@@ -89,8 +90,8 @@ void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
                             std::string startupScriptSourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("reactbridge_xplat_setJSModulesUnbundle");
-  nativeToJsBridge_->loadApplication(std::move(unbundle), std::move(startupScript),
-                                     std::move(startupScriptSourceURL));
+  nativeToJsBridge_->loadApplicationUnbundle(std::move(unbundle), std::move(startupScript),
+                                             std::move(startupScriptSourceURL));
 }
 
 bool Instance::supportsProfiling() {
