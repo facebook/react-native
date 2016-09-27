@@ -51,7 +51,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
-  private final SparseIntArray mViewsToDrop = new SparseIntArray();
+  private final ArrayList<Integer> mViewsToDrop = new ArrayList<>();
+  private final ArrayList<Integer> mParentsForViewsToDrop = new ArrayList<>();
   private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
   private final ArrayList<UIViewOperationQueue.UIOperation> mUpdateViewBoundsOperations =
       new ArrayList<>();
@@ -132,8 +133,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mOnLayoutEvents.clear();
 
     if (mViewsToDrop.size() > 0) {
-      mOperationsQueue.enqueueDropViews(mViewsToDrop);
+      mOperationsQueue.enqueueDropViews(mViewsToDrop, mParentsForViewsToDrop);
       mViewsToDrop.clear();
+      mParentsForViewsToDrop.clear();
     }
 
     mOperationsQueue.enqueueProcessLayoutRequests();
@@ -141,7 +143,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /* package */ void removeRootView(int rootViewTag) {
     // Note root view tags with a negative value.
-    mViewsToDrop.put(-rootViewTag, -1);
+    mViewsToDrop.add(-rootViewTag);
+    mParentsForViewsToDrop.add(-1);
   }
 
   /**
@@ -229,7 +232,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
    * @param node The node to drop the backing view for.
    */
   /* package */ void dropView(FlatShadowNode node, int parentReactTag) {
-    mViewsToDrop.put(node.getReactTag(), parentReactTag);
+    mViewsToDrop.add(node.getReactTag());
+    mParentsForViewsToDrop.add(parentReactTag);
   }
 
   /**

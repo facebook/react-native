@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -207,8 +209,12 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
     private final SparseIntArray mViewsToDrop;
 
-    private DropViews(SparseIntArray viewsToDrop) {
-      mViewsToDrop = viewsToDrop;
+    private DropViews(ArrayList<Integer> viewsToDrop, ArrayList<Integer> parentsForViewsToDrop) {
+      SparseIntArray sparseIntArray = new SparseIntArray();
+      for (int i = 0, count = viewsToDrop.size(); i < count; i++) {
+        sparseIntArray.put(viewsToDrop.get(i), parentsForViewsToDrop.get(i));
+      }
+      mViewsToDrop = sparseIntArray;
     }
 
     @Override
@@ -478,8 +484,10 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
         new SetPadding(reactTag, paddingLeft, paddingTop, paddingRight, paddingBottom));
   }
 
-  public void enqueueDropViews(SparseIntArray viewsToDrop) {
-    enqueueUIOperation(new DropViews(viewsToDrop));
+  public void enqueueDropViews(
+      ArrayList<Integer> viewsToDrop,
+      ArrayList<Integer> parentsOfViewsToDrop) {
+    enqueueUIOperation(new DropViews(viewsToDrop, parentsOfViewsToDrop));
   }
 
   public void enqueueMeasureVirtualView(

@@ -342,9 +342,7 @@ public class FlatUIImplementation extends UIImplementation {
         --moveFromIndex;
         moveFromChildIndex = (moveFromIndex == -1) ? -1 : mMoveProxy.getMoveFrom(moveFromIndex);
       } else if (removeFromChildIndex > moveFromChildIndex) {
-        removeChild(
-            removeChildAt(parentNode, removeFromChildIndex, prevIndex),
-            parentNode.getReactTag());
+        removeChild(removeChildAt(parentNode, removeFromChildIndex, prevIndex), parentNode);
         prevIndex = removeFromChildIndex;
 
         --removeFromIndex;
@@ -361,19 +359,38 @@ public class FlatUIImplementation extends UIImplementation {
    * Unregisters given element and all of its children from ShadowNodeRegistry,
    * and drops all Views used by it and its children.
    */
-  private void removeChild(ReactShadowNode child, int parentReactTag) {
+  private void removeChild(ReactShadowNode child, ReactShadowNode parentNode) {
     if (child instanceof FlatShadowNode) {
       FlatShadowNode node = (FlatShadowNode) child;
       if (node.mountsToView() && node.isBackingViewCreated()) {
+        int tag = -1;
+
+        // this tag is used to remove the reference to this dropping view if it it's clipped.
+        // we need to figure out the correct "view parent" tag to do this. note that this is
+        // not necessarily getParent().getReactTag(), since getParent() may represent something
+        // that's not a View - we need to find the first View (what would represent
+        // view.getParent() on the ui thread), which is what this code is finding.
+        ReactShadowNode tmpNode = parentNode;
+        while (tmpNode != null) {
+          if (tmpNode instanceof FlatShadowNode) {
+            FlatShadowNode flatTmpNode = (FlatShadowNode) tmpNode;
+            if (flatTmpNode.mountsToView() && flatTmpNode.isBackingViewCreated()) {
+              tag = flatTmpNode.getReactTag();
+              break;
+            }
+          }
+          tmpNode = tmpNode.getParent();
+        }
+
         // this will recursively drop all subviews
-        mStateBuilder.dropView(node, parentReactTag);
+        mStateBuilder.dropView(node, tag);
         removeShadowNode(node);
         return;
       }
     }
 
     for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
-      removeChild(child.getChildAt(i), child.getReactTag());
+      removeChild(child.getChildAt(i), child);
     }
 
     removeShadowNode(child);
