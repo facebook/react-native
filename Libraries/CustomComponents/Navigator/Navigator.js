@@ -484,6 +484,7 @@ var Navigator = React.createClass({
    */
   immediatelyResetRouteStack: function(nextRouteStack) {
     var destIndex = nextRouteStack.length - 1;
+    this._emitWillFocus(nextRouteStack[destIndex]);
     this.setState({
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
