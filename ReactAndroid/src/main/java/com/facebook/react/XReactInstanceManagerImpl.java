@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.app.Application;
@@ -924,33 +922,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
 
-    ReactMarker.logMarker(RUN_JS_BUNDLE_START);
-    try {
-      catalystInstance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
-        new Callable<Void>() {
-          @Override
-          public Void call() throws Exception {
-            reactContext.initializeWithInstance(catalystInstance);
-
-            Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
-            try {
-              catalystInstance.runJSBundle();
-            } finally {
-              Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-              ReactMarker.logMarker(RUN_JS_BUNDLE_END);
-            }
-            return null;
-          }
-        }).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (ExecutionException e) {
-      if (e.getCause() instanceof RuntimeException) {
-        throw (RuntimeException) e.getCause();
-      } else {
-        throw new RuntimeException(e);
-      }
-    }
+    reactContext.initializeWithInstance(catalystInstance);
+    catalystInstance.runJSBundle();
 
     return reactContext;
   }
