@@ -677,12 +677,12 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
 {
   static NSUInteger flowID = 0;
 
-  CHECK(@0);
+  CHECK(0);
 
   NSUInteger cookie = ++flowID;
   if (callbacks != NULL) {
-    callbacks->begin_async_flow(1, "flow", cookie);
-    return @(cookie);
+    callbacks->begin_async_flow(1, "flow", (int)cookie);
+    return cookie;
   }
 
   NSTimeInterval time = CACurrentMediaTime();
@@ -708,7 +708,7 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_flow(1, "flow", cookie);
+    callbacks->end_async_flow(1, "flow", (int)cookie);
     return;
   }
 
