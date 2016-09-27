@@ -181,6 +181,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
 
     mLayoutState = LayoutState.DIRTY;
+    layout.computedFlexBasis = CSSConstants.UNDEFINED;
 
     if (mParent != null) {
       mParent.dirty();

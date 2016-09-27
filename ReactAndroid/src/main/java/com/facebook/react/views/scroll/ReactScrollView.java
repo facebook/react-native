@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -25,11 +24,12 @@ import android.view.View;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.facebook.react.views.view.ReactClippingViewGroup;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
 
 /**
@@ -59,11 +59,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
 
-  public ReactScrollView(Context context) {
+  public ReactScrollView(ReactContext context) {
     this(context, null);
   }
 
-  public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
+  public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
 
@@ -82,7 +82,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     if (sScrollerField != null) {
       try {
-        mScroller = (OverScroller) sScrollerField.get(this);
+        Object scroller = sScrollerField.get(this);
+        if (scroller instanceof OverScroller) {
+          mScroller = (OverScroller) scroller;
+        } else {
+          Log.w(
+            ReactConstants.TAG,
+            "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
+              "This app will exhibit the bounce-back scrolling bug :(");
+          mScroller = null;
+        }
       } catch (IllegalAccessException e) {
         throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
       }

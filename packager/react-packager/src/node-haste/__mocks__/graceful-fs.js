@@ -9,6 +9,7 @@
 'use strict';
 
 const fs = jest.genMockFromModule('fs');
+const stream = require.requireActual('stream');
 const noop = () => {};
 
 function asyncCallback(cb) {
@@ -185,7 +186,35 @@ fs.close.mockImpl((fd, callback = noop) => {
 
 let filesystem;
 
-fs.__setMockFilesystem = (object) => filesystem = object;
+fs.createReadStream.mockImpl(path => {
+  if (!path.startsWith('/')) {
+    throw Error('Cannot open file ' + path);
+  }
+
+  const parts = path.split('/').slice(1);
+  let file = filesystem;
+
+  for (const part of parts) {
+    file = file[part];
+    if (!file) {
+      break;
+    }
+  }
+
+  if (typeof file !== 'string') {
+    throw Error('Cannot open file ' + path);
+  }
+
+  return new stream.Readable({
+    read() {
+      this.push(file, 'utf8');
+      this.push(null);
+    }
+  });
+});
+
+
+fs.__setMockFilesystem = (object) => (filesystem = object);
 
 function getToNode(filepath) {
   // Ignore the drive for Windows paths.

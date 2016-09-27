@@ -756,14 +756,6 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   float: right;
 }
 
-footer.wrap {
-  font-size: 13px;
-  font-weight: 600;
-  padding-top: 36px;
-  padding-bottom: 18px;
-  overflow: auto;
-}
-
 section.black content {
   padding-bottom: 18px;
 }
@@ -792,6 +784,7 @@ section.black content {
 .documentationContent {
   *zoom: 1;
   padding-top: 20px;
+  padding-bottom: 80px;
 }
 
 .documentationContent:before, .documentationContent:after {
@@ -909,6 +902,10 @@ figure {
 }
 
 .showcaseSection .inner-content {
+  width: 800px;
+}
+
+.helpSection .inner-content {
   width: 800px;
 }
 
@@ -1395,8 +1392,12 @@ div[data-twttr-id] iframe {
   border-radius: 20px;
 }
 
+table.versions  {
+  width: 60%;
+}
+
 .versions th {
-  text-align: right;
+  width: 20%;
 }
 
 .versions td, .versions th {
@@ -1407,43 +1408,10 @@ div[data-twttr-id] iframe {
   background-color: hsl(198, 100%, 94%);
 }
 
-.survey {
-  padding: 10px;
-  padding-top: 0;
-  background-color: rgba(5, 165, 209, 0.05);
-  border: 2px solid #05A5D1;
-  position: relative;
-}
-
-.survey-image {
-  float: left;
-  height: 128px;
-  width: 128px;
-  background-image: url('../img/survey.png');
-}
-
-.survey p {
-  margin-left: 130px;
-}
-
-.survey .button {
-  font-size: 24px;
-  background: #05A5D1;
-  color: #fafafa;
-}
-
 @media only screen
   and (max-device-width: 1024px) {
   #content {
     display: inline;
-  }
-
-  .survey-image {
-    position: static;
-    margin: 10px auto;
-  }
-  .survey p {
-    margin-left: 0px;
   }
 
   .container {
@@ -1507,6 +1475,10 @@ div[data-twttr-id] iframe {
   .showcaseSection .inner-content {
     width: 100%;
   }
+
+  .helpSection .inner-content {
+    width: 100%;
+  }
 }
 
 /** Algolia Doc Search **/
@@ -1545,6 +1517,10 @@ input#algolia-doc-search {
   outline: none;
   border: none;
   width: 170px;
+  transition: .5s width ease;
+  -webkit-transition: .5s width ease;
+  -moz-transition: .5s width ease;
+  -o-transition: .5s width ease;
 }
 
 input#algolia-doc-search:focus {
@@ -1811,4 +1787,150 @@ article li {
   .video-container {
     height: 345px;
   }
+}
+
+/** Help **/
+.helpSection h2 {
+  font-size: 24px;
+}
+
+.help-row {
+  margin: 50px 0;
+}
+
+.help-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.help-col {
+  float: left;
+}
+
+.help-col p {
+  font-size: 16px;
+}
+
+.help-col h3 {
+  color: #2d2d2d;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: normal;
+}
+
+@media (min-width: 600px) {
+  .help-col {
+    float: left;
+    margin-left: 40px;
+    width: 240px;
+  }
+
+  .help-col:first-child {
+    margin-left: 0;
+  }
+}
+
+.help-list {
+  padding: 0;
+  list-style: none;
+  margin: 1.25em 0 1em 0;
+}
+
+.entry ul, li {
+  margin: 0;
+}
+
+.help-list .help-list-entry {
+  padding: 16px 0;
+  border-top: 1px solid #f1eff0;
+}
+
+/** Footer **/
+
+footer.nav-footer {
+  box-sizing: border-box;
+  border: none;
+  font-weight: 300;
+  color: #202020;
+  font-size: 15px;
+  line-height: 24px;
+  background: #2D2D2D;
+  box-shadow: inset 0 10px 10px -5px #0d1116;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+footer .sitemap {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1080px;
+  margin: 0 auto 3em;
+}
+footer .sitemap div {
+  flex: 1;
+}
+footer .sitemap .nav-home {
+  display: table;
+  margin: -12px 20px 0 0;
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  opacity: 0.4;
+  transition: opacity 0.15s ease-in-out;
+}
+footer .sitemap .nav-home:hover,
+footer .sitemap .nav-home:focus {
+  opacity: 1.0;
+}
+@media screen and (max-width: 740px) {
+  footer .sitemap {
+    display: none;
+  }
+}
+
+footer .sitemap a {
+  color: white;
+  display: table;
+  margin: 2px -10px;
+  padding: 3px 10px;
+}
+footer .sitemap a:hover,
+footer .sitemap a:focus {
+  color: #05A5D1;
+  text-decoration: none;
+}
+footer .sitemap h5 > a:hover,
+footer .sitemap h5 > a:focus {
+  color: white;
+  text-decoration: none;
+}
+footer .sitemap h5,
+footer .sitemap h6 {
+  margin: 0 0 10px;
+}
+footer .sitemap h5,
+footer .sitemap h6,
+footer .sitemap h5 > a,
+footer .sitemap h6 > a {
+  color: #05A5D1;
+}
+footer .sitemap h5 > a,
+footer .sitemap h6 > a {
+  margin: 0 -10px;
+}
+footer .fbOpenSource {
+  display: block;
+  margin: 1em auto;
+  opacity: 0.4;
+  transition: opacity 0.15s ease-in-out;
+  width: 170px;
+}
+footer .fbOpenSource:hover {
+  opacity: 1.0;
+}
+footer .copyright {
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
 }

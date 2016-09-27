@@ -76,5 +76,18 @@ if (exec(`git tag v${version}`).code) {
   exit(1);
 }
 
+// Push newly created tag
+exec(`git push origin v${version}`);
+
+// Tag latest if doing stable release
+if (version.indexOf(`rc`) === -1) {
+  exec(`git tag -d latest`);
+  exec(`git push origin :latest`);
+  exec(`git tag latest`);
+  exec(`git push origin latest`);
+}
+
+exec(`git push origin ${branch} --follow-tags`);
+
 exit(0);
 /*eslint-enable no-undef */

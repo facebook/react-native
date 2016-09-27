@@ -22,6 +22,7 @@ describe('FileWatcher', () => {
   let config;
 
   beforeEach(() => {
+    jest.resetModules();
     const sane = require('sane');
     WatchmanWatcher = sane.WatchmanWatcher;
     WatchmanWatcher.prototype.once.mockImplementation(

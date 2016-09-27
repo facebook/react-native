@@ -53,13 +53,13 @@ public:
   }
 
   void callNativeModules(
-      JSExecutor& executor, std::string callJSON, bool isEndOfBatch) override {
+      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
-    m_nativeQueue->runOnQueue([this, token, callJSON=std::move(callJSON), isEndOfBatch] {
+    m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
-      for (auto& call : react::parseMethodCalls(callJSON)) {
+      for (auto& call : react::parseMethodCalls(std::move(calls))) {
         m_registry->callNativeMethod(
           token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
       }
@@ -118,12 +118,6 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                             std::string sourceURL) {
-  // TODO(t11144533): Add assert that we are on the correct thread
-  m_mainExecutor->loadApplicationScript(std::move(script), std::move(sourceURL));
-}
-
 void NativeToJsBridge::loadOptimizedApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
@@ -138,21 +132,35 @@ void NativeToJsBridge::loadOptimizedApplicationScript(
   });
 }
 
-void NativeToJsBridge::loadApplicationUnbundle(
+void NativeToJsBridge::loadApplication(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       m_mainExecutorToken,
-      [unbundle=folly::makeMoveWrapper(std::move(unbundle)),
+      [unbundleWrap=folly::makeMoveWrapper(std::move(unbundle)),
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
 
-    executor->setJSModulesUnbundle(unbundle.move());
+    auto unbundle = unbundleWrap.move();
+    if (unbundle) {
+      executor->setJSModulesUnbundle(std::move(unbundle));
+    }
     executor->loadApplicationScript(std::move(*startupScript),
                                     std::move(startupScriptSourceURL));
   });
+}
+
+void NativeToJsBridge::loadApplicationSync(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL) {
+  if (unbundle) {
+    m_mainExecutor->setJSModulesUnbundle(std::move(unbundle));
+  }
+  m_mainExecutor->loadApplicationScript(std::move(startupScript),
+                                        std::move(startupScriptSourceURL));
 }
 
 void NativeToJsBridge::callFunction(

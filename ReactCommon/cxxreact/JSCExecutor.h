@@ -74,6 +74,12 @@ public:
   virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
+  template <typename T>
+  Value callFunctionSync(
+      const std::string& module, const std::string& method, T&& args) {
+    return callFunctionSyncWithValue(module, method,
+                                     toValue(m_context, std::forward<T>(args)));
+  }
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
@@ -101,6 +107,7 @@ private:
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
   folly::Optional<Object> m_flushedQueueJS;
+  folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
 
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
@@ -115,11 +122,14 @@ private:
       const folly::dynamic& jscConfig);
 
   void initOnJSVMThread() throw(JSException);
+  // This method is experimental, and may be modified or removed.
+  Value callFunctionSyncWithValue(
+    const std::string& module, const std::string& method, Value value);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
   void callNativeModules(Value&&);
   void flush();
-  void flushQueueImmediate(std::string queueJSON);
+  void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
 
   int addWebWorker(std::string scriptURL, JSValueRef workerRef, JSValueRef globalObjRef);

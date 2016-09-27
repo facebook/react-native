@@ -13,9 +13,11 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -210,18 +212,25 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       new DialogInterface.OnKeyListener() {
         @Override
         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-          // We need to stop the BACK button from closing the dialog by default so we capture that
-          // event and instead inform JS so that it can make the decision as to whether or not to
-          // allow the back button to close the dialog.  If it chooses to, it can just set visible
-          // to false on the Modal and the Modal will go away
-          if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (event.getAction() == KeyEvent.ACTION_UP) {
+          if (event.getAction() == KeyEvent.ACTION_UP) {
+            // We need to stop the BACK button from closing the dialog by default so we capture that
+            // event and instead inform JS so that it can make the decision as to whether or not to
+            // allow the back button to close the dialog.  If it chooses to, it can just set visible
+            // to false on the Modal and the Modal will go away
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
               Assertions.assertNotNull(
-                  mOnRequestCloseListener,
-                  "setOnRequestCloseListener must be called by the manager");
+                mOnRequestCloseListener,
+                "setOnRequestCloseListener must be called by the manager");
               mOnRequestCloseListener.onRequestClose(dialog);
+              return true;
+            } else {
+              // We redirect the rest of the key events to the current activity, since the activity
+              // expects to receive those events and react to them, ie. in the case of the dev menu
+              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
+              if (currentActivity != null) {
+                return currentActivity.onKeyUp(keyCode, event);
+              }
             }
-            return true;
           }
           return false;
         }
@@ -238,8 +247,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
 
-    mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     } else {
@@ -255,6 +262,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * child information forwarded from ReactModalHostView and uses that to create children.  It is
    * also responsible for acting as a RootView and handling touch events.  It does this the same
    * way as ReactRootView.
+   *
+   * To get layout to work properly, we need to layout all the elements within the Modal as if they
+   * can fill the entire window.  To do that, we need to explicitly set the styleWidth and
+   * styleHeight on the LayoutShadowNode to be the window size. This is done through the
+   * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
 
@@ -262,6 +274,22 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     public DialogRootViewGroup(Context context) {
       super(context);
+    }
+
+    @Override
+    protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
+      super.onSizeChanged(w, h, oldw, oldh);
+      if (getChildCount() > 0) {
+        ((ReactContext) getContext()).runOnNativeModulesQueueThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              Point modalSize = ModalHostHelper.getModalHostSize(getContext());
+              ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
+                .updateNodeSize(getChildAt(0).getId(), modalSize.x, modalSize.y);
+            }
+          });
+      }
     }
 
     @Override

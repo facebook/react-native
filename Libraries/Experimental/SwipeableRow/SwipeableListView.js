@@ -30,6 +30,18 @@ const SwipeableRow = require('SwipeableRow');
 
 const {PropTypes} = React;
 
+type Props = {
+  bounceFirstRowOnMount: boolean,
+  dataSource: SwipeableListViewDataSource,
+  maxSwipeDistance: number,
+  renderRow: Function,
+  renderQuickActions: Function,
+};
+
+type State = {
+  dataSource: Object,
+};
+
 /**
  * A container component that renders multiple SwipeableRow's in a ListView
  * implementation. This is designed to be a drop-in replacement for the
@@ -49,20 +61,18 @@ const {PropTypes} = React;
  * - More to come
  */
 class SwipeableListView extends React.Component {
-  props: {
-    bounceFirstRowOnMount: boolean,
-    dataSource: SwipeableListViewDataSource,
-    maxSwipeDistance: number,
-    renderRow: Function,
-    renderQuickActions: Function,
-  };
+  props: Props;
+  state: State;
+
+  _listViewRef: ?ReactElement<any> = null;
+  _shouldBounceFirstRowOnMount: boolean = false;
 
   static getNewDataSource(): Object {
     return new SwipeableListViewDataSource({
       getRowData: (data, sectionID, rowID) => data[sectionID][rowID],
       getSectionHeaderData: (data, sectionID) => data[sectionID],
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
       rowHasChanged: (row1, row2) => row1 !== row2,
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
   }
 
@@ -90,21 +100,17 @@ class SwipeableListView extends React.Component {
     renderQuickActions: () => null,
   };
 
-  state: Object = {
-    dataSource: this.props.dataSource,
-  };
+  constructor(props: Props, context: any): void {
+    super(props, context);
 
-  _listViewRef: ?ReactElement<any> = null;
-  _shouldBounceFirstRowOnMount = false;
-
-  componentWillMount(): void {
     this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
+    this.state = {
+      dataSource: this.props.dataSource,
+    };
   }
 
-  componentWillReceiveProps(nextProps: Object): void {
-    if (
-      this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()
-    ) {
+  componentWillReceiveProps(nextProps: Props): void {
+    if (this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()) {
       this.setState({
         dataSource: nextProps.dataSource,
       });
@@ -119,10 +125,19 @@ class SwipeableListView extends React.Component {
           this._listViewRef = ref;
         }}
         dataSource={this.state.dataSource.getDataSource()}
+        onScroll={this._onScroll}
         renderRow={this._renderRow}
-        scrollEnabled={this.state.scrollEnabled}
       />
     );
+  }
+
+  _onScroll = (): void => {
+    // Close any opens rows on ListView scroll
+    if (this.props.dataSource.getOpenRowID()) {
+      this.setState({
+        dataSource: this.state.dataSource.setOpenRowID(null),
+      });
+    }
   }
 
   /**
@@ -131,22 +146,20 @@ class SwipeableListView extends React.Component {
    * scrolling is active allows us to significantly improve framerates
    * (from high 20s to almost consistently 60 fps)
    */
-  _setListViewScrollable = (value: boolean): void => {
-    if (this._listViewRef &&
-        typeof this._listViewRef.setNativeProps === 'function') {
+  _setListViewScrollable(value: boolean): void {
+    if (this._listViewRef && typeof this._listViewRef.setNativeProps === 'function') {
       this._listViewRef.setNativeProps({
         scrollEnabled: value,
       });
     }
-  };
+  }
 
   // Passing through ListView's getScrollResponder() function
-  getScrollResponder = (): ?Object => {
-    if (this._listViewRef &&
-        typeof this._listViewRef.getScrollResponder === 'function') {
+  getScrollResponder(): ?Object {
+    if (this._listViewRef && typeof this._listViewRef.getScrollResponder === 'function') {
       return this._listViewRef.getScrollResponder();
     }
-  };
+  }
 
   _renderRow = (rowData: Object, sectionID: string, rowID: string): ReactElement<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
@@ -177,11 +190,11 @@ class SwipeableListView extends React.Component {
     );
   };
 
-  _onOpen = (rowID: string): void => {
+  _onOpen(rowID: string): void {
     this.setState({
       dataSource: this.state.dataSource.setOpenRowID(rowID),
     });
-  };
+  }
 }
 
 module.exports = SwipeableListView;

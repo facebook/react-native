@@ -35,9 +35,14 @@ class Instance {
     std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry);
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL);
+  void loadScriptFromStringSync(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
   void loadScriptFromOptimizedBundle(std::string bundlePath, std::string sourceURL, int flags);
   void loadUnbundle(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL);
+  void loadUnbundleSync(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL);
@@ -50,16 +55,26 @@ class Instance {
   void callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params);
   MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId,
                                               unsigned int methodId, folly::dynamic&& args);
+  // This method is experimental, and may be modified or removed.
+  template <typename T>
+  Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
+    return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
+  }
+
   ExecutorToken getMainExecutorToken();
   void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
 
  private:
-  void callNativeModules(ExecutorToken token, const std::string& calls, bool isEndOfBatch);
+  void callNativeModules(ExecutorToken token, folly::dynamic&& calls, bool isEndOfBatch);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
+
+  std::mutex m_syncMutex;
+  std::condition_variable m_syncCV;
+  bool m_syncReady = false;
 };
 
 }
