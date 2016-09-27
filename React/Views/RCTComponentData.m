@@ -145,8 +145,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // Check for custom setter
     if ([keyPath isEqualToString:@"__custom__"]) {
 
-      // Get custom setter
-      SEL customSetter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""]);
+      // Get custom setter. There is no default view in the shadow case, so the selector is different.
+      NSString *selectorString;
+      if (!shadowView) {
+        selectorString = [NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""];
+      } else {
+        selectorString = [NSString stringWithFormat:@"set_%@:forShadowView:", name];
+      }
+      SEL customSetter = NSSelectorFromString(selectorString);
 
       propBlock = ^(id<RCTComponent> view, id json) {
         RCTComponentData *strongSelf = weakSelf;
@@ -154,13 +160,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           return;
         }
         json = RCTNilIfNull(json);
-        if (!json && !strongSelf->_defaultView) {
-          // Only create default view if json is null
-          strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+        if (!shadowView) {
+          if (!json && !strongSelf->_defaultView) {
+            // Only create default view if json is null
+            strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+          }
+          ((void (*)(id, SEL, id, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
+          );
+        } else {
+          ((void (*)(id, SEL, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view
+          );
         }
-        ((void (*)(id, SEL, id, id, id))objc_msgSend)(
-          strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
-        );
       };
 
     } else {

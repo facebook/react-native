@@ -126,10 +126,10 @@ RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
 /**
  * This macro can be used when you need to provide custom logic for setting
  * shadow view properties. The macro should be followed by a method body, which can
- * refer to "json", "view" and "defaultView" to implement the required logic.
+ * refer to "json" and "view".
  */
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
 RCT_REMAP_SHADOW_PROPERTY(name, __custom__, type)         \
-- (void)set_##name:(id)json forShadowView:(viewClass *)view withDefaultView:(viewClass *)defaultView
+- (void)set_##name:(id)json forShadowView:(viewClass *)view
 
 @end
