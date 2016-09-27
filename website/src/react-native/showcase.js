@@ -344,6 +344,13 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
     infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
     infoTitle: 'Baidu is a search engine that has 600 million users.',
+  },
+  {
+    name: '宠拜',
+    icon: 'https://is5-ssl.mzstatic.com/image/thumb/Purple22/v4/b9/5c/94/b95c9438-0b2d-fa7b-e7cf-1a747c759f29/mzl.cxfydihc.png/340x340bb-80.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/chong-bai-jing-cai-chong-wu/id1110265473?l=zh&ls=1&mt=8',
+    infoLink: 'http://petadore.cn/',
+    infoTitle: 'Chong Bai is an social app that around pet and pet life.',
   }
 ];
 
