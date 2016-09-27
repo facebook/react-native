@@ -60,7 +60,7 @@ const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
  * }
  *```
  */
-class Keyboard {
+module.exports = {
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -81,7 +81,7 @@ class Keyboard {
    */
   addListener (nativeEvent: string, jsFunction: Function) {
     return KeyboardEventEmitter.addListener(nativeEvent, jsFunction);
-  }
+  },
 
   /**
    * Removes all listeners for a specific event type.
@@ -90,7 +90,7 @@ class Keyboard {
    */
   removeAllListeners (eventType: string) {
     KeyboardEventEmitter.removeAllListeners(eventType);
-  }
+  },
 
   /**
    * Removes a specific subscription.
@@ -99,7 +99,7 @@ class Keyboard {
    */
   removeSubscription (subscription: Object) {
     KeyboardEventEmitter.removeSubscription(subscription);
-  }
+  },
 
   /**
    * Dismisses the active keyboard and removes focus.
@@ -108,8 +108,4 @@ class Keyboard {
     dismissKeyboard();
   }
 
-}
-
-Keyboard = new Keyboard();
-
-module.exports = Keyboard;
+};
