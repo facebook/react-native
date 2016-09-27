@@ -17,7 +17,7 @@
 #include <dlfcn.h>
 
 
-void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(void *handle) {
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
   return;
 }
 
