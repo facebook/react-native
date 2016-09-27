@@ -271,8 +271,6 @@ void JSCExecutor::loadApplicationScript(
     return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
   }
 
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
   if (flags & UNPACKED_BC_CACHE) {
     configureJSCBCCache(m_context, bundlePath);
   }
@@ -292,7 +290,6 @@ void JSCExecutor::loadApplicationScript(
 
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 #endif
 
@@ -306,8 +303,6 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     "JSCExecutor::loadApplicationScript-createExpectingAscii");
   #endif
 
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
   String jsScript = jsStringFromBigString(*script);
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
@@ -318,11 +313,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
+
   bindBridge();
 
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
