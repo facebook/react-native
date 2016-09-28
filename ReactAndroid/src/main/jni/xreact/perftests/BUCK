@@ -6,6 +6,7 @@ cxx_library(
   soname = 'libnativereactperftests.so',
   compiler_flags = [
     '-fexceptions',
+    '-std=c++1y',
   ],
   deps = [
     '//native/fb:fb',
