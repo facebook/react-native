@@ -798,7 +798,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
   [jsExecutor callFunctionOnModule:module
                             method:method
-                         arguments:arguments
+                         arguments:arguments ?: @[]
                    jsValueCallback:^(JSValue *result, NSError *jsError) {
     if (error) {
       *error = jsError;
