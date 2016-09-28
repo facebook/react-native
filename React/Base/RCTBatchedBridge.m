@@ -779,6 +779,48 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 }
 
 /**
+ * JS thread only
+ */
+- (JSValue *)callFunctionOnModule:(NSString *)module
+                           method:(NSString *)method
+                        arguments:(NSArray *)arguments
+                            error:(NSError **)error
+{
+  RCTJSCExecutor *jsExecutor = (RCTJSCExecutor *)_javaScriptExecutor;
+  if (![jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+    RCTLogWarn(@"FBReactBridgeJSExecutor is only supported when running in JSC");
+    return nil;
+  }
+
+  __block JSValue *jsResult = nil;
+
+  RCTAssertJSThread();
+  RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
+  [jsExecutor callFunctionOnModule:module
+                            method:method
+                         arguments:arguments
+                   jsValueCallback:^(JSValue *result, NSError *jsError) {
+    if (error) {
+      *error = jsError;
+    }
+
+    JSValue *length = result[@"length"];
+    RCTAssert([length isNumber] && [length toUInt32] == 2,
+              @"Return value of a callFunction must be an array of size 2");
+
+    jsResult = [result valueAtIndex:0];
+
+    NSArray *nativeModuleCalls = [[result valueAtIndex:1] toArray];
+    [self handleBuffer:nativeModuleCalls batchEnded:YES];
+  }];
+
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call");
+
+  return jsResult;
+}
+
+
+/**
  * Private hack to support `setTimeout(fn, 0)`
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer
