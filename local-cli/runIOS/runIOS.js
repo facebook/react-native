@@ -135,7 +135,7 @@ function buildProject(xcodeProject, udid, scheme) {
 function matchingDevice(devices, deviceName) {
   if (deviceName === true && devices.length === 1)
   {
-    console.log(`Using first available device ${devices[0].name } due to lack of name supplied.`)
+    console.log(`Using first available device '${devices[0].name }' due to lack of name supplied.`)
     return devices[0];
   }
   for (let i = devices.length - 1; i >= 0; i--) {   
