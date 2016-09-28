@@ -512,7 +512,8 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native: Development"
+  NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", [_bridge class]];
+  _actionSheet = [UIAlertController alertControllerWithTitle:title
                                                      message:@""
                                               preferredStyle:UIAlertControllerStyleActionSheet];
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
