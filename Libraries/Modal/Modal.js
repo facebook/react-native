@@ -16,10 +16,9 @@ const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
 const View = require('View');
-const deprecatedPropType = require('deprecatedPropType');
 
+const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
@@ -136,7 +135,6 @@ class Modal extends React.Component {
 
     const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
     };
 
     let animationType = this.props.animationType;
