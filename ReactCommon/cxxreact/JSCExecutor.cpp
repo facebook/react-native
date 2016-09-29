@@ -9,9 +9,11 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/json.h>
+#include <folly/Exception.h>
 #include <folly/Memory.h>
 #include <folly/String.h>
 #include <folly/Conv.h>
+#include <fcntl.h>
 #include <sys/time.h>
 
 #include "FollySupport.h"
@@ -260,30 +262,47 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  if ((flags & UNPACKED_JS_SOURCE) == 0) {
-    throw std::runtime_error("Optimized bundle with no unpacked js source");
-  }
-
-  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
-  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
-    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
-    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
-  }
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
-  if (flags & UNPACKED_BC_CACHE) {
-    configureJSCBCCache(m_context, bundlePath);
-  }
+  folly::throwOnFail<std::runtime_error>(
+    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
+    "Optimized bundle with no unpacked source or bytecode");
 
   String jsSourceURL(sourceURL.c_str());
-  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+  JSSourceCodeRef sourceCode = nullptr;
+  SCOPE_EXIT {
+    if (sourceCode) {
+      JSReleaseSourceCode(sourceCode);
+    }
+  };
+
+  if (flags & UNPACKED_BYTECODE) {
+    int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
+    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    SCOPE_EXIT { close(fd); };
+
+    auto length = lseek(fd, 0, SEEK_END);
+    folly::checkUnixError(length, "Couldn't seek to the end of compiled bundle");
+
+    sourceCode = JSCreateCompiledSourceCode(fd, length, jsSourceURL);
+  } else {
+    auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+    if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+      LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+      return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+    }
+
+    if (flags & UNPACKED_BC_CACHE) {
+      configureJSCBCCache(m_context, bundlePath);
+    }
+
+    sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
       jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
-  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+  }
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   evaluateSourceCode(m_context, sourceCode, jsSourceURL);
 

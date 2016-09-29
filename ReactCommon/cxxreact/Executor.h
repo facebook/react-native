@@ -18,10 +18,12 @@ namespace react {
 
 #define UNPACKED_JS_SOURCE_PATH_SUFFIX "/bundle.js"
 #define UNPACKED_META_PATH_SUFFIX "/bundle.meta"
+#define UNPACKED_BYTECODE_SUFFIX "/bundle.bytecode"
 
 enum {
   UNPACKED_JS_SOURCE = (1 << 0),
   UNPACKED_BC_CACHE = (1 << 1),
+  UNPACKED_BYTECODE = (1 << 2),
 };
 
 class JSExecutor;
