@@ -133,7 +133,6 @@ function buildProject(xcodeProject, udid, scheme) {
     '-derivedDataPath', 'build',
   ];
   console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
   var buildProcess = child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'pipe'});
   var buildOutput = buildProcess.stdout.toString();
   //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
