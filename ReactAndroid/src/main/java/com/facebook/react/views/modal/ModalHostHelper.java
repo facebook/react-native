@@ -18,7 +18,6 @@ import com.facebook.infer.annotation.Assertions;
   private static final Point MIN_POINT = new Point();
   private static final Point MAX_POINT = new Point();
   private static final Point SIZE_POINT = new Point();
-  private static final Point REAL_SIZE_POINT = new Point();
 
   /**
    * To get the size of the screen, we use information from the WindowManager and
