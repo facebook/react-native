@@ -22,7 +22,7 @@ import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
-import com.facebook.fbui.textlayoutbuilder.cachewarmer.DefaultTextLayoutCacheWarmer;
+import com.facebook.fbui.textlayoutbuilder.glyphwarmer.GlyphWarmerImpl;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -48,7 +48,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       new TextLayoutBuilder()
           .setShouldCacheLayout(false)
           .setShouldWarmText(true)
-          .setCacheWarmer(new DefaultTextLayoutCacheWarmer());
+          .setGlyphWarmer(new GlyphWarmerImpl());
 
   private @Nullable CharSequence mText;
   private @Nullable DrawTextLayout mDrawCommand;
