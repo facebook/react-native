@@ -39,11 +39,11 @@ import com.facebook.infer.annotation.Assertions;
     display.getSize(SIZE_POINT);
 
     if (SIZE_POINT.x < SIZE_POINT.y) {
-     // If we are vertical the width value comes from min width and height comes from max height
-     return new Point(MIN_POINT.x, MAX_POINT.y);
+      // If we are vertical the width value comes from min width and height comes from max height
+      return new Point(MIN_POINT.x, MAX_POINT.y);
     } else {
-     // If we are horizontal the width value comes from max width and height comes from min height
-     return new Point(MAX_POINT.x, MIN_POINT.y);
+      // If we are horizontal the width value comes from max width and height comes from min height
+      return new Point(MAX_POINT.x, MIN_POINT.y);
     }
   }
 }
