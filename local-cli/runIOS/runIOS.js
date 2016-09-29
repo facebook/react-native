@@ -86,9 +86,11 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     // but we want it to only launch the simulator
   }
 
-  buildProject(xcodeProject, selectedSimulator.udid, scheme);
+  var appName = buildProject(xcodeProject, selectedSimulator.udid, scheme);
+  if (!appName)
+    appName = inferredSchemeName;
 
-  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
+  const appPath = `build/Build/Products/Debug-iphonesimulator/${appName}.app`;
   console.log(`Installing ${appPath}`);
   child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
@@ -103,9 +105,11 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 }
 
 function runOnDevice(selectedDevice, scheme, xcodeProject){
-  buildProject(xcodeProject, selectedDevice.udid, scheme);
+  var appName = buildProject(xcodeProject, selectedDevice.udid, scheme);
+  if (!appName)
+    appName = scheme;
   const iosDeployInstallArgs = [
-    '--bundle', 'build/Build/Products/Debug-iphoneos/' + scheme + '.app',
+    '--bundle', 'build/Build/Products/Debug-iphoneos/' + appName + '.app',
     '--id' , selectedDevice.udid,
     '--justlaunch'
   ];
@@ -130,6 +134,14 @@ function buildProject(xcodeProject, udid, scheme) {
   ];
   console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
   child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+  var buildProcess = child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'pipe'});
+  var buildOutput = buildProcess.stdout.toString();
+  //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
+  var exportFullProductLines = buildOutput.match(new RegExp("export FULL_PRODUCT_NAME=\".+"));
+  if (exportFullProductLines && exportFullProductLines.length)
+  {
+    return exportFullProductLines[exportFullProductLines.length - 1].replace("export FULL_PRODUCT_NAME=\"","").replace(".app\"","");//strip out everything but the file name
+  } 
 }
 
 function matchingDevice(devices, deviceName) {
