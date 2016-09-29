@@ -42,7 +42,10 @@ class KeyboardAvoidingViewExample extends React.Component {
   renderExample = () => {
     return (
       <View style={styles.outerContainer}>
-        <Modal animationType="fade" visible={this.state.modalOpen}>
+        <Modal  
+              onRequestClose={() => {this.setState({modalOpen: false})}} 
+              animationType="fade" 
+              visible={this.state.modalOpen}>
           <KeyboardAvoidingView behavior={this.state.behavior} style={styles.container}>
             <SegmentedControlIOS
               onValueChange={this.onSegmentChange}
@@ -66,7 +69,6 @@ class KeyboardAvoidingViewExample extends React.Component {
       </View>
     );
   };
-
   render() {
     return (
       <UIExplorerPage title="Keyboard Avoiding View">
