@@ -1705,7 +1705,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
       for (ii = startIndex; ii < childCount; ii++) {
         const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-        if (child->style.positionType == CSSPositionTypeAbsolute) {
+        if (child->style.positionType == CSSPositionTypeRelative) {
           if (child->lineIndex != i) {
             break;
           }
@@ -1724,7 +1724,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         for (ii = startIndex; ii < endIndex; ii++) {
           const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-          if (child->style.positionType == CSSPositionTypeAbsolute) {
+          if (child->style.positionType == CSSPositionTypeRelative) {
             switch (getAlignItem(node, child)) {
               case CSSAlignFlexStart:
                 child->layout.position[pos[crossAxis]] =

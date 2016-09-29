@@ -64,6 +64,14 @@ var featured = [
     infoTitle: 'PlaceAVote wants to give voters a say in Congress',
   },
   {
+    name: 'Robin Rooms',
+    icon: 'http://robinpowered.s3.amazonaws.com/rooms/appicon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/robin-rooms/id947566115',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.robinpowered.rooms',
+    infoLink: 'https://techcrunch.com/2016/05/31/robin-makes-the-office-smarter-with-7-million-in-new-funding/',
+    infoTitle: 'Robin Rooms manages and mounts outside your conference rooms'
+  },
+  {
     name: 'FanVision Bolt',
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
@@ -351,6 +359,14 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/cn/app/chong-bai-jing-cai-chong-wu/id1110265473?l=zh&ls=1&mt=8',
     infoLink: 'http://petadore.cn/',
     infoTitle: 'Chong Bai is an social app that around pet and pet life.',
+	},
+	{
+		name: 'Sleeperbot',
+    icon: 'https://blitzchat.net/uploads/c8425332190a4f4b852d7770ad32e602/original.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/sleeperbot-fantasy-football/id987367543?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
+    infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
+    infoTitle: 'Switching to React Native in Production on iOS and Android',
   }
 ];
 
