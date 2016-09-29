@@ -142,6 +142,15 @@ void CSSNodeFree(const CSSNodeRef node) {
   free(node);
 }
 
+void CSSNodeFreeRecursive(const CSSNodeRef root) {
+  while (CSSNodeChildCount(root) > 0) {
+    const CSSNodeRef child = CSSNodeGetChild(root, 0);
+    CSSNodeRemoveChild(root, child);
+    CSSNodeFreeRecursive(child);
+  }
+  CSSNodeFree(root);
+}
+
 void CSSNodeInit(const CSSNodeRef node) {
   node->parent = NULL;
   node->children = CSSNodeListNew(4);
