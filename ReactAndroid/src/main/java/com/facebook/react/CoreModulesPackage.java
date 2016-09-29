@@ -26,6 +26,7 @@ import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -95,6 +96,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         @Override
         public NativeModule get() {
           return new AndroidInfoModule();
+        }
+      }));
+    moduleSpecList
+      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new HeadlessJsTaskSupportModule(reactContext);
         }
       }));
     moduleSpecList.add(
