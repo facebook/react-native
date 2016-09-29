@@ -137,10 +137,10 @@ function buildProject(xcodeProject, udid, scheme) {
   var buildProcess = child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'pipe'});
   var buildOutput = buildProcess.stdout.toString();
   //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
-  var exportFullProductLines = buildOutput.match(new RegExp("export FULL_PRODUCT_NAME=\".+"));
+  var exportFullProductLines = buildOutput.match(new RegExp("export FULL_PRODUCT_NAME=.+\.app"));
   if (exportFullProductLines && exportFullProductLines.length)
   {
-    return exportFullProductLines[exportFullProductLines.length - 1].replace("export FULL_PRODUCT_NAME=\"","").replace(".app\"","");//strip out everything but the file name
+    return exportFullProductLines[exportFullProductLines.length - 1].replace("\"","").replace("export FULL_PRODUCT_NAME=","").replace(".app","");//strip out everything but the file name
   } 
 }
 
