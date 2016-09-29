@@ -701,6 +701,8 @@ class Server {
         telemetric: true,
       },
     );
+    const appRoot = process.cwd() + path.sep;
+
     new Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
@@ -739,7 +741,10 @@ class Server {
           if (!original) {
             return frame;
           }
+          const relativePath = original.source.replace(appRoot, '');
           return Object.assign({}, frame, {
+            fileName: path.basename(relativePath),
+            filePath: path.dirname(relativePath),
             file: original.source,
             lineNumber: original.line,
             column: original.column,

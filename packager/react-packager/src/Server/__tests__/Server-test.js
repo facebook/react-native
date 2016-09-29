@@ -493,6 +493,8 @@ describe('processRequest', () => {
       ).then(response => {
         expect(JSON.parse(response.body)).toEqual({
           stack: [{
+            fileName: 'foo.js',
+            filePath: '.',
             file: 'foo.js',
             lineNumber: 21,
             column: 4,
