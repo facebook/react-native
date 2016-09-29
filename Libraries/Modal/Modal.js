@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
@@ -146,6 +147,12 @@ class Modal extends React.Component {
       }
     }
 
+    const innerChildren = __DEV__ ?
+      ( <AppContainer>
+          {this.props.children}
+        </AppContainer>) :
+      this.props.children;
+
     return (
       <RCTModalHostView
         animationType={animationType}
@@ -158,7 +165,7 @@ class Modal extends React.Component {
         onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {innerChildren}
         </View>
       </RCTModalHostView>
     );
