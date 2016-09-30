@@ -11,7 +11,7 @@ with allow_unsafe_import():
 def react_native_target(path):
   return '//ReactAndroid/src/main/' + path
 
-# Example: react_native_target('bridge:bridge')
+# Example: react_native_xplat_target('bridge:bridge')
 def react_native_xplat_target(path):
   return '//ReactCommon/' + path
 

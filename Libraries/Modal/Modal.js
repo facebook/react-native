@@ -11,15 +11,15 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
 const View = require('View');
-const deprecatedPropType = require('deprecatedPropType');
 
+const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
@@ -136,7 +136,6 @@ class Modal extends React.Component {
 
     const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
     };
 
     let animationType = this.props.animationType;
@@ -147,6 +146,12 @@ class Modal extends React.Component {
         animationType = 'slide';
       }
     }
+
+    const innerChildren = __DEV__ ?
+      ( <AppContainer>
+          {this.props.children}
+        </AppContainer>) :
+      this.props.children;
 
     return (
       <RCTModalHostView
@@ -160,7 +165,7 @@ class Modal extends React.Component {
         onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {innerChildren}
         </View>
       </RCTModalHostView>
     );

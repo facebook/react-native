@@ -9,9 +9,11 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/json.h>
+#include <folly/Exception.h>
 #include <folly/Memory.h>
 #include <folly/String.h>
 #include <folly/Conv.h>
+#include <fcntl.h>
 #include <sys/time.h>
 
 #include "FollySupport.h"
@@ -117,7 +119,6 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   folly::dynamic config =
     folly::dynamic::object
       ("remoteModuleConfig", std::move(nativeModuleConfig));
-
 
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
@@ -261,28 +262,47 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  if ((flags & UNPACKED_JS_SOURCE) == 0) {
-    throw std::runtime_error("Optimized bundle with no unpacked js source");
-  }
-
-  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
-  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
-    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
-    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
-  }
-
-  if (flags & UNPACKED_BC_CACHE) {
-    configureJSCBCCache(m_context, bundlePath);
-  }
+  folly::throwOnFail<std::runtime_error>(
+    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
+    "Optimized bundle with no unpacked source or bytecode");
 
   String jsSourceURL(sourceURL.c_str());
-  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+  JSSourceCodeRef sourceCode = nullptr;
+  SCOPE_EXIT {
+    if (sourceCode) {
+      JSReleaseSourceCode(sourceCode);
+    }
+  };
+
+  if (flags & UNPACKED_BYTECODE) {
+    int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
+    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    SCOPE_EXIT { close(fd); };
+
+    auto length = lseek(fd, 0, SEEK_END);
+    folly::checkUnixError(length, "Couldn't seek to the end of compiled bundle");
+
+    sourceCode = JSCreateCompiledSourceCode(fd, length, jsSourceURL);
+  } else {
+    auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
+    if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+      LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+      return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+    }
+
+    if (flags & UNPACKED_BC_CACHE) {
+      configureJSCBCCache(m_context, bundlePath);
+    }
+
+    sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
       jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
-  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+  }
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   evaluateSourceCode(m_context, sourceCode, jsSourceURL);
 
@@ -290,6 +310,7 @@ void JSCExecutor::loadApplicationScript(
 
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 #endif
 
@@ -303,6 +324,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     "JSCExecutor::loadApplicationScript-createExpectingAscii");
   #endif
 
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
   String jsScript = jsStringFromBigString(*script);
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
@@ -313,11 +336,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
-
   bindBridge();
 
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
@@ -339,6 +362,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
   m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
   m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
   m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+  m_callFunctionReturnResultAndFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnResultAndFlushedQueue").asObject();
 }
 
 void JSCExecutor::callNativeModules(Value&& value) {
@@ -398,6 +422,26 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   }();
 
   callNativeModules(std::move(result));
+}
+
+Value JSCExecutor::callFunctionSyncWithValue(
+    const std::string& module, const std::string& method, Value args) {
+  SystraceSection s("JSCExecutor::callFunction");
+
+  Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
+    Value(m_context, String::createExpectingAscii(module)),
+    Value(m_context, String::createExpectingAscii(method)),
+    std::move(args),
+  }).asObject();
+
+  Value length = result.getProperty("length");
+
+  if (!length.isNumber() || length.asInteger() != 2) {
+    std::runtime_error("Return value of a callFunction must be an array of size 2");
+  }
+
+  callNativeModules(result.getPropertyAtIndex(1));
+  return result.getPropertyAtIndex(0);
 }
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {

@@ -8,6 +8,7 @@ import javax.inject.Provider;
 import java.util.concurrent.ExecutionException;
 
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.module.model.Info;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -15,6 +16,8 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
@@ -77,9 +80,11 @@ public class ModuleHolder {
   }
 
   private NativeModule create() {
-    String name = mInfo instanceof LegacyModuleInfo ?
-      ((LegacyModuleInfo) mInfo).mType.getSimpleName() :
-      mInfo.name();
+    boolean isEagerModule = mInfo instanceof LegacyModuleInfo;
+    String name = isEagerModule ? ((LegacyModuleInfo) mInfo).mType.getSimpleName() : mInfo.name();
+    if (!isEagerModule) {
+      ReactMarker.logMarker(CREATE_MODULE_START);
+    }
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
       .arg("name", name)
       .flush();
@@ -89,6 +94,9 @@ public class ModuleHolder {
       mInitializeNeeded = false;
     }
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    if (!isEagerModule) {
+      ReactMarker.logMarker(CREATE_MODULE_END);
+    }
     return module;
   }
 
