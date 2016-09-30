@@ -92,7 +92,7 @@ class DependencyGraph {
 
     const {activity} = this._opts;
     const depGraphActivity = activity.startEvent(
-      'Building Dependency Graph',
+      'Initializing Packager',
       null,
       {
         telemetric: true,
