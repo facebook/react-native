@@ -365,11 +365,12 @@ class Bundler {
     finalizeBundle = noop,
   }) {
     const findEventId = Activity.startEvent(
-      'Finding dependencies',
+      'Transforming modules',
       null,
       {
         telemetric: true,
         entryPoint: entryFile,
+        details: dev ? 'dev' : 'prod',
       },
     );
     const modulesByName = Object.create(null);
