@@ -71,7 +71,6 @@ cxx_library(
   compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
   exported_headers = [
     'CxxModule.h',
-    'FollySupport.h',
     'JsArgumentHelpers.h',
     'JsArgumentHelpers-inl.h',
   ],
