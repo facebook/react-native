@@ -69,6 +69,7 @@ cxx_library(
   name = 'module',
   force_static = True,
   compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+  xcode_public_headers_symlinks = True,
   exported_headers = [
     'CxxModule.h',
     'JsArgumentHelpers.h',
@@ -87,6 +88,7 @@ cxx_library(
   name = 'samplemodule',
   soname = 'libxplat_react_module_samplemodule.so',
   srcs = ['SampleCxxModule.cpp'],
+  xcode_public_headers_symlinks = True,
   exported_headers = ['SampleCxxModule.h'],
   header_namespace = '',
   compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
@@ -134,6 +136,7 @@ react_library(
   force_static = True,
   srcs = glob(['*.cpp']),
   headers = glob(['*.h'], excludes=CXXREACT_PUBLIC_HEADERS),
+  xcode_public_headers_symlinks = True,
   exported_headers = CXXREACT_PUBLIC_HEADERS,
   preprocessor_flags = [
     '-DLOG_TAG="ReactNative"',
