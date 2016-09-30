@@ -16,7 +16,6 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "FollySupport.h"
 #include "JSCHelpers.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -130,7 +129,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 JSCExecutor::JSCExecutor(
