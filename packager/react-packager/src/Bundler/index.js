@@ -369,6 +369,7 @@ class Bundler {
       null,
       {
         telemetric: true,
+        entryPoint: entryFile,
       },
     );
     const modulesByName = Object.create(null);
