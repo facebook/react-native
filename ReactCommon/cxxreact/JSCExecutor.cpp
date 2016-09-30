@@ -278,11 +278,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-
-    auto length = lseek(fd, 0, SEEK_END);
-    folly::checkUnixError(length, "Couldn't seek to the end of compiled bundle");
-
-    sourceCode = JSCreateCompiledSourceCode(fd, length, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
   } else {
     auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
     if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
@@ -296,7 +292,6 @@ void JSCExecutor::loadApplicationScript(
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
-      jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
