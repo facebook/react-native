@@ -12,9 +12,9 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,6 +47,8 @@ public class ReactContext extends ContextWrapper {
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
 
+  private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
+
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
@@ -54,7 +56,6 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable WeakReference<Activity> mCurrentActivity;
-  private LifecycleState mLifecycleState = LifecycleState.BEFORE_RESUME;
 
   public ReactContext(Context base) {
     super(base);
@@ -145,6 +146,10 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
+  public LifecycleState getLifecycleState() {
+    return mLifecycleState;
+  }
+
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
     if (hasActiveCatalystInstance()) {
@@ -197,6 +202,7 @@ public class ReactContext extends ContextWrapper {
    */
   public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
+    mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     mLifecycleState = LifecycleState.RESUMED;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -228,6 +234,7 @@ public class ReactContext extends ContextWrapper {
    */
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+    mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }

@@ -18,6 +18,10 @@ mockColor.bold = function() {
   return {};
 };
 
+mockColor.bgRed = function() {
+  return {};
+};
+
 module.exports = {
   dim: s =>  s,
   magenta: mockColor,
