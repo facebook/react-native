@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
@@ -26,7 +27,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * The Modal component is a simple way to present content above an enclosing view.
  *
  * _Note: If you need more control over how to present modals over the rest of your app,
- * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
+ * then consider using a top-level Navigator._
  *
  * ```javascript
  * import React, { Component } from 'react';
@@ -146,6 +147,12 @@ class Modal extends React.Component {
       }
     }
 
+    const innerChildren = __DEV__ ?
+      ( <AppContainer>
+          {this.props.children}
+        </AppContainer>) :
+      this.props.children;
+
     return (
       <RCTModalHostView
         animationType={animationType}
@@ -158,7 +165,7 @@ class Modal extends React.Component {
         onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {innerChildren}
         </View>
       </RCTModalHostView>
     );
