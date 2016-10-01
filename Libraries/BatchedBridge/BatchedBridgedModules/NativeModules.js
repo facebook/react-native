@@ -108,7 +108,7 @@ function arrayContains<T>(array: Array<T>, value: T): boolean {
 function createErrorFromErrorData(errorData: {message: string}): Error {
   const {
     message,
-    ...extraErrorInfo,
+    ...extraErrorInfo
   } = errorData;
   const error = new Error(message);
   (error:any).framesToPop = 1;
