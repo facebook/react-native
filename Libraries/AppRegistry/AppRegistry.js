@@ -15,9 +15,11 @@ var BatchedBridge = require('BatchedBridge');
 var BugReporting = require('BugReporting');
 var ReactNative = require('react/lib/ReactNative');
 
+const infoLog = require('infoLog');
 var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
-const infoLog = require('infoLog');
+
+const { HeadlessJsTaskSupport } = require('NativeModules');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -25,8 +27,12 @@ if (__DEV__) {
   require('RCTRenderingPerf');
 }
 
+type Task = (taskData: any) => Promise<void>;
+type TaskProvider = () => Task;
+
 var runnables = {};
 var runCount = 1;
+const tasks: Map<string, TaskProvider> = new Map();
 
 type ComponentProvider = () => ReactClass<any>;
 
@@ -102,6 +108,40 @@ var AppRegistry = {
   unmountApplicationComponentAtRootTag: function(rootTag : number) {
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
+
+  /**
+   * Register a headless task. A headless task is a bit of code that runs without a UI.
+   * @param taskKey the key associated with this task
+   * @param task    a promise returning function that takes some data passed from the native side as
+   *                the only argument; when the promise is resolved or rejected the native side is
+   *                notified of this event and it may decide to destroy the JS context.
+   */
+  registerHeadlessTask: function(taskKey: string, task: TaskProvider): void {
+    if (tasks.has(taskKey)) {
+      console.warn(`registerHeadlessTask called multiple times for same key '${taskKey}'`);
+    }
+    tasks.set(taskKey, task);
+  },
+
+  /**
+   * Only called from native code. Starts a headless task.
+   *
+   * @param taskId the native id for this task instance to keep track of its execution
+   * @param taskKey the key for the task to start
+   * @param data the data to pass to the task
+   */
+  startHeadlessTask: function(taskId: number, taskKey: string, data: any): void {
+    const taskProvider = tasks.get(taskKey);
+    if (!taskProvider) {
+      throw new Error(`No task registered for key ${taskKey}`);
+    }
+    taskProvider()(data)
+      .then(() => HeadlessJsTaskSupport.notifyTaskFinished(taskId))
+      .catch(reason => {
+        console.error(reason);
+        HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      });
+  }
 
 };
 

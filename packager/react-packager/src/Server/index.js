@@ -635,6 +635,7 @@ class Server {
       return;
     }
 
+    const options = this._getOptionsFromUrl(req.url);
     const startReqEventId = Activity.startEvent(
       'Requesting bundle',
       {
@@ -642,9 +643,10 @@ class Server {
       },
       {
         telemetric: true,
+        entryPoint: options.entryFile,
+        details: req.url,
       },
     );
-    const options = this._getOptionsFromUrl(req.url);
     debug('Getting bundle for request');
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
