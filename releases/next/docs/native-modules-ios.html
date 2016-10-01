@@ -7,7 +7,14 @@
 
 <span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-@end</div><p>React Native will not expose any methods of <code>CalendarManager</code> to JavaScript unless explicitly told to. This is done using the <code>RCT_EXPORT_METHOD()</code> macro:</p><div class="prism language-javascript"><span class="token function">RCT_EXPORT_METHOD<span class="token punctuation">(</span></span>addEvent<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>name location<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>location<span class="token punctuation">)</span>
+@end</div><p>React Native will not expose any methods of <code>CalendarManager</code> to JavaScript unless explicitly told to. This is done using the <code>RCT_EXPORT_METHOD()</code> macro:</p><div class="prism language-javascript">#import <span class="token string">&quot;CalendarManager.h&quot;</span>
+#import <span class="token string">&quot;RCTLog.h&quot;</span>
+
+@implementation CalendarManager
+
+<span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">RCT_EXPORT_METHOD<span class="token punctuation">(</span></span>addEvent<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>name location<span class="token punctuation">:</span><span class="token punctuation">(</span>NSString <span class="token operator">*</span><span class="token punctuation">)</span>location<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
   <span class="token function">RCTLogInfo<span class="token punctuation">(</span></span>@<span class="token string">&quot;Pretending to create an event %@ at %@&quot;</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> location<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span></div><p>Now, from your JavaScript file you can call the method like this:</p><div class="prism language-javascript">import <span class="token punctuation">{</span> NativeModules <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
