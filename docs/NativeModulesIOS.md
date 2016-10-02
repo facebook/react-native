@@ -42,6 +42,13 @@ RCT_EXPORT_MODULE();
 React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly told to. This is done using the `RCT_EXPORT_METHOD()` macro:
 
 ```objective-c
+#import "CalendarManager.h"
+#import "RCTLog.h"
+
+@implementation CalendarManager
+
+RCT_EXPORT_MODULE();
+
 RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 {
   RCTLogInfo(@"Pretending to create an event %@ at %@", name, location);
@@ -252,14 +259,14 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 
 ## Depedency Injection
 The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).
- 
+
 You can do this by creating a class that implements the RTCBridgeDelegate Protocol, initializing an RTCBridge with the delegate as an argument and initialising a RTCRootView with the initialized bridge.
- 
+
 ```objective-c
 id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRTCBridgeDelegate alloc] init];
- 
+
 RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:nil];
- 
+
 RCTRootView *rootView = [[RCTRootView alloc]
                         initWithBridge:bridge
                             moduleName:kModuleName
