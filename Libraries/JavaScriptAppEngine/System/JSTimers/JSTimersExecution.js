@@ -7,58 +7,88 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule JSTimersExecution
+ * @flow
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-var keyMirror = require('fbjs/lib/keyMirror');
-var performanceNow = require('fbjs/lib/performanceNow');
-var warning = require('fbjs/lib/warning');
-var Systrace = require('Systrace');
+const Systrace = require('Systrace');
+
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
+const performanceNow = require('fbjs/lib/performanceNow');
+const warning = require('fbjs/lib/warning');
+
+// These timing contants should be kept in sync with the ones in native ios and
+// android `RCTTiming` module.
+const FRAME_DURATION = 1000 / 60;
+const IDLE_CALLBACK_FRAME_DEADLINE = 1;
+
+let hasEmittedTimeDriftWarning = false;
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
  * external clock signal, all that's stored here is timerID, timer type, and
  * callback.
  */
-var JSTimersExecution = {
+const JSTimersExecution = {
   GUID: 1,
   Type: keyMirror({
     setTimeout: null,
     setInterval: null,
     requestAnimationFrame: null,
     setImmediate: null,
+    requestIdleCallback: null,
   }),
 
-  // Parallel arrays:
+  // Parallel arrays
   callbacks: [],
   types: [],
   timerIDs: [],
   immediates: [],
+  requestIdleCallbacks: [],
+  identifiers: ([] : Array<null | {methodName: string}>),
+
+  errors: (null : ?[Error]),
 
   /**
    * Calls the callback associated with the ID. Also unregister that callback
    * if it was a one time timer (setTimeout), and not unregister it if it was
    * recurring (setInterval).
    */
-  callTimer: function(timerID) {
-    warning(timerID <= JSTimersExecution.GUID, 'Tried to call timer with ID ' + timerID + ' but no such timer exists');
-    var timerIndex = JSTimersExecution.timerIDs.indexOf(timerID);
+  callTimer(timerID: number, frameTime: number) {
+    warning(
+      timerID <= JSTimersExecution.GUID,
+      'Tried to call timer with ID %s but no such timer exists.',
+      timerID
+    );
+
     // timerIndex of -1 means that no timer with that ID exists. There are
     // two situations when this happens, when a garbage timer ID was given
     // and when a previously existing timer was deleted before this callback
     // fired. In both cases we want to ignore the timer id, but in the former
     // case we warn as well.
+    const timerIndex = JSTimersExecution.timerIDs.indexOf(timerID);
     if (timerIndex === -1) {
       return;
     }
-    var type = JSTimersExecution.types[timerIndex];
-    var callback = JSTimersExecution.callbacks[timerIndex];
+
+    const type = JSTimersExecution.types[timerIndex];
+    const callback = JSTimersExecution.callbacks[timerIndex];
+    if (!callback || !type) {
+      console.error('No callback found for timerID ' + timerID);
+      return;
+    }
+
+    if (__DEV__) {
+      const identifier = JSTimersExecution.identifiers[timerIndex] || {};
+      Systrace.beginEvent('Systrace.callTimer: ' + identifier.methodName);
+    }
 
     // Clear the metadata
     if (type === JSTimersExecution.Type.setTimeout ||
         type === JSTimersExecution.Type.setImmediate ||
-        type === JSTimersExecution.Type.requestAnimationFrame) {
+        type === JSTimersExecution.Type.requestAnimationFrame ||
+        type === JSTimersExecution.Type.requestIdleCallback) {
       JSTimersExecution._clearIndex(timerIndex);
     }
 
@@ -68,16 +98,30 @@ var JSTimersExecution = {
           type === JSTimersExecution.Type.setImmediate) {
         callback();
       } else if (type === JSTimersExecution.Type.requestAnimationFrame) {
-        var currentTime = performanceNow();
-        callback(currentTime);
+        callback(performanceNow());
+      } else if (type === JSTimersExecution.Type.requestIdleCallback) {
+        callback({
+          timeRemaining: function() {
+            // TODO: Optimisation: allow running for longer than one frame if
+            // there are no pending JS calls on the bridge from native. This
+            // would require a way to check the bridge queue synchronously.
+            return Math.max(0, FRAME_DURATION - (performanceNow() - frameTime));
+          },
+        });
       } else {
         console.error('Tried to call a callback with invalid type: ' + type);
-        return;
       }
     } catch (e) {
-      // Don't rethrow so that we can run every other timer.
-      JSTimersExecution.errors = JSTimersExecution.errors || [];
-      JSTimersExecution.errors.push(e);
+      // Don't rethrow so that we can run all timers.
+      if (!JSTimersExecution.errors) {
+        JSTimersExecution.errors = [e];
+      } else {
+        JSTimersExecution.errors.push(e);
+      }
+    }
+
+    if (__DEV__) {
+      Systrace.endEvent();
     }
   },
 
@@ -85,19 +129,24 @@ var JSTimersExecution = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers: function(timerIDs) {
-    invariant(timerIDs.length !== 0, 'Probably shouldn\'t call "callTimers" with no timerIDs');
+  callTimers(timerIDs: [number]) {
+    invariant(
+      timerIDs.length !== 0,
+      'Cannot call `callTimers` with an empty list of IDs.'
+    );
 
     JSTimersExecution.errors = null;
-    timerIDs.forEach(JSTimersExecution.callTimer);
+    for (let i = 0; i < timerIDs.length; i++) {
+      JSTimersExecution.callTimer(timerIDs[i], 0);
+    }
 
-    var errors = JSTimersExecution.errors;
+    const errors = JSTimersExecution.errors;
     if (errors) {
-      var errorCount = errors.length;
+      const errorCount = errors.length;
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
         // error one at a time
-        for (var ii = 1; ii < errorCount; ii++) {
+        for (let ii = 1; ii < errorCount; ii++) {
           require('JSTimers').setTimeout(
             ((error) => { throw error; }).bind(null, errors[ii]),
             0
@@ -108,23 +157,50 @@ var JSTimersExecution = {
     }
   },
 
+  callIdleCallbacks: function(frameTime: number) {
+    if (FRAME_DURATION - (performanceNow() - frameTime) < IDLE_CALLBACK_FRAME_DEADLINE) {
+      return;
+    }
+
+    JSTimersExecution.errors = null;
+    if (JSTimersExecution.requestIdleCallbacks.length > 0) {
+      const passIdleCallbacks = JSTimersExecution.requestIdleCallbacks.slice();
+      JSTimersExecution.requestIdleCallbacks = [];
+
+      for (let i = 0; i < passIdleCallbacks.length; ++i) {
+        JSTimersExecution.callTimer(passIdleCallbacks[i], frameTime);
+      }
+    }
+
+    if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+      const { Timing } = require('NativeModules');
+      Timing.setSendIdleEvents(false);
+    }
+
+    if (JSTimersExecution.errors) {
+      JSTimersExecution.errors.forEach((error) =>
+        require('JSTimers').setTimeout(() => { throw error; }, 0)
+      );
+    }
+  },
+
   /**
    * Performs a single pass over the enqueued immediates. Returns whether
    * more immediates are queued up (can be used as a condition a while loop).
    */
-  callImmediatesPass: function() {
+  callImmediatesPass() {
     Systrace.beginEvent('JSTimersExecution.callImmediatesPass()');
 
     // The main reason to extract a single pass is so that we can track
     // in the system trace
     if (JSTimersExecution.immediates.length > 0) {
-      var passImmediates = JSTimersExecution.immediates.slice();
+      const passImmediates = JSTimersExecution.immediates.slice();
       JSTimersExecution.immediates = [];
 
       // Use for loop rather than forEach as per @vjeux's advice
       // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-      for (var i = 0; i < passImmediates.length; ++i) {
-        JSTimersExecution.callTimer(passImmediates[i]);
+      for (let i = 0; i < passImmediates.length; ++i) {
+        JSTimersExecution.callTimer(passImmediates[i], 0);
       }
     }
 
@@ -137,7 +213,7 @@ var JSTimersExecution = {
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
-  callImmediates: function() {
+  callImmediates() {
     JSTimersExecution.errors = null;
     while (JSTimersExecution.callImmediatesPass()) {}
     if (JSTimersExecution.errors) {
@@ -147,10 +223,22 @@ var JSTimersExecution = {
     }
   },
 
-  _clearIndex: function(i) {
+  /**
+   * Called from native (in development) when environment times are out-of-sync.
+   */
+  emitTimeDriftWarning(warningMessage: string) {
+    if (hasEmittedTimeDriftWarning) {
+      return;
+    }
+    hasEmittedTimeDriftWarning = true;
+    console.warn(warningMessage);
+  },
+
+  _clearIndex(i: number) {
     JSTimersExecution.timerIDs[i] = null;
     JSTimersExecution.callbacks[i] = null;
     JSTimersExecution.types[i] = null;
+    JSTimersExecution.identifiers[i] = null;
   },
 };
 

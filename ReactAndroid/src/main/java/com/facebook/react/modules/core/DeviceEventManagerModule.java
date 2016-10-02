@@ -13,16 +13,20 @@ import javax.annotation.Nullable;
 
 import android.net.Uri;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.SupportsWebWorkers;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
+@ReactModule(name = "DeviceEventManager")
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   @SupportsWebWorkers
@@ -58,9 +62,11 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
    * Sends an event to the JS instance that a new intent was received.
    */
   public void emitNewIntentReceived(Uri uri) {
+    WritableMap map = Arguments.createMap();
+    map.putString("url", uri.toString());
     getReactApplicationContext()
         .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("url", uri.toString());
+        .emit("url", map);
   }
 
   /**

@@ -8,6 +8,7 @@
 
 var React = require('React');
 var Prism = require('Prism');
+var WebPlayer = require('WebPlayer');
 var Header = require('Header');
 
 /**
@@ -827,7 +828,16 @@ Parser.prototype.tok = function() {
       );
     }
     case 'code': {
-      return <Prism>{this.token.text}</Prism>;
+      var lang = this.token.lang
+        , text = this.token.text;
+
+      if (lang && lang.indexOf('ReactNativeWebPlayer') === 0) {
+        return (
+          <WebPlayer params={lang.split('?')[1]}>{text}</WebPlayer>
+        );
+      }
+
+      return <Prism>{text}</Prism>;
     }
     case 'table': {
       var table = []

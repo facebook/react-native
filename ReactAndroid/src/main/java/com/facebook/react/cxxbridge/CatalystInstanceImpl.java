@@ -75,6 +75,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final NativeModuleRegistry mJavaRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private boolean mInitialized = false;
+  private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
 
@@ -162,6 +163,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
   /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
+  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
 
   @Override
   public void runJSBundle() {
@@ -169,6 +171,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSBundleHasLoaded = true;
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
+    // Loading the bundle is queued on the JS thread, but may not have
+    // run yet.  It's save to set this here, though, since any work it
+    // gates will be queued on the JS thread behind the load.
+    mAcceptCalls = true;
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
   }
@@ -177,22 +183,23 @@ public class CatalystInstanceImpl implements CatalystInstance {
     ExecutorToken token,
     String module,
     String method,
-    NativeArray arguments,
-    String tracingName);
+    NativeArray arguments);
 
   @Override
   public void callFunction(
       ExecutorToken executorToken,
       final String module,
       final String method,
-      final NativeArray arguments,
-      final String tracingName) {
+      final NativeArray arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
       return;
     }
+    if (!mAcceptCalls) {
+      throw new RuntimeException("Attempt to call JS function before JS bundle is loaded.");
+    }
 
-    callJSFunction(executorToken, module, method, arguments, tracingName);
+    callJSFunction(executorToken, module, method, arguments);
   }
 
   private native void callJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
@@ -250,6 +257,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
+    // We assume that the instance manager blocks on running the JS bundle. If
+    // that changes, then we need to set mAcceptCalls just after posting the
+    // task that will run the js bundle.
+    Assertions.assertCondition(
+        mAcceptCalls,
+        "RunJSBundle hasn't completed.");
     mInitialized = true;
     mJavaRegistry.notifyCatalystInstanceInitialized();
   }

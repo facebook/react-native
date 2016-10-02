@@ -13,7 +13,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var ReactNative = require('ReactNative');
+var ReactNative = require('react/lib/ReactNative');
 var View = require('View');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -50,14 +50,15 @@ var styles = StyleSheet.create({
 
 var A, B, C, D;
 
-var MeasureLayoutTestApp = React.createClass({
-  componentDidMount: function() {
+class MeasureLayoutTestApp extends React.Component {
+  componentDidMount() {
     A = ReactNative.findNodeHandle(this.refs.A);
     B = ReactNative.findNodeHandle(this.refs.B);
     C = ReactNative.findNodeHandle(this.refs.C);
     D = ReactNative.findNodeHandle(this.refs.D);
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <View ref="A" style={styles.A} collapsable={false}>
         <View ref="B" style={styles.B} collapsable={false}>
@@ -66,8 +67,8 @@ var MeasureLayoutTestApp = React.createClass({
         <View ref="D" style={styles.D} collapsable={false} />
       </View>
     );
-  },
-});
+  }
+}
 
 function shouldNotCallThisCallback() {
   assertEquals(false, true);

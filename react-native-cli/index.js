@@ -102,6 +102,7 @@ if (cli) {
       );
       process.exit(1);
     } else {
+      if (!argv.verbose) console.log('This may take some time...');
       init(commands[1], argv.verbose, argv.version);
     }
     break;
@@ -223,13 +224,13 @@ function run(root, projectName, rnPackage) {
 
     checkNodeVersion();
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
 
 function runVerbose(root, projectName, rnPackage) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
+  var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
       console.error('`npm install --save --save-exact react-native` failed');
@@ -263,7 +264,7 @@ function checkForVersionArgument() {
     try {
       console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
     } catch (e) {
-      console.log('react-native: n/a - not inside a React Native project directory')
+      console.log('react-native: n/a - not inside a React Native project directory');
     }
     process.exit();
   }

@@ -7,15 +7,15 @@ install:
   - export NVM_DIR="/Users/travis/build/facebook/.nvm"
   - brew install nvm
   - source $(brew --prefix nvm)/nvm.sh
-  # testing with npm@2 for diversity, Circle tests with npm@3
-  - nvm install 4.4.3
+  # TODO npm 2 started stalling on Travis, t11852928
+  - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
   - npm config set progress=false
-  - npm install
+  - travis_wait npm install
 
 script:
-  - if [[ "$TEST_TYPE" = objc ]]; then travis_retry ./scripts/objc-test.sh; fi
+  - if [[ "$TEST_TYPE" = objc ]]; then travis_retry travis_wait ./scripts/objc-test.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi

@@ -11,6 +11,8 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
+
 /**
  * Default name for the JS thread
  */
@@ -24,6 +26,34 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
  * context. Note that this notification won't fire when debugging in Chrome.
  */
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
+
+/**
+ * A key to a reference to a JSContext class, held in the the current thread's
+ *  dictionary. The reference would point to the JSContext class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSCurrentContext()`
+ *  accessor, which will return the current JSContext in the currently used VM.
+ */
+RCT_EXTERN NSString *const RCTFBJSContextClassKey;
+
+/**
+ * A key to a reference to a JSValue class, held in the the current thread's
+ *  dictionary. The reference would point to the JSValue class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSValue()` accessor.
+ */
+RCT_EXTERN NSString *const RCTFBJSValueClassKey;
+
+/**
+ * @experimental
+ * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
+ * Avoid using this; it's experimental and is not likely to be supported long-term.
+ */
+@interface RCTJSContextProvider : NSObject
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+@end
 
 /**
  * Uses a JavaScriptCore context as the execution engine.
@@ -44,11 +74,27 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
- * Create a NSError from a JSError object.
- *
- * If available, the error's userInfo property will contain the JS stacktrace under
- * the RCTJSStackTraceKey key.
+ * @experimental
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ * The returned executor has already executed the supplied application script synchronously.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
+ * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
  */
-- (NSError *)convertJSErrorToNSError:(JSValueRef)jsError context:(JSContextRef)context;
++ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
+                                     applicationScript:(NSData *)applicationScript
+                                             sourceURL:(NSURL *)sourceURL
+                                             JSContext:(JSContext **)JSContext
+                                                 error:(NSError **)error;
+
+/**
+ * Invokes the given module/method directly. The completion block will be called with the
+ * JSValue returned by the JS context.
+ *
+ * Currently this does not flush the JS-to-native message queue.
+ */
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+             jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
 
 @end

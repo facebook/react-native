@@ -15,9 +15,9 @@ var AlgoliaDocSearch = require('AlgoliaDocSearch');
 var HeaderLinks = React.createClass({
   linksInternal: [
     {section: 'docs', href: 'docs/getting-started.html', text: 'Docs', target: '.nav-docs'},
-    {section: 'support', href: 'support.html', text: 'Support'},
-    {section: 'showcase', href: 'showcase.html', text: 'Showcase'},
-    {section: 'blog', href: 'blog/', text: 'Blog'},
+    {section: 'support', href: '/react-native/support.html', text: 'Help'},
+    {section: 'showcase', href: '/react-native/showcase.html', text: 'Showcase'},
+    {section: 'blog', href: '/react-native/blog/', text: 'Blog'},
   ],
   linksExternal: [
     {section: 'github', href: 'https://github.com/facebook/react-native', text: 'GitHub'},

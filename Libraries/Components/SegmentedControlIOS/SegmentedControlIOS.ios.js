@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
+var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -20,8 +20,8 @@ var View = require('View');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  values: Array<string>;
-  enabled: boolean;
+  values: Array<string>,
+  enabled: boolean,
 };
 
 var SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';

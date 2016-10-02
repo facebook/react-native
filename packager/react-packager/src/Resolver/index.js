@@ -11,7 +11,7 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('node-haste');
+const DependencyGraph = require('../node-haste');
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
@@ -93,7 +93,6 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'react',
         'react-native',
         'react-native-windows',
         // Parse requires AsyncStorage. They will
@@ -106,7 +105,7 @@ class Resolver {
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
+      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
@@ -266,8 +265,8 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDebugInfo() {
-    return this._depGraph.getDebugInfo();
+  getDependecyGraph() {
+    return this._depGraph;
   }
 }
 
@@ -285,7 +284,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
 
 function definePolyfillCode(code,) {
   return [
-    `(function(global) {`,
+    '(function(global) {',
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');

@@ -18,12 +18,12 @@ var normalizeColor = require('normalizeColor');
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
-  inputRange: Array<number>;
-  outputRange: (Array<number> | Array<string>);
-  easing?: ((input: number) => number);
-  extrapolate?: ExtrapolateType;
-  extrapolateLeft?: ExtrapolateType;
-  extrapolateRight?: ExtrapolateType;
+  inputRange: Array<number>,
+  outputRange: (Array<number> | Array<string>),
+  easing?: ((input: number) => number),
+  extrapolate?: ExtrapolateType,
+  extrapolateLeft?: ExtrapolateType,
+  extrapolateRight?: ExtrapolateType,
 };
 
 var linear = (t) => t;
@@ -163,7 +163,7 @@ function colorToRgba(input: string): string {
     return input;
   }
 
-  int32Color = int32Color || 0; // $FlowIssue
+  int32Color = int32Color || 0;
 
   var r = (int32Color & 0xff000000) >>> 24;
   var g = (int32Color & 0x00ff0000) >>> 16;

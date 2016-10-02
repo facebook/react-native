@@ -12,9 +12,9 @@
 'use strict';
 
 export type StackFrame = {
-  file: string;
-  lineNumber: number;
-  column: number;
+  file: string,
+  lineNumber: number,
+  column: number,
 };
 
 var stacktraceParser = require('stacktrace-parser');
@@ -26,7 +26,7 @@ function parseErrorStack(e: Error): Array<StackFrame> {
 
   var stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
 
-  var framesToPop = e.framesToPop || 0;
+  var framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
   while (framesToPop--) {
     stack.shift();
   }

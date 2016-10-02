@@ -24,15 +24,18 @@ var subscriptions = [];
 var updatesEnabled = false;
 
 type GeoOptions = {
-  timeout: number;
-  maximumAge: number;
-  enableHighAccuracy: bool;
-  distanceFilter: number;
+  timeout: number,
+  maximumAge: number,
+  enableHighAccuracy: bool,
+  distanceFilter: number,
 }
 
 /**
- * The Geolocation API follows the web spec:
+ * The Geolocation API extends the web spec:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
+ *
+ * As a browser polyfill, this API is available through the `navigator.geolocation`
+ * global - you do not need to `import` it.
  *
  * ### iOS
  * You need to include the `NSLocationWhenInUseUsageDescription` key
@@ -44,6 +47,9 @@ type GeoOptions = {
  * app's `AndroidManifest.xml`:
  *
  * `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
+ *
+ * Android API >= 18 Positions will also contain a `mocked` boolean to indicate if position
+ * was created from a mock provider.
  *
  */
 var Geolocation = {

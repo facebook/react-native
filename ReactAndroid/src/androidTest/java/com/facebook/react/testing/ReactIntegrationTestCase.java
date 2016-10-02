@@ -22,18 +22,19 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.modules.core.Timing;
-
 import com.facebook.soloader.SoLoader;
 
+import static org.mockito.Mockito.mock;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call
@@ -51,7 +52,8 @@ import com.facebook.soloader.SoLoader;
  */
 public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 
-  private static final long IDLE_TIMEOUT_MS = 15000;
+  // we need a bigger timeout for CI builds because they run on a slow emulator
+  private static final long IDLE_TIMEOUT_MS = 60000;
 
   private @Nullable CatalystInstance mInstance;
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
@@ -137,7 +139,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new Runnable() {
           @Override
           public void run() {
-            Timing timing = new Timing(getContext());
+            Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
             simpleSettableFuture.set(timing);
           }
         });

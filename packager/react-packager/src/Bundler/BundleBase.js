@@ -59,8 +59,10 @@ class BundleBase {
   }
 
   finalize(options) {
-    Object.freeze(this._modules);
-    Object.freeze(this._assets);
+    if (!options.allowUpdates) {
+      Object.freeze(this._modules);
+      Object.freeze(this._assets);
+    }
 
     this._finalized = true;
   }
@@ -76,11 +78,17 @@ class BundleBase {
     return this._source;
   }
 
+  invalidateSource() {
+    this._source = null;
+  }
+
   assertFinalized(message) {
     if (!this._finalized) {
       throw new Error(message || 'Bundle needs to be finalized before getting any source');
     }
   }
+
+  setRamGroups() {}
 
   toJSON() {
     return {

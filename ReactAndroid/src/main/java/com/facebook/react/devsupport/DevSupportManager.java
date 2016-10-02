@@ -9,9 +9,12 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -36,8 +39,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   String getSourceUrl();
   String getJSBundleURLForRemoteDebugging();
   String getDownloadedJSBundleFile();
+  String getHeapCaptureUploadUrl();
   boolean hasUpToDateJSBundleInCache();
   void reloadSettings();
   void handleReloadJS();
   void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback);
+  @Nullable String getLastErrorTitle();
+  @Nullable StackFrame[] getLastErrorStack();
 }

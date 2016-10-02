@@ -119,7 +119,14 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_REMAP_VIEW_PROPERTY(overflow, clipsToBounds, css_clip_t)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
+{
+  if (json) {
+    view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
+  } else {
+    view.clipsToBounds = defaultView.clipsToBounds;
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
@@ -260,6 +267,11 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
 
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
+
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat)
@@ -283,12 +295,17 @@ RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, css_flex_direction_t)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, css_wrap_type_t)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, css_justify_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, css_align_t)
-RCT_EXPORT_SHADOW_PROPERTY(position, css_position_type_t)
+RCT_EXPORT_SHADOW_PROPERTY(flexGrow, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(flexShrink, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(flexBasis, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
+
+RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 

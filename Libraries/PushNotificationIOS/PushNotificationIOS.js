@@ -19,13 +19,37 @@ const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManage
 
 const _notifHandlers = new Map();
 
-//TODO: remove this once all call sites for popInitialNotification() have been removed
-let _initialNotification = RCTPushNotificationManager &&
-  RCTPushNotificationManager.initialNotification;
-
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
+
+/**
+ * An event emitted by PushNotificationIOS.
+ */
+export type PushNotificationEventName = $Enum<{
+  /**
+   * Fired when a remote notification is received. The handler will be invoked
+   * with an instance of `PushNotificationIOS`.
+   */
+  notification: string,
+  /**
+   * Fired when a local notification is received. The handler will be invoked
+   * with an instance of `PushNotificationIOS`.
+   */
+  localNotification: string,
+  /**
+   * Fired when the user registers for remote notifications. The handler will be
+   * invoked with a hex string representing the deviceToken.
+   */
+  register: string,
+  /**
+   * Fired when the user fails to register for remote notifications. Typically
+   * occurs when APNS is having issues, or the device is a simulator. The
+   * handler will be invoked with {message: string, code: number, details: any}.
+   */
+  registrationError: string,
+}>;
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -60,6 +84,11 @@ const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
  *    {
  *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
  *    }
+ *    // Required for the registrationError event.
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+ *    {
+ *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+ *    }
  *    // Required for the notification event.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
  *    {
@@ -88,7 +117,7 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo`  : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app’s icon badge. The default value of this property is 0, which means that no badge is displayed.
+   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
   static presentLocalNotification(details: Object) {
     RCTPushNotificationManager.presentLocalNotification(details);
@@ -105,7 +134,7 @@ class PushNotificationIOS {
    * - `soundName` : The sound played when the notification is fired (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
-   * - `applicationIconBadgeNumber` (optional) : The number to display as the app’s icon badge. Setting the number to 0 removes the icon badge.
+   * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
    */
   static scheduleLocalNotification(details: Object) {
     RCTPushNotificationManager.scheduleLocalNotification(details);
@@ -162,18 +191,21 @@ class PushNotificationIOS {
    *   handler will be invoked with an instance of `PushNotificationIOS`.
    * - `register`: Fired when the user registers for remote notifications. The
    *   handler will be invoked with a hex string representing the deviceToken.
+   * - `registrationError`: Fired when the user fails to register for remote
+   *   notifications. Typically occurs when APNS is having issues, or the device
+   *   is a simulator. The handler will be invoked with
+   *   {message: string, code: number, details: any}.
    */
-  static addEventListener(type: string, handler: Function) {
+  static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener;
     if (type === 'notification') {
       listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
         (notifData) => {
-          notifData.remote = true;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -181,7 +213,6 @@ class PushNotificationIOS {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
         (notifData) => {
-          notifData.remote = false;
           handler(new PushNotificationIOS(notifData));
         }
       );
@@ -192,6 +223,13 @@ class PushNotificationIOS {
           handler(registrationInfo.deviceToken);
         }
       );
+    } else if (type === 'registrationError') {
+      listener = PushNotificationEmitter.addListener(
+        NOTIF_REGISTRATION_ERROR_EVENT,
+        (errorInfo) => {
+          handler(errorInfo);
+        }
+      );
     }
     _notifHandlers.set(handler, listener);
   }
@@ -200,10 +238,10 @@ class PushNotificationIOS {
    * Removes the event listener. Do this in `componentWillUnmount` to prevent
    * memory leaks
    */
-  static removeEventListener(type: string, handler: Function) {
+  static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register` and `localNotification` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {
@@ -286,23 +324,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * DEPRECATED: An initial notification will be available if the app was
-   * cold-launched from a notification.
-   *
-   * The first caller of `popInitialNotification` will get the initial
-   * notification object, or `null`. Subsequent invocations will return null.
-   */
-  static popInitialNotification() {
-    console.warn('PushNotificationIOS.popInitialNotification() is deprecated. Use getInitialNotification() instead.');
-    var initialNotification = _initialNotification &&
-      new PushNotificationIOS(_initialNotification);
-    _initialNotification = null;
-    return initialNotification;
-  }
-
-  /**
-   * If the app launch was triggered by a push notification,
-   * it will give the notification object, otherwise it will give `null`
+   * This method returns a promise that resolves to either the notification
+   * object if the app was launched by a push notification, or `null` otherwise.
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
     return RCTPushNotificationManager.getInitialNotification().then(notification => {
@@ -313,7 +336,7 @@ class PushNotificationIOS {
   /**
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
-   * `popInitialNotification` is sufficient
+   * `getInitialNotification` is sufficient
    */
   constructor(nativeNotif: Object) {
     this._data = {};

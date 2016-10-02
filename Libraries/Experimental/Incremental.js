@@ -84,12 +84,12 @@ export type Props = {
   * Called when all the decendents have finished rendering and mounting
   * recursively.
   */
- onDone?: () => void;
+ onDone?: () => void,
  /**
   * Tags instances and associated tasks for easier debugging.
   */
- name: string;
- children?: any;
+ name: string,
+ children?: any,
 };
 type DefaultProps = {
   name: string,
@@ -176,11 +176,11 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
 }
 
 export type Context = {
-  incrementalGroupEnabled: boolean;
+  incrementalGroupEnabled: boolean,
   incrementalGroup: ?{
-    groupId: string;
-    incrementalCount: number;
-  };
+    groupId: string,
+    incrementalCount: number,
+  },
 };
 
 module.exports = Incremental;

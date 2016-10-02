@@ -16,6 +16,7 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTBridgeModule.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
@@ -58,11 +59,23 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = RCTBridgeModuleNameForClass(_managerClass);
-    RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
-    if ([_name hasSuffix:@"Manager"]) {
-      _name = [_name substringToIndex:_name.length - @"Manager".length];
+    // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
+    // We want to get rid of RCT and RK prefixes, but a lot of JS code still references
+    // view names by prefix. So, while RCTBridgeModuleNameForClass now drops these
+    // prefixes by default, we'll still keep them around here.
+    NSString *name = [managerClass moduleName];
+    if (name.length == 0) {
+      name = NSStringFromClass(managerClass);
     }
+    if ([name hasPrefix:@"RK"]) {
+      name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
+    }
+    if ([name hasSuffix:@"Manager"]) {
+      name = [name substringToIndex:name.length - @"Manager".length];
+    }
+
+    RCTAssert(name.length, @"Invalid moduleName '%@'", name);
+    _name = name;
 
     _implementsUIBlockToAmendWithShadowViewRegistry = NO;
     Class cls = _managerClass;
@@ -91,7 +104,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIView *view = [self.manager view];
   view.reactTag = tag;
+#if !TARGET_OS_TV
   view.multipleTouchEnabled = YES;
+#endif
   view.userInteractionEnabled = YES; // required for touch handling
   view.layer.allowsGroupOpacity = YES; // required for touch handling
   return view;
@@ -132,8 +147,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // Check for custom setter
     if ([keyPath isEqualToString:@"__custom__"]) {
 
-      // Get custom setter
-      SEL customSetter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""]);
+      // Get custom setter. There is no default view in the shadow case, so the selector is different.
+      NSString *selectorString;
+      if (!shadowView) {
+        selectorString = [NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""];
+      } else {
+        selectorString = [NSString stringWithFormat:@"set_%@:forShadowView:", name];
+      }
+      SEL customSetter = NSSelectorFromString(selectorString);
 
       propBlock = ^(id<RCTComponent> view, id json) {
         RCTComponentData *strongSelf = weakSelf;
@@ -141,13 +162,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           return;
         }
         json = RCTNilIfNull(json);
-        if (!json && !strongSelf->_defaultView) {
-          // Only create default view if json is null
-          strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+        if (!shadowView) {
+          if (!json && !strongSelf->_defaultView) {
+            // Only create default view if json is null
+            strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+          }
+          ((void (*)(id, SEL, id, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
+          );
+        } else {
+          ((void (*)(id, SEL, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view
+          );
         }
-        ((void (*)(id, SEL, id, id, id))objc_msgSend)(
-          strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
-        );
       };
 
     } else {
@@ -343,7 +370,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_viewPropBlocks](view, json);
+    [self propBlockForKey:key inDictionary:self->_viewPropBlocks](view, json);
   }];
 
   if ([view respondsToSelector:@selector(didSetProps:)]) {
@@ -358,7 +385,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
-    [self propBlockForKey:key inDictionary:_shadowPropBlocks](shadowView, json);
+    [self propBlockForKey:key inDictionary:self->_shadowPropBlocks](shadowView, json);
   }];
 
   if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
@@ -368,9 +395,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
     NSArray<NSString *> *events = [self.manager customDirectEventTypes];
+#pragma clang diagnostic pop
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],
         @"customDirectEventTypes must return an array, but %@ returned %@",
@@ -381,8 +411,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
+#pragma clang diagnostic pop
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],

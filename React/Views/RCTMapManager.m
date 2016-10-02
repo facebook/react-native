@@ -103,7 +103,9 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
-  [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
+  if (json) {
+    [view setRegion:[RCTConvert MKCoordinateRegion:json] animated:YES];
+  }
 }
 
 #pragma mark MKMapViewDelegate
@@ -147,6 +149,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+#if !TARGET_OS_TV
 - (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view
                               didChangeDragState:(MKAnnotationViewDragState)newState
                                     fromOldState:(MKAnnotationViewDragState)oldState
@@ -170,6 +173,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     }
   }
 }
+#endif //TARGET_OS_TV
 
 - (MKAnnotationView *)mapView:(RCTMap *)mapView
             viewForAnnotation:(RCTMapAnnotation *)annotation
@@ -278,7 +282,9 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     }
   }
 
+#if !TARGET_OS_TV
   annotationView.draggable = annotation.draggable;
+#endif
 
   return annotationView;
 }

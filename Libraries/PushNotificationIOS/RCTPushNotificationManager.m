@@ -14,22 +14,13 @@
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
-#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
-#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
-#define UIUserNotificationTypeNone  UIRemoteNotificationTypeNone
-#define UIUserNotificationType      UIRemoteNotificationType
-
-#endif
-
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
 NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
 
 NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
+NSString *const RCTErrorRemoteNotificationRegistrationFailed = @"E_FAILED_TO_REGISTER_FOR_REMOTE_NOTIFICATIONS";
 
 @implementation RCTConvert (UILocalNotification)
 
@@ -71,6 +62,7 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   formattedLocalNotification[@"category"] = RCTNullIfNil(notification.category);
   formattedLocalNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
   formattedLocalNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
+  formattedLocalNotification[@"remote"] = @NO;
   return formattedLocalNotification;
 }
 
@@ -96,6 +88,10 @@ RCT_EXPORT_MODULE()
                                                name:RCTRemoteNotificationsRegistered
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRemoteNotificationRegistrationError:)
+                                               name:RCTErrorRemoteNotificationRegistrationFailed
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRegisterUserNotificationSettings:)
                                                name:RCTRegisterUserNotificationSettings
                                              object:nil];
@@ -110,26 +106,8 @@ RCT_EXPORT_MODULE()
 {
   return @[@"localNotificationReceived",
            @"remoteNotificationReceived",
-           @"remoteNotificationsRegistered"];
-}
-
-// TODO: Once all JS call sites for popInitialNotification have
-// been removed we can get rid of this
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  NSDictionary<NSString *, id> *initialNotification =
-    self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-
-  UILocalNotification *initialLocalNotification =
-    self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-
-  if (initialNotification) {
-    return @{@"initialNotification": [initialNotification copy]};
-  } else if (initialLocalNotification) {
-    return @{@"initialNotification": RCTFormatLocalNotification(initialLocalNotification)};
-  } else {
-    return @{@"initialNotification": (id)kCFNull};
-  }
+           @"remoteNotificationsRegistered",
+           @"remoteNotificationRegistrationError"];
 }
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
@@ -155,6 +133,13 @@ RCT_EXPORT_MODULE()
                                                     userInfo:@{@"deviceToken" : [hexString copy]}];
 }
 
++ (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTErrorRemoteNotificationRegistrationFailed
+                                                      object:self
+                                                    userInfo:@{@"error": error}];
+}
+
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
@@ -176,12 +161,25 @@ RCT_EXPORT_MODULE()
 
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
-  [self sendEventWithName:@"remoteNotificationReceived" body:notification.userInfo];
+  NSMutableDictionary *userInfo = [notification.userInfo mutableCopy];
+  userInfo[@"remote"] = @YES;
+  [self sendEventWithName:@"remoteNotificationReceived" body:userInfo];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
 {
   [self sendEventWithName:@"remoteNotificationsRegistered" body:notification.userInfo];
+}
+
+- (void)handleRemoteNotificationRegistrationError:(NSNotification *)notification
+{
+  NSError *error = notification.userInfo[@"error"];
+  NSDictionary *errorDetails = @{
+    @"message": error.localizedDescription,
+    @"code": @(error.code),
+    @"details": error.userInfo,
+  };
+  [self sendEventWithName:@"remoteNotificationRegistrationError" body:errorDetails];
 }
 
 - (void)handleRegisterUserNotificationSettings:(NSNotification *)notification
@@ -270,19 +268,7 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
     return;
   }
 
-  NSUInteger types = 0;
-  if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-    types = [RCTSharedApplication() currentUserNotificationSettings].types;
-  } else {
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-    types = [RCTSharedApplication() enabledRemoteNotificationTypes];
-
-#endif
-
-  }
-
+  NSUInteger types = [RCTSharedApplication() currentUserNotificationSettings].types;
   callback(@[@{
     @"alert": @((types & UIUserNotificationTypeAlert) > 0),
     @"badge": @((types & UIUserNotificationTypeBadge) > 0),
@@ -329,14 +315,15 @@ RCT_EXPORT_METHOD(cancelLocalNotifications:(NSDictionary<NSString *, id> *)userI
 RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  NSDictionary<NSString *, id> *initialNotification =
-    self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+  NSMutableDictionary<NSString *, id> *initialNotification =
+    [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
 
   UILocalNotification *initialLocalNotification =
     self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
 
   if (initialNotification) {
-    resolve([initialNotification copy]);
+    initialNotification[@"remote"] = @YES;
+    resolve(initialNotification);
   } else if (initialLocalNotification) {
     resolve(RCTFormatLocalNotification(initialLocalNotification));
   } else {

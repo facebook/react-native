@@ -31,15 +31,29 @@ let _enabled = false;
 let _asyncCookie = 0;
 
 const ReactSystraceDevtool = __DEV__ ? {
-  onBeginReconcilerTimer(debugID, timerType) {
-    const displayName = require('ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.${timerType}(${displayName})`);
+  onBeforeMountComponent(debugID) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
   },
-  onEndReconcilerTimer(debugID, timerType) {
+  onMountComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUpdateComponent(debugID) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
+  },
+  onUpdateComponent(debugID) {
+    Systrace.endEvent();
+  },
+  onBeforeUnmountComponent(debugID) {
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
+    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
+  },
+  onUnmountComponent(debugID) {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {
-    const displayName = require('ReactComponentTreeDevtool').getDisplayName(debugID);
+    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
     Systrace.beginEvent(`${displayName}.${timerType}()`);
   },
   onEndLifeCycleTimer(debugID, timerType) {
@@ -53,10 +67,10 @@ const Systrace = {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').addDevtool(ReactSystraceDevtool);
+          require('react/lib/ReactDebugTool').addDevtool(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').removeDevtool(ReactSystraceDevtool);
+          require('react/lib/ReactDebugTool').removeDevtool(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;

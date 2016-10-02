@@ -15,6 +15,7 @@
 const Animated = require('Animated');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
+const I18nManager = require('I18nManager');
 
 const clamp = require('clamp');
 
@@ -37,11 +38,21 @@ type Props = NavigationSceneRendererProps & {
  */
 const {
   ANIMATION_DURATION,
-  DISTANCE_THRESHOLD,
   POSITION_THRESHOLD,
   RESPOND_THRESHOLD,
   Directions,
 } = NavigationCardStackPanResponder;
+
+/**
+ * The threshold (in pixels) to finish the gesture action.
+ */
+const DISTANCE_THRESHOLD = 50;
+
+/**
+ * The threshold to trigger the gesture action. This determines the rate of the
+ * flick when the action will be triggered
+ */
+const VELOCITY_THRESHOLD = 1.5;
 
 /**
  * Pan responder that handles gesture for a card in the cards list.
@@ -93,7 +104,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
     return (
       Math.abs(gesture[axis]) > RESPOND_THRESHOLD &&
       distance > 0 &&
-      index > 0
+      index >= 0
     );
   }
 
@@ -123,6 +134,9 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
+    const currentValue = I18nManager.isRTL && axis === 'dx' ?
+      this._startValue + (gesture[axis] / distance) :
+      this._startValue - (gesture[axis] / distance);
 
     const prevIndex = Math.max(
       0,
@@ -136,7 +150,7 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
     const value = clamp(
       prevIndex,
-      this._startValue - (gesture[axis] / distance),
+      currentValue,
       nextIndex,
     );
 
@@ -159,14 +173,21 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
+    const velocityAxis = isVertical ? 'vy' : 'vx';
     const index = navigationState.index;
-    const distance = gesture[axis];
+    const distance = I18nManager.isRTL && axis === 'dx' ?
+      -gesture[axis] :
+      gesture[axis];
+    const moveSpeed = I18nManager.isRTL && velocityAxis === 'vx' ?
+      -gesture[velocityAxis] :
+      gesture[velocityAxis];
 
     position.stopAnimation((value: number) => {
       this._reset();
       if (
         distance > DISTANCE_THRESHOLD  ||
-        value <= index - POSITION_THRESHOLD
+        value <= index - POSITION_THRESHOLD ||
+        moveSpeed > VELOCITY_THRESHOLD
       ) {
         onNavigateBack && onNavigateBack();
         return;
@@ -174,7 +195,8 @@ class NavigationPagerPanResponder extends NavigationAbstractPanResponder {
 
       if (
         distance < -DISTANCE_THRESHOLD ||
-        value >= index  + POSITION_THRESHOLD
+        value >= index  + POSITION_THRESHOLD ||
+        moveSpeed < -VELOCITY_THRESHOLD
       ) {
         onNavigateForward && onNavigateForward();
       }

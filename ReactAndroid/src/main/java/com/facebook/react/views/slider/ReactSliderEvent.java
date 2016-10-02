@@ -24,8 +24,8 @@ public class ReactSliderEvent extends Event<ReactSliderEvent> {
   private final double mValue;
   private final boolean mFromUser;
 
-  public ReactSliderEvent(int viewId, long timestampMs, double value, boolean fromUser) {
-    super(viewId, timestampMs);
+  public ReactSliderEvent(int viewId, double value, boolean fromUser) {
+    super(viewId);
     mValue = value;
     mFromUser = fromUser;
   }
