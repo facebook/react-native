@@ -233,7 +233,7 @@ public class MainReactPackage extends LazyReactPackage {
       new ReactDropdownPickerManager(),
       new ReactHorizontalScrollViewManager(),
       new ReactImageManager(),
-      new ReactModalHostManager(reactContext),
+      new ReactModalHostManager(),
       new ReactProgressBarViewManager(),
       new ReactRawTextManager(),
       new ReactScrollViewManager(),

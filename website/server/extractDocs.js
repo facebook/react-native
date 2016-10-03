@@ -546,6 +546,7 @@ const apis = [
   '../Libraries/Image/ImageStore.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
+  '../Libraries/Components/Keyboard/Keyboard.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',

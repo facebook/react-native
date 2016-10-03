@@ -27,7 +27,7 @@ declare class Promise<+R> {
   static resolve<T>(object?: Promise<T> | T): Promise<T>;
   static reject<T>(error?: any): Promise<T>;
 
-  static all: Promise$All;
+  static all<Elem, T:Iterable<Elem>>(promises: T): Promise<$TupleMap<T, typeof $await>>;
   static race<T>(promises: Array<Promise<T>>): Promise<T>;
 
   // Non-standard APIs

@@ -10,7 +10,7 @@
 #include <folly/Memory.h>
 
 #include <cxxreact/SystraceSection.h>
-#include <cxxreact/FollySupport.h>
+#include <cxxreact/ModuleRegistry.h>
 
 namespace facebook {
 namespace react {
@@ -42,11 +42,12 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
     , m_delegate(delegate) {
 
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
+  auto moduleRegistry = delegate->getModuleRegistry();
 
   {
     SystraceSection s("collectNativeModuleDescriptions");
-    for (const auto& name : delegate->moduleNames()) {
-      nativeModuleConfig.push_back(delegate->getModuleConfig(name));
+    for (const auto& name : moduleRegistry->moduleNames()) {
+      nativeModuleConfig.push_back(moduleRegistry->getConfig(name));
     }
   }
 
@@ -57,7 +58,7 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 ProxyExecutor::~ProxyExecutor() {

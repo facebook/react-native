@@ -546,11 +546,13 @@ const ScrollView = React.createClass({
 const styles = StyleSheet.create({
   baseVertical: {
     flexGrow: 1,
+    flexShrink: 1,
     flexDirection: 'column',
     overflow: 'scroll',
   },
   baseHorizontal: {
     flexGrow: 1,
+    flexShrink: 1,
     flexDirection: 'row',
     overflow: 'scroll',
   },

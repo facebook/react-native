@@ -143,19 +143,20 @@ class Bundler {
     });
 
     this._resolver = new Resolver({
-      projectRoots: opts.projectRoots,
-      blacklistRE: opts.blacklistRE,
-      polyfillModuleNames: opts.polyfillModuleNames,
-      moduleFormat: opts.moduleFormat,
-      assetRoots: opts.assetRoots,
-      fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
+      assetRoots: opts.assetRoots,
+      blacklistRE: opts.blacklistRE,
       cache: this._cache,
+      extraNodeModules: opts.extraNodeModules,
+      fileWatcher: opts.fileWatcher,
+      minifyCode: this._transformer.minify,
+      moduleFormat: opts.moduleFormat,
+      polyfillModuleNames: opts.polyfillModuleNames,
+      projectRoots: opts.projectRoots,
+      resetCache: opts.resetCache,
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
-      extraNodeModules: opts.extraNodeModules,
-      minifyCode: this._transformer.minify,
     });
 
     this._projectRoots = opts.projectRoots;
@@ -365,10 +366,12 @@ class Bundler {
     finalizeBundle = noop,
   }) {
     const findEventId = Activity.startEvent(
-      'Finding dependencies',
+      'Transforming modules',
       null,
       {
         telemetric: true,
+        entryPoint: entryFile,
+        details: dev ? 'dev' : 'prod',
       },
     );
     const modulesByName = Object.create(null);

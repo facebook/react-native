@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const Activity = require('../Activity');
 const Promise = require('promise');
 const declareOpts = require('../lib/declareOpts');
 const os = require('os');
@@ -90,10 +91,19 @@ class Transformer {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
+    const transformEventId = Activity.startEvent(
+      'Transforming file',
+      fileName,
+      {
+        telemetric: true,
+        silent: true,
+      },
+    );
     return this
       ._transform(this._transformModulePath, fileName, code, options)
       .then(result => {
         debug('done transforming file', fileName);
+        Activity.endEvent(transformEventId);
         return result;
       })
       .catch(error => {
