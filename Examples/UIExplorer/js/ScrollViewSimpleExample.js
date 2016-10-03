@@ -57,6 +57,20 @@ class ScrollViewSimpleExample extends React.Component {
         {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
       </ScrollView>
     );
+    items.push(
+      <ScrollView
+        key={'scrollViewSnap'}
+        horizontal
+        snapToInterval={210}
+        pagingEnabled
+      >
+        {this.makeItems(NUM_ITEMS, [
+          styles.itemWrapper,
+          styles.horizontalItemWrapper,
+          styles.horizontalPagingItemWrapper,
+        ])}
+      </ScrollView>
+    );
 
     var verticalScrollView = (
       <ScrollView style={styles.verticalScrollView}>
@@ -83,7 +97,10 @@ var styles = StyleSheet.create({
   },
   horizontalItemWrapper: {
     padding: 50
-  }
+  },
+  horizontalPagingItemWrapper: {
+    width: 200,
+  },
 });
 
 module.exports = ScrollViewSimpleExample;
