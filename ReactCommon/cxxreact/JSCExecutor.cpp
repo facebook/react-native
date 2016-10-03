@@ -16,13 +16,13 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "FollySupport.h"
 #include "JSCHelpers.h"
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "Value.h"
-
 #include "JSCSamplingProfiler.h"
+#include "JSModulesUnbundle.h"
+#include "ModuleRegistry.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -81,13 +81,20 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
 
 }
 
+#if DEBUG
 static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
     size_t argumentCount,
     const JSValueRef arguments[],
-    JSValueRef *exception);
+    JSValueRef *exception) {
+  String execJSString = Value(ctx, arguments[0]).toString();
+  String jsURL = Value(ctx, arguments[1]).toString();
+  evaluateScript(ctx, execJSString, jsURL);
+  return JSValueMakeUndefined(ctx);
+}
+#endif
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
@@ -111,7 +118,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
 
   {
     SystraceSection s("collectNativeModuleNames");
-    for (auto& name : delegate->moduleNames()) {
+    for (auto& name : delegate->getModuleRegistry()->moduleNames()) {
       nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
     }
   }
@@ -123,7 +130,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 JSCExecutor::JSCExecutor(
@@ -189,6 +196,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   configureJSCForAndroid(m_jscConfig);
   #endif
 
+  // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
@@ -205,14 +213,20 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
   installNativeHook<&JSCExecutor::nativeRequireModuleConfig>("nativeRequireModuleConfig");
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
+  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
+
+  // Websorker support
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+
+  #if DEBUG
+  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
+  #endif
 
   #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
   addNativeTracingHooks(m_context);
@@ -278,11 +292,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-
-    auto length = lseek(fd, 0, SEEK_END);
-    folly::checkUnixError(length, "Couldn't seek to the end of compiled bundle");
-
-    sourceCode = JSCreateCompiledSourceCode(fd, length, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
   } else {
     auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
     if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
@@ -296,7 +306,6 @@ void JSCExecutor::loadApplicationScript(
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
-      jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
@@ -679,7 +688,7 @@ JSValueRef JSCExecutor::nativeRequireModuleConfig(
   }
 
   std::string moduleName = Value(m_context, arguments[0]).toString().str();
-  folly::dynamic config = m_delegate->getModuleConfig(moduleName);
+  folly::dynamic config = m_delegate->getModuleRegistry()->getConfig(moduleName);
   return Value::fromDynamic(m_context, config);
 }
 
@@ -765,18 +774,6 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
     return JSValueMakeUndefined(m_context);
   }
   return Value::fromDynamic(m_context, result.result);
-}
-
-static JSValueRef nativeInjectHMRUpdate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  String execJSString = Value(ctx, arguments[0]).toString();
-  String jsURL = Value(ctx, arguments[1]).toString();
-  evaluateScript(ctx, execJSString, jsURL);
-  return JSValueMakeUndefined(ctx);
 }
 
 } }

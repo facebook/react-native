@@ -11,8 +11,6 @@
 
 #include <folly/dynamic.h>
 
-#include "JSModulesUnbundle.h"
-
 namespace facebook {
 namespace react {
 
@@ -27,7 +25,9 @@ enum {
 };
 
 class JSExecutor;
+class JSModulesUnbundle;
 class MessageQueueThread;
+class ModuleRegistry;
 
 struct MethodCallResult {
   folly::dynamic result;
@@ -44,8 +44,8 @@ class ExecutorDelegate {
                                 std::shared_ptr<MessageQueueThread> queue) = 0;
   virtual std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executor) = 0;
 
-  virtual std::vector<std::string> moduleNames() = 0;
-  virtual folly::dynamic getModuleConfig(const std::string& name) = 0;
+  virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
+
   virtual void callNativeModules(
     JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
