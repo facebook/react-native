@@ -2,8 +2,6 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -17,10 +15,13 @@ import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
+
+import javax.annotation.Nullable;
 
 /**
  * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
@@ -38,6 +39,7 @@ public class ReactActivityDelegate {
   private @Nullable ReactRootView mReactRootView;
   private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private @Nullable PermissionListener mPermissionListener;
+  private @Nullable Callback mPermissionsCallback;
 
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
@@ -117,6 +119,11 @@ public class ReactActivityDelegate {
         getPlainActivity(),
         (DefaultHardwareBackBtnHandler) getPlainActivity());
     }
+
+    if (mPermissionsCallback != null) {
+      mPermissionsCallback.invoke();
+      mPermissionsCallback = null;
+    }
   }
 
   protected void onDestroy() {
@@ -178,13 +185,18 @@ public class ReactActivityDelegate {
   }
 
   public void onRequestPermissionsResult(
-    int requestCode,
-    String[] permissions,
-    int[] grantResults) {
-    if (mPermissionListener != null &&
-      mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-      mPermissionListener = null;
-    }
+    final int requestCode,
+    final String[] permissions,
+    final int[] grantResults) {
+    mPermissionsCallback = new Callback() {
+      @Override
+      public void invoke(Object... args) {
+        if (mPermissionListener != null &&
+        mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+          mPermissionListener = null;
+        }
+      }
+    };
   }
 
   private Context getContext() {

@@ -47,7 +47,7 @@ type Rationale = {
  *                    'so you can take awesome pictures.'
  *       }
  *     )
- *     if (granted) {
+ *     if (granted === PermissionsAndroid.RESULTS.PERMISSION_GRANTED) {
  *       console.log("You can use the camera")
  *     } else {
  *       console.log("Camera permission denied")
@@ -61,6 +61,7 @@ type Rationale = {
 
 class PermissionsAndroid {
   PERMISSIONS: Object;
+  RESULTS: Object;
 
   constructor() {
     /**
@@ -92,6 +93,12 @@ class PermissionsAndroid {
       READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
       WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
     };
+
+    this.RESULTS = {
+      PERMISSION_GRANTED: 'PERMISSION_GRANTED',
+      PERMISSION_DENIED: 'PERMISSION_DENIED',
+      PERMISSION_NEVER_ASK_AGAIN: 'PERMISSION_NEVER_ASK_AGAIN',
+    };
   }
 
   /**
@@ -104,7 +111,7 @@ class PermissionsAndroid {
 
   /**
    * Prompts the user to enable a permission and returns a promise resolving to a
-   * boolean value indicating whether the user allowed or denied the request
+   * string value indicating whether the user allowed or denied the request
    *
    * If the optional rationale argument is included (which is an object with a
    * `title` and `message`), this function checks with the OS whether it is
@@ -127,6 +134,15 @@ class PermissionsAndroid {
       }
     }
     return Permissions.requestPermission(permission);
+  }
+
+  /**
+   * Prompts the user to enable multiple permissions in the same dialog and
+   * returns an object with the permissions as keys and strings as values
+   * indicating whether the user allowed or denied the request
+   */
+  requestMultiplePermissions(permissions: Array<string>) : Promise<Object> {
+    return Permissions.requestMultiplePermissions(permissions);
   }
 }
 
