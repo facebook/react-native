@@ -55,7 +55,7 @@ fi
 XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
 XCODE_SCHEME="UIExplorer-tvOS"
 XCODE_SDK="appletvsimulator"
-XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0"
+XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=9.2"
 
 # Support for environments without xcpretty installed
 set +e
