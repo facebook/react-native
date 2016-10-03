@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
+import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
@@ -99,6 +100,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
     view.setTranslucentBackgroundDrawable(bg == null ?
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+  }
+
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "nativeForegroundAndroid")
+  public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
+    view.setForeground(fg == null
+        ? null
+        : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
   }
 
   @ReactProp(name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
