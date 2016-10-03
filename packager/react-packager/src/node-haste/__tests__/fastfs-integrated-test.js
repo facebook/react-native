@@ -22,13 +22,17 @@ const contents = fs.readFileSync(fileName, 'utf-8');
 
 describe('fastfs:', function() {
   let fastfs;
-  const crawling = Promise.resolve([fileName]);
   const roots = [__dirname];
   const watcher = new EventEmitter();
 
-  beforeEach(function(done) {
-    fastfs = new Fastfs('arbitrary', roots, watcher, {crawling});
-    fastfs.build().then(done);
+  beforeEach(function() {
+    fastfs = new Fastfs(
+      'arbitrary',
+      roots,
+      watcher,
+      [`${__dirname}/fastfs-data`],
+      {}
+    );
   });
 
   describe('partial reading', () => {

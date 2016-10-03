@@ -241,14 +241,14 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     // changes to the haste map can affect resolution of files in the bundle
-    this._bundler
-      .getResolver()
-      .getDependecyGraph()
-      .getHasteMap()
-      .on('change', () => {
+    const dependencyGraph = this._bundler.getResolver().getDependecyGraph();
+
+    dependencyGraph.load().then(() => {
+      dependencyGraph.getHasteMap().on('change', () => {
         debug('Clearing bundle cache due to haste map change');
         this._clearBundles();
       });
+    });
 
     this._debouncedFileChangeHandler = debounceAndBatch(filePaths => {
       // only clear bundles for non-JS changes
@@ -292,7 +292,7 @@ class Server {
   }
 
   buildBundle(options) {
-    return Promise.resolve().then(() => {
+    return this._bundler.getResolver().getDependecyGraph().load().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }
@@ -692,7 +692,11 @@ class Server {
         }
       },
       error => this._handleError(res, JSON.stringify(options), error)
-    ).done();
+    ).catch(error => {
+      process.nextTick(() => {
+        throw error;
+      });
+    });
   }
 
   _symbolicate(req, res) {

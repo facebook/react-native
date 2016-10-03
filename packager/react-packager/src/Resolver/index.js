@@ -57,6 +57,10 @@ const validateOpts = declareOpts({
   minifyCode: {
     type: 'function',
   },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -109,6 +113,8 @@ class Resolver {
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      // for jest-haste-map
+      resetCache: options.resetCache,
     });
 
     this._minifyCode = opts.minifyCode;

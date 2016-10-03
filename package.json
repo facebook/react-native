@@ -166,6 +166,7 @@
     "image-size": "^0.3.5",
     "immutable": "~3.7.6",
     "inquirer": "^0.12.0",
+    "jest-haste-map": "15.0.1",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
