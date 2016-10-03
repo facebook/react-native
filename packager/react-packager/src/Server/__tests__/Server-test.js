@@ -87,6 +87,7 @@ describe('processRequest', () => {
       jest.fn().mockReturnValue({
         getDependecyGraph: jest.fn().mockReturnValue({
           getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+          load: jest.fn(() => Promise.resolve()),
         }),
       });
 

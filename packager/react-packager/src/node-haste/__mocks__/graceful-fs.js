@@ -77,6 +77,15 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
   }
 });
 
+fs.readFileSync.mockImpl(function(filepath, encoding) {
+  const node = getToNode(filepath);
+  // dir check
+  if (node && typeof node === 'object' && node.SYMLINK == null) {
+    throw new Error('Error readFileSync a dir: ' + filepath);
+  }
+  return node;
+});
+
 fs.stat.mockImpl((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
@@ -119,6 +128,31 @@ fs.statSync.mockImpl((filepath) => {
     isSymbolicLink: () => false,
     mtime,
   };
+});
+
+fs.lstat.mockImpl((filepath, callback) => {
+  callback = asyncCallback(callback);
+  let node;
+  try {
+    node = getToNode(filepath);
+  } catch (e) {
+    callback(e);
+    return;
+  }
+
+  if (node && typeof node === 'object') {
+    callback(null, {
+      isDirectory: () => true,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  } else {
+    callback(null, {
+      isDirectory: () => false,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  }
 });
 
 fs.lstatSync.mockImpl((filepath) => {
