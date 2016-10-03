@@ -170,4 +170,28 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
         }
       });
   }
+
+  @ReactMethod
+  public void setStyle(final String style, final Promise res) {
+    final Activity activity = getCurrentActivity();
+    if (activity == null) {
+      res.reject(ERROR_NO_ACTIVITY, ERROR_NO_ACTIVITY_MESSAGE);
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @TargetApi(Build.VERSION_CODES.M)
+          @Override
+          public void run() {
+            View decorView = activity.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+              style.equals("dark-content") ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+            res.resolve(null);
+          }
+        }
+      );
+    }
+  }
 }
