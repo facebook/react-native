@@ -40,12 +40,13 @@ type Props = {
 
 const NavigationHeaderBackButton = (props: Props) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={props.onPress}>
-    <Image style={styles.button} source={require('./assets/back-icon.png')} />
+    {image ? image : <Image style={styles.button} source={require('./assets/back-icon.png')} />}
   </TouchableOpacity>
 );
 
 NavigationHeaderBackButton.propTypes = {
-  onPress: React.PropTypes.func.isRequired
+  onPress: React.PropTypes.func.isRequired,
+  image: React.PropTypes.object
 };
 
 const styles = StyleSheet.create({
