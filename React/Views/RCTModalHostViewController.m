@@ -55,7 +55,6 @@
 {
   return _preferredStatusBarHidden;
 }
-#endif
 
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -73,5 +72,7 @@
   return _supportedInterfaceOrientations;
 }
 #endif
+#endif
+
 
 @end

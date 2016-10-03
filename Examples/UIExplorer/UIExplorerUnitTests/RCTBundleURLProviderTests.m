@@ -73,6 +73,7 @@ static NSURL *ipBundleURL()
 
 - (void)testBundleURL
 {
+#if !TARGET_OS_TV
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = nil;
   NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];
@@ -81,6 +82,7 @@ static NSURL *ipBundleURL()
   } else {
     XCTAssertEqualObjects(URL, localhostBundleURL());
   }
+#endif
 }
 
 - (void)testLocalhostURL

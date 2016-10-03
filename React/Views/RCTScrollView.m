@@ -930,6 +930,15 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 {                                                         \
   return [_scrollView getter];                            \
 }
+  
+#define RCT_EMPTY_BOOL_GETTER_SETTER(setter, getter)      \
+- (void)setter:(BOOL)value                                \
+{                                                         \
+}                                                         \
+- (BOOL)getter                                            \
+{                                                         \
+  return NO;                                              \
+}
 
 RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, alwaysBounceHorizontal, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, alwaysBounceVertical, BOOL)
@@ -946,6 +955,9 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
 #if !TARGET_OS_TV
 RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
+#else
+RCT_EMPTY_BOOL_GETTER_SETTER(setPagingEnabled, isPagingEnabled)
+RCT_EMPTY_BOOL_GETTER_SETTER(setScrollsToTop, scrollsToTop)
 #endif
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
