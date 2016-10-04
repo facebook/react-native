@@ -13,6 +13,8 @@ const AssetServer = require('../AssetServer');
 const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
+const MultipartResponse = require('./MultipartResponse');
+const ProgressBar = require('progress');
 const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
@@ -158,6 +160,9 @@ const bundleOpts = declareOpts({
     type: 'array',
     default: [],
   },
+  onProgress: {
+    type: 'function',
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -192,7 +197,7 @@ const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 
 class Server {
   constructor(options) {
-    const opts = validateOpts(options);
+    const opts = this._opts = validateOpts(options);
 
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
@@ -511,8 +516,13 @@ class Server {
       ).done(() => Activity.endEvent(assetEvent));
   }
 
+  optionsHash(options) {
+    // onProgress is a function, can't be serialized
+    return JSON.stringify(Object.assign({}, options, { onProgress: null }));
+  }
+
   _useCachedOrUpdateOrCreateBundle(options) {
-    const optionsJson = JSON.stringify(options);
+    const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
       this._bundles[optionsJson] = building;
@@ -647,6 +657,24 @@ class Server {
         details: req.url,
       },
     );
+
+    let consoleProgress = () => {};
+    if (process.stdout.isTTY && !this._opts.silent) {
+      const bar = new ProgressBar('transformed :current/:total (:percent)', {
+        complete: '=',
+        incomplete: ' ',
+        width: 40,
+        total: 1,
+      });
+      consoleProgress = debouncedTick(bar);
+    }
+
+    const mres = MultipartResponse.wrap(req, res);
+    options.onProgress = (done, total) => {
+      consoleProgress(done, total);
+      mres.writeChunk({'Content-Type': 'application/json'}, JSON.stringify({done, total}));
+    };
+
     debug('Getting bundle for request');
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
@@ -659,15 +687,16 @@ class Server {
             dev: options.dev,
           });
           debug('Writing response headers');
-          res.setHeader('Content-Type', 'application/javascript');
-          res.setHeader('ETag', p.getEtag());
-          if (req.headers['if-none-match'] === res.getHeader('ETag')){
+          const etag = p.getEtag();
+          mres.setHeader('Content-Type', 'application/javascript');
+          mres.setHeader('ETag', etag);
+
+          if (req.headers['if-none-match'] === etag) {
             debug('Responding with 304');
-            res.statusCode = 304;
-            res.end();
+            mres.writeHead(304);
+            mres.end();
           } else {
-            debug('Writing request body');
-            res.end(bundleSource);
+            mres.end(bundleSource);
           }
           debug('Finished response');
           Activity.endEvent(startReqEventId);
@@ -681,17 +710,17 @@ class Server {
             sourceMap = JSON.stringify(sourceMap);
           }
 
-          res.setHeader('Content-Type', 'application/json');
-          res.end(sourceMap);
+          mres.setHeader('Content-Type', 'application/json');
+          mres.end(sourceMap);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
-          res.setHeader('Content-Type', 'application/json');
-          res.end(assetsList);
+          mres.setHeader('Content-Type', 'application/json');
+          mres.end(assetsList);
           Activity.endEvent(startReqEventId);
         }
       },
-      error => this._handleError(res, JSON.stringify(options), error)
+      error => this._handleError(mres, this.optionsHash(options), error)
     ).catch(error => {
       process.nextTick(() => {
         throw error;
@@ -865,6 +894,25 @@ class Server {
 
 function contentsEqual(array, set) {
   return array.length === set.size && array.every(set.has, set);
+}
+
+function debouncedTick(progressBar) {
+  let n = 0;
+  let start, total;
+
+  return (_, t) => {
+    total = t;
+    n += 1;
+    if (start) {
+      if (progressBar.curr + n >= total || Date.now() - start > 200) {
+        progressBar.total = total;
+        progressBar.tick(n);
+        start = n = 0;
+      }
+    } else {
+      start = Date.now();
+    }
+  };
 }
 
 module.exports = Server;
