@@ -930,7 +930,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 {                                                         \
   return [_scrollView getter];                            \
 }
-  
+
 RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, alwaysBounceHorizontal, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, alwaysBounceVertical, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setBounces, bounces, BOOL)
