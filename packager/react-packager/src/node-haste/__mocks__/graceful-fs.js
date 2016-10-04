@@ -9,6 +9,7 @@
 'use strict';
 
 const fs = jest.genMockFromModule('fs');
+const {dirname} = require.requireActual('path');
 const stream = require.requireActual('stream');
 const noop = () => {};
 
@@ -71,7 +72,11 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
     if (node && typeof node === 'object' && node.SYMLINK == null) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
-    return callback(null, node);
+    if (node == null) {
+      callback(Error('No such file: ' + filepath));
+    } else {
+      callback(null, node);
+    }
   } catch (e) {
     return callback(e);
   }
@@ -245,6 +250,26 @@ fs.createReadStream.mockImpl(path => {
       this.push(null);
     }
   });
+});
+
+fs.createWriteStream.mockImpl(file => {
+  let node;
+  try {
+    node = getToNode(dirname(file));
+  } finally {
+    if (typeof node === 'object') {
+      const writeStream = new stream.Writable({
+        write(chunk) {
+          this.__chunks.push(chunk);
+        }
+      });
+      writeStream.__file = file;
+      writeStream.__chunks = [];
+      return writeStream;
+    } else {
+      throw new Error('Cannot open file ' + file);
+    }
+  }
 });
 
 
