@@ -14,6 +14,7 @@ import java.util.List;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * UIImplementationProvider that creates instances of {@link FlatUIImplementation}.
@@ -22,7 +23,8 @@ public final class FlatUIImplementationProvider extends UIImplementationProvider
   @Override
   public FlatUIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
-      List<ViewManager> viewManagers) {
-    return FlatUIImplementation.createInstance(reactContext, viewManagers);
+      List<ViewManager> viewManagers,
+      EventDispatcher eventDispatcher) {
+    return FlatUIImplementation.createInstance(reactContext, viewManagers, eventDispatcher);
   }
 }

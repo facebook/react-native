@@ -21,8 +21,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -38,7 +38,8 @@ public class FlatUIImplementation extends UIImplementation {
 
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
-      List<ViewManager> viewManagers) {
+      List<ViewManager> viewManagers,
+      EventDispatcher eventDispatcher) {
 
     ReactImageManager reactImageManager = findReactImageManager(viewManagers);
     if (reactImageManager != null) {
@@ -73,7 +74,8 @@ public class FlatUIImplementation extends UIImplementation {
       reactContext,
       reactImageManager,
       viewManagerRegistry,
-      operationsQueue
+      operationsQueue,
+      eventDispatcher
     );
   }
 
@@ -90,8 +92,9 @@ public class FlatUIImplementation extends UIImplementation {
       ReactApplicationContext reactContext,
       @Nullable ReactImageManager reactImageManager,
       ViewManagerRegistry viewManagers,
-      FlatUIViewOperationQueue operationsQueue) {
-    super(reactContext, viewManagers, operationsQueue);
+      FlatUIViewOperationQueue operationsQueue,
+      EventDispatcher eventDispatcher) {
+    super(reactContext, viewManagers, operationsQueue, eventDispatcher);
     mReactContext = reactContext;
     mStateBuilder = new StateBuilder(operationsQueue);
     mReactImageManager = reactImageManager;
@@ -502,17 +505,16 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
-  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
-    super.updateViewHierarchy(eventDispatcher);
-    mStateBuilder.afterUpdateViewHierarchy(eventDispatcher);
+  protected void updateViewHierarchy() {
+    super.updateViewHierarchy();
+    mStateBuilder.afterUpdateViewHierarchy(mEventDispatcher);
   }
 
   @Override
   protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
-      float absoluteY,
-      EventDispatcher eventDispatcher) {
+      float absoluteY) {
     mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
   }
 
