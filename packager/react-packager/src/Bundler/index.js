@@ -8,11 +8,11 @@
  */
 'use strict';
 
+const Promise = require('promise');
+
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
-const ProgressBar = require('progress');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -84,10 +84,6 @@ const validateOpts = declareOpts({
   transformTimeoutInterval: {
     type: 'number',
     required: false,
-  },
-  silent: {
-    type: 'boolean',
-    default: false,
   },
   allowBundleUpdates: {
     type: 'boolean',
@@ -260,6 +256,7 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
+    onProgress,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -306,6 +303,7 @@ class Bundler {
       isolateModuleIDs,
       generateSourceMaps,
       assetPlugins,
+      onProgress,
     });
   }
 
@@ -364,6 +362,7 @@ class Bundler {
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
+    onProgress = noop,
   }) {
     const findEventId = Activity.startEvent(
       'Transforming modules',
@@ -377,17 +376,6 @@ class Bundler {
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgress = noop;
-      if (process.stdout.isTTY && !this._opts.silent) {
-        const bar = new ProgressBar('transformed :current/:total (:percent)', {
-          complete: '=',
-          incomplete: ' ',
-          width: 40,
-          total: 1,
-        });
-        onProgress = debouncedTick(bar);
-      }
-
       resolutionResponse = this.getDependencies({
         entryFile,
         dev,
@@ -773,25 +761,6 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 function filterObject(object, blacklist) {
