@@ -12,6 +12,7 @@
 'use strict';
 
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 export type ComponentInterface = ReactClass<any> | {
   name?: string,
@@ -41,6 +42,7 @@ function verifyPropTypes(
   var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
     if (!componentInterface.propTypes[prop] &&
+        !ReactNativeViewAttributes.UIView[prop] &&
         !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       var message;
