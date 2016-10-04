@@ -58,6 +58,7 @@ class TabBarExample extends React.Component {
       <TabBarIOS
         unselectedTintColor="yellow"
         tintColor="white"
+        unselectedItemTintColor="red"
         barTintColor="darkslateblue">
         <TabBarIOS.Item
           title="Blue Tab"
