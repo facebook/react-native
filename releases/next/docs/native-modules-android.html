@@ -185,7 +185,7 @@ public void <span class="token function">onActivityResult<span class="token punc
   final int resultCode<span class="token punctuation">,</span>
   final Intent intent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
  <span class="token comment" spellcheck="true"> // Your logic here
-</span><span class="token punctuation">}</span></div><p>We will implement a simple image picker to demonstrate this. The image picker will expose the method <code>pickImage</code> to JavaScript, which will return the path of the image when called.</p><div class="prism language-javascript">public class <span class="token class-name">ImagePickerModule</span> extends <span class="token class-name">ReactContextBaseJavaModule</span> implements <span class="token class-name">ActivityEventListener</span> <span class="token punctuation">{</span>
+</span><span class="token punctuation">}</span></div><p>We will implement a simple image picker to demonstrate this. The image picker will expose the method <code>pickImage</code> to JavaScript, which will return the path of the image when called.</p><div class="prism language-javascript">public class <span class="token class-name">ImagePickerModule</span> extends <span class="token class-name">ReactContextBaseJavaModule</span> <span class="token punctuation">{</span>
 
   private static final int IMAGE_PICKER_REQUEST <span class="token operator">=</span> <span class="token number">467081</span><span class="token punctuation">;</span>
   private static final String E_ACTIVITY_DOES_NOT_EXIST <span class="token operator">=</span> <span class="token string">&quot;E_ACTIVITY_DOES_NOT_EXIST&quot;</span><span class="token punctuation">;</span>
@@ -195,11 +195,35 @@ public void <span class="token function">onActivityResult<span class="token punc
 
   private Promise mPickerPromise<span class="token punctuation">;</span>
 
+  private final ActivityEventListener mActivityEventListener <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BaseActivityEventListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    @Override
+    public void <span class="token function">onActivityResult<span class="token punctuation">(</span></span>Activity activity<span class="token punctuation">,</span> int requestCode<span class="token punctuation">,</span> int resultCode<span class="token punctuation">,</span> Intent data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>requestCode <span class="token operator">==</span> IMAGE_PICKER_REQUEST<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>mPickerPromise <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>resultCode <span class="token operator">==</span> Activity<span class="token punctuation">.</span>RESULT_CANCELED<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            mPickerPromise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_PICKER_CANCELLED<span class="token punctuation">,</span> <span class="token string">&quot;Image picker was cancelled&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>resultCode <span class="token operator">==</span> Activity<span class="token punctuation">.</span>RESULT_OK<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            Uri uri <span class="token operator">=</span> intent<span class="token punctuation">.</span><span class="token function">getData<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>uri <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              mPickerPromise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_NO_IMAGE_DATA_FOUND<span class="token punctuation">,</span> <span class="token string">&quot;No image data found&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+              mPickerPromise<span class="token punctuation">.</span><span class="token function">resolve<span class="token punctuation">(</span></span>uri<span class="token punctuation">.</span><span class="token function">toString<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span>
+
+          mPickerPromise <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
   public <span class="token function">ImagePickerModule<span class="token punctuation">(</span></span>ReactApplicationContext reactContext<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">super<span class="token punctuation">(</span></span>reactContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
    <span class="token comment" spellcheck="true"> // Add the listener for `onActivityResult`
-</span>    reactContext<span class="token punctuation">.</span><span class="token function">addActivityEventListener<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span>    reactContext<span class="token punctuation">.</span><span class="token function">addActivityEventListener<span class="token punctuation">(</span></span>mActivityEventListener<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
   @Override
@@ -230,28 +254,6 @@ public void <span class="token function">onActivityResult<span class="token punc
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       mPickerPromise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_FAILED_TO_SHOW_PICKER<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
       mPickerPromise <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span>
-
- <span class="token comment" spellcheck="true"> // You can get the result here
-</span>  @Override
-  public void <span class="token function">onActivityResult<span class="token punctuation">(</span></span>final int requestCode<span class="token punctuation">,</span> final int resultCode<span class="token punctuation">,</span> final Intent intent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>requestCode <span class="token operator">==</span> IMAGE_PICKER_REQUEST<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span>mPickerPromise <span class="token operator">!</span><span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>resultCode <span class="token operator">==</span> Activity<span class="token punctuation">.</span>RESULT_CANCELED<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          mPickerPromise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_PICKER_CANCELLED<span class="token punctuation">,</span> <span class="token string">&quot;Image picker was cancelled&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>resultCode <span class="token operator">==</span> Activity<span class="token punctuation">.</span>RESULT_OK<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          Uri uri <span class="token operator">=</span> intent<span class="token punctuation">.</span><span class="token function">getData<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-          <span class="token keyword">if</span> <span class="token punctuation">(</span>uri <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            mPickerPromise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_NO_IMAGE_DATA_FOUND<span class="token punctuation">,</span> <span class="token string">&quot;No image data found&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-            mPickerPromise<span class="token punctuation">.</span><span class="token function">resolve<span class="token punctuation">(</span></span>uri<span class="token punctuation">.</span><span class="token function">toString<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-
-        mPickerPromise <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><h3><a class="anchor" name="listening-to-lifecycle-events"></a>Listening to LifeCycle events <a class="hash-link" href="docs/native-modules-android.html#listening-to-lifecycle-events">#</a></h3><p>Listening to the activity&#x27;s LifeCycle events such as <code>onResume</code>, <code>onPause</code> etc. is very similar to how we implemented <code>ActivityEventListener</code>. The module must implement <code>LifecycleEventListener</code>. Then, you need to register a listener in the module&#x27;s constructor,</p><div class="prism language-javascript">reactContext<span class="token punctuation">.</span><span class="token function">addLifecycleEventListener<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>Now you can listen to the activity&#x27;s LifeCycle events by implementing the following methods:</p><div class="prism language-javascript">@Override
