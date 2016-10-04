@@ -75,7 +75,74 @@ dropFilter:React.PropTypes.func.isRequired,
 dropAction:React.PropTypes.func.isRequired};var
 
 
-TableHeader=function(_React$Component3){_inherits(TableHeader,_React$Component3);
+ExpanderConfiguration=function(_React$Component3){_inherits(ExpanderConfiguration,_React$Component3);
+function ExpanderConfiguration(props){_classCallCheck(this,ExpanderConfiguration);return _possibleConstructorReturn(this,Object.getPrototypeOf(ExpanderConfiguration).call(this,
+props));
+}_createClass(ExpanderConfiguration,[{key:'render',value:function render()
+{
+var aggrow=this.props.aggrow;
+var expander=this.props.expander;
+return(
+React.createElement(Draggable,{id:'expander:add:'+expander.toString()},
+React.createElement('div',{
+style:{
+width:'auto',
+height:'26px',
+border:'1px solid darkGray',
+margin:'2px'}},
+
+aggrow.getExpanderName(expander))));
+
+
+
+}}]);return ExpanderConfiguration;}(React.Component);var
+
+
+TableConfiguration=function(_React$Component4){_inherits(TableConfiguration,_React$Component4);
+function TableConfiguration(props){_classCallCheck(this,TableConfiguration);var _this4=_possibleConstructorReturn(this,Object.getPrototypeOf(TableConfiguration).call(this,
+props));
+_this4.state={
+expanded:false};return _this4;
+
+}_createClass(TableConfiguration,[{key:'renderExpander',value:function renderExpander(
+ex){
+return React.createElement(ExpanderConfiguration,{aggrow:this.props.aggrow,expander:ex});
+}},{key:'render',value:function render()
+{var _this5=this;
+var expanderText=this.state.expanded?'>>':'<<';
+var aggrow=this.props.aggrow;
+var config=[];
+if(this.state.expanded){
+config=aggrow.getExpanders().map(function(ex){return _this5.renderExpander(ex);});
+}
+return(
+React.createElement('div',{style:{
+width:this.state.expanded?'512px':'26px',
+height:'100%',
+display:'flex',
+flexDirection:'column',
+overflow:'hidden',
+borderLeft:'2px solid black'}},
+
+React.createElement('div',{style:{
+width:'100%',
+height:'26px',
+border:'1px solid darkGray'},
+
+onClick:function onClick(e){return _this5.setState({expanded:!_this5.state.expanded});}},
+expanderText),
+
+config));
+
+
+}}]);return TableConfiguration;}(React.Component);
+
+
+TableConfiguration.propTypes={
+aggrow:React.PropTypes.object.isRequired};var
+
+
+TableHeader=function(_React$Component5){_inherits(TableHeader,_React$Component5);
 function TableHeader(props){_classCallCheck(this,TableHeader);return _possibleConstructorReturn(this,Object.getPrototypeOf(TableHeader).call(this,
 props));
 }_createClass(TableHeader,[{key:'render',value:function render()
@@ -166,13 +233,13 @@ aggrow:React.PropTypes.object.isRequired,
 dropAction:React.PropTypes.func.isRequired};var
 
 
-Table=function(_React$Component4){_inherits(Table,_React$Component4);// eslint-disable-line no-unused-vars
-function Table(props){_classCallCheck(this,Table);var _this4=_possibleConstructorReturn(this,Object.getPrototypeOf(Table).call(this,
+Table=function(_React$Component6){_inherits(Table,_React$Component6);// eslint-disable-line no-unused-vars
+function Table(props){_classCallCheck(this,Table);var _this7=_possibleConstructorReturn(this,Object.getPrototypeOf(Table).call(this,
 props));
-_this4.state={
+_this7.state={
 aggrow:props.aggrow,
 viewport:{top:0,height:100},
-cursor:0};return _this4;
+cursor:0};return _this7;
 
 }_createClass(Table,[{key:'scroll',value:function scroll(
 
@@ -307,30 +374,47 @@ _active.splice(_sIndex,1);
 _active.splice(_dIndex,0,_dragged);
 aggrow.setActiveExpanders(_active);
 this.setState({cursor:0});
+}else if(s.startsWith('expander:add:')){
+var _dIndex2=-1;
+var sExpander=parseInt(s.substring(13),10);
+if(d.startsWith('expander:insert:')){
+_dIndex2=parseInt(d.substr(16),10);
+}else if(d==='divider:insert'){
+_dIndex2=0;
+}else{
+throw'not allowed to drag '+s+' to '+d;
+}
+var _active2=aggrow.getActiveExpanders();
+_active2.splice(_dIndex2,0,sExpander);
+aggrow.setActiveExpanders(_active2);
+this.setState({cursor:0});
 }
 }},{key:'render',value:function render()
 
-{var _this5=this;
+{var _this8=this;
 return(
-React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',flexDirection:'column'}},
-React.createElement(TableHeader,{aggrow:this.state.aggrow,dropAction:function dropAction(s,d){return _this5.dropAction(s,d);}}),
+React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',flexDirection:'row'}},
+React.createElement('div',{style:{width:'100%',height:'100%',display:'flex',flexDirection:'column',overflow:'hidden'}},
+React.createElement(TableHeader,{aggrow:this.state.aggrow,dropAction:function dropAction(s,d){return _this8.dropAction(s,d);}}),
 React.createElement('div',{
 style:{
 width:'100%',
 flexGrow:'1',
 overflow:'scroll'},
 
-onScroll:function onScroll(e){return _this5.scroll(e);},
-ref:function ref(div){_this5._scrollDiv=div;}},
+onScroll:function onScroll(e){return _this8.scroll(e);},
+ref:function ref(div){_this8._scrollDiv=div;}},
 React.createElement('div',{style:{position:'relative'}},
-this.renderVirtualizedRows()))));
+this.renderVirtualizedRows()))),
 
 
+
+React.createElement(TableConfiguration,{aggrow:this.state.aggrow})));
 
 
 }},{key:'renderVirtualizedRows',value:function renderVirtualizedRows()
 
-{var _this6=this;
+{var _this9=this;
 var aggrow=this.state.aggrow;
 var viewport=this.state.viewport;
 var rows=aggrow.getRows(viewport.top,viewport.height);
@@ -340,12 +424,12 @@ position:'absolute',
 width:'100%',
 height:(rowHeight*(aggrow.getHeight()+20)).toString()+'px'}},
 
-rows.map(function(child){return _this6.renderRow(child);})));
+rows.map(function(child){return _this9.renderRow(child);})));
 
 
 }},{key:'renderRow',value:function renderRow(
 
-row){var _this7=this;
+row){var _this10=this;
 if(row===null){
 return null;
 }
@@ -399,7 +483,7 @@ width:'12px',
 textAlign:'center',
 border:'1px solid gray'},
 
-onClick:function onClick(){return _this7._expandRow(row);}},'+'));
+onClick:function onClick(){return _this10._expandRow(row);}},'+'));
 
 
 }else if(aggrow.canContract(row)){
@@ -412,7 +496,7 @@ width:'12px',
 textAlign:'center',
 border:'1px solid gray'},
 
-onClick:function onClick(){return _this7._contractRow(row);}},'-'));
+onClick:function onClick(){return _this10._contractRow(row);}},'-'));
 
 
 }else{
@@ -448,7 +532,7 @@ backgroundColor:bg,
 borderBottom:'1px solid gray'},
 
 onClick:function onClick(){
-_this7.setState({cursor:row.top});
+_this10.setState({cursor:row.top});
 }},
 columns));
 
