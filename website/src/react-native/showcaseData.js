@@ -385,6 +385,16 @@ var pinned = [
     pinned: true,
   },
   {
+    name: 'Airbnb',
+    icon: 'https://a2.muscache.com/airbnb/static/icons/apple-touch-icon-180x180-bcbe0e3960cd084eb8eaf1353cf3c730.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/airbnb/id401626263?mt=8&bev=1472279725_4ITWKWGX6KrmU6pT&utm_medium=web&utm_source=airbnb&_branch_match_id=307510898795870823',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb',
+    infoLink: '',
+    infoTitle: '',
+    defaultLink: 'https://www.airbnb.com/mobile',
+    pinned: true,
+  },
+  {
     name: 'Baidu(手机百度)',
     icon: 'http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png',
     linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
