@@ -1262,6 +1262,7 @@ div[data-twttr-id] iframe {
 .propType {
   font-weight: normal;
   font-size: 15px;
+  white-space: pre;
 }
 
 .compactProps .propType {

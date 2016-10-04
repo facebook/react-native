@@ -143,7 +143,7 @@ const View = React.createClass({
      * with the element. By default, the label is constructed by traversing all the
      * children and accumulating all the `Text` nodes separated by space.
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: PropTypes.node,
 
     /**
      * Indicates to accessibility services to treat UI component like a
@@ -509,6 +509,7 @@ const View = React.createClass({
 const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
     nativeBackgroundAndroid: true,
+    nativeForegroundAndroid: true,
   }
 });
 
