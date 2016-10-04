@@ -13,6 +13,7 @@ const AssetServer = require('../AssetServer');
 const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
+const MultipartResponse = require('./MultipartResponse');
 const ProgressBar = require('progress');
 const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
@@ -657,6 +658,7 @@ class Server {
       },
     );
 
+    let consoleProgress = () => {};
     if (process.stdout.isTTY && !this._opts.silent) {
       const bar = new ProgressBar('transformed :current/:total (:percent)', {
         complete: '=',
@@ -664,8 +666,15 @@ class Server {
         width: 40,
         total: 1,
       });
-      options.onProgress = debouncedTick(bar);
+      consoleProgress = debouncedTick(bar);
     }
+
+    const mres = MultipartResponse.wrap(req, res);
+    options.onProgress = (done, total) => {
+      consoleProgress(done, total);
+      mres.writeChunk({'Content-Type': 'application/json'}, JSON.stringify({done, total}));
+    };
+
     debug('Getting bundle for request');
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
@@ -678,15 +687,16 @@ class Server {
             dev: options.dev,
           });
           debug('Writing response headers');
-          res.setHeader('Content-Type', 'application/javascript');
-          res.setHeader('ETag', p.getEtag());
-          if (req.headers['if-none-match'] === res.getHeader('ETag')){
+          const etag = p.getEtag();
+          mres.setHeader('Content-Type', 'application/javascript');
+          mres.setHeader('ETag', etag);
+
+          if (req.headers['if-none-match'] === etag) {
             debug('Responding with 304');
-            res.statusCode = 304;
-            res.end();
+            mres.writeHead(304);
+            mres.end();
           } else {
-            debug('Writing request body');
-            res.end(bundleSource);
+            mres.end(bundleSource);
           }
           debug('Finished response');
           Activity.endEvent(startReqEventId);
@@ -700,17 +710,17 @@ class Server {
             sourceMap = JSON.stringify(sourceMap);
           }
 
-          res.setHeader('Content-Type', 'application/json');
-          res.end(sourceMap);
+          mres.setHeader('Content-Type', 'application/json');
+          mres.end(sourceMap);
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
-          res.setHeader('Content-Type', 'application/json');
-          res.end(assetsList);
+          mres.setHeader('Content-Type', 'application/json');
+          mres.end(assetsList);
           Activity.endEvent(startReqEventId);
         }
       },
-      error => this._handleError(res, this.optionsHash(options), error)
+      error => this._handleError(mres, this.optionsHash(options), error)
     ).catch(error => {
       process.nextTick(() => {
         throw error;

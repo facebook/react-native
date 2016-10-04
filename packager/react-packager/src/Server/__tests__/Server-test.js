@@ -47,9 +47,11 @@ describe('processRequest', () => {
     reqHandler(
       { url: requrl, headers:{}, ...reqOptions },
       {
+        statusCode: 200,
         headers: {},
         getHeader(header) { return this.headers[header]; },
         setHeader(header, value) { this.headers[header] = value; },
+        writeHead(statusCode) { this.statusCode = statusCode; },
         end(body) {
           this.body = body;
           resolve(this);
@@ -157,6 +159,7 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.ios.includeRequire.map',
         dev: true,
         platform: undefined,
+        onProgress: jasmine.any(Function),
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
         entryModuleOnly: false,
@@ -181,6 +184,7 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.map?platform=ios',
         dev: true,
         platform: 'ios',
+        onProgress: jasmine.any(Function),
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
         entryModuleOnly: false,
@@ -205,6 +209,7 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
         dev: true,
         platform: undefined,
+        onProgress: jasmine.any(Function),
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
         entryModuleOnly: false,
