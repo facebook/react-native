@@ -26,6 +26,7 @@ import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -95,6 +96,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         @Override
         public NativeModule get() {
           return new AndroidInfoModule();
+        }
+      }));
+    moduleSpecList
+      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new HeadlessJsTaskSupportModule(reactContext);
         }
       }));
     moduleSpecList.add(
@@ -169,12 +177,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
         com.facebook.react.bridge.Systrace.class,
-        HMRClient.class,
-        JSCSamplingProfiler.SamplingProfiler.class,
-        DebugComponentOwnershipModule.RCTDebugComponentOwnership.class));
+        HMRClient.class));
 
     if (ReactBuildConfig.DEBUG) {
+      jsModules.add(DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
       jsModules.add(JSCHeapCapture.HeapCapture.class);
+      jsModules.add(JSCSamplingProfiler.SamplingProfiler.class);
     }
 
     return jsModules;
@@ -194,9 +202,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       return new UIManagerModule(
         reactContext,
         viewManagersList,
-        mUIImplementationProvider.createUIImplementation(
-          reactContext,
-          viewManagersList));
+        mUIImplementationProvider);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

@@ -384,7 +384,7 @@ var agData=this.data;
 var agNumRows=agData.length/numFields;
 var ag=new aggrow(agStrings,agStacks,agNumRows);
 
-var idExpander=ag.addFieldExpander('Id',
+ag.addFieldExpander('Id',
 function getId(row){
 var id=agData[row*numFields+idField];
 if(id<0){
@@ -402,13 +402,13 @@ function compareType(rowA,rowB){
 return agData[rowA*numFields+typeField]-agData[rowB*numFields+typeField];
 });
 
-var sizeExpander=ag.addFieldExpander('Size',
+ag.addFieldExpander('Size',
 function getSize(row){return agData[row*numFields+sizeField].toString();},
 function compareSize(rowA,rowB){
 return agData[rowA*numFields+sizeField]-agData[rowB*numFields+sizeField];
 });
 
-var traceExpander=ag.addFieldExpander('Trace',
+ag.addFieldExpander('Trace',
 function getSize(row){return agStrings.get(agData[row*numFields+traceField]);},
 function compareSize(rowA,rowB){
 return agData[rowA*numFields+traceField]-agData[rowB*numFields+traceField];
@@ -456,10 +456,7 @@ pathExpander,
 reactExpander,
 moduleExpander,
 typeExpander,
-idExpander,
-traceExpander,
-valueExpander,
-sizeExpander]);
+valueExpander]);
 
 ag.setActiveAggregators([sizeAggregator,countAggregator]);
 return ag;

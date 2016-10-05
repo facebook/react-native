@@ -28,6 +28,7 @@ cxx_library(
     react_native_xplat_target('cxxreact:module'),
   ],
   srcs = glob(['*.cpp']),
+  xcode_public_headers_symlinks = True,
   exported_headers = EXPORTED_HEADERS,
   headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
   preprocessor_flags = [

@@ -98,6 +98,7 @@ gradle.projectsEvaluated {
             runBefore("process${flavorNameCapitalized}X86${buildNameCapitalized}Resources", currentBundleTask)
             runBefore("processUniversal${targetName}Resources", currentBundleTask)
             runBefore("process${targetName}Resources", currentBundleTask)
+            runBefore("dataBindingProcessLayouts${targetName}", currentBundleTask)
         }
     }
 }

@@ -690,16 +690,9 @@ var TouchableMixin = {
     }
 
     if (newIsHighlight && !curIsHighlight) {
-      this._savePressInLocation(e);
-      this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
-    } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
-      if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = setTimeout(() => {
-          this.touchableHandleActivePressOut(e);
-        }, this.touchableGetPressOutDelayMS());
-      } else {
-        this.touchableHandleActivePressOut(e);
-      }
+      this._startHighlight(e);
+    } else if (!newIsHighlight && curIsHighlight) {
+      this._endHighlight(e);
     }
 
     if (IsPressingIn[curState] && signal === Signals.RESPONDER_RELEASE) {
@@ -712,13 +705,35 @@ var TouchableMixin = {
 
       var shouldInvokePress =  !IsLongPressingIn[curState] || pressIsLongButStillCallOnPress;
       if (shouldInvokePress && this.touchableHandlePress) {
+        if (!newIsHighlight && !curIsHighlight) {
+          // we never highlighted because of delay, but we should highlight now
+          this._startHighlight(e);
+          this._endHighlight(e);
+        }
         this.touchableHandlePress(e);
       }
     }
 
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.touchableDelayTimeout = null;
-  }
+  },
+
+  _startHighlight: function(e) {
+    this._savePressInLocation(e);
+    this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
+  },
+
+  _endHighlight: function(e) {
+    if (this.touchableHandleActivePressOut) {
+      if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
+        this.pressOutDelayTimeout = setTimeout(() => {
+          this.touchableHandleActivePressOut(e);
+        }, this.touchableGetPressOutDelayMS());
+      } else {
+        this.touchableHandleActivePressOut(e);
+      }
+    }
+  },
 
 };
 

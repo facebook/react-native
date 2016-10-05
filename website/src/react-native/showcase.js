@@ -56,6 +56,22 @@ var featured = [
     infoTitle: 'Building the F8 App',
   },
   {
+    name: 'PlaceAVote',
+    icon: 'https://s12.postimg.org/nr79mplq5/pav_Icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/placeavote/id1120628991?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.placeavote.androidapp&hl=en',
+    infoLink: 'https://techcrunch.com/2016/05/10/placeavote-wants-to-give-voters-a-say-in-congress/',
+    infoTitle: 'PlaceAVote wants to give voters a say in Congress',
+  },
+  {
+    name: 'Robin Rooms',
+    icon: 'http://robinpowered.s3.amazonaws.com/rooms/appicon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/robin-rooms/id947566115',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.robinpowered.rooms',
+    infoLink: 'https://techcrunch.com/2016/05/31/robin-makes-the-office-smarter-with-7-million-in-new-funding/',
+    infoTitle: 'Robin Rooms manages and mounts outside your conference rooms'
+  },
+  {
     name: 'FanVision Bolt',
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
@@ -336,6 +352,14 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
     infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
     infoTitle: 'Baidu is a search engine that has 600 million users.',
+  },
+  {
+    name: 'Sleeperbot',
+    icon: 'https://blitzchat.net/uploads/c8425332190a4f4b852d7770ad32e602/original.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/sleeperbot-fantasy-football/id987367543?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
+    infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
+    infoTitle: 'Switching to React Native in Production on iOS and Android',
   }
 ];
 

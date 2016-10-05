@@ -29,8 +29,9 @@ package com.facebook.react.bridge;
 public interface LifecycleEventListener {
 
   /**
-   * Called when host activity receives resume event (e.g. {@link Activity#onResume}. Always called
-   * for the most current activity.
+   * Called either when the host activity receives a resume event (e.g. {@link Activity#onResume} or
+   * if the native module that implements this is initialized while the host activity is already
+   * resumed. Always called for the most current activity.
    */
   void onHostResume();
 

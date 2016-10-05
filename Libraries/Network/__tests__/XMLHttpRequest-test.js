@@ -33,6 +33,7 @@ describe('XMLHttpRequest', function() {
   var handleError;
   var handleLoad;
   var handleReadyStateChange;
+  var handleLoadEnd;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -40,16 +41,19 @@ describe('XMLHttpRequest', function() {
     xhr.ontimeout = jest.fn();
     xhr.onerror = jest.fn();
     xhr.onload = jest.fn();
+    xhr.onloadend = jest.fn();
     xhr.onreadystatechange = jest.fn();
 
     handleTimeout = jest.fn();
     handleError = jest.fn();
     handleLoad = jest.fn();
+    handleLoadEnd = jest.fn();
     handleReadyStateChange = jest.fn();
 
     xhr.addEventListener('timeout', handleTimeout);
     xhr.addEventListener('error', handleError);
     xhr.addEventListener('load', handleLoad);
+    xhr.addEventListener('loadend', handleLoadEnd);
     xhr.addEventListener('readystatechange', handleReadyStateChange);
   });
 
@@ -58,6 +62,8 @@ describe('XMLHttpRequest', function() {
     handleTimeout = null;
     handleError = null;
     handleLoad = null;
+    handleLoadEnd = null;
+    handleReadyStateChange = null;
   });
 
   it('should transition readyState correctly', function() {
@@ -119,10 +125,12 @@ describe('XMLHttpRequest', function() {
     expect(xhr.readyState).toBe(xhr.DONE);
 
     expect(xhr.ontimeout.mock.calls.length).toBe(1);
+    expect(xhr.onloadend.mock.calls.length).toBe(1);
     expect(xhr.onerror).not.toBeCalled();
     expect(xhr.onload).not.toBeCalled();
 
     expect(handleTimeout.mock.calls.length).toBe(1);
+    expect(handleLoadEnd.mock.calls.length).toBe(1);
     expect(handleError).not.toBeCalled();
     expect(handleLoad).not.toBeCalled();
   });
@@ -136,11 +144,13 @@ describe('XMLHttpRequest', function() {
 
     expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
     expect(xhr.onerror.mock.calls.length).toBe(1);
+    expect(xhr.onloadend.mock.calls.length).toBe(1);
     expect(xhr.ontimeout).not.toBeCalled();
     expect(xhr.onload).not.toBeCalled();
 
     expect(handleReadyStateChange.mock.calls.length).toBe(2);
     expect(handleError.mock.calls.length).toBe(1);
+    expect(handleLoadEnd.mock.calls.length).toBe(1);
     expect(handleTimeout).not.toBeCalled();
     expect(handleLoad).not.toBeCalled();
   });
@@ -154,16 +164,18 @@ describe('XMLHttpRequest', function() {
 
     expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
     expect(xhr.onload.mock.calls.length).toBe(1);
+    expect(xhr.onloadend.mock.calls.length).toBe(1);
     expect(xhr.onerror).not.toBeCalled();
     expect(xhr.ontimeout).not.toBeCalled();
 
     expect(handleReadyStateChange.mock.calls.length).toBe(2);
     expect(handleLoad.mock.calls.length).toBe(1);
+    expect(handleLoadEnd.mock.calls.length).toBe(1);
     expect(handleError).not.toBeCalled();
     expect(handleTimeout).not.toBeCalled();
   });
 
-  it('should call onload function when there is no error', function() {
+  it('should call upload onprogress', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
 
@@ -180,6 +192,19 @@ describe('XMLHttpRequest', function() {
     expect(xhr.upload.onprogress.mock.calls[0][0].total).toBe(100);
     expect(handleProgress.mock.calls[0][0].loaded).toBe(42);
     expect(handleProgress.mock.calls[0][0].total).toBe(100);
+  });
+
+  it('should combine response headers with CRLF', function() {
+    xhr.open('GET', 'blabla');
+    xhr.send();
+    xhr.__didReceiveResponse(1, 200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '32',
+    });
+
+    expect(xhr.getAllResponseHeaders()).toBe(
+      'Content-Type: text/plain; charset=utf-8\r\n' +
+      'Content-Length: 32');
   });
 
 });
