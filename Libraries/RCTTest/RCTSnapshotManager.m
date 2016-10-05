@@ -13,6 +13,7 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSnapshotReady;
 @property (nonatomic, copy) NSString *testIdentifier;
+@property (nonatomic, assign) NSInteger snapshotDelay;
 
 @end
 
@@ -23,9 +24,11 @@
   if (![_testIdentifier isEqualToString:testIdentifier]) {
     _testIdentifier = [testIdentifier copy];
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (self.onSnapshotReady) {
-        self.onSnapshotReady(@{@"testIdentifier" : self.testIdentifier});
-      }
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, self.snapshotDelay * NSEC_PER_SEC),dispatch_get_main_queue(), ^{
+        if (self.onSnapshotReady) {
+          self.onSnapshotReady(@{@"testIdentifier" : self.testIdentifier});
+        }
+      });
     });
   }
 }
@@ -44,5 +47,6 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(testIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onSnapshotReady, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(snapshotDelay, NSInteger)
 
 @end

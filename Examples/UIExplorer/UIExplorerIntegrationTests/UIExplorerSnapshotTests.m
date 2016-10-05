@@ -36,7 +36,7 @@
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = @"-iOS10";
   }
-  _runner.recordMode = NO;
+  _runner.recordMode = YES;
 }
 
 #define RCT_TEST(name)                  \

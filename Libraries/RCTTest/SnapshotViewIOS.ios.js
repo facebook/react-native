@@ -23,6 +23,7 @@ class SnapshotViewIOS extends React.Component {
   props: {
     onSnapshotReady?: Function,
     testIdentifier?: string,
+    snapshotDelay?: number
   };
 
   static propTypes = {
@@ -31,6 +32,7 @@ class SnapshotViewIOS extends React.Component {
     onSnapshotReady : React.PropTypes.func,
     // A name to identify the individual instance to the SnapshotView
     testIdentifier : React.PropTypes.string,
+    snapshotDelay : React.PropTypes.number
   };
 
   onDefaultAction = (event: Object) => {

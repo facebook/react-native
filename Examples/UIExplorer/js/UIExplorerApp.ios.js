@@ -201,6 +201,8 @@ AppRegistry.registerComponent('SetPropertiesExampleApp', () => require('./SetPro
 AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () => require('./RootViewSizeFlexibilityExampleApp'));
 AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 
+console.disableYellowBox = false;
+
 // Register suitable examples for snapshot tests
 UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
   const ExampleModule = Example.module;
