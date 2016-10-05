@@ -14,7 +14,6 @@
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTPerformanceLogger.h"
-#import "RCTMultipartDataTask.h"
 
 #include <sys/stat.h>
 
@@ -152,51 +151,50 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
     return;
   }
 
+  // Load remote script file
+  NSURLSessionDataTask *task =
+  [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
+   ^(NSData *data, NSURLResponse *response, NSError *error) {
 
-  RCTMultipartDataTask *task = [[RCTMultipartDataTask alloc] initWithURL:scriptURL partHandler:^(NSInteger statusCode, NSDictionary *headers, NSData *data, NSError *error, BOOL done) {
-    if (!done) {
-      // TODO(frantic): Emit progress event
-      return;
-    }
+     // Handle general request errors
+     if (error) {
+       if ([error.domain isEqualToString:NSURLErrorDomain]) {
+         error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorURLLoadFailed
+                                 userInfo:
+                  @{
+                    NSLocalizedDescriptionKey:
+                      [@"Could not connect to development server.\n\n"
+                       "Ensure the following:\n"
+                       "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
+                       "- Node server URL is correctly set in AppDelegate\n\n"
+                       "URL: " stringByAppendingString:scriptURL.absoluteString],
+                    NSLocalizedFailureReasonErrorKey: error.localizedDescription,
+                    NSUnderlyingErrorKey: error,
+                    }];
+       }
+       onComplete(error, nil, 0);
+       return;
+     }
 
-    // Handle general request errors
-    if (error) {
-      if ([error.domain isEqualToString:NSURLErrorDomain]) {
-        error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                                    code:RCTJavaScriptLoaderErrorURLLoadFailed
-                                userInfo:
-                 @{
-                   NSLocalizedDescriptionKey:
-                     [@"Could not connect to development server.\n\n"
-                      "Ensure the following:\n"
-                      "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
-                      "- Node server URL is correctly set in AppDelegate\n\n"
-                      "URL: " stringByAppendingString:scriptURL.absoluteString],
-                   NSLocalizedFailureReasonErrorKey: error.localizedDescription,
-                   NSUnderlyingErrorKey: error,
-                   }];
-      }
-      onComplete(error, nil, 0);
-      return;
-    }
-
-    // For multipart responses packager sets X-Http-Status header in case HTTP status code
-    // is different from 200 OK
-    NSString *statusCodeHeader = [headers valueForKey:@"X-Http-Status"];
-    if (statusCodeHeader) {
-      statusCode = [statusCodeHeader integerValue];
-    }
-
-    if (statusCode != 200) {
-      error = [NSError errorWithDomain:@"JSServer"
-                                  code:statusCode
-                              userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding])];
-      onComplete(error, nil, 0);
-      return;
-    }
-    onComplete(nil, data, data.length);
-  }];
-
+     // Parse response as text
+     NSStringEncoding encoding = NSUTF8StringEncoding;
+     if (response.textEncodingName != nil) {
+       CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
+       if (cfEncoding != kCFStringEncodingInvalidId) {
+         encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+       }
+     }
+     // Handle HTTP errors
+     if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
+       error = [NSError errorWithDomain:@"JSServer"
+                                   code:((NSHTTPURLResponse *)response).statusCode
+                               userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:encoding])];
+       onComplete(error, nil, 0);
+       return;
+     }
+     onComplete(nil, data, data.length);
+   }];
   [task resume];
 }
 
