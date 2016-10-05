@@ -87,6 +87,14 @@ var featured = [
 
   },
   {
+    name: 'Cdiscount',
+    icon: 'http://lh3.googleusercontent.com/a9li2oZgpi3BN1rLLOPvxFtUe8PN8VI-nmwwclqh5Bjrt_EM4dkqjYnU7osL9tdj0w=w300-rw',
+    linkAppStore: 'https://play.google.com/store/apps/details?id=cdiscount.mobile',
+    infoLink: 'https://en.wikipedia.org/wiki/Cdiscount',
+    infoTitle: 'Millions of products at the best price, only at Cdiscount',
+
+  },
+  {
     name: 'Discord',
     icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
     linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
