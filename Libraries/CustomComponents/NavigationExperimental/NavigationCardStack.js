@@ -59,6 +59,7 @@ type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
+  configureTransition?: Function,
   renderHeader: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
