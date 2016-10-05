@@ -11,13 +11,18 @@
  */
 'use strict';
 
-const {fetch} = require('fetch');
 const getDevServer = require('getDevServer');
 const {SourceCode} = require('NativeModules');
+// Do not require fetch immediately. See symbolicateStackTrace()
+// Workaround for https://github.com/facebook/react-native/issues/9605
+let fetch; 
 
 import type {StackFrame} from 'parseErrorStack';
 
 async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<StackFrame>> {
+  // require fetch at a later stage, only when needed
+  if (!fetch) fetch = global.fetch || require('fetch')
+
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {
     throw new Error('Bundle was not loaded from the packager');
