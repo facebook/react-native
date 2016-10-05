@@ -20,8 +20,9 @@
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "Value.h"
-
 #include "JSCSamplingProfiler.h"
+#include "JSModulesUnbundle.h"
+#include "ModuleRegistry.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -117,7 +118,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
 
   {
     SystraceSection s("collectNativeModuleNames");
-    for (auto& name : delegate->moduleNames()) {
+    for (auto& name : delegate->getModuleRegistry()->moduleNames()) {
       nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
     }
   }
@@ -687,7 +688,7 @@ JSValueRef JSCExecutor::nativeRequireModuleConfig(
   }
 
   std::string moduleName = Value(m_context, arguments[0]).toString().str();
-  folly::dynamic config = m_delegate->getModuleConfig(moduleName);
+  folly::dynamic config = m_delegate->getModuleRegistry()->getConfig(moduleName);
   return Value::fromDynamic(m_context, config);
 }
 
