@@ -38,16 +38,16 @@ const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
  *   }
  *
  *   componentWillUnmount () {
- *      this.keyboardDidShowListener.remove();
- *      this.keyboardDidHideListener.remove();
+ *     this.keyboardDidShowListener.remove();
+ *     this.keyboardDidHideListener.remove();
  *   }
  *
  *   _keyboardDidShow () {
- *    window.alert('Keyboard Shown');
+ *     alert('Keyboard Shown');
  *   }
  *
  *   _keyboardDidHide () {
- *    window.alert('Keyboard Hidden');
+ *     alert('Keyboard Hidden');
  *   }
  *
  *   render() {
