@@ -12,40 +12,87 @@
 
 const {traverse, types} = require('babel-core');
 
-const isRequireCall = (callee, firstArg) =>
-  callee.type !== 'Identifier' ||
-  callee.name !== 'require' ||
-  !firstArg ||
-  firstArg.type !== 'StringLiteral';
+class Replacement {
+  constructor() {
+    this.nameToIndex = new Map();
+    this.nextIndex = 0;
+  }
 
-function collectDependencies(ast, code) {
-  let nextIndex = 0;
-  const dependencyIndexes = new Map();
+  isRequireCall(callee, firstArg) {
+    return (
+      callee.type === 'Identifier' && callee.name === 'require' &&
+      firstArg && firstArg.type === 'StringLiteral'
+    );
+  }
 
-  function getIndex(depencyId) {
-    let index = dependencyIndexes.get(depencyId);
+  getIndex(name) {
+    let index = this.nameToIndex.get(name);
     if (index !== undefined) {
       return index;
     }
-
-    index = nextIndex++;
-    dependencyIndexes.set(depencyId, index);
+    index = this.nextIndex++;
+    this.nameToIndex.set(name, index);
     return index;
   }
 
+  getNames() {
+    return Array.from(this.nameToIndex.keys());
+  }
+
+  makeArgs(newId, oldId) {
+    return [newId, oldId];
+  }
+}
+
+class ProdReplacement {
+  constructor(names) {
+    this.replacement = new Replacement();
+    this.names = names;
+  }
+
+  isRequireCall(callee, firstArg) {
+    return (
+      callee.type === 'Identifier' && callee.name === 'require' &&
+      firstArg && firstArg.type === 'NumericLiteral'
+    );
+  }
+
+  getIndex(id) {
+    if (id in this.names) {
+      return this.replacement.getIndex(this.names[id]);
+    }
+
+    throw new Error(
+      `${id} is not a known module ID. Existing mappings: ${
+       this.names.map((n, i) => `${i} => ${n}`).join(', ')}`
+    );
+  }
+
+  getNames() {
+    return this.replacement.getNames();
+  }
+
+  makeArgs(newId) {
+    return [newId];
+  }
+}
+
+function collectDependencies(ast, replacement) {
   traverse(ast, {
     CallExpression(path) {
       const node = path.node;
       const arg = node.arguments[0];
-      if (isRequireCall(node.callee, arg)) {
-        return;
+      if (replacement.isRequireCall(node.callee, arg)) {
+        const index = replacement.getIndex(arg.value);
+        node.arguments = replacement.makeArgs(types.numericLiteral(index), arg);
       }
-
-      node.arguments[0] = types.numericLiteral(getIndex(arg.value));
     }
   });
 
-  return Array.from(dependencyIndexes.keys());
+  return replacement.getNames();
 }
 
-module.exports = collectDependencies;
+exports = module.exports =
+  ast => collectDependencies(ast, new Replacement());
+exports.forOptimization =
+  (ast, names) => collectDependencies(ast, new ProdReplacement(names));
