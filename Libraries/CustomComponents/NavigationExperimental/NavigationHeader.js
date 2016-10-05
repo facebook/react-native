@@ -128,6 +128,12 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
+  _handleTVEvent(props: NavigationSceneRendererProps, evt: Object): void {
+    if(evt && evt.nativeEvent && evt.nativeEvent.eventType === "menu") {
+      props.onNavigateBack && props.onNavigateBack();
+    }
+  }
+
   render(): ReactElement<any> {
     const { scenes, style, viewProps } = this.props;
 
@@ -147,6 +153,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
           { height: barHeight },
           style
         ]}
+        onTVNavEvent={(evt) => this._handleTVEvent(this.props,evt)}
         {...viewProps}
       >
         {scenesProps.map(this._renderLeft, this)}

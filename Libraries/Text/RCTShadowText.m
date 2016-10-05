@@ -431,6 +431,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
     }
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
+
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
