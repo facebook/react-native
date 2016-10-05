@@ -14,7 +14,7 @@ case "$CONFIGURATION" in
   Debug)
     # Speed up build times by skipping the creation of the offline package for debug
     # builds on the simulator since the packager is supposed to be running anyways.
-    if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+    if [[ "$PLATFORM_NAME" == *simulator ]]; then
       echo "Skipping bundling for Simulator platform"
       exit 0;
     fi
@@ -71,7 +71,7 @@ type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
-if [[ "$CONFIGURATION" = "Debug" && "$PLATFORM_NAME" != "iphonesimulator" ]]; then
+if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
   PLISTBUDDY='/usr/libexec/PlistBuddy'
   PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
   IP=$(ipconfig getifaddr en0)
