@@ -21,7 +21,7 @@ import type {StackFrame} from 'parseErrorStack';
 
 async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<StackFrame>> {
   // require fetch at a later stage, only when needed
-  if (!fetch) fetch = global.fetch || require('fetch')
+  if (!fetch) fetch = global.fetch || require('fetch');
 
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {
