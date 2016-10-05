@@ -202,9 +202,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       return new UIManagerModule(
         reactContext,
         viewManagersList,
-        mUIImplementationProvider.createUIImplementation(
-          reactContext,
-          viewManagersList));
+        mUIImplementationProvider);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

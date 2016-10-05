@@ -16,24 +16,24 @@ import java.util.Set;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.InvalidIteratorException;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NoSuchKeyException;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.UnexpectedNativeTypeException;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
@@ -79,7 +79,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
