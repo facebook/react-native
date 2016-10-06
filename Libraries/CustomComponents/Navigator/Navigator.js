@@ -297,7 +297,7 @@ var Navigator = React.createClass({
      * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
      *
-     * Available scene configutation options are:
+     * Available scene configuration options are:
      *
      *  - Navigator.SceneConfigs.PushFromRight (default)
      *  - Navigator.SceneConfigs.FloatFromRight
