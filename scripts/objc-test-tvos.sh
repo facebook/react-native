@@ -22,10 +22,10 @@ function cleanup {
 trap cleanup EXIT
 
 XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer"
-XCODE_SDK="iphonesimulator"
+XCODE_SCHEME="UIExplorer-tvOS"
+XCODE_SDK="appletvsimulator"
 if [ -z "$XCODE_DESTINATION" ]; then
-  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=9.3"
+  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=9.2"
 fi
 
 # Support for environments without xcpretty installed
