@@ -15,6 +15,7 @@ import java.util.Map;
 
 import android.view.View;
 
+import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -28,7 +29,8 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
  * for the corresponding native view.
  */
 @ReactPropertyHolder
-public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
+public abstract class ViewManager<T extends View, C extends ReactShadowNode>
+  extends BaseJavaModule {
 
   public final void updateProperties(T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
