@@ -33,6 +33,11 @@ type Event = Object;
 var DEFAULT_PROPS = {
   activeOpacity: 0.85,
   underlayColor: 'black',
+  tvParallaxDisable: false,
+  tvParallaxShiftDistanceX: 2.0,
+  tvParallaxShiftDistanceY: 2.0,
+  tvParallaxTiltAngle: 0.05,
+  tvParallaxMagnification: 1.0
 };
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -86,6 +91,37 @@ var TouchableHighlight = React.createClass({
      * Called immediately after the underlay is hidden
      */
     onHideUnderlay: React.PropTypes.func,
+    /**
+     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     */
+    hasTVPreferredFocus: React.PropTypes.bool,
+
+    /**
+     * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
+     */
+    tvParallaxDisable: React.PropTypes.bool,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     */
+    tvParallaxShiftDistanceX: React.PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     */
+    tvParallaxShiftDistanceY: React.PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
+     */
+    tvParallaxTiltAngle: React.PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
+     */
+    tvParallaxMagnification: React.PropTypes.number,
+
+
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -108,7 +144,8 @@ var TouchableHighlight = React.createClass({
       underlayStyle: [
         INACTIVE_UNDERLAY_PROPS.style,
         props.style,
-      ]
+      ],
+      hasTVPreferredFocus: props.hasTVPreferredFocus
     };
   },
 
@@ -234,6 +271,15 @@ var TouchableHighlight = React.createClass({
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
+        onTVSelect={this.props.onPress}
+        onTVFocus={this._showUnderlay}
+        onTVBlur={this._hideUnderlay}
+        tvParallaxDisable={this.props.tvParallaxDisable}
+        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
+        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
+        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
+        tvParallaxMagnification={this.props.tvParallaxMagnification}
+        hasTVPreferredFocus={this.state.hasTVPreferredFocus}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}

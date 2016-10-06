@@ -172,6 +172,7 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
       RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
   }
 }
+
 RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
@@ -191,6 +192,12 @@ RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
     view.borderColor = json ? [RCTConvert CGColor:json] : defaultView.borderColor;
   } else {
     view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(tvFocusedBorderColor, CGColor, RCTView)
+{
+  if ([view respondsToSelector:@selector(setTvFocusedBorderColor:)]) {
+    view.tvFocusedBorderColor = json ? [UIColor colorWithCGColor:[RCTConvert CGColor:json]] : nil;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
@@ -220,6 +227,18 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
 }
 RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
+
+// Apple TV properties
+RCT_EXPORT_VIEW_PROPERTY(onTVSelect, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onTVNavEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxDisable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxShiftDistanceX, float)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxShiftDistanceY, float)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxTiltAngle, float)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxMagnification, float)
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, CGFloat, RCTView)         \

@@ -256,6 +256,38 @@ const View = React.createClass({
     onMagicTap: PropTypes.func,
 
     /**
+     * *(Apple TV only)* Optional method.  When implemented, this view will be focusable
+     * and navigable using the Apple TV remote.
+     */
+    onTVSelect: PropTypes.func,
+
+    /**
+     * *(Apple TV only)* Optional method. Will be called if this view comes into focus
+     * during navigation with the TV remote.  May be used to give the view a different
+     * appearance when focused.
+     */
+    onTVFocus: PropTypes.func,
+
+    /**
+     * *(Apple TV only)* Optional method.  Will be called if this view leaves focus during
+     * navigation with the TV remote.
+     */
+    onTVBlur: PropTypes.func,
+
+    /**
+     * *(Apple TV only)* Optional method.  When implemented, this method will be called when
+     * the user presses a button or makes a swipe gesture on the TV remote.  The event passed
+     * into this method will have a nativeEvent property, with a type that is one of
+     * [left, right, up, down, playPause, menu].
+     */
+    onTVNavEvent: PropTypes.func,
+
+    /**
+     * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
+     */
+    hasTVPreferredFocus: PropTypes.bool,
+
+    /**
      * Used to locate this view in end-to-end tests.
      *
      * > This disables the 'layout-only view removal' optimization for this view!
@@ -431,6 +463,31 @@ const View = React.createClass({
      * (or one of its superviews).
      */
     removeClippedSubviews: PropTypes.bool,
+
+    /**
+     * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
+     */
+    tvParallaxDisable: PropTypes.bool,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     */
+    tvParallaxShiftDistanceX: PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     */
+    tvParallaxShiftDistanceY: PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
+     */
+    tvParallaxTiltAngle: PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
+     */
+    tvParallaxMagnification: PropTypes.number,
 
     /**
      * Whether this `View` should render itself (and all of its children) into a
