@@ -261,7 +261,7 @@ const View = React.createClass({
     onTVSelect: PropTypes.func,
 
     /**
-     * *(Apple TV only)* Optional method. Will be called if this view comes into focus 
+     * *(Apple TV only)* Optional method. Will be called if this view comes into focus
      * during navigation with the TV remote.  May be used to give the view a different
      * appearance when focused.
      */
@@ -276,7 +276,7 @@ const View = React.createClass({
     /**
      * *(Apple TV only)* Optional method.  When implemented, this method will be called when
      * the user presses a button or makes a swipe gesture on the TV remote.  The event passed
-     * into this method will have a nativeEvent property, with a type that is one of 
+     * into this method will have a nativeEvent property, with a type that is one of
      * [left, right, up, down, playPause, menu].
      */
     onTVNavEvent: PropTypes.func,

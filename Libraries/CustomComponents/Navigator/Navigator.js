@@ -1279,7 +1279,7 @@ var Navigator = React.createClass({
   },
 
  _handleTVEvent: function(evt: Object) {
-    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === "menu") {
+    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === 'menu') {
       this.pop();
     }
   },
