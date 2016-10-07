@@ -86,8 +86,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGER
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -139,6 +137,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final JSCConfig mJSCConfig;
   private final boolean mLazyNativeModulesEnabled;
+  private final boolean mLazyViewManagersEnabled;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -297,7 +296,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     JSCConfig jscConfig,
     @Nullable RedBoxHandler redBoxHandler,
-    boolean lazyNativeModulesEnabled) {
+    boolean lazyNativeModulesEnabled,
+    boolean lazyViewManagersEnabled) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -325,6 +325,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
+    mLazyViewManagersEnabled = lazyViewManagersEnabled;
   }
 
   @Override
@@ -857,7 +858,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         "createAndProcessCoreModulesPackage");
     try {
       CoreModulesPackage coreModulesPackage =
-          new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
+        new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
       processPackage(
         coreModulesPackage,
         reactContext,

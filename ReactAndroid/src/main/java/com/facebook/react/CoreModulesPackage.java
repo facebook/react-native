@@ -71,9 +71,9 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
   private final UIImplementationProvider mUIImplementationProvider;
 
   CoreModulesPackage(
-      ReactInstanceManager reactInstanceManager,
-      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-      UIImplementationProvider uiImplementationProvider) {
+    ReactInstanceManager reactInstanceManager,
+    DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+    UIImplementationProvider uiImplementationProvider) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
