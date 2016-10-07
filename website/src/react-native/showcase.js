@@ -65,10 +65,6 @@ var AppList = React.createClass({
   },
 
   _renderTitle: function(app) {
-    // if (app.pinned) {
-    //   return;
-    // }
-
     var title = (
       <h3>{app.name}</h3>
     );
@@ -93,10 +89,6 @@ var AppList = React.createClass({
   },
 
   _renderLinks: function(app) {
-    if (app.pinned) {
-      return;
-    }
-
     if (!app.linkAppStore && !app.linkPlayStore) {
       return;
     }
