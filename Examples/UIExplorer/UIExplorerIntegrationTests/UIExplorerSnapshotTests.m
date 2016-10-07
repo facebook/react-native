@@ -45,14 +45,14 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
-#if !TARGET_OS_TV // None of these will run in tvOS due to StatusBar not existing
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
+#if !TARGET_OS_TV  // TextExample uses fonts that don't exist on Apple TV
 RCT_TEST(TextExample)
+#endif
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
 RCT_TEST(TabBarExample)
-#endif
 
 - (void)testZZZNotInRecordMode
 {

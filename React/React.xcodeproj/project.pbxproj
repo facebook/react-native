@@ -163,7 +163,7 @@
 		2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0674E1A70F44B002CDEE1 /* RCTViewManager.m */; };
 		2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080241A694A8400A75B9A /* RCTWrapperViewController.m */; };
 		2D3B5EF11D9B09E700451313 /* UIView+React.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067541A70F44B002CDEE1 /* UIView+React.m */; };
-		2D537FD21DA4809D000F876C /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
+		2D537FD21DA4809D000F876C /* (null) in Sources */ = {isa = PBXBuildFile; };
 		2D562E431DA5976B00F962D6 /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D562E421DA5976B00F962D6 /* RCTTVRemoteHandler.m */; };
 		2D562E441DA5979400F962D6 /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D562E421DA5976B00F962D6 /* RCTTVRemoteHandler.m */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
