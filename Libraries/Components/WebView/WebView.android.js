@@ -207,6 +207,14 @@ class WebView extends React.Component {
       console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
+    if (__DEV__) {
+      if (this.props.injectedJavaScript
+          && this.props.injectedJavaScript.indexOf('//') !== -1) {
+        console.warn('WebView: single-line comment in `injectedJavaScript` will ' +
+          'cause inconsistent result across different devices.');
+      }
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
