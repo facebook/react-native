@@ -129,9 +129,12 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
   return defaultValue;
 }
 
+static int32_t gNodeInstanceCount = 0;
+
 CSSNodeRef CSSNodeNew() {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
 
   CSSNodeInit(node);
   return node;
@@ -140,6 +143,7 @@ CSSNodeRef CSSNodeNew() {
 void CSSNodeFree(const CSSNodeRef node) {
   CSSNodeListFree(node->children);
   free(node);
+  gNodeInstanceCount--;
 }
 
 void CSSNodeFreeRecursive(const CSSNodeRef root) {
@@ -149,6 +153,10 @@ void CSSNodeFreeRecursive(const CSSNodeRef root) {
     CSSNodeFreeRecursive(child);
   }
   CSSNodeFree(root);
+}
+
+int32_t CSSNodeGetInstanceCount() {
+  return gNodeInstanceCount;
 }
 
 void CSSNodeInit(const CSSNodeRef node) {
