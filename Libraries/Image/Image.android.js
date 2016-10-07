@@ -83,10 +83,10 @@ var Image = React.createClass({
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
-     * 
+     *
      * `headers` is an object representing the HTTP headers to send along with the request
      * for a remote image.
-     * 
+     *
      * This prop can also contain several remote `uri`, specified together with
      * their width and height. The native side will then choose the best `uri` to display
      * based on the measured size of the image container.
