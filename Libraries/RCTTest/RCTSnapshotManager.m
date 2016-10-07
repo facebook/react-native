@@ -24,12 +24,10 @@
   if (![_testIdentifier isEqualToString:testIdentifier]) {
     _testIdentifier = [testIdentifier copy];
     dispatch_async(dispatch_get_main_queue(), ^{
-      // dispatch_after(dispatch_time(DISPATCH_TIME_NOW, self.snapshotDelay * NSEC_PER_SEC),dispatch_get_main_queue(), ^{
-        if (self.onSnapshotReady) {
-          self.onSnapshotReady(@{@"testIdentifier" : self.testIdentifier});
-        }
-      });
-    // });
+      if (self.onSnapshotReady) {
+        self.onSnapshotReady(@{@"testIdentifier" : self.testIdentifier});
+      }
+    });
   }
 }
 
