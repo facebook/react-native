@@ -56,6 +56,9 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   @Override
   public void reset() {
     assertNativeInstance();
+    if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
+      throw new IllegalStateException("You should not reset an attached CSSNode");
+    }
 
     jni_CSSNodeFree(mNativePointer);
     mNativePointer = 0;
@@ -78,6 +81,9 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   @Override
   public void addChildAt(CSSNodeJNI child, int i) {
     assertNativeInstance();
+    if (child.mParent != null) {
+      throw new IllegalStateException("Child already has a parent, it must be removed first.");
+    }
 
     mChildren.add(i, child);
     child.mParent = this;
