@@ -11,6 +11,56 @@ var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
 
+var apps = require('./showcaseData').pinned;
+
+var AppList = React.createClass({
+  render: function() {
+    return (
+      <div>
+        {this.props.apps.map(this._renderApp)}
+      </div>
+    );
+  },
+
+  _renderApp: function(app, i) {
+    var inner = (
+      <div>
+        {this._renderIcon(app)}
+      </div>
+    );
+
+    return (
+      <div className="showcase" key={i}>
+        {inner}
+      </div>
+    );
+  },
+
+  _renderIcon: function(app) {
+    var icon = (
+      <img src={app.icon} alt={app.name} />
+    );
+
+    return (
+      <a href={app.defaultLink}>
+        {icon}
+      </a>
+    );
+  },
+
+  _renderTitle: function(app) {
+    var title = (
+      <h3>{app.name}</h3>
+    );
+
+    return (
+      <a href={app.defaultLink}>
+        {title}
+      </a>
+    );
+  },
+});
+
 var index = React.createClass({
   render: function() {
     return (
@@ -32,12 +82,12 @@ var index = React.createClass({
 
           <div style={{margin: '40px auto', maxWidth: 800}}>
 
-          <h2>Build Native Mobile Apps using JavaScript and React</h2>
-          <p>
-            React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
-          </p>
+            <h2>Build Native Mobile Apps using JavaScript and React</h2>
+            <p>
+              React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
+            </p>
 
-          <Prism>
+            <Prism>
 
 {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
@@ -57,14 +107,14 @@ class WhyReactNativeIsSoGreat extends Component {
     );
   }
 }`}
-          </Prism>
+            </Prism>
 
-          <h2>A React Native App is a Real Mobile App</h2>
-          <p>
-            With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
-          </p>
+            <h2>A React Native App is a Real Mobile App</h2>
+            <p>
+              With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
+            </p>
 
-          <Prism>
+            <Prism>
 {`import React, { Component } from 'react';
 import { Image, ScrollView, Text } from 'react-native';
 
@@ -87,21 +137,21 @@ class AwkwardScrollingImageWithText extends Component {
     );
   }
 }`}
-          </Prism>
+            </Prism>
 
-          <h2>Don't Waste Time Recompiling</h2>
-          <p>
-            React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
-          </p>
-          <br />
-          <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
+            <h2>Don't Waste Time Recompiling</h2>
+            <p>
+              React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+            </p>
+            <br />
+            <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
 
-          <h2>Use Native Code When You Need To</h2>
-          <p>
-            React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
-          </p>
+            <h2>Use Native Code When You Need To</h2>
+            <p>
+              React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
+            </p>
 
-          <Prism>
+            <Prism>
 {`import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { TheGreatestComponentInTheWorld } from './your-native-code';
@@ -119,11 +169,26 @@ class SomethingFast extends Component {
     );
   }
 }`}
-          </Prism>
+            </Prism>
           </div>
+
           <section className="home-bottom-section">
             <div className="buttons-unit">
               <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+            </div>
+          </section>
+
+          <section className="home-showcase-section">
+            <h2>Who's using React Native?</h2>
+            <p>
+              Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!
+            </p>
+            <AppList apps={apps} />
+            <p className="footnote">
+              Some of these are hybrid native/React Native apps.
+            </p>
+            <div className="buttons-unit">
+              <a href="showcase.html" className="button">More React Native apps</a>
             </div>
           </section>
         </section>
