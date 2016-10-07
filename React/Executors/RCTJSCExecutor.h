@@ -53,6 +53,11 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
+/**
+ * Marks whether the provider uses the custom implementation of JSC and not the system one.
+ */
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
 @end
 
 /**
