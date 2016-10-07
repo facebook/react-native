@@ -39,14 +39,22 @@ class SnapshotViewIOS extends React.Component {
     TestModule.verifySnapshot(TestModule.markTestPassed);
   };
 
+  createDelay = () => {
+    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
+    if (!this.props.snapshotDelay){
+      onSnapshotReady();
+      return;
+    }
+    setTimeout(onSnapshotReady, this.props.snapshotDelay * 1000);
+  }
+
   render() {
     var testIdentifier = this.props.testIdentifier || 'test';
-    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
       <RCTSnapshot
         style={style.snapshot}
         {...this.props}
-        onSnapshotReady={onSnapshotReady}
+        onSnapshotReady={this.createDelay}
         testIdentifier={testIdentifier}
       />
     );
