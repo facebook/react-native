@@ -382,11 +382,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad && !cancelled) {
-      cancelLoad();
-      cancelLoad = nil;
-    }
-    OSAtomicOr32Barrier(1, &cancelled);
+    dispatch_async(_URLRequestQueue, ^{
+      if (cancelLoad && !cancelled) {
+        cancelLoad();
+        cancelLoad = nil;
+      }
+      OSAtomicOr32Barrier(1, &cancelled);
+    });
   };
 }
 
