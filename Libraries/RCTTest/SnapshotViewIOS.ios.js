@@ -41,7 +41,7 @@ class SnapshotViewIOS extends React.Component {
 
   createDelay = () => {
     var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
-    if (!this.props.snapshotDelay){
+    if (!this.props.snapshotDelay || this.props.snapshotDelay === 0){
       onSnapshotReady();
       return;
     }
