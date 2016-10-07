@@ -45,14 +45,14 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
-//#if !TARGET_OS_TV // None of these will run in tvOS due to StatusBar not existing
+#if !TARGET_OS_TV // None of these will run in tvOS due to StatusBar not existing
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
 RCT_TEST(TabBarExample)
-//#endif
+#endif
 
 - (void)testZZZNotInRecordMode
 {

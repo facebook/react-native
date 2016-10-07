@@ -13,7 +13,6 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSnapshotReady;
 @property (nonatomic, copy) NSString *testIdentifier;
-@property (nonatomic, assign) NSInteger snapshotDelay;
 
 @end
 
@@ -45,6 +44,5 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(testIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onSnapshotReady, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(snapshotDelay, NSInteger)
 
 @end
