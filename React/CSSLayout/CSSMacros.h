@@ -33,8 +33,16 @@
 #define CSS_ABORT()
 #endif
 
-#define CSS_ASSERT(X, message)        \
-  if (!(X)) {                         \
-    fprintf(stderr, "%s\n", message); \
-    CSS_ABORT();                      \
+#if CSS_ASSERT_FAIL_ENABLED
+#define CSS_ERROR_FUNC(message) CSSAssertFail(message)
+#else
+#define CSS_ERROR_FUNC(message) fprintf(stderr, "%s", message)
+#endif
+
+#ifndef CSS_ASSERT
+#define CSS_ASSERT(X, message) \
+  if (!(X)) {                  \
+    CSS_ERROR_FUNC(message);   \
+    CSS_ABORT();               \
   }
+#endif

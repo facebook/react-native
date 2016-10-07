@@ -122,6 +122,10 @@ typedef CSSSize (*CSSMeasureFunc)(void *context,
                                   CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
 
+#ifdef CSS_ASSERT_FAIL_ENABLED
+typedef void (*CSSAssertFailFunc)(const char *message);
+#endif
+
 // CSSNode
 WIN_EXPORT CSSNodeRef CSSNodeNew();
 WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
@@ -205,5 +209,11 @@ CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
 CSS_NODE_LAYOUT_PROPERTY(float, Width);
 CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+// Assert
+WIN_EXPORT void CSSAssertSetFailFunc(CSSAssertFailFunc func);
+WIN_EXPORT void CSSAssertFail(const char *message);
+#endif
 
 CSS_EXTERN_C_END
