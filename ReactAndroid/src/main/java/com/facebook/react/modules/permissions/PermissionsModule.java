@@ -99,7 +99,10 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
         mRequestCode, new Callback() {
           @Override
           public void invoke(Object... args) {
-            promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
+            if(args!=null)
+              promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
+            else
+              promise.resolve(null);
           }
         });
 
@@ -116,7 +119,10 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       int requestCode,
       String[] permissions,
       int[] grantResults) {
-    mCallbacks.get(requestCode).invoke(grantResults[0]);
+    if(grantResults.length>0)
+      mCallbacks.get(requestCode).invoke(grantResults[0]);
+    else
+      mCallbacks.get(requestCode).invoke(null);
     mCallbacks.remove(requestCode);
     return mCallbacks.size() == 0;
   }
