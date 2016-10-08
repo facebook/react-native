@@ -377,7 +377,8 @@ public class FlatUIImplementation extends UIImplementation {
         while (tmpNode != null) {
           if (tmpNode instanceof FlatShadowNode) {
             FlatShadowNode flatTmpNode = (FlatShadowNode) tmpNode;
-            if (flatTmpNode.mountsToView() && flatTmpNode.isBackingViewCreated()) {
+            if (flatTmpNode.mountsToView() && flatTmpNode.isBackingViewCreated() &&
+                flatTmpNode.getParent() != null) {
               tag = flatTmpNode.getReactTag();
               break;
             }
