@@ -114,7 +114,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText,
+            reactEditText.getTag(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -122,7 +122,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText,
+            reactEditText.getTag(),
             newText.toString(),
             "",
             start,
@@ -146,7 +146,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText,
+            reactEditText.getTag(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -154,7 +154,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText,
+            reactEditText.getTag(),
             moreText,
             "",
             start,
@@ -178,7 +178,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText,
+            reactEditText.getTag(),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -186,7 +186,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText,
+            reactEditText.getTag(),
             moreText,
             "",
             start,

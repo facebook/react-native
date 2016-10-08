@@ -29,6 +29,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.common.TestIdUtil;
 import com.facebook.react.cxxbridge.CatalystInstanceImpl;
 import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
@@ -179,37 +180,6 @@ public class ReactTestHelper {
    * propagated into view content description.
    */
   public static View getViewWithReactTestId(View rootView, String testId) {
-    return findChild(rootView, hasTagValue(testId));
-  }
-
-  public static String getTestId(View view) {
-    return view.getTag() instanceof String ? (String) view.getTag() : null;
-  }
-
-  private static View findChild(View root, Predicate<View> predicate) {
-    if (predicate.apply(root)) {
-      return root;
-    }
-    if (root instanceof ViewGroup) {
-      ViewGroup viewGroup = (ViewGroup) root;
-      for (int i = 0; i < viewGroup.getChildCount(); i++) {
-        View child = viewGroup.getChildAt(i);
-        View result = findChild(child, predicate);
-        if (result != null) {
-          return result;
-        }
-      }
-    }
-    return null;
-  }
-
-  private static Predicate<View> hasTagValue(final String tagValue) {
-    return new Predicate<View>() {
-      @Override
-      public boolean apply(View view) {
-        Object tag = view.getTag();
-        return tag != null && tag.equals(tagValue);
-      }
-    };
+    return rootView.findViewById(TestIdUtil.getTestId(testId));
   }
 }

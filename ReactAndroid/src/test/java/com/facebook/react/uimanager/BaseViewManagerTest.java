@@ -82,7 +82,7 @@ public class BaseViewManagerTest {
   public void testUsingATestIdNotFoundInResources() {
     when(context.getPackageName()).thenReturn("com.foo");
     sut.setTestId(view, testID);
-    verify(view, never()).setId(anyInt());
+    verify(view).setId(eq(10));
   }
 
   @Test
