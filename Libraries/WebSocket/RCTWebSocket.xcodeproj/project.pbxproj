@@ -271,7 +271,6 @@
 				SDKROOT = iphoneos;
 				WARNING_CFLAGS = (
 					"-Werror",
-					"-Wall",
 				);
 			};
 			name = Debug;
@@ -313,7 +312,6 @@
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
-					"-Wall",
 				);
 			};
 			name = Release;
