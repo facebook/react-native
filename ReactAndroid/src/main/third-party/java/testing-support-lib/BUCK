@@ -1,0 +1,23 @@
+android_prebuilt_aar(
+    name = 'runner',
+    aar = ':testing-support-lib-runner-download',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'testing-support-lib-runner-download',
+    url = 'mvn:com.android.support.test:runner:aar:0.3',
+    sha1 = 'a31e7e8db98ca19fb3fab23f120d19a6f4e3e8a9',
+)
+
+android_prebuilt_aar(
+    name = 'exposed-instrumentation-api',
+    aar = ':testing-support-instrumentation',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'testing-support-instrumentation',
+    url = 'mvn:com.android.support.test:exposed-instrumentation-api-publish:aar:0.3',
+    sha1 = 'a7161eafdfbd02a39461f076c9dce0c8e5e7a149',
+)

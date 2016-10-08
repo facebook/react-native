@@ -1,0 +1,3 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+include ':ReactAndroid', ':Examples:UIExplorer:android:app', ':Examples:Movies:android:app', ':Examples:TicTacToe:android:app'

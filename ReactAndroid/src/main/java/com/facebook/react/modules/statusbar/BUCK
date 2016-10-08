@@ -1,0 +1,22 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'statusbar',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/module/annotations:annotations'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':statusbar',
+)

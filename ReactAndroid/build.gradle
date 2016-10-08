@@ -1,0 +1,297 @@
+// Copyright 2015-present Facebook. All Rights Reserved.
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+apply plugin: 'de.undercouch.download'
+
+import de.undercouch.gradle.tasks.download.Download
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.apache.tools.ant.filters.ReplaceTokens
+
+// We download various C++ open-source dependencies into downloads.
+// We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
+// After that we build native code from src/main/jni with module path pointing at third-party-ndk.
+
+def downloadsDir = new File("$buildDir/downloads")
+def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
+
+// The Boost library is a very large download (>100MB).
+// If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
+// and the build will use that.
+def boostPath = System.getenv("REACT_NATIVE_BOOST_PATH")
+
+task createNativeDepsDirectories {
+    downloadsDir.mkdirs()
+    thirdPartyNdkDir.mkdirs()
+}
+
+task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
+    // Use ZIP version as it's faster this way to selectively extract some parts of the archive
+    src 'https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip'
+    // alternative
+    // src 'http://mirror.nienbo.com/boost/boost_1_57_0.zip'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'boost_1_57_0.zip')
+}
+
+task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
+    from boostPath ? boostPath : zipTree(downloadBoost.dest)
+    from 'src/main/jni/third-party/boost/Android.mk'
+    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    into "$thirdPartyNdkDir/boost"
+}
+
+task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/google/double-conversion/archive/v1.1.1.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'double-conversion-1.1.1.tar.gz')
+}
+
+task prepareDoubleConversion(dependsOn: downloadDoubleConversion, type: Copy) {
+    from tarTree(downloadDoubleConversion.dest)
+    from 'src/main/jni/third-party/double-conversion/Android.mk'
+    include 'double-conversion-1.1.1/src/**/*', 'Android.mk'
+    filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/double-conversion"
+}
+
+task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/facebook/folly/archive/v2016.09.26.00.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'folly-2016.09.26.00.tar.gz');
+}
+
+task prepareFolly(dependsOn: downloadFolly, type: Copy) {
+    from tarTree(downloadFolly.dest)
+    from 'src/main/jni/third-party/folly/Android.mk'
+    include 'folly-2016.09.26.00/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-2016.09.26.00/")}
+    includeEmptyDirs = false
+    into "$thirdPartyNdkDir/folly"
+}
+
+task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
+    src 'https://github.com/google/glog/archive/v0.3.3.tar.gz'
+    onlyIfNewer true
+    overwrite false
+    dest new File(downloadsDir, 'glog-0.3.3.tar.gz')
+}
+
+// Prepare glog sources to be compiled, this task will perform steps that normally should've been
+// executed by automake. This way we can avoid dependencies on make/automake
+task prepareGlog(dependsOn: downloadGlog, type: Copy) {
+    from tarTree(downloadGlog.dest)
+    from 'src/main/jni/third-party/glog/'
+    include 'glog-0.3.3/src/**/*', 'Android.mk', 'config.h'
+    includeEmptyDirs = false
+    filesMatching('**/*.h.in') {
+        filter(ReplaceTokens, tokens: [
+                ac_cv_have_unistd_h: '1',
+                ac_cv_have_stdint_h: '1',
+                ac_cv_have_systypes_h: '1',
+                ac_cv_have_inttypes_h: '1',
+                ac_cv_have_libgflags: '0',
+                ac_google_start_namespace: 'namespace google {',
+                ac_cv_have_uint16_t: '1',
+                ac_cv_have_u_int16_t: '1',
+                ac_cv_have___uint16: '0',
+                ac_google_end_namespace: '}',
+                ac_cv_have___builtin_expect: '1',
+                ac_google_namespace: 'google',
+                ac_cv___attribute___noinline: '__attribute__ ((noinline))',
+                ac_cv___attribute___noreturn: '__attribute__ ((noreturn))',
+                ac_cv___attribute___printf_4_5: '__attribute__((__format__ (__printf__, 4, 5)))'
+        ])
+        it.path = (it.name - '.in')
+    }
+    into "$thirdPartyNdkDir/glog"
+}
+
+task downloadJSCHeaders(type: Download) {
+    def jscAPIBaseURL = 'https://svn.webkit.org/repository/webkit/!svn/bc/174650/trunk/Source/JavaScriptCore/API/'
+    def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
+    def output = new File(downloadsDir, 'jsc')
+    output.mkdirs()
+    src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
+    onlyIfNewer true
+    overwrite false
+    dest output
+}
+
+// Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
+task prepareJSC(dependsOn: downloadJSCHeaders) << {
+    copy {
+        from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
+        from {downloadJSCHeaders.dest}
+        from 'src/main/jni/third-party/jsc/Android.mk'
+        include 'jni/**/*.so', '*.h', 'Android.mk'
+        filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
+        into "$thirdPartyNdkDir/jsc";
+    }
+}
+
+def getNdkBuildName() {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        return "ndk-build.cmd"
+    } else {
+        return "ndk-build"
+    }
+}
+
+def findNdkBuildFullPath() {
+    // we allow to provide full path to ndk-build tool
+    if (hasProperty('ndk.command')) {
+        return property('ndk.command')
+    }
+    // or just a path to the containing directory
+    if (hasProperty('ndk.path')) {
+        def ndkDir = property('ndk.path')
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+    if (System.getenv('ANDROID_NDK') != null) {
+        def ndkDir = System.getenv('ANDROID_NDK')
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+    def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
+            plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder()
+    if (ndkDir) {
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+    return null
+}
+
+def getNdkBuildFullPath() {
+    def ndkBuildFullPath = findNdkBuildFullPath()
+    if (ndkBuildFullPath == null) {
+        throw new GradleScriptException(
+            "ndk-build binary cannot be found, check if you've set " +
+            "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+            "setup in local.properties",
+            null)
+    }
+    if (!new File(ndkBuildFullPath).canExecute()) {
+        throw new GradleScriptException(
+            "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
+            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+            "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
+            null)
+    }
+    return ndkBuildFullPath
+}
+
+task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
+    inputs.file('src/main/jni/xreact')
+    outputs.dir("$buildDir/react-ndk/all")
+    commandLine getNdkBuildFullPath(),
+            'NDK_PROJECT_PATH=null',
+            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+            'NDK_OUT=' + temporaryDir,
+            "NDK_LIBS_OUT=$buildDir/react-ndk/all",
+            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
+            '-C', file('src/main/jni/react/jni').absolutePath,
+            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
+}
+
+task cleanReactNdkLib(type: Exec) {
+    commandLine getNdkBuildFullPath(),
+            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
+            '-C', file('src/main/jni/react/jni').absolutePath,
+            'clean'
+}
+
+task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
+    from "$buildDir/react-ndk/all"
+    exclude '**/libjsc.so'
+    into "$buildDir/react-ndk/exported"
+}
+
+task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
+  from "$buildDir/react-ndk/exported"
+  into "src/main/jni/prebuilt/lib"
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+
+        ndk {
+            moduleName "reactnativejni"
+        }
+
+        buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        buildConfigField 'int', 'EXOPACKAGE_FLAGS', '0'
+        testApplicationId "com.facebook.react.tests.gradle"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets.main {
+        jni.srcDirs = []
+        jniLibs.srcDir "$buildDir/react-ndk/exported"
+        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
+        java {
+          srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
+          exclude 'com/facebook/react/processing'
+          exclude 'com/facebook/react/module/processing'
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn packageReactNdkLibs
+    }
+
+    clean.dependsOn cleanReactNdkLib
+
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    compile 'javax.inject:javax.inject:1'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.facebook.fresco:fresco:0.11.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
+    compile 'com.facebook.soloader:soloader:0.1.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+    compile 'com.squareup.okio:okio:1.9.0'
+    compile 'org.webkit:android-jsc:r174650'
+
+    testCompile "junit:junit:${JUNIT_VERSION}"
+    testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+    testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+    testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+    testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+
+    androidTestCompile fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+}
+
+apply from: 'release.gradle'

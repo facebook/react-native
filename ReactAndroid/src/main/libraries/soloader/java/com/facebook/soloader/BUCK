@@ -1,0 +1,11 @@
+android_prebuilt_aar(
+    name = 'soloader',
+    aar = ':soloader-binary-aar',
+    visibility = ['PUBLIC'],
+)
+
+remote_file(
+    name = 'soloader-binary-aar',
+    url = 'mvn:com.facebook.soloader:soloader:aar:0.1.0',
+    sha1 = '918573465c94c6bc9bad48ef259f1e0cd6543c1b',
+)

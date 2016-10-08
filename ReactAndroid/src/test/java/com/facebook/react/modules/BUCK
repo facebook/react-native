@@ -1,0 +1,44 @@
+include_defs('//ReactAndroid/DEFS')
+
+robolectric3_test(
+  # Please change the contact to the oncall of your team
+  contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
+  name = 'modules',
+  srcs = glob(['**/*.java']),
+  deps = [
+    CSSLAYOUT_TARGET,
+    react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
+    react_native_dep('third-party/java/fest:fest'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_dep('third-party/java/junit:junit'),
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/okhttp:okhttp3'),
+    react_native_dep('third-party/java/okio:okio'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+    react_native_target('java/com/facebook/react/animation:animation'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common/network:network'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/devsupport:devsupport'),
+    react_native_target('java/com/facebook/react/modules/clipboard:clipboard'),
+    react_native_target('java/com/facebook/react/modules/common:common'),
+    react_native_target('java/com/facebook/react/modules/core:core'),
+    react_native_target('java/com/facebook/react/modules/debug:debug'),
+    react_native_target('java/com/facebook/react/modules/dialog:dialog'),
+    react_native_target('java/com/facebook/react/modules/network:network'),
+    react_native_target('java/com/facebook/react/modules/share:share'),
+    react_native_target('java/com/facebook/react/modules/storage:storage'),
+    react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+    react_native_target('java/com/facebook/react/touch:touch'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react:react'),
+    react_native_tests_target('java/com/facebook/react/bridge:testhelpers'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
+
+project_config(
+  test_target = ':modules',
+)

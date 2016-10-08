@@ -1,0 +1,49 @@
+include_defs('//ReactAndroid/DEFS')
+
+IMAGE_EVENT_FILES = [
+  'ImageLoadEvent.java',
+]
+
+android_library(
+  name = 'imageevents',
+  srcs = IMAGE_EVENT_FILES,
+  deps = [
+    react_native_dep('third-party/android/support-annotations:android-support-annotations'),
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  ],
+  visibility = ['PUBLIC'],
+)
+
+android_library(
+  name = 'image',
+  srcs = glob(['*.java'], excludes = IMAGE_EVENT_FILES),
+  exported_deps = [
+    ':imageevents',
+  ],
+  deps = [
+    CSSLAYOUT_TARGET,
+    react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
+    react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
+    react_native_dep('third-party/android/support-annotations:android-support-annotations'),
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/views/imagehelper:withmultisource'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':image',
+)
