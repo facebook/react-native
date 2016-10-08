@@ -71,10 +71,15 @@ RCT_EXPORT_MODULE()
 
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
 {
+  dispatch_block_t completionBlock = ^{
+    if (modalHostView.onHide) {
+      modalHostView.onHide(nil);
+    }
+  };
   if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
+    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController dismissViewControllerAnimated:animated completion:nil];
+    [viewController dismissViewControllerAnimated:animated completion:completionBlock];
   }
 }
 
@@ -94,6 +99,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onHide, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)

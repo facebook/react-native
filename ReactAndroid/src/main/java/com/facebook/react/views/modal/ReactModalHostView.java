@@ -66,6 +66,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   // but transparency does not since we can access the window to update the property.
   private boolean mPropertyRequiresNewDialog;
   private @Nullable DialogInterface.OnShowListener mOnShowListener;
+  private @Nullable DialogInterface.OnDismissListener mOnDismissListener;
   private @Nullable OnRequestCloseListener mOnRequestCloseListener;
 
   public ReactModalHostView(Context context) {
@@ -144,6 +145,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mOnShowListener = listener;
   }
 
+  protected void setOnDissmissListener(DialogInterface.OnDismissListener listener) {
+    mOnDismissListener = listener;
+  }
+
   protected void setTransparent(boolean transparent) {
     mTransparent = transparent;
   }
@@ -208,6 +213,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
+    mDialog.setOnDissmissListener(mOnDissmissListener);
     mDialog.setOnKeyListener(
       new DialogInterface.OnKeyListener() {
         @Override

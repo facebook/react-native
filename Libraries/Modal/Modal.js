@@ -107,6 +107,10 @@ class Modal extends React.Component {
      * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
     onShow: PropTypes.func,
+    /**
+     * The `onHide` prop allows passing a function that will be called once the modal has been hidden.
+     */
+    onHide: PropTypes.func,
     animated: deprecatedPropType(
       PropTypes.bool,
       'Use the `animationType` prop instead.'
@@ -159,6 +163,7 @@ class Modal extends React.Component {
         transparent={this.props.transparent}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
+        onHide={this.props.onHide}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
