@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -33,6 +34,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 /**
  * View manager for AndroidViews (plain React Views).
  */
+@ReactModule(name = ReactViewManager.REACT_CLASS)
 public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @VisibleForTesting

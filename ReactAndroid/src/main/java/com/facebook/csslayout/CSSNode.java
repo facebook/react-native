@@ -649,5 +649,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     layout.resetResult();
     lineIndex = 0;
     mLayoutState = LayoutState.DIRTY;
+    mMeasureFunction = null;
   }
 }

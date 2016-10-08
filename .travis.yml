@@ -1,6 +1,6 @@
 language: objective-c
 
-osx_image: xcode7.3
+osx_image: xcode8
 
 install:
   - mkdir -p /Users/travis/build/facebook/.nvm
