@@ -219,6 +219,7 @@ void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
+  CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
   CSSNodeListInsert(node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -2295,3 +2296,17 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
     }
   }
 }
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+static CSSAssertFailFunc gAssertFailFunc;
+
+void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
+  gAssertFailFunc = func;
+}
+
+void CSSAssertFail(const char *message) {
+  if (gAssertFailFunc) {
+    (*gAssertFailFunc)(message);
+  }
+}
+#endif
