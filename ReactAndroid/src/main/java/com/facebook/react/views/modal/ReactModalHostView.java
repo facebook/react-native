@@ -145,7 +145,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mOnShowListener = listener;
   }
 
-  protected void setOnDissmissListener(DialogInterface.OnDismissListener listener) {
+  protected void setOnDismissListener(DialogInterface.OnDismissListener listener) {
     mOnDismissListener = listener;
   }
 
@@ -213,7 +213,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
-    mDialog.setOnDissmissListener(mOnDissmissListener);
+    mDialog.setOnDismissListener(mOnDismissListener);
     mDialog.setOnKeyListener(
       new DialogInterface.OnKeyListener() {
         @Override
