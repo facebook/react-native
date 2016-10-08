@@ -26,8 +26,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
-import static com.facebook.react.common.TestIdUtil.getOriginalReactTag;
-
+import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
@@ -77,7 +76,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public int reactTagForTouch(float touchX, float touchY) {
     Spanned text = (Spanned) getText();
-    int target = getOriginalReactTag(this);
+    int target = reactTagFrom(this);
 
     int x = (int) touchX;
     int y = (int) touchY;

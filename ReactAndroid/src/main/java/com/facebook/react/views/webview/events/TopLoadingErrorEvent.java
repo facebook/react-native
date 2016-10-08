@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.webview.events;
 
-import android.view.View;
-
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -23,20 +21,8 @@ public class TopLoadingErrorEvent extends Event<TopLoadingErrorEvent> {
   public static final String EVENT_NAME = "topLoadingError";
   private WritableMap mEventData;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param eventData
-   */
-  @Deprecated
-  public TopLoadingErrorEvent(int viewTag, WritableMap eventData) {
+  public TopLoadingErrorEvent(Object viewTag, WritableMap eventData) {
     super(viewTag);
-    mEventData = eventData;
-  }
-
-  public TopLoadingErrorEvent(View view, WritableMap eventData) {
-    super(view);
     mEventData = eventData;
   }
 

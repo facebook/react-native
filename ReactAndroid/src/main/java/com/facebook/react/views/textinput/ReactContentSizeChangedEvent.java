@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -26,28 +24,11 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   private float mContentWidth;
   private float mContentHeight;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param contentSizeWidth
-   * @param contentSizeHeight
-   */
-  @Deprecated
   public ReactContentSizeChangedEvent(
-          int viewTag,
+          Object viewTag,
           float contentSizeWidth,
           float contentSizeHeight) {
     super(viewTag);
-    mContentWidth = contentSizeWidth;
-    mContentHeight = contentSizeHeight;
-  }
-
-  public ReactContentSizeChangedEvent(
-    View view,
-    float contentSizeWidth,
-    float contentSizeHeight) {
-    super(view);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }

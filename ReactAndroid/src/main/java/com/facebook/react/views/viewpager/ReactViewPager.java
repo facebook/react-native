@@ -123,14 +123,14 @@ public class ReactViewPager extends ViewPager {
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getThisPager(), position, positionOffset));
+          new PageScrollEvent(getTag(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getThisPager(), position));
+            new PageSelectedEvent(getTag(), position));
       }
     }
 
@@ -151,7 +151,7 @@ public class ReactViewPager extends ViewPager {
           throw new IllegalStateException("Unsupported pageScrollState");
       }
       mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getThisPager(), pageScrollState));
+        new PageScrollStateChangedEvent(getTag(), pageScrollState));
     }
   }
 
@@ -192,10 +192,6 @@ public class ReactViewPager extends ViewPager {
     }
 
     return super.onTouchEvent(ev);
-  }
-
-  private ReactViewPager getThisPager() {
-    return this;
   }
 
   public void setCurrentItemFromJs(int item, boolean animated) {

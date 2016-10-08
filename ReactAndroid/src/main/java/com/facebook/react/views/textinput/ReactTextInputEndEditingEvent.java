@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -26,24 +24,10 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
 
   private String mText;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param text
-   */
-  @Deprecated
   public ReactTextInputEndEditingEvent(
-          int viewTag,
+          Object viewTag,
           String text) {
     super(viewTag);
-    mText = text;
-  }
-
-  public ReactTextInputEndEditingEvent(
-      View view,
-      String text) {
-    super(view);
     mText = text;
   }
 

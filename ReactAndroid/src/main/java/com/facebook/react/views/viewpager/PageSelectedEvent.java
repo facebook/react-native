@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.viewpager;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -28,20 +26,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private final int mPosition;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param position
-   */
-  @Deprecated
-  protected PageSelectedEvent(int viewTag, int position) {
+  protected PageSelectedEvent(Object viewTag, int position) {
     super(viewTag);
-    mPosition = position;
-  }
-
-  protected PageSelectedEvent(View view, int position) {
-    super(view);
     mPosition = position;
   }
 

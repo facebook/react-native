@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.slider;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -26,25 +24,12 @@ public class ReactSliderEvent extends Event<ReactSliderEvent> {
   private final double mValue;
   private final boolean mFromUser;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param value
-   * @param fromUser
-   */
-  @Deprecated
-  public ReactSliderEvent(int viewTag, double value, boolean fromUser) {
+  public ReactSliderEvent(Object viewTag, double value, boolean fromUser) {
     super(viewTag);
     mValue = value;
     mFromUser = fromUser;
   }
 
-  public ReactSliderEvent(View view, double value, boolean fromUser) {
-    super(view);
-    mValue = value;
-    mFromUser = fromUser;
-  }
 
   public double getValue() {
     return mValue;

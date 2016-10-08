@@ -645,7 +645,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              mEditText,
+              mEditText.getTag(),
               s.toString(),
               PixelUtil.toDIPFromPixel(contentWidth),
               PixelUtil.toDIPFromPixel(contentHeight),
@@ -653,7 +653,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
-              mEditText,
+              mEditText.getTag(),
               newText,
               oldText,
               start,
@@ -678,15 +678,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
-                      editText));
+                      editText.getTag()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
-                      editText));
+                      editText.getTag()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      editText,
+                      editText.getTag(),
                       editText.getText().toString()));
             }
           }
@@ -703,7 +703,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                   reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      editText,
+                      editText.getTag(),
                       editText.getText().toString()));
             }
             if (actionId == EditorInfo.IME_ACTION_NEXT ||
@@ -749,7 +749,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
-            mEditText,
+            mEditText.getTag(),
             PixelUtil.toDIPFromPixel(contentWidth),
             PixelUtil.toDIPFromPixel(contentHeight)));
       }
@@ -777,7 +777,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
-                mReactEditText,
+                mReactEditText.getTag(),
                 start,
                 end
             ));

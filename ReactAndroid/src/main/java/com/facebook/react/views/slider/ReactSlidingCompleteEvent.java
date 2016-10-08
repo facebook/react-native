@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.slider;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -25,20 +23,8 @@ public class ReactSlidingCompleteEvent extends Event<ReactSlidingCompleteEvent> 
 
   private final double mValue;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param value
-   */
-  @Deprecated
-  public ReactSlidingCompleteEvent(int viewTag, double value) {
+  public ReactSlidingCompleteEvent(Object viewTag, double value) {
     super(viewTag);
-    mValue = value;
-  }
-
-  public ReactSlidingCompleteEvent(View view, double value) {
-    super(view);
     mValue = value;
   }
 

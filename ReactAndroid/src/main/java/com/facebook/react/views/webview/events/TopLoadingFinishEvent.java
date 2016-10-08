@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.webview.events;
 
-import android.view.View;
-
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -23,20 +21,8 @@ public class TopLoadingFinishEvent extends Event<TopLoadingFinishEvent> {
   public static final String EVENT_NAME = "topLoadingFinish";
   private WritableMap mEventData;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param eventData
-   */
-  @Deprecated
-  public TopLoadingFinishEvent(int viewTag, WritableMap eventData) {
+  public TopLoadingFinishEvent(Object viewTag, WritableMap eventData) {
     super(viewTag);
-    mEventData = eventData;
-  }
-
-  public TopLoadingFinishEvent(View view, WritableMap eventData) {
-    super(view);
     mEventData = eventData;
   }
 

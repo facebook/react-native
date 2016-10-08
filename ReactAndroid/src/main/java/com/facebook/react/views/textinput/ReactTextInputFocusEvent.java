@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -23,18 +21,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private static final String EVENT_NAME = "topFocus";
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   */
-  @Deprecated
-  public ReactTextInputFocusEvent(int viewTag) {
+  public ReactTextInputFocusEvent(Object viewTag) {
     super(viewTag);
-  }
-
-  public ReactTextInputFocusEvent(View view) {
-    super(view);
   }
 
   @Override

@@ -81,7 +81,7 @@ public class NativeAnimatedNodeTraversalTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(view.getId()).thenReturn(viewTag);
+    when(view.getTag()).thenReturn(viewTag);
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
@@ -737,7 +737,7 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   private Event createScrollEvent(final View view, final double value) {
-    return new Event(view) {
+    return new Event(view.getTag()) {
       @Override
       public String getEventName() {
         return "topScroll";

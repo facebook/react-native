@@ -262,11 +262,6 @@ const View = React.createClass({
      *
      * ### Android Specifics
      *
-     * By default this value is passed to the underlying View's
-     * [setTag](https://developer.android.com/reference/android/view/View.html#setTag(java.lang.Object)
-     * method.  Very few testing frameworks support looking up
-     * a View by tag, let alone `uiautomatorviewer` which only supports `content-description`, `resource-id`, `text`, and `XPath`.
-     *
      * While React Native does *not* utilize XML based layouts for android Views it
      * is still possible to add [android:id](https://developer.android.com/reference/android/view/View.html#attr_android:id)
      * to the underlying View in order to support

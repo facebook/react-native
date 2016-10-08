@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.viewpager;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -33,25 +31,9 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   private final int mPosition;
   private final float mOffset;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param position
-   * @param offset
-   */
-  @Deprecated
-  protected PageScrollEvent(int viewTag, int position, int offset) {
+  protected PageScrollEvent(Object viewTag, int position, float offset) {
     super(viewTag);
     mPosition = position;
-    mOffset = getOffset(offset);
-  }
-
-  protected PageScrollEvent(View view, int position, float offset) {
-    super(view);
-    mPosition = position;
-
-    // folly::toJson default options don't support serialize NaN or Infinite value
     mOffset = getOffset(offset);
   }
 

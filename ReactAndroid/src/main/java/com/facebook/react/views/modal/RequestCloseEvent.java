@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.modal;
 
-import android.view.View;
-
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -21,18 +19,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public static final String EVENT_NAME = "topRequestClose";
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   */
-  @Deprecated
-  protected RequestCloseEvent(int viewTag) {
+  protected RequestCloseEvent(Object viewTag) {
     super(viewTag);
-  }
-
-  protected RequestCloseEvent(View view) {
-    super(view);
   }
 
   @Override

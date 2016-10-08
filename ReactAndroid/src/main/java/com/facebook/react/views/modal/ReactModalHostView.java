@@ -36,7 +36,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
 
-import static com.facebook.react.common.TestIdUtil.getOriginalReactTag;
+import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -301,7 +301,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             @Override
             public void run() {
               ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(getOriginalReactTag(getChildAt(0)), w, h);
+                .updateNodeSize(reactTagFrom(getChildAt(0)), w, h);
             }
           });
       }

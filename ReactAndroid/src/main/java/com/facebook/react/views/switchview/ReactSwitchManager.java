@@ -76,7 +76,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
-                  buttonView,
+                  buttonView.getTag(),
                   isChecked));
         }
       };

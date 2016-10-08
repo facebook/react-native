@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 
+import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+
 /**
  * Wraps {@link RecyclerView} providing interface similar to `ScrollView.js` where each children
  * will be rendered as a separate {@link RecyclerView} row.
@@ -296,7 +298,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     @Override
     public long getItemId(int position) {
       // this should return the view's actual ID to work properly with the view we're extending.
-      return mViews.get(position).getId();
+      return reactTagFrom(mViews.get(position));
     }
 
     public View getView(int index) {
@@ -344,7 +346,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
-                this,
+                this.getTag(),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -358,7 +360,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     if (mSendContentSizeChangeEvents) {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
-                  this,
+                  this.getTag(),
                   getWidth(),
                   newTotalChildrenHeight));
     }

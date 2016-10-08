@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
@@ -29,36 +27,13 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
   private int mRangeStart;
   private int mRangeEnd;
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   * @param text
-   * @param previousText
-   * @param rangeStart
-   * @param rangeEnd
-   */
-  @Deprecated
   public ReactTextInputEvent(
-          int viewTag,
+          Object viewTag,
           String text,
           String previousText,
           int rangeStart,
           int rangeEnd) {
     super(viewTag);
-    mText = text;
-    mPreviousText = previousText;
-    mRangeStart = rangeStart;
-    mRangeEnd = rangeEnd;
-  }
-
-  public ReactTextInputEvent(
-      View view,
-      String text,
-      String previousText,
-      int rangeStart,
-      int rangeEnd) {
-    super(view);
     mText = text;
     mPreviousText = previousText;
     mRangeStart = rangeStart;

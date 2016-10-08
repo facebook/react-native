@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.drawer.events;
 
-import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -19,18 +17,8 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
 
   public static final String EVENT_NAME = "topDrawerOpened";
 
-  /**
-   * See {@link Event#Event(int)}.
-   *
-   * @param viewTag
-   */
-  @Deprecated
-  public DrawerOpenedEvent(int viewTag) {
+  public DrawerOpenedEvent(Object viewTag) {
     super(viewTag);
-  }
-
-  public DrawerOpenedEvent(View view) {
-    super(view);
   }
 
   @Override

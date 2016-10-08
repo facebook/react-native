@@ -9,11 +9,7 @@
 
 package com.facebook.react.uimanager.events;
 
-import android.view.View;
-
 import com.facebook.react.common.SystemClock;
-
-import static com.facebook.react.common.TestIdUtil.getOriginalReactTag;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -34,33 +30,17 @@ public abstract class Event<T extends Event> {
   protected Event() {
   }
 
-  /**
-   * Usage of this constructor is discouraged as the viewTag is not gauranteed to represent the
-   * associated view.  See {@link com.facebook.react.uimanager.BaseViewManager#setTestId(View, String)}.
-   * Use {@link #Event(View)} instead.
-   *
-   * @param viewTag
-   */
-  @Deprecated
-  protected Event(int viewTag) {
+  protected Event(Object viewTag) {
     init(viewTag);
-  }
-
-  protected Event(View view) {
-    init(getOriginalReactTag(view));
   }
 
   /**
    * This method needs to be called before event is sent to event dispatcher.
    */
-  protected void init(int viewTag) {
-    mViewTag = viewTag;
+  protected void init(Object viewTag) {
+    mViewTag = (int) viewTag;
     mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
-  }
-
-  protected void init(View view) {
-    init(getOriginalReactTag(view));
   }
 
   /**

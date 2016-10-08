@@ -22,7 +22,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
 
-import static com.facebook.react.common.TestIdUtil.getOriginalReactTag;
+import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
@@ -89,7 +89,7 @@ public class TouchTargetHelper {
       float[] viewCoords,
       @Nullable int[] nativeViewTag) {
     UiThreadUtil.assertOnUiThread();
-    int targetTag = getOriginalReactTag(viewGroup);
+    int targetTag = reactTagFrom(viewGroup);
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
     viewCoords[0] = eventX;
     viewCoords[1] = eventY;
@@ -98,7 +98,7 @@ public class TouchTargetHelper {
       View reactTargetView = findClosestReactAncestor(nativeTargetView);
       if (reactTargetView != null) {
         if (nativeViewTag != null) {
-          nativeViewTag[0] = getOriginalReactTag(reactTargetView);
+          nativeViewTag[0] = reactTagFrom(reactTargetView);
         }
         targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
       }
@@ -107,7 +107,7 @@ public class TouchTargetHelper {
   }
 
   private static View findClosestReactAncestor(View view) {
-    while (view != null && view.getId() <= 0) {
+    while (view != null && reactTagFrom(view) <= 0) {
       view = (View) view.getParent();
     }
     return view;
@@ -226,7 +226,7 @@ public class TouchTargetHelper {
         // ViewGroup).
         if (view instanceof ReactCompoundView) {
           int reactTag = ((ReactCompoundView)view).reactTagForTouch(eventCoords[0], eventCoords[1]);
-          if (reactTag != getOriginalReactTag(view)) {
+          if (reactTag != reactTagFrom(view)) {
             // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
             return view;
           }
@@ -258,7 +258,7 @@ public class TouchTargetHelper {
       // {@link #findTouchTargetView()}.
       return ((ReactCompoundView) targetView).reactTagForTouch(eventX, eventY);
     }
-    return getOriginalReactTag(targetView);
+    return reactTagFrom(targetView);
   }
 
 }

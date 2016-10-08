@@ -60,7 +60,6 @@ public class BaseViewManagerTest {
 
   private final String testID = "some-test-id";
   private final int mappedTestID = 23457897;
-  private final int originalJsTag = 5;
   private final String myPackage = "com.myApp";
 
 
@@ -69,7 +68,6 @@ public class BaseViewManagerTest {
     MockitoAnnotations.initMocks(this);
     when(view.getContext()).thenReturn(context);
     when(view.getResources()).thenReturn(resources);
-    when(view.getId()).thenReturn(originalJsTag);
     when(resources.getIdentifier(eq(testID), eq("id"), eq(myPackage))).thenReturn(mappedTestID);
     when(resources.getIdentifier(eq(testID), eq("id"), not(eq(myPackage)))).thenReturn(0);
     sut = new ViewManagerStub();
@@ -78,17 +76,6 @@ public class BaseViewManagerTest {
   @After
   public void teardown() {
     TestIdUtil.resetTestState();
-  }
-
-  @Test
-  public void testSetTestIdShouldAlwaysCallSetTag() {
-    String expectedTestID1 = "asdfasdf1";
-    String expectedTestID2 = "asdfasdf2";
-    when(context.getPackageName()).thenReturn("com.foo");
-    sut.setTestId(view, expectedTestID1);
-    sut.setTestId(view, expectedTestID2);
-    verify(view).setTag(expectedTestID1);
-    verify(view).setTag(expectedTestID2);
   }
 
   @Test
@@ -107,30 +94,6 @@ public class BaseViewManagerTest {
     when(view.getId()).thenReturn((mappedTestID));
     sut.setTestId(view, testID);
     inOrder.verify(view, never()).setId(anyInt());
-  }
-
-  @Test
-  public void testRetrievingOriginalReactTagWhenNoTestIdWasUsed() {
-    assertEquals("The original JS tag was not returned", TestIdUtil.getOriginalReactTag(view), originalJsTag);
-  }
-
-  @Test
-  public void testRetrievingOriginalReactTagWhenTestIdWasUsed() {
-    when(context.getPackageName()).thenReturn(myPackage);
-    sut.setTestId(view, testID);
-    verify(view).setId(mappedTestID);
-    assertEquals("The original JS tag was not returned", TestIdUtil.getOriginalReactTag(view), originalJsTag);
-  }
-
-  @Test
-  public void testWhenTheViewInstanceIsRemoved() {
-    InOrder inOrder = inOrder(view);
-    when(context.getPackageName()).thenReturn(myPackage);
-    sut.setTestId(view, testID);
-    inOrder.verify(view).setId(mappedTestID);
-    assertEquals("The original JS tag was not returned", TestIdUtil.getOriginalReactTag(view), originalJsTag);
-    sut.onDropViewInstance(view);
-    inOrder.verify(view).setId(originalJsTag);
   }
 
   private static class ViewManagerStub extends BaseViewManager<View, LayoutShadowNode> {
