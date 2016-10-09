@@ -295,6 +295,13 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
     infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
     infoTitle: 'Switching to React Native in Production on iOS and Android',
+  },
+  {
+    name: 'BallisticsARC',
+    icon: 'https://lh4.ggpht.com/QU9pRRo3sy89-xQdyay8rjDHeTFbpB9ifx0mneFyWUWwQ4tj1-tIGWQGvqX4eKFeZsCo=w300',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.geoballistics.ballisticsarc&hl=en',
+    infoLink: 'https://thebhwgroup.com/blog/react-native-jni',
+    infoTitle: 'React Native with JNI & C',
   }
 ];
 
