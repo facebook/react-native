@@ -457,6 +457,16 @@ var pinned = [
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
     pinned: true,
+  },
+  {
+    name: '手机京东',
+    icon: 'https://lh3.googleusercontent.com/AIIAZsqyEG0KmCFruh1Ec374-2l7n1rfv_LG5RWjdAZOzUBCu-5MRqdLbzJfBnOdSFg=w300-rw',
+    linkPlayStore: 'https://app.jd.com/android.html',
+    linkAppStore: 'https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8',
+    infoLink: 'http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile',
+    infoTitle: 'JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.',
+    defaultLink: 'http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile',
+    pinned: true,
   }
 ];
 
