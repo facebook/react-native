@@ -16,7 +16,7 @@ EXPORTED_HEADERS = [
 
 cxx_library(
   name='jni',
-  soname = 'libreactnativejnifb.so',
+  soname = 'libreactnativejnifb.$(ext)',
   header_namespace = 'xreact/jni',
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   deps = JSC_DEPS + [

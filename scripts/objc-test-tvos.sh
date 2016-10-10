@@ -16,16 +16,16 @@ function cleanup {
     WATCHMAN_LOGS=/usr/local/Cellar/watchman/3.1/var/run/watchman/$USER.log
     [ -f $WATCHMAN_LOGS ] && cat $WATCHMAN_LOGS
   fi
-  # kill whatever is occupying port 8081
+  # kill whatever is occupying port 8081 
   lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
 }
 trap cleanup EXIT
 
 XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer"
-XCODE_SDK="iphonesimulator"
+XCODE_SCHEME="UIExplorer-tvOS"
+XCODE_SDK="appletvsimulator"
 if [ -z "$XCODE_DESTINATION" ]; then
-  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.0"
+  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=9.2"
 fi
 
 # Support for environments without xcpretty installed
@@ -51,3 +51,4 @@ else
     -destination "$XCODE_DESTINATION" \
     test | $OUTPUT_TOOL && exit ${PIPESTATUS[0]}
 fi
+
