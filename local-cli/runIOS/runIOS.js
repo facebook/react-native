@@ -86,7 +86,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     // but we want it to only launch the simulator
   }
 
-  var appName = buildProject(xcodeProject, selectedSimulator.udid, scheme);
+  let appName = buildProject(xcodeProject, selectedSimulator.udid, scheme);
   if (!appName)
     appName = inferredSchemeName;
 
@@ -105,7 +105,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 }
 
 function runOnDevice(selectedDevice, scheme, xcodeProject){
-  var appName = buildProject(xcodeProject, selectedDevice.udid, scheme);
+  let appName = buildProject(xcodeProject, selectedDevice.udid, scheme);
   if (!appName)
     appName = scheme;
   const iosDeployInstallArgs = [
@@ -137,11 +137,11 @@ function buildProject(xcodeProject, udid, scheme) {
   var buildOutput = buildProcess.stdout.toString();
   console.log(buildOutput);
   //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
-  var exportFullProductLines = buildOutput.match(new RegExp("export FULL_PRODUCT_NAME=.+\.app"));
-  if (exportFullProductLines && exportFullProductLines.length)
+  let productNameMatch = /(export FULL_PRODUCT_NAME=)("*)(.+)(.app)/.exec(buildOutput);
+  if (productNameMatch && productNameMatch.length && productNameMatch.length > 3)
   {
-    return exportFullProductLines[exportFullProductLines.length - 1].replace("\"","").replace("export FULL_PRODUCT_NAME=","").replace(".app","");//strip out everything but the file name
-  } 
+    return productNameMatch[3];//0 is the full match, 1 is 'export FULL_PRODUCT_NAME=', 2 is possible double quote, 3 is app name and 4 is '.app'
+  }
 }
 
 function matchingDevice(devices, deviceName) {
