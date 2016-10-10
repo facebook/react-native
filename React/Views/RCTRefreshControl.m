@@ -111,8 +111,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _currentRefreshingState = refreshing;
 
     if (refreshing) {
-      // If it is the initial render, beginRefreshing will get called
-      // in layoutSubviews.
       if (!_isInitialRender) {
         [self beginRefreshing];
       }
