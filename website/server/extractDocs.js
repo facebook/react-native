@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
@@ -487,7 +489,6 @@ function renderStyle(filepath) {
 
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
-  '../Libraries/Components/ActivityIndicator/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
@@ -505,12 +506,9 @@ const components = [
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/Slider/Slider.js',
-  '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
   '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
   '../Libraries/Components/Switch/Switch.js',
-  '../Libraries/Components/SwitchAndroid/SwitchAndroid.android.js',
-  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
@@ -544,7 +542,6 @@ const apis = [
   '../Libraries/Image/ImageEditor.js',
   '../Libraries/CameraRoll/ImagePickerIOS.js',
   '../Libraries/Image/ImageStore.js',
-  '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/Components/Keyboard/Keyboard.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',

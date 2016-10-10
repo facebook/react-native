@@ -17,7 +17,7 @@ var React = require('React');
 var ScrollView = require('ScrollView');
 var Picker = require('Picker');
 var StyleSheet = require('StyleSheet');
-var SwitchAndroid = require('SwitchAndroid');
+var Switch = require('Switch');
 var Text = require('Text');
 var TextInput = require('TextInput');
 var ToolbarAndroid = require('ToolbarAndroid');
@@ -83,7 +83,7 @@ class TestIdTestApp extends React.Component {
           <Picker.Item label="Dialog picker" value="key0" />
         </Picker>
 
-        <SwitchAndroid testID="Switch" value={true} />
+        <Switch testID="Switch" value={true} />
 
         <Text testID="Text">text</Text>
 
