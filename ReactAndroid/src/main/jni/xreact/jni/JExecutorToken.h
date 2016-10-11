@@ -7,6 +7,7 @@
 #include <fb/fbjni.h>
 
 #include <cxxreact/ExecutorToken.h>
+#include <cxxreact/noncopyable.h>
 
 using namespace facebook::jni;
 

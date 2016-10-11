@@ -181,6 +181,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
 
     mLayoutState = LayoutState.DIRTY;
+    layout.computedFlexBasis = CSSConstants.UNDEFINED;
 
     if (mParent != null) {
       mParent.dirty();
@@ -648,5 +649,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     layout.resetResult();
     lineIndex = 0;
     mLayoutState = LayoutState.DIRTY;
+    mMeasureFunction = null;
   }
 }

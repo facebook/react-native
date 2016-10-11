@@ -53,7 +53,7 @@ std::string Value::toJSONString(unsigned indent) const {
 Value Value::fromJSON(JSContextRef ctx, const String& json) {
   auto result = JSValueMakeFromJSONString(ctx, json);
   if (!result) {
-    throwJSExecutionException("Failed to create String from JSON");
+    throwJSExecutionException("Failed to create String from JSON: %s", json.str().c_str());
   }
   return Value(ctx, result);
 }

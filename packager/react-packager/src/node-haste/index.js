@@ -11,10 +11,10 @@
 const Cache = require('./Cache');
 const Fastfs = require('./fastfs');
 const FileWatcher = require('./FileWatcher');
+const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const Polyfill = require('./Polyfill');
-const crawl = require('./crawlers');
 const extractRequires = require('./lib/extractRequires');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
@@ -23,6 +23,7 @@ const isAbsolutePath = require('absolute-path');
 const replacePatterns = require('./lib/replacePatterns');
 const path = require('./fastpath');
 const util = require('util');
+const os = require('os');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
@@ -57,6 +58,10 @@ class DependencyGraph {
     assetDependencies,
     moduleOptions,
     extraNodeModules,
+    // additional arguments for jest-haste-map
+    useWatchman,
+    maxWorkers,
+    resetCache,
   }) {
     this._opts = {
       activity: activity || defaultActivity,
@@ -78,6 +83,10 @@ class DependencyGraph {
         cacheTransformResults: true,
       },
       extraNodeModules,
+      // additional arguments for jest-haste-map & defaults
+      useWatchman: useWatchman !== false,
+      maxWorkers,
+      resetCache,
     };
     this._cache = cache;
     this._assetDependencies = assetDependencies;
@@ -90,103 +99,110 @@ class DependencyGraph {
       return this._loading;
     }
 
-    const {activity} = this._opts;
-    const depGraphActivity = activity.startEvent(
-      'Building Dependency Graph',
-      null,
-      {
-        telemetric: true,
-      },
-    );
-    const crawlActivity = activity.startEvent(
-      'Crawling File System',
-      null,
-      {
-        telemetric: true,
-      },
-    );
-    const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
-    this._crawling = crawl(allRoots, {
-      ignore: this._opts.ignoreFilePath,
-      exts: this._opts.extensions.concat(this._opts.assetExts),
-      fileWatcher: this._opts.fileWatcher,
-    });
-    this._crawling.then((files) => activity.endEvent(crawlActivity));
-
-    this._fastfs = new Fastfs(
-      'JavaScript',
-      this._opts.roots,
-      this._opts.fileWatcher,
-      {
-        ignore: this._opts.ignoreFilePath,
-        crawling: this._crawling,
-        activity: activity,
-      }
-    );
-
-    this._fastfs.on('change', this._processFileChange.bind(this));
-
-    this._moduleCache = new ModuleCache({
-      fastfs: this._fastfs,
-      cache: this._cache,
-      extractRequires: this._opts.extractRequires,
-      transformCode: this._opts.transformCode,
-      depGraphHelpers: this._helpers,
-      assetDependencies: this._assetDependencies,
-      moduleOptions: this._opts.moduleOptions,
-    }, this._opts.platforms);
-
-    this._hasteMap = new HasteMap({
-      fastfs: this._fastfs,
-      extensions: this._opts.extensions,
-      moduleCache: this._moduleCache,
-      preferNativePlatform: this._opts.preferNativePlatform,
-      helpers: this._helpers,
-      platforms: this._opts.platforms,
+    const mw = this._opts.maxWorkers;
+    const haste = new JestHasteMap({
+      extensions: this._opts.extensions.concat(this._opts.assetExts),
+      ignorePattern: {test: this._opts.ignoreFilePath},
+      maxWorkers: typeof mw === 'number' && mw >= 1 ? mw : getMaxWorkers(),
+      mocksPattern: '',
+      name: 'react-native-packager',
+      platforms: Array.from(this._opts.platforms),
+      providesModuleNodeModules: this._opts.providesModuleNodeModules,
+      resetCache: this._opts.resetCache,
+      retainAllFiles: true,
+      roots: this._opts.roots.concat(this._opts.assetRoots_DEPRECATED),
+      useWatchman: this._opts.useWatchman,
     });
 
-    this._deprecatedAssetMap = new DeprecatedAssetMap({
-      fsCrawl: this._crawling,
-      roots: this._opts.assetRoots_DEPRECATED,
-      helpers: this._helpers,
-      fileWatcher: this._opts.fileWatcher,
-      ignoreFilePath: this._opts.ignoreFilePath,
-      assetExts: this._opts.assetExts,
-      activity: this._opts.activity,
-      enabled: this._opts.enableAssetMap,
-      platforms: this._opts.platforms,
-    });
+    this._loading = haste.build().then(hasteMap => {
+      const {activity} = this._opts;
+      const depGraphActivity = activity.startEvent(
+        'Initializing Packager',
+        null,
+        {
+          telemetric: true,
+        },
+      );
 
-    this._loading = Promise.all([
-      this._fastfs.build()
-        .then(() => {
-          const hasteActivity = activity.startEvent(
-            'Building Haste Map',
-            null,
-            {
-              telemetric: true,
-            },
+      const hasteFSFiles = hasteMap.hasteFS.getAllFiles();
+
+      this._fastfs = new Fastfs(
+        'JavaScript',
+        this._opts.roots,
+        this._opts.fileWatcher,
+        hasteFSFiles,
+        {
+          ignore: this._opts.ignoreFilePath,
+          activity: activity,
+        }
+      );
+
+      this._fastfs.on('change', this._processFileChange.bind(this));
+
+      this._moduleCache = new ModuleCache({
+        fastfs: this._fastfs,
+        cache: this._cache,
+        extractRequires: this._opts.extractRequires,
+        transformCode: this._opts.transformCode,
+        depGraphHelpers: this._helpers,
+        assetDependencies: this._assetDependencies,
+        moduleOptions: this._opts.moduleOptions,
+      }, this._opts.platforms);
+
+      this._hasteMap = new HasteMap({
+        fastfs: this._fastfs,
+        extensions: this._opts.extensions,
+        moduleCache: this._moduleCache,
+        preferNativePlatform: this._opts.preferNativePlatform,
+        helpers: this._helpers,
+        platforms: this._opts.platforms,
+      });
+
+      const escapePath = (p: string) => {
+        return (path.sep === '\\')  ? p.replace(/(\/|\\(?!\.))/g, '\\\\') : p;
+      };
+
+      const assetPattern =
+        new RegExp('^' + this._opts.assetRoots_DEPRECATED.map(escapePath).join('|'));
+
+      const assetFiles = hasteMap.hasteFS.matchFiles(assetPattern);
+
+      this._deprecatedAssetMap = new DeprecatedAssetMap({
+        helpers: this._helpers,
+        assetExts: this._opts.assetExts,
+        platforms: this._opts.platforms,
+        files: assetFiles,
+      });
+
+      this._fastfs.on('change', (type, filePath, root, fstat) => {
+        if (assetPattern.test(path.join(root, filePath))) {
+          this._deprecatedAssetMap.processFileChange(type, filePath, root, fstat);
+        }
+      });
+
+      const hasteActivity = activity.startEvent(
+        'Building Haste Map',
+        null,
+        {
+          telemetric: true,
+        },
+      );
+      return this._hasteMap.build().then(
+        map => {
+          activity.endEvent(hasteActivity);
+          activity.endEvent(depGraphActivity);
+          return map;
+        },
+        err => {
+          const error = new Error(
+            `Failed to build DependencyGraph: ${err.message}`
           );
-          return this._hasteMap.build().then(map => {
-            activity.endEvent(hasteActivity);
-            return map;
-          });
-        }),
-      this._deprecatedAssetMap.build(),
-    ]).then(
-      response => {
-        activity.endEvent(depGraphActivity);
-        return response[0]; // Return the haste map
-      },
-      err => {
-        const error = new Error(
-          `Failed to build DependencyGraph: ${err.message}`
-        );
-        error.type = ERROR_BUILDING_DEP_GRAPH;
-        error.stack = err.stack;
-        throw error;
-      }
-    );
+          error.type = ERROR_BUILDING_DEP_GRAPH;
+          error.stack = err.stack;
+          throw error;
+        }
+      );
+    });
 
     return this._loading;
   }
@@ -312,7 +328,7 @@ class DependencyGraph {
         this._loading = this._hasteMap.build();
       } else {
         this._loading = this._hasteMap.processFileChange(type, absPath);
-        this._loading.catch((e) => this._hasteMapError = e);
+        this._loading.catch((e) => {this._hasteMapError = e;});
       }
       return this._loading;
     };
@@ -350,5 +366,29 @@ function NotFoundError() {
   this.status = 404;
 }
 util.inherits(NotFoundError, Error);
+
+function getMaxWorkers() {
+  const cores = os.cpus().length;
+
+  if (cores <= 1) {
+    // oh well...
+    return 1;
+  }
+  if (cores <= 4) {
+    // don't starve the CPU while still reading reasonably rapidly
+    return cores - 1;
+  }
+  if (cores <= 8) {
+    // empirical testing showed massive diminishing returns when going over
+    // 4 or 5 workers on 8-core machines
+    return Math.floor(cores * 0.75) - 1;
+  }
+
+  // pretty much guesswork
+  if (cores < 24) {
+    return Math.floor(3 / 8 * cores + 3);
+  }
+  return cores / 2;
+}
 
 module.exports = DependencyGraph;

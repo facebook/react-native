@@ -55,6 +55,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 @property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onError;
+@property (nonatomic, copy) RCTDirectEventBlock onPartialLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
@@ -296,6 +297,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       };
     }
 
+    __weak RCTImageView *weakSelf = self;
+    RCTImageLoaderPartialLoadBlock partialLoadHandler = ^(UIImage *image) {
+      [weakSelf imageLoaderLoadedImage:image error:nil forImageSource:source partial:YES];
+    };
+
     CGSize imageSize = self.bounds.size;
     CGFloat imageScale = RCTScreenScale();
     if (!UIEdgeInsetsEqualToEdgeInsets(_capInsets, UIEdgeInsetsZero)) {
@@ -304,9 +310,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       imageScale = source.scale;
     }
 
-    __weak RCTImageView *weakSelf = self;
     RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *loadedImage) {
-      [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source];
+      [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 
     _reloadImageCancellationBlock =
@@ -316,13 +321,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                          clipped:NO
                                       resizeMode:_resizeMode
                                    progressBlock:progressHandler
+                                partialLoadBlock:partialLoadHandler
                                  completionBlock:completionHandler];
   } else {
     [self clearImage];
   }
 }
 
-- (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source
+- (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source partial:(BOOL)isPartialLoad
 {
   if (![source isEqual:_pendingImageSource]) {
     // Bail out if source has changed since we started loading
@@ -340,8 +346,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
-    self->_imageSource = source;
-    self->_pendingImageSource = nil;
+    if (!isPartialLoad) {
+      self->_imageSource = source;
+      self->_pendingImageSource = nil;
+    }
 
     if (image.reactKeyframeAnimation) {
       [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
@@ -350,11 +358,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       self.image = image;
     }
 
-    if (self->_onLoad) {
-      self->_onLoad(onLoadParamsForSource(source));
-    }
-    if (self->_onLoadEnd) {
-      self->_onLoadEnd(nil);
+    if (isPartialLoad) {
+      if (self->_onPartialLoad) {
+        self->_onPartialLoad(nil);
+      }
+    } else {
+      if (self->_onLoad) {
+        self->_onLoad(onLoadParamsForSource(source));
+      }
+      if (self->_onLoadEnd) {
+        self->_onLoadEnd(nil);
+      }
     }
   };
 

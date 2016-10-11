@@ -141,7 +141,7 @@ var GESTURE_ACTIONS = [
  *
  * ```
  * import React, { Component } from 'react';
- * import { Text, Navigator } from 'react-native';
+ * import { Text, Navigator, TouchableHighlight } from 'react-native';
  *
  * export default class NavAllDay extends Component {
  *   render() {
@@ -297,7 +297,7 @@ var Navigator = React.createClass({
      * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
      *
-     * Available scene configutation options are:
+     * Available scene configuration options are:
      *
      *  - Navigator.SceneConfigs.PushFromRight (default)
      *  - Navigator.SceneConfigs.FloatFromRight
@@ -484,6 +484,7 @@ var Navigator = React.createClass({
    */
   immediatelyResetRouteStack: function(nextRouteStack) {
     var destIndex = nextRouteStack.length - 1;
+    this._emitWillFocus(nextRouteStack[destIndex]);
     this.setState({
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
@@ -1248,7 +1249,7 @@ var Navigator = React.createClass({
         key={'scene_' + getRouteID(route)}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
-          return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
+          return (this.state.transitionFromIndex != null);
         }}
         pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>

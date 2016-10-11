@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule MessageQueueTestModule1
+ * @providesModule MessageQueueTestModule
  */
 'use strict';
 
@@ -15,12 +15,11 @@
  * correctly dispatches to commonJS modules. The `testHook` is overriden by test
  * cases.
  */
-var MessageQueueTestModule1 = {
+var MessageQueueTestModule = {
   testHook1: function() {
   },
   testHook2: function() {
   }
 };
 
-module.exports = MessageQueueTestModule1;
-
+module.exports = MessageQueueTestModule;

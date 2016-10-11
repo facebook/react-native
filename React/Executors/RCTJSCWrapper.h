@@ -49,3 +49,13 @@ typedef struct RCTJSCWrapper {
 
 RCT_EXTERN RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC);
 RCT_EXTERN void RCTJSCWrapperRelease(RCTJSCWrapper *wrapper);
+
+/**
+ * Link time overridable initialization function to execute custom
+ * initialization code when loading custom JSC.
+ *
+ * By default it does nothing.
+ *
+ * @param handle to the dlopen'd JSC library.
+ */
+void __attribute__((visibility("hidden"))) RCTCustomJSCInit(void *handle);
