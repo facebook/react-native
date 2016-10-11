@@ -138,6 +138,7 @@
     "art": "^0.10.0",
     "async": "^2.0.1",
     "babel-core": "^6.10.4",
+    "babel-generator": "^6.14.0",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.5.0",
     "babel-plugin-transform-flow-strip-types": "^6.6.5",

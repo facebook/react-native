@@ -83,7 +83,7 @@ var LayoutPropTypes = {
    *  use logical pixel units, rather than percents, ems, or any of that.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom
-   *  for more details of how `top` affects layout.
+   *  for more details of how `bottom` affects layout.
    */
   bottom: ReactPropTypes.number,
 
