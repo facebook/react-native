@@ -14,7 +14,6 @@
 const Systrace = require('Systrace');
 
 const invariant = require('fbjs/lib/invariant');
-const keyMirror = require('fbjs/lib/keyMirror');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
@@ -25,6 +24,13 @@ const IDLE_CALLBACK_FRAME_DEADLINE = 1;
 
 let hasEmittedTimeDriftWarning = false;
 
+export type JSTimerType =
+  'setTimeout' |
+  'setInterval' |
+  'requestAnimationFrame' |
+  'setImmediate' |
+  'requestIdleCallback';
+
 /**
  * JS implementation of timer functions. Must be completely driven by an
  * external clock signal, all that's stored here is timerID, timer type, and
@@ -32,18 +38,11 @@ let hasEmittedTimeDriftWarning = false;
  */
 const JSTimersExecution = {
   GUID: 1,
-  Type: keyMirror({
-    setTimeout: null,
-    setInterval: null,
-    requestAnimationFrame: null,
-    setImmediate: null,
-    requestIdleCallback: null,
-  }),
 
   // Parallel arrays
-  callbacks: [],
-  types: [],
-  timerIDs: [],
+  callbacks: ([] : Array<?Function>),
+  types: ([] : Array<?JSTimerType>),
+  timerIDs: ([] : Array<?number>),
   immediates: [],
   requestIdleCallbacks: [],
   identifiers: ([] : Array<null | {methodName: string}>),
@@ -85,21 +84,18 @@ const JSTimersExecution = {
     }
 
     // Clear the metadata
-    if (type === JSTimersExecution.Type.setTimeout ||
-        type === JSTimersExecution.Type.setImmediate ||
-        type === JSTimersExecution.Type.requestAnimationFrame ||
-        type === JSTimersExecution.Type.requestIdleCallback) {
+    if (type === 'setTimeout' || type === 'setImmediate' ||
+        type === 'requestAnimationFrame' || type === 'requestIdleCallback') {
       JSTimersExecution._clearIndex(timerIndex);
     }
 
     try {
-      if (type === JSTimersExecution.Type.setTimeout ||
-          type === JSTimersExecution.Type.setInterval ||
-          type === JSTimersExecution.Type.setImmediate) {
+      if (type === 'setTimeout' || type === 'setInterval' ||
+          type === 'setImmediate') {
         callback();
-      } else if (type === JSTimersExecution.Type.requestAnimationFrame) {
+      } else if (type === 'requestAnimationFrame') {
         callback(performanceNow());
-      } else if (type === JSTimersExecution.Type.requestIdleCallback) {
+      } else if (type === 'requestIdleCallback') {
         callback({
           timeRemaining: function() {
             // TODO: Optimisation: allow running for longer than one frame if

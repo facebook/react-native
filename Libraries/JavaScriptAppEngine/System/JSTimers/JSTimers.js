@@ -15,7 +15,10 @@
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
 const RCTTiming = require('NativeModules').Timing;
 const JSTimersExecution = require('JSTimersExecution');
+
 const parseErrorStack = require('parseErrorStack');
+
+import type {JSTimerType} from 'JSTimersExecution';
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
@@ -26,7 +29,7 @@ function _getFreeIndex(): number {
   return freeIndex;
 }
 
-function _allocateCallback(func: Function, type: $Keys<typeof JSTimersExecution.Type>): number {
+function _allocateCallback(func: Function, type: JSTimerType): number {
   const id = JSTimersExecution.GUID++;
   const freeIndex = _getFreeIndex();
   JSTimersExecution.timerIDs[freeIndex] = id;
@@ -57,8 +60,7 @@ function _freeCallback(timerID: number) {
   if (index !== -1) {
     JSTimersExecution._clearIndex(index);
     const type = JSTimersExecution.types[index];
-    if (type !== JSTimersExecution.Type.setImmediate &&
-        type !== JSTimersExecution.Type.requestIdleCallback) {
+    if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
       RCTTiming.deleteTimer(timerID);
     }
   }
@@ -75,8 +77,7 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setTimeout: function(func: Function, duration: number, ...args?: any): number {
-    const id = _allocateCallback(() => func.apply(undefined, args),
-                                 JSTimersExecution.Type.setTimeout);
+    const id = _allocateCallback(() => func.apply(undefined, args), 'setTimeout');
     RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
     return id;
   },
@@ -86,8 +87,7 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setInterval: function(func: Function, duration: number, ...args?: any): number {
-    const id = _allocateCallback(() => func.apply(undefined, args),
-                                 JSTimersExecution.Type.setInterval);
+    const id = _allocateCallback(() => func.apply(undefined, args), 'setInterval');
     RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
     return id;
   },
@@ -97,8 +97,7 @@ const JSTimers = {
    * current JavaScript execution loop.
    */
   setImmediate: function(func: Function, ...args?: any) {
-    const id = _allocateCallback(() => func.apply(undefined, args),
-                                 JSTimersExecution.Type.setImmediate);
+    const id = _allocateCallback(() => func.apply(undefined, args), 'setImmediate');
     JSTimersExecution.immediates.push(id);
     return id;
   },
@@ -107,7 +106,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked every frame.
    */
   requestAnimationFrame: function(func : Function) {
-    const id = _allocateCallback(func, JSTimersExecution.Type.requestAnimationFrame);
+    const id = _allocateCallback(func, 'requestAnimationFrame');
     RCTTiming.createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
   },
@@ -121,7 +120,7 @@ const JSTimers = {
       RCTTiming.setSendIdleEvents(true);
     }
 
-    const id = _allocateCallback(func, JSTimersExecution.Type.requestIdleCallback);
+    const id = _allocateCallback(func, 'requestIdleCallback');
     JSTimersExecution.requestIdleCallbacks.push(id);
     return id;
   },
