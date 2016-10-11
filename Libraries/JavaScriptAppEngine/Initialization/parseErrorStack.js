@@ -12,6 +12,8 @@
 'use strict';
 
 export type StackFrame = {
+  filePath: string,
+  fileName: string,
   file: string,
   lineNumber: number,
   column: number,

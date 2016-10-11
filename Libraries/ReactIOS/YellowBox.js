@@ -177,10 +177,9 @@ const WarningRow = ({count, warning, onPress}) => {
 type StackRowProps = { frame: StackFrame };
 const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
+  const View = require('View');
   const TouchableHighlight = require('TouchableHighlight');
-  const {file, lineNumber} = frame;
-  const fileParts = file.split('/');
-  const fileName = fileParts[fileParts.length - 1];
+  const {file, lineNumber, fileName, filePath} = frame;
 
   return (
     <TouchableHighlight
@@ -188,9 +187,14 @@ const StackRow = ({frame}: StackRowProps) => {
       style={styles.openInEditorButton}
       underlayColor="transparent"
       onPress={openFileInEditor.bind(null, file, lineNumber)}>
-      <Text style={styles.inspectorCountText}>
-        {fileName}:{lineNumber}
-      </Text>
+      <View>
+        <Text style={styles.stackFile}>
+          {fileName}:{lineNumber}
+        </Text>
+        <Text style={styles.stackPath}>
+          {filePath}
+        </Text>
+      </View>
     </TouchableHighlight>
   );
 };
@@ -409,7 +413,7 @@ var styles = StyleSheet.create({
     backgroundColor: backgroundColor(1),
   },
   toggleStacktraceButton: {
-    flex: 1,
+    height: 30,
     padding: 5,
   },
   stacktraceList: {
@@ -469,6 +473,14 @@ var styles = StyleSheet.create({
     top: Platform.OS === 'android' ? 5 : 7,
     marginLeft: 15,
     marginRight: 15,
+  },
+  stackFile: {
+    color: textColor,
+    fontSize: 16,
+  },
+  stackPath: {
+    color: textColor,
+    fontSize: 10,
   },
 });
 
