@@ -11,9 +11,10 @@
  */
 'use strict';
 
-const {fetch} = require('fetch');
 const getDevServer = require('getDevServer');
+
 const {SourceCode} = require('NativeModules');
+const {fetch} = require('fetch');
 
 import type {StackFrame} from 'parseErrorStack';
 

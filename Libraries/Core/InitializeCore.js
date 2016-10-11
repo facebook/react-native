@@ -16,7 +16,7 @@
  * 1. Require system.
  * 2. Bridged modules.
  *
- * @providesModule InitializeJavaScriptAppEngine
+ * @providesModule InitializeCore
  * @flow
  */
 

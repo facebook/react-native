@@ -72,7 +72,7 @@ To revert the `User Search Header Paths` and `Header Search Paths` build setting
 
 ### No transports available
 
-React Native implements a polyfill for WebSockets. These [polyfills](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js) are initialized as part of the react-native module that you include in your application through `import React from 'react'`. If you load another module that requires WebSockets, such as [Firebase](https://github.com/facebook/react-native/issues/3645), be sure to load/require it after react-native:
+React Native implements a polyfill for WebSockets. These [polyfills](https://github.com/facebook/react-native/blob/master/Libraries/Core/InitializeCore.js) are initialized as part of the react-native module that you include in your application through `import React from 'react'`. If you load another module that requires WebSockets, such as [Firebase](https://github.com/facebook/react-native/issues/3645), be sure to load/require it after react-native:
 
 ```
 import React from 'react';
