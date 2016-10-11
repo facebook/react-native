@@ -10,16 +10,15 @@
 'use strict';
 
 const assert = require('assert');
-
+const babel = require('babel-core');
+const deepAssign = require('deep-assign');
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
 const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
+const jsdocApi = require('jsdoc-api');
 const path = require('path');
 const slugify = require('../core/slugify');
-const babel = require('babel-core');
-const jsdocApi = require('jsdoc-api');
-const deepAssign = require('deep-assign');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -488,6 +487,7 @@ function renderStyle(filepath) {
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/ActivityIndicator/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Components/Button.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
