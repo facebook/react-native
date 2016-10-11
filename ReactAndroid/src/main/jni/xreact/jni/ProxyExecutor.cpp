@@ -42,12 +42,13 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
     , m_delegate(delegate) {
 
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
-  auto moduleRegistry = delegate->getModuleRegistry();
 
   {
     SystraceSection s("collectNativeModuleDescriptions");
+    auto moduleRegistry = delegate->getModuleRegistry();
     for (const auto& name : moduleRegistry->moduleNames()) {
-      nativeModuleConfig.push_back(moduleRegistry->getConfig(name));
+      auto config = moduleRegistry->getConfig(name);
+      nativeModuleConfig.push_back(config ? config->config : nullptr);
     }
   }
 
