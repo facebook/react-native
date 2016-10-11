@@ -130,7 +130,7 @@ const bundleOpts = declareOpts({
     type: 'array',
     default: [
       // Ensures essential globals are available and are patched correctly.
-      'InitializeJavaScriptAppEngine'
+      'InitializeCore'
     ],
   },
   unbundle: {

@@ -12,6 +12,7 @@
 
 const RCTWebSocketModule = require('NativeModules').WebSocketModule;
 const NativeEventEmitter = require('NativeEventEmitter');
+
 const base64 = require('base64-js');
 
 const originalRCTWebSocketConnect = RCTWebSocketModule.connect;
