@@ -235,7 +235,7 @@ class SomethingFast extends Component {
               Some of these are hybrid native/React Native apps.
             </p>
             <div className="buttons-unit">
-              <a href="showcase.html" className="button">More React Native apps</a>
+              <a href="/react-native/showcase.html" className="button">More React Native apps</a>
             </div>
           </section>
         </section>
