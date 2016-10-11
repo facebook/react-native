@@ -60,7 +60,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *   );
  * },
  * ```
- * > **NOTE**: TouchableHighlight supports only one child
+ * > **NOTE**: TouchableHighlight must have one child (not zero or more than one)
  * >
  * > If you wish to have several child components, wrap them in a View.
  */

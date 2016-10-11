@@ -23,8 +23,6 @@
 /* eslint strict: 0 */
 /* globals window: true */
 
-require('regenerator-runtime/runtime');
-
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
 }
@@ -33,30 +31,12 @@ if (global.window === undefined) {
   global.window = global;
 }
 
-function setUpProcess(): void {
-  global.process = global.process || {};
-  global.process.env = global.process.env || {};
-  if (!global.process.env.NODE_ENV) {
-    global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
-  }
-}
-
-function setUpProfile(): void {
-  const Systrace = require('Systrace');
-  Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
-}
-
-function setUpConsole(): void {
-  // ExceptionsManager transitively requires Promise so we install it after
-  const ExceptionsManager = require('ExceptionsManager');
-  ExceptionsManager.installConsoleErrorReporter();
-
-  require('RCTLog');
-}
+const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will
- * replace it but maintain its descriptor configuration.
+ * replace it but maintain its descriptor configuration. By default, the property
+ * will replaced with a lazy getter.
  *
  * The original property value will be preserved as `original[PropertyName]` so
  * that, if necessary, it can be restored. For example, if you want to route
@@ -66,7 +46,12 @@ function setUpConsole(): void {
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-function defineProperty(object: Object, name: string, newValue: mixed): void {
+function defineProperty<T>(
+  object: Object,
+  name: string,
+  getValue: () => T,
+  eager?: boolean
+): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
@@ -77,47 +62,50 @@ function defineProperty(object: Object, name: string, newValue: mixed): void {
   }
 
   const {enumerable, writable, configurable} = descriptor || {};
-  if (!descriptor || configurable) {
+  if (descriptor && !configurable) {
+    console.error('Failed to set polyfill. ' + name + ' is not configurable.');
+    return;
+  }
+
+  if (eager === true) {
     Object.defineProperty(object, name, {
       configurable: true,
       enumerable: enumerable !== false,
       writable: writable !== false,
-      value: newValue,
+      value: getValue(),
     });
-  }
-}
-
-function defineLazyProperty<T>(
-  object: Object,
-  name: string,
-  getNewValue: () => T
-): void {
-  const defineLazyObjectProperty = require('defineLazyObjectProperty');
-
-  const descriptor = getPropertyDescriptor(object, name);
-  if (descriptor) {
-    const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(object, backupName, descriptor);
-  }
-
-  const {configurable} = descriptor || {};
-  if (!descriptor || configurable) {
+  } else {
     defineLazyObjectProperty(object, name, {
-      get: getNewValue,
-      enumerable: descriptor ? descriptor.enumerable !== false : true,
-      writable: descriptor ? descriptor.writable !== false : true,
+      get: getValue,
+      enumerable: enumerable !== false,
+      writable: writable !== false,
     });
   }
 }
 
-function setUpErrorHandler(): void {
-  if (global.__fbDisableExceptionsManager) {
-    return;
-  }
+// Set up process
+global.process = global.process || {};
+global.process.env = global.process.env || {};
+if (!global.process.env.NODE_ENV) {
+  global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
+}
 
+// Set up profile
+const Systrace = require('Systrace');
+Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+
+// Set up console
+const ExceptionsManager = require('ExceptionsManager');
+ExceptionsManager.installConsoleErrorReporter();
+
+// RCTLog needs to register with BatchedBridge
+require('RCTLog');
+
+// Set up error handler
+if (!global.__fbDisableExceptionsManager) {
   function handleError(e, isFatal) {
     try {
-      require('ExceptionsManager').handleException(e, isFatal);
+      ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
       /* eslint-disable no-console-disallow */
       console.log('Failed to print error: ', ee.message);
@@ -130,115 +118,82 @@ function setUpErrorHandler(): void {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
-/**
- * Sets up a set of window environment wrappers that ensure that the
- * BatchedBridge is flushed after each tick. In both the case of the
- * `UIWebView` based `RCTJavaScriptCaller` and `RCTContextCaller`, we
- * implement our own custom timing bridge that should be immune to
- * unexplainably dropped timing signals.
- */
-function setUpTimers(): void {
-  const defineLazyTimer = name => {
-    defineLazyProperty(global, name, () => require('JSTimers')[name]);
+// Set up timers
+const defineLazyTimer = name => {
+  defineProperty(global, name, () => require('JSTimers')[name]);
+};
+defineLazyTimer('setTimeout');
+defineLazyTimer('setInterval');
+defineLazyTimer('setImmediate');
+defineLazyTimer('clearTimeout');
+defineLazyTimer('clearInterval');
+defineLazyTimer('clearImmediate');
+defineLazyTimer('requestAnimationFrame');
+defineLazyTimer('cancelAnimationFrame');
+defineLazyTimer('requestIdleCallback');
+defineLazyTimer('cancelIdleCallback');
+
+// Set up alert
+if (!global.alert) {
+  global.alert = function(text) {
+    // Require Alert on demand. Requiring it too early can lead to issues
+    // with things like Platform not being fully initialized.
+    require('Alert').alert('Alert', '' + text);
   };
-  defineLazyTimer('setTimeout');
-  defineLazyTimer('setInterval');
-  defineLazyTimer('setImmediate');
-  defineLazyTimer('clearTimeout');
-  defineLazyTimer('clearInterval');
-  defineLazyTimer('clearImmediate');
-  defineLazyTimer('requestAnimationFrame');
-  defineLazyTimer('cancelAnimationFrame');
-  defineLazyTimer('requestIdleCallback');
-  defineLazyTimer('cancelIdleCallback');
 }
 
-function setUpAlert(): void {
-  if (!global.alert) {
-    global.alert = function(text) {
-      // Require Alert on demand. Requiring it too early can lead to issues
-      // with things like Platform not being fully initialized.
-      require('Alert').alert('Alert', '' + text);
-    };
+// Set up Promise
+// The native Promise implementation throws the following error:
+// ERROR: Event loop not supported.
+defineProperty(global, 'Promise', () => require('Promise'));
+
+// Set up regenerator.
+defineProperty(global, 'regeneratorRuntime', () => {
+  // The require just sets up the global, so make sure when we first
+  // invoke it the global does not exist
+  delete global.regeneratorRuntime;
+  require('regenerator-runtime/runtime');
+  return global.regeneratorRuntime;
+});
+
+// Set up XHR
+// The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
+// let you fetch anything from the internet
+defineProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
+defineProperty(global, 'FormData', () => require('FormData'));
+
+defineProperty(global, 'fetch', () => require('fetch').fetch);
+defineProperty(global, 'Headers', () => require('fetch').Headers);
+defineProperty(global, 'Request', () => require('fetch').Request);
+defineProperty(global, 'Response', () => require('fetch').Response);
+defineProperty(global, 'WebSocket', () => require('WebSocket'));
+
+// Set up Geolocation
+let navigator = global.navigator;
+if (navigator === undefined) {
+  global.navigator = navigator = {};
+}
+navigator.product = 'ReactNative';
+defineProperty(navigator, 'geolocation', () => require('Geolocation'));
+
+// Set up collections
+// We can't make these lazy because `Map` checks for `global.Map` (which would
+// not exist if it were lazily defined).
+defineProperty(global, 'Map', () => require('Map'), true);
+defineProperty(global, 'Set', () => require('Set'), true);
+
+// Set up devtools
+if (__DEV__) {
+  // not when debugging in chrome
+  // TODO(t12832058) This check is broken
+  if (!window.document) {
+    const setupDevtools = require('setupDevtools');
+    setupDevtools();
   }
+
+  require('RCTDebugComponentOwnership');
+  require('react-transform-hmr');
 }
-
-function setUpPromise(): void {
-  // The native Promise implementation throws the following error:
-  // ERROR: Event loop not supported.
-  defineLazyProperty(global, 'Promise', () => require('Promise'));
-}
-
-function setUpXHR(): void {
-  // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
-  // let you fetch anything from the internet
-  defineLazyProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
-  defineLazyProperty(global, 'FormData', () => require('FormData'));
-
-  defineLazyProperty(global, 'fetch', () => require('fetch').fetch);
-  defineLazyProperty(global, 'Headers', () => require('fetch').Headers);
-  defineLazyProperty(global, 'Request', () => require('fetch').Request);
-  defineLazyProperty(global, 'Response', () => require('fetch').Response);
-
-  defineLazyProperty(global, 'WebSocket', () => require('WebSocket'));
-}
-
-function setUpGeolocation(): void {
-  if (global.navigator === undefined) {
-    Object.defineProperty(global, 'navigator', {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: {},
-    });
-  }
-  const {navigator} = global;
-  Object.defineProperty(navigator, 'product', {value: 'ReactNative'});
-  defineLazyProperty(navigator, 'geolocation', () => require('Geolocation'));
-}
-
-function setUpCollections(): void {
-  // We can't make these lazy because `Map` checks for `global.Map` (which would
-  // not exist if it were lazily defined).
-  defineProperty(global, 'Map', require('Map'));
-  defineProperty(global, 'Set', require('Set'));
-}
-
-function setUpDevTools(): void {
-  if (__DEV__) {
-    // not when debugging in chrome
-    // TODO(t12832058) This check is broken
-    if (!window.document) {
-      const setupDevtools = require('setupDevtools');
-      setupDevtools();
-    }
-
-    require('RCTDebugComponentOwnership');
-    require('react-transform-hmr');
-  }
-}
-
-function getPropertyDescriptor(object: Object, name: string): any {
-  while (object) {
-    const descriptor = Object.getOwnPropertyDescriptor(object, name);
-    if (descriptor) {
-      return descriptor;
-    }
-    object = Object.getPrototypeOf(object);
-  }
-}
-
-setUpProcess();
-setUpProfile();
-setUpConsole();
-setUpTimers();
-setUpAlert();
-setUpPromise();
-setUpErrorHandler();
-setUpXHR();
-setUpGeolocation();
-setUpCollections();
-setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.

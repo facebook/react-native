@@ -11,9 +11,6 @@
 const babel = require('babel-core');
 const t = babel.types;
 
-const isLiteral = binaryExpression =>
-  t.isLiteral(binaryExpression.left) && t.isLiteral(binaryExpression.right);
-
 const Conditional = {
   exit(path) {
     const node = path.node;
@@ -81,5 +78,5 @@ function constantFolding(filename, transformResult) {
   });
 }
 
+constantFolding.plugin = plugin;
 module.exports = constantFolding;
-

@@ -15,6 +15,7 @@
 #include "ExecutorToken.h"
 #include "JSCHelpers.h"
 #include "Value.h"
+#include "JSCNativeModules.h"
 
 namespace facebook {
 namespace react {
@@ -102,6 +103,7 @@ private:
   std::string m_deviceCacheDir;
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
@@ -142,10 +144,8 @@ private:
 
   template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
+  JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 
-  JSValueRef nativeRequireModuleConfig(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
   JSValueRef nativeStartWorker(
       size_t argumentCount,
       const JSValueRef arguments[]);

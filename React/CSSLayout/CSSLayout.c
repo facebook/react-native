@@ -129,9 +129,12 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
   return defaultValue;
 }
 
+static int32_t gNodeInstanceCount = 0;
+
 CSSNodeRef CSSNodeNew() {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
 
   CSSNodeInit(node);
   return node;
@@ -140,6 +143,7 @@ CSSNodeRef CSSNodeNew() {
 void CSSNodeFree(const CSSNodeRef node) {
   CSSNodeListFree(node->children);
   free(node);
+  gNodeInstanceCount--;
 }
 
 void CSSNodeFreeRecursive(const CSSNodeRef root) {
@@ -149,6 +153,10 @@ void CSSNodeFreeRecursive(const CSSNodeRef root) {
     CSSNodeFreeRecursive(child);
   }
   CSSNodeFree(root);
+}
+
+int32_t CSSNodeGetInstanceCount() {
+  return gNodeInstanceCount;
 }
 
 void CSSNodeInit(const CSSNodeRef node) {
@@ -211,6 +219,7 @@ void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
+  CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
   CSSNodeListInsert(node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -2287,3 +2296,17 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
     }
   }
 }
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+static CSSAssertFailFunc gAssertFailFunc;
+
+void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
+  gAssertFailFunc = func;
+}
+
+void CSSAssertFail(const char *message) {
+  if (gAssertFailFunc) {
+    (*gAssertFailFunc)(message);
+  }
+}
+#endif

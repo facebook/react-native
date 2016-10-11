@@ -103,11 +103,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game)) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="objc swift" />
 
