@@ -48,6 +48,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
   /* package */ static final String ARG_DATE = "date";
   /* package */ static final String ARG_MINDATE = "minDate";
   /* package */ static final String ARG_MAXDATE = "maxDate";
+  /* package */ static final String ARG_SPINNERMODE = "spinnerMode";
 
   /* package */ static final String ACTION_DATE_SET = "dateSetAction";
   /* package */ static final String ACTION_DISMISSED = "dismissedAction";
@@ -172,6 +173,9 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
     }
     if (options.hasKey(ARG_MAXDATE) && !options.isNull(ARG_MAXDATE)) {
       args.putLong(ARG_MAXDATE, (long) options.getDouble(ARG_MAXDATE));
+    }
+    if (options.hasKey(ARG_SPINNERMODE) && !options.isNull(ARG_SPINNERMODE)) {
+      args.putBoolean(ARG_SPINNERMODE, (Boolean) options.getBoolean(ARG_SPINNERMODE));
     }
     return args;
   }
