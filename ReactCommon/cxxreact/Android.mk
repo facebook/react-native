@@ -13,6 +13,7 @@ LOCAL_SRC_FILES := \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
+  JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
   JSCWebWorker.cpp \

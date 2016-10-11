@@ -60,11 +60,26 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
       throw new IllegalStateException("You should not reset an attached CSSNode");
     }
 
+    free();
+  }
+
+  private void free() {
     jni_CSSNodeFree(mNativePointer);
     mNativePointer = 0;
     mChildren = null;
     mParent = null;
     mMeasureFunction = null;
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      if (mNativePointer != 0) {
+        free();
+      }
+    } finally {
+      super.finalize();
+    }
   }
 
   @Override
