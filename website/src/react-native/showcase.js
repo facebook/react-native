@@ -295,6 +295,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
     infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
     infoTitle: 'Switching to React Native in Production on iOS and Android',
+  },
+  {
+    name: 'JD（手机京东）',
+    icon: 'https://lh3.googleusercontent.com/AIIAZsqyEG0KmCFruh1Ec374-2l7n1rfv_LG5RWjdAZOzUBCu-5MRqdLbzJfBnOdSFg=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8',
+    linkPlayStore: 'https://app.jd.com/android.html',
+    infoLink: 'http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile',
+    infoTitle: 'JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.',
   }
 ];
 
