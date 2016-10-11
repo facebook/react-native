@@ -383,7 +383,8 @@ Let's say we have the same `CalendarManager` but as a Swift class:
 @objc(CalendarManager)
 class CalendarManager: NSObject {
 
-  @objc func addEvent(name: String, location: String, date: NSNumber) -> Void {
+  @objc(addEvent:location:date:)
+  func addEvent(name: String, location: String, date: NSNumber) -> Void {
     // Date is ready to use!
   }
 
