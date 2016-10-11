@@ -65,7 +65,7 @@ const viewConfig = {
  *     return (
  *       <Text style={styles.baseText}>
  *         <Text style={styles.titleText} onPress={this.onPressTitle}>
- *           {this.state.titleText}<br /><br />
+ *           {this.state.titleText}{'\n'}{'\n'}
  *         </Text>
  *         <Text numberOfLines={5}>
  *           {this.state.bodyText}
