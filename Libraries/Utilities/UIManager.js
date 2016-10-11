@@ -98,6 +98,8 @@ if (Platform.OS === 'ios') {
       });
     }
   });
+} else if (Platform.OS === 'android' && UIManager.AndroidLazyViewManagersEnabled) {
+  // TODO fill this out
 }
 
 module.exports = UIManager;

@@ -45,31 +45,41 @@ public class UIImplementation {
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
   private final ReactApplicationContext mReactContext;
+  protected final EventDispatcher mEventDispatcher;
 
   private double mLayoutCount = 0.0;
   private double mLayoutTimer = 0.0;
 
-  public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
-    this(reactContext, new ViewManagerRegistry(viewManagers));
+  public UIImplementation(
+    ReactApplicationContext reactContext,
+    List<ViewManager> viewManagers,
+    EventDispatcher eventDispatcher) {
+    this(reactContext, new ViewManagerRegistry(viewManagers), eventDispatcher);
   }
 
-  private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
+  private UIImplementation(
+    ReactApplicationContext reactContext,
+    ViewManagerRegistry viewManagers,
+    EventDispatcher eventDispatcher) {
     this(
         reactContext,
         viewManagers,
-        new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
+        new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)),
+        eventDispatcher);
   }
 
   protected UIImplementation(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
-      UIViewOperationQueue operationsQueue) {
+      UIViewOperationQueue operationsQueue,
+      EventDispatcher eventDispatcher) {
     mReactContext = reactContext;
     mViewManagers = viewManagers;
     mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);
+    mEventDispatcher = eventDispatcher;
   }
 
   protected ReactShadowNode createRootShadowNode() {
@@ -136,8 +146,7 @@ public class UIImplementation {
   public void updateNodeSize(
       int nodeViewTag,
       int newWidth,
-      int newHeight,
-      EventDispatcher eventDispatcher) {
+      int newHeight) {
     ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
@@ -146,7 +155,7 @@ public class UIImplementation {
     // the batch. As all batches are executed as a single runnable on the event queue this should
     // always be empty, but that calling architecture is an implementation detail.
     if (mOperationsQueue.isEmpty()) {
-      dispatchViewUpdates(eventDispatcher, -1); // -1 = no associated batch id
+      dispatchViewUpdates(-1); // -1 = no associated batch id
     }
   }
 
@@ -515,20 +524,20 @@ public class UIImplementation {
   /**
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
-  public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
-    updateViewHierarchy(eventDispatcher);
+  public void dispatchViewUpdates(int batchId) {
+    updateViewHierarchy();
     mNativeViewHierarchyOptimizer.onBatchComplete();
     mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
-  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
+  protected void updateViewHierarchy() {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
 
       calculateRootLayout(cssRoot);
-      applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
+      applyUpdatesRecursive(cssRoot, 0f, 0f);
     }
   }
 
@@ -764,8 +773,7 @@ public class UIImplementation {
   protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
-      float absoluteY,
-      EventDispatcher eventDispatcher) {
+      float absoluteY) {
     if (!cssNode.hasUpdates()) {
       return;
     }
@@ -775,8 +783,7 @@ public class UIImplementation {
         applyUpdatesRecursive(
             cssNode.getChildAt(i),
             absoluteX + cssNode.getLayoutX(),
-            absoluteY + cssNode.getLayoutY(),
-            eventDispatcher);
+            absoluteY + cssNode.getLayoutY());
       }
     }
 
@@ -790,7 +797,7 @@ public class UIImplementation {
 
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
-        eventDispatcher.dispatchEvent(
+        mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
                 tag,
                 cssNode.getScreenX(),

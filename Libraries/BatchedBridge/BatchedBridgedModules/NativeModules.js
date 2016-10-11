@@ -58,6 +58,9 @@ function genModule(config: ?ModuleConfig, moduleID: number): ?{name: string, mod
   return { name: moduleName, module };
 }
 
+// export this method as a global so we can call it from native
+global.__fbGenNativeModule = genModule;
+
 function loadModule(name: string, moduleID: number): ?Object {
   invariant(global.nativeRequireModuleConfig,
     'Can\'t lazily create module without nativeRequireModuleConfig');
@@ -108,34 +111,38 @@ function arrayContains<T>(array: Array<T>, value: T): boolean {
 function createErrorFromErrorData(errorData: {message: string}): Error {
   const {
     message,
-    ...extraErrorInfo,
+    ...extraErrorInfo
   } = errorData;
   const error = new Error(message);
   (error:any).framesToPop = 1;
   return Object.assign(error, extraErrorInfo);
 }
 
-const bridgeConfig = global.__fbBatchedBridgeConfig;
-invariant(bridgeConfig, '__fbBatchedBridgeConfig is not set, cannot invoke native modules');
+let NativeModules : {[moduleName: string]: Object} = {};
+if (global.nativeModuleProxy) {
+  NativeModules = global.nativeModuleProxy;
+} else {
+  const bridgeConfig = global.__fbBatchedBridgeConfig;
+  invariant(bridgeConfig, '__fbBatchedBridgeConfig is not set, cannot invoke native modules');
 
-const NativeModules : {[moduleName: string]: Object} = {};
-(bridgeConfig.remoteModuleConfig || []).forEach((config: ModuleConfig, moduleID: number) => {
-  // Initially this config will only contain the module name when running in JSC. The actual
-  // configuration of the module will be lazily loaded.
-  const info = genModule(config, moduleID);
-  if (!info) {
-    return;
-  }
+  (bridgeConfig.remoteModuleConfig || []).forEach((config: ModuleConfig, moduleID: number) => {
+    // Initially this config will only contain the module name when running in JSC. The actual
+    // configuration of the module will be lazily loaded.
+    const info = genModule(config, moduleID);
+    if (!info) {
+      return;
+    }
 
-  if (info.module) {
-    NativeModules[info.name] = info.module;
-  }
-  // If there's no module config, define a lazy getter
-  else {
-    defineLazyObjectProperty(NativeModules, info.name, {
-      get: () => loadModule(info.name, moduleID)
-    });
-  }
-});
+    if (info.module) {
+      NativeModules[info.name] = info.module;
+    }
+    // If there's no module config, define a lazy getter
+    else {
+      defineLazyObjectProperty(NativeModules, info.name, {
+        get: () => loadModule(info.name, moduleID)
+      });
+    }
+  });
+}
 
 module.exports = NativeModules;

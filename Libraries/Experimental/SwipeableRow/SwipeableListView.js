@@ -34,6 +34,7 @@ type Props = {
   bounceFirstRowOnMount: boolean,
   dataSource: SwipeableListViewDataSource,
   maxSwipeDistance: number,
+  onScroll: ?Function,
   renderRow: Function,
   renderQuickActions: Function,
 };
@@ -131,13 +132,14 @@ class SwipeableListView extends React.Component {
     );
   }
 
-  _onScroll = (): void => {
+  _onScroll = (e): void => {
     // Close any opens rows on ListView scroll
     if (this.props.dataSource.getOpenRowID()) {
       this.setState({
         dataSource: this.state.dataSource.setOpenRowID(null),
       });
     }
+    this.props.onScroll && this.props.onScroll(e);
   }
 
   /**

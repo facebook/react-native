@@ -6,7 +6,7 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 # TODO(cjhopman): Remove this target (or move the xreact target to this directory).
 cxx_library(
   name='jni',
-  soname = 'libreactnativejni.so',
+  soname = 'libreactnativejni.$(ext)',
   header_namespace = 'react/jni',
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   srcs = [
