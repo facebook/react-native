@@ -24,7 +24,7 @@ import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
  * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
  * {@link #calculateLayout()}, {@link #layout} will be filled with the results of the layout.
  */
-public class CSSNode implements CSSNodeAPI<CSSNode> {
+public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
 
   private enum LayoutState {
     /**
@@ -52,10 +52,10 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   public int lineIndex = 0;
 
-  CSSNode nextChild;
+  CSSNodeDEPRECATED nextChild;
 
-  private @Nullable ArrayList<CSSNode> mChildren;
-  private @Nullable CSSNode mParent;
+  private @Nullable ArrayList<CSSNodeDEPRECATED> mChildren;
+  private @Nullable CSSNodeDEPRECATED mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
   private boolean mIsTextNode = false;
@@ -72,13 +72,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   }
 
   @Override
-  public CSSNode getChildAt(int i) {
+  public CSSNodeDEPRECATED getChildAt(int i) {
     Assertions.assertNotNull(mChildren);
     return mChildren.get(i);
   }
 
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     if (child.mParent != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
@@ -93,16 +93,17 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   }
 
   @Override
-  public CSSNode removeChildAt(int i) {
+  public CSSNodeDEPRECATED removeChildAt(int i) {
     Assertions.assertNotNull(mChildren);
-    CSSNode removed = mChildren.remove(i);
+    CSSNodeDEPRECATED removed = mChildren.remove(i);
     removed.mParent = null;
     dirty();
     return removed;
   }
 
   @Override
-  public @Nullable CSSNode getParent() {
+  public @Nullable
+  CSSNodeDEPRECATED getParent() {
     return mParent;
   }
 
@@ -110,7 +111,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * @return the index of the given child, or -1 if the child doesn't exist in this node.
    */
   @Override
-  public int indexOf(CSSNode child) {
+  public int indexOf(CSSNodeDEPRECATED child) {
     Assertions.assertNotNull(mChildren);
     return mChildren.indexOf(child);
   }
@@ -427,7 +428,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
   }
 
-
   /**
    * Get this node's margin, as defined by style + default margin.
    */
@@ -637,12 +637,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   /**
    * Resets this instance to its default state. This method is meant to be used when
-   * recycling {@link CSSNode} instances.
+   * recycling {@link CSSNodeDEPRECATED} instances.
    */
   @Override
   public void reset() {
     if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
-      throw new IllegalStateException("You should not reset an attached CSSNode");
+      throw new IllegalStateException("You should not reset an attached CSSNodeDEPRECATED");
     }
 
     style.reset();
