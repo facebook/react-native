@@ -166,6 +166,7 @@
 		2D537FD21DA4809D000F876C /* (null) in Sources */ = {isa = PBXBuildFile; };
 		2D562E431DA5976B00F962D6 /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D562E421DA5976B00F962D6 /* RCTTVRemoteHandler.m */; };
 		2D562E441DA5979400F962D6 /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D562E421DA5976B00F962D6 /* RCTTVRemoteHandler.m */; };
+		2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
