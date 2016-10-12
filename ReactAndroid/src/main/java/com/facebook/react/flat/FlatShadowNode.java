@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 import android.graphics.Rect;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;
@@ -201,7 +201,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   }
 
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     if (mForceMountChildrenToView && child instanceof FlatShadowNode) {
       ((FlatShadowNode) child).forceMountToView();

@@ -20,7 +20,7 @@ package com.facebook.react.flat;
   }
 
   /**
-   * Returns true when this CSSNode tree needs to be re-laid out. If true, FlatUIImplementation
+   * Returns true when this CSSNodeDEPRECATED tree needs to be re-laid out. If true, FlatUIImplementation
    * will request LayoutEngine to perform a layout pass to update node boundaries. This is used
    * to avoid unnecessary node updates.
    */

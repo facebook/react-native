@@ -16,7 +16,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 
 /**
  * FlatReactModalShadowNode
@@ -45,7 +45,7 @@ class FlatReactModalShadowNode extends FlatShadowNode implements AndroidView {
    */
   @Override
   @TargetApi(16)
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
 
     Context context = getThemedContext();
