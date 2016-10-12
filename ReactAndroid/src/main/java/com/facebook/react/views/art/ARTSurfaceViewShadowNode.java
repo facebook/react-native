@@ -17,6 +17,8 @@ import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.view.TextureView;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -47,39 +49,48 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   }
 
   private void drawOutput() {
-    if (mSurface == null) {
+    if (mSurface == null || !mSurface.isValid()) {
       markChildrenUpdatesSeen(this);      
       return;
     }
 
-    Canvas canvas = mSurface.lockCanvas(null);
-    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+    try {
+      Canvas canvas = mSurface.lockCanvas(null);
+      canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-    Paint paint = new Paint();
-    for (int i = 0; i < getChildCount(); i++) {
-      ARTVirtualNode child = (ARTVirtualNode) getChildAt(i);
-      child.draw(canvas, paint, 1f);
-      child.markUpdateSeen();
+      Paint paint = new Paint();
+      for (int i = 0; i < getChildCount(); i++) {
+        ARTVirtualNode child = (ARTVirtualNode) getChildAt(i);
+        child.draw(canvas, paint, 1f);
+        child.markUpdateSeen();
+      }
+
+      if (mSurface == null) {
+        return;
+      }
+    
+      mSurface.unlockCanvasAndPost(canvas);
+    } catch(IllegalArgumentException | IllegalStateException e) {
+      FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in Surface.unlockCanvasAndPost");
     }
-
-    mSurface.unlockCanvasAndPost(canvas);
   }
 
   private void markChildrenUpdatesSeen(ReactShadowNode shadowNode) {
     for (int i = 0; i < shadowNode.getChildCount(); i++) {
-        ReactShadowNode child = (ReactShadowNode) shadowNode.getChildAt(i);
-        child.markUpdateSeen();
-        markChildrenUpdatesSeen(child);
-      }
+      ReactShadowNode child = (ReactShadowNode) shadowNode.getChildAt(i);
+      child.markUpdateSeen();
+      markChildrenUpdatesSeen(child);
+    }
   }
 
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-      mSurface = new Surface(surface);
+    mSurface = new Surface(surface);
   }
 
   public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-      mSurface = null;
-      return true;
+    mSurface.release();
+    mSurface = null;
+    return true;
   }
 
   public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
