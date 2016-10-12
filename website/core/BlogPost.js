@@ -15,7 +15,7 @@ var Marked = require('Marked');
 var React = require('React');
 var BlogPostHeader = require('BlogPostHeader');
 var BlogPostFooter = require('BlogPostFooter');
-var ReadMoreLink = require('ReadMoreLink');
+var ExcerptLink = require('ExcerptLink');
 
 var BlogPost = React.createClass({
   render: function() {
@@ -36,17 +36,16 @@ var BlogPost = React.createClass({
     var footer = <BlogPostFooter post={post} postedOnDate={postedOnDate} />;
 
     if (this.props.excerpt) {
-      var excerptLength = 50;
-      var words = content.trim().split(' ');
-      if (words.length > excerptLength) {
-        content = words.slice(0,excerptLength).join(' ') + '...';
-        footer = <ReadMoreLink href={'/react-native/blog/' + post.path} />;
-      }
+      content = content.trim().split('\n')[0];
+      footer = <ExcerptLink href={'/react-native/blog/' + post.path} category={post.category} />;
     }
 
     return (
       <article>
-        <BlogPostHeader post={post} postedOnDate={postedOnDate} />
+        <BlogPostHeader
+          post={post}
+          postedOnDate={postedOnDate}
+          excerpt={this.props.excerpt} />
         <div className="entry-content">
           <Marked>{content}</Marked>
         </div>

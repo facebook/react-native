@@ -9,6 +9,8 @@
 'use strict';
 
 const fs = jest.genMockFromModule('fs');
+const {dirname} = require.requireActual('path');
+const stream = require.requireActual('stream');
 const noop = () => {};
 
 function asyncCallback(cb) {
@@ -70,10 +72,23 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
     if (node && typeof node === 'object' && node.SYMLINK == null) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
-    return callback(null, node);
+    if (node == null) {
+      callback(Error('No such file: ' + filepath));
+    } else {
+      callback(null, node);
+    }
   } catch (e) {
     return callback(e);
   }
+});
+
+fs.readFileSync.mockImpl(function(filepath, encoding) {
+  const node = getToNode(filepath);
+  // dir check
+  if (node && typeof node === 'object' && node.SYMLINK == null) {
+    throw new Error('Error readFileSync a dir: ' + filepath);
+  }
+  return node;
 });
 
 fs.stat.mockImpl((filepath, callback) => {
@@ -118,6 +133,31 @@ fs.statSync.mockImpl((filepath) => {
     isSymbolicLink: () => false,
     mtime,
   };
+});
+
+fs.lstat.mockImpl((filepath, callback) => {
+  callback = asyncCallback(callback);
+  let node;
+  try {
+    node = getToNode(filepath);
+  } catch (e) {
+    callback(e);
+    return;
+  }
+
+  if (node && typeof node === 'object') {
+    callback(null, {
+      isDirectory: () => true,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  } else {
+    callback(null, {
+      isDirectory: () => false,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  }
 });
 
 fs.lstatSync.mockImpl((filepath) => {
@@ -185,7 +225,55 @@ fs.close.mockImpl((fd, callback = noop) => {
 
 let filesystem;
 
-fs.__setMockFilesystem = (object) => filesystem = object;
+fs.createReadStream.mockImpl(path => {
+  if (!path.startsWith('/')) {
+    throw Error('Cannot open file ' + path);
+  }
+
+  const parts = path.split('/').slice(1);
+  let file = filesystem;
+
+  for (const part of parts) {
+    file = file[part];
+    if (!file) {
+      break;
+    }
+  }
+
+  if (typeof file !== 'string') {
+    throw Error('Cannot open file ' + path);
+  }
+
+  return new stream.Readable({
+    read() {
+      this.push(file, 'utf8');
+      this.push(null);
+    }
+  });
+});
+
+fs.createWriteStream.mockImpl(file => {
+  let node;
+  try {
+    node = getToNode(dirname(file));
+  } finally {
+    if (typeof node === 'object') {
+      const writeStream = new stream.Writable({
+        write(chunk) {
+          this.__chunks.push(chunk);
+        }
+      });
+      writeStream.__file = file;
+      writeStream.__chunks = [];
+      return writeStream;
+    } else {
+      throw new Error('Cannot open file ' + file);
+    }
+  }
+});
+
+
+fs.__setMockFilesystem = (object) => (filesystem = object);
 
 function getToNode(filepath) {
   // Ignore the drive for Windows paths.

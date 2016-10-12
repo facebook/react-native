@@ -20,7 +20,7 @@ const stat = denodeify(fs.stat);
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
 class Fastfs extends EventEmitter {
-  constructor(name, roots, fileWatcher, {ignore, crawling, activity}) {
+  constructor(name, roots, fileWatcher, files, {ignore, activity}) {
     super();
     this._name = name;
     this._fileWatcher = fileWatcher;
@@ -37,39 +37,39 @@ class Fastfs extends EventEmitter {
       return new File(root, true);
     });
     this._fastPaths = Object.create(null);
-    this._crawling = crawling;
     this._activity = activity;
-  }
 
-  build() {
-    return this._crawling.then(files => {
-      let fastfsActivity;
-      const activity = this._activity;
-      if (activity) {
-        fastfsActivity = activity.startEvent('Building in-memory fs for ' + this._name);
-      }
-      files.forEach(filePath => {
-        const root = this._getRoot(filePath);
-        if (root) {
-          const newFile = new File(filePath, false);
-          const dirname = filePath.substr(0, filePath.lastIndexOf(path.sep));
-          const parent = this._fastPaths[dirname];
-          this._fastPaths[filePath] = newFile;
-          if (parent) {
-            parent.addChild(newFile, this._fastPaths);
-          } else {
-            root.addChild(newFile, this._fastPaths);
-          }
+    let fastfsActivity;
+    if (activity) {
+      fastfsActivity = activity.startEvent(
+        'Building in-memory fs for ' + this._name,
+        null,
+        {
+          telemetric: true,
+        },
+      );
+    }
+    files.forEach(filePath => {
+      const root = this._getRoot(filePath);
+      if (root) {
+        const newFile = new File(filePath, false);
+        const dirname = filePath.substr(0, filePath.lastIndexOf(path.sep));
+        const parent = this._fastPaths[dirname];
+        this._fastPaths[filePath] = newFile;
+        if (parent) {
+          parent.addChild(newFile, this._fastPaths);
+        } else {
+          root.addChild(newFile, this._fastPaths);
         }
-      });
-      if (activity) {
-        activity.endEvent(fastfsActivity);
-      }
-
-      if (this._fileWatcher) {
-        this._fileWatcher.on('all', this._processFileChange.bind(this));
       }
     });
+    if (activity) {
+      activity.endEvent(fastfsActivity);
+    }
+
+    if (this._fileWatcher) {
+      this._fileWatcher.on('all', this._processFileChange.bind(this));
+    }
   }
 
   stat(filePath) {
@@ -356,7 +356,7 @@ function makeReadCallback(fd, predicate, callback) {
 }
 
 function isDescendant(root, child) {
-  return child.startsWith(root);
+  return root === child || child.startsWith(root + path.sep);
 }
 
 module.exports = Fastfs;

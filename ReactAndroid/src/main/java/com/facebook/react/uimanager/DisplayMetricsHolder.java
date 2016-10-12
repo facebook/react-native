@@ -9,16 +9,16 @@
 
 package com.facebook.react.uimanager;
 
+import javax.annotation.Nullable;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import android.content.Context;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import javax.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
 
@@ -43,11 +43,15 @@ public class DisplayMetricsHolder {
   public static void setWindowDisplayMetrics(DisplayMetrics displayMetrics) {
     sWindowDisplayMetrics = displayMetrics;
   }
-  
+
   public static void initDisplayMetricsIfNotInitialized(Context context) {
     if (DisplayMetricsHolder.getScreenDisplayMetrics() != null) {
       return;
     }
+    initDisplayMetrics(context);
+  }
+
+  public static void initDisplayMetrics(Context context) {
     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
     DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 

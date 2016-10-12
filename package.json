@@ -11,14 +11,20 @@
     "node": ">=4"
   },
   "jest": {
+    "automock": true,
     "scriptPreprocessor": "jestSupport/preprocessor.js",
-    "setupEnvScriptFile": "jestSupport/env.js",
+    "setupFiles": [
+      "jestSupport/env.js"
+    ],
+    "timers": "fake",
     "moduleNameMapper": {
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/website/",
+      "local-cli/generator/templates/"
     ],
     "haste": {
       "defaultPlatform": "ios",
@@ -90,7 +96,8 @@
       "source-map",
       "fastpath",
       "denodeify",
-      "fbjs"
+      "fbjs",
+      "sinon"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -124,12 +131,14 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "15.3.1-rc.2"
+    "react": "~15.3.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
+    "async": "^2.0.1",
     "babel-core": "^6.10.4",
+    "babel-generator": "^6.14.0",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.5.0",
     "babel-plugin-transform-flow-strip-types": "^6.6.5",
@@ -141,7 +150,7 @@
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.8.2",
-    "base64-js": "^0.0.8",
+    "base64-js": "^1.1.2",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
@@ -158,6 +167,7 @@
     "image-size": "^0.3.5",
     "immutable": "~3.7.6",
     "inquirer": "^0.12.0",
+    "jest-haste-map": "15.0.1",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
@@ -182,7 +192,7 @@
     "regenerator-runtime": "^0.9.5",
     "sane": "~1.4.1",
     "semver": "^5.0.3",
-    "source-map": "^0.4.4",
+    "source-map": "^0.5.6",
     "stacktrace-parser": "^0.1.3",
     "temp": "0.8.3",
     "uglify-js": "^2.6.2",
@@ -197,18 +207,19 @@
     "yeoman-generator": "0.21.2"
   },
   "devDependencies": {
-    "babel-eslint": "^6.0.0",
-    "eslint": "^2.13.1",
-    "eslint-plugin-babel": "^3.2.0",
-    "eslint-plugin-flow-vars": "^0.2.1",
-    "eslint-plugin-react": "^4.2.1",
-    "flow-bin": "^0.31.1",
-    "jest": "~14.1.0",
-    "jest-repl": "~14.1.0",
-    "jest-runtime": "~14.1.0",
+    "babel-eslint": "^7.0.0",
+    "eslint": "^3.7.0",
+    "eslint-plugin-babel": "^3.3.0",
+    "eslint-plugin-flowtype": "^2.19.0",
+    "eslint-plugin-react": "^6.3.0",
+    "flow-bin": "^0.33.0",
+    "jest": "15.1.0",
+    "jest-repl": "15.1.0",
+    "jest-runtime": "15.1.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "15.3.1-rc.2",
-    "shelljs": "0.6.0"
+    "react": "~15.3.1",
+    "shelljs": "0.6.0",
+    "sinon": "^2.0.0-pre.2"
   }
 }

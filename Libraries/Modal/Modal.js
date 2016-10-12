@@ -11,15 +11,15 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
 const View = require('View');
-const deprecatedPropType = require('deprecatedPropType');
 
+const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
 
@@ -27,7 +27,7 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * The Modal component is a simple way to present content above an enclosing view.
  *
  * _Note: If you need more control over how to present modals over the rest of your app,
- * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
+ * then consider using a top-level Navigator._
  *
  * ```javascript
  * import React, { Component } from 'react';
@@ -111,6 +111,18 @@ class Modal extends React.Component {
       PropTypes.bool,
       'Use the `animationType` prop instead.'
     ),
+    /**
+     * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
+     * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
+     * @platform ios
+     */
+    supportedOrientations: PropTypes.arrayOf(PropTypes.oneOf(['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'])),
+    /**
+     * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
+     * The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.
+     * @platform ios
+     */
+    onOrientationChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -124,7 +136,6 @@ class Modal extends React.Component {
 
     const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
     };
 
     let animationType = this.props.animationType;
@@ -136,6 +147,12 @@ class Modal extends React.Component {
       }
     }
 
+    const innerChildren = __DEV__ ?
+      ( <AppContainer>
+          {this.props.children}
+        </AppContainer>) :
+      this.props.children;
+
     return (
       <RCTModalHostView
         animationType={animationType}
@@ -144,9 +161,11 @@ class Modal extends React.Component {
         onShow={this.props.onShow}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
+        supportedOrientations={this.props.supportedOrientations}
+        onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {innerChildren}
         </View>
       </RCTModalHostView>
     );

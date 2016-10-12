@@ -35,11 +35,11 @@ const {
   TouchableOpacity
 } = ReactNative;
 
+const invariant = require('invariant');
+
 const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
-
-const CAMERA_ROLL_VIEW = 'camera_roll_view';
 
 class CameraRollExample extends React.Component {
   state = {
@@ -47,13 +47,14 @@ class CameraRollExample extends React.Component {
     sliderValue: 1,
     bigImages: true,
   };
-
+  _cameraRollView: ?CameraRollView;
   render() {
     return (
       <View>
         <Switch
           onValueChange={this._onSwitchChange}
-          value={this.state.bigImages} />
+          value={this.state.bigImages}
+        />
         <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
         <Slider
           value={this.state.sliderValue}
@@ -61,7 +62,7 @@ class CameraRollExample extends React.Component {
         />
         <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
-          ref={CAMERA_ROLL_VIEW}
+          ref={(ref) => { this._cameraRollView = ref; }}
           batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
@@ -84,8 +85,8 @@ class CameraRollExample extends React.Component {
   _renderImage = (asset) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
-    const location = asset.node.location.longitude ?
-      JSON.stringify(asset.node.location) : 'Unknown location';
+    const {location} = asset.node;
+    const locationStr = location ? JSON.stringify(location) : 'Unknown location';
     return (
       <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
         <View style={styles.row}>
@@ -95,7 +96,7 @@ class CameraRollExample extends React.Component {
           />
           <View style={styles.info}>
             <Text style={styles.url}>{asset.node.image.uri}</Text>
-            <Text>{location}</Text>
+            <Text>{locationStr}</Text>
             <Text>{asset.node.group_name}</Text>
             <Text>{new Date(asset.node.timestamp).toString()}</Text>
           </View>
@@ -114,7 +115,8 @@ class CameraRollExample extends React.Component {
   };
 
   _onSwitchChange = (value) => {
-    this.refs[CAMERA_ROLL_VIEW].rendererChanged();
+    invariant(this._cameraRollView, 'ref should be set');
+    this._cameraRollView.rendererChanged();
     this.setState({ bigImages: value });
   };
 }

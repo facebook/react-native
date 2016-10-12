@@ -21,7 +21,13 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
  *
  * There is also a function `showWithGravity` to specify the layout gravity. May be
- * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER
+ * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
+ *
+ * Basic usage:
+ * ```javascript
+ * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
+ * ToastAndroid.showWithGravity('All Your Base Are Belong To Us', ToastAndroid.SHORT, ToastAndroid.CENTER);
+ * ```
  */
 
 var ToastAndroid = {

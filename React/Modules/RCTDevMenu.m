@@ -9,6 +9,8 @@
 
 #import "RCTDevMenu.h"
 
+#import <objc/runtime.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
@@ -118,7 +120,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
-@interface RCTDevMenu () <RCTBridgeModule, UIActionSheetDelegate, RCTInvalidating, RCTWebSocketProxyDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketProxyDelegate>
 
 @property (nonatomic, strong) Class executorClass;
 
@@ -126,7 +128,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @implementation RCTDevMenu
 {
-  UIActionSheet *_actionSheet;
+  UIAlertController *_actionSheet;
   NSUserDefaults *_defaults;
   NSMutableDictionary *_settings;
   NSURLSessionDataTask *_updateTask;
@@ -255,7 +257,7 @@ RCT_EXPORT_MODULE()
 // TODO: Move non-UI logic into separate RCTDevSettings module
 - (void)connectPackager
 {
-  Class webSocketManagerClass = NSClassFromString(@"RCTWebSocketManager");
+  Class webSocketManagerClass = objc_lookUpClass("RCTWebSocketManager");
   id<RCTWebSocketProxy> webSocketManager = (id <RCTWebSocketProxy>)[webSocketManagerClass sharedInstance];
   NSURL *url = [self packagerURL];
   if (url) {
@@ -281,7 +283,7 @@ RCT_EXPORT_MODULE()
   if ([target isEqualToString:@"bridge"]) {
     if ([action isEqualToString:@"reload"]) {
       if ([options[@"debug"] boolValue]) {
-        _bridge.executorClass = NSClassFromString(@"RCTWebSocketExecutor");
+        _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
       }
       [_bridge reload];
     }
@@ -407,7 +409,7 @@ RCT_EXPORT_MODULE()
 {
   _presentedItems = nil;
   [_updateTask cancel];
-  [_actionSheet dismissWithClickedButtonIndex:_actionSheet.cancelButtonIndex animated:YES];
+  [_actionSheet dismissViewControllerAnimated:YES completion:^(void){}];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -421,7 +423,7 @@ RCT_EXPORT_MODULE()
 - (void)toggle
 {
   if (_actionSheet) {
-    [_actionSheet dismissWithClickedButtonIndex:_actionSheet.cancelButtonIndex animated:YES];
+    [_actionSheet dismissViewControllerAnimated:YES completion:^(void){}];
     _actionSheet = nil;
   } else {
     [self show];
@@ -453,16 +455,14 @@ RCT_EXPORT_MODULE()
     [weakSelf reload];
   }]];
 
-  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  Class jsDebuggingExecutorClass = objc_lookUpClass("RCTWebSocketExecutor");
   if (!jsDebuggingExecutorClass) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName] handler:^{
-      UIAlertView *alert = RCTAlertView(
-        [NSString stringWithFormat:@"%@ Debugger Unavailable", self->_webSocketExecutorName],
-        [NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", self->_webSocketExecutorName],
-        nil,
-        @"OK",
-        nil);
-      [alert show];
+      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", self->_webSocketExecutorName]
+                                                                               message:[NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", self->_webSocketExecutorName]
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+
+      [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
     BOOL isDebuggingJS = _executorClass && _executorClass == jsDebuggingExecutorClass;
@@ -512,61 +512,59 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  UIActionSheet *actionSheet = [UIActionSheet new];
-  actionSheet.title = @"React Native: Development";
-  actionSheet.delegate = self;
+  NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", [_bridge class]];
+  // On larger devices we don't have an anchor point for the action sheet
+  UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
+  _actionSheet = [UIAlertController alertControllerWithTitle:title
+                                                     message:@""
+                                              preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {
-        [actionSheet addButtonWithTitle:item.title];
+        [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action) {
+                                                         // Cancel button tappped.
+                                                         [item callHandler];
+                                                       }]];
         break;
       }
       case RCTDevMenuTypeToggle: {
         BOOL selected = [item.value boolValue];
-        [actionSheet addButtonWithTitle:selected? item.selectedTitle : item.title];
+        [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action) {
+                                                         BOOL value = [self->_settings[item.key] boolValue];
+                                                         [self updateSetting:item.key value:@(!value)]; // will call handler
+                                                       }]];
+
         break;
       }
     }
   }
 
-  [actionSheet addButtonWithTitle:@"Cancel"];
-  actionSheet.cancelButtonIndex = actionSheet.numberOfButtons - 1;
+  [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                   style:UIAlertActionStyleCancel
+                                                 handler:^(UIAlertAction *action) {
+                                                 }]];
 
-  actionSheet.actionSheetStyle = UIBarStyleBlack;
-  [actionSheet showInView:RCTKeyWindow().rootViewController.view];
-  _actionSheet = actionSheet;
   _presentedItems = items;
+  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:^(void){}];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-  _actionSheet = nil;
-  if (buttonIndex == actionSheet.cancelButtonIndex) {
-    return;
-  }
 
-  RCTDevMenuItem *item = _presentedItems[buttonIndex];
-  switch (item.type) {
-    case RCTDevMenuTypeButton: {
-      [item callHandler];
-      break;
-    }
-    case RCTDevMenuTypeToggle: {
-      BOOL value = [_settings[item.key] boolValue];
-      [self updateSetting:item.key value:@(!value)]; // will call handler
-      break;
-    }
-  }
-  return;
-}
 
 RCT_EXPORT_METHOD(reload)
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                      object:nil
-                                                    userInfo:nil];
+  [_bridge requestReload];
+}
+
+RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
+{
+  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  self.executorClass = enableDebug ? jsDebuggingExecutorClass : nil;
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow
@@ -575,7 +573,7 @@ RCT_EXPORT_METHOD(reload)
   [self updateSetting:@"shakeToShow" value:@(_shakeToShow)];
 }
 
-- (void)setProfilingEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
 {
   _profilingEnabled = enabled;
   [self updateSetting:@"profilingEnabled" value:@(_profilingEnabled)];
@@ -591,7 +589,7 @@ RCT_EXPORT_METHOD(reload)
   }
 }
 
-- (void)setLiveReloadEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
 {
   _liveReloadEnabled = enabled;
   [self updateSetting:@"liveReloadEnabled" value:@(_liveReloadEnabled)];
@@ -609,7 +607,7 @@ RCT_EXPORT_METHOD(reload)
   return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
-- (void)setHotLoadingEnabled:(BOOL)enabled
+RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
   _hotLoadingEnabled = enabled;
   [self updateSetting:@"hotLoadingEnabled" value:@(_hotLoadingEnabled)];
@@ -637,7 +635,7 @@ RCT_EXPORT_METHOD(reload)
     // needed to prevent overriding a custom executor with the default if a
     // custom executor has been set directly on the bridge
     if (executorClass == Nil &&
-        _bridge.executorClass != NSClassFromString(@"RCTWebSocketExecutor")) {
+        _bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
       return;
     }
 

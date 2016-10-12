@@ -31,7 +31,7 @@ const wrapperEnd = wrappedCode => wrappedCode.indexOf('{') + 1;
 
 const Section = (line, column, map) => ({map, offset: {line, column}});
 
-function combineSourceMaps({modules, withCustomOffsets}) {
+function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
   let offsets;
   const sections = [];
   const sourceMap = {
@@ -45,13 +45,41 @@ function combineSourceMaps({modules, withCustomOffsets}) {
 
   let line = 0;
   modules.forEach(({code, id, map, name}) => {
-    const hasOffset = withCustomOffsets && id != null;
-    const column = hasOffset ? wrapperEnd(code) : 0;
+    let column = 0;
+    let hasOffset = false;
+    let group;
+    let groupLines = 0;
+
+    if (withCustomOffsets) {
+      if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
+        // this is a module appended to another module
+        return;
+      }
+
+      if (moduleGroups && moduleGroups.groups.has(id)) {
+        group = moduleGroups.groups.get(id);
+        const otherModules = Array.from(group).map(
+          moduleId => moduleGroups.modulesById.get(moduleId));
+        otherModules.forEach(m => {
+          groupLines += countLines(m.code);
+        });
+        map = combineSourceMaps({
+          modules: [{code, id, map, name}].concat(otherModules),
+        });
+      }
+
+      hasOffset = id != null;
+      column = wrapperEnd(code);
+    }
+
     sections.push(Section(line, column, map || lineToLineSourceMap(code, name)));
     if (hasOffset) {
       offsets[id] = line;
+      for (const moduleId of group || []) {
+        offsets[moduleId] = line;
+      }
     }
-    line += countLines(code);
+    line += countLines(code) + groupLines;
   });
 
   return sourceMap;

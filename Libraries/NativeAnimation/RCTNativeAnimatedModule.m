@@ -15,6 +15,9 @@
 #import "RCTConvert.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTLog.h"
+#import "RCTDiffClampAnimatedNode.h"
+#import "RCTDivisionAnimatedNode.h"
+#import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
 #import "RCTStyleAnimatedNode.h"
@@ -68,7 +71,10 @@ RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
             @"props" : [RCTPropsAnimatedNode class],
             @"interpolation" : [RCTInterpolationAnimatedNode class],
             @"addition" : [RCTAdditionAnimatedNode class],
+            @"diffclamp": [RCTDiffClampAnimatedNode class],
+            @"division" : [RCTDivisionAnimatedNode class],
             @"multiplication" : [RCTMultiplicationAnimatedNode class],
+            @"modulus" : [RCTModuloAnimatedNode class],
             @"transform" : [RCTTransformAnimatedNode class]};
   });
 
@@ -169,6 +175,32 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   valueNode.value = value.floatValue;
   [valueNode setNeedsUpdate];
+}
+
+RCT_EXPORT_METHOD(setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
+                  offset:(nonnull NSNumber *)offset)
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  [valueNode setOffset:offset.floatValue];
+  [_updatedValueNodes addObject:valueNode];
+}
+
+RCT_EXPORT_METHOD(flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  [valueNode flattenOffset];
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag

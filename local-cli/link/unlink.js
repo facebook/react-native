@@ -11,8 +11,12 @@ const getDependencyConfig = require('./getDependencyConfig');
 const compact = require('lodash').compact;
 const difference = require('lodash').difference;
 const filter = require('lodash').filter;
-const isEmpty = require('lodash').isEmpty;
+const find = require('lodash').find;
 const flatten = require('lodash').flatten;
+const isEmpty = require('lodash').isEmpty;
+const promiseWaterfall = require('./promiseWaterfall');
+const commandStub = require('./commandStub');
+const promisify = require('./promisify');
 
 log.heading = 'rnpm-link';
 
@@ -88,35 +92,47 @@ function unlink(args, config) {
 
   const allDependencies = getDependencyConfig(config, getProjectDependencies());
   const otherDependencies = filter(allDependencies, d => d.name !== packageName);
+  const thisDependency = find(allDependencies, d => d.name === packageName);
   const iOSDependencies = compact(otherDependencies.map(d => d.config.ios));
 
-  unlinkDependencyAndroid(project.android, dependency, packageName);
-  unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies);
+  const tasks = [
+    () => promisify(thisDependency.config.commands.preunlink || commandStub),
+    () => unlinkDependencyAndroid(project.android, dependency, packageName),
+    () => unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies),
+    () => promisify(thisDependency.config.commands.postunlink || commandStub)
+  ];
 
-  const assets = difference(
-    dependency.assets,
-    flatten(allDependencies, d => d.assets)
-  );
+  return promiseWaterfall(tasks)
+    .then(() => {
+      const assets = difference(
+        dependency.assets,
+        flatten(allDependencies, d => d.assets)
+      );
 
-  if (isEmpty(assets)) {
-    return Promise.resolve();
-  }
+      if (isEmpty(assets)) {
+        return Promise.resolve();
+      }
 
-  if (project.ios) {
-    log.info('Unlinking assets from ios project');
-    unlinkAssetsIOS(assets, project.ios);
-  }
+      if (project.ios) {
+        log.info('Unlinking assets from ios project');
+        unlinkAssetsIOS(assets, project.ios);
+      }
 
-  if (project.android) {
-    log.info('Unlinking assets from android project');
-    unlinkAssetsAndroid(assets, project.android.assetsPath);
-  }
+      if (project.android) {
+        log.info('Unlinking assets from android project');
+        unlinkAssetsAndroid(assets, project.android.assetsPath);
+      }
 
-  log.info(
-    `${packageName} assets has been successfully unlinked from your project`
-  );
-
-  return Promise.resolve();
+      log.info(
+        `${packageName} assets has been successfully unlinked from your project`
+      );
+    })
+    .catch(err => {
+      log.error(
+        `It seems something went wrong while unlinking. Error: ${err.message}`
+      );
+      throw err;
+    });
 };
 
 module.exports = {

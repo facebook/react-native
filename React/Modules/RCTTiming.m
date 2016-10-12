@@ -175,7 +175,7 @@ RCT_EXPORT_MODULE()
   return _sendIdleEvents || _timers.count > 0;
 }
 
-- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
+- (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
