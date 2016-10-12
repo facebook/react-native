@@ -13,6 +13,7 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
 var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
@@ -137,6 +138,14 @@ var Slider = React.createClass({
       maximumValue: 1,
       step: 0
     };
+  },
+
+  viewConfig: {
+    uiViewClassName: 'RCTSlider',
+    validAttributes: {
+      ...ReactNativeViewAttributes.RCTView,
+      value: true
+    }
   },
 
   render: function() {
