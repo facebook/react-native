@@ -52,7 +52,7 @@ class UIExplorerExampleContainer extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return false;
+    return !(this.props.module === nextProps.module && this.props.title === nextProps.title);
   }
 
   render(): ReactElement<any> {
