@@ -571,7 +571,7 @@ var TouchableMixin = {
       return;
     }
 
-    UIManager.measure(tag, this._handleQueryLayout.bind(this));
+    UIManager.measure(tag, this._handleQueryLayout);
   },
 
   _handleQueryLayout: function(l, t, w, h, globalX, globalY) {
