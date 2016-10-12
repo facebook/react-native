@@ -58,10 +58,10 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_CSSNodeFree(long nativePointer);
   @Override
-  public void reset() {
+  public void free() {
     assertNativeInstance();
     if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
-      throw new IllegalStateException("You should not reset an attached CSSNode");
+      throw new IllegalStateException("You should not free an attached CSSNode");
     }
 
     jni_CSSNodeFree(mNativePointer);
