@@ -63,7 +63,7 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
 
   @Override
   public void init() {
-    reset();
+    free();
   }
 
   @Override
@@ -640,9 +640,9 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * recycling {@link CSSNodeDEPRECATED} instances.
    */
   @Override
-  public void reset() {
+  public void free() {
     if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
-      throw new IllegalStateException("You should not reset an attached CSSNodeDEPRECATED");
+      throw new IllegalStateException("You should not free an attached CSSNodeDEPRECATED");
     }
 
     style.reset();

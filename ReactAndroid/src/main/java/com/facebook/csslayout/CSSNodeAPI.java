@@ -90,5 +90,5 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setData(Object data);
   Object getData();
   void init();
-  void reset();
+  void free();
 }
