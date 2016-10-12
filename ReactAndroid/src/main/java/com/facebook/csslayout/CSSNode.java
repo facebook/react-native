@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
-public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
+public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   static {
     try {
@@ -29,8 +29,8 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
     }
   }
 
-  private CSSNodeJNI mParent;
-  private List<CSSNodeJNI> mChildren;
+  private CSSNode mParent;
+  private List<CSSNode> mChildren;
   private MeasureFunction mMeasureFunction;
   private long mNativePointer;
   private Object mData;
@@ -60,10 +60,6 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
       throw new IllegalStateException("You should not reset an attached CSSNode");
     }
 
-    free();
-  }
-
-  private void free() {
     jni_CSSNodeFree(mNativePointer);
     mNativePointer = 0;
     mChildren = null;
@@ -72,29 +68,18 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
   }
 
   @Override
-  protected void finalize() throws Throwable {
-    try {
-      if (mNativePointer != 0) {
-        free();
-      }
-    } finally {
-      super.finalize();
-    }
-  }
-
-  @Override
   public int getChildCount() {
     return mChildren.size();
   }
 
   @Override
-  public CSSNodeJNI getChildAt(int i) {
+  public CSSNode getChildAt(int i) {
     return mChildren.get(i);
   }
 
   private native void jni_CSSNodeInsertChild(long nativePointer, long childPointer, int index);
   @Override
-  public void addChildAt(CSSNodeJNI child, int i) {
+  public void addChildAt(CSSNode child, int i) {
     assertNativeInstance();
     if (child.mParent != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
@@ -107,22 +92,23 @@ public class CSSNodeJNI implements CSSNodeAPI<CSSNodeJNI> {
 
   private native void jni_CSSNodeRemoveChild(long nativePointer, long childPointer);
   @Override
-  public CSSNodeJNI removeChildAt(int i) {
+  public CSSNode removeChildAt(int i) {
     assertNativeInstance();
 
-    final CSSNodeJNI child = mChildren.remove(i);
+    final CSSNode child = mChildren.remove(i);
     child.mParent = null;
     jni_CSSNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
   }
 
   @Override
-  public @Nullable CSSNodeJNI getParent() {
+  public @Nullable
+  CSSNode getParent() {
     return mParent;
   }
 
   @Override
-  public int indexOf(CSSNodeJNI child) {
+  public int indexOf(CSSNode child) {
     return mChildren.indexOf(child);
   }
 
