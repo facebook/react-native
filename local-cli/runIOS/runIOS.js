@@ -64,8 +64,7 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
 }
 
 function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
-  return new Promise((resolve) =>
-  {
+  return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
       child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -90,11 +89,10 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     resolve(selectedSimulator.udid)
   })
   .then((udid) => buildProject(xcodeProject, udid, scheme))
-  .then((appName) =>
-  {
-    if (!appName)
+  .then((appName) => {
+    if (!appName) {
       appName = inferredSchemeName;
-
+    }
     const appPath = `build/Build/Products/Debug-iphonesimulator/${appName}.app`;
     console.log(`Installing ${appPath}`);
     child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
@@ -112,17 +110,17 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 
 function runOnDevice(selectedDevice, scheme, xcodeProject){
   return buildProject(xcodeProject, selectedDevice.udid, scheme)
-  .then((appName) =>
-  {
-    if (!appName)
+  .then((appName) => {
+    if (!appName) {
       appName = scheme;
+    }
     const iosDeployInstallArgs = [
       '--bundle', 'build/Build/Products/Debug-iphoneos/' + appName + '.app',
       '--id' , selectedDevice.udid,
       '--justlaunch'
     ];
     console.log(`installing and launching your app on ${selectedDevice.name}...`);
-    let iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
+    const iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
     if (iosDeployOutput.error) {
       console.log('');
       console.log('** INSTALLATION FAILED **');
@@ -151,13 +149,12 @@ function buildProject(xcodeProject, udid, scheme) {
       buildOutput += data.toString();
     });
     buildProcess.stderr.on('data', function(data) {
-        console.log(data.toString());
+      console.error(data.toString());
     });
     buildProcess.on('close', function(code) {
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
-      let productNameMatch = /export FULL_PRODUCT_NAME="*(.+).app/.exec(buildOutput);
-      if (productNameMatch && productNameMatch.length && productNameMatch.length > 1)
-      {
+      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app/.exec(buildOutput);
+      if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
       return buildProcess.error? reject(error) : resolve();
