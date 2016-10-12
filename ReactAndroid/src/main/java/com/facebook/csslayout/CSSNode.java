@@ -35,6 +35,10 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private long mNativePointer;
   private Object mData;
 
+  public CSSNode() {
+    init();
+  }
+
   private void assertNativeInstance() {
     if (mNativePointer == 0) {
       throw new IllegalStateException("Null native pointer");
