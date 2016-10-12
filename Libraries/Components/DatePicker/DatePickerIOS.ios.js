@@ -18,6 +18,7 @@ const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const ColorPropType = require('ColorPropType');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -81,6 +82,11 @@ const DatePickerIOS = React.createClass({
     minuteInterval: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]),
 
     /**
+     * Text color.
+     */
+    textColor: ColorPropType,
+
+    /**
      * Timezone offset in minutes.
      *
      * By default, the date picker will use the device's timezone. With this
@@ -93,6 +99,7 @@ const DatePickerIOS = React.createClass({
   getDefaultProps: function(): DefaultProps {
     return {
       mode: 'datetime',
+      textColor: '#000',
     };
   },
 
@@ -131,6 +138,7 @@ const DatePickerIOS = React.createClass({
           }
           mode={props.mode}
           minuteInterval={props.minuteInterval}
+          textColor={props.textColor}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
         />
