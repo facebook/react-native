@@ -321,7 +321,7 @@ public class UIImplementation {
     Arrays.sort(viewsToAdd, ViewAtIndex.COMPARATOR);
     Arrays.sort(indicesToRemove);
 
-    // Apply changes to CSSNode hierarchy
+    // Apply changes to CSSNodeDEPRECATED hierarchy
     int lastIndexRemoved = -1;
     for (int i = indicesToRemove.length - 1; i >= 0; i--) {
       int indexToRemove = indicesToRemove[i];
