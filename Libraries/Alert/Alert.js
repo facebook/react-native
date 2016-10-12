@@ -24,7 +24,7 @@ type Buttons = Array<{
 }>;
 
 type Options = {
-  cancelable?: ?boolean;
+  cancelable?: ?boolean,
 };
 
 /**

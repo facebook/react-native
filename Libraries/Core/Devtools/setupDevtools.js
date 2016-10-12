@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var NativeModules = require('NativeModules');
+var Platform = require('Platform');
 
 function setupDevtools() {
   var messageListeners = [];
