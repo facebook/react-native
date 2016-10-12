@@ -238,7 +238,7 @@ class WebView extends React.Component {
     /**
      * A function that is invoked when the webview calls `window.postMessage`.
      * Setting this property will inject a `postMessage` global into your
-     * webview, overriding any previous values.
+     * webview, but will still call pre-existing values of `postMessage`.
      *
      * `window.postMessage` accepts one argument, `data`, which will be
      * available on the event object, `event.nativeEvent.data`. `data`

@@ -27,7 +27,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -48,6 +50,7 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
+import com.facebook.common.logging.FLog;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -267,9 +270,25 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void linkBridge() {
       if (messagingEnabled) {
-        loadUrl("javascript:(window.postMessage = function(data) {" +
-          BRIDGE_NAME + ".postMessage(String(data));" +
-        "})");
+        if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          // See isNative in lodash
+          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+          evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+              if (value.equals("true")) {
+                FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+              }
+            }
+          });
+        }
+
+        loadUrl("javascript:(" +
+          "window.originalPostMessage = window.postMessage," +
+          "window.postMessage = function(data) {" +
+            BRIDGE_NAME + ".postMessage(String(data));" +
+          "}" +
+        ")");
       }
     }
 
@@ -461,10 +480,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         try {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.evaluateJavascript(
-            "document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + "))",
-            null
-          );
+          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
