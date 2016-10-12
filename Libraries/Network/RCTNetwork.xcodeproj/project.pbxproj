@@ -12,12 +12,12 @@
 		13D6D66A1B5FCF8200883BE9 /* RCTNetworkTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D6D6691B5FCF8200883BE9 /* RCTNetworkTask.m */; };
 		13EF800E1BCBE015003F47DD /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */; };
 		2D3B5F261D9B0EAB00451313 /* RCTNetworkTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D6D6691B5FCF8200883BE9 /* RCTNetworkTask.m */; };
-		2D3B5F271D9B0EB400451313 /* RCTHTTPRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */; };
+		2D3B5F271D9B0EB400451313 /* RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */; };
 		2D3B5F281D9B0EB400451313 /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */; };
 		2D3B5F291D9B0EB400451313 /* RCTDataRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 134E96991BCEB7F800AFFDA1 /* RCTDataRequestHandler.m */; };
 		2D3B5F2A1D9B0EB400451313 /* RCTNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7361AB03E7B00659ED6 /* RCTNetInfo.m */; };
 		2D3B5F2B1D9B0EB400451313 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
-		352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */; };
+		352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */; };
 		58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
 /* End PBXBuildFile section */
 
@@ -53,7 +53,7 @@
 		13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFileRequestHandler.m; sourceTree = "<group>"; };
 		2D2A28541D9B044C00D4039D /* libRCTNetwork-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTNetwork-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTHTTPRequestHandler.h; sourceTree = "<group>"; };
-		352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTHTTPRequestHandler.m; sourceTree = "<group>"; };
+		352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTHTTPRequestHandler.mm; sourceTree = "<group>"; };
 		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512061A9E6CE300147676 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
 		58B512071A9E6CE300147676 /* RCTNetworking.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNetworking.mm; sourceTree = "<group>"; };
@@ -83,7 +83,7 @@
 				13D6D6681B5FCF8200883BE9 /* RCTNetworkTask.h */,
 				13D6D6691B5FCF8200883BE9 /* RCTNetworkTask.m */,
 				352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */,
-				352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.m */,
+				352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */,
 				13EF800C1BCBE015003F47DD /* RCTFileRequestHandler.h */,
 				13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */,
 				134E96981BCEB7F800AFFDA1 /* RCTDataRequestHandler.h */,
@@ -188,7 +188,7 @@
 				2D3B5F2A1D9B0EB400451313 /* RCTNetInfo.m in Sources */,
 				2D3B5F261D9B0EAB00451313 /* RCTNetworkTask.m in Sources */,
 				2D3B5F281D9B0EB400451313 /* RCTFileRequestHandler.m in Sources */,
-				2D3B5F271D9B0EB400451313 /* RCTHTTPRequestHandler.m in Sources */,
+				2D3B5F271D9B0EB400451313 /* RCTHTTPRequestHandler.mm in Sources */,
 				2D3B5F2B1D9B0EB400451313 /* RCTNetworking.mm in Sources */,
 				2D3B5F291D9B0EB400451313 /* RCTDataRequestHandler.m in Sources */,
 			);
@@ -203,7 +203,7 @@
 				134E969A1BCEB7F800AFFDA1 /* RCTDataRequestHandler.m in Sources */,
 				1372B7371AB03E7B00659ED6 /* RCTNetInfo.m in Sources */,
 				58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */,
-				352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.m in Sources */,
+				352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
