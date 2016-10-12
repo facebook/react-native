@@ -1715,11 +1715,15 @@ function createAnimatedComponent(Component: any): any {
       var callback = () => {
         if (this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
-            if (this._component.viewConfig != null) {
-              this._component.setNativeProps(
-                this._propsAnimated.__getAnimatedValue()
-              );
+            if (this._component.viewConfig == null) {
+              var ctor = this._component.constructor;
+              var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
+              throw new Error(componentName + ' "viewConfig" is not defined.');
             }
+
+            this._component.setNativeProps(
+              this._propsAnimated.__getAnimatedValue()
+            );
           } else {
             throw new Error('Attempting to run JS driven animation on animated '
               + 'node that has been moved to "native" earlier by starting an '
