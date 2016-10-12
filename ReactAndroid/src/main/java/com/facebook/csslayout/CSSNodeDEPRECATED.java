@@ -62,7 +62,7 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   private Object mData;
 
   @Override
-  public void init() {
+  public void reinit() {
     free();
   }
 

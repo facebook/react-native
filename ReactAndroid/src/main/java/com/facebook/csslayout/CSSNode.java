@@ -36,7 +36,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private Object mData;
 
   public CSSNode() {
-    init();
+    reinit();
   }
 
   private void assertNativeInstance() {
@@ -47,7 +47,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native long jni_CSSNodeNew();
   @Override
-  public void init() {
+  public void reinit() {
     if (mNativePointer != 0) {
       throw new IllegalStateException("Allready initialized node");
     }
