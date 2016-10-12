@@ -12,7 +12,7 @@ package com.facebook.csslayout;
 import java.util.Arrays;
 
 /**
- * The CSS style definition for a {@link CSSNode}.
+ * The CSS style definition for a {@link CSSNodeDEPRECATED}.
  */
 public class CSSStyle {
 

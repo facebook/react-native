@@ -14,16 +14,16 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
- * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
- * {@link CSSNode} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
+ * {@link CSSNodeDEPRECATED} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -43,7 +43,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
  * information.
  */
 @ReactPropertyHolder
-public class ReactShadowNode extends CSSNode {
+public class ReactShadowNode extends CSSNodeDEPRECATED {
 
   private int mReactTag;
   private @Nullable String mViewClassName;
@@ -163,7 +163,7 @@ public class ReactShadowNode extends CSSNode {
   }
 
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     markUpdated();
     ReactShadowNode node = (ReactShadowNode) child;
