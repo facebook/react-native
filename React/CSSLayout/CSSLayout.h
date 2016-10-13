@@ -127,11 +127,11 @@ typedef void (*CSSAssertFailFunc)(const char *message);
 #endif
 
 // CSSNode
-WIN_EXPORT CSSNodeRef CSSNodeNew();
+WIN_EXPORT CSSNodeRef CSSNodeNew(void);
 WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
 WIN_EXPORT void CSSNodeFree(const CSSNodeRef node);
 WIN_EXPORT void CSSNodeFreeRecursive(const CSSNodeRef node);
-WIN_EXPORT int32_t CSSNodeGetInstanceCount();
+WIN_EXPORT int32_t CSSNodeGetInstanceCount(void);
 
 WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index);
 WIN_EXPORT void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
