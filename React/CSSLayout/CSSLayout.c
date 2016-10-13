@@ -129,9 +129,12 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
   return defaultValue;
 }
 
+static int32_t gNodeInstanceCount = 0;
+
 CSSNodeRef CSSNodeNew() {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
 
   CSSNodeInit(node);
   return node;
@@ -140,6 +143,20 @@ CSSNodeRef CSSNodeNew() {
 void CSSNodeFree(const CSSNodeRef node) {
   CSSNodeListFree(node->children);
   free(node);
+  gNodeInstanceCount--;
+}
+
+void CSSNodeFreeRecursive(const CSSNodeRef root) {
+  while (CSSNodeChildCount(root) > 0) {
+    const CSSNodeRef child = CSSNodeGetChild(root, 0);
+    CSSNodeRemoveChild(root, child);
+    CSSNodeFreeRecursive(child);
+  }
+  CSSNodeFree(root);
+}
+
+int32_t CSSNodeGetInstanceCount() {
+  return gNodeInstanceCount;
 }
 
 void CSSNodeInit(const CSSNodeRef node) {
@@ -191,7 +208,7 @@ void CSSNodeInit(const CSSNodeRef node) {
   node->layout.cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
 }
 
-void _CSSNodeMarkDirty(const CSSNodeRef node) {
+static void _CSSNodeMarkDirty(const CSSNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
     node->layout.computedFlexBasis = CSSUndefined;
@@ -202,6 +219,7 @@ void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
+  CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
   CSSNodeListInsert(node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -1705,7 +1723,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
       for (ii = startIndex; ii < childCount; ii++) {
         const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-        if (child->style.positionType == CSSPositionTypeAbsolute) {
+        if (child->style.positionType == CSSPositionTypeRelative) {
           if (child->lineIndex != i) {
             break;
           }
@@ -1724,7 +1742,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         for (ii = startIndex; ii < endIndex; ii++) {
           const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-          if (child->style.positionType == CSSPositionTypeAbsolute) {
+          if (child->style.positionType == CSSPositionTypeRelative) {
             switch (getAlignItem(node, child)) {
               case CSSAlignFlexStart:
                 child->layout.position[pos[crossAxis]] =
@@ -2278,3 +2296,17 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
     }
   }
 }
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+static CSSAssertFailFunc gAssertFailFunc;
+
+void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
+  gAssertFailFunc = func;
+}
+
+void CSSAssertFail(const char *message) {
+  if (gAssertFailFunc) {
+    (*gAssertFailFunc)(message);
+  }
+}
+#endif

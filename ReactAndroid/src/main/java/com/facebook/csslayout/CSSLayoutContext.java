@@ -13,7 +13,7 @@ package com.facebook.csslayout;
  * A context for holding values local to a given instance of layout computation.
  *
  * This is necessary for making layout thread-safe. A separate instance should
- * be used when {@link CSSNode#calculateLayout} is called concurrently on
+ * be used when {@link CSSNodeDEPRECATED#calculateLayout} is called concurrently on
  * different node hierarchies.
  */
 public class CSSLayoutContext {

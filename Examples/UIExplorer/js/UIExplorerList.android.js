@@ -33,6 +33,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ActivityIndicatorExample'),
   },
   {
+    key: 'ButtonExample',
+    module: require('./ButtonExample'),
+  },
+  {
     key: 'ImageExample',
     module: require('./ImageExample'),
   },

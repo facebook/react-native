@@ -11,7 +11,7 @@ package com.facebook.react.views.modal;
 
 import android.graphics.Point;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
@@ -29,7 +29,7 @@ class ModalHostShadowNode extends LayoutShadowNode {
    * within the <RCTModalHostView/> in Modal.js.  This needs to fill the entire window.
    */
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     Point modalSize = ModalHostHelper.getModalHostSize(getThemedContext());
     child.setStyleWidth(modalSize.x);

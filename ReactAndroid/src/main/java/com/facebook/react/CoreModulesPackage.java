@@ -13,7 +13,6 @@ import javax.inject.Provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.bridge.JavaScriptModule;
@@ -26,6 +25,7 @@ import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
@@ -70,9 +70,9 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
   private final UIImplementationProvider mUIImplementationProvider;
 
   CoreModulesPackage(
-      ReactInstanceManager reactInstanceManager,
-      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-      UIImplementationProvider uiImplementationProvider) {
+    ReactInstanceManager reactInstanceManager,
+    DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+    UIImplementationProvider uiImplementationProvider) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
@@ -95,6 +95,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         @Override
         public NativeModule get() {
           return new AndroidInfoModule();
+        }
+      }));
+    moduleSpecList
+      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new HeadlessJsTaskSupportModule(reactContext);
         }
       }));
     moduleSpecList.add(
@@ -180,11 +187,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
     return jsModules;
   }
 
-  @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
-  }
-
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
@@ -194,9 +196,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       return new UIManagerModule(
         reactContext,
         viewManagersList,
-        mUIImplementationProvider.createUIImplementation(
-          reactContext,
-          viewManagersList));
+        mUIImplementationProvider);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

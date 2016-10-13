@@ -360,7 +360,7 @@ const TextInput = React.createClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.string,
+    placeholder: PropTypes.node,
     /**
      * The text color of the placeholder string.
      */
@@ -413,7 +413,7 @@ const TextInput = React.createClass({
      * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
-    defaultValue: PropTypes.string,
+    defaultValue: PropTypes.node,
     /**
      * When the clear button should appear on the right side of the text view.
      * @platform ios

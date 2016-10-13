@@ -493,31 +493,6 @@ BOOL RCTForceTouchAvailable(void)
     (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
 }
 
-UIAlertView *__nullable RCTAlertView(NSString *title,
-                                     NSString *__nullable message,
-                                     id __nullable delegate,
-                                     NSString *__nullable cancelButtonTitle,
-                                     NSArray<NSString *> *__nullable otherButtonTitles)
-{
-  if (RCTRunningInAppExtension()) {
-    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
-    return nil;
-  }
-
-  UIAlertView *alertView = [UIAlertView new];
-  alertView.title = title;
-  alertView.message = message;
-  alertView.delegate = delegate;
-  if (cancelButtonTitle != nil) {
-    [alertView addButtonWithTitle:cancelButtonTitle];
-    alertView.cancelButtonIndex = 0;
-  }
-  for (NSString *buttonTitle in otherButtonTitles) {
-    [alertView addButtonWithTitle:buttonTitle];
-  }
-  return alertView;
-}
-
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};

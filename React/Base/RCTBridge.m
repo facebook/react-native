@@ -296,6 +296,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   [self createBatchedBridge];
+  [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
@@ -349,5 +350,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [self.batchedBridge enqueueCallback:cbID args:args];
 }
+
+- (JSValue *)callFunctionOnModule:(NSString *)module
+                           method:(NSString *)method
+                        arguments:(NSArray *)arguments
+                            error:(NSError **)error
+{
+  return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
+}
+
 
 @end

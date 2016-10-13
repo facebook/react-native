@@ -34,6 +34,8 @@
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
+RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
+RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
@@ -342,8 +344,13 @@ static NSThread *newJavaScriptThread(void)
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
                                                           object:context];
 
-      configureCacheOnContext(context, self->_jscWrapper);
       installBasicSynchronousHooksOnContext(context);
+    }
+
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    if (!threadDictionary[RCTFBJSContextClassKey] || !threadDictionary[RCTFBJSValueClassKey]) {
+      threadDictionary[RCTFBJSContextClassKey] = self->_jscWrapper->JSContext;
+      threadDictionary[RCTFBJSValueClassKey] = self->_jscWrapper->JSValue;
     }
 
     __weak RCTJSCExecutor *weakSelf = self;
@@ -397,7 +404,7 @@ static NSThread *newJavaScriptThread(void)
     context[@"nativeTraceEndAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        NSUInteger newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+        NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
         _RCTProfileEndFlowEvent(newCookie);
         CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
         [weakBridge.flowIDMapLock unlock];
@@ -424,18 +431,6 @@ static NSThread *newJavaScriptThread(void)
     };
 #endif
   }];
-}
-
-/** If configureJSContextForIOS is available on jscWrapper, calls it with the correct parameters. */
-static void configureCacheOnContext(JSContext *context, RCTJSCWrapper *jscWrapper)
-{
-  if (jscWrapper->configureJSContextForIOS != NULL) {
-    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-    RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
-    if (cachesPath) {
-      jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
-    }
-  }
 }
 
 /** Installs synchronous hooks that don't require a weak reference back to the RCTJSCExecutor. */
@@ -936,7 +931,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 @implementation RCTJSContextProvider
 {
   dispatch_semaphore_t _semaphore;
-  BOOL _useCustomJSCLibrary;
   NSThread *_javaScriptThread;
   JSContext *_context;
   RCTJSCWrapper *_jscWrapper;
@@ -957,7 +951,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
   _jscWrapper = RCTJSCWrapperCreate(_useCustomJSCLibrary);
   _context = [_jscWrapper->JSContext new];
-  configureCacheOnContext(_context, _jscWrapper);
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
 }
