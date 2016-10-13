@@ -12,7 +12,7 @@ package com.facebook.csslayout;
 import java.util.Arrays;
 
 /**
- * Where the output of {@link LayoutEngine#layoutNode(CSSNode, float)} will go in the CSSNode.
+ * Where the output of {@link LayoutEngine#layoutNode(CSSNodeDEPRECATED, float)} will go in the CSSNodeDEPRECATED.
  */
 public class CSSLayout {
   // This value was chosen based on empiracle data. Even the most complicated
