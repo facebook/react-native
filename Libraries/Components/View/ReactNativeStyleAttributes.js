@@ -42,6 +42,7 @@ ReactNativeStyleAttributes.borderColor = colorAttributes;
 ReactNativeStyleAttributes.borderLeftColor = colorAttributes;
 ReactNativeStyleAttributes.borderRightColor = colorAttributes;
 ReactNativeStyleAttributes.borderTopColor = colorAttributes;
+ReactNativeStyleAttributes.tvFocusedBorderColor = colorAttributes;
 ReactNativeStyleAttributes.color = colorAttributes;
 ReactNativeStyleAttributes.shadowColor = colorAttributes;
 ReactNativeStyleAttributes.textDecorationColor = colorAttributes;

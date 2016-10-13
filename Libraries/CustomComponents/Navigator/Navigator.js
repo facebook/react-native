@@ -1278,6 +1278,12 @@ var Navigator = React.createClass({
     });
   },
 
+ _handleTVEvent: function(evt: Object) {
+    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === 'menu') {
+      this.pop();
+    }
+  },
+
   render: function() {
     var newRenderedSceneMap = new Map();
     var scenes = this.state.routeStack.map((route, index) => {
@@ -1293,7 +1299,7 @@ var Navigator = React.createClass({
     });
     this._renderedSceneMap = newRenderedSceneMap;
     return (
-      <View style={[styles.container, this.props.style]}>
+      <View style={[styles.container, this.props.style]} onTVNavEvent={(evt) => this._handleTVEvent(evt)}>
         <View
           style={styles.transitioner}
           {...this.panGesture.panHandlers}
