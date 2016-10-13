@@ -31,7 +31,7 @@ module.exports = {
           fs.readFileSync('package.json', 'utf8')
         ).name
       } catch (e) {
-        return 'my-react-native-app'
+        return 'unknown-app-name'
       }
     },
   }],
