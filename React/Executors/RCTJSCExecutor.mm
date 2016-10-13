@@ -944,7 +944,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 @implementation RCTJSContextProvider
 {
   dispatch_semaphore_t _semaphore;
-  BOOL _useCustomJSCLibrary;
   NSThread *_javaScriptThread;
   JSContext *_context;
   RCTJSCWrapper *_jscWrapper;

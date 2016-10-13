@@ -15,11 +15,11 @@ const BoundingDimensions = require('BoundingDimensions');
 const Position = require('Position');
 const React = require('React'); // eslint-disable-line no-unused-vars
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
+const UIManager = require('UIManager');
 const View = require('View');
 
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('normalizeColor');
-const queryLayoutByID = require('queryLayoutByID');
 
 /**
  * `Touchable`: Taps done right.
@@ -566,11 +566,12 @@ var TouchableMixin = {
    * @private
    */
   _remeasureMetricsOnActivation: function() {
-    queryLayoutByID(
-      this.state.touchable.responderID,
-      null,
-      this._handleQueryLayout
-    );
+    const tag = this.state.touchable.responderID;
+    if (tag == null) {
+      return;
+    }
+
+    UIManager.measure(tag, this._handleQueryLayout);
   },
 
   _handleQueryLayout: function(l, t, w, h, globalX, globalY) {

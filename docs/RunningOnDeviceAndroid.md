@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
 next: signed-apk-android
-props: native-components-android
+previous: headless-js-android
 ---
 
 ## Prerequisite: USB Debugging
@@ -27,7 +27,7 @@ Now you can use `react-native run-android` to install and launch your app on the
 
 Let's now set up an Android device to run our React Native projects.
 
-First thing is to plug in your device and check the manufacturer code by using `lsusb`, which should output something like this:
+First thing is to plug in your device and check the manufacturer code by using `lsusb` (on mac, you must first [install lsusb](https://github.com/jlhonora/lsusb)). `lsusb` should output something like this:
 
 ```bash
 $ lsusb

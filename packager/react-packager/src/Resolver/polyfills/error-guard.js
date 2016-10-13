@@ -13,30 +13,40 @@
  * before any of the modules, this ErrorUtils must be defined (and the handler
  * set) globally before requiring anything.
  */
+
 /* eslint strict:0 */
-var ErrorUtils = {
-  _inGuard: 0,
-  _globalHandler: null,
+const _inGuard = 0;
+
+/**
+ * This is the error handler that is called when we encounter an exception
+ * when loading a module. This will report any errors encountered before
+ * ExceptionsManager is configured.
+ */
+const _globalHandler = function onError(e) {
+  throw e;
+};
+
+const ErrorUtils = {
   setGlobalHandler: function(fun) {
-    ErrorUtils._globalHandler = fun;
+    _globalHandler = fun;
   },
   getGlobalHandler: function() {
-    return ErrorUtils._globalHandler;
+    return _globalHandler;
   },
   reportError: function(error) {
-    ErrorUtils._globalHandler && ErrorUtils._globalHandler(error);
+    _globalHandler && _globalHandler(error);
   },
   reportFatalError: function(error) {
-    ErrorUtils._globalHandler && ErrorUtils._globalHandler(error, true);
+    _globalHandler && _globalHandler(error, true);
   },
   applyWithGuard: function(fun, context, args) {
     try {
-      ErrorUtils._inGuard++;
+      _inGuard++;
       return fun.apply(context, args);
     } catch (e) {
       ErrorUtils.reportError(e);
     } finally {
-      ErrorUtils._inGuard--;
+      _inGuard--;
     }
   },
   applyWithGuardIfNeeded: function(fun, context, args) {
@@ -47,7 +57,7 @@ var ErrorUtils = {
     }
   },
   inGuard: function() {
-    return ErrorUtils._inGuard;
+    return _inGuard;
   },
   guard: function(fun, name, context) {
     if (typeof fun !== 'function') {
@@ -70,18 +80,5 @@ var ErrorUtils = {
     return guarded;
   }
 };
+
 global.ErrorUtils = ErrorUtils;
-
-/**
- * This is the error handler that is called when we encounter an exception
- * when loading a module. This will report any errors encountered before
- * ExceptionsManager is configured.
- */
-function setupErrorGuard() {
-  var onError = function(e) {
-    throw e;
-  };
-  global.ErrorUtils.setGlobalHandler(onError);
-}
-
-setupErrorGuard();
