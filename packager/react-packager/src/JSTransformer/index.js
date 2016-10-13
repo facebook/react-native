@@ -114,7 +114,9 @@ class Transformer {
     debug('transforming file', fileName);
     const transformEventId = Activity.startEvent(
       'Transforming file',
-      fileName,
+      {
+        file_name: fileName,
+      },
       {
         telemetric: true,
         silent: true,

@@ -208,7 +208,7 @@ void CSSNodeInit(const CSSNodeRef node) {
   node->layout.cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
 }
 
-void _CSSNodeMarkDirty(const CSSNodeRef node) {
+static void _CSSNodeMarkDirty(const CSSNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
     node->layout.computedFlexBasis = CSSUndefined;
