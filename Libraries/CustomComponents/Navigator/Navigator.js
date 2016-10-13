@@ -1032,6 +1032,10 @@ var Navigator = React.createClass({
   jumpToName: function(routeName) {
     var destIndex = -1;
     for (var i = 0; i < this.state.routeStack.length; i++){
+      invariant(
+        typeof this.state.routeStack[i].name !== 'undefined',
+        'Cannot use routeName jump to scene that is not in the route stack or defined "name"'
+      );
       if (this.state.routeStack[i].name === routeName){
         destIndex = i;
       }
