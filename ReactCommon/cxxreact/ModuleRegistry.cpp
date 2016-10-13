@@ -38,17 +38,17 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
   return names;
 }
 
-folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
+folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
   SystraceSection s("getConfig", "module", name);
   auto it = modulesByName_.find(name);
   if (it == modulesByName_.end()) {
     return nullptr;
   }
-  CHECK(it->second < modules_.size());
 
+  CHECK(it->second < modules_.size());
   NativeModule* module = modules_[it->second].get();
 
-  // string name, [object constants,] array methodNames (methodId is index), [array promiseMethodIds], [array syncMethodIds]
+  // string name, object constants, array methodNames (methodId is index), [array promiseMethodIds], [array syncMethodIds]
   folly::dynamic config = folly::dynamic::array(name);
 
   {
@@ -89,7 +89,7 @@ folly::dynamic ModuleRegistry::getConfig(const std::string& name) {
     // no constants or methods
     return nullptr;
   } else {
-    return config;
+    return ModuleConfig({it->second, config});
   }
 }
 
