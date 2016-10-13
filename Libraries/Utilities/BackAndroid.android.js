@@ -42,6 +42,10 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * Example:
  *
  * ```js
+ * const ReactNative = require('react-native');
+ * const {
+ *   BackAndroid
+ * } = ReactNative;
  * BackAndroid.addEventListener('hardwareBackPress', function() {
  * 	 if (!this.onMainScreen()) {
  * 	   this.goBack();
