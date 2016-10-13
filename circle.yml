@@ -12,6 +12,8 @@ machine:
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
 
 dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter "package-name"
   override:
     # BUCK and android
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
