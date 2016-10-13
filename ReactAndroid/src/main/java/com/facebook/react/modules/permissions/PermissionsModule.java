@@ -31,7 +31,7 @@ import com.facebook.react.modules.core.PermissionListener;
 @ReactModule(name = "PermissionsAndroid")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
-  private static final String ERROR_REQUST_INTERRIPTED = "E_REQUEST_INTERRUPTED";
+  private static final String ERROR_REQUST_INTERRUPTED = "E_REQUEST_INTERRUPTED";
 
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
@@ -104,7 +104,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
             if(args[0] != null)
               promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
             else
-              promise.reject(ERROR_REQUST_INTERRIPTED, permission + " request was interrupted");
+              promise.reject(ERROR_REQUST_INTERRUPTED, permission + " request was interrupted");
           }
         });
 
