@@ -39,6 +39,10 @@ void Instance::initializeBridge(
      nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
           jsef.get(), moduleRegistry, jsQueue, nativeQueue.move(), callback_);
+
+      std::lock_guard<std::mutex> lock(m_syncMutex);
+      m_syncReady = true;
+      m_syncCV.notify_all();
     });
 
   CHECK(nativeToJsBridge_);
@@ -49,8 +53,15 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   callback_->incrementPendingJSCalls();
   SystraceSection s("reactbridge_xplat_loadScriptFromString",
                     "sourceURL", sourceURL);
-  // TODO mhorowitz: ReactMarker around loadApplicationScript
-  nativeToJsBridge_->loadApplicationScript(std::move(string), std::move(sourceURL));
+  nativeToJsBridge_->loadApplication(nullptr, std::move(string), std::move(sourceURL));
+}
+
+void Instance::loadScriptFromStringSync(std::unique_ptr<const JSBigString> string,
+                                        std::string sourceURL) {
+  std::unique_lock<std::mutex> lock(m_syncMutex);
+  m_syncCV.wait(lock, [this] { return m_syncReady; });
+
+  nativeToJsBridge_->loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
 }
 
 void Instance::loadScriptFromFile(const std::string& filename,
@@ -89,9 +100,19 @@ void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
                             std::unique_ptr<const JSBigString> startupScript,
                             std::string startupScriptSourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("reactbridge_xplat_setJSModulesUnbundle");
-  nativeToJsBridge_->loadApplicationUnbundle(std::move(unbundle), std::move(startupScript),
-                                             std::move(startupScriptSourceURL));
+  nativeToJsBridge_->loadApplication(std::move(unbundle), std::move(startupScript),
+                                     std::move(startupScriptSourceURL));
+}
+
+void Instance::loadUnbundleSync(std::unique_ptr<JSModulesUnbundle> unbundle,
+                                std::unique_ptr<const JSBigString> startupScript,
+                                std::string startupScriptSourceURL) {
+  std::unique_lock<std::mutex> lock(m_syncMutex);
+  m_syncCV.wait(lock, [this] { return m_syncReady; });
+
+  SystraceSection s("reactbridge_xplat_loadApplicationSync");
+  nativeToJsBridge_->loadApplicationSync(std::move(unbundle), std::move(startupScript),
+                                         std::move(startupScriptSourceURL));
 }
 
 bool Instance::supportsProfiling() {

@@ -221,6 +221,9 @@
     "no-bitwise": 1,                 // disallow use of bitwise operators (off by default)
     "no-plusplus": 0,                // disallow use of unary operators, ++ and -- (off by default)
 
+  // React Plugin
+  // The following rules are made available via `eslint-plugin-react`.
+
     "react/display-name": 0,
     "react/jsx-boolean-value": 0,
     "react/jsx-no-duplicate-props": 2,
@@ -228,8 +231,8 @@
     "react/jsx-sort-props": 0,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,
-    "react/no-did-mount-set-state": [1, "allow-in-func"],
-    "react/no-did-update-set-state": [1, "allow-in-func"],
+    "react/no-did-mount-set-state": 1,
+    "react/no-did-update-set-state": 1,
     "react/no-multi-comp": 0,
     "react/no-string-refs": 1,
     "react/no-unknown-property": 0,

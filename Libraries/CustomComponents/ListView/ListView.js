@@ -454,7 +454,7 @@ var ListView = React.createClass({
 
     var {
       renderScrollComponent,
-      ...props,
+      ...props
     } = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;

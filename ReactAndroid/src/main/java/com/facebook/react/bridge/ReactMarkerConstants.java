@@ -33,4 +33,6 @@ public class ReactMarkerConstants {
     "CREATE_UI_MANAGER_MODULE_CONSTANTS_START";
   public static final String CREATE_UI_MANAGER_MODULE_CONSTANTS_END =
     "CREATE_UI_MANAGER_MODULE_CONSTANTS_END";
+  public static final String CREATE_MODULE_START = "CREATE_MODULE_START";
+  public static final String CREATE_MODULE_END = "CREATE_MODULE_END";
 }
