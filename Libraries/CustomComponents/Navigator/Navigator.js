@@ -1026,16 +1026,30 @@ var Navigator = React.createClass({
 
   /**
    * Transition to an existing scene without unmounting.
-   * @param {object} route Route to transition to. The specified route must
+   * @param {string} routeName Route to transition to. The specified route must
    * be in the currently mounted set of routes defined in `routeStack`.
    */
-  jumpTo: function(routeName) {
+  jumpToName: function(routeName) {
     var destIndex = -1;
     for (var i = 0; i < this.state.routeStack.length; i++){
       if (this.state.routeStack[i].name === routeName){
         destIndex = i;
       }
     }
+    invariant(
+      destIndex !== -1,
+      'Cannot jump to route that is not in the route stack'
+    );
+    this._jumpN(destIndex - this.state.presentedIndex);
+  },
+
+  /**
+   * Transition to an existing scene without unmounting.
+   * @param {object} route Route to transition to. The specified route must
+   * be in the currently mounted set of routes defined in `routeStack`.
+   */
+  jumpTo: function(route) {
+    var destIndex = this.state.routeStack.indexOf(route);
     invariant(
       destIndex !== -1,
       'Cannot jump to route that is not in the route stack'
