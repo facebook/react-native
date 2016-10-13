@@ -109,10 +109,12 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
         mRequestCode, new Callback() {
           @Override
           public void invoke(Object... args) {
-            if(args[0] != null)
+            if (args[0] != null) {
               promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
-            else
+            }
+            else {
               promise.reject(ERROR_REQUST_INTERRUPTED, permission + " request was interrupted");
+            }
           }
         });
 
@@ -131,10 +133,12 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       int requestCode,
       String[] permissions,
       int[] grantResults) {
-    if(grantResults.length > 0)
+    if (grantResults.length > 0) {
       mCallbacks.get(requestCode).invoke(grantResults[0]);
-    else
+    }
+    else {
       mCallbacks.get(requestCode).invoke((Class<?>) null);
+    }
     mCallbacks.remove(requestCode);
     return mCallbacks.size() == 0;
   }
