@@ -29,6 +29,11 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     }
   }
 
+  /**
+   * Get native instance count. Useful for testing only.
+   */
+  static native int jni_CSSNodeGetInstanceCount();
+
   private CSSNode mParent;
   private List<CSSNode> mChildren;
   private MeasureFunction mMeasureFunction;
