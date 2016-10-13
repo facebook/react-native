@@ -9,6 +9,8 @@
 
 #import "RCTHTTPRequestHandler.h"
 
+#import <mutex>
+
 #import "RCTNetworking.h"
 
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
@@ -19,6 +21,7 @@
 {
   NSMapTable *_delegates;
   NSURLSession *_session;
+  std::mutex _mutex;
 }
 
 @synthesize bridge = _bridge;
@@ -56,7 +59,6 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
-
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
@@ -65,21 +67,28 @@ RCT_EXPORT_MODULE()
                                              delegate:self
                                         delegateQueue:callbackQueue];
 
+    std::lock_guard<std::mutex> lock(_mutex);
     _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
 
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
-  [_delegates setObject:delegate forKey:task];
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    [_delegates setObject:delegate forKey:task];
+  }
   [task resume];
   return task;
 }
 
 - (void)cancelRequest:(NSURLSessionDataTask *)task
 {
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    [_delegates removeObjectForKey:task];
+  }
   [task cancel];
-  [_delegates removeObjectForKey:task];
 }
 
 #pragma mark - NSURLSession delegate
@@ -90,7 +99,12 @@ RCT_EXPORT_MODULE()
     totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
-  [[_delegates objectForKey:task] URLRequest:task didSendDataWithProgress:totalBytesSent];
+  id<RCTURLRequestDelegate> delegate;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    delegate = [_delegates objectForKey:task];
+  }
+  [delegate URLRequest:task didSendDataWithProgress:totalBytesSent];
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -98,7 +112,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
-  [[_delegates objectForKey:task] URLRequest:task didReceiveResponse:response];
+  id<RCTURLRequestDelegate> delegate;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    delegate = [_delegates objectForKey:task];
+  }
+  [delegate URLRequest:task didReceiveResponse:response];
   completionHandler(NSURLSessionResponseAllow);
 }
 
@@ -106,13 +125,23 @@ didReceiveResponse:(NSURLResponse *)response
           dataTask:(NSURLSessionDataTask *)task
     didReceiveData:(NSData *)data
 {
-  [[_delegates objectForKey:task] URLRequest:task didReceiveData:data];
+  id<RCTURLRequestDelegate> delegate;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    delegate = [_delegates objectForKey:task];
+  }
+  [delegate URLRequest:task didReceiveData:data];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  [[_delegates objectForKey:task] URLRequest:task didCompleteWithError:error];
-  [_delegates removeObjectForKey:task];
+  id<RCTURLRequestDelegate> delegate;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    delegate = [_delegates objectForKey:task];
+    [_delegates removeObjectForKey:task];
+  }
+  [delegate URLRequest:task didCompleteWithError:error];
 }
 
 @end

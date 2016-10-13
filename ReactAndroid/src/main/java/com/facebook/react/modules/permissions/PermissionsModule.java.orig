@@ -31,9 +31,12 @@ import com.facebook.react.modules.core.PermissionListener;
 @ReactModule(name = "PermissionsAndroid")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
-  private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
+<<<<<<< HEAD
   private static final String ERROR_REQUST_INTERRUPTED = "E_REQUEST_INTERRUPTED";
 
+=======
+  private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
+>>>>>>> 863459064ff21630edf380c3baac0f49b6e03c5e
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
 
