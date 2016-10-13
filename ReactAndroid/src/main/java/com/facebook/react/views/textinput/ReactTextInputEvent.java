@@ -28,12 +28,12 @@ public class ReactTextInputEvent extends Event<ReactTextInputEvent> {
   private int mRangeEnd;
 
   public ReactTextInputEvent(
-          Object viewTag,
-          String text,
-          String previousText,
-          int rangeStart,
-          int rangeEnd) {
-    super(viewTag);
+      int viewId,
+      String text,
+      String previousText,
+      int rangeStart,
+      int rangeEnd) {
+    super(viewId);
     mText = text;
     mPreviousText = previousText;
     mRangeStart = rangeStart;

@@ -21,8 +21,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private static final String EVENT_NAME = "topBlur";
 
-  public ReactTextInputBlurEvent(Object viewTag) {
-    super(viewTag);
+  public ReactTextInputBlurEvent(int viewId) {
+    super(viewId);
   }
 
   @Override

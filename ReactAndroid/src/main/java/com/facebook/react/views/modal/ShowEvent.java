@@ -19,7 +19,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public static final String EVENT_NAME = "topShow";
 
-  protected ShowEvent(Object viewTag) {
+  protected ShowEvent(int viewTag) {
     super(viewTag);
   }
 

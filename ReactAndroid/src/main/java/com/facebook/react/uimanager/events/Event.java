@@ -30,15 +30,15 @@ public abstract class Event<T extends Event> {
   protected Event() {
   }
 
-  protected Event(Object viewTag) {
+  protected Event(int viewTag) {
     init(viewTag);
   }
 
   /**
    * This method needs to be called before event is sent to event dispatcher.
    */
-  protected void init(Object viewTag) {
-    mViewTag = (int) viewTag;
+  protected void init(int viewTag) {
+    mViewTag = viewTag;
     mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
   }

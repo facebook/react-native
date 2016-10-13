@@ -346,7 +346,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
-                this.getTag(),
+                reactTagFrom(this),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -360,7 +360,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     if (mSendContentSizeChangeEvents) {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
-                  this.getTag(),
+                  reactTagFrom(this),
                   getWidth(),
                   newTotalChildrenHeight));
     }

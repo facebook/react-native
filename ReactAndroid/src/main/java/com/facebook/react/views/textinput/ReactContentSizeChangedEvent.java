@@ -25,10 +25,10 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   private float mContentHeight;
 
   public ReactContentSizeChangedEvent(
-          Object viewTag,
-          float contentSizeWidth,
-          float contentSizeHeight) {
-    super(viewTag);
+    int viewId,
+    float contentSizeWidth,
+    float contentSizeHeight) {
+    super(viewId);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }

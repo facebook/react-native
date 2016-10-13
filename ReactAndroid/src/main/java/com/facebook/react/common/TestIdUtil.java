@@ -59,6 +59,7 @@ public class TestIdUtil {
      */
     @VisibleForTesting
     public static void resetTestState() {
-        TEST_IDS.clear();INTERNAL_ID.set(STARTING_INTERNAL_ID);
+        TEST_IDS.clear();
+        INTERNAL_ID.set(STARTING_INTERNAL_ID);
     }
 }

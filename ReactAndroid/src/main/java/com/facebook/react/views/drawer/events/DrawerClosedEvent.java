@@ -17,8 +17,8 @@ public class DrawerClosedEvent extends Event<DrawerClosedEvent> {
 
   public static final String EVENT_NAME = "topDrawerClosed";
 
-  public DrawerClosedEvent(Object viewTag) {
-    super(viewTag);
+  public DrawerClosedEvent(int viewId) {
+    super(viewId);
   }
 
   @Override

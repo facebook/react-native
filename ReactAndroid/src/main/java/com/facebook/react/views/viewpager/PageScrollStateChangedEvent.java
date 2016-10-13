@@ -26,7 +26,7 @@ class PageScrollStateChangedEvent extends Event<PageScrollStateChangedEvent> {
 
   private final String mPageScrollState;
 
-  protected PageScrollStateChangedEvent(Object viewTag, String pageScrollState) {
+  protected PageScrollStateChangedEvent(int viewTag, String pageScrollState) {
     super(viewTag);
     mPageScrollState = pageScrollState;
   }

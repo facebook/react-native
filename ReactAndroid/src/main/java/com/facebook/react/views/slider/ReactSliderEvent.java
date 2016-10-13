@@ -24,12 +24,11 @@ public class ReactSliderEvent extends Event<ReactSliderEvent> {
   private final double mValue;
   private final boolean mFromUser;
 
-  public ReactSliderEvent(Object viewTag, double value, boolean fromUser) {
-    super(viewTag);
+  public ReactSliderEvent(int viewId, double value, boolean fromUser) {
+    super(viewId);
     mValue = value;
     mFromUser = fromUser;
   }
-
 
   public double getValue() {
     return mValue;

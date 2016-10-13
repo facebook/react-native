@@ -25,9 +25,9 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   private String mText;
 
   public ReactTextInputSubmitEditingEvent(
-          Object viewTag,
-          String text) {
-    super(viewTag);
+      int viewId,
+      String text) {
+    super(viewId);
     mText = text;
   }
 

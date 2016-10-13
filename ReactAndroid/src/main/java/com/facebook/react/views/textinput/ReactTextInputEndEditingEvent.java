@@ -25,9 +25,9 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
   private String mText;
 
   public ReactTextInputEndEditingEvent(
-          Object viewTag,
-          String text) {
-    super(viewTag);
+      int viewId,
+      String text) {
+    super(viewId);
     mText = text;
   }
 

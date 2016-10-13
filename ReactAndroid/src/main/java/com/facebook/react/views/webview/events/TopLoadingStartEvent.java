@@ -21,8 +21,8 @@ public class TopLoadingStartEvent extends Event<TopLoadingStartEvent> {
   public static final String EVENT_NAME = "topLoadingStart";
   private WritableMap mEventData;
 
-  public TopLoadingStartEvent(Object viewTag, WritableMap eventData) {
-    super(viewTag);
+  public TopLoadingStartEvent(int viewId, WritableMap eventData) {
+    super(viewId);
     mEventData = eventData;
   }
 

@@ -39,7 +39,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private @Nullable ScrollEventType mScrollEventType;
 
   public static ScrollEvent obtain(
-      Object viewTag,
+      int viewTag,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,
@@ -72,7 +72,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   private void init(
-      Object viewTag,
+      int viewTag,
       ScrollEventType scrollEventType,
       int scrollX,
       int scrollY,

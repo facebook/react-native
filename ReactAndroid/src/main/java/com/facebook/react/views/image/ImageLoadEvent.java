@@ -39,22 +39,21 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final int mWidth;
   private final int mHeight;
 
-
-  public ImageLoadEvent(Object viewTag, @ImageEventType int eventType) {
-    this(viewTag, eventType, null);
+  public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
+    this(viewId, eventType, null);
   }
 
-  public ImageLoadEvent(Object viewTag, @ImageEventType int eventType, String imageUri) {
-    this(viewTag, eventType, imageUri, 0, 0);
+  public ImageLoadEvent(int viewId, @ImageEventType int eventType, String imageUri) {
+    this(viewId, eventType, imageUri, 0, 0);
   }
 
   public ImageLoadEvent(
-          Object viewTag,
-          @ImageEventType int eventType,
-          @Nullable String imageUri,
-          int width,
-          int height) {
-    super(viewTag);
+    int viewId,
+    @ImageEventType int eventType,
+    @Nullable String imageUri,
+    int width,
+    int height) {
+    super(viewId);
     mEventType = eventType;
     mImageUri = imageUri;
     mWidth = width;

@@ -23,8 +23,8 @@ public class ReactSlidingCompleteEvent extends Event<ReactSlidingCompleteEvent> 
 
   private final double mValue;
 
-  public ReactSlidingCompleteEvent(Object viewTag, double value) {
-    super(viewTag);
+  public ReactSlidingCompleteEvent(int viewId, double value) {
+    super(viewId);
     mValue = value;
   }
 

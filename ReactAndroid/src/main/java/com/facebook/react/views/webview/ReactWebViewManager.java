@@ -128,7 +128,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingStartEvent(
-              webView.getTag(),
+              reactTagFrom(webView),
               createWebViewEvent(webView, url)));
     }
 
@@ -164,7 +164,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       dispatchEvent(
           webView,
-          new TopLoadingErrorEvent(webView.getTag(), eventData));
+          new TopLoadingErrorEvent(reactTagFrom(webView), eventData));
     }
 
     @Override
@@ -174,7 +174,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingStartEvent(
-              webView.getTag(),
+              reactTagFrom(webView),
               createWebViewEvent(webView, url)));
     }
 
@@ -182,7 +182,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingFinishEvent(
-              webView.getTag(),
+              reactTagFrom(webView),
               createWebViewEvent(webView, url)));
     }
 
@@ -514,7 +514,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           dispatchEvent(
             webView,
             new ContentSizeChangeEvent(
-              webView.getTag(),
+              reactTagFrom(webView),
               webView.getWidth(),
               webView.getContentHeight()));
         }

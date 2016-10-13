@@ -22,8 +22,8 @@ public class ToolbarClickEvent extends Event<ToolbarClickEvent> {
   private static final String EVENT_NAME = "topSelect";
   private final int position;
 
-  public ToolbarClickEvent(Object viewTag, int position) {
-    super(viewTag);
+  public ToolbarClickEvent(int viewId, int position) {
+    super(viewId);
     this.position = position;
   }
 

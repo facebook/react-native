@@ -36,6 +36,8 @@ import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
 
+import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+
 /**
  * View Manager for {@link ReactDrawerLayout} components.
  */
@@ -187,25 +189,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     @Override
     public void onDrawerSlide(View view, float v) {
       mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getTag(), v));
+          new DrawerSlideEvent(reactTagFrom(mDrawerLayout), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
       mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getTag()));
+        new DrawerOpenedEvent(reactTagFrom(mDrawerLayout)));
     }
 
     @Override
     public void onDrawerClosed(View view) {
       mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getTag()));
+          new DrawerClosedEvent(reactTagFrom(mDrawerLayout)));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
       mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getTag(), i));
+          new DrawerStateChangedEvent(reactTagFrom(mDrawerLayout), i));
     }
   }
 }
