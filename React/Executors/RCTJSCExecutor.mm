@@ -344,7 +344,6 @@ static NSThread *newJavaScriptThread(void)
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
                                                           object:context];
 
-      configureCacheOnContext(context, self->_jscWrapper);
       installBasicSynchronousHooksOnContext(context);
     }
 
@@ -432,18 +431,6 @@ static NSThread *newJavaScriptThread(void)
     };
 #endif
   }];
-}
-
-/** If configureJSContextForIOS is available on jscWrapper, calls it with the correct parameters. */
-static void configureCacheOnContext(JSContext *context, RCTJSCWrapper *jscWrapper)
-{
-  if (jscWrapper->configureJSContextForIOS != NULL) {
-    NSString *cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-    RCTAssert(cachesPath != nil, @"cachesPath should not be nil");
-    if (cachesPath) {
-      jscWrapper->configureJSContextForIOS(context.JSGlobalContextRef, [cachesPath UTF8String]);
-    }
-  }
 }
 
 /** Installs synchronous hooks that don't require a weak reference back to the RCTJSCExecutor. */
@@ -964,7 +951,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 {
   _jscWrapper = RCTJSCWrapperCreate(_useCustomJSCLibrary);
   _context = [_jscWrapper->JSContext new];
-  configureCacheOnContext(_context, _jscWrapper);
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
 }
