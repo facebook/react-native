@@ -100,6 +100,8 @@ typedef struct CSSNode {
   void *context;
 } CSSNode;
 
+static void _CSSNodeMarkDirty(const CSSNodeRef node);
+
 static float
 computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const float defaultValue) {
   CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
@@ -131,7 +133,7 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
 
 static int32_t gNodeInstanceCount = 0;
 
-CSSNodeRef CSSNodeNew() {
+CSSNodeRef CSSNodeNew(void) {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
   gNodeInstanceCount++;
@@ -155,7 +157,7 @@ void CSSNodeFreeRecursive(const CSSNodeRef root) {
   CSSNodeFree(root);
 }
 
-int32_t CSSNodeGetInstanceCount() {
+int32_t CSSNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
 
