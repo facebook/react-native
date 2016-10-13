@@ -95,3 +95,20 @@ If you run into issues where running `react-native init` hangs in your system, t
 ```
 react-native init --verbose
 ```
+
+## Unable to execute JS call: __fbBatchedBridge is undefined
+Refer to issue [#6282](https://github.com/facebook/react-native/issues/6282)
+
+In `node_modules/react-native/packager/react-native-xcode.sh` comment out the following lines:
+
+```
+if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+  echo "Skipping bundling for Simulator platform"
+  exit 0;
+fi
+```
+## Cannot refresh page in simulator:
+Try:
+* [Enabling hardware keyboard](https://github.com/facebook/react-native/issues/306#issuecomment-86834162).
+* [Ensure scheme is set to debug](https://github.com/facebook/react-native/issues/306#issuecomment-173116919).
+* Ensure the 'run' command (run-ios, run-android) has opened a terminal window with the packager running.
