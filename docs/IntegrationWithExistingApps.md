@@ -234,6 +234,7 @@ target 'swift-2048' do
     'Core',
     'RCTText',
     'RCTWebSocket', # needed for debugging
+    'RCTNetwork', 
     # Add any other subspecs you want to use in your project
   ]
 
