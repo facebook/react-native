@@ -107,6 +107,7 @@ class PickerAndroid extends React.Component {
       selected: this.state.initialSelectedIndex,
       testID: this.props.testID,
       style: [styles.pickerAndroid, this.props.style],
+      accessibilityLabel: this.props.accessibilityLabel,
     };
 
     return <Picker ref={REF_PICKER} {...nativeProps} />;

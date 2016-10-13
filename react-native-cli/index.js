@@ -224,13 +224,13 @@ function run(root, projectName, rnPackage) {
 
     checkNodeVersion();
 
-    var cli = require(CLI_MODULE_PATH());
+    cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
 
 function runVerbose(root, projectName, rnPackage) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
+  var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
       console.error('`npm install --save --save-exact react-native` failed');

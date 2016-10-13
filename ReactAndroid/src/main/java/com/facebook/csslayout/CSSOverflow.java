@@ -12,4 +12,5 @@ package com.facebook.csslayout;
 public enum CSSOverflow {
   VISIBLE,
   HIDDEN,
+  SCROLL,
 }

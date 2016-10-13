@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTScrollView.h"
+#import "RCTShadowView.h"
 #import "RCTUIManager.h"
 
 @interface RCTScrollView (Private)
@@ -59,9 +60,11 @@ RCT_EXPORT_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle)
 RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
 RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale, CGFloat)
-RCT_EXPORT_VIEW_PROPERTY(pagingEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
+#if !TARGET_OS_TV
+RCT_EXPORT_VIEW_PROPERTY(pagingEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
+#endif
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSIndexSet)
@@ -78,6 +81,15 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
+
+// overflow is used both in css-layout as well as by reac-native. In css-layout
+// we always want to treat overflow as scroll but depending on what the overflow
+// is set to from js we want to clip drawing or not. This piece of code ensures
+// that css-layout is always treating the contents of a scroll container as
+// overflow: 'scroll'.
+RCT_CUSTOM_SHADOW_PROPERTY(overflow, CSSOverflow, RCTShadowView) {
+  view.overflow = CSSOverflowScroll;
+}
 
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)

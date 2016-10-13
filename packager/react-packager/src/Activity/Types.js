@@ -11,15 +11,26 @@
  */
 'use strict';
 
-export type EventOptions = {
-  telemetric: boolean,
+export type Options = {
+  telemetric?: boolean,
+  silent?: boolean,
+  displayFields?: Array<string> | true,
 };
 
+type EventFieldDescriptor = {
+  type: 'int' | 'normal',
+  value: number | string | boolean,
+};
+
+export type NormalisedEventData = {[key: string]: EventFieldDescriptor};
+
+export type EventData = {[key: string]: number | string | boolean};
+
 export type Event = {
-  id: number,
-  startTimeStamp: [number, number],
+  data: NormalisedEventData,
   durationMs?: number,
+  id: number,
   name: string,
-  data?: any,
-  options: EventOptions,
+  options: Options,
+  startTimeStamp: [number, number],
 };

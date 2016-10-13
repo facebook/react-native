@@ -360,7 +360,7 @@ const TextInput = React.createClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.string,
+    placeholder: PropTypes.node,
     /**
      * The text color of the placeholder string.
      */
@@ -393,7 +393,6 @@ const TextInput = React.createClass({
     /**
      * The start and end of the text input's selection. Set start and end to
      * the same value to position the cursor.
-     * @platform ios
      */
     selection: PropTypes.shape({
       start: PropTypes.number.isRequired,
@@ -414,7 +413,7 @@ const TextInput = React.createClass({
      * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
-    defaultValue: PropTypes.string,
+    defaultValue: PropTypes.node,
     /**
      * When the clear button should appear on the right side of the text view.
      * @platform ios
@@ -575,7 +574,11 @@ const TextInput = React.createClass({
   _getText: function(): ?string {
     return typeof this.props.value === 'string' ?
       this.props.value :
-      this.props.defaultValue;
+      (
+        typeof this.props.defaultValue === 'string' ?
+        this.props.defaultValue :
+        ''
+      );
   },
 
   _setNativeRef: function(ref: any) {
@@ -673,6 +676,10 @@ const TextInput = React.createClass({
     );
     if (childCount > 1) {
       children = <Text>{children}</Text>;
+    }
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {start: props.selection.start, end: props.selection.start};
     }
 
     const textContainer =

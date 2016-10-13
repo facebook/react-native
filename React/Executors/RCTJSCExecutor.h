@@ -28,6 +28,23 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * A key to a reference to a JSContext class, held in the the current thread's
+ *  dictionary. The reference would point to the JSContext class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSCurrentContext()`
+ *  accessor, which will return the current JSContext in the currently used VM.
+ */
+RCT_EXTERN NSString *const RCTFBJSContextClassKey;
+
+/**
+ * A key to a reference to a JSValue class, held in the the current thread's
+ *  dictionary. The reference would point to the JSValue class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSValue()` accessor.
+ */
+RCT_EXTERN NSString *const RCTFBJSValueClassKey;
+
+/**
  * @experimental
  * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
  * Avoid using this; it's experimental and is not likely to be supported long-term.
@@ -35,6 +52,11 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 @interface RCTJSContextProvider : NSObject
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+/**
+ * Marks whether the provider uses the custom implementation of JSC and not the system one.
+ */
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 @end
 
@@ -55,14 +77,6 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
  * to initialize RCTJSCWrapper.
  */
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
-
-/**
- * Create a NSError from a JSError object.
- *
- * If available, the error's userInfo property will contain the JS stacktrace under
- * the RCTJSStackTraceKey key.
- */
-- (NSError *)errorForJSError:(JSValue *)jsError;
 
 /**
  * @experimental

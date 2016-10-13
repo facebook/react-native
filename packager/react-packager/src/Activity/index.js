@@ -11,11 +11,12 @@
  */
 'use strict';
 
-import type {EventOptions} from './Types';
-import type {Event} from './Types';
+import type {Event, EventData, Options} from './Types';
 
 const chalk = require('chalk');
 const events = require('events');
+const formatData = require('./formatData');
+const normaliseEventData = require('./normaliseEventData');
 
 let ENABLED = true;
 let UUID = 1;
@@ -23,24 +24,21 @@ let UUID = 1;
 const EVENT_INDEX: {[key: number]: Event} = Object.create(null);
 const EVENT_EMITTER = new events.EventEmitter();
 
-function startEvent(
-  name: string,
-  data: any = null,
-  options?: EventOptions = {telemetric: false},
-): number {
+function startEvent(name: string, data: EventData = {}, options: Options = {}): number {
   if (name == null) {
     throw new Error('No event name specified!');
   }
 
   const id = UUID++;
   EVENT_INDEX[id] = {
+    data: normaliseEventData(data),
     id,
-    startTimeStamp: process.hrtime(),
-    name,
-    data,
     options,
+    name,
+    startTimeStamp: process.hrtime(),
   };
   logEvent(id, 'startEvent');
+
   return id;
 }
 
@@ -64,7 +62,7 @@ function forgetEvent(id: number): void {
 }
 
 function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
-  const event = EVENT_INDEX[id];
+  const event = getEvent(id);
   EVENT_EMITTER.emit(phase, id);
 
   if (!ENABLED) {
@@ -74,31 +72,34 @@ function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
   const {
     name,
     durationMs,
-    data,
     options,
   } = event;
 
   const logTimeStamp = new Date().toLocaleString();
-  const dataString = data ? ': ' + JSON.stringify(data) : '';
-  const {telemetric} = options;
+  const dataString = formatData(event);
+  const {telemetric, silent} = options;
 
   switch (phase) {
     case 'startEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      }
       break;
 
     case 'endEvent':
-      // eslint-disable-next-line no-console-disallow
-      console.log(
-        chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString} `) +
-        (telemetric ? chalk.reset.cyan(`(${+durationMs}ms)`) : chalk.dim(`(${+durationMs}ms)`))
-      );
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(
+          chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString}`) +
+          (telemetric ? chalk.reset.cyan(` (${+durationMs}ms)`) : chalk.dim(` (${+durationMs}ms)`))
+        );
+      }
       forgetEvent(id);
       break;
 
     default:
-      throw new Error('Unexpected scheduled event type: ' + name);
+      throw new Error(`Unexpected event phase "${phase}"!`);
   }
 }
 

@@ -16,7 +16,6 @@
 #include <dlfcn.h>
 
 #include <cxxreact/JsArgumentHelpers.h>
-#include <cxxreact/FollySupport.h>
 
 #include "ReadableNativeArray.h"
 
@@ -53,9 +52,9 @@ public:
 
   std::string getType() {
     if (method_->func) {
-      return "remote";
+      return "async";
     } else {
-      return "syncHook";
+      return "sync";
     }
   }
 
@@ -207,7 +206,7 @@ std::string CxxModuleWrapper::getConstantsJson() {
     constsobject.insert(std::move(c.first), std::move(c.second));
   }
 
-  return facebook::react::detail::toStdString(folly::toJson(constsobject));
+  return folly::toJson(constsobject);
 }
 
 jobject CxxModuleWrapper::getMethods() {

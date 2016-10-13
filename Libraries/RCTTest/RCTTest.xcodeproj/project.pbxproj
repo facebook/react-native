@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D3B5F2D1D9B0F2800451313 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
+		2D3B5F2E1D9B0F2B00451313 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
+		2D3B5F2F1D9B0F2E00451313 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
+		2D3B5F301D9B0F3D00451313 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
+		2D3B5F311D9B0F4200451313 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
+		2D3B5F321D9B0F4500451313 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
 		585135371AB3C56F00882537 /* RCTTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135341AB3C56F00882537 /* RCTTestModule.m */; };
 		585135381AB3C57000882537 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
 		585135391AB3C59A00882537 /* RCTTestRunner.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
@@ -17,6 +23,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		2D2A286C1D9B047700D4039D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		580C376D1AB104AF0015E709 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -30,6 +45,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTTest-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		580C376F1AB104AF0015E709 /* libRCTTest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTTest.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		585135331AB3C56F00882537 /* RCTTestModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTestModule.h; sourceTree = "<group>"; };
 		585135341AB3C56F00882537 /* RCTTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTestModule.m; sourceTree = "<group>"; };
@@ -48,6 +64,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2D2A286B1D9B047700D4039D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		580C376C1AB104AF0015E709 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -78,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				580C376F1AB104AF0015E709 /* libRCTTest.a */,
+				2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,6 +124,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2D2A286D1D9B047700D4039D /* RCTTest-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D2A28761D9B047700D4039D /* Build configuration list for PBXNativeTarget "RCTTest-tvOS" */;
+			buildPhases = (
+				2D2A286A1D9B047700D4039D /* Sources */,
+				2D2A286B1D9B047700D4039D /* Frameworks */,
+				2D2A286C1D9B047700D4039D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTTest-tvOS";
+			productName = "RCTTest-tvOS";
+			productReference = 2D2A286E1D9B047700D4039D /* libRCTTest-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		580C376E1AB104AF0015E709 /* RCTTest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 580C37831AB104AF0015E709 /* Build configuration list for PBXNativeTarget "RCTTest" */;
@@ -126,6 +167,10 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
+					2D2A286D1D9B047700D4039D = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
 					580C376E1AB104AF0015E709 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -144,11 +189,25 @@
 			projectRoot = "";
 			targets = (
 				580C376E1AB104AF0015E709 /* RCTTest */,
+				2D2A286D1D9B047700D4039D /* RCTTest-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2D2A286A1D9B047700D4039D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D3B5F311D9B0F4200451313 /* UIImage+Compare.m in Sources */,
+				2D3B5F2F1D9B0F2E00451313 /* RCTTestRunner.m in Sources */,
+				2D3B5F321D9B0F4500451313 /* UIImage+Diff.m in Sources */,
+				2D3B5F301D9B0F3D00451313 /* FBSnapshotTestController.m in Sources */,
+				2D3B5F2D1D9B0F2800451313 /* RCTSnapshotManager.m in Sources */,
+				2D3B5F2E1D9B0F2B00451313 /* RCTTestModule.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		580C376B1AB104AF0015E709 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -165,6 +224,42 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2D2A28741D9B047700D4039D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		2D2A28751D9B047700D4039D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
 		580C37811AB104AF0015E709 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -205,7 +300,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../React/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -250,7 +345,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../React/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -303,6 +398,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2D2A28761D9B047700D4039D /* Build configuration list for PBXNativeTarget "RCTTest-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D2A28741D9B047700D4039D /* Debug */,
+				2D2A28751D9B047700D4039D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		580C376A1AB104AF0015E709 /* Build configuration list for PBXProject "RCTTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

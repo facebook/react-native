@@ -251,6 +251,7 @@ function buildTransitionProps(
     position,
     progress,
     scenes,
+    // $FlowFixMe(>=0.32.0) - find can return undefined
     scene: scenes.find(isSceneActive),
   };
 }

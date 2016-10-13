@@ -58,7 +58,7 @@ class Package {
         return name;
       }
 
-      if (name[0] !== '/') {
+      if (!isAbsolutePath(name)) {
         const replacement = replacements[name];
         // support exclude with "someDependency": false
         return replacement === false
@@ -66,11 +66,11 @@ class Package {
           : replacement || name;
       }
 
-      if (!isAbsolutePath(name)) {
-        throw new Error(`Expected ${name} to be absolute path`);
+      let relPath = './' + path.relative(this.root, name);
+      if (path.sep !== '/') {
+        relPath = relPath.replace(path.sep, '/');
       }
 
-      const relPath = './' + path.relative(this.root, name);
       let redirect = replacements[relPath];
 
       // false is a valid value

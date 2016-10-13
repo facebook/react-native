@@ -41,6 +41,7 @@ var IS_RTL = I18nManager.isRTL;
 
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
+var PIXEL_RATIO = PixelRatio.get();
 
 var ToTheLeftIOS = {
   transformTranslate: {
@@ -50,7 +51,7 @@ var ToTheLeftIOS = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   opacity: {
     value: 1.0,
@@ -71,12 +72,12 @@ var FadeToTheLeft = {
   // rotation (x, y, z, w)
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: -Math.round(Dimensions.get('window').width * 0.3), y: 0, z: 0},
+    to: {x: -Math.round(SCREEN_WIDTH * 0.3), y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   // Uncomment to try rotation:
   // Quick guide to reasoning about rotations:
@@ -108,12 +109,12 @@ var FadeToTheLeft = {
   },
   translateX: {
     from: 0,
-    to: -Math.round(Dimensions.get('window').width * 0.3),
+    to: -Math.round(SCREEN_WIDTH * 0.3),
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   scaleX: {
     from: 1,
@@ -172,12 +173,12 @@ var FadeOut = {
 var ToTheLeft = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: -Dimensions.get('window').width, y: 0, z: 0},
+    to: {x: -SCREEN_WIDTH, y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   opacity: {
     value: 1.0,
@@ -186,24 +187,24 @@ var ToTheLeft = {
 
   translateX: {
     from: 0,
-    to: -Dimensions.get('window').width,
+    to: -SCREEN_WIDTH,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
 var ToTheRight = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: Dimensions.get('window').width, y: 0, z: 0},
+    to: {x: SCREEN_WIDTH, y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   opacity: {
     value: 1.0,
@@ -212,24 +213,24 @@ var ToTheRight = {
 
   translateX: {
     from: 0,
-    to: Dimensions.get('window').width,
+    to: SCREEN_WIDTH,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
 var ToTheUp = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: 0, y: -Dimensions.get('window').height, z: 0},
+    to: {x: 0, y: -SCREEN_HEIGHT, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   opacity: {
     value: 1.0,
@@ -237,24 +238,24 @@ var ToTheUp = {
   },
   translateY: {
     from: 0,
-    to: -Dimensions.get('window').height,
+    to: -SCREEN_HEIGHT,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
 var ToTheDown = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: 0, y: Dimensions.get('window').height, z: 0},
+    to: {x: 0, y: SCREEN_HEIGHT, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   opacity: {
     value: 1.0,
@@ -262,12 +263,12 @@ var ToTheDown = {
   },
   translateY: {
     from: 0,
-    to: Dimensions.get('window').height,
+    to: SCREEN_HEIGHT,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
@@ -278,23 +279,23 @@ var FromTheRight = {
   },
 
   transformTranslate: {
-    from: {x: Dimensions.get('window').width, y: 0, z: 0},
+    from: {x: SCREEN_WIDTH, y: 0, z: 0},
     to: {x: 0, y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 
   translateX: {
-    from: Dimensions.get('window').width,
+    from: SCREEN_WIDTH,
     to: 0,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 
   scaleX: {
@@ -316,7 +317,7 @@ var FromTheLeft = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   translateX: {
     from: -SCREEN_WIDTH,
@@ -325,7 +326,7 @@ var FromTheLeft = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
@@ -338,7 +339,7 @@ var FromTheDown = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   translateY: {
     from: SCREEN_HEIGHT,
@@ -347,7 +348,7 @@ var FromTheDown = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
@@ -360,7 +361,7 @@ var FromTheTop = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   translateY: {
     from: -SCREEN_HEIGHT,
@@ -369,7 +370,7 @@ var FromTheTop = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
@@ -383,7 +384,7 @@ var ToTheBack = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   transformScale: {
     from: {x: 1, y: 1, z: 1},
@@ -427,22 +428,22 @@ var FromTheFront = {
   },
 
   transformTranslate: {
-    from: {x: 0, y: Dimensions.get('window').height, z: 0},
+    from: {x: 0, y: SCREEN_HEIGHT, z: 0},
     to: {x: 0, y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   translateY: {
-    from: Dimensions.get('window').height,
+    from: SCREEN_HEIGHT,
     to: 0,
     min: 0,
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   scaleX: {
     value: 1,
@@ -478,7 +479,7 @@ var FromTheFrontAndroid = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
   translateY: {
     from: 100,
@@ -487,7 +488,7 @@ var FromTheFrontAndroid = {
     max: 1,
     type: 'linear',
     extrapolate: true,
-    round: PixelRatio.get(),
+    round: PIXEL_RATIO,
   },
 };
 
@@ -598,6 +599,13 @@ var NavigatorSceneConfigs = {
     animationInterpolators: {
       into: buildStyleInterpolator(directionMapping.FromTheEnd),
       out: buildStyleInterpolator(directionMapping.ToTheStartIOS),
+    },
+  },
+  PushFromLeft: {
+    ...BaseConfig,
+    animationInterpolators: {
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.ToTheEndIOS),
     },
   },
   FloatFromRight: {
