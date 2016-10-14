@@ -419,6 +419,7 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    errorInfo[@"userInfo"] = RCTNullIfNil(RCTJSONClean(error.userInfo));
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
