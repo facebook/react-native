@@ -359,6 +359,21 @@ exports.examples = [
     }
   },
   {
+    title: 'Ignore SSL Error',
+    render(): ReactElement<any> {
+      return (
+        <WebView
+          style={{
+            backgroundColor: BGWASH,
+            height: 100,
+          }}
+          source={{uri: 'https://kyfw.12306.cn/otn/'}}
+          scalesPageToFit={true}
+          ignoreSslError={true} />
+      );
+    }
+  },
+  {
     title: 'Static HTML',
     render(): ReactElement<any> {
       return (
