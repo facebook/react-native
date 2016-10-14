@@ -22,6 +22,7 @@ function runIOS(argv, config, args) {
     throw new Error('Could not find Xcode project files in ios folder');
   }
 
+  const buildConfig = getBuildConfig();
   const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
   const scheme = args.scheme || inferredSchemeName;
   console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
@@ -31,7 +32,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      runOnDevice(selectedDevice, scheme, xcodeProject);
+      runOnDevice(selectedDevice, scheme, xcodeProject, buildConfig);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -44,7 +45,7 @@ function runIOS(argv, config, args) {
   } else if (args.udid) {
     runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
   } else {
-    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    runOnSimulator(xcodeProject, args, scheme, buildConfig);
   }
 }
 
@@ -63,7 +64,7 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
+function runOnSimulator(xcodeProject, args, scheme, buildConfig) {
   try {
     var simulators = JSON.parse(
     child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -88,7 +89,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 
   buildProject(xcodeProject, selectedSimulator.udid, scheme);
 
-  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
+  const appPath = 'build/Build/Products/Debug-iphonesimulator/' + buildConfig.EXECUTABLE_FOLDER_PATH;
   console.log(`Installing ${appPath}`);
   child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
@@ -102,10 +103,10 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject){
+function runOnDevice(selectedDevice, scheme, xcodeProject, buildConfig) {
   buildProject(xcodeProject, selectedDevice.udid, scheme);
   const iosDeployInstallArgs = [
-    '--bundle', 'build/Build/Products/Debug-iphoneos/' + scheme + '.app',
+    '--bundle', 'build/Build/Products/Debug-iphoneos/' + buildConfig.EXECUTABLE_FOLDER_PATH,
     '--id' , selectedDevice.udid,
     '--justlaunch'
   ];
@@ -152,10 +153,27 @@ function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
-function printFoundDevices(devices){
+function printFoundDevices(devices) {
   for (let i = devices.length - 1; i >= 0; i--) {
     console.log(devices[i].name + ' Udid: ' + devices[i].udid);
   }
+}
+
+function getBuildConfig() {
+  const result = child_process.execFileSync(
+    'xcodebuild',
+    ['-showBuildSettings', '-configuration', 'Debug'],
+    {encoding: 'utf8'}
+  );
+  const config = {};
+  for (let x of result.trim().split('\n')) {
+    const keyValue = x.trim().split(' = ');
+    if (keyValue.length !== 2) {
+      continue;
+    }
+    config[keyValue[0]] = keyValue[1].trim("'");
+  }
+  return config;
 }
 
 module.exports = {
