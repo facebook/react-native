@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
+import android.util.LayoutDirection;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
@@ -88,6 +89,11 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @ReactProp(name = "title")
   public void setTitle(ReactToolbar view, @Nullable String title) {
     view.setTitle(title);
+  }
+
+  @ReactProp(name = "rtl")
+  public void setRtl(ReactToolbar view, boolean rtl) {
+    view.setLayoutDirection(rtl ? LayoutDirection.LTR : LayoutDirection.RTL);
   }
 
   @ReactProp(name = "titleColor", customType = "Color")
