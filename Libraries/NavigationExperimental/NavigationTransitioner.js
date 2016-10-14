@@ -53,6 +53,7 @@ const DefaultTransitionSpec = {
   duration: 250,
   easing: Easing.inOut(Easing.ease),
   timing: Animated.timing,
+  useNativeDriver: true,
 };
 
 class NavigationTransitioner extends React.Component<any, Props, State> {
@@ -198,8 +199,14 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       isMeasured: true,
     };
 
-    layout.height.setValue(height);
-    layout.width.setValue(width);
+    Animated.event([{
+      nativeEvent: {
+          layout: {
+            height: layout.height,
+            width: layout.width,
+          },
+      },
+    }]);
 
     const nextState = {
       ...this.state,
