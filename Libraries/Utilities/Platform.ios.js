@@ -14,6 +14,8 @@
 
 var Platform = {
   OS: 'ios',
+  isIos: true,
+  isAndroid: false,
   select: (obj: Object) => obj.ios,
 };
 
