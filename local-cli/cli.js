@@ -13,9 +13,9 @@
 require('./server/checkNodeVersion')();
 
 require('../packager/babelRegisterOnly')([
-  /private-cli\/src/,
+  /private-cli[\/\\]src/,
   /local-cli/,
-  /react-packager\/src/
+  /react-packager[\/\\]src/
 ]);
 
 var cliEntry = require('./cliEntry');
