@@ -121,6 +121,16 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     view.setActions(actions);
   }
 
+  @ReactProp(name = "contentInsetStart")
+  public void setContentInsetStart(ReactToolbar view, int insetStart) {
+    view.setContentInsetsRelative((int) PixelUtil.toPixelFromDIP(insetStart), view.getContentInsetEnd());
+  }
+
+  @ReactProp(name = "contentInsetEnd")
+  public void setContentInsetEnd(ReactToolbar view, int insetEnd) {
+    view.setContentInsetsRelative(view.getContentInsetStart(), (int) PixelUtil.toPixelFromDIP(insetEnd));
+  }
+
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactToolbar view) {
     final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
