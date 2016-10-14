@@ -74,6 +74,28 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
+var USAGE = [
+    ''
+  , '  Usage: react-native [command] [options]'
+  , ''
+  , '  Options:'
+  , ''
+  , '     -v, --version <version>      to print current version of react-native-cli and react-native dependency'
+  , '                                  if you are in a RN app folder'
+  , '                                  NOTE'
+  , '                                  if this option is passed to `init` it will install an alternative react-native package'
+  , '                                  EXAMPLES'
+  , '                                  - "0.22.0-rc1" - A new app will be created using a specific version of React Native from npm repo'
+  , '                                  - "https://registry.npmjs.org/react-native/-/react-native-0.20.0.tgz" - a .tgz archive from any npm repo'
+  , '                                  - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests'
+  , ''
+  , '     --verbose                    to print logs while init'
+  , '  Commands:'
+  , ''
+  , '     init   [name]                to create a new project and npm install it'
+  , ''
+].join('\n');
+
 checkForVersionArgument();
 
 var cli;
@@ -87,6 +109,10 @@ var commands = argv._;
 if (cli) {
   cli.run();
 } else {
+  if (commands.length === 0 && (argv.help || argv.h)) {
+    console.log(USAGE);
+    process.exit();
+  }
   if (commands.length === 0) {
     console.error(
       'You did not pass any commands, did you mean to run `react-native init`?'
@@ -95,6 +121,10 @@ if (cli) {
   }
 
   switch (commands[0]) {
+  case 'help':
+    console.log(USAGE);
+    process.exit();
+    break;
   case 'init':
     if (!commands[1]) {
       console.error(
