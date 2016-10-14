@@ -12,15 +12,21 @@ package com.facebook.react.views.art;
 import javax.annotation.Nullable;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Shader;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Shadow node for virtual ARTShape view
@@ -164,6 +170,52 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
     return true;
   }
 
+  /*
+   * calculate stops count from array
+   * from array minus first 5 elements because it 1 - LinearGradient key, 2,3,4,5 - LinearGradient position
+   * and after devide on 5 because 1,2,3,4 - colors A,R,G,B and 5 - stop per 4 colors.
+   */
+  private static int getStopsCount(float[] value) {
+    int count = (value.length - 5)/5;
+    return count;
+  }
+
+  /*
+   * sorting stops and stopsColors from array
+   */
+  private static int gradientStopsParsing(float[] value, int stopsCount, float[] stops, int[] stopsColors) {
+    int startStops = value.length - stopsCount;
+    int startColorsPosition = 5;
+    for (int i = 0; i < stopsCount; i++) {
+      stops[i] = i == 0 ?
+        value[startStops + i] :
+        (
+          i == (stopsCount - 1) ? value[startStops + 1] :
+          value[startStops + i + 1]
+        );
+      stopsColors[i] = i == 0 ?
+        Color.argb(
+          (int) (value[startColorsPosition + 3] * 255),
+          (int) (value[startColorsPosition] * 255),
+          (int) (value[startColorsPosition + 1] * 255),
+          (int) (value[startColorsPosition + 2] * 255)) :
+        i == (stopsCount - 1) ?
+          Color.argb(
+            (int) (value[12] * 255),
+            (int) (value[9] * 255),
+            (int) (value[10] * 255),
+            (int) (value[11] * 255)) :
+          Color.argb(
+            (int) (value[startColorsPosition + 7] * 255),
+            (int) (value[startColorsPosition + 4] * 255),
+            (int) (value[startColorsPosition + 5] * 255),
+            (int) (value[startColorsPosition + 6] * 255));
+      startColorsPosition = startColorsPosition + 4;
+    }
+    return value.length;
+  }
+
+
   /**
    * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true}
    * if the fill should be drawn, {@code false} if not.
@@ -181,6 +233,21 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
               (int) (mFillColor[1] * 255),
               (int) (mFillColor[2] * 255),
               (int) (mFillColor[3] * 255));
+          break;
+        case 1:
+          int stopsCount = getStopsCount(mFillColor);
+          int [] stopsColors = new int [stopsCount];
+          float [] stops = new float[stopsCount];
+          gradientStopsParsing(mFillColor, stopsCount, stops, stopsColors);
+          paint.setShader(
+            new LinearGradient(
+              mFillColor[3] * 2,
+              mFillColor[4] * 2,
+              mFillColor[1] * 2,
+              mFillColor[2] * 2,
+              stopsColors,
+              stops,
+              Shader.TileMode.CLAMP));
           break;
         default:
           // TODO(6352048): Support gradients etc.
