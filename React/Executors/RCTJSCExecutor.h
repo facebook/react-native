@@ -73,6 +73,12 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
+ * Specify a name for the JSContext used, which will be visible in debugging tools
+ * @default is "RCTJSContext"
+ */
+@property (nonatomic, copy) NSString *contextName;
+
+/**
  * Inits a new executor instance with given flag that's used
  * to initialize RCTJSCWrapper.
  */
