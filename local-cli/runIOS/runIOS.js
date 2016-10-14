@@ -44,7 +44,7 @@ function runIOS(argv, config, args) {
   } else if (args.udid) {
     runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
   } else {
-    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    runOnSimulator(xcodeProject, args, scheme);
   }
 }
 
@@ -63,7 +63,7 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
+function runOnSimulator(xcodeProject, args, scheme){
   try {
     var simulators = JSON.parse(
     child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -88,7 +88,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 
   buildProject(xcodeProject, selectedSimulator.udid, scheme);
 
-  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
+  const appPath = `build/Build/Products/Debug-iphonesimulator/${scheme}.app`;
   console.log(`Installing ${appPath}`);
   child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
