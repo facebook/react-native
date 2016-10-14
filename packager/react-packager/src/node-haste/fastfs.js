@@ -11,7 +11,7 @@
 const denodeify = require('denodeify');
 const {EventEmitter} = require('events');
 
-const fs = require('graceful-fs');
+const fs = require('fs');
 const path = require('./fastpath');
 
 const readFile = denodeify(fs.readFile);
