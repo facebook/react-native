@@ -86,19 +86,19 @@ exports<span class="token punctuation">.</span>description <span class="token op
 exports<span class="token punctuation">.</span>examples <span class="token operator">=</span> <span class="token punctuation">[</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Default settings&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;SliderExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Initial value: 0.5&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;SliderExample value<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">0.5</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;minimumValue: -1, maximumValue: 2&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
         &lt;SliderExample
           minimumValue<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">}</span>
@@ -109,13 +109,13 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;step: 0.25&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;SliderExample step<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">0.25</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;onSlidingComplete&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
         &lt;SlidingCompleteExample <span class="token operator">/</span><span class="token operator">&gt;</span>
       <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -124,7 +124,7 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Custom min/max track tint color&#x27;</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
         &lt;SliderExample
           minimumTrackTintColor<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">&#x27;red&#x27;</span><span class="token punctuation">}</span>
@@ -136,21 +136,21 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Custom thumb image&#x27;</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;SliderExample thumbImage<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./uie_thumb_big.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Custom track image&#x27;</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;SliderExample trackImage<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./slider.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Custom min/max track image&#x27;</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element&lt;any<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
         &lt;SliderExample
           minimumTrackImage<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./slider-left.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
