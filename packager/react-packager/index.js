@@ -11,7 +11,6 @@
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
 require('./src/node-haste/fastpath').replace();
-useGracefulFs();
 
 var debug = require('debug');
 var Activity = require('./src/Activity');
@@ -72,12 +71,6 @@ exports.getOrderedDependencyPaths = function(options, bundleOptions) {
       return paths;
     });
 };
-
-function useGracefulFs() {
-  var fs = require('fs');
-  var gracefulFs = require('graceful-fs');
-  gracefulFs.gracefulify(fs);
-}
 
 function enableDebug() {
   // react-packager logs debug messages using the 'debug' npm package, and uses
