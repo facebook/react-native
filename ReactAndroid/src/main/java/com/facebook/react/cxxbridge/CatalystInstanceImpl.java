@@ -347,6 +347,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public native void setGlobalVariable(String propName, String jsonValue);
 
+  @Override
+  public native long getJavaScriptContext();
+
   // TODO mhorowitz: add mDestroyed checks to the next three methods
 
   @Override
