@@ -111,6 +111,7 @@
     "Libraries",
     "lib",
     "packager",
+    "local-cli",
     "cli.js",
     "local-cli",
     "init.sh",
