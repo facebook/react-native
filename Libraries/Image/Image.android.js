@@ -336,9 +336,6 @@ var cfg = {
   nativeOnly: {
     src: true,
     loadingIndicatorSrc: true,
-    defaultImageSrc: true,
-    imageTag: true,
-    progressHandlerRegistered: true,
     shouldNotifyLoadEvents: true,
   },
 };

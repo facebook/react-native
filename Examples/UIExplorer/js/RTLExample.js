@@ -47,8 +47,6 @@ const {
 const UIExplorerPage = require('./UIExplorerPage');
 const UIExplorerBlock = require('./UIExplorerBlock');
 
-const AnimatedImage = Animated.createAnimatedComponent(Image);
-
 type State = {
   toggleStatus: any,
   pan: Object,
@@ -116,7 +114,7 @@ function AnimationBlock(props) {
   return (
     <View style={styles.block}>
       <TouchableWithoutFeedback onPress={props.onPress}>
-        <AnimatedImage
+        <Animated.Image
           style={[styles.img, props.imgStyle]}
           source={require('./Thumbnails/poke.png')}
         />

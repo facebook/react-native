@@ -21,6 +21,10 @@ let __nativeAnimationIdCount = 1; /* used for started animations */
 
 type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
+type EventMapping = {
+  nativeEventPath: Array<string>;
+  animatedValueTag: number;
+};
 
 let nativeEventEmitter;
 
@@ -61,6 +65,14 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeValue(nodeTag, value);
   },
+  setAnimatedNodeOffset: function(nodeTag: number, offset: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.setAnimatedNodeOffset(nodeTag, offset);
+  },
+  flattenAnimatedNodeOffset: function(nodeTag: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
+  },
   connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
@@ -73,6 +85,14 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
+  addAnimatedEventToView: function(viewTag: number, eventName: string, eventMapping: EventMapping) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
+  },
+  removeAnimatedEventFromView(viewTag: number, eventName: string) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
+  }
 };
 
 /**

@@ -381,6 +381,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
                atomically:YES
                  encoding:NSUTF8StringEncoding
                     error:nil];
+#if !TARGET_OS_TV
       UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:outFile]]
                                                                                            applicationActivities:nil];
       activityViewController.completionHandler = ^(__unused NSString *activityType, __unused BOOL completed) {
@@ -392,6 +393,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
                                                                                                  animated:YES
                                                                                                completion:nil];
       });
+#endif
     });
   } else {
     RCTProfileInit(RCTProfilingBridge());
@@ -677,12 +679,12 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
 {
   static NSUInteger flowID = 0;
 
-  CHECK(@0);
+  CHECK(0);
 
   NSUInteger cookie = ++flowID;
   if (callbacks != NULL) {
-    callbacks->begin_async_flow(1, "flow", cookie);
-    return @(cookie);
+    callbacks->begin_async_flow(1, "flow", (int)cookie);
+    return cookie;
   }
 
   NSTimeInterval time = CACurrentMediaTime();
@@ -708,7 +710,7 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_flow(1, "flow", cookie);
+    callbacks->end_async_flow(1, "flow", (int)cookie);
     return;
   }
 
@@ -753,6 +755,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
                                                  encoding:NSUTF8StringEncoding];
 
        if (message.length) {
+#if !TARGET_OS_TV
          dispatch_async(dispatch_get_main_queue(), ^{
            [[[UIAlertView alloc] initWithTitle:@"Profile"
                                        message:message
@@ -760,6 +763,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
                              cancelButtonTitle:@"OK"
                              otherButtonTitles:nil] show];
          });
+#endif
        }
      }
    }];

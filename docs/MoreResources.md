@@ -42,7 +42,7 @@ The [React Native Community](https://www.facebook.com/groups/react.native.commun
 
 [Reactiflux](https://discord.gg/0ZcbPKXt5bZjGY5n) is a Discord chat where a lot of React-related discussion happens, including React Native. Discord is just like Slack except it works better for open source projects with a zillion contributors. Check out the #react-native channel.
 
-The [React Twitter account](https://twitter.com/reactjs) covers both React and React Native. Following that account is a pretty good way to find out what's happening in the world of React.
+The [React Twitter account](https://twitter.com/reactjs) covers both React and React Native. Follow the React Native [Twitter account](https://twitter.com/reactnative) and [blog](/react-native/blog/) to find out what's happening in the world of React Native.
 
 There are a lot of [React Native Meetups](http://www.meetup.com/topics/react-native/) that happen around the world. Often there is React Native content in React meetups as well.
 

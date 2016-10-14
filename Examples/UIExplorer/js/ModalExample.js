@@ -33,7 +33,7 @@ var {
   TouchableHighlight,
   View,
 } = ReactNative;
-// $FlowFixMe Picker.Item not properly defined for flow.
+
 const Item = Picker.Item;
 
 exports.displayName = (undefined: ?string);

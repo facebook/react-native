@@ -68,6 +68,6 @@ exports.description = 'Interface to show iOS\' accessibility samples';
 exports.examples = [
   {
     title: 'Accessibility elements',
-    render(): ReactElement<any> { return <AccessibilityIOSExample />; }
+    render(): React.Element<any> { return <AccessibilityIOSExample />; }
   },
 ];

@@ -59,7 +59,7 @@ class SwipeableQuickActionButton extends React.Component {
     textStyle: Text.propTypes.style,
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     if (!this.props.imageSource && !this.props.text) {
       return null;
     }

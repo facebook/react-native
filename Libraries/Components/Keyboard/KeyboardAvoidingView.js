@@ -87,7 +87,7 @@ const KeyboardAvoidingView = React.createClass({
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
-    if (!frame) {
+    if (!frame || !keyboardFrame) {
       return 0;
     }
 
@@ -148,7 +148,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {
