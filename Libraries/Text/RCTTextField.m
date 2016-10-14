@@ -162,6 +162,11 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (void)textFieldDidChange
 {
   _nativeEventCount++;
+  [self sendChangeEvent];
+}
+
+- (void)sendChangeEvent
+{
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
                                      text:self.text

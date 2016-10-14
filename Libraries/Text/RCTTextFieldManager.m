@@ -39,20 +39,28 @@ RCT_EXPORT_MODULE()
   }
 
   if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+    if (textField.autocorrectionType == UITextAutocorrectionTypeYes) { // If autoCorrect is on...
+      if (range.length > 0 && ![string isEqualToString:@""]) { // This catches an auto correction on submit.
+        textField.text = [self replaceText:textField.text.mutableCopy inRange:range withString:string];
+        // Collapse selection at end of insert to match normal paste behavior
+        textField.selectedTextRange = [self textRangeForTextField:textField
+                                           withTextPositionOffset:(range.location + string.length)];
+        [textField sendChangeEvent];
+        return NO;
+      }
+    }
     return YES;
   }
+  
   NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
   if (string.length > allowedLength) {
     if (string.length > 1) {
       // Truncate the input string so the result is exactly maxLength
       NSString *limitedString = [string substringToIndex:allowedLength];
-      NSMutableString *newString = textField.text.mutableCopy;
-      [newString replaceCharactersInRange:range withString:limitedString];
-      textField.text = newString;
+      textField.text = [self replaceText:textField.text.mutableCopy inRange:range withString:limitedString];
       // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      textField.selectedTextRange = [self textRangeForTextField:textField
+                                         withTextPositionOffset:(range.location + allowedLength)];
       [textField textFieldDidChange];
     }
     return NO;
@@ -72,6 +80,23 @@ RCT_EXPORT_MODULE()
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
 {
   return [textField textFieldShouldEndEditing:textField];
+}
+
+- (NSString *)replaceText:(NSMutableString *)originalString
+                  inRange:(NSRange)range
+               withString:(NSString *)string
+{
+  NSMutableString *newString = originalString;
+  [newString replaceCharactersInRange:range withString:string];
+  return newString;
+}
+
+- (UITextRange *)textRangeForTextField:(UITextField *)textField
+                withTextPositionOffset:(NSUInteger)offset
+{
+      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
+                                                          offset:offset];
+      return [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)
