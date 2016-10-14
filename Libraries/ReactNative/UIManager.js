@@ -18,6 +18,8 @@ const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const findNodeHandle = require('react/lib/findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
 
+import type React from 'react';
+
 const { UIManager } = NativeModules;
 
 invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
@@ -42,7 +44,7 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * @platform ios
  */
 UIManager.takeSnapshot = async function(
-  view ?: 'window' | ReactElement<any> | number,
+  view ?: 'window' | React.Element<any> | number,
   options ?: {
     width ?: number,
     height ?: number,
