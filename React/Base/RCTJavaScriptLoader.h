@@ -23,11 +23,20 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
+@interface RCTLoadingProgress : NSObject
+
+@property (nonatomic, copy) NSString *status;
+@property (strong, nonatomic) NSNumber *done;
+@property (strong, nonatomic) NSNumber *total;
+
+@end
+
+typedef void (^RCTSourceLoadProgressBlock)(RCTLoadingProgress *progressData);
 typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
 @interface RCTJavaScriptLoader : NSObject
 
-+ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete;
++ (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete;
 
 /**
  * @experimental

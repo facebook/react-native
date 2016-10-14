@@ -73,9 +73,11 @@
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge
-                  withBlock:(RCTSourceLoadBlock)loadCallback
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
 {
   [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
+                            onProgress:onProgress
                             onComplete:loadCallback];
 }
 
