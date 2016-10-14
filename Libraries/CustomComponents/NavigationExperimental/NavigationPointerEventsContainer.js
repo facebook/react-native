@@ -86,7 +86,7 @@ function create(
       this._bindPosition(nextProps);
     }
 
-    render(): ReactElement<any>  {
+    render(): React.Element<any>  {
       this._pointerEvents = this._computePointerEvents();
       return (
         <Component

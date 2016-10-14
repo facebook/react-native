@@ -148,7 +148,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {

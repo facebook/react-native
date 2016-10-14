@@ -128,7 +128,7 @@ class Modal extends React.Component {
     visible: true,
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     if (this.props.visible === false) {
       return null;
     }
