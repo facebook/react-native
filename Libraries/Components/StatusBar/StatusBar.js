@@ -386,7 +386,7 @@ class StatusBar extends React.Component {
     });
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     return null;
   }
 }

@@ -97,7 +97,7 @@ class AnExTilt extends React.Component {
     this._startBurnsZoom();
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <Animated.View
         {...this.state.tiltPanResponder.panHandlers}

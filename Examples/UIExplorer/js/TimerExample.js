@@ -242,7 +242,7 @@ exports.examples = [
     title: 'this.setInterval(fn, t)',
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
-    render: function(): ReactElement<any> {
+    render: function(): React.Element<any> {
       class IntervalExample extends React.Component {
         state = {
           showTimer: true,

@@ -202,7 +202,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <NavigationTransitioner
         navigationState={this.props.navigationState}
@@ -212,7 +212,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
   }
 
-  _render(props: NavigationTransitionProps): ReactElement<any> {
+  _render(props: NavigationTransitionProps): React.Element<any> {
     const {
       renderHeader
     } = this.props;
@@ -237,7 +237,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     );
   }
 
-  _renderScene(props: NavigationSceneRendererProps): ReactElement<any> {
+  _renderScene(props: NavigationSceneRendererProps): React.Element<any> {
     const isVertical = this.props.direction === 'vertical';
 
     const style = isVertical ?

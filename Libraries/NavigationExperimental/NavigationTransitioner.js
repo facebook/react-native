@@ -175,7 +175,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View
         onLayout={this._onLayout}

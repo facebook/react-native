@@ -51,7 +51,7 @@ class UIExplorerExampleContainer extends React.Component {
     );
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     if (!this.props.module.examples) {
       return <this.props.module />;
     }

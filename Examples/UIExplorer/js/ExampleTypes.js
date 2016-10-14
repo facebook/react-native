@@ -25,7 +25,7 @@
 
 export type Example = {
   title: string,
-  render: () => ?ReactElement<any>,
+  render: () => ?React.Element<any>,
   description?: string,
   platform?: string;
 };
