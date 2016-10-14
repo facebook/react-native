@@ -26,6 +26,7 @@ var flattenStyle = require('flattenStyle');
 type Event = Object;
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var TOUCHSTART_DISPATCH_TYPE = 'onResponderGrant';
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -83,14 +84,22 @@ var TouchableOpacity = React.createClass({
 
   /**
    * Animate the touchable to a new opacity.
+   * While pressing the element, it change immediately without animation. 
    */
-  setOpacityTo: function(value: number) {
+  setOpacityTo: function(value: number, e={dispatchConfig:{registrationName:''}} ) {
+    var { registrationName } = e.dispatchConfig;
+    var duration = this.isFirstHit( registrationName ) ? 0 : 150;
+
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {toValue: value, duration}
     ).start();
   },
-
+  
+  isFirstHit: function( typeName ){
+    return typeName == TOUCHSTART_DISPATCH_TYPE;
+  },
+  
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
@@ -98,7 +107,7 @@ var TouchableOpacity = React.createClass({
   touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
-    this._opacityActive();
+    this._opacityActive(e);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
@@ -144,8 +153,8 @@ var TouchableOpacity = React.createClass({
     return this.props.delayPressOut;
   },
 
-  _opacityActive: function() {
-    this.setOpacityTo(this.props.activeOpacity);
+  _opacityActive: function(e: Event) {
+    this.setOpacityTo(this.props.activeOpacity, e);
   },
 
   _opacityInactive: function() {
