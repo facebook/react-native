@@ -74,6 +74,8 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
+var RESERVED_WORDS = require('./reserved-words.js');
+
 checkForVersionArgument();
 
 var cli;
@@ -127,11 +129,11 @@ function validatePackageName(name) {
     process.exit(1);
   }
 
-  if (name === 'React') {
-    console.error(
-      '"%s" is not a valid name for a project. Please do not use the ' +
-        'reserved word "React".',
-      name
+  if (RESERVED_WORDS.indexOf(name.toLowerCase()) !== -1) {
+      console.error(
+          '"%s" is not a valid name for a project. Please do not use the ' +
+          'reserved word "%s".',
+        name, name
     );
     process.exit(1);
   }
