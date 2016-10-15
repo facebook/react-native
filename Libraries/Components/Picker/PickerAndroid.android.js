@@ -14,7 +14,6 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
-var ReactChildren = require('react/lib/ReactChildren');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
@@ -79,7 +78,7 @@ class PickerAndroid extends React.Component {
   // Translate prop and children into stuff that the native picker understands.
   _stateFromProps = (props) => {
     var selectedIndex = 0;
-    const items = ReactChildren.map(props.children, (child, index) => {
+    const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }

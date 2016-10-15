@@ -18,7 +18,6 @@ const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const ReactChildren = require('react/lib/ReactChildren');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInputState = require('TextInputState');
@@ -621,7 +620,7 @@ const TextInput = React.createClass({
     } else {
       var children = props.children;
       var childCount = 0;
-      ReactChildren.forEach(children, () => ++childCount);
+      React.Children.forEach(children, () => ++childCount);
       invariant(
         !(props.value && childCount),
         'Cannot specify both value and children.'
@@ -670,7 +669,7 @@ const TextInput = React.createClass({
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
     var childCount = 0;
-    ReactChildren.forEach(children, () => ++childCount);
+    React.Children.forEach(children, () => ++childCount);
     invariant(
       !(this.props.value && childCount),
       'Cannot specify both value and children.'
