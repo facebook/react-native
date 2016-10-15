@@ -19,7 +19,6 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var onlyChild = require('react/lib/onlyChild');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -222,7 +221,7 @@ var TouchableNativeFeedback = React.createClass({
   },
 
   render: function() {
-    const child = onlyChild(this.props.children);
+    const child = React.Children.only(this.props.children);
     let children = child.props.children;
     if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
       if (!Array.isArray(children)) {

@@ -27,7 +27,6 @@ var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
 var merge = require('merge');
-var onlyChild = require('react/lib/onlyChild');
 
 type Event = Object;
 
@@ -243,7 +242,7 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
         {React.cloneElement(
-          onlyChild(this.props.children),
+          React.Children.only(this.props.children),
           {
             ref: CHILD_REF,
           }
