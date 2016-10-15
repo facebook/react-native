@@ -21,14 +21,16 @@ type IOSDeviceInfo = {
  */
 function parseIOSDevicesList(text: string): Array<IOSDeviceInfo> {
   const devices = [];
+
   text.split('\n').forEach((line) => {
     const device = line.match(/(.*?) \((.*?)\) \[(.*?)\]/);
-    const noSimulator = line.match(/(.*?) \((.*?)\) \[(.*?)\] \((.*?)\)/);
-    if (device != null && noSimulator == null){
+    const isSimulator = line.indexOf('Simulator') === -1 ? false : true;
+
+    if (device != null) {
       var name = device[1];
       var version = device[2];
       var udid = device[3];
-      devices.push({udid, name, version});
+      devices.push({udid, name, version, isSimulator});
     }
   });
 

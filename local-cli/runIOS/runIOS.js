@@ -33,10 +33,10 @@ function runIOS(argv, config, args) {
   );
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
-    if (selectedDevice){
+    if (selectedDevice) {
       return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
     } else {
-      if (devices){
+      if (devices) {
         console.log('Could not find device with the name: "' + args.device + '".');
         console.log('Choose one of the following:');
         printFoundDevices(devices);
@@ -45,28 +45,28 @@ function runIOS(argv, config, args) {
       }
     }
   } else if (args.udid) {
-    return runOnDeviceByUdid(args, scheme, xcodeProject, devices);
+    return runOnDeviceByUdid(xcodeProject, args, inferredSchemeName, scheme, devices);
   } else {
     return runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
   }
 }
 
-function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
+function runOnDeviceByUdid(xcodeProject, args, inferredSchemeName, scheme, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
-  if (selectedDevice){
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
-  } else {
-    if (devices){
-      console.log('Could not find device with the udid: "' + args.udid + '".');
-      console.log('Choose one of the following:');
-      printFoundDevices(devices);
+  if (selectedDevice) {
+    if (selectedDevice.isSimulator) {
+      return runOnSimulator(xcodeProject, Object.assign(args, { selectedSimulator: selectedDevice }), inferredSchemeName, scheme);
     } else {
-      console.log('No iOS devices connected.');
+      return runOnDevice(selectedDevice, scheme, xcodeProject);
     }
+  } else {
+    console.log('Could not find device with the udid: "' + args.udid + '".');
+    console.log('Choose one of the following:');
+    printFoundDevices(devices);
   }
 }
 
-function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
+function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme) {
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -75,10 +75,14 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     } catch (e) {
       throw new Error('Could not parse the simulator list output');
     }
-
-    const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
-    if (!selectedSimulator) {
-      throw new Error(`Could not find ${args.simulator} simulator`);
+    var selectedSimulator;
+    if (!args.selectedSimulator) {
+      selectedSimulator = findMatchingSimulator(simulators, args.simulator);
+      if (!selectedSimulator) {
+        throw new Error(`Could not find ${args.simulator} simulator`);
+      }
+    } else {
+      selectedSimulator = args.selectedSimulator;
     }
 
     const simulatorFullName = formattedDeviceName(selectedSimulator);
@@ -89,7 +93,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
       // instruments always fail with 255 because it expects more arguments,
       // but we want it to only launch the simulator
     }
-    resolve(selectedSimulator.udid)
+    resolve(selectedSimulator.udid);
   })
   .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration))
   .then((appName) => {
@@ -108,7 +112,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 
     console.log(`Launching ${bundleID}`);
     child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
-  })
+  });
 }
 
 function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
@@ -147,7 +151,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
     ];
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
     const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
-    let buildOutput = "";
+    let buildOutput = '';
     buildProcess.stdout.on('data', function(data) {
       console.log(data.toString());
       buildOutput += data.toString();
@@ -161,7 +165,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
-      return buildProcess.error? reject(error) : resolve();
+      return buildProcess.error ? reject(buildProcess.error) : resolve();
     });
   });
 }
@@ -169,7 +173,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
 function matchingDevice(devices, deviceName) {
   if (deviceName === true && devices.length === 1)
   {
-    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`)
+    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`);
     return devices[0];
   }
   for (let i = devices.length - 1; i >= 0; i--) {
@@ -191,9 +195,9 @@ function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
-function printFoundDevices(devices){
+function printFoundDevices(devices) {
   for (let i = devices.length - 1; i >= 0; i--) {
-    console.log(devices[i].name + ' Udid: ' + devices[i].udid);
+    console.log(`Device: ${devices[i].name}\nVersion: ${devices[i].version}\nUDID: ${devices[i].udid}\n`);
   }
 }
 
