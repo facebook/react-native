@@ -11,7 +11,6 @@
 'use strict';
 
 var Platform = require('Platform');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var Touchable = require('Touchable');
@@ -21,6 +20,8 @@ var UIManager = require('UIManager');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
+
+var PropTypes = React.PropTypes;
 
 var rippleBackgroundPropType = PropTypes.shape({
   type: React.PropTypes.oneOf(['RippleAndroid']),
@@ -42,7 +43,7 @@ var TouchableView = requireNativeComponent('RCTView', null, {
   nativeOnly: {
     nativeBackgroundAndroid: backgroundPropType,
     nativeForegroundAndroid: backgroundPropType,
-  }
+  },
 });
 
 type Event = Object;

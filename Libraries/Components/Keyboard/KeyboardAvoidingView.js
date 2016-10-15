@@ -14,10 +14,11 @@
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
+
+const PropTypes = React.PropTypes;
 
 import type EmitterSubscription from 'EmitterSubscription';
 

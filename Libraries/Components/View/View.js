@@ -13,7 +13,6 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -22,6 +21,8 @@ const UIManager = require('UIManager');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 

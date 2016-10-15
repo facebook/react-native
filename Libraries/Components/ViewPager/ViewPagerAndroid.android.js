@@ -14,12 +14,13 @@
 var React = require('React');
 var ReactNative = require('ReactNative');
 var ReactElement = require('react/lib/ReactElement');
-var ReactPropTypes = require('react/lib/ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
+
+var ReactPropTypes = React.PropTypes;
 
 var VIEWPAGER_REF = 'viewPager';
 
