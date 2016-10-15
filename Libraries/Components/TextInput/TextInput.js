@@ -16,7 +16,6 @@ const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ReactChildren = require('react/lib/ReactChildren');
@@ -32,6 +31,8 @@ const warning = require('fbjs/lib/warning');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const onlyMultiline = {
   onTextInput: true,

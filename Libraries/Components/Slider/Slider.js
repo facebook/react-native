@@ -15,12 +15,13 @@ var Image = require('Image');
 var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+
+var PropTypes = React.PropTypes;
 
 type Event = Object;
 
