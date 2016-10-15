@@ -76,7 +76,7 @@ class Alert {
   ): void {
     if (Platform.OS === 'ios') {
       if (typeof type !== 'undefined') {
-        console.warn('Alert.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+        console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
         AlertIOS.alert(title, message, buttons, type);
         return;
       }
