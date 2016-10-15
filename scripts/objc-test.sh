@@ -4,9 +4,15 @@
 
 # Start the packager and preload the UIExplorerApp bundle for better performance in integration tests
 open "./packager/launchPackager.command" || echo "Can't start packager automatically"
-sleep 10
-curl 'http://localhost:8081/Examples/UIExplorer/js/UIExplorerApp.ios.bundle?platform=ios&dev=true&minify=false' -o UIExplorerApp.bundle
-rm UIExplorerApp.bundle
+sleep 20
+curl 'http://localhost:8081/Examples/UIExplorer/js/UIExplorerApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
+rm temp.bundle
+curl 'http://localhost:8081/Examples/UIExplorer/js/UIExplorerApp.ios.bundle?platform=ios&dev=true&minify=false' -o temp.bundle
+rm temp.bundle
+curl 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o temp.bundle
+rm temp.bundle
+curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
+rm temp.bundle
 
 function cleanup {
   EXIT_CODE=$?
