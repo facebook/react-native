@@ -127,7 +127,6 @@ const ReactNative = {
       }
       return require('react/lib/LinkedStateMixin');
     },
-    Perf: undefined,
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
@@ -145,7 +144,6 @@ const ReactNative = {
       }
       return require('NativeModules').TestModule;
     },
-    TestUtils: undefined,
     get batchedUpdates() {
       if (__DEV__) {
         warning(
@@ -181,7 +179,7 @@ if (__DEV__) {
     Object.defineProperty(ReactNative, key, {
       get() { throwOnWrongReactAPI(key); },
       enumerable: false,
-      configurable: false
+      configurable: false,
     });
   }
 }
@@ -203,26 +201,4 @@ function applyForwarding(key) {
 for (const key in ReactNativeInternal) {
   applyForwarding(key);
 }
-
-if (__DEV__) {
-  Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('Perf', 'react-addons-perf');
-      }
-      return require('react/lib/ReactPerf');
-    }
-  });
-  Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('update', 'react-addons-test-utils');
-      }
-      return require('react/lib/ReactTestUtils');
-    }
-  });
-}
-
 module.exports = ReactNative;
