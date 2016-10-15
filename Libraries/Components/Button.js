@@ -54,6 +54,7 @@ class Button extends React.Component {
     onPress: () => any,
     color?: ?string,
     accessibilityLabel?: ?string,
+    disabled?: ?boolean,
   };
 
   static propTypes = {
@@ -70,6 +71,10 @@ class Button extends React.Component {
      */
     color: ColorPropType,
     /**
+     * If true, disable all interactions for this component.
+     */
+    disabled: React.PropTypes.bool,
+    /**
      * Handler to be called when the user taps the button
      */
     onPress: React.PropTypes.func.isRequired,
@@ -81,6 +86,7 @@ class Button extends React.Component {
       color,
       onPress,
       title,
+      disabled,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -89,6 +95,10 @@ class Button extends React.Component {
       textStyles.push({color: color});
     } else if (color) {
       buttonStyles.push({backgroundColor: color});
+    }
+    if (disabled) {
+      buttonStyles.push(styles.buttonDisabled);
+      textStyles.push(styles.textDisabled);
     }
     invariant(
       typeof title === 'string',
@@ -100,6 +110,7 @@ class Button extends React.Component {
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={['button']}
+        disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
           <Text style={textStyles}>{formattedTitle}</Text>
@@ -138,6 +149,21 @@ const styles = StyleSheet.create({
       padding: 8,
       fontWeight: '500',
     },
+  }),
+  buttonDisabled: Platform.select({
+    ios: {},
+    android: {
+      elevation: 0,
+      backgroundColor: '#dfdfdf',
+    }
+  }),
+  textDisabled: Platform.select({
+    ios: {
+      color: '#cdcdcd',
+    },
+    android: {
+      color: '#a1a1a1',
+    }
   }),
 });
 
