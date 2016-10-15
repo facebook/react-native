@@ -11,16 +11,14 @@
  */
 'use strict';
 
-var React = require('React');
-
-var onlyChild = require('react/lib/onlyChild');
+const React = require('React');
 
 /**
  * Renders static content efficiently by allowing React to short-circuit the
  * reconciliation process. This component should be used when you know that a
  * subtree of components will never need to be updated.
  *
- *   var someValue = ...; // We know for certain this value will never change.
+ *   const someValue = ...; // We know for certain this value will never change.
  *   return (
  *     <StaticContainer>
  *       <MyComponent value={someValue} />
@@ -37,8 +35,10 @@ class StaticContainer extends React.Component {
   }
 
   render() {
-    var child = this.props.children;
-    return (child === null || child === false) ? null : onlyChild(child);
+    const child = this.props.children;
+    return (child === null || child === false)
+      ? null
+      : React.Children.only(child);
   }
 
 }

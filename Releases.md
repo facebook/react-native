@@ -3,15 +3,14 @@ https://github.com/facebook/react-native/releases
 
 ## Release schedule
 
-| Version | RC release       | Stable release |
-| ------- | ---------------- | -------------- |
-| 0.27.0  | week of May 16   | June 6         |
-| 0.28.0  | week of June 6   | June 20        |
-| 0.29.0  | week of June 20  | July 4         |
-| 0.30.0  | week of July 4   | July 18        |
-| 0.31.0  | week of July 18  | Aug 1          |
-| 0.32.0  | week of Aug 1    | Aug 15         |
-| ...     | ...              | ...            |
+| Version | RC release          | Stable release |
+| ------- | ------------------- | -------------- |
+| 0.36.0  | week of October 10  | October 24     |
+| 0.37.0  | week of October 24  | November 7     |
+| 0.38.0  | week of November 7  | November 21    |
+| 0.39.0  | week of November 21 | December 5     |
+| 0.40.0  | week of December 5  | December 19    |
+| ...     | ...                 | ...            |
 
 -------------------
 ## How to cut a new release branch

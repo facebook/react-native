@@ -13,6 +13,8 @@
 
 const Animated = require('Animated');
 
+import type React from 'react';
+
 // Object Instances
 
 export type NavigationAnimatedValue = Animated.Value;
@@ -112,7 +114,7 @@ export type NavigationAnimationSetter = (
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
-) => ?ReactElement<any>;
+) => ?React.Element<any>;
 
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,

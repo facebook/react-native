@@ -65,7 +65,7 @@ function navStatePresentedIndex(navState) {
   }
   // TODO: rename `observedTopOfStack` to `presentedIndex` in `NavigatorIOS`
   return navState.observedTopOfStack;
-};
+}
 
 
 /**
@@ -79,7 +79,7 @@ function initStyle(index, presentedIndex) {
   return index === presentedIndex ? NavigatorBreadcrumbNavigationBarStyles.Center[index] :
     index < presentedIndex ? NavigatorBreadcrumbNavigationBarStyles.Left[index] :
     NavigatorBreadcrumbNavigationBarStyles.Right[index];
-};
+}
 
 class NavigatorBreadcrumbNavigationBar extends React.Component {
   static propTypes = {

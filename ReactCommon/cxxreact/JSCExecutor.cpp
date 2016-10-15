@@ -20,6 +20,7 @@
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "Value.h"
+#include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
@@ -79,6 +80,28 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
   return &funcWrapper::call;
 }
 
+template<JSValueRef (JSCExecutor::*method)(JSObjectRef object, JSStringRef propertyName)>
+inline JSObjectGetPropertyCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+         JSContextRef ctx,
+         JSObjectRef object,
+         JSStringRef propertyName,
+         JSValueRef *exception) {
+      try {
+        auto globalObj = JSContextGetGlobalObject(ctx);
+        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        return (executor->*method)(object, propertyName);
+      } catch (...) {
+        *exception = translatePendingCppExceptionToJSError(ctx, object);
+        return JSValueMakeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
+}
+
 }
 
 #if DEBUG
@@ -109,28 +132,15 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate->getModuleRegistry()),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
-  SystraceSection s("setBatchedBridgeConfig");
-
-  folly::dynamic nativeModuleConfig = folly::dynamic::array();
-
   {
-    SystraceSection s("collectNativeModuleNames");
-    for (auto& name : delegate->getModuleRegistry()->moduleNames()) {
-      nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
-    }
+    SystraceSection s("nativeModuleProxy object");
+    installGlobalProxy(m_context, "nativeModuleProxy",
+                       exceptionWrapMethod<&JSCExecutor::getNativeModule>());
   }
-
-  folly::dynamic config =
-    folly::dynamic::object
-      ("remoteModuleConfig", std::move(nativeModuleConfig));
-
-  SystraceSection t("setGlobalVariable");
-  setGlobalVariable(
-    "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 JSCExecutor::JSCExecutor(
@@ -146,6 +156,7 @@ JSCExecutor::JSCExecutor(
     m_owner(owner),
     m_deviceCacheDir(owner->m_deviceCacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate->getModuleRegistry()),
     m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
@@ -189,6 +200,11 @@ void JSCExecutor::destroy() {
   });
 }
 
+void JSCExecutor::setContextName(const std::string& name) {
+  String jsName = String(name.c_str());
+  JSGlobalContextSetName(m_context, static_cast<JSStringRef>(jsName));
+}
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
@@ -211,7 +227,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
-  installNativeHook<&JSCExecutor::nativeRequireModuleConfig>("nativeRequireModuleConfig");
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
@@ -263,6 +278,8 @@ void JSCExecutor::terminateOnJSVMThread() {
   for (int workerId : workerIds) {
     terminateOwnedWebWorker(workerId);
   }
+
+  m_nativeModules.reset();
 
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
@@ -647,6 +664,14 @@ void JSCExecutor::installNativeHook(const char* name) {
   installGlobalFunction(m_context, name, exceptionWrapMethod<method>());
 }
 
+JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
+  if (JSStringIsEqualToUTF8CString(propertyName, "name")) {
+    return Value(m_context, String("NativeModules"));
+  }
+
+  return m_nativeModules.getModule(m_context, propertyName);
+}
+
 JSValueRef JSCExecutor::nativePostMessage(
     size_t argumentCount,
     const JSValueRef arguments[]) {
@@ -678,18 +703,6 @@ JSValueRef JSCExecutor::nativeRequire(
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
   }
   return JSValueMakeUndefined(m_context);
-}
-
-JSValueRef JSCExecutor::nativeRequireModuleConfig(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  std::string moduleName = Value(m_context, arguments[0]).toString().str();
-  folly::dynamic config = m_delegate->getModuleRegistry()->getConfig(moduleName);
-  return Value::fromDynamic(m_context, config);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(

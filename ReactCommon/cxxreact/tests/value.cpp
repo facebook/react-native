@@ -17,11 +17,11 @@ using namespace facebook::react;
 
 #ifdef ANDROID
 #include <android/looper.h>
-void prepare() {
+static void prepare() {
   ALooper_prepare(0);
 }
 #else
-void prepare() {
+static void prepare() {
 }
 #endif
 
