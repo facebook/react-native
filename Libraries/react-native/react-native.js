@@ -186,7 +186,7 @@ if (__DEV__) {
 
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
-const ReactNativeInternal = require('react/lib/ReactNative');
+const ReactNativeInternal = require('ReactNative');
 function applyForwarding(key) {
   if (__DEV__) {
     Object.defineProperty(
