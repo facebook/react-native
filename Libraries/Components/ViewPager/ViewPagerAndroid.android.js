@@ -13,7 +13,6 @@
 
 var React = require('React');
 var ReactNative = require('ReactNative');
-var ReactElement = require('react/lib/ReactElement');
 var UIManager = require('UIManager');
 var View = require('View');
 
@@ -178,7 +177,7 @@ class ViewPagerAndroid extends React.Component {
           (child.type.displayName !== 'View')) {
         console.warn('Each ViewPager child must be a <View>. Was ' + child.type.displayName);
       }
-      return ReactElement.createElement(child.type, newProps);
+      return React.createElement(child.type, newProps);
     });
   };
 
