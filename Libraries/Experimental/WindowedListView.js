@@ -48,8 +48,6 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const nullthrows = require('fbjs/lib/nullthrows');
 
-import type ReactComponent from 'ReactComponent';
-
 const DEBUG = false;
 
 /**
@@ -187,7 +185,7 @@ class WindowedListView extends React.Component {
   _willComputeRowsToRender: boolean = false;
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<string> = new Set();
-  _scrollRef: ?Object;
+  _scrollRef: ?ScrollView;
 
   static defaultProps = {
     initialNumToRender: 10,
@@ -214,7 +212,7 @@ class WindowedListView extends React.Component {
       lastRow: Math.min(this.props.data.length, this.props.initialNumToRender) - 1,
     };
   }
-  getScrollResponder(): ?ReactComponent {
+  getScrollResponder(): ?ScrollView {
     return this._scrollRef &&
       this._scrollRef.getScrollResponder &&
       this._scrollRef.getScrollResponder();
