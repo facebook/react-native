@@ -165,6 +165,15 @@ Input | Output
    101|      0
    200|      0
 
+`interpolate` also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:
+
+```javascript
+value.interpolate({
+  inputRange: [0, 360],
+  outputRange: ['0deg', '360deg']
+})
+```
+
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
