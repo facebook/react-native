@@ -78,14 +78,14 @@ exports.examples = [
   },
 }, {
   title: '<Text onPress={fn}> with highlight',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <TextOnPressBox />;
   },
 }, {
   title: 'Touchable feedback events',
   description: '<Touchable*> components accept onPress, onPressIn, ' +
     'onPressOut, and onLongPress as props.',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <TouchableFeedbackEvents />;
   },
 }, {
@@ -93,13 +93,13 @@ exports.examples = [
   description: '<Touchable*> components also accept delayPressIn, ' +
     'delayPressOut, and delayLongPress as props. These props impact the ' +
     'timing of feedback events.',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <TouchableDelayEvents />;
   },
 }, {
   title: '3D Touch / Force Touch',
   description: 'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <ForceTouchExample />;
   },
   platform: 'ios',
@@ -107,14 +107,14 @@ exports.examples = [
    title: 'Touchable Hit Slop',
    description: '<Touchable*> components accept hitSlop prop which extends the touch area ' +
      'without changing the view bounds.',
-   render: function(): React.Element<any> {
+   render: function(): React.Element<*> {
      return <TouchableHitSlop />;
    },
  }, {
    title: 'Disabled Touchable*',
    description: '<Touchable*> components accept disabled prop which prevents ' +
      'any interaction with component',
-   render: function(): React.Element<any> {
+   render: function(): React.Element<*> {
      return <TouchableDisabled />;
    },
  }];
