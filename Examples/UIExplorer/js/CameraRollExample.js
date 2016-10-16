@@ -35,7 +35,7 @@ const {
   TouchableOpacity
 } = ReactNative;
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 const CameraRollView = require('./CameraRollView');
 

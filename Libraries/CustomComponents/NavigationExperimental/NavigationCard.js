@@ -41,7 +41,6 @@ const NavigationPointerEventsContainer = require('NavigationPointerEventsContain
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const View = require('View');
 
 import type  {
   NavigationPanPanHandlers,
