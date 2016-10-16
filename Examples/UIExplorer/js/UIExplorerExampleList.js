@@ -63,7 +63,7 @@ type Props = {
 class UIExplorerExampleList extends React.Component {
   props: Props
 
-  render(): ?React.Element<*> {
+  render(): ?React.Element<any> {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) => filterRegex.test(example.module.title);
@@ -90,7 +90,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTitleRow(): ?React.Element<*> {
+  _renderTitleRow(): ?React.Element<any> {
     if (!this.props.displayTitleRow) {
       return null;
     }
@@ -106,7 +106,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTextInput(): ?React.Element<*> {
+  _renderTextInput(): ?React.Element<any> {
     if (this.props.disableSearch) {
       return null;
     }
@@ -129,7 +129,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderSectionHeader(data: any, section: string): ?React.Element<*> {
+  _renderSectionHeader(data: any, section: string): ?React.Element<any> {
     return (
       <Text style={styles.sectionHeader}>
         {section.toUpperCase()}
@@ -137,7 +137,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderExampleRow(example: {key: string, module: Object}): ?React.Element<*> {
+  _renderExampleRow(example: {key: string, module: Object}): ?React.Element<any> {
     return this._renderRow(
       example.module.title,
       example.module.description,
@@ -146,7 +146,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?React.Element<*> {
+  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?React.Element<any> {
     return (
       <View key={key || title}>
         <TouchableHighlight onPress={handler}>

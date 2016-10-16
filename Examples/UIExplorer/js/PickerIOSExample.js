@@ -147,13 +147,13 @@ exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
 {
   title: '<PickerIOS>',
-  render: function(): React.Element<*> {
+  render: function(): React.Element<any> {
     return <PickerExample />;
   },
 },
 {
   title: '<PickerIOS> with custom styling',
-  render: function(): React.Element<*> {
+  render: function(): React.Element<any> {
     return <PickerStyleExample />;
   },
 }];

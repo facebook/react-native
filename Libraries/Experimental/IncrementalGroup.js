@@ -65,7 +65,7 @@ class IncrementalGroup extends React.Component {
     };
   }
 
-  render(): React.Element<*> {
+  render(): React.Element<any> {
     return (
       <Incremental
         onDone={this.props.onDone}
