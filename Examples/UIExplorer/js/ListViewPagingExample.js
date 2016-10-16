@@ -142,7 +142,7 @@ class ListViewPagingExample extends React.Component {
     };
   }
 
-  renderRow = (rowData: string, sectionID: string, rowID: string): React.Element<any> => {
+  renderRow = (rowData: string, sectionID: string, rowID: string): React.Element<*> => {
     return (<Thumb text={rowData}/>);
   };
 

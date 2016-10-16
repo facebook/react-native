@@ -114,7 +114,7 @@ export type NavigationAnimationSetter = (
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
-) => ?React.Element<any>;
+) => ?React.Element<*>;
 
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,

@@ -45,7 +45,7 @@ exports.examples = [{
 },
 {
   title: 'Prompt Options',
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return <PromptOptions />;
   }
 },
