@@ -120,6 +120,6 @@ exports.description = 'Asynchronous local disk storage.';
 exports.examples = [
   {
     title: 'Basics - getItem, setItem, removeItem',
-    render(): React.Element<any> { return <BasicStorageExample />; }
+    render(): React.Element<*> { return <BasicStorageExample />; }
   },
 ];

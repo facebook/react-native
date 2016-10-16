@@ -28,7 +28,7 @@ class StaticRenderer extends React.Component {
     return nextProps.shouldUpdate;
   }
 
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return this.props.render();
   }
 }

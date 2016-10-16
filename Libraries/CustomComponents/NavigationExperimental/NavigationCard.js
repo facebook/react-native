@@ -76,7 +76,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     style: PropTypes.any,
   };
 
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     const {
       panHandlers,
       pointerEvents,

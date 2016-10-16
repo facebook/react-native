@@ -96,7 +96,7 @@ class AnExBobble extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {

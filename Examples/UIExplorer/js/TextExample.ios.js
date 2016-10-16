@@ -433,7 +433,7 @@ exports.examples = [
   },
 }, {
   title: 'Toggling Attributes',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <AttributeToggler />;
   },
 }, {
@@ -575,7 +575,7 @@ exports.examples = [
   },
 }, {
   title: 'Dynamic Font Size Adjustment',
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     return <AdjustingFontSize />;
   },
 }];

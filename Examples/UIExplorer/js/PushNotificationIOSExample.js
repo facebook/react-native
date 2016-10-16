@@ -193,7 +193,7 @@ exports.description = 'Apple PushNotification and badge value';
 exports.examples = [
 {
   title: 'Badge Number',
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return (
       <View>
         <Button
@@ -210,13 +210,13 @@ exports.examples = [
 },
 {
   title: 'Push Notifications',
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return <NotificationExample />;
   }
 },
 {
   title: 'Notifications Permissions',
-  render(): React.Element<any> {
+  render(): React.Element<*> {
     return <NotificationPermissionExample />;
   }
 }];
