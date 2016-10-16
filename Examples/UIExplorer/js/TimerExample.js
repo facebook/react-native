@@ -249,18 +249,6 @@ exports.examples = [
         };
 
         render() {
-          if (this.state.showTimer) {
-            var timer = [
-              <TimerTester ref="interval" dt={25} type="setInterval" />,
-              <UIExplorerButton onPress={() => this.refs.interval.clear() }>
-                Clear interval
-              </UIExplorerButton>
-            ];
-            var toggleText = 'Unmount timer';
-          } else {
-            var timer = null;
-            var toggleText = 'Mount new timer';
-          }
           return (
             <View>
               {this.state.showTimer && this._renderTimer()}
