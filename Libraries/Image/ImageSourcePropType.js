@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const PropTypes = require('react/lib/ReactPropTypes');
+const {PropTypes} = require('React');
 
 const ImageURISourcePropType = PropTypes.shape({
   /**
