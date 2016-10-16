@@ -579,11 +579,3 @@ exports.examples = [
     return <AdjustingFontSize />;
   },
 }];
-
-var styles = StyleSheet.create({
-  backgroundColorText: {
-    margin: 5,
-    marginBottom: 0,
-    backgroundColor: 'rgba(100, 100, 100, 0.3)'
-  },
-});

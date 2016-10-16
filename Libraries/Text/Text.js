@@ -21,7 +21,6 @@ const Touchable = require('Touchable');
 
 const createReactNativeComponentClass =
   require('react/lib/createReactNativeComponentClass');
-const merge = require('merge');
 const mergeFast = require('mergeFast');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);

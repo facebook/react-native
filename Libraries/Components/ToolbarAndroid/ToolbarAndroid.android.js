@@ -205,19 +205,6 @@ var ToolbarAndroid = React.createClass({
   },
 });
 
-var toolbarAttributes = {
-  ...ReactNativeViewAttributes.UIView,
-  actions: true,
-  logo: true,
-  navIcon: true,
-  overflowIcon: true,
-  rtl: true,
-  subtitle: true,
-  subtitleColor: true,
-  title: true,
-  titleColor: true,
-};
-
 var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
   nativeOnly: {
     nativeActions: true,
