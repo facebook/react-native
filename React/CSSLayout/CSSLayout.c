@@ -100,6 +100,8 @@ typedef struct CSSNode {
   void *context;
 } CSSNode;
 
+static void _CSSNodeMarkDirty(const CSSNodeRef node);
+
 static float
 computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const float defaultValue) {
   CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
@@ -131,7 +133,7 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
 
 static int32_t gNodeInstanceCount = 0;
 
-CSSNodeRef CSSNodeNew() {
+CSSNodeRef CSSNodeNew(void) {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
   gNodeInstanceCount++;
@@ -155,7 +157,7 @@ void CSSNodeFreeRecursive(const CSSNodeRef root) {
   CSSNodeFree(root);
 }
 
-int32_t CSSNodeGetInstanceCount() {
+int32_t CSSNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
 
@@ -240,10 +242,9 @@ uint32_t CSSNodeChildCount(const CSSNodeRef node) {
 }
 
 void CSSNodeMarkDirty(const CSSNodeRef node) {
-  CSS_ASSERT(node->measure != NULL,
-             "Nodes without custom measure functions "
-             "should not manually mark themselves as "
-             "dirty");
+  CSS_ASSERT(node->measure != NULL || CSSNodeChildCount(node) > 0,
+             "Only leaf nodes with custom measure functions"
+             "should manually mark themselves as dirty");
   _CSSNodeMarkDirty(node);
 }
 
@@ -964,7 +965,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
   // For content (text) nodes, determine the dimensions based on the text
   // contents.
-  if (node->measure) {
+  if (node->measure && CSSNodeChildCount(node) == 0) {
     const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
     const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
 
@@ -2098,7 +2099,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
   // most
   // expensive to measure, so it's worth avoiding redundant measurements if at
   // all possible.
-  if (node->measure) {
+  if (node->measure && CSSNodeChildCount(node) == 0) {
     const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
     const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
