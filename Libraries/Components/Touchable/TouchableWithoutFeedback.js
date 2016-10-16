@@ -147,7 +147,7 @@ const TouchableWithoutFeedback = React.createClass({
     return this.props.delayPressOut || 0;
   },
 
-  render: function(): React.Element<any> {
+  render: function(): React.Element<*> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     const child = React.Children.only(this.props.children);
     let children = child.props.children;

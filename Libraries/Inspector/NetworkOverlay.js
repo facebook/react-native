@@ -58,7 +58,7 @@ class NetworkOverlay extends React.Component {
   _listViewHighlighted: bool;
   _listViewHeight: number;
   _scrollView: ?ScrollView;
-  _detailViewItems: Array<Array<React.Element<any>>>;
+  _detailViewItems: Array<Array<React.Element<*>>>;
   _listViewOnLayout: (event: Event) => void;
   _captureRequestListView: (listRef: ?ListView) => void;
   _captureDetailScrollView: (scrollRef: ?ScrollView) => void;
@@ -67,8 +67,8 @@ class NetworkOverlay extends React.Component {
     sectionID: number,
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
-  ) => React.Element<any>;
-  _renderScrollComponent: (props: Object) => React.Element<any>;
+  ) => React.Element<*>;
+  _renderScrollComponent: (props: Object) => React.Element<*>;
   _closeButtonClicked: () => void;
   // Map of `socketId` -> `index in `_requests``.
   _socketIdMap: Object;
@@ -294,7 +294,7 @@ class NetworkOverlay extends React.Component {
     sectionID: number,
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
-  ): React.Element<any> {
+  ): React.Element<*> {
     let urlCellViewStyle = styles.urlEvenCellView;
     let methodCellViewStyle = styles.methodEvenCellView;
     if (rowID % 2 === 1) {
@@ -327,7 +327,7 @@ class NetworkOverlay extends React.Component {
   _renderSeperator(
     sectionID: number,
     rowID: number,
-    adjacentRowHighlighted: bool): React.Element<any> {
+    adjacentRowHighlighted: bool): React.Element<*> {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -367,7 +367,7 @@ class NetworkOverlay extends React.Component {
     this._listViewHeight = height;
   }
 
-  _renderScrollComponent(props: Object): React.Element<any> {
+  _renderScrollComponent(props: Object): React.Element<*> {
     return (
       <RecyclerViewBackedScrollView {...props} />
     );
