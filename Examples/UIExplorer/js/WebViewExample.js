@@ -217,6 +217,53 @@ class ScaledWebView extends React.Component {
   }
 }
 
+class MessagingTest extends React.Component {
+  webview = null
+
+  state = {
+    messagesReceivedFromWebView: 0,
+    message: '',
+  }
+
+  onMessage = e => this.setState({
+    messagesReceivedFromWebView: this.state.messagesReceivedFromWebView + 1,
+    message: e.nativeEvent.data,
+  })
+
+  postMessage = () => {
+    if (this.webview) {
+      this.webview.postMessage('"Hello" from React Native!');
+    }
+  }
+
+  render(): ReactElement<any> {
+    const {messagesReceivedFromWebView, message} = this.state;
+
+    return (
+      <View style={[styles.container, { height: 200 }]}>
+        <View style={styles.container}>
+          <Text>Messages received from web view: {messagesReceivedFromWebView}</Text>
+          <Text>{message || '(No message)'}</Text>
+          <View style={styles.buttons}>
+            <Button text="Send Message to Web View" enabled onPress={this.postMessage} />
+          </View>
+        </View>
+        <View style={styles.container}>
+          <WebView
+            ref={webview => { this.webview = webview; }}
+            style={{
+              backgroundColor: BGWASH,
+              height: 100,
+            }}
+            source={require('./messagingtest.html')}
+            onMessage={this.onMessage}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -391,5 +438,9 @@ exports.examples = [
         />
       );
     }
+  },
+  {
+    title: 'Mesaging Test',
+    render(): ReactElement<any> { return <MessagingTest />; }
   }
 ];

@@ -236,6 +236,16 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
+     * A function that is invoked when the webview calls `window.postMessage`.
+     * Setting this property will inject a `postMessage` global into your
+     * webview, but will still call pre-existing values of `postMessage`.
+     *
+     * `window.postMessage` accepts one argument, `data`, which will be
+     * available on the event object, `event.nativeEvent.data`. `data`
+     * must be a string.
+     */
+    onMessage: PropTypes.func,
+    /**
      * Boolean value that forces the `WebView` to show the loading view
      * on the first load.
      */
@@ -382,6 +392,8 @@ class WebView extends React.Component {
       source.uri = this.props.url;
     }
 
+    const messagingEnabled = typeof this.props.onMessage === 'function';
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -397,6 +409,8 @@ class WebView extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        messagingEnabled={messagingEnabled}
+        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
@@ -458,6 +472,24 @@ class WebView extends React.Component {
   };
 
   /**
+   * Posts a message to the web view, which will emit a `message` event.
+   * Accepts one argument, `data`, which must be a string.
+   *
+   * In your webview, you'll need to something like the following.
+   *
+   * ```js
+   * document.addEventListener('message', e => { document.title = e.data; });
+   * ```
+   */
+  postMessage = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.postMessage,
+      [String(data)]
+    );
+  };
+
+  /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
@@ -502,6 +534,11 @@ class WebView extends React.Component {
     });
     this._updateNavigationState(event);
   };
+
+  _onMessage = (event: Event) => {
+    var {onMessage} = this.props;
+    onMessage && onMessage(event);
+  }
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
@@ -509,6 +546,8 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onMessage: true,
+    messagingEnabled: PropTypes.bool,
   },
 });
 
