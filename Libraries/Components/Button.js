@@ -20,7 +20,7 @@ const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * A basic button component that should render nicely on any platform. Supports
