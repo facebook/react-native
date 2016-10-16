@@ -18,7 +18,7 @@
 #import "RCTJSCExecutor.h"
 #import "RCTBridge+Private.h"
 
-static const NSTimeInterval kTestTimeoutSeconds = 60;
+static const NSTimeInterval kTestTimeoutSeconds = 120;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 
 @implementation RCTTestRunner
