@@ -31,7 +31,6 @@ const UIExplorerPage = require('UIExplorerPage');
 const {
   Picker,
   Text,
-  TouchableWithoutFeedback,
 } = ReactNative;
 
 const Item = Picker.Item;

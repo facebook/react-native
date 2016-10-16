@@ -25,13 +25,11 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
-  PixelRatio,
   Image,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  UIManager,
   Platform,
   TouchableNativeFeedback,
   View,

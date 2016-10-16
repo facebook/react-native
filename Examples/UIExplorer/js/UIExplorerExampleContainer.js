@@ -29,8 +29,6 @@ const {
 const UIExplorerBlock = require('./UIExplorerBlock');
 const UIExplorerPage = require('./UIExplorerPage');
 
-const invariant = require('fbjs/lib/invariant');
-
 class UIExplorerExampleContainer extends React.Component {
   renderExample(example, i) {
     // Filter platform-specific examples
