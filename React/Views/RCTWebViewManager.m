@@ -13,6 +13,7 @@
 #import "RCTUIManager.h"
 #import "RCTWebView.h"
 #import "UIView+React.h"
+#import "RCTUtils.h"
 
 @interface RCTWebViewManager () <RCTWebViewDelegate>
 
@@ -93,6 +94,24 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {
       [view stopLoading];
+    }
+  }];
+}
+
+RCT_REMAP_METHOD(evaluateJavaScript, evaluateJavaScript:(nonnull NSNumber *)reactTag script:(nonnull NSString *)script resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+      return;
+    }
+
+    NSString *result = [view evaluateJavaScript: script];
+    if (result && [result length] > 0) {
+      resolve(result);
+    } else {
+      reject(RCTErrorUnspecified, @"Error evaluating script.", nil);
     }
   }];
 }

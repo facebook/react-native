@@ -458,6 +458,16 @@ class WebView extends React.Component {
   };
 
   /**
+   * Evaluate JavaScript on the current page.
+   */
+  evaluateJavaScript: async function(script: string): Promise {
+    var escaped = JSON.stringify(script).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    var wrapped = 'JSON.stringify(eval(' + escaped + '))';
+    var resultString = await RCTWebViewManager.evaluateJavaScript(this.getWebViewHandle(), wrapped);
+    return JSON.parse(resultString);
+  },
+
+  /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
