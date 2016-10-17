@@ -12,9 +12,9 @@
   },
   "jest": {
     "automock": true,
-    "scriptPreprocessor": "jestSupport/preprocessor.js",
+    "scriptPreprocessor": "jest/preprocessor.js",
     "setupFiles": [
-      "jestSupport/env.js"
+      "jest/setup.js"
     ],
     "timers": "fake",
     "moduleNameMapper": {
@@ -117,7 +117,7 @@
     "LICENSE",
     "PATENTS",
     "README.md",
-    "jestSupport",
+    "jest",
     ".flowconfig",
     "flow"
   ],
