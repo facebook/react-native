@@ -30,7 +30,10 @@ exports[`TouchableHighlight renders correctly 1`] = `
   tvParallaxShiftDistanceX={2}
   tvParallaxShiftDistanceY={2}
   tvParallaxTiltAngle={0.05}>
-  <Text>
+  <Text
+    accessible={true}
+    allowFontScaling={true}
+    ellipsizeMode="tail">
     Touchable
   </Text>
 </View>
