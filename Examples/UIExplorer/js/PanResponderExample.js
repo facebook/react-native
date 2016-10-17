@@ -28,7 +28,6 @@ var {
   PanResponder,
   StyleSheet,
   View,
-  processColor,
 } = ReactNative;
 
 var CIRCLE_SIZE = 80;

@@ -21,7 +21,10 @@ exports[`TouchableHighlight renders correctly 1`] = `
     ]
   }
   testID={undefined}>
-  <Text>
+  <Text
+    accessible={true}
+    allowFontScaling={true}
+    ellipsizeMode="tail">
     Touchable
   </Text>
 </View>
