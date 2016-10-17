@@ -96,11 +96,16 @@ class HasteMap extends EventEmitter {
       return null;
     }
 
-    // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
+    // If platform is 'ios10', we prefer .ios10.js to .ios.js
+    // which we prefer .ios.js to .native.js which we prefer to
     // a plain .js file.
     let module = undefined;
     if (module == null && platform != null) {
       module = modulesMap[platform];
+    }
+    if (module == null && platform != null) {
+      const versionlessPlatform = platform.replace(/\d/, '');
+      module = modulesMap[versionlessPlatform];
     }
     if (module == null && this._preferNativePlatform) {
       module = modulesMap[NATIVE_PLATFORM];
