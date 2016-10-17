@@ -8,14 +8,10 @@
  */
 'use strict';
 
-const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('./fastpath');
 
 const {EventEmitter} = require('events');
-
-const readFile = denodeify(fs.readFile);
-const stat = denodeify(fs.stat);
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
@@ -222,14 +218,26 @@ class File {
 
   read() {
     if (!this._read) {
-      this._read = readFile(this.path, 'utf8');
+      this._read = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.readFileSync(this.path, 'utf8'));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
     return this._read;
   }
 
   stat() {
     if (!this._stat) {
-      this._stat = stat(this.path);
+      this._stat = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.statSync(this.path));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
 
     return this._stat;
