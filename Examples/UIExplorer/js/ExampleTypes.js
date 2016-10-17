@@ -27,7 +27,7 @@ import type React from 'react';
 
 export type Example = {
   title: string,
-  render: () => ?React.Element<*>,
+  render: () => ?React.Element<any>,
   description?: string,
   platform?: string,
 };
