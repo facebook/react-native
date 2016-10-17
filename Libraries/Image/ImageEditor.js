@@ -32,14 +32,15 @@ type ImageCropData = {
   },
   /**
    * (Optional) size to scale the cropped image to.
+   * defaults to size. (no scale)
    */
   displaySize?: ?{
     width: number,
     height: number,
   },
   /**
-   * (Optional) the resizing mode to use when scaling the image. If the
-   * `displaySize` param is not specified, this has no effect.
+   * (Optional) the resizing mode to use when scaling the image. 
+   * defaults to "contain".
    */
   resizeMode?: ?$Enum<{
     contain: string,
