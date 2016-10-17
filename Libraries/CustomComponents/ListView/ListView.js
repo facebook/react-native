@@ -34,7 +34,7 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var ReactNative = require('react/lib/ReactNative');
+var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
@@ -454,7 +454,7 @@ var ListView = React.createClass({
 
     var {
       renderScrollComponent,
-      ...props,
+      ...props
     } = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;

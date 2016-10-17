@@ -11,23 +11,24 @@
  */
 'use strict';
 
+const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
 const View = require('View');
-const deprecatedPropType = require('deprecatedPropType');
 
+const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+
+const PropTypes = React.PropTypes;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
  * _Note: If you need more control over how to present modals over the rest of your app,
- * then consider using a top-level Navigator. Go [here](/react-native/docs/navigator-comparison.html) to compare navigation options._
+ * then consider using a top-level Navigator._
  *
  * ```javascript
  * import React, { Component } from 'react';
@@ -35,9 +36,8 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  *
  * class ModalExample extends Component {
  *
- *   constructor(props) {
- *     super(props);
- *     this.state = {modalVisible: false};
+ *   state = {
+ *     modalVisible: false,
  *   }
  *
  *   setModalVisible(visible) {
@@ -129,14 +129,13 @@ class Modal extends React.Component {
     visible: true,
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     if (this.props.visible === false) {
       return null;
     }
 
     const containerStyles = {
       backgroundColor: this.props.transparent ? 'transparent' : 'white',
-      top: Platform.OS === 'android' && Platform.Version >= 19 ? UIManager.RCTModalHostView.Constants.StatusBarHeight : 0,
     };
 
     let animationType = this.props.animationType;
@@ -147,6 +146,12 @@ class Modal extends React.Component {
         animationType = 'slide';
       }
     }
+
+    const innerChildren = __DEV__ ?
+      ( <AppContainer>
+          {this.props.children}
+        </AppContainer>) :
+      this.props.children;
 
     return (
       <RCTModalHostView
@@ -160,7 +165,7 @@ class Modal extends React.Component {
         onOrientationChange={this.props.onOrientationChange}
         >
         <View style={[styles.container, containerStyles]}>
-          {this.props.children}
+          {innerChildren}
         </View>
       </RCTModalHostView>
     );

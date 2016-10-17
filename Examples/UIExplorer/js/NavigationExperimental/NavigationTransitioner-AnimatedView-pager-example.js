@@ -95,7 +95,7 @@ class Example extends Component {
     this.state = reducer();
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View style={styles.example}>
         <ExampleNavigator
@@ -154,7 +154,7 @@ class ExampleNavigator extends Component {
     this._renderScene = this._renderScene.bind(this);
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <NavigationTransitioner
         navigationState={this.props.navigationState}
@@ -165,7 +165,7 @@ class ExampleNavigator extends Component {
 
   _render(
     transitionProps: NavigationTransitionProps,
-  ): ReactElement<any> {
+  ): React.Element<any> {
     const scenes = transitionProps.scenes.map((scene) => {
       const sceneProps = {
         ...transitionProps,
@@ -182,7 +182,7 @@ class ExampleNavigator extends Component {
 
   _renderScene(
     sceneProps: NavigationSceneRendererProps,
-  ): ReactElement<any> {
+  ): React.Element<any> {
     return (
       <ExampleScene
         {...sceneProps}
@@ -203,7 +203,7 @@ class ExampleScene extends Component {
     navigate: PropTypes.func.isRequired,
   };
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {scene, navigate} = this.props;
 
     const panHandlers = NavigationPagerPanResponder.forHorizontal({

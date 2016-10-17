@@ -27,7 +27,6 @@ var React = require('react');
 var ReactNative = require('react-native');
 var {
   Animated,
-  Image,
   PanResponder,
   StyleSheet,
   View,
@@ -96,7 +95,7 @@ class AnExBobble extends React.Component {
     });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {

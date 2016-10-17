@@ -100,6 +100,8 @@ typedef struct CSSNode {
   void *context;
 } CSSNode;
 
+static void _CSSNodeMarkDirty(const CSSNodeRef node);
+
 static float
 computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const float defaultValue) {
   CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
@@ -129,9 +131,12 @@ computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const flo
   return defaultValue;
 }
 
-CSSNodeRef CSSNodeNew() {
+static int32_t gNodeInstanceCount = 0;
+
+CSSNodeRef CSSNodeNew(void) {
   const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
 
   CSSNodeInit(node);
   return node;
@@ -140,6 +145,20 @@ CSSNodeRef CSSNodeNew() {
 void CSSNodeFree(const CSSNodeRef node) {
   CSSNodeListFree(node->children);
   free(node);
+  gNodeInstanceCount--;
+}
+
+void CSSNodeFreeRecursive(const CSSNodeRef root) {
+  while (CSSNodeChildCount(root) > 0) {
+    const CSSNodeRef child = CSSNodeGetChild(root, 0);
+    CSSNodeRemoveChild(root, child);
+    CSSNodeFreeRecursive(child);
+  }
+  CSSNodeFree(root);
+}
+
+int32_t CSSNodeGetInstanceCount(void) {
+  return gNodeInstanceCount;
 }
 
 void CSSNodeInit(const CSSNodeRef node) {
@@ -183,6 +202,7 @@ void CSSNodeInit(const CSSNodeRef node) {
   // Such that the comparison is always going to be false
   node->layout.lastParentDirection = (CSSDirection) -1;
   node->layout.nextCachedMeasurementsIndex = 0;
+  node->layout.computedFlexBasis = CSSUndefined;
 
   node->layout.measuredDimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.measuredDimensions[CSSDimensionHeight] = CSSUndefined;
@@ -190,9 +210,10 @@ void CSSNodeInit(const CSSNodeRef node) {
   node->layout.cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
 }
 
-void _CSSNodeMarkDirty(const CSSNodeRef node) {
+static void _CSSNodeMarkDirty(const CSSNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
+    node->layout.computedFlexBasis = CSSUndefined;
     if (node->parent) {
       _CSSNodeMarkDirty(node->parent);
     }
@@ -200,6 +221,7 @@ void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
+  CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
   CSSNodeListInsert(node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -220,10 +242,9 @@ uint32_t CSSNodeChildCount(const CSSNodeRef node) {
 }
 
 void CSSNodeMarkDirty(const CSSNodeRef node) {
-  CSS_ASSERT(node->measure != NULL,
-             "Nodes without custom measure functions "
-             "should not manually mark themselves as "
-             "dirty");
+  CSS_ASSERT(node->measure != NULL || CSSNodeChildCount(node) > 0,
+             "Only leaf nodes with custom measure functions"
+             "should manually mark themselves as dirty");
   _CSSNodeMarkDirty(node);
 }
 
@@ -451,6 +472,8 @@ _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32
       printf("overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
       printf("overflow: 'visible', ");
+    } else if (node->style.overflow == CSSOverflowScroll) {
+      printf("overflow: 'scroll', ");
     }
 
     if (eqFour(node->style.margin)) {
@@ -942,7 +965,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
   // For content (text) nodes, determine the dimensions based on the text
   // contents.
-  if (node->measure) {
+  if (node->measure && CSSNodeChildCount(node) == 0) {
     const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
     const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
 
@@ -1117,8 +1140,10 @@ static void layoutNodeImpl(const CSSNodeRef node,
                   getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
       } else if (!CSSValueIsUndefined(child->style.flexBasis) &&
                  !CSSValueIsUndefined(availableInnerMainDim)) {
-        child->layout.computedFlexBasis =
-            fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+        if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+          child->layout.computedFlexBasis =
+              fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+        }
       } else {
         // Compute the flex basis and hypothetical main size (i.e. the clamped
         // flex basis).
@@ -1138,21 +1163,19 @@ static void layoutNodeImpl(const CSSNodeRef node,
           childHeightMeasureMode = CSSMeasureModeExactly;
         }
 
-        // According to the spec, if the main size is not definite and the
-        // child's inline axis is parallel to the main axis (i.e. it's
-        // horizontal), the child should be sized using "UNDEFINED" in
-        // the main size. Otherwise use "AT_MOST" in the cross axis.
-        if (!isMainAxisRow && CSSValueIsUndefined(childWidth) &&
-            !CSSValueIsUndefined(availableInnerWidth)) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
         // The W3C spec doesn't say anything about the 'overflow' property,
         // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) &&
-              !CSSValueIsUndefined(availableInnerHeight)) {
+        if ((!isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+            node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(availableInnerWidth)) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureModeAtMost;
+          }
+        }
+
+        if ((isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+            node->style.overflow != CSSOverflowScroll) {
+          if (CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(availableInnerHeight)) {
             childHeight = availableInnerHeight;
             childHeightMeasureMode = CSSMeasureModeAtMost;
           }
@@ -1701,7 +1724,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
       for (ii = startIndex; ii < childCount; ii++) {
         const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-        if (child->style.positionType == CSSPositionTypeAbsolute) {
+        if (child->style.positionType == CSSPositionTypeRelative) {
           if (child->lineIndex != i) {
             break;
           }
@@ -1720,7 +1743,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         for (ii = startIndex; ii < endIndex; ii++) {
           const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-          if (child->style.positionType == CSSPositionTypeAbsolute) {
+          if (child->style.positionType == CSSPositionTypeRelative) {
             switch (getAlignItem(node, child)) {
               case CSSAlignFlexStart:
                 child->layout.position[pos[crossAxis]] =
@@ -2076,7 +2099,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
   // most
   // expensive to measure, so it's worth avoiding redundant measurements if at
   // all possible.
-  if (node->measure) {
+  if (node->measure && CSSNodeChildCount(node) == 0) {
     const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
     const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
@@ -2274,3 +2297,17 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
     }
   }
 }
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+static CSSAssertFailFunc gAssertFailFunc;
+
+void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
+  gAssertFailFunc = func;
+}
+
+void CSSAssertFail(const char *message) {
+  if (gAssertFailFunc) {
+    (*gAssertFailFunc)(message);
+  }
+}
+#endif

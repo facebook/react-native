@@ -122,7 +122,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
 {
   if (json) {
-    view.clipsToBounds = [RCTConvert CSSOverflow:json] == CSSOverflowHidden;
+    view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
   } else {
     view.clipsToBounds = defaultView.clipsToBounds;
   }
