@@ -1544,9 +1544,10 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
     // If we are using "at most" rules in the main axis. Calculate the remaining space when
     // constraint by the min size defined for the main axis.
-    if (measureModeMainDim == CSSMeasureModeAtMost) {
+
+    if (measureModeMainDim == CSSMeasureModeAtMost && remainingFreeSpace > 0) {
       if (!CSSValueIsUndefined(node->style.minDimensions[dim[mainAxis]]) && node->style.minDimensions[dim[mainAxis]] >= 0) {
-        remainingFreeSpace = fmaxf(0, node->style.minDimensions[dim[mainAxis]] - (availableInnerMainDim - remainingFreeSpace));
+        remainingFreeSpace = fmax(0, node->style.minDimensions[dim[mainAxis]] - (availableInnerMainDim - remainingFreeSpace));
       } else {
         remainingFreeSpace = 0;
       }
