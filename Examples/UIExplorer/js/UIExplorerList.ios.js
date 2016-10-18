@@ -152,6 +152,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     key: 'WebViewExample',
     module: require('./WebViewExample'),
   },
+  {
+    key: 'WKWebViewIOSExample',
+    module: require('./WKWebViewIOSExample'),
+  },
 ];
 
 const APIExamples: Array<UIExplorerExample> = [

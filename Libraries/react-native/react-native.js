@@ -66,6 +66,7 @@ const ReactNative = {
   get TouchableWithoutFeedback() { return require('TouchableWithoutFeedback'); },
   get View() { return require('View'); },
   get ViewPagerAndroid() { return require('ViewPagerAndroid'); },
+  get WKWebViewIOS() { return require('WKWebViewIOS'); },
   get WebView() { return require('WebView'); },
 
   // APIs
