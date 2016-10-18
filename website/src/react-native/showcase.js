@@ -27,6 +27,13 @@ content.
 */
 var featured = [
   {
+    name: 'Chop',
+    icon: 'https://pbs.twimg.com/profile_images/656536498951446529/6zU6BvgB.png',
+    linkAppStore: 'http://apple.co/2dfkYH9',
+    infoLink: 'http://blog.getchop.io',
+    infoTitle: 'Chop is a mobile commerce solution for local businesses',
+  },
+  {
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
