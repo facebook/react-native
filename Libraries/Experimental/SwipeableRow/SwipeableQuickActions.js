@@ -46,7 +46,7 @@ class SwipeableQuickActions extends React.Component {
     style: View.propTypes.style,
   };
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     // $FlowFixMe found when converting React.createClass to ES6
     const children = this.props.children;
     let buttons = [];

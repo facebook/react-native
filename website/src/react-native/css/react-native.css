@@ -1262,6 +1262,7 @@ div[data-twttr-id] iframe {
 .propType {
   font-weight: normal;
   font-size: 15px;
+  white-space: pre;
 }
 
 .compactProps .propType {
@@ -1337,6 +1338,30 @@ div[data-twttr-id] iframe {
   display: none;
 }
 
+
+/** Showcase **/
+
+.home-showcase-section {
+  max-width: 800px;
+  margin: 20px auto 40px auto;
+  text-align: center;
+}
+
+.home-showcase-section p {
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.footnote {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.home-showcase-section .showcase img {
+  width: 110px;
+  border-radius: 20px;
+}
+
 .showcaseHeader {
   padding-bottom: 15px;
   padding-top: 15px;
@@ -1344,7 +1369,7 @@ div[data-twttr-id] iframe {
 }
 
 .showcase {
-  margin: 30px auto 10px auto;
+  margin: 30px auto 30px auto;
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -1392,8 +1417,17 @@ div[data-twttr-id] iframe {
   border-radius: 20px;
 }
 
+.pinned img {
+  width: 150px;
+  border-radius: 20px;
+}
+
+table.versions  {
+  width: 60%;
+}
+
 .versions th {
-  text-align: right;
+  width: 20%;
 }
 
 .versions td, .versions th {

@@ -12,7 +12,6 @@
 'use strict';
 
 var BoxInspector = require('BoxInspector');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var StyleInspector = require('StyleInspector');
 var StyleSheet = require('StyleSheet');
@@ -20,11 +19,12 @@ var Text = require('Text');
 var TouchableHighlight = require('TouchableHighlight');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var {fetch} = require('fetch');
 
 var flattenStyle = require('flattenStyle');
 var mapWithSeparator = require('mapWithSeparator');
 var openFileInEditor = require('openFileInEditor');
+
+var PropTypes = React.PropTypes;
 
 class ElementProperties extends React.Component {
   props: {

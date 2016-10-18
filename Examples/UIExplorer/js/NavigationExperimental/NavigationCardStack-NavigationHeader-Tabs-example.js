@@ -166,7 +166,7 @@ function createAppNavigationContainer(ComponentClass) {
       };
     }
 
-    render(): ReactElement {
+    render(): React.Element {
       const navigate = this.context[key] || this.props.navigate;
       return <ComponentClass {...this.props} navigate={navigate} />;
     }
@@ -191,7 +191,7 @@ class YourApplication extends Component {
     this._navigate = this._navigate.bind(this);
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     // User your own navigator (see next step).
     return (
       <YourNavigator
@@ -255,7 +255,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
   }
 
   // Now use the `NavigationCardStack` to render the scenes.
-  render(): ReactElement {
+  render(): React.Element {
     const {appNavigationState} = this.props;
     const {tabs} = appNavigationState;
     const tabKey = tabs.routes[tabs.index].key;
@@ -281,7 +281,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
   // Render the header.
   // The detailed spec of `sceneProps` is defined at `NavigationTypeDefinition`
   // as type `NavigationSceneRendererProps`.
-  _renderHeader(sceneProps: Object): ReactElement {
+  _renderHeader(sceneProps: Object): React.Element {
     return (
       <YourHeader
         {...sceneProps}
@@ -292,7 +292,7 @@ const YourNavigator = createAppNavigationContainer(class extends Component {
   // Render a scene for route.
   // The detailed spec of `sceneProps` is defined at `NavigationTypeDefinition`
   // as type `NavigationSceneRendererProps`.
-  _renderScene(sceneProps: Object): ReactElement {
+  _renderScene(sceneProps: Object): React.Element {
     return (
       <YourScene
         {...sceneProps}
@@ -319,7 +319,7 @@ const YourHeader = createAppNavigationContainer(class extends Component {
     this._renderTitleComponent = this._renderTitleComponent.bind(this);
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     return (
       <NavigationHeader
         {...this.props}
@@ -333,7 +333,7 @@ const YourHeader = createAppNavigationContainer(class extends Component {
     this.props.navigate({type: 'pop'});
   }
 
-  _renderTitleComponent(props: Object): ReactElement {
+  _renderTitleComponent(props: Object): React.Element {
     return (
       <NavigationHeader.Title>
         {props.scene.route.key}
@@ -357,7 +357,7 @@ const YourScene = createAppNavigationContainer(class extends Component {
     this._pushRoute = this._pushRoute.bind(this);
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     return (
       <ScrollView>
         <NavigationExampleRow
@@ -403,7 +403,7 @@ const YourTabs = createAppNavigationContainer(class extends Component {
     super(props, context);
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     return (
       <View style={styles.tabs}>
         {this.props.navigationState.routes.map(this._renderTab, this)}
@@ -411,7 +411,7 @@ const YourTabs = createAppNavigationContainer(class extends Component {
     );
   }
 
-  _renderTab(route: Object, index: number): ReactElement {
+  _renderTab(route: Object, index: number): React.Element {
     return (
       <YourTab
         key={route.key}
@@ -437,7 +437,7 @@ const YourTab = createAppNavigationContainer(class extends Component {
     this._onPress = this._onPress.bind(this);
   }
 
-  render(): ReactElement {
+  render(): React.Element {
     const style = [styles.tabText];
     if (this.props.selected) {
       style.push(styles.tabSelected);
