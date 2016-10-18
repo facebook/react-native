@@ -30,7 +30,7 @@ var featured = [
     name: 'Chop',
     icon: 'https://pbs.twimg.com/profile_images/656536498951446529/6zU6BvgB.png',
     linkAppStore: 'http://apple.co/2dfkYH9',
-    infoLink: 'http://blog.getchop.io',
+    infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'Chop is a mobile commerce solution for local businesses',
   },
   {
