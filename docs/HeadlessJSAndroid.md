@@ -49,9 +49,9 @@ public class MyTaskService extends FbHeadlessJsTaskService {
 }
 ```
 
-Now, whenever you [start your service](https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)), e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
+Now, whenever you [start your service](https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent), e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
 
 ## Caveats
 
 * By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. There is a way around this.
-* If you start your service from a BroadcastReceiver, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
+* If you start your service from a `BroadcastReceiver`, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
