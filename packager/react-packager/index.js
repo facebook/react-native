@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -15,9 +17,15 @@ require('./src/node-haste/fastpath').replace();
 var debug = require('debug');
 var Activity = require('./src/Activity');
 
+type Options = {
+  nonPersistent: boolean,
+  verbose: boolean,
+}
+
 exports.createServer = createServer;
 exports.Activity = Activity;
-exports.getOrderedDependencyPaths = function(options, bundleOptions) {
+
+exports.getOrderedDependencyPaths = function(options: Options, bundleOptions: mixed) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(bundleOptions)
     .then(function(paths) {
@@ -40,7 +48,7 @@ function enableDebug() {
   debug.enable(debugPattern);
 }
 
-function createServer(options) {
+function createServer(options: Options) {
   // the debug module is configured globally, we need to enable debugging
   // *before* requiring any packages that use `debug` for logging
   if (options.verbose) {
@@ -51,7 +59,7 @@ function createServer(options) {
   return new Server(omit(options, ['verbose']));
 }
 
-function createNonPersistentServer(options) {
+function createNonPersistentServer(options: Options) {
   Activity.disable();
   // Don't start the filewatcher or the cache.
   if (options.nonPersistent == null) {
