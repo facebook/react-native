@@ -36,4 +36,4 @@ xcodebuild \
   -scheme $XCODE_SCHEME \
   -sdk $XCODE_SDK \
   -destination "$XCODE_DESTINATION" \
-  test | $OUTPUT_TOOL && exit ${PIPESTATUS[0]}
+  build test
