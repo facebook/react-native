@@ -9,8 +9,6 @@
 
 package com.facebook.react.flat;
 
-import android.graphics.Bitmap;
-
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -60,6 +58,6 @@ import com.facebook.react.views.art.ARTSurfaceView;
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.setBitmap((Bitmap) extraData);
+    root.setSurfaceTextureListener((FlatARTSurfaceViewShadowNode) extraData);
   }
 }
