@@ -1680,7 +1680,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         betweenMainDim = remainingFreeSpace / itemsOnLine;
         leadingMainDim = betweenMainDim / 2;
         break;
-      default:
+      case CSSJustifyFlexStart:
         break;
     }
 
@@ -1915,7 +1915,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
                 //                (auto) crossAxis dimension.
                 break;
               }
-              default:
+              case CSSAlignAuto:
                 break;
             }
           }
