@@ -49,7 +49,7 @@ public class MyTaskService extends FbHeadlessJsTaskService {
 }
 ```
 
-Now, whenever you [start your service](https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)), e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
+Now, whenever you [start your service](https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent), e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
 
 ## Caveats
 
