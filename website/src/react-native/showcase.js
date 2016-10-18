@@ -27,13 +27,6 @@ content.
 */
 var featured = [
   {
-    name: 'Chop',
-    icon: 'https://pbs.twimg.com/profile_images/656536498951446529/6zU6BvgB.png',
-    linkAppStore: 'http://apple.co/2dfkYH9',
-    infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
-    infoTitle: 'Chop is a mobile commerce solution for local businesses',
-  },
-  {
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
@@ -310,7 +303,14 @@ var featured = [
     linkPlayStore: 'https://app.jd.com/android.html',
     infoLink: 'http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile',
     infoTitle: 'JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.',
-  }
+  },
+  {
+    name: 'Chop',
+    icon: 'https://pbs.twimg.com/profile_images/656536498951446529/6zU6BvgB.png',
+    linkAppStore: 'http://apple.co/2dfkYH9',
+    infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
+    infoTitle: 'How we built Chop',
+  }  
 ];
 
 /*
