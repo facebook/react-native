@@ -698,6 +698,28 @@ var NavigatorSceneConfigs = {
       out: buildStyleInterpolator(directionMapping.FadeToTheEnd),
     },
   },
+  HorizontalSwipeJumpFromLeft: {
+    ...BaseConfig,
+    gestures: {
+      jumpBack: {
+        ...directionMapping.BaseEndToStartGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      jumpForward: {
+        ...directionMapping.BaseStartToEndGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      pop: directionMapping.BaseEndToStartGesture,
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.ToTheEnd),
+    },
+  },
   VerticalUpSwipeJump: {
     ...BaseConfig,
     gestures: {
