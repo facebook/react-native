@@ -1550,14 +1550,20 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
         if (remainingFreeSpace < 0) {
           flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
-
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
-            updatedMainSize = boundAxis(currentRelativeChild,
-                                        mainAxis,
-                                        childFlexBasis +
-                                            remainingFreeSpace / totalFlexShrinkScaledFactors *
-                                                flexShrinkScaledFactor);
+            float childSize;
+
+            if (totalFlexShrinkScaledFactors == 0) {
+              childSize = childFlexBasis + flexShrinkScaledFactor;
+            } else {
+              childSize =
+                  childFlexBasis +
+                  (remainingFreeSpace / totalFlexShrinkScaledFactors) *
+                  flexShrinkScaledFactor;
+            }
+
+            updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childSize);
           }
         } else if (remainingFreeSpace > 0) {
           flexGrowFactor = currentRelativeChild->style.flexGrow;
