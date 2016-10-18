@@ -1855,15 +1855,21 @@ static void layoutNodeImpl(const CSSNodeRef node,
     float crossDimLead = 0;
     float currentLead = leadingPaddingAndBorderCross;
 
-    const CSSAlign alignContent = node->style.alignContent;
-    if (alignContent == CSSAlignFlexEnd) {
-      currentLead += remainingAlignContentDim;
-    } else if (alignContent == CSSAlignCenter) {
-      currentLead += remainingAlignContentDim / 2;
-    } else if (alignContent == CSSAlignStretch) {
-      if (availableInnerCrossDim > totalLineCrossDim) {
-        crossDimLead = (remainingAlignContentDim / lineCount);
-      }
+    switch (node->style.alignContent) {
+      case CSSAlignFlexEnd:
+        currentLead += remainingAlignContentDim;
+        break;
+      case CSSAlignCenter:
+        currentLead += remainingAlignContentDim / 2;
+        break;
+      case CSSAlignStretch:
+        if (availableInnerCrossDim > totalLineCrossDim) {
+          crossDimLead = (remainingAlignContentDim / lineCount);
+        }
+        break;
+      case CSSAlignAuto:
+      case CSSAlignFlexStart:
+        break;
     }
 
     uint32_t endIndex = 0;
