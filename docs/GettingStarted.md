@@ -230,7 +230,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 
 <block class="linux android" />
 
-Create or edit your `~/.bashrc` file and add the following lines:
+Create or edit your `~/.bashrc` file (`~/.zshrc` if you using `zsh`) and add the following lines:
 
 ```
 export ANDROID_HOME=~/Android/Sdk
