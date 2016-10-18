@@ -307,6 +307,7 @@ var Navigator = React.createClass({
      *  - Navigator.SceneConfigs.FadeAndroid
      *  - Navigator.SceneConfigs.HorizontalSwipeJump
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
+     *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft
      *  - Navigator.SceneConfigs.VerticalUpSwipeJump
      *  - Navigator.SceneConfigs.VerticalDownSwipeJump
      *
