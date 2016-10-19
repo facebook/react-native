@@ -667,7 +667,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause();
+        mReactInstanceManager.onPause(this);
     }
 }
 
@@ -685,7 +685,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy();
+        mReactInstanceManager.onDestroy(this);
     }
 }
 ```
