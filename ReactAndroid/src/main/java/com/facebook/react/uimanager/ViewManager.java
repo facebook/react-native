@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
- * responsible for creating and updating CSSNode subclasses used for calculating position and size
+ * responsible for creating and updating CSSNodeDEPRECATED subclasses used for calculating position and size
  * for the corresponding native view.
  */
 @ReactPropertyHolder
