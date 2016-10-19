@@ -111,8 +111,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
           public void invoke(Object... args) {
             if (args[0] != null) {
               promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
-            }
-            else {
+            } else {
               promise.reject(ERROR_REQUST_INTERRUPTED, permission + " request was interrupted");
             }
           }
@@ -135,8 +134,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       int[] grantResults) {
     if (grantResults.length > 0) {
       mCallbacks.get(requestCode).invoke(grantResults[0]);
-    }
-    else {
+    } else {
       mCallbacks.get(requestCode).invoke((Class<?>) null);
     }
     mCallbacks.remove(requestCode);
