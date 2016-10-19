@@ -839,7 +839,13 @@ static void computeChildFlexBasis(
   CSSMeasureMode childWidthMeasureMode;
   CSSMeasureMode childHeightMeasureMode;
 
-  if (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow)) {
+  if (!CSSValueIsUndefined(child->style.flexBasis) &&
+      !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
+    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+      child->layout.computedFlexBasis =
+          fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+    }
+  } else if (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow)) {
     // The width is definite, so use that as the flex basis.
     child->layout.computedFlexBasis =
         fmaxf(child->style.dimensions[CSSDimensionWidth],
@@ -849,12 +855,6 @@ static void computeChildFlexBasis(
     child->layout.computedFlexBasis =
         fmaxf(child->style.dimensions[CSSDimensionHeight],
               getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
-  } else if (!CSSValueIsUndefined(child->style.flexBasis) &&
-             !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
-    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
-      child->layout.computedFlexBasis =
-          fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
-    }
   } else {
     // Compute the flex basis and hypothetical main size (i.e. the clamped
     // flex basis).
