@@ -53,6 +53,11 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
+/**
+ * Marks whether the provider uses the custom implementation of JSC and not the system one.
+ */
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
 @end
 
 /**
@@ -66,6 +71,12 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  * @default is NO.
  */
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
+/**
+ * Specify a name for the JSContext used, which will be visible in debugging tools
+ * @default is "RCTJSContext"
+ */
+@property (nonatomic, copy) NSString *contextName;
 
 /**
  * Inits a new executor instance with given flag that's used

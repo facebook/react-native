@@ -34,7 +34,7 @@ var LazyRenderer = React.createClass({
     });
   },
 
-  render: function(): ?ReactElement {
+  render: function(): ?React.Element {
     return this.state._lazyRender ? null : this.props.render();
   },
 });

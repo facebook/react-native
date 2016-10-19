@@ -8,7 +8,6 @@
  *
  * @providesModule NavigationCardStackPanResponder
  * @flow
- * @typechecks
  */
 'use strict';
 

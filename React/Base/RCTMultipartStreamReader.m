@@ -58,7 +58,9 @@
 
 - (BOOL)readAllParts:(RCTMultipartCallback)callback
 {
-  NSInteger start = 0;
+  NSInteger chunkStart = 0;
+  NSInteger bytesSeen = 0;
+
   NSData *delimiter = [[NSString stringWithFormat:@"%@--%@%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
   NSData *closeDelimiter = [[NSString stringWithFormat:@"%@--%@--%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableData *content = [[NSMutableData alloc] initWithCapacity:1];
@@ -69,7 +71,10 @@
   [_stream open];
   while (true) {
     BOOL isCloseDelimiter = NO;
-    NSRange remainingBufferRange = NSMakeRange(start, content.length - start);
+    // Search only a subset of chunk that we haven't seen before + few bytes
+    // to allow for the edge case when the delimiter is cut by read call
+    NSInteger searchStart = MAX(bytesSeen - (NSInteger)closeDelimiter.length, chunkStart);
+    NSRange remainingBufferRange = NSMakeRange(searchStart, content.length - searchStart);
     NSRange range = [content rangeOfData:delimiter options:0 range:remainingBufferRange];
     if (range.location == NSNotFound) {
       isCloseDelimiter = YES;
@@ -77,6 +82,7 @@
     }
 
     if (range.location == NSNotFound) {
+      bytesSeen = content.length;
       NSInteger bytesRead = [_stream read:buffer maxLength:bufferLen];
       if (bytesRead <= 0 || _stream.streamError) {
         return NO;
@@ -85,12 +91,13 @@
       continue;
     }
 
-    NSInteger end = range.location;
-    NSInteger length = end - start;
+    NSInteger chunkEnd = range.location;
+    NSInteger length = chunkEnd - chunkStart;
+    bytesSeen = chunkEnd;
 
     // Ignore preamble
-    if (start > 0) {
-      NSData *chunk = [content subdataWithRange:NSMakeRange(start, length)];
+    if (chunkStart > 0) {
+      NSData *chunk = [content subdataWithRange:NSMakeRange(chunkStart, length)];
       [self emitChunk:chunk callback:callback done:isCloseDelimiter];
     }
 
@@ -98,7 +105,7 @@
       return YES;
     }
 
-    start = end + delimiter.length;
+    chunkStart = chunkEnd + delimiter.length;
   }
 }
 

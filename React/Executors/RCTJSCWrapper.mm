@@ -59,7 +59,6 @@ static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSEvaluateScript = JSEvaluateScript;
   wrapper->JSContext = [JSContext class];
   wrapper->JSValue = [JSValue class];
-  wrapper->configureJSContextForIOS = NULL;
 }
 
 static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
@@ -86,7 +85,6 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript");
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
-  wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
 
   static dispatch_once_t once;
   dispatch_once(&once, ^{

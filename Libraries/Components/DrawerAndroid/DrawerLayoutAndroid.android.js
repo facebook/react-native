@@ -14,8 +14,7 @@ var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
-var ReactNative = require('react/lib/ReactNative');
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+var ReactNative = require('ReactNative');
 var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -25,6 +24,8 @@ var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
+
+var ReactPropTypes = React.PropTypes;
 
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';

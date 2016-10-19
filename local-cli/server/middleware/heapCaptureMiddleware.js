@@ -109,7 +109,7 @@ function symbolicateHeapCaptureFunctions(capture, onFailure, onSuccess) {
           if (original.name) {
             ref.value.name = original.name;
           } else if (!ref.value.name) {
-            ref.value.name = path.posix.basename(original.source) + ':' + original.line;
+            ref.value.name = path.posix.basename(original.source || '') + ':' + original.line;
           }
           ref.value.url = original.source;
           ref.value.line = original.line;
