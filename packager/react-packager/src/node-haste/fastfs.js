@@ -8,14 +8,10 @@
  */
 'use strict';
 
-const denodeify = require('denodeify');
-const {EventEmitter} = require('events');
-
-const fs = require('graceful-fs');
+const fs = require('fs');
 const path = require('./fastpath');
 
-const readFile = denodeify(fs.readFile);
-const stat = denodeify(fs.stat);
+const {EventEmitter} = require('events');
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
@@ -99,14 +95,6 @@ class Fastfs extends EventEmitter {
       throw new Error(`Unable to find file with path: ${filePath}`);
     }
     return file.read();
-  }
-
-  readWhile(filePath, predicate) {
-    const file = this._getFile(filePath);
-    if (!file) {
-      throw new Error(`Unable to find file with path: ${filePath}`);
-    }
-    return file.readWhile(predicate);
   }
 
   closest(filePath, name) {
@@ -230,23 +218,26 @@ class File {
 
   read() {
     if (!this._read) {
-      this._read = readFile(this.path, 'utf8');
+      this._read = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.readFileSync(this.path, 'utf8'));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
     return this._read;
   }
 
-  readWhile(predicate) {
-    return readWhile(this.path, predicate).then(({result, completed}) => {
-      if (completed && !this._read) {
-        this._read = Promise.resolve(result);
-      }
-      return result;
-    });
-  }
-
   stat() {
     if (!this._stat) {
-      this._stat = stat(this.path);
+      this._stat = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.statSync(this.path));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
 
     return this._stat;
@@ -301,58 +292,6 @@ class File {
 
     delete this.parent.children[path.basename(this.path)];
   }
-}
-
-function readWhile(filePath, predicate) {
-  return new Promise((resolve, reject) => {
-    fs.open(filePath, 'r', (openError, fd) => {
-      if (openError) {
-        reject(openError);
-        return;
-      }
-
-      read(
-        fd,
-        /*global Buffer: true*/
-        new Buffer(512),
-        makeReadCallback(fd, predicate, (readError, result, completed) => {
-          if (readError) {
-            reject(readError);
-          } else {
-            resolve({result, completed});
-          }
-        })
-      );
-    });
-  });
-}
-
-function read(fd, buffer, callback) {
-  fs.read(fd, buffer, 0, buffer.length, -1, callback);
-}
-
-function close(fd, error, result, complete, callback) {
-  fs.close(fd, closeError => callback(error || closeError, result, complete));
-}
-
-function makeReadCallback(fd, predicate, callback) {
-  let result = '';
-  let index = 0;
-  return function readCallback(error, bytesRead, buffer) {
-    if (error) {
-      close(fd, error, undefined, false, callback);
-      return;
-    }
-
-    const completed = bytesRead === 0;
-    const chunk = completed ? '' : buffer.toString('utf8', 0, bytesRead);
-    result += chunk;
-    if (completed || !predicate(chunk, index++, result)) {
-      close(fd, null, result, completed, callback);
-    } else {
-      read(fd, buffer, readCallback);
-    }
-  };
 }
 
 function isDescendant(root, child) {

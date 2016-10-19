@@ -5,12 +5,21 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
 const ModuleTransport = require('../lib/ModuleTransport');
 
 class BundleBase {
+
+  _assets: Array<mixed>;
+  _finalized: boolean;
+  _mainModuleId: mixed | void;
+  _modules: Array<ModuleTransport>;
+  _source: ?string;
+
   constructor() {
     this._finalized = false;
     this._modules = [];
@@ -26,11 +35,11 @@ class BundleBase {
     return this._mainModuleId;
   }
 
-  setMainModuleId(moduleId) {
+  setMainModuleId(moduleId: mixed) {
     this._mainModuleId = moduleId;
   }
 
-  addModule(module) {
+  addModule(module: ModuleTransport) {
     if (!(module instanceof ModuleTransport)) {
       throw new Error('Expected a ModuleTransport object');
     }
@@ -38,7 +47,7 @@ class BundleBase {
     return this._modules.push(module) - 1;
   }
 
-  replaceModuleAt(index, module) {
+  replaceModuleAt(index: number, module: ModuleTransport) {
     if (!(module instanceof ModuleTransport)) {
       throw new Error('Expeceted a ModuleTransport object');
     }
@@ -54,11 +63,11 @@ class BundleBase {
     return this._assets;
   }
 
-  addAsset(asset) {
+  addAsset(asset: mixed) {
     this._assets.push(asset);
   }
 
-  finalize(options) {
+  finalize(options: {allowUpdates?: boolean}) {
     if (!options.allowUpdates) {
       Object.freeze(this._modules);
       Object.freeze(this._assets);
@@ -67,7 +76,7 @@ class BundleBase {
     this._finalized = true;
   }
 
-  getSource(options) {
+  getSource() {
     this.assertFinalized();
 
     if (this._source) {
@@ -82,7 +91,7 @@ class BundleBase {
     this._source = null;
   }
 
-  assertFinalized(message) {
+  assertFinalized(message?: string) {
     if (!this._finalized) {
       throw new Error(message || 'Bundle needs to be finalized before getting any source');
     }

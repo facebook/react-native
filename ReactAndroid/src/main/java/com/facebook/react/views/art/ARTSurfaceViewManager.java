@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.art;
 
-import android.graphics.Bitmap;
-
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
@@ -63,6 +61,6 @@ public class ARTSurfaceViewManager extends
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.setBitmap((Bitmap) extraData);
+    root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
   }
 }

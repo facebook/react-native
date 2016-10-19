@@ -17,7 +17,6 @@ var Text = require('Text');
 var View = require('View');
 var ElementProperties = require('ElementProperties');
 var PerformanceOverlay = require('PerformanceOverlay');
-var Touchable = require('Touchable');
 var TouchableHighlight = require('TouchableHighlight');
 var NetworkOverlay = require('NetworkOverlay');
 
