@@ -12,11 +12,22 @@
 
 const ModuleTransport = require('../lib/ModuleTransport');
 
+export type FinalizeOptions = {
+  allowUpdates?: boolean,
+  runBeforeMainModule?: Array<mixed>,
+  runMainModule?: boolean,
+};
+
+export type GetSourceOptions = {
+  inlineSourceMap: boolean,
+  dev: boolean,
+};
+
 class BundleBase {
 
   _assets: Array<mixed>;
   _finalized: boolean;
-  _mainModuleId: mixed | void;
+  _mainModuleId: string | void;
   _modules: Array<ModuleTransport>;
   _source: ?string;
 
@@ -35,7 +46,7 @@ class BundleBase {
     return this._mainModuleId;
   }
 
-  setMainModuleId(moduleId: mixed) {
+  setMainModuleId(moduleId: string) {
     this._mainModuleId = moduleId;
   }
 
@@ -67,7 +78,7 @@ class BundleBase {
     this._assets.push(asset);
   }
 
-  finalize(options: {allowUpdates?: boolean}) {
+  finalize(options: FinalizeOptions) {
     if (!options.allowUpdates) {
       Object.freeze(this._modules);
       Object.freeze(this._assets);
@@ -76,7 +87,7 @@ class BundleBase {
     this._finalized = true;
   }
 
-  getSource() {
+  getSource(options: GetSourceOptions) {
     this.assertFinalized();
 
     if (this._source) {
@@ -97,9 +108,9 @@ class BundleBase {
     }
   }
 
-  setRamGroups() {}
+  setRamGroups(ramGroups: Array<string>) {}
 
-  toJSON() {
+  toJSON(): mixed {
     return {
       modules: this._modules,
       assets: this._assets,
