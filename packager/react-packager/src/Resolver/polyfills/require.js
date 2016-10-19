@@ -126,7 +126,7 @@ function loadModuleImplementation(moduleId, module) {
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
-    factory(global, require, moduleObject, module.exports);
+    factory.call(module.exports, global, require, moduleObject, module.exports);
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {

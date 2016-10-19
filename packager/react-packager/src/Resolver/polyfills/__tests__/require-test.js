@@ -25,6 +25,15 @@ describe('require', () => {
     });
   });
 
+  describe('this', () => {
+    it('should be the exports object', () => {
+      defineShim(2, function(global, require, module, exports) {
+        expect(this).toBe(exports);
+      });
+      requireShim(2);
+    });
+  });
+
   describe('module.exports', () => {
     it('should be the same as exports', () => {
       defineShim(11, function(global, require, module, exports) {
