@@ -92,5 +92,26 @@ describe('require', () => {
         firstWas: 'first value'
       });
     });
+
+    it('should handle circular deps using module.exports', () => {
+      defineShim(51, function(global, require, module, exports) {
+        module.exports = {
+          first: 'first value'
+        };
+        var p = require(52).p;
+        module.exports.first = 'second value';
+        module.exports.firstWas = p();
+      });
+      defineShim(52, function(global, require, module, exports) {
+        var first = require(51).first;
+        exports.p = function() {
+          return first;
+        }
+      });
+      expect(requireShim(51)).toEqual({
+        first: 'second value',
+        firstWas: 'first value'
+      });
+    });
   });
 });
