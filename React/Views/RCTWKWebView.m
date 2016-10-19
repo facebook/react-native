@@ -18,6 +18,7 @@
 #import "RCTUtils.h"
 #import "RCTWebRequestTypes.h"
 #import "RCTView.h"
+#import "RCTWeakScriptMessageDelegate.h"
 #import "UIView+React.h"
 
 @interface RCTWKWebView () <WKNavigationDelegate, WKScriptMessageHandler, RCTAutoInsetsProtocol>
@@ -47,10 +48,13 @@
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
     
-    // userContentController is needed to observe messages sent from webview
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     WKUserContentController *controller = [[WKUserContentController alloc] init];
-    [controller addScriptMessageHandler:self name:@"reactNative"];
+    
+    // observe messages sent from webview
+    [controller addScriptMessageHandler:[[RCTWeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
+
+    
     configuration.userContentController = controller;
     
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:configuration];
@@ -230,19 +234,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 
   if (isJSNavigation) {
-    // Handle messages posted
-    if ([request.URL.host isEqualToString:RCTJSPostMessageHost]) {
-      NSString *data = request.URL.query;
-      data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-      data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-      [event addEntriesFromDictionary: @{
-        @"data": data,
-      }];
-      _onMessage(event);
-    }
-  
     return decisionHandler(WKNavigationActionPolicyCancel);
   }
 
@@ -272,8 +263,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 }
 
-- (void)webView:(WKWebView *)webView
-    didFinishNavigation:(__unused WKNavigation *)navigation
+- (void)webView:(WKWebView *)webView didFinishNavigation:(__unused WKNavigation *)navigation
 {
   if (_injectedJavaScript != nil) {
     [webView evaluateJavaScript:_injectedJavaScript completionHandler:^(id result, NSError *error) {

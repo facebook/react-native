@@ -192,13 +192,11 @@ class WKWebViewIOS extends React.Component {
     onNavigationStateChange: PropTypes.func,
 
     /**
-     * A function that is invoked when the webview calls `window.postMessage`.
-     * Setting this property will inject a `postMessage` global into your
-     * webview, but will still call pre-existing values of `postMessage`.
+     * A function that is invoked when the webview posts a message to native
+     * using `window.webkit.messageHandlers.reactNative.postMessage`.
      *
-     * `window.postMessage` accepts one argument, `data`, which will be
-     * available on the event object, `event.nativeEvent.data`. `data`
-     * must be a string.
+     * postMessage accepts one argument, `data`, which will be available on the
+     * event object, `event.nativeEvent.data`.
      */
     onMessage: PropTypes.func,
 
@@ -284,7 +282,7 @@ class WKWebViewIOS extends React.Component {
     });
 
     var source = this.props.source || {};
-
+    console.log('@>> i', this.props.injectedJavaScript);
     var webView =
       <RCTWKWebView
         ref={RCT_WEBVIEW_REF}
