@@ -34,6 +34,15 @@ describe('require', () => {
     });
   });
 
+  describe('module.id', () => {
+    it('should be the identifier of the module passed to require', () => {
+      defineShim(3, function(global, require, module, exports) {
+        expect(module.id).toBe(3);
+      });
+      requireShim(3);
+    });
+  });
+
   describe('module.exports', () => {
     it('should be the same as exports', () => {
       defineShim(11, function(global, require, module, exports) {

@@ -113,6 +113,9 @@ function loadModuleImplementation(moduleId, module) {
     }
 
     const moduleObject = {
+      get id() {
+        return moduleId;
+      },
       get exports() {
         return module.exports;
       },
