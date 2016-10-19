@@ -91,12 +91,8 @@ typedef struct CSSNode {
 
   struct CSSNode *nextChild;
 
-  CSSSize (*measure)(void *context,
-                     float width,
-                     CSSMeasureMode widthMode,
-                     float height,
-                     CSSMeasureMode heightMode);
-  void (*print)(void *context);
+  CSSMeasureFunc measure;
+  CSSPrintFunc print;
   void *context;
 } CSSNode;
 
@@ -1550,14 +1546,20 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
         if (remainingFreeSpace < 0) {
           flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
-
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
-            updatedMainSize = boundAxis(currentRelativeChild,
-                                        mainAxis,
-                                        childFlexBasis +
-                                            remainingFreeSpace / totalFlexShrinkScaledFactors *
-                                                flexShrinkScaledFactor);
+            float childSize;
+
+            if (totalFlexShrinkScaledFactors == 0) {
+              childSize = childFlexBasis + flexShrinkScaledFactor;
+            } else {
+              childSize =
+                  childFlexBasis +
+                  (remainingFreeSpace / totalFlexShrinkScaledFactors) *
+                  flexShrinkScaledFactor;
+            }
+
+            updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childSize);
           }
         } else if (remainingFreeSpace > 0) {
           flexGrowFactor = currentRelativeChild->style.flexGrow;
@@ -1680,7 +1682,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         betweenMainDim = remainingFreeSpace / itemsOnLine;
         leadingMainDim = betweenMainDim / 2;
         break;
-      default:
+      case CSSJustifyFlexStart:
         break;
     }
 
@@ -1849,15 +1851,21 @@ static void layoutNodeImpl(const CSSNodeRef node,
     float crossDimLead = 0;
     float currentLead = leadingPaddingAndBorderCross;
 
-    const CSSAlign alignContent = node->style.alignContent;
-    if (alignContent == CSSAlignFlexEnd) {
-      currentLead += remainingAlignContentDim;
-    } else if (alignContent == CSSAlignCenter) {
-      currentLead += remainingAlignContentDim / 2;
-    } else if (alignContent == CSSAlignStretch) {
-      if (availableInnerCrossDim > totalLineCrossDim) {
-        crossDimLead = (remainingAlignContentDim / lineCount);
-      }
+    switch (node->style.alignContent) {
+      case CSSAlignFlexEnd:
+        currentLead += remainingAlignContentDim;
+        break;
+      case CSSAlignCenter:
+        currentLead += remainingAlignContentDim / 2;
+        break;
+      case CSSAlignStretch:
+        if (availableInnerCrossDim > totalLineCrossDim) {
+          crossDimLead = (remainingAlignContentDim / lineCount);
+        }
+        break;
+      case CSSAlignAuto:
+      case CSSAlignFlexStart:
+        break;
     }
 
     uint32_t endIndex = 0;
@@ -1915,7 +1923,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
                 //                (auto) crossAxis dimension.
                 break;
               }
-              default:
+              case CSSAlignAuto:
                 break;
             }
           }
