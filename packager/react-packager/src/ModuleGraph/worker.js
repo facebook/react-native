@@ -65,6 +65,7 @@ function transformJSON(infile, options, outfile, callback) {
   if (basename(filename) === 'package.json') {
     result.package = {
       name: value.name,
+      main: value.main,
       browser: value.browser,
       'react-native': value['react-native'],
     };
