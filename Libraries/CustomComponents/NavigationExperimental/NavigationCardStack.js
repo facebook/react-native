@@ -59,6 +59,7 @@ type Props = {
   direction: NavigationGestureDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
+  configureTransition?: Function,
   renderHeader: ?NavigationSceneRenderer,
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
@@ -133,6 +134,12 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     cardStyle: View.propTypes.style,
 
     /**
+     * Allows to control the Transition of the underlying
+     * NavigationTransitioner
+     */
+    configureTransition: PropTypes.func,
+
+    /**
      * Direction of the cards movement. Value could be `horizontal` or
      * `vertical`. Default value is `horizontal`.
      */
@@ -191,6 +198,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   static defaultProps: DefaultProps = {
     direction: Directions.HORIZONTAL,
     enableGestures: true,
+    configureTransition: null,
   };
 
   constructor(props: Props, context: any) {
@@ -205,6 +213,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   render(): React.Element<any> {
     return (
       <NavigationTransitioner
+        configureTransition={this.props.configureTransition}
         navigationState={this.props.navigationState}
         render={this._render}
         style={this.props.style}
