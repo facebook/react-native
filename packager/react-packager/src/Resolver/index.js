@@ -86,6 +86,7 @@ class Resolver {
 
   constructor(options) {
     const opts = validateOpts(options);
+    const additionalPlatforms = getPlatforms(opts.assetRoots);
 
     this._depGraph = new DependencyGraph({
       activity: Activity,
@@ -105,7 +106,7 @@ class Resolver {
         // remove it from here.
         'parse',
       ],
-      platforms: ['ios', 'android', 'windows', 'web', 'windows7'],
+      platforms: ['ios', 'android', 'windows', 'web'].concat(additionalPlatforms),
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
@@ -294,6 +295,18 @@ function definePolyfillCode(code,) {
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
+}
+
+// Check for resolveConfig overrides
+function getPlatforms(projectPaths, resolveConfigFile = '/.resolveConfig') {
+  // iterate over paths until success or empty
+  if (projectPaths.length === 0) return [];
+  try {
+    const config = require(path.join(projectPaths.pop(), resolveConfigFile));
+    return config.additionalPlatforms;
+  } catch(e) {
+    return getPlatforms(projectPaths, resolveConfigFile);
+  }
 }
 
 module.exports = Resolver;
