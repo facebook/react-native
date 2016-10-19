@@ -98,6 +98,8 @@ typedef struct CSSNode {
 
 static void _CSSNodeMarkDirty(const CSSNodeRef node);
 
+static CSSLogger gLogger = &printf;
+
 static float
 computedEdgeValue(const float edges[CSSEdgeCount], const CSSEdge edge, const float defaultValue) {
   CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
@@ -375,19 +377,19 @@ static bool eq(const float a, const float b) {
 
 static void indent(const uint32_t n) {
   for (uint32_t i = 0; i < n; i++) {
-    printf("  ");
+    gLogger("  ");
   }
 }
 
 static void printNumberIfNotZero(const char *str, const float number) {
   if (!eq(number, 0)) {
-    printf("%s: %g, ", str, number);
+    gLogger("%s: %g, ", str, number);
   }
 }
 
 static void printNumberIfNotUndefined(const char *str, const float number) {
   if (!CSSValueIsUndefined(number)) {
-    printf("%s: %g, ", str, number);
+    gLogger("%s: %g, ", str, number);
   }
 }
 
@@ -398,66 +400,66 @@ static bool eqFour(const float four[4]) {
 static void
 _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32_t level) {
   indent(level);
-  printf("{");
+  gLogger("{");
 
   if (node->print) {
     node->print(node->context);
   }
 
   if (options & CSSPrintOptionsLayout) {
-    printf("layout: {");
-    printf("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
-    printf("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
-    printf("top: %g, ", node->layout.position[CSSEdgeTop]);
-    printf("left: %g", node->layout.position[CSSEdgeLeft]);
-    printf("}, ");
+    gLogger("layout: {");
+    gLogger("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
+    gLogger("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
+    gLogger("top: %g, ", node->layout.position[CSSEdgeTop]);
+    gLogger("left: %g", node->layout.position[CSSEdgeLeft]);
+    gLogger("}, ");
   }
 
   if (options & CSSPrintOptionsStyle) {
     if (node->style.flexDirection == CSSFlexDirectionColumn) {
-      printf("flexDirection: 'column', ");
+      gLogger("flexDirection: 'column', ");
     } else if (node->style.flexDirection == CSSFlexDirectionColumnReverse) {
-      printf("flexDirection: 'column-reverse', ");
+      gLogger("flexDirection: 'column-reverse', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRow) {
-      printf("flexDirection: 'row', ");
+      gLogger("flexDirection: 'row', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRowReverse) {
-      printf("flexDirection: 'row-reverse', ");
+      gLogger("flexDirection: 'row-reverse', ");
     }
 
     if (node->style.justifyContent == CSSJustifyCenter) {
-      printf("justifyContent: 'center', ");
+      gLogger("justifyContent: 'center', ");
     } else if (node->style.justifyContent == CSSJustifyFlexEnd) {
-      printf("justifyContent: 'flex-end', ");
+      gLogger("justifyContent: 'flex-end', ");
     } else if (node->style.justifyContent == CSSJustifySpaceAround) {
-      printf("justifyContent: 'space-around', ");
+      gLogger("justifyContent: 'space-around', ");
     } else if (node->style.justifyContent == CSSJustifySpaceBetween) {
-      printf("justifyContent: 'space-between', ");
+      gLogger("justifyContent: 'space-between', ");
     }
 
     if (node->style.alignItems == CSSAlignCenter) {
-      printf("alignItems: 'center', ");
+      gLogger("alignItems: 'center', ");
     } else if (node->style.alignItems == CSSAlignFlexEnd) {
-      printf("alignItems: 'flex-end', ");
+      gLogger("alignItems: 'flex-end', ");
     } else if (node->style.alignItems == CSSAlignStretch) {
-      printf("alignItems: 'stretch', ");
+      gLogger("alignItems: 'stretch', ");
     }
 
     if (node->style.alignContent == CSSAlignCenter) {
-      printf("alignContent: 'center', ");
+      gLogger("alignContent: 'center', ");
     } else if (node->style.alignContent == CSSAlignFlexEnd) {
-      printf("alignContent: 'flex-end', ");
+      gLogger("alignContent: 'flex-end', ");
     } else if (node->style.alignContent == CSSAlignStretch) {
-      printf("alignContent: 'stretch', ");
+      gLogger("alignContent: 'stretch', ");
     }
 
     if (node->style.alignSelf == CSSAlignFlexStart) {
-      printf("alignSelf: 'flex-start', ");
+      gLogger("alignSelf: 'flex-start', ");
     } else if (node->style.alignSelf == CSSAlignCenter) {
-      printf("alignSelf: 'center', ");
+      gLogger("alignSelf: 'center', ");
     } else if (node->style.alignSelf == CSSAlignFlexEnd) {
-      printf("alignSelf: 'flex-end', ");
+      gLogger("alignSelf: 'flex-end', ");
     } else if (node->style.alignSelf == CSSAlignStretch) {
-      printf("alignSelf: 'stretch', ");
+      gLogger("alignSelf: 'stretch', ");
     }
 
     printNumberIfNotUndefined("flexGrow", node->style.flexGrow);
@@ -465,11 +467,11 @@ _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32
     printNumberIfNotUndefined("flexBasis", node->style.flexBasis);
 
     if (node->style.overflow == CSSOverflowHidden) {
-      printf("overflow: 'hidden', ");
+      gLogger("overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
-      printf("overflow: 'visible', ");
+      gLogger("overflow: 'visible', ");
     } else if (node->style.overflow == CSSOverflowScroll) {
-      printf("overflow: 'scroll', ");
+      gLogger("overflow: 'scroll', ");
     }
 
     if (eqFour(node->style.margin)) {
@@ -518,7 +520,7 @@ _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32
     printNumberIfNotUndefined("minHeight", node->style.minDimensions[CSSDimensionHeight]);
 
     if (node->style.positionType == CSSPositionTypeAbsolute) {
-      printf("position: 'absolute', ");
+      gLogger("position: 'absolute', ");
     }
 
     printNumberIfNotUndefined("left",
@@ -533,14 +535,14 @@ _CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options, const uint32
 
   const uint32_t childCount = CSSNodeListCount(node->children);
   if (options & CSSPrintOptionsChildren && childCount > 0) {
-    printf("children: [\n");
+    gLogger("children: [\n");
     for (uint32_t i = 0; i < childCount; i++) {
       _CSSNodePrint(CSSNodeGetChild(node, i), options, level + 1);
     }
     indent(level);
-    printf("]},\n");
+    gLogger("]},\n");
   } else {
-    printf("},\n");
+    gLogger("},\n");
   }
 }
 
@@ -2361,6 +2363,10 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
       CSSNodePrint(node, CSSPrintOptionsLayout | CSSPrintOptionsChildren | CSSPrintOptionsStyle);
     }
   }
+}
+
+void CSSLayoutSetLogger(CSSLogger logger) {
+  gLogger = logger;
 }
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
