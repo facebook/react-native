@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,6 +122,7 @@ typedef CSSSize (*CSSMeasureFunc)(void *context,
                                   float height,
                                   CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
+typedef int (*CSSLogger)(const char *format, ...);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
 typedef void (*CSSAssertFailFunc)(const char *message);
@@ -209,6 +211,8 @@ CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
 CSS_NODE_LAYOUT_PROPERTY(float, Width);
 CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
+
+WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
 // Assert
