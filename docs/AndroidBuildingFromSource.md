@@ -148,4 +148,6 @@ If you made changes to React Native and submit a pull request, all tests will ru
 
 ## Troubleshooting
 
-Gradle build fails in `ndk-build`. See the section about `local.properties` file above.
+- Gradle build fails in `ndk-build`. See the section about `local.properties` file above.
+
+- Wrong react-native version is used (0.20): if you're using dependencies that have a reference to react-native, you need to run the following command first: `./gradlew :ReactAndroid:installArchives`. This will build react-native in node_modules, so that it can be properly referenced from your dependencies. If such a module does not find anything at node_modules/react-native, it will probably search the Maven repository, where it will find react-native verion 0.20, resulting in a lot of errors.
