@@ -320,7 +320,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
@@ -335,8 +335,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
