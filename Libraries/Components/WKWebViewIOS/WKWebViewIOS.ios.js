@@ -29,7 +29,6 @@ var PropTypes = React.PropTypes;
 var WKWebViewManager = require('NativeModules').WKWebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
-var RCT_WEBVIEW_REF = 'webview';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -240,6 +239,8 @@ class WKWebViewIOS extends React.Component {
     viewState: WebViewState.IDLE,
   };
 
+  webview = null;
+
   componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
@@ -282,10 +283,10 @@ class WKWebViewIOS extends React.Component {
     });
 
     var source = this.props.source || {};
-    console.log('@>> i', this.props.injectedJavaScript);
+
     var webView =
       <RCTWKWebView
-        ref={RCT_WEBVIEW_REF}
+        ref={webview => { this.webview = webview; }}
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
@@ -387,7 +388,7 @@ class WKWebViewIOS extends React.Component {
    * Returns the native webview node.
    */
   getWebViewHandle = (): any => {
-    return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
+    return ReactNative.findNodeHandle(this.webview);
   };
 
   _onLoadingStart = (event: Event) => {

@@ -38,8 +38,6 @@ var HEADER = '#3b5998';
 var BGWASH = 'rgba(255,255,255,0.8)';
 var DISABLED_WASH = 'rgba(255,255,255,0.25)';
 
-var TEXT_INPUT_REF = 'urlInput';
-var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
 
 class WKWebViewIOSExample extends React.Component {
@@ -50,6 +48,10 @@ class WKWebViewIOSExample extends React.Component {
     forwardButtonEnabled: false,
     loading: true,
   };
+
+  textInput = null;
+
+  webview = null;
 
   inputText = '';
 
@@ -82,7 +84,7 @@ class WKWebViewIOSExample extends React.Component {
             </Text>
           </TouchableOpacity>
           <TextInput
-            ref={TEXT_INPUT_REF}
+            ref={textInput => { this.textInput = textInput; }}
             autoCapitalize="none"
             defaultValue={this.state.url}
             onSubmitEditing={this.onSubmitEditing}
@@ -99,7 +101,7 @@ class WKWebViewIOSExample extends React.Component {
           </TouchableOpacity>
         </View>
         <WKWebViewIOS
-          ref={WEBVIEW_REF}
+          ref={webview => { this.webview = webview; }}
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
           source={{uri: this.state.url}}
@@ -118,15 +120,15 @@ class WKWebViewIOSExample extends React.Component {
   }
 
   goBack = () => {
-    this.refs[WEBVIEW_REF].goBack();
+    this.webview && this.webview.goBack();
   };
 
   goForward = () => {
-    this.refs[WEBVIEW_REF].goForward();
+    this.webview && this.webview.goForward();
   };
 
   reload = () => {
-    this.refs[WEBVIEW_REF].reload();
+    this.webview && this.webview.reload();
   };
 
   onShouldStartLoadWithRequest = (event) => {
@@ -158,7 +160,7 @@ class WKWebViewIOSExample extends React.Component {
       });
     }
     // dismiss keyboard
-    this.refs[TEXT_INPUT_REF].blur();
+    this.textInput && this.textInput.blur();
   };
 }
 
