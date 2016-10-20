@@ -1,35 +1,40 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
 
-const isAbsolutePath = require('absolute-path');
 const path = require('path');
 
-class Package {
+import type {PackageData} from '../types.flow';
 
-  constructor({ file, fastfs, cache }) {
-    this.path = path.resolve(file);
-    this.root = path.dirname(this.path);
-    this._fastfs = fastfs;
+module.exports = class Package {
+  data: Promise<PackageData>;
+  root: string;
+  type: 'Package';
+
+  constructor(packagePath: string, data: Promise<PackageData>) {
+    this.data = data;
+    this.root = path.dirname(packagePath);
     this.type = 'Package';
-    this._cache = cache;
   }
 
   getMain() {
-    return this.read().then(json => {
-      var replacements = getReplacements(json);
+    // Copied from node-haste/Package.js
+    return this.data.then(data => {
+      const replacements = getReplacements(data);
       if (typeof replacements === 'string') {
         return path.join(this.root, replacements);
       }
 
-      let main = json.main || 'index';
+      let main = getMain(data);
 
       if (replacements && typeof replacements === 'object') {
         main = replacements[main] ||
@@ -43,31 +48,20 @@ class Package {
     });
   }
 
-  isHaste() {
-    return this._cache.get(this.path, 'package-haste', () =>
-      this.read().then(json => !!json.name)
-    );
-  }
-
   getName() {
-    return this._cache.get(this.path, 'package-name', () =>
-      this.read().then(json => json.name)
-    );
+    return this.data.then(p => p.name);
   }
 
-  invalidate() {
-    this._cache.invalidate(this.path);
-  }
-
-  redirectRequire(name) {
-    return this.read().then(json => {
-      var replacements = getReplacements(json);
+  redirectRequire(name: string) {
+    // Copied from node-haste/Package.js
+    return this.data.then(data => {
+      const replacements = getReplacements(data);
 
       if (!replacements || typeof replacements !== 'object') {
         return name;
       }
 
-      if (!isAbsolutePath(name)) {
+      if (!path.isAbsolute(name)) {
         const replacement = replacements[name];
         // support exclude with "someDependency": false
         return replacement === false
@@ -105,17 +99,13 @@ class Package {
       return name;
     });
   }
+};
 
-  read() {
-    if (!this._reading) {
-      this._reading = this._fastfs.readFile(this.path)
-        .then(jsonStr => JSON.parse(jsonStr));
-    }
-
-    return this._reading;
-  }
+function getMain(pkg) {
+  return pkg.main || 'index';
 }
 
+// Copied from node-haste/Package.js
 function getReplacements(pkg) {
   let rn = pkg['react-native'];
   let browser = pkg.browser;
@@ -127,17 +117,16 @@ function getReplacements(pkg) {
     return rn;
   }
 
-  if (typeof rn === 'string') {
-    rn = { [pkg.main]: rn };
+  const main = getMain(pkg);
+  if (typeof rn !== 'object') {
+    rn = { [main]: rn };
   }
 
-  if (typeof browser === 'string') {
-    browser = { [pkg.main]: browser };
+  if (typeof browser !== 'object') {
+    browser = { [main]: browser };
   }
 
   // merge with "browser" as default,
   // "react-native" as override
   return { ...browser, ...rn };
 }
-
-module.exports = Package;
