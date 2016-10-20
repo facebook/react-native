@@ -406,6 +406,8 @@ var Navigator = React.createClass({
 
     this._renderedSceneMap = new Map();
 
+    this._sceneRefs = [];
+
     var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
     invariant(
       routeStack.length >= 1,
@@ -678,8 +680,8 @@ var Navigator = React.createClass({
    * Push a scene off the screen, so that opacity:0 scenes will not block touches sent to the presented scenes
    */
   _disableScene: function(sceneIndex) {
-    this.refs['scene_' + sceneIndex] &&
-      this.refs['scene_' + sceneIndex].setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
+    this._sceneRefs[sceneIndex] &&
+      this._sceneRefs[sceneIndex].setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
   },
 
   /**
@@ -702,13 +704,13 @@ var Navigator = React.createClass({
       // to prevent the enabled scene from flashing over the presented scene
       enabledSceneNativeProps.style.opacity = 0;
     }
-    this.refs['scene_' + sceneIndex] &&
-      this.refs['scene_' + sceneIndex].setNativeProps(enabledSceneNativeProps);
+    this._sceneRefs[sceneIndex] &&
+      this._sceneRefs[sceneIndex].setNativeProps(enabledSceneNativeProps);
   },
 
   _clearTransformations: function(sceneIndex) {
     const defaultStyle = flattenStyle([styles.defaultSceneStyle]);
-    this.refs['scene_' + sceneIndex].setNativeProps({ style: defaultStyle });
+    this._sceneRefs[sceneIndex].setNativeProps({ style: defaultStyle });
   },
 
   _onAnimationStart: function() {
@@ -740,7 +742,7 @@ var Navigator = React.createClass({
   },
 
   _setRenderSceneToHardwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
-    var viewAtIndex = this.refs['scene_' + sceneIndex];
+    var viewAtIndex = this._sceneRefs[sceneIndex];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
     }
@@ -982,7 +984,7 @@ var Navigator = React.createClass({
   },
 
   _transitionSceneStyle: function(fromIndex, toIndex, progress, index) {
-    var viewAtIndex = this.refs['scene_' + index];
+    var viewAtIndex = this._sceneRefs[index];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
     }
@@ -1266,7 +1268,9 @@ var Navigator = React.createClass({
     return (
       <View
         key={'scene_' + getRouteID(route)}
-        ref={'scene_' + i}
+        ref={(scene) => {
+          this._sceneRefs[i] = scene;
+        }}
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null);
         }}
