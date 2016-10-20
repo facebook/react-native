@@ -94,7 +94,7 @@ class HasteMap extends EventEmitter {
 
   getModule(name, platform = null) {
     // getModule override can be provided
-    if (this._moduleOptions.getModule) {
+    if (this._moduleOptions && this._moduleOptions.getModule) {
       return this._moduleOptions.getModule(this, name, this._preferNativePlatform, NATIVE_PLATFORM, GENERIC_PLATFORM, platform);
     } else {
       const modulesMap = this._map[name];
