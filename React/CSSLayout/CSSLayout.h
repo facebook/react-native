@@ -135,15 +135,17 @@ WIN_EXPORT void CSSNodeFree(const CSSNodeRef node);
 WIN_EXPORT void CSSNodeFreeRecursive(const CSSNodeRef node);
 WIN_EXPORT int32_t CSSNodeGetInstanceCount(void);
 
-WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index);
+WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node,
+                                   const CSSNodeRef child,
+                                   const uint32_t index);
 WIN_EXPORT void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
 WIN_EXPORT CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index);
 WIN_EXPORT uint32_t CSSNodeChildCount(const CSSNodeRef node);
 
 WIN_EXPORT void CSSNodeCalculateLayout(const CSSNodeRef node,
-                            const float availableWidth,
-                            const float availableHeight,
-                            const CSSDirection parentDirection);
+                                       const float availableWidth,
+                                       const float availableHeight,
+                                       const CSSDirection parentDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -158,19 +160,22 @@ WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions option
 
 WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName)                \
+#define CSS_NODE_PROPERTY(type, name, paramName)                           \
   WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
   WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                     \
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                \
   WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName); \
   WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                                    \
-  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, const CSSEdge edge, const type paramName); \
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)    \
+  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, \
+                                        const CSSEdge edge,    \
+                                        const type paramName); \
   WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node, const CSSEdge edge);
 
-#define CSS_NODE_LAYOUT_PROPERTY(type, name) WIN_EXPORT type CSSNodeLayoutGet##name(const CSSNodeRef node);
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) \
+  WIN_EXPORT type CSSNodeLayoutGet##name(const CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
