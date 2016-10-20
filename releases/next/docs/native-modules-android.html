@@ -107,7 +107,7 @@ ToastAndroid<span class="token punctuation">.</span><span class="token function"
 <span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.</p><p>It is very important to highlight that the callback is not invoked immediately after the native function completes - remember that bridge communication is asynchronous, and this too is tied to the run loop.</p><h3><a class="anchor" name="promises"></a>Promises <a class="hash-link" href="docs/native-modules-android.html#promises">#</a></h3><p>Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016&#x27;s <code>async/await</code> syntax. When the last parameter of a bridged native method is a <code>Promise</code>, its corresponding JS method will return a JS Promise object.</p><p>Refactoring the above code to use a promise instead of callbacks looks like this:</p><div class="prism language-javascript">public class <span class="token class-name">UIManagerModule</span> extends <span class="token class-name">ReactContextBaseJavaModule</span> <span class="token punctuation">{</span>
 
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-
+  private static final String E_LAYOUT_ERROR <span class="token operator">=</span> <span class="token string">&quot;E_LAYOUT_ERROR&quot;</span><span class="token punctuation">;</span>
   @ReactMethod
   public void <span class="token function">measureLayout<span class="token punctuation">(</span></span>
       int tag<span class="token punctuation">,</span>
@@ -125,7 +125,7 @@ ToastAndroid<span class="token punctuation">.</span><span class="token function"
 
       promise<span class="token punctuation">.</span><span class="token function">resolve<span class="token punctuation">(</span></span>map<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IllegalViewOperationException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      promise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      promise<span class="token punctuation">.</span><span class="token function">reject<span class="token punctuation">(</span></span>E_LAYOUT_ERROR<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 
