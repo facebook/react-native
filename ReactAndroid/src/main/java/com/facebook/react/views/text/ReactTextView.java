@@ -9,6 +9,8 @@
 
 package com.facebook.react.views.text;
 
+import javax.annotation.Nullable;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -20,12 +22,9 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.csslayout.FloatUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
-
-import javax.annotation.Nullable;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
@@ -60,20 +59,10 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
     setText(update.getText());
     setPadding(
-      (int) Math.ceil(update.getPaddingLeft()),
-      (int) Math.ceil(update.getPaddingTop()),
-      (int) Math.ceil(update.getPaddingRight()),
-      (int) Math.ceil(update.getPaddingBottom()));
-
-    float nextLineHeight = update.getLineHeight();
-    if (!FloatUtil.floatsEqual(mLineHeight, nextLineHeight)) {
-      mLineHeight = nextLineHeight;
-      if (Float.isNaN(mLineHeight)) { // NaN will be used if property gets reset
-        setLineSpacing(0, 1);
-      } else {
-        setLineSpacing(mLineHeight, 0);
-      }
-    }
+      (int) Math.floor(update.getPaddingLeft()),
+      (int) Math.floor(update.getPaddingTop()),
+      (int) Math.floor(update.getPaddingRight()),
+      (int) Math.floor(update.getPaddingBottom()));
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {

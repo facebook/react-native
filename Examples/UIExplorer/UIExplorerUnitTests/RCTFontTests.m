@@ -24,8 +24,12 @@
 
 @implementation RCTFontTests
 
+// It can happen (particularly in tvOS simulator) that expected and result font objects
+// will be different objects, but the same font, so this macro now explicitly
+// checks that fontName (which includes the style) and pointSize are equal.
 #define RCTAssertEqualFonts(font1, font2) { \
-  XCTAssertEqualObjects(font1, font2); \
+  XCTAssertTrue([font1.fontName isEqualToString:font2.fontName]); \
+  XCTAssertEqual(font1.pointSize,font2.pointSize); \
 }
 
 - (void)testWeight
@@ -63,11 +67,13 @@
 
 - (void)testFamily
 {
+#if !TARGET_OS_TV
   {
     UIFont *expected = [UIFont fontWithName:@"Cochin" size:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Cochin"}];
     RCTAssertEqualFonts(expected, result);
   }
+#endif
   {
     UIFont *expected = [UIFont fontWithName:@"HelveticaNeue" size:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Helvetica Neue"}];
@@ -135,6 +141,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"HelveticaNeue-Bold", @"fontWeight": @"normal"}];
     RCTAssertEqualFonts(expected, result);
   }
+#if !TARGET_OS_TV
   {
     UIFont *expected = [UIFont fontWithName:@"Cochin-Bold" size:14];
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Cochin", @"fontWeight": @"700"}];
@@ -145,6 +152,7 @@
     UIFont *result = [RCTConvert UIFont:@{@"fontFamily": @"Cochin", @"fontWeight": @"100"}];
     RCTAssertEqualFonts(expected, result);
   }
+#endif
 }
 
 - (void)testFamilyAndStyle

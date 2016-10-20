@@ -433,7 +433,7 @@ exports.examples = [
   },
 }, {
   title: 'Toggling Attributes',
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     return <AttributeToggler />;
   },
 }, {
@@ -575,15 +575,7 @@ exports.examples = [
   },
 }, {
   title: 'Dynamic Font Size Adjustment',
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     return <AdjustingFontSize />;
   },
 }];
-
-var styles = StyleSheet.create({
-  backgroundColorText: {
-    margin: 5,
-    marginBottom: 0,
-    backgroundColor: 'rgba(100, 100, 100, 0.3)'
-  },
-});

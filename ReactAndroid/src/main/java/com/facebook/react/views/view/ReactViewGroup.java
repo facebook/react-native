@@ -26,16 +26,15 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
-import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.*;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, com.facebook.react.uimanager.ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -225,7 +224,8 @@ public class ReactViewGroup extends ViewGroup implements
     mRemoveClippedSubviews = removeClippedSubviews;
     if (removeClippedSubviews) {
       mClippingRect = new Rect();
-      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      com.facebook.react.uimanager.ReactClippingViewGroupHelper
+        .calculateClippingRect(this, mClippingRect);
       mAllChildrenCount = getChildCount();
       int initialSize = Math.max(12, mAllChildrenCount);
       mAllChildren = new View[initialSize];
@@ -315,10 +315,11 @@ public class ReactViewGroup extends ViewGroup implements
       needUpdateClippingRecursive = true;
     }
     if (needUpdateClippingRecursive) {
-      if (child instanceof ReactClippingViewGroup) {
+      if (child instanceof com.facebook.react.uimanager.ReactClippingViewGroup) {
         // we don't use {@link sHelperRect} until the end of this loop, therefore it's safe
         // to call this method that may write to the same {@link sHelperRect} object.
-        ReactClippingViewGroup clippingChild = (ReactClippingViewGroup) child;
+        com.facebook.react.uimanager.ReactClippingViewGroup
+          clippingChild = (com.facebook.react.uimanager.ReactClippingViewGroup) child;
         if (clippingChild.getRemoveClippedSubviews()) {
           clippingChild.updateClippingRect();
         }

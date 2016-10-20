@@ -11,21 +11,23 @@
 
 #include <folly/dynamic.h>
 
-#include "JSModulesUnbundle.h"
-
 namespace facebook {
 namespace react {
 
 #define UNPACKED_JS_SOURCE_PATH_SUFFIX "/bundle.js"
 #define UNPACKED_META_PATH_SUFFIX "/bundle.meta"
+#define UNPACKED_BYTECODE_SUFFIX "/bundle.bytecode"
 
 enum {
   UNPACKED_JS_SOURCE = (1 << 0),
   UNPACKED_BC_CACHE = (1 << 1),
+  UNPACKED_BYTECODE = (1 << 2),
 };
 
 class JSExecutor;
+class JSModulesUnbundle;
 class MessageQueueThread;
+class ModuleRegistry;
 
 struct MethodCallResult {
   folly::dynamic result;
@@ -42,10 +44,10 @@ class ExecutorDelegate {
                                 std::shared_ptr<MessageQueueThread> queue) = 0;
   virtual std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executor) = 0;
 
-  virtual std::vector<std::string> moduleNames() = 0;
-  virtual folly::dynamic getModuleConfig(const std::string& name) = 0;
+  virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
+
   virtual void callNativeModules(
-    JSExecutor& executor, std::string callJSON, bool isEndOfBatch) = 0;
+    JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
 };

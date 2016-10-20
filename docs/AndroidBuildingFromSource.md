@@ -97,7 +97,7 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
+Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
 ...

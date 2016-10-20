@@ -50,7 +50,6 @@ class Tester extends React.Component {
       toValue: this.current,
     };
 
-    // $FlowIssue #0000000
     Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
@@ -164,6 +163,46 @@ class InternalSettings extends React.Component {
         {this.state && <Text>
           JS Stall filtered: {Math.round(this.state.filteredStall)}, last: {this.state.busyTime}
         </Text>}
+      </View>
+    );
+  }
+}
+
+class EventExample extends React.Component {
+  state = {
+    scrollX: new Animated.Value(0),
+  };
+
+  render() {
+    const opacity = this.state.scrollX.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
+    return (
+      <View>
+        <Animated.View
+          style={[
+            styles.block,
+            {
+              opacity,
+            }
+          ]}
+        />
+        <Animated.ScrollView
+          horizontal
+          style={{ height: 100, marginTop: 16 }}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { x: this.state.scrollX } }
+            }], {
+              useNativeDriver: true,
+            })
+          }
+        >
+          <View style={{ width: 600, backgroundColor: '#eee', justifyContent: 'center' }}>
+            <Text>Scroll me!</Text>
+          </View>
+        </Animated.ScrollView>
       </View>
     );
   }
@@ -427,6 +466,15 @@ exports.examples = [
     render: function() {
       return (
         <InternalSettings />
+      );
+    },
+  },
+  {
+    title: 'Animated events',
+    platform: 'android',
+    render: function() {
+      return (
+        <EventExample />
       );
     },
   },

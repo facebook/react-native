@@ -103,11 +103,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game)) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_(video_game) game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="objc swift" />
 
@@ -126,7 +126,7 @@ We will add the package dependencies to a `package.json` file. Create this file 
 
 Below is an example of what your `package.json` file should minimally contain.
 
-> Version numbers will vary according to your needs. Normally the latest versions for both [React](https://github.com/facebook/react/releases) and [React Native](https://github.com/facebook/react/releases) will be sufficient.
+> Version numbers will vary according to your needs. Normally the latest versions for both [React](https://github.com/facebook/react/releases) and [React Native](https://github.com/facebook/react-native/releases) will be sufficient.
 
 <block class="objc" />
 
@@ -209,6 +209,7 @@ target 'NumberTileGame' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
+    'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
@@ -233,6 +234,7 @@ target 'swift-2048' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
+    'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
@@ -603,6 +605,10 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
+
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code
@@ -610,8 +616,6 @@ This is only really used in dev mode when reloading JavaScript from the developm
 You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an `Activity` that creates a `ReactRootView`, starts a React application inside it and sets it as the main content view.
 
 > If you are targetting Android version <5, use the `AppCompatActivity` class from the `com.android.support:appcompat` package instead of `Activity`.
-
-> If you find out later that your app crashes due to `Didn't find class "com.facebook.jni.IteratorHelper"` exception, uncomment the `setUseOldBridge` line. [See related issue on GitHub.](https://github.com/facebook/react-native/issues/8701)
 
 ```java
 public class MyReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
@@ -630,7 +634,6 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
                 .addPackage(new MainReactPackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
-                //.setUseOldBridge(true) // uncomment this line if your app crashes
                 .build();
         mReactRootView.startReactApplication(mReactInstanceManager, "HelloWorld", null);
 
@@ -668,7 +671,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause();
+        mReactInstanceManager.onPause(this);
     }
 }
 
@@ -686,7 +689,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy();
+        mReactInstanceManager.onDestroy(this);
     }
 }
 ```

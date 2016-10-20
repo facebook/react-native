@@ -26,7 +26,7 @@ function dependencies(argv, config, args, packagerInstance) {
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
-    blacklistRE: config.getBlacklistRE(args.platform),
+    blacklistRE: config.getBlacklistRE(),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
@@ -89,7 +89,6 @@ module.exports = {
       description: 'The platform extension used for selecting modules',
     }, {
       command: '--transformer [path]',
-      default: null,
       description: 'Specify a custom transformer to be used'
     }, {
       command: '--verbose',

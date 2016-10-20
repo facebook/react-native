@@ -15,7 +15,6 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
-const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -60,8 +59,8 @@ export type AnnotationDragState = $Enum<{
  * `MKMapView`.
  *
  * For a cross-platform solution, check out
- * [react-native-maps](https://github.com/lelandrichardson/react-native-maps)
- * by Leland Richardson.
+ * [react-native-maps](https://github.com/airbnb/react-native-maps)
+ * by Airbnb.
  *
  * ```
  * import React, { Component } from 'react';

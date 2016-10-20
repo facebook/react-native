@@ -11,7 +11,6 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -448,21 +447,6 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
-  public final void writeConstantsField(JsonWriter writer, String fieldName) throws IOException {
-    Map<String, Object> constants = getConstants();
-    if (constants == null || constants.isEmpty()) {
-      return;
-    }
-
-    writer.name(fieldName).beginObject();
-    for (Map.Entry<String, Object> constant : constants.entrySet()) {
-      writer.name(constant.getKey());
-      JsonWriterHelper.value(writer, constant.getValue());
-    }
-    writer.endObject();
-  }
-
-  @Override
   public void initialize() {
     // do nothing
   }
@@ -471,11 +455,6 @@ public abstract class BaseJavaModule implements NativeModule {
   public boolean canOverrideExistingModule() {
     // TODO(t11394819): Make this final and use annotation
     return false;
-  }
-
-  @Override
-  public void onReactBridgeInitialized(ReactBridge bridge) {
-    // do nothing
   }
 
   @Override

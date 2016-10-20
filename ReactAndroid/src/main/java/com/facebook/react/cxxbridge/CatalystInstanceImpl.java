@@ -167,14 +167,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
-    // This should really be done when we post the task that runs the JS bundle
-    // (don't even need to wait for it to finish). Since that is currently done
-    // synchronously, marking it here is fine.
-    mAcceptCalls = true;
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     mJSBundleHasLoaded = true;
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
+    // Loading the bundle is queued on the JS thread, but may not have
+    // run yet.  It's save to set this here, though, since any work it
+    // gates will be queued on the JS thread behind the load.
+    mAcceptCalls = true;
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
   }

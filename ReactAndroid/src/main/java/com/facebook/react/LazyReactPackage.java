@@ -10,11 +10,14 @@
 package com.facebook.react;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -26,6 +29,35 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * TODO(t11394819): Make this default and deprecate ReactPackage
  */
 public abstract class LazyReactPackage implements ReactPackage {
+
+  public static ReactModuleInfoProvider getReactModuleInfoProviderViaReflection(
+      LazyReactPackage lazyReactPackage) {
+    Class<?> reactModuleInfoProviderClass;
+    try {
+      reactModuleInfoProviderClass = Class.forName(
+          lazyReactPackage.getClass().getCanonicalName() + "$$ReactModuleInfoProvider");
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+
+    if (reactModuleInfoProviderClass == null) {
+      throw new RuntimeException("ReactModuleInfoProvider class for " +
+          lazyReactPackage.getClass().getCanonicalName() + " not found.");
+    }
+
+    try {
+      return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
+    } catch (InstantiationException e) {
+      throw new RuntimeException(
+          "Unable to instantiate ReactModuleInfoProvider for " + lazyReactPackage.getClass(),
+          e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(
+          "Unable to instantiate ReactModuleInfoProvider for " + lazyReactPackage.getClass(),
+          e);
+    }
+  }
+
   /**
    * @param reactContext react application context that can be used to create modules
    * @return list of module specs that can create the native modules
@@ -48,4 +80,28 @@ public abstract class LazyReactPackage implements ReactPackage {
     }
     return modules;
   }
+
+  /**
+   * @param reactContext react application context that can be used to create View Managers.
+   * @return list of module specs that can create the View Managers.
+   */
+  public List<ModuleSpec> getViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    List<ModuleSpec> viewManagerModuleSpecs = getViewManagers(reactContext);
+    if (viewManagerModuleSpecs == null || viewManagerModuleSpecs.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    List<ViewManager> viewManagers = new ArrayList<>();
+    for (ModuleSpec moduleSpec : viewManagerModuleSpecs) {
+      viewManagers.add((ViewManager) moduleSpec.getProvider().get());
+    }
+    return viewManagers;
+  }
+
+  public abstract ReactModuleInfoProvider getReactModuleInfoProvider();
 }
