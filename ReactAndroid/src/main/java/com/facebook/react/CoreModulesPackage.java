@@ -25,6 +25,7 @@ import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -185,6 +186,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
     }
 
     return jsModules;
+  }
+
+  @Override
+  public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    // This has to be done via reflection or we break open source.
+    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {

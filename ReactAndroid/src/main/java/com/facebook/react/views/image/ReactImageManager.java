@@ -22,6 +22,7 @@ import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -29,9 +30,10 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+@ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
-  public static final String REACT_CLASS = "RCTImageView";
+  protected static final String REACT_CLASS = "RCTImageView";
 
   @Override
   public String getName() {

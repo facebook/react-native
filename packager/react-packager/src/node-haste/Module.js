@@ -13,7 +13,7 @@ const docblock = require('./DependencyGraph/docblock');
 const extractRequires = require('./lib/extractRequires');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('./fastpath');
+const path = require('path');
 
 class Module {
 
