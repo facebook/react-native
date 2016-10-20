@@ -439,11 +439,12 @@ function extractFont(font) {
   }
   var fontFamily = extractSingleFontFamily(font.fontFamily);
   var fontSize = +font.fontSize || 12;
+  var fontWeight = font.fontWeight.toString();
   return {
     // Normalize
     fontFamily: fontFamily,
     fontSize: fontSize,
-    fontWeight: font.fontWeight,
+    fontWeight: fontWeight,
     fontStyle: font.fontStyle,
   };
 }
