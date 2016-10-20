@@ -24,5 +24,5 @@ public interface NativeModuleCallExceptionHandler {
   /**
    * Do something to display or log the exception.
    */
-  void handleException(Exception e);
+  void handleException(Throwable e);
 }

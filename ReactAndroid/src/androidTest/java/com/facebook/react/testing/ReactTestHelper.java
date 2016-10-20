@@ -88,7 +88,7 @@ public class ReactTestHelper {
           .setNativeModuleCallExceptionHandler(
             new NativeModuleCallExceptionHandler() {
                 @Override
-                public void handleException(Exception e) {
+                public void handleException(Throwable e) {
                   throw new RuntimeException(e);
                 }
             })

@@ -15,7 +15,7 @@ package com.facebook.react.bridge;
 public class DefaultNativeModuleCallExceptionHandler implements NativeModuleCallExceptionHandler {
 
   @Override
-  public void handleException(Exception e) {
+  public void handleException(Throwable e) {
     if (e instanceof RuntimeException) {
       // Because we are rethrowing the original exception, the original stacktrace will be
       // preserved.

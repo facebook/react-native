@@ -220,7 +220,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   }
 
   @Override
-  public void handleException(Exception e) {
+  public void handleException(Throwable e) {
     if (mIsDevSupportEnabled) {
       if (e instanceof JSException) {
         FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
