@@ -14,6 +14,7 @@ import java.util.Map;
 import android.content.DialogInterface;
 
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -24,9 +25,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 /**
  * View manager for {@link ReactModalHostView} components.
  */
+@ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
-  private static final String REACT_CLASS = "RCTModalHostView";
+  protected static final String REACT_CLASS = "RCTModalHostView";
 
   @Override
   public String getName() {
