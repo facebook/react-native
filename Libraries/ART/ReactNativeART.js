@@ -439,7 +439,7 @@ function extractFont(font) {
   }
   var fontFamily = extractSingleFontFamily(font.fontFamily);
   var fontSize = +font.fontSize || 12;
-  var fontWeight = font.fontWeight.toString();
+  var fontWeight = font.fontWeight ? font.fontWeight.toString() : "400";
   return {
     // Normalize
     fontFamily: fontFamily,
