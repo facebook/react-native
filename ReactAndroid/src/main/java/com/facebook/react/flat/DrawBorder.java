@@ -15,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import com.facebook.csslayout.Spacing;
 
@@ -48,6 +49,7 @@ import com.facebook.csslayout.Spacing;
   private int mBackgroundColor;
 
   private @Nullable DashPathEffect mPathEffectForBorderStyle;
+  private @Nullable Path mPathForBorder;
 
   public void setBorderWidth(int position, float borderWidth) {
     switch (position) {
@@ -209,44 +211,116 @@ import com.facebook.csslayout.Spacing;
     drawBorders(canvas);
   }
 
+  /**
+   * @return true when border colors differs where two border sides meet (e.g. right and top border
+   * colors differ)
+   */
+  private boolean isBorderColorDifferentAtIntersectionPoints() {
+    return isFlagSet(BORDER_TOP_COLOR_SET) ||
+        isFlagSet(BORDER_BOTTOM_COLOR_SET) ||
+        isFlagSet(BORDER_LEFT_COLOR_SET) ||
+        isFlagSet(BORDER_RIGHT_COLOR_SET);
+  }
+
   private void drawRectangularBorders(Canvas canvas) {
     int defaultColor = getBorderColor();
     float defaultWidth = getBorderWidth();
 
-    // draw top
+    float top = getTop();
     float topWidth = resolveWidth(mBorderTopWidth, defaultWidth);
-    float bottomOfTheTop = getTop() + topWidth;
+    float bottomOfTheTop = top + topWidth;
     int topColor = resolveBorderColor(BORDER_TOP_COLOR_SET, mBorderTopColor, defaultColor);
+
+    float bottom = getBottom();
+    float bottomWidth = resolveWidth(mBorderBottomWidth, defaultWidth);
+    float topOfTheBottom = bottom - bottomWidth;
+    int bottomColor = resolveBorderColor(BORDER_BOTTOM_COLOR_SET, mBorderBottomColor, defaultColor);
+
+    float left = getLeft();
+    float leftWidth = resolveWidth(mBorderLeftWidth, defaultWidth);
+    float rightOfTheLeft = left + leftWidth;
+    int leftColor = resolveBorderColor(BORDER_LEFT_COLOR_SET, mBorderLeftColor, defaultColor);
+
+    float right = getRight();
+    float rightWidth = resolveWidth(mBorderRightWidth, defaultWidth);
+    float leftOfTheRight = right - rightWidth;
+    int rightColor = resolveBorderColor(BORDER_RIGHT_COLOR_SET, mBorderRightColor, defaultColor);
+
+    boolean isDrawPathRequired = isBorderColorDifferentAtIntersectionPoints();
+    if (isDrawPathRequired && mPathForBorder == null) {
+      mPathForBorder = new Path();
+    }
+
+    // draw top
     if (Color.alpha(topColor) != 0 && topWidth != 0) {
       PAINT.setColor(topColor);
-      canvas.drawRect(getLeft(), getTop(), getRight(), bottomOfTheTop, PAINT);
+
+      if (isDrawPathRequired) {
+        updatePathForTopBorder(
+            top,
+            bottomOfTheTop,
+            left,
+            rightOfTheLeft,
+            right,
+            leftOfTheRight);
+        canvas.drawPath(mPathForBorder, PAINT);
+      } else {
+        canvas.drawRect(left, top, right, bottomOfTheTop, PAINT);
+      }
     }
 
     // draw bottom
-    float bottomWidth = resolveWidth(mBorderBottomWidth, defaultWidth);
-    float topOfTheBottom = getBottom() - bottomWidth;
-    int bottomColor = resolveBorderColor(BORDER_BOTTOM_COLOR_SET, mBorderBottomColor, defaultColor);
     if (Color.alpha(bottomColor) != 0 && bottomWidth != 0) {
       PAINT.setColor(bottomColor);
-      canvas.drawRect(getLeft(), topOfTheBottom, getRight(), getBottom(), PAINT);
+
+      if (isDrawPathRequired) {
+        updatePathForBottomBorder(
+            bottom,
+            topOfTheBottom,
+            left,
+            rightOfTheLeft,
+            right,
+            leftOfTheRight);
+        canvas.drawPath(mPathForBorder, PAINT);
+      } else {
+        canvas.drawRect(left, topOfTheBottom, right, bottom, PAINT);
+      }
     }
 
     // draw left
-    float leftWidth = resolveWidth(mBorderLeftWidth, defaultWidth);
-    float rightOfTheLeft = getLeft() + leftWidth;
-    int leftColor = resolveBorderColor(BORDER_LEFT_COLOR_SET, mBorderLeftColor, defaultColor);
     if (Color.alpha(leftColor) != 0 && leftWidth != 0) {
       PAINT.setColor(leftColor);
-      canvas.drawRect(getLeft(), bottomOfTheTop, rightOfTheLeft, topOfTheBottom, PAINT);
+
+      if (isDrawPathRequired) {
+        updatePathForLeftBorder(
+            top,
+            bottomOfTheTop,
+            bottom,
+            topOfTheBottom,
+            left,
+            rightOfTheLeft);
+        canvas.drawPath(mPathForBorder, PAINT);
+      } else {
+        canvas.drawRect(left, bottomOfTheTop, rightOfTheLeft, topOfTheBottom, PAINT);
+      }
     }
 
     // draw right
-    float rightWidth = resolveWidth(mBorderRightWidth, defaultWidth);
-    float leftOfTheRight = getRight() - rightWidth;
-    int rightColor = resolveBorderColor(BORDER_RIGHT_COLOR_SET, mBorderRightColor, defaultColor);
     if (Color.alpha(rightColor) != 0 && rightWidth != 0) {
       PAINT.setColor(rightColor);
-      canvas.drawRect(leftOfTheRight, bottomOfTheTop, getRight(), topOfTheBottom, PAINT);
+
+      if (isDrawPathRequired) {
+        updatePathForRightBorder(
+            top,
+            bottomOfTheTop,
+            bottom,
+            topOfTheBottom,
+            right,
+            leftOfTheRight);
+        canvas.drawPath(mPathForBorder, PAINT);
+      } else {
+        canvas.drawRect(leftOfTheRight, bottomOfTheTop, right, topOfTheBottom, PAINT);
+      }
     }
 
     // draw center
@@ -254,6 +328,78 @@ import com.facebook.csslayout.Spacing;
       PAINT.setColor(mBackgroundColor);
       canvas.drawRect(rightOfTheLeft, bottomOfTheTop, leftOfTheRight, topOfTheBottom, PAINT);
     }
+  }
+
+  private void updatePathForTopBorder(
+      float top,
+      float bottomOfTheTop,
+      float left,
+      float rightOfTheLeft,
+      float right,
+      float leftOfTheRight) {
+    if (mPathForBorder == null) {
+      mPathForBorder = new Path();
+    }
+    mPathForBorder.reset();
+    mPathForBorder.moveTo(left, top);
+    mPathForBorder.lineTo(rightOfTheLeft, bottomOfTheTop);
+    mPathForBorder.lineTo(leftOfTheRight, bottomOfTheTop);
+    mPathForBorder.lineTo(right, top);
+    mPathForBorder.lineTo(left, top);
+  }
+
+  private void updatePathForBottomBorder(
+      float bottom,
+      float topOfTheBottom,
+      float left,
+      float rightOfTheLeft,
+      float right,
+      float leftOfTheRight) {
+    if (mPathForBorder == null) {
+      mPathForBorder = new Path();
+    }
+    mPathForBorder.reset();
+    mPathForBorder.moveTo(left, bottom);
+    mPathForBorder.lineTo(right, bottom);
+    mPathForBorder.lineTo(leftOfTheRight, topOfTheBottom);
+    mPathForBorder.lineTo(rightOfTheLeft, topOfTheBottom);
+    mPathForBorder.lineTo(left, bottom);
+  }
+
+  private void updatePathForLeftBorder(
+      float top,
+      float bottomOfTheTop,
+      float bottom,
+      float topOfTheBottom,
+      float left,
+      float rightOfTheLeft) {
+    if (mPathForBorder == null) {
+      mPathForBorder = new Path();
+    }
+    mPathForBorder.reset();
+    mPathForBorder.moveTo(left, top);
+    mPathForBorder.lineTo(rightOfTheLeft, bottomOfTheTop);
+    mPathForBorder.lineTo(rightOfTheLeft, topOfTheBottom);
+    mPathForBorder.lineTo(left, bottom);
+    mPathForBorder.lineTo(left, top);
+  }
+
+  private void updatePathForRightBorder(
+      float top,
+      float bottomOfTheTop,
+      float bottom,
+      float topOfTheBottom,
+      float right,
+      float leftOfTheRight) {
+    if (mPathForBorder == null) {
+      mPathForBorder = new Path();
+    }
+    mPathForBorder.reset();
+    mPathForBorder.moveTo(right, top);
+    mPathForBorder.lineTo(right, bottom);
+    mPathForBorder.lineTo(leftOfTheRight, topOfTheBottom);
+    mPathForBorder.lineTo(leftOfTheRight, bottomOfTheTop);
+    mPathForBorder.lineTo(right, top);
   }
 
   private int resolveBorderColor(int flag, int color, int defaultColor) {
