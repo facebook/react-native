@@ -605,6 +605,10 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
+
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code
