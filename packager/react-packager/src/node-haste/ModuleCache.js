@@ -1,10 +1,20 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
 const AssetModule = require('./AssetModule');
-const Package = require('./Package');
 const Module = require('./Module');
+const Package = require('./Package');
 const Polyfill = require('./Polyfill');
-const path = require('./fastpath');
+
+const path = require('path');
 
 class ModuleCache {
 
