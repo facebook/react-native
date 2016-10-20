@@ -8,11 +8,11 @@
  */
 'use strict';
 
-const denodeify = require('denodeify');
 const crypto = require('crypto');
+const denodeify = require('denodeify');
 const fs = require('graceful-fs');
 const isAbsolutePath = require('absolute-path');
-const path = require('../fastpath');
+const path = require('path');
 const tmpDir = require('os').tmpDir();
 
 function getObjectValues(object) {

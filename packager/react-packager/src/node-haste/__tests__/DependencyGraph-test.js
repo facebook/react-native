@@ -39,9 +39,7 @@ jest.mock('jest-haste-map/build/crawlers/node', () => {
         activeCalls--;
 
         names.forEach(file => {
-          file = process.platform === 'win32' ?
-            path.win32.join(directory, file) :
-            path.join(directory, file);
+          file = path.join(directory, file);
           if (ignore(file)) {
             return;
           }
@@ -108,6 +106,13 @@ jest.mock('jest-haste-map/build/crawlers/node', () => {
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
+const path = require('path');
+beforeEach(() => {
+  jest.resetModules();
+
+  jest.mock('path', () => path);
+});
 
 describe('DependencyGraph', function() {
   let Module;
@@ -2715,8 +2720,9 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'win32';
 
-      // force reload with fastpath
+      // reload path module
       jest.resetModules();
+      jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
     });
 
