@@ -86,7 +86,8 @@ class Resolver {
 
   constructor(options) {
     const opts = validateOpts(options);
-    const additionalPlatforms = getPlatforms(opts.assetRoots);
+    const configOpts = getResolveConfigOpts(opts.assetRoots);
+    const additionalPlatforms = configOpts ? configOpts.additionalPlatforms : [];
 
     this._depGraph = new DependencyGraph({
       activity: Activity,
@@ -114,6 +115,9 @@ class Resolver {
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      moduleOptions: configOpts || {
+        cacheTransformResults: true,
+      },
       // for jest-haste-map
       resetCache: options.resetCache,
     });
@@ -298,14 +302,13 @@ function definePolyfillCode(code,) {
 }
 
 // Check for resolveConfig overrides
-function getPlatforms(projectPaths, resolveConfigFile = '/.resolveConfig') {
+function getResolveConfigOpts(projectPaths, resolveConfigFile = '/.resolveConfig') {
   // iterate over paths until success or empty
-  if (projectPaths.length === 0) return [];
+  if (projectPaths.length === 0) return null;
   try {
-    const config = require(path.join(projectPaths.pop(), resolveConfigFile));
-    return config.additionalPlatforms;
+    return require(path.join(projectPaths.pop(), resolveConfigFile));
   } catch(e) {
-    return getPlatforms(projectPaths, resolveConfigFile);
+    return getResolveConfigOpts(projectPaths, resolveConfigFile);
   }
 }
 

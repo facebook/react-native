@@ -79,9 +79,7 @@ class DependencyGraph {
       transformCode,
       shouldThrowOnUnresolvedErrors,
       enableAssetMap: enableAssetMap || true,
-      moduleOptions: moduleOptions || {
-        cacheTransformResults: true,
-      },
+      moduleOptions: moduleOptions,
       extraNodeModules,
       // additional arguments for jest-haste-map & defaults
       useWatchman: useWatchman !== false,
@@ -156,6 +154,7 @@ class DependencyGraph {
         preferNativePlatform: this._opts.preferNativePlatform,
         helpers: this._helpers,
         platforms: this._opts.platforms,
+        moduleOptions: this._opts.moduleOptions,
       });
 
       const escapePath = (p: string) => {
