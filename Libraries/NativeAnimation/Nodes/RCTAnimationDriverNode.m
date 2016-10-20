@@ -118,14 +118,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             fromInterval,
                                             toInterval,
                                             fromFrameValue.doubleValue,
-                                            toFrameValue.doubleValue);
+                                            toFrameValue.doubleValue,
+                                            EXTRAPOLATE_TYPE_EXTEND,
+                                            EXTRAPOLATE_TYPE_EXTEND);
 
   [self updateOutputWithFrameOutput:frameOutput];
 }
 
 - (void)updateOutputWithFrameOutput:(CGFloat)frameOutput
 {
-  CGFloat outputValue = RCTInterpolateValue(frameOutput, 0, 1, _fromValue, _toValue);
+  CGFloat outputValue = RCTInterpolateValue(frameOutput,
+                                            0,
+                                            1,
+                                            _fromValue,
+                                            _toValue,
+                                            EXTRAPOLATE_TYPE_EXTEND,
+                                            EXTRAPOLATE_TYPE_EXTEND);
+
   _outputValue = @(outputValue);
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
