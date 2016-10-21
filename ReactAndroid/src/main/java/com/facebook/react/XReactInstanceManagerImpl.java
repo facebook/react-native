@@ -940,70 +940,27 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       .flush();
     if (mLazyNativeModulesEnabled && reactPackage instanceof LazyReactPackage) {
       LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
-      if (addReactModuleInfos(lazyReactPackage, reactContext, moduleSpecs, reactModuleInfoMap)) {
-        moduleSpecs.addAll(lazyReactPackage.getNativeModules(reactContext));
+      ReactModuleInfoProvider instance = lazyReactPackage.getReactModuleInfoProvider();
+      Map<Class, ReactModuleInfo> map = instance.getReactModuleInfos();
+      if (!map.isEmpty()) {
+        reactModuleInfoMap.putAll(map);
       }
+      moduleSpecs.addAll(lazyReactPackage.getNativeModules(reactContext));
     } else {
       FLog.d(
         ReactConstants.TAG,
         reactPackage.getClass().getSimpleName() +
-          " is not a LazyReactPackage, falling back to old version");
-      addEagerModuleProviders(reactPackage, reactContext, moduleSpecs);
+          " is not a LazyReactPackage, falling back to old version.");
+      for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
+        moduleSpecs.add(
+            new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
+      }
     }
 
     for (Class<? extends JavaScriptModule> jsModuleClass : reactPackage.createJSModules()) {
       jsModulesBuilder.add(jsModuleClass);
     }
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-  }
-
-  private boolean addReactModuleInfos(
-    LazyReactPackage lazyReactPackage,
-    ReactApplicationContext reactApplicationContext,
-    List<ModuleSpec> moduleSpecs,
-    Map<Class, ReactModuleInfo> reactModuleInfoMap) {
-    Class<?> reactModuleInfoProviderClass = null;
-    try {
-      reactModuleInfoProviderClass = Class.forName(
-        lazyReactPackage.getClass().getCanonicalName() + "$$ReactModuleInfoProvider");
-    } catch (ClassNotFoundException e) {
-      FLog.w(
-        TAG,
-        "Could not find generated ReactModuleInfoProvider for " + lazyReactPackage.getClass());
-      // Fallback to non-lazy method.
-      addEagerModuleProviders(lazyReactPackage, reactApplicationContext, moduleSpecs);
-      return false;
-    }
-
-    if (reactModuleInfoProviderClass != null) {
-      ReactModuleInfoProvider instance;
-      try {
-        instance = (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
-      } catch (InstantiationException e) {
-        throw new RuntimeException(
-          "Unable to instantiate ReactModuleInfoProvider for " + lazyReactPackage.getClass(),
-          e);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(
-          "Unable to instantiate ReactModuleInfoProvider for " + lazyReactPackage.getClass(),
-          e);
-      }
-      Map<Class, ReactModuleInfo> map = instance.getReactModuleInfos();
-      if (!map.isEmpty()) {
-        reactModuleInfoMap.putAll(map);
-      }
-    }
-    return true;
-  }
-
-  private void addEagerModuleProviders(
-    ReactPackage reactPackage,
-    ReactApplicationContext reactApplicationContext,
-    List<ModuleSpec> moduleSpecs) {
-    for (NativeModule nativeModule : reactPackage.createNativeModules(reactApplicationContext)) {
-      moduleSpecs.add(
-        new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
-    }
   }
 
   private void moveReactContextToCurrentLifecycleState() {
