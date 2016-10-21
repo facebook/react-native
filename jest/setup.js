@@ -159,9 +159,9 @@ jest
     getByID: () => mockEmptyObject,
   }));
 
-const React = require('react');
-
 jest.doMock('requireNativeComponent', () => {
+  const React = require('react');
+
   return (viewName) => {
     return (props) => {
       return React.createElement(
