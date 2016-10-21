@@ -27,6 +27,13 @@ content.
 */
 var featured = [
   {
+    name: 'GitHub Popular',
+    icon: 'http://www.devio.org/io/GitHubPopular/img/ic_app.png',
+    linkPlayStore: 'http://shouji.baidu.com/software/10123273.html',
+    infoLink: 'http://www.devio.org/2016/10/19/%E6%AF%8F%E4%BD%8D%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98%E9%83%BD%E5%BA%94%E8%AF%A5%E6%9C%89%E4%B8%80%E6%AC%BE%E7%9A%84GitHub%E6%9C%80%E5%8F%97%E6%AC%A2%E8%BF%8E%E4%B8%8E%E6%9C%80%E7%83%AD%E9%A1%B9%E7%9B%AE%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%91%E5%B8%83@GitHubPopular/',
+    infoTitle: 'This is a GitHub most popular repositories viewer with React Native.',
+  },
+  {
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
