@@ -172,7 +172,7 @@ import com.facebook.csslayout.Spacing;
 
   @Override
   protected void onDraw(Canvas canvas) {
-    if (getBorderRadius() >= 0.5f) {
+    if (getBorderRadius() >= 0.5f || getPathEffectForBorderStyle() != null) {
       drawRoundedBorders(canvas);
     } else {
       drawRectangularBorders(canvas);
