@@ -158,3 +158,17 @@ jest
     register: id => id,
     getByID: () => mockEmptyObject,
   }));
+
+const React = require('react');
+
+jest.doMock('requireNativeComponent', () => {
+  return (viewName) => {
+    return (props) => {
+      return React.createElement(
+        viewName,
+        props,
+        props.children,
+      );
+    }
+  }
+});
