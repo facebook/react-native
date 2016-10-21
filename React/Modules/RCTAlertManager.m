@@ -146,7 +146,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
       buttonStyle = UIAlertActionStyleDestructive;
     }
-    __weak UIAlertController* weakAlertController = alertController;
+    __weak UIAlertController *weakAlertController = alertController;
     [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                         style:buttonStyle
                                                       handler:^(__unused UIAlertAction *action) {
