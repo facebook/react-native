@@ -55,6 +55,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 @ReactModuleList({
   AnimationsDebugModule.class,
   AndroidInfoModule.class,
+  HeadlessJsTaskSupportModule.class,
   DeviceEventManagerModule.class,
   ExceptionsManagerModule.class,
   Timing.class,
