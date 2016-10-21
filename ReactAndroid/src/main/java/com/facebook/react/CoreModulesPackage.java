@@ -53,14 +53,15 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  * view managers from).
  */
 @ReactModuleList({
-  AnimationsDebugModule.class,
   AndroidInfoModule.class,
-  HeadlessJsTaskSupportModule.class,
+  AnimationsDebugModule.class,
   DeviceEventManagerModule.class,
   ExceptionsManagerModule.class,
-  Timing.class,
+  HeadlessJsTaskSupportModule.class,
   SourceCodeModule.class,
+  Timing.class,
   UIManagerModule.class,
+  // Debug only
   DebugComponentOwnershipModule.class,
   JSCHeapCapture.class,
   JSCSamplingProfiler.class,
@@ -83,15 +84,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
     List<ModuleSpec> moduleSpecList = new ArrayList<>();
-    moduleSpecList.add(
-      new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
-        @Override
-        public NativeModule get() {
-          return new AnimationsDebugModule(
-            reactContext,
-            mReactInstanceManager.getDevSupportManager().getDevSettings());
-        }
-      }));
+
     moduleSpecList.add(
       new ModuleSpec(AndroidInfoModule.class, new Provider<NativeModule>() {
         @Override
@@ -99,11 +92,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
           return new AndroidInfoModule();
         }
       }));
-    moduleSpecList
-      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
+    moduleSpecList.add(
+      new ModuleSpec(AnimationsDebugModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new HeadlessJsTaskSupportModule(reactContext);
+          return new AnimationsDebugModule(
+            reactContext,
+            mReactInstanceManager.getDevSupportManager().getDevSettings());
         }
       }));
     moduleSpecList.add(
@@ -120,11 +115,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
           return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
         }
       }));
-    moduleSpecList.add(
-      new ModuleSpec(Timing.class, new Provider<NativeModule>() {
+    moduleSpecList
+      .add(new ModuleSpec(HeadlessJsTaskSupportModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
+          return new HeadlessJsTaskSupportModule(reactContext);
         }
       }));
     moduleSpecList.add(
@@ -132,6 +127,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
         @Override
         public NativeModule get() {
           return new SourceCodeModule(mReactInstanceManager.getSourceUrl());
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(Timing.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
         }
       }));
     moduleSpecList.add(
