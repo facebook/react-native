@@ -12,7 +12,7 @@ Android requires that all apps be digitally signed with a certificate before the
 
 ### Generating a signing key
 
-You can generate a private signing key using `keytool`.
+You can generate a private signing key using `keytool`. On Windows `keytool` must be run from `C:\Program Files\Java\jdkx.x.x_x\bin`.
 
     $ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
