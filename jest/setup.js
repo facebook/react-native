@@ -162,13 +162,9 @@ jest
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
 
-  return (viewName) => {
-    return (props) => {
-      return React.createElement(
-        viewName,
-        props,
-        props.children,
-      );
-    }
-  }
+  return viewName => props => React.createElement(
+    viewName,
+    props,
+    props.children,
+  );
 });
