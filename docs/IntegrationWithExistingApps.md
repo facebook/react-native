@@ -83,11 +83,15 @@ The keys to integrating React Native components into your Android application ar
 
 The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
+> To ensure a smooth experience, make sure your `android` project is under `$root/android`.
+
 <block class="objc swift" />
 
 ### General
 
 First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+
+> To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
 ### CocoaPods
 
