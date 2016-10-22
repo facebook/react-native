@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -13,6 +15,18 @@ const fs = require('fs');
 const path = require('path');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
+
+export type ConfigT = {
+  extraNodeModules?: {[id: string]: string},
+  getAssetExts?: () => Array<string>,
+  getTransformModulePath?: () => string,
+  getTransformOptionsModulePath?: () => string,
+  transformVariants?: () => {[name: string]: Object},
+
+  getAssetRoots(): Array<string>,
+  getBlacklistRE(): RegExp,
+  getProjectRoots(): Array<string>,
+};
 
 /**
  * Module capable of getting the configuration that should be used for
@@ -25,7 +39,11 @@ const RN_CLI_CONFIG = 'rn-cli.config.js';
  * error will be thrown.
  */
 const Config = {
-  get(cwd, defaultConfig, pathToConfig) {
+  get(
+    cwd: string,
+    defaultConfig?: ConfigT | null,
+    pathToConfig?: string | null,
+  ): ConfigT {
     let baseConfig;
 
     // Handle the legacy code path where pathToConfig is unspecified
@@ -36,12 +54,15 @@ const Config = {
           `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${cwd}"`
         );
       }
+      // $FlowFixMe nope
       baseConfig = require(configPath);
     } else if (pathToConfig == null) {
       assert(defaultConfig, 'Must have a default config if config is missing');
     } else {
       baseConfig = path.isAbsolute(pathToConfig) ?
+        // $FlowFixMe nope
         require(pathToConfig) :
+        // $FlowFixMe nope
         require(path.join(cwd, pathToConfig));
     }
 
@@ -52,7 +73,7 @@ const Config = {
     };
   },
 
-  findConfigPath(cwd) {
+  findConfigPath(cwd: string): ?string {
     const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
     return parentDir ? path.join(parentDir, RN_CLI_CONFIG) : null;
   },
