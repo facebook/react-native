@@ -99,7 +99,7 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
-      providesModuleNodeModules: [
+      providesModuleNodeModules: defaults.providesModuleNodeModules,
       platforms: defaults.platforms.concat(additionalPlatforms),
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
