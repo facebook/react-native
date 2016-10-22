@@ -356,7 +356,7 @@ class ResolutionRequest {
 
           const searchQueue = [];
           for (let currDir = path.dirname(fromModule.path);
-               currDir !== realPath.parse(fromModule.path).root;
+               currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
             const searchPath = path.join(currDir, 'node_modules');
             if (this._fastfs.dirExists(searchPath)) {
