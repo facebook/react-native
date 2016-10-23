@@ -164,24 +164,6 @@ class WKWebViewIOSExample extends React.Component {
   };
 }
 
-class Button extends React.Component {
-  _handlePress = () => {
-    if (this.props.enabled !== false && this.props.onPress) {
-      this.props.onPress();
-    }
-  };
-
-  render() {
-    return (
-      <TouchableWithoutFeedback onPress={this._handlePress}>
-        <View style={styles.button}>
-          <Text>{this.props.text}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  }
-}
-
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -257,14 +239,6 @@ var styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  button: {
-    flex: 0.5,
-    width: 0,
-    margin: 5,
-    borderColor: 'gray',
-    borderWidth: 1,
-    backgroundColor: 'gray',
   },
 });
 
