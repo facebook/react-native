@@ -98,7 +98,19 @@ typedef struct CSSNode {
 
 static void _CSSNodeMarkDirty(const CSSNodeRef node);
 
+#ifdef ANDROID
+#include <android/log.h>
+static int _csslayoutAndroidLog(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int result = __android_log_vprint(ANDROID_LOG_DEBUG, "css-layout", format, args);
+  va_end(args);
+  return result;
+}
+static CSSLogger gLogger = &_csslayoutAndroidLog;
+#else
 static CSSLogger gLogger = &printf;
+#endif
 
 static float computedEdgeValue(const float edges[CSSEdgeCount],
                                const CSSEdge edge,
