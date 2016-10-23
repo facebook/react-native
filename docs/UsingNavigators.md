@@ -104,7 +104,7 @@ A more complete example that demonstrates the pushing and popping of routes. Edi
 
 ```javascript
 import React, { Component } from 'react';
-import { AppRegistry, Navigator, Text, View } from 'react-native';
+import { AppRegistry, Navigator } from 'react-native';
 
 import MyScene from './MyScene';
 
@@ -149,11 +149,6 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TouchableHighlight } from 'react-native';
 
 export default class MyScene extends Component {
-  static propTypes = {
-    title: PropTypes.string.isRequired,
-    onForward: PropTypes.func.isRequired,
-    onBack: PropTypes.func.isRequired,
-  }
   render() {
     return (
       <View>
@@ -168,6 +163,12 @@ export default class MyScene extends Component {
     )
   }
 }
+
+MyScene.propTypes = {
+  title: PropTypes.string.isRequired,
+  onForward: PropTypes.func.isRequired,
+  onBack: PropTypes.func.isRequired,
+};
 ```
 
 In this example, the `MyScene` component is passed the title of the current route via the `title` prop. It displays two tappable components that call the `onForward` and `onBack` functions passed through its props, which in turn will call `navigator.push()` and `navigator.pop()` as needed.
