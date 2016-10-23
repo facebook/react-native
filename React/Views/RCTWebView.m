@@ -16,9 +16,11 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-#import "RCTWebRequestTypes.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+
+NSString *const RCTJSNavigationScheme = @"react-js-navigation";
+NSString *const RCTJSPostMessageHost = @"postMessage";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
 

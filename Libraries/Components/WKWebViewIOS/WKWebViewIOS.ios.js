@@ -191,15 +191,6 @@ class WKWebViewIOS extends React.Component {
     onNavigationStateChange: PropTypes.func,
 
     /**
-     * A function that is invoked when the webview posts a message to native
-     * using `window.webkit.messageHandlers.reactNative.postMessage`.
-     *
-     * postMessage accepts one argument, `data`, which will be available on the
-     * event object, `event.nativeEvent.data`.
-     */
-    onMessage: PropTypes.func,
-
-    /**
      * Boolean value that forces the `WebView` to show the loading view
      * on the first load.
      */
@@ -299,7 +290,6 @@ class WKWebViewIOS extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
-        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       />;
 
@@ -353,24 +343,6 @@ class WKWebViewIOS extends React.Component {
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.stopLoading,
       null
-    );
-  };
-
-  /**
-   * Posts a message to the web view, which will emit a `message` event.
-   * Accepts one argument, `data`, which must be a string.
-   *
-   * In your webview, you'll need to something like the following.
-   *
-   * ```js
-   * document.addEventListener('message', e => { document.title = e.data; });
-   * ```
-   */
-  postMessage = (data: string) => {
-    UIManager.dispatchViewManagerCommand(
-      this.getWebViewHandle(),
-      UIManager.RCTWKWebView.Commands.postMessage,
-      [String(data)]
     );
   };
 
@@ -429,11 +401,6 @@ class WKWebViewIOS extends React.Component {
     });
     this._updateNavigationState(event);
   };
-
-  _onMessage = (event: Event) => {
-    var {onMessage} = this.props;
-    onMessage && onMessage(event);
-  };
 }
 
 var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebViewIOS, {
@@ -441,7 +408,6 @@ var RCTWKWebView = requireNativeComponent('RCTWKWebView', WKWebViewIOS, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
-    onMessage: true,
   },
 });
 

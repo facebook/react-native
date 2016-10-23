@@ -32,6 +32,5 @@
 - (void)goBack;
 - (void)reload;
 - (void)stopLoading;
-- (void)postMessage:(NSString *)message;
 
 @end

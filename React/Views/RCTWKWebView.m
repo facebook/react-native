@@ -16,18 +16,16 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-#import "RCTWebRequestTypes.h"
 #import "RCTView.h"
-#import "RCTWeakScriptMessageDelegate.h"
+#import "RCTWebView.h"
 #import "UIView+React.h"
 
-@interface RCTWKWebView () <WKNavigationDelegate, WKScriptMessageHandler, RCTAutoInsetsProtocol>
+@interface RCTWKWebView () <WKNavigationDelegate, RCTAutoInsetsProtocol>
 
 @property(nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property(nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property(nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property(nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
-@property(nonatomic, copy) RCTDirectEventBlock onMessage;
 
 @end
 
@@ -47,17 +45,7 @@
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    
-    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-    WKUserContentController *controller = [[WKUserContentController alloc] init];
-    
-    // observe messages sent from webview
-    [controller addScriptMessageHandler:[[RCTWeakScriptMessageDelegate alloc] initWithDelegate:self] name:@"reactNative"];
-
-    
-    configuration.userContentController = controller;
-    
-    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:configuration];
+    _webView = [[WKWebView alloc] initWithFrame:self.bounds];
     _webView.navigationDelegate = self;
     [self addSubview:_webView];
   }
@@ -89,18 +77,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)stopLoading
 {
   [_webView stopLoading];
-}
-
-- (void)postMessage:(NSString *)message
-{
-  NSDictionary *eventInitDict = @{
-    @"data" : message,
-  };
-  NSString *source = [NSString
-    stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
-    RCTJSONStringify(eventInitDict, NULL)
-  ];
-  [_webView evaluateJavaScript:source completionHandler:nil];
 }
 
 - (void)setSource:(NSDictionary *)source
@@ -181,17 +157,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_webView.scrollView
                       updateOffset:YES];
-}
-
-#pragma mark - WKUserContentController methods
-
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
-  NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-  [event addEntriesFromDictionary: @{
-   @"data": message.body,
-  }];
-  _onMessage(event);
 }
 
 #pragma mark - WKNavigationDelegate methods
