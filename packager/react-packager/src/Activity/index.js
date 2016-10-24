@@ -17,10 +17,12 @@ const chalk = require('chalk');
 const events = require('events');
 const formatData = require('./formatData');
 const normaliseEventData = require('./normaliseEventData');
+const os = require('os');
 
 let ENABLED = true;
 let UUID = 1;
 
+const session = `${os.hostname()}-${Date.now()}`;
 const EVENT_INDEX: {[key: number]: Event} = Object.create(null);
 const EVENT_EMITTER = new events.EventEmitter();
 
@@ -35,6 +37,7 @@ function startEvent(name: string, data: EventData = {}, options: Options = {}): 
     id,
     options,
     name,
+    session,
     startTimeStamp: process.hrtime(),
   };
   logEvent(id, 'startEvent');
