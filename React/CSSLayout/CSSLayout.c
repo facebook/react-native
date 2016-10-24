@@ -302,16 +302,6 @@ void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex) {
   }
 }
 
-float CSSNodeStyleGetFlex(const CSSNodeRef node) {
-  if (CSSNodeStyleGetFlexGrow(node) > 0) {
-    return CSSNodeStyleGetFlexGrow(node);
-  } else if (CSSNodeStyleGetFlexShrink(node) > 0) {
-    return -CSSNodeStyleGetFlexShrink(node);
-  }
-
-  return 0;
-}
-
 #define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
   void CSSNodeSet##name(const CSSNodeRef node, type paramName) {    \
     node->instanceName = paramName;                                 \
