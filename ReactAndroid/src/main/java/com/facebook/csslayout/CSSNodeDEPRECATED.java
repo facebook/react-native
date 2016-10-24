@@ -413,8 +413,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's margin, as defined by style + default margin.
    */
   @Override
-  public Spacing getMargin() {
-    return style.margin;
+  public float getMargin(int spacingType) {
+    return style.margin.get(spacingType);
   }
 
   @Override
@@ -428,8 +428,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's padding, as defined by style + default padding.
    */
   @Override
-  public Spacing getPadding() {
-    return style.padding;
+  public float getPadding(int spacingType) {
+    return style.padding.get(spacingType);
   }
 
   @Override
@@ -443,8 +443,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's border, as defined by style.
    */
   @Override
-  public Spacing getBorder() {
-    return style.border;
+  public float getBorder(int spacingType) {
+    return style.border.get(spacingType);
   }
 
   @Override
@@ -458,8 +458,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's position, as defined by style.
    */
   @Override
-  public Spacing getPosition() {
-    return style.position;
+  public float getPosition(int spacingType) {
+    return style.position.get(spacingType);
   }
 
   @Override

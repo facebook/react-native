@@ -36,6 +36,7 @@ import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -585,7 +586,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           mPreparedSpannableText,
           UNSET,
           mContainsImages,
-          getPadding(),
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
           getTextAlign()
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
