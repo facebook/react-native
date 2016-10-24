@@ -173,10 +173,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       updateNodeRegion = true;
     }
 
-    Spacing padding = getPadding();
-
-    left += padding.get(Spacing.LEFT);
-    top += padding.get(Spacing.TOP);
+    left += getPadding(Spacing.LEFT);
+    top += getPadding(Spacing.TOP);
 
     // these are actual right/bottom coordinates where this DrawCommand will draw.
     right = left + mDrawCommand.getLayoutWidth();

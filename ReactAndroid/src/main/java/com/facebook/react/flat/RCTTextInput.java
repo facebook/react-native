@@ -90,12 +90,11 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
         TypedValue.COMPLEX_UNIT_PX,
         fontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : fontSize);
-    Spacing padding = getPadding();
     editText.setPadding(
-        (int) Math.ceil(padding.get(Spacing.START)),
-        (int) Math.ceil(padding.get(Spacing.TOP)),
-        (int) Math.ceil(padding.get(Spacing.END)),
-        (int) Math.ceil(padding.get(Spacing.BOTTOM)));
+        (int) Math.ceil(getPadding(Spacing.START)),
+        (int) Math.ceil(getPadding(Spacing.TOP)),
+        (int) Math.ceil(getPadding(Spacing.END)),
+        (int) Math.ceil(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -128,7 +127,15 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mJsEventCount != UNSET) {
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(getText(), mJsEventCount, false, getPadding(), UNSET);
+          new ReactTextUpdate(
+              getText(),
+              mJsEventCount,
+              false,
+              getPadding(Spacing.START),
+              getPadding(Spacing.TOP),
+              getPadding(Spacing.END),
+              getPadding(Spacing.BOTTOM),
+              UNSET);
       // TODO: the Float.NaN should be replaced with the real line height see D3592781
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }

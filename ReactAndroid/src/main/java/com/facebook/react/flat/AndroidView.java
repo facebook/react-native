@@ -9,8 +9,6 @@
 
 package com.facebook.react.flat;
 
-import com.facebook.csslayout.Spacing;
-
 interface AndroidView {
 
   /**
@@ -31,7 +29,7 @@ interface AndroidView {
   void resetPaddingChanged();
 
   /**
-   * Get this node's padding, as defined by style + default padding.
+   * Get the padding for a certain spacingType defined in com.facebook.csslayout.Spacing
    */
-  Spacing getPadding();
+  float getPadding(int spacingType);
 }

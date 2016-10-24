@@ -712,13 +712,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   private void updateViewPadding(AndroidView androidView, int reactTag) {
     if (androidView.isPaddingChanged()) {
-      Spacing padding = androidView.getPadding();
       mOperationsQueue.enqueueSetPadding(
           reactTag,
-          Math.round(padding.get(Spacing.LEFT)),
-          Math.round(padding.get(Spacing.TOP)),
-          Math.round(padding.get(Spacing.RIGHT)),
-          Math.round(padding.get(Spacing.BOTTOM)));
+          Math.round(androidView.getPadding(Spacing.LEFT)),
+          Math.round(androidView.getPadding(Spacing.TOP)),
+          Math.round(androidView.getPadding(Spacing.RIGHT)),
+          Math.round(androidView.getPadding(Spacing.BOTTOM)));
       androidView.resetPaddingChanged();
     }
   }
