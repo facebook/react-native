@@ -52,7 +52,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   CSSPositionType getPositionType();
   void setPositionType(CSSPositionType positionType);
   void setWrap(CSSWrap flexWrap);
-  float getFlex();
   void setFlex(float flex);
   float getFlexGrow();
   void setFlexGrow(float flexGrow);

@@ -295,13 +295,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.ordinal());
   }
 
-  private native float jni_CSSNodeStyleGetFlex(long nativePointer);
-  @Override
-  public float getFlex() {
-    assertNativeInstance();
-    return jni_CSSNodeStyleGetFlex(mNativePointer);
-  }
-
   private native void jni_CSSNodeStyleSetFlex(long nativePointer, float flex);
   @Override
   public void setFlex(float flex) {
