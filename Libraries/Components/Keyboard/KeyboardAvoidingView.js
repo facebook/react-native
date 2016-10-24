@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const Dimensions = require('Dimensions');
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
@@ -92,9 +93,9 @@ const KeyboardAvoidingView = React.createClass({
       return 0;
     }
 
-    const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
-    const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
-    return Math.max(y2 - y1, 0);
+    const screenHeight = Dimensions.get('window').height;
+    const keyboardYPosition = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+    return screenHeight - keyboardYPosition;
   },
 
   onKeyboardChange(event: ?KeyboardChangeEvent) {
