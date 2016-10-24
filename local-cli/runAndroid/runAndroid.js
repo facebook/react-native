@@ -116,7 +116,7 @@ function buildAndRun(args) {
     console.log(chalk.red(
       'Could not install the app on the device, read the error above for details.\n' +
       'Make sure you have an Android emulator running or a device connected and have\n' +
-      'set up your Android development environment:\n' +
+      'set up your Android development environment.\n' +
       'Go to https://facebook.github.io/react-native/docs/getting-started.html\n' +
       'and check the Android tab for setup instructions.'
     ));
