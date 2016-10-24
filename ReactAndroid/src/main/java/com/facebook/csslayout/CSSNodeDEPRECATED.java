@@ -62,11 +62,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   private Object mData;
 
   @Override
-  public void reinit() {
-    free();
-  }
-
-  @Override
   public int getChildCount() {
     return mChildren == null ? 0 : mChildren.size();
   }
@@ -626,7 +621,7 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * recycling {@link CSSNodeDEPRECATED} instances.
    */
   @Override
-  public void free() {
+  public void reset() {
     if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
       throw new IllegalStateException("You should not free an attached CSSNodeDEPRECATED");
     }
