@@ -28,6 +28,9 @@ function cleanup {
 }
 trap cleanup EXIT
 
+if [ -z "$XCODE_BUILD_STEPS" ]; then
+  XCODE_BUILD_STEPS="build test"
+fi
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
@@ -36,4 +39,4 @@ xcodebuild \
   -scheme $XCODE_SCHEME \
   -sdk $XCODE_SDK \
   -destination "$XCODE_DESTINATION" \
-  build test
+  $XCODE_BUILD_STEPS
