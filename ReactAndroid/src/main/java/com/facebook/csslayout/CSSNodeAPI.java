@@ -88,6 +88,5 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setOverflow(CSSOverflow overflow);
   void setData(Object data);
   Object getData();
-  void reinit();
-  void free();
+  void reset();
 }

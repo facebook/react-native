@@ -169,6 +169,15 @@ void CSSNodeFreeRecursive(const CSSNodeRef root) {
   CSSNodeFree(root);
 }
 
+void CSSNodeReset(const CSSNodeRef node) {
+  CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot reset a node which still has children attached");
+  CSS_ASSERT(node->parent == NULL, "Cannot reset a node still attached to a parent");
+  
+  CSSNodeListFree(node->children);
+  memset(node, 0, sizeof(CSSNode));
+  CSSNodeInit(node);
+}
+
 int32_t CSSNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
