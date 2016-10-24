@@ -67,6 +67,7 @@ typedef struct CSSStyle {
   CSSPositionType positionType;
   CSSWrapType flexWrap;
   CSSOverflow overflow;
+  float flex;
   float flexGrow;
   float flexShrink;
   float flexBasis;
@@ -178,8 +179,9 @@ void CSSNodeInit(const CSSNodeRef node) {
   node->hasNewLayout = true;
   node->isDirty = false;
 
-  node->style.flexGrow = 0;
-  node->style.flexShrink = 0;
+  node->style.flex = CSSUndefined;
+  node->style.flexGrow = CSSUndefined;
+  node->style.flexShrink = CSSUndefined;
   node->style.flexBasis = CSSUndefined;
 
   node->style.alignItems = CSSAlignStretch;
@@ -263,27 +265,48 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
   return node->isDirty;
 }
 
+float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexGrow)) {
+    return node->style.flexGrow;
+  }
+  if (!CSSValueIsUndefined(node->style.flex) && node->style.flex > 0) {
+    return node->style.flex;
+  }
+  return 0;
+}
+
+float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexShrink)) {
+    return node->style.flexShrink;
+  }
+  if (!CSSValueIsUndefined(node->style.flex) && node->style.flex < 0) {
+    return -node->style.flex;
+  }
+  return 0;
+}
+
+float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexBasis)) {
+    return node->style.flexBasis;
+  }
+  if (!CSSValueIsUndefined(node->style.flex)) {
+    return node->style.flex > 0 ? 0 : CSSUndefined;
+  }
+  return CSSUndefined;
+}
+
 void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex) {
-  if (CSSValueIsUndefined(flex) || flex == 0) {
-    CSSNodeStyleSetFlexGrow(node, 0);
-    CSSNodeStyleSetFlexShrink(node, 0);
-    CSSNodeStyleSetFlexBasis(node, CSSUndefined);
-  } else if (flex > 0) {
-    CSSNodeStyleSetFlexGrow(node, flex);
-    CSSNodeStyleSetFlexShrink(node, 0);
-    CSSNodeStyleSetFlexBasis(node, 0);
-  } else {
-    CSSNodeStyleSetFlexGrow(node, 0);
-    CSSNodeStyleSetFlexShrink(node, -flex);
-    CSSNodeStyleSetFlexBasis(node, CSSUndefined);
+  if (node->style.flex != flex) {
+    node->style.flex = flex;
+    _CSSNodeMarkDirty(node);
   }
 }
 
 float CSSNodeStyleGetFlex(const CSSNodeRef node) {
-  if (node->style.flexGrow > 0) {
-    return node->style.flexGrow;
-  } else if (node->style.flexShrink > 0) {
-    return -node->style.flexShrink;
+  if (CSSNodeStyleGetFlexGrow(node) > 0) {
+    return CSSNodeStyleGetFlexGrow(node);
+  } else if (CSSNodeStyleGetFlexShrink(node) > 0) {
+    return -CSSNodeStyleGetFlexShrink(node);
   }
 
   return 0;
@@ -298,13 +321,16 @@ float CSSNodeStyleGetFlex(const CSSNodeRef node) {
     return node->instanceName;                                      \
   }
 
+#define CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(type, name, paramName, instanceName)   \
+  void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName) {        \
+    if (node->style.instanceName != paramName) {                                   \
+      node->style.instanceName = paramName;                                        \
+      _CSSNodeMarkDirty(node);                                                     \
+    }                                                                              \
+  }
+
 #define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName)   \
-  void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName) { \
-    if (node->style.instanceName != paramName) {                            \
-      node->style.instanceName = paramName;                                 \
-      _CSSNodeMarkDirty(node);                                              \
-    }                                                                       \
-  }                                                                         \
+  CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(type, name, paramName, instanceName)  \
                                                                             \
   type CSSNodeStyleGet##name(const CSSNodeRef node) {                       \
     return node->style.instanceName;                                        \
@@ -342,9 +368,10 @@ CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignSelf, alignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSPositionType, PositionType, positionType, positionType);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrapType, FlexWrap, flexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSOverflow, Overflow, overflow, overflow);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexGrow, flexGrow, flexGrow);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexShrink, flexShrink, flexShrink);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, FlexBasis, flexBasis, flexBasis);
+
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
 CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Position, position, position, CSSUndefined);
 CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Margin, margin, margin, 0);
@@ -476,9 +503,9 @@ static void _CSSNodePrint(const CSSNodeRef node,
       gLogger("alignSelf: 'stretch', ");
     }
 
-    printNumberIfNotUndefined("flexGrow", node->style.flexGrow);
-    printNumberIfNotUndefined("flexShrink", node->style.flexShrink);
-    printNumberIfNotUndefined("flexBasis", node->style.flexBasis);
+    printNumberIfNotUndefined("flexGrow", CSSNodeStyleGetFlexGrow(node));
+    printNumberIfNotUndefined("flexShrink", CSSNodeStyleGetFlexShrink(node));
+    printNumberIfNotUndefined("flexBasis", CSSNodeStyleGetFlexBasis(node));
 
     if (node->style.overflow == CSSOverflowHidden) {
       gLogger("overflow: 'hidden', ");
@@ -720,7 +747,7 @@ static CSSFlexDirection getCrossFlexDirection(const CSSFlexDirection flexDirecti
 
 static bool isFlex(const CSSNodeRef node) {
   return (node->style.positionType == CSSPositionTypeRelative &&
-          (node->style.flexGrow != 0 || node->style.flexShrink != 0));
+          (node->style.flexGrow != 0 || node->style.flexShrink != 0 || node->style.flex != 0));
 }
 
 static float getDimWithMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -855,11 +882,11 @@ static void computeChildFlexBasis(const CSSNodeRef node,
   CSSMeasureMode childWidthMeasureMode;
   CSSMeasureMode childHeightMeasureMode;
 
-  if (!CSSValueIsUndefined(child->style.flexBasis) &&
+  if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
       !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
     if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
       child->layout.computedFlexBasis =
-          fmaxf(child->style.flexBasis, getPaddingAndBorderAxis(child, mainAxis));
+          fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
     }
   } else if (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow)) {
     // The width is definite, so use that as the flex basis.
@@ -1406,13 +1433,12 @@ static void layoutNodeImpl(const CSSNodeRef node,
         itemsOnLine++;
 
         if (isFlex(child)) {
-          totalFlexGrowFactors += child->style.flexGrow;
+          totalFlexGrowFactors += CSSNodeStyleGetFlexGrow(child);
 
           // Unlike the grow factor, the shrink factor is scaled relative to the
           // child
           // dimension.
-          totalFlexShrinkScaledFactors +=
-              -child->style.flexShrink * child->layout.computedFlexBasis;
+          totalFlexShrinkScaledFactors += -CSSNodeStyleGetFlexShrink(child) * child->layout.computedFlexBasis;
         }
 
         // Store a private linked list of children that need to be layed out.
@@ -1495,7 +1521,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
+          flexShrinkScaledFactor = -CSSNodeStyleGetFlexShrink(currentRelativeChild) * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
@@ -1515,7 +1541,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
             }
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = currentRelativeChild->style.flexGrow;
+          flexGrowFactor = CSSNodeStyleGetFlexGrow(currentRelativeChild);
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
@@ -1550,7 +1576,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = -currentRelativeChild->style.flexShrink * childFlexBasis;
+          flexShrinkScaledFactor = -CSSNodeStyleGetFlexShrink(currentRelativeChild) * childFlexBasis;
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
             float childSize;
@@ -1566,7 +1592,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
             updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childSize);
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = currentRelativeChild->style.flexGrow;
+          flexGrowFactor = CSSNodeStyleGetFlexGrow(currentRelativeChild);
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
