@@ -358,20 +358,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
     }
   }
 
-  /**
-   * Get this node's flex, as defined by style.
-   */
-  @Override
-  public float getFlex() {
-    if (style.flexGrow > 0) {
-      return style.flexGrow;
-    } else if (style.flexShrink > 0) {
-      return -style.flexShrink;
-    }
-
-    return 0;
-  }
-
   @Override
   public void setFlex(float flex) {
     if (CSSConstants.isUndefined(flex) || flex == 0) {

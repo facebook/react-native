@@ -192,7 +192,8 @@ CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
 CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
-CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+
+WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
 CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
