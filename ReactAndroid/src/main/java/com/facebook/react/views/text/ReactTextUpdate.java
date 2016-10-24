@@ -11,8 +11,6 @@ package com.facebook.react.views.text;
 
 import android.text.Spannable;
 
-import com.facebook.csslayout.Spacing;
-
 /**
  * Class that contains the data needed for a text update.
  * Used by both <Text/> and <TextInput/>
@@ -33,15 +31,18 @@ public class ReactTextUpdate {
     Spannable text,
     int jsEventCounter,
     boolean containsImages,
-    Spacing padding,
+    float paddingStart,
+    float paddingTop,
+    float paddingEnd,
+    float paddingBottom,
     int textAlign) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
-    mPaddingLeft = padding.get(Spacing.START);
-    mPaddingTop = padding.get(Spacing.TOP);
-    mPaddingRight = padding.get(Spacing.END);
-    mPaddingBottom = padding.get(Spacing.BOTTOM);
+    mPaddingLeft = paddingStart;
+    mPaddingTop = paddingTop;
+    mPaddingRight = paddingEnd;
+    mPaddingBottom = paddingBottom;
     mTextAlign = textAlign;
   }
 
