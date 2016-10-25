@@ -113,9 +113,9 @@ static CSSLogger gLogger = &_csslayoutAndroidLog;
 static CSSLogger gLogger = &printf;
 #endif
 
-static float computedEdgeValue(const float edges[CSSEdgeCount],
-                               const CSSEdge edge,
-                               const float defaultValue) {
+static inline float computedEdgeValue(const float edges[CSSEdgeCount],
+                                      const CSSEdge edge,
+                                      const float defaultValue) {
   CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
 
   if (!CSSValueIsUndefined(edges[edge])) {
@@ -272,7 +272,7 @@ CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index) {
   return CSSNodeListGet(node->children, index);
 }
 
-uint32_t CSSNodeChildCount(const CSSNodeRef node) {
+inline uint32_t CSSNodeChildCount(const CSSNodeRef node) {
   return CSSNodeListCount(node->children);
 }
 
@@ -287,7 +287,7 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
   return node->isDirty;
 }
 
-float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
   }
@@ -297,7 +297,7 @@ float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
   return 0;
 }
 
-float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
@@ -307,7 +307,7 @@ float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
   return 0;
 }
 
-float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexBasis)) {
     return node->style.flexBasis;
   }
@@ -416,11 +416,11 @@ bool layoutNodeInternal(const CSSNodeRef node,
                         const bool performLayout,
                         const char *reason);
 
-bool CSSValueIsUndefined(const float value) {
+inline bool CSSValueIsUndefined(const float value) {
   return isnan(value);
 }
 
-static bool eq(const float a, const float b) {
+static inline bool eq(const float a, const float b) {
   if (CSSValueIsUndefined(a)) {
     return CSSValueIsUndefined(b);
   }
@@ -628,15 +628,15 @@ static const CSSDimension dim[4] = {
         [CSSFlexDirectionRowReverse] = CSSDimensionWidth,
 };
 
-static bool isRowDirection(const CSSFlexDirection flexDirection) {
+static inline bool isRowDirection(const CSSFlexDirection flexDirection) {
   return flexDirection == CSSFlexDirectionRow || flexDirection == CSSFlexDirectionRowReverse;
 }
 
-static bool isColumnDirection(const CSSFlexDirection flexDirection) {
+static inline bool isColumnDirection(const CSSFlexDirection flexDirection) {
   return flexDirection == CSSFlexDirectionColumn || flexDirection == CSSFlexDirectionColumnReverse;
 }
 
-static float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
   if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSEdgeStart])) {
     return node->style.margin[CSSEdgeStart];
   }
@@ -708,30 +708,32 @@ static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axi
   return 0;
 }
 
-static float getLeadingPaddingAndBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getLeadingPaddingAndBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingPadding(node, axis) + getLeadingBorder(node, axis);
 }
 
-static float getTrailingPaddingAndBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getTrailingPaddingAndBorder(const CSSNodeRef node,
+                                                const CSSFlexDirection axis) {
   return getTrailingPadding(node, axis) + getTrailingBorder(node, axis);
 }
 
-static float getMarginAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getMarginAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingMargin(node, axis) + getTrailingMargin(node, axis);
 }
 
-static float getPaddingAndBorderAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getPaddingAndBorderAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingPaddingAndBorder(node, axis) + getTrailingPaddingAndBorder(node, axis);
 }
 
-static CSSAlign getAlignItem(const CSSNodeRef node, const CSSNodeRef child) {
+static inline CSSAlign getAlignItem(const CSSNodeRef node, const CSSNodeRef child) {
   if (child->style.alignSelf != CSSAlignAuto) {
     return child->style.alignSelf;
   }
   return node->style.alignItems;
 }
 
-static CSSDirection resolveDirection(const CSSNodeRef node, const CSSDirection parentDirection) {
+static inline CSSDirection resolveDirection(const CSSNodeRef node,
+                                            const CSSDirection parentDirection) {
   if (node->style.direction == CSSDirectionInherit) {
     return parentDirection > CSSDirectionInherit ? parentDirection : CSSDirectionLTR;
   } else {
@@ -739,8 +741,8 @@ static CSSDirection resolveDirection(const CSSNodeRef node, const CSSDirection p
   }
 }
 
-static CSSFlexDirection resolveAxis(const CSSFlexDirection flexDirection,
-                                    const CSSDirection direction) {
+static inline CSSFlexDirection resolveAxis(const CSSFlexDirection flexDirection,
+                                           const CSSDirection direction) {
   if (direction == CSSDirectionRTL) {
     if (flexDirection == CSSFlexDirectionRow) {
       return CSSFlexDirectionRowReverse;
@@ -761,34 +763,34 @@ static CSSFlexDirection getCrossFlexDirection(const CSSFlexDirection flexDirecti
   }
 }
 
-static bool isFlex(const CSSNodeRef node) {
+static inline bool isFlex(const CSSNodeRef node) {
   return (node->style.positionType == CSSPositionTypeRelative &&
           (node->style.flexGrow != 0 || node->style.flexShrink != 0 || node->style.flex != 0));
 }
 
-static float getDimWithMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline float getDimWithMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
   return node->layout.measuredDimensions[dim[axis]] + getLeadingMargin(node, axis) +
          getTrailingMargin(node, axis);
 }
 
-static bool isStyleDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline bool isStyleDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
   const float value = node->style.dimensions[dim[axis]];
   return !CSSValueIsUndefined(value) && value >= 0.0;
 }
 
-static bool isLayoutDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline bool isLayoutDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
   const float value = node->layout.measuredDimensions[dim[axis]];
   return !CSSValueIsUndefined(value) && value >= 0.0;
 }
 
-static bool isLeadingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline bool isLeadingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
   return (isRowDirection(axis) &&
           !CSSValueIsUndefined(
               computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined))) ||
          !CSSValueIsUndefined(computedEdgeValue(node->style.position, leading[axis], CSSUndefined));
 }
 
-static bool isTrailingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+static inline bool isTrailingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
   return (isRowDirection(axis) &&
           !CSSValueIsUndefined(
               computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined))) ||
@@ -862,7 +864,9 @@ static float boundAxisWithinMinAndMax(const CSSNodeRef node,
 // Like boundAxisWithinMinAndMax but also ensures that the value doesn't go
 // below the
 // padding and border amount.
-static float boundAxis(const CSSNodeRef node, const CSSFlexDirection axis, const float value) {
+static inline float boundAxis(const CSSNodeRef node,
+                              const CSSFlexDirection axis,
+                              const float value) {
   return fmaxf(boundAxisWithinMinAndMax(node, axis, value), getPaddingAndBorderAxis(node, axis));
 }
 
