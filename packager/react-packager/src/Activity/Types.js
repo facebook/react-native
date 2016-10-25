@@ -32,5 +32,6 @@ export type Event = {
   id: number,
   name: string,
   options: Options,
+  session: string,
   startTimeStamp: [number, number],
 };
