@@ -2,6 +2,7 @@
 
 package com.facebook.react.jstasks;
 
+import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -41,7 +42,7 @@ public class HeadlessJsTaskContext {
     return helper;
   }
 
-  private final ReactContext mReactContext;
+  private final WeakReference<ReactContext> mReactContext;
   private final Set<HeadlessJsTaskEventListener> mHeadlessJsTaskEventListeners =
     new CopyOnWriteArraySet<>();
   private final AtomicInteger mLastTaskId = new AtomicInteger(0);
@@ -50,7 +51,7 @@ public class HeadlessJsTaskContext {
   private final SparseArray<Runnable> mTaskTimeouts = new SparseArray<>();
 
   private HeadlessJsTaskContext(ReactContext reactContext) {
-    mReactContext = reactContext;
+    mReactContext = new WeakReference<ReactContext>(reactContext);
   }
 
   /**
@@ -82,14 +83,17 @@ public class HeadlessJsTaskContext {
    */
   public synchronized int startTask(final HeadlessJsTaskConfig taskConfig) {
     UiThreadUtil.assertOnUiThread();
-    if (mReactContext.getLifecycleState() == LifecycleState.RESUMED &&
+    ReactContext reactContext = Assertions.assertNotNull(
+      mReactContext.get(),
+      "Tried to start a task on a react context that has already been destroyed");
+    if (reactContext.getLifecycleState() == LifecycleState.RESUMED &&
       !taskConfig.isAllowedInForeground()) {
       throw new IllegalStateException(
         "Tried to start task " + taskConfig.getTaskKey() +
           " while in foreground, but this is not allowed.");
     }
     final int taskId = mLastTaskId.incrementAndGet();
-    mReactContext.getJSModule(AppRegistry.class)
+    reactContext.getJSModule(AppRegistry.class)
       .startHeadlessTask(taskId, taskConfig.getTaskKey(), taskConfig.getData());
     if (taskConfig.getTimeout() > 0) {
       scheduleTaskTimeout(taskId, taskConfig.getTimeout());
