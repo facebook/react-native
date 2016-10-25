@@ -155,6 +155,17 @@ CSSNodeRef CSSNodeNew(void) {
 }
 
 void CSSNodeFree(const CSSNodeRef node) {
+  if (node->parent) {
+    CSSNodeListDelete(node->parent->children, node);
+    node->parent = NULL;
+  }
+
+  const uint32_t childCount = CSSNodeChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
+    const CSSNodeRef child = CSSNodeGetChild(node, i);
+    child->parent = NULL;
+  }
+
   CSSNodeListFree(node->children);
   free(node);
   gNodeInstanceCount--;
