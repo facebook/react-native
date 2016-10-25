@@ -68,3 +68,24 @@ export type LoadFn = (
   options: LoadOptions,
   callback: callback2<File, Array<string>>,
 ) => void;
+
+type TransformResult = {
+  code: string,
+  map: ?Object,
+  dependencies: Array<String>,
+};
+
+export type TransformedFile = {
+  file: string,
+  code: string,
+  transformed: {[variant: string]: TransformResult},
+  hasteID: ?string,
+  package?: PackageData,
+};
+
+export type PackageData = {
+  name?: string,
+  main?: string,
+  browser?: Object | string,
+  'react-native'?: Object | string,
+};

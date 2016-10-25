@@ -11,6 +11,8 @@ package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
+
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -127,6 +129,13 @@ public class DisabledDevSupportManager implements DevSupportManager {
   @Override
   public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
 
+  }
+
+  @Override
+  public @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourceURL,
+      final File outputFile) {
+    return null;
   }
 
   @Override

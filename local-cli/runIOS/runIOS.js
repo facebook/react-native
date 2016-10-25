@@ -31,7 +31,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      runOnDevice(selectedDevice, scheme, xcodeProject);
+      return runOnDevice(selectedDevice, scheme, xcodeProject);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -42,16 +42,16 @@ function runIOS(argv, config, args) {
       }
     }
   } else if (args.udid) {
-    runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
+    return runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
   } else {
-    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    return runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
   }
 }
 
 function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, udid);
   if (selectedDevice){
-    runOnDevice(selectedDevice, scheme, xcodeProject);
+    return runOnDevice(selectedDevice, scheme, xcodeProject);
   } else {
     if (devices){
       console.log('Could not find device with the udid: "' + udid + '".');
@@ -64,81 +64,118 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
 }
 
 function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
-  try {
-    var simulators = JSON.parse(
-    child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
-    );
-  } catch (e) {
-    throw new Error('Could not parse the simulator list output');
-  }
+  return new Promise((resolve) => {
+    try {
+      var simulators = JSON.parse(
+      child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
+      );
+    } catch (e) {
+      throw new Error('Could not parse the simulator list output');
+    }
 
-  const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
-  if (!selectedSimulator) {
-    throw new Error(`Cound't find ${args.simulator} simulator`);
-  }
+    const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
+    if (!selectedSimulator) {
+      throw new Error(`Cound't find ${args.simulator} simulator`);
+    }
 
-  const simulatorFullName = formattedDeviceName(selectedSimulator);
-  console.log(`Launching ${simulatorFullName}...`);
-  try {
-    child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
-  } catch (e) {
-    // instruments always fail with 255 because it expects more arguments,
-    // but we want it to only launch the simulator
-  }
+    const simulatorFullName = formattedDeviceName(selectedSimulator);
+    console.log(`Launching ${simulatorFullName}...`);
+    try {
+      child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
+    } catch (e) {
+      // instruments always fail with 255 because it expects more arguments,
+      // but we want it to only launch the simulator
+    }
+    resolve(selectedSimulator.udid)
+  })
+  .then((udid) => buildProject(xcodeProject, udid, scheme))
+  .then((appName) => {
+    if (!appName) {
+      appName = inferredSchemeName;
+    }
+    const appPath = `build/Build/Products/Debug-iphonesimulator/${appName}.app`;
+    console.log(`Installing ${appPath}`);
+    child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
-  buildProject(xcodeProject, selectedSimulator.udid, scheme);
+    const bundleID = child_process.execFileSync(
+      '/usr/libexec/PlistBuddy',
+      ['-c', 'Print:CFBundleIdentifier', path.join(appPath, 'Info.plist')],
+      {encoding: 'utf8'}
+    ).trim();
 
-  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
-  console.log(`Installing ${appPath}`);
-  child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
-
-  const bundleID = child_process.execFileSync(
-    '/usr/libexec/PlistBuddy',
-    ['-c', 'Print:CFBundleIdentifier', path.join(appPath, 'Info.plist')],
-    {encoding: 'utf8'}
-  ).trim();
-
-  console.log(`Launching ${bundleID}`);
-  child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+    console.log(`Launching ${bundleID}`);
+    child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
+  })
 }
 
 function runOnDevice(selectedDevice, scheme, xcodeProject){
-  buildProject(xcodeProject, selectedDevice.udid, scheme);
-  const iosDeployInstallArgs = [
-    '--bundle', 'build/Build/Products/Debug-iphoneos/' + scheme + '.app',
-    '--id' , selectedDevice.udid,
-    '--justlaunch'
-  ];
-  console.log(`installing and launching your app on ${selectedDevice.name}...`);
-  var iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
-  if (iosDeployOutput.error) {
-    console.log('');
-    console.log('** INSTALLATION FAILED **');
-    console.log('Make sure you have ios-deploy installed globally.');
-    console.log('(e.g "npm install -g ios-deploy")');
-  } else {
-    console.log('** INSTALLATION SUCCEEDED **');
-  }
+  return buildProject(xcodeProject, selectedDevice.udid, scheme)
+  .then((appName) => {
+    if (!appName) {
+      appName = scheme;
+    }
+    const iosDeployInstallArgs = [
+      '--bundle', 'build/Build/Products/Debug-iphoneos/' + appName + '.app',
+      '--id' , selectedDevice.udid,
+      '--justlaunch'
+    ];
+    console.log(`installing and launching your app on ${selectedDevice.name}...`);
+    const iosDeployOutput = child_process.spawnSync('ios-deploy', iosDeployInstallArgs, {encoding: 'utf8'});
+    if (iosDeployOutput.error) {
+      console.log('');
+      console.log('** INSTALLATION FAILED **');
+      console.log('Make sure you have ios-deploy installed globally.');
+      console.log('(e.g "npm install -g ios-deploy")');
+    } else {
+      console.log('** INSTALLATION SUCCEEDED **');
+    }
+  });
 }
 
 function buildProject(xcodeProject, udid, scheme) {
-  const xcodebuildArgs = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
-    '-scheme', scheme,
-    '-destination', `id=${udid}`,
-    '-derivedDataPath', 'build',
-  ];
-  console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+  return new Promise((resolve,reject) =>
+  {
+     const xcodebuildArgs = [
+      xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+      '-scheme', scheme,
+      '-destination', `id=${udid}`,
+      '-derivedDataPath', 'build',
+    ];
+    console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
+    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
+    let buildOutput = "";
+    buildProcess.stdout.on('data', function(data) {
+      console.log(data.toString());
+      buildOutput += data.toString();
+    });
+    buildProcess.stderr.on('data', function(data) {
+      console.error(data.toString());
+    });
+    buildProcess.on('close', function(code) {
+      //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
+      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app/.exec(buildOutput);
+      if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
+        return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
+      }
+      return buildProcess.error? reject(error) : resolve();
+    });
+  });
 }
 
+
 function matchingDevice(devices, deviceName) {
+  if (deviceName === true && devices.length === 1)
+  {
+    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`)
+    return devices[0];
+  }  
   for (let i = devices.length - 1; i >= 0; i--) {
     if (devices[i].name === deviceName || formattedDeviceName(devices[i]) === deviceName) {
       return devices[i];
     }
   }
 }
+
 
 function matchingDeviceByUdid(devices, udid) {
   for (let i = devices.length - 1; i >= 0; i--) {
@@ -190,7 +227,7 @@ module.exports = {
     default: 'ios',
   }, {
     command: '--device [string]',
-    description: 'Explicitly set device to use by name',
+    description: 'Explicitly set device to use by name.  The value is not required if you have a single device connected.',
   },{
     command: '--udid [string]',
     description: 'Explicitly set device to use by udid',

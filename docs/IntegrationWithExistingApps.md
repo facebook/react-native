@@ -67,7 +67,7 @@ The keys to integrating React Native components into your Android application ar
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
 3. Create your actual React Native components in JavaScript.
-4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
+4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_modules/` to your `build.gradle` file.
 4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
@@ -83,11 +83,15 @@ The keys to integrating React Native components into your Android application ar
 
 The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
+> To ensure a smooth experience, make sure your `android` project is under `$root/android`.
+
 <block class="objc swift" />
 
 ### General
 
 First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+
+> To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
 ### CocoaPods
 
@@ -209,6 +213,7 @@ target 'NumberTileGame' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
+    'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
@@ -233,6 +238,7 @@ target 'swift-2048' do
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
+    'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
@@ -603,6 +609,10 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
+
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code
@@ -665,7 +675,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause();
+        mReactInstanceManager.onPause(this);
     }
 }
 
@@ -683,7 +693,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy();
+        mReactInstanceManager.onDestroy(this);
     }
 }
 ```

@@ -595,7 +595,7 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 
 - (void)setIntrinsicContentSize:(CGSize)size
 {
-  if (CSSNodeStyleGetFlex(_cssNode) == 0) {
+  if (CSSNodeStyleGetFlexGrow(_cssNode) == 0 && CSSNodeStyleGetFlexShrink(_cssNode) == 0) {
     RCTAssignSuggestedDimension(_cssNode, CSSDimensionHeight, size.height);
     RCTAssignSuggestedDimension(_cssNode, CSSDimensionWidth, size.width);
   }
@@ -615,6 +615,11 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 
 // Flex
 
+- (void)setFlex:(CGFloat)value
+{
+  CSSNodeStyleSetFlex(_cssNode, value);
+}
+
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
 - (void)set##setProp:(type)value                            \
 {                                                           \
@@ -625,7 +630,6 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
   return CSSNodeStyleGet##cssProp(_cssNode);                \
 }
 
-RCT_STYLE_PROPERTY(Flex, flex, Flex, CGFloat)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, CGFloat)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, CGFloat)
 RCT_STYLE_PROPERTY(FlexBasis, flexBasis, FlexBasis, CGFloat)
