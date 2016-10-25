@@ -24,12 +24,14 @@ class Draggable extends React.Component { // eslint-disable-line no-unused-vars
 
   render() {
     const id = this.props.id;
-    function dragStart(e) {
-      e.dataTransfer.setData('text/plain', id);
-    }
     return React.cloneElement(
       this.props.children,
-      { draggable: 'true', onDragStart: dragStart }
+      {
+        draggable: 'true',
+        onDragStart: (e) => {
+          e.dataTransfer.setData('text', id);
+        },
+      }
     );
   }
 }
@@ -45,23 +47,15 @@ class DropTarget extends React.Component { // eslint-disable-line no-unused-vars
 
   render() {
     const thisId = this.props.id;
-    const dropFilter = this.props.dropFilter;
     const dropAction = this.props.dropAction;
     return React.cloneElement(
       this.props.children,
       {
-        onDragOver: (e) => {
-          const sourceId = e.dataTransfer.getData('text/plain');
-          if (dropFilter(sourceId)) {
-            e.preventDefault();
-          }
-        },
+        onDragOver: (e) => e.preventDefault(),
         onDrop: (e) => {
-          const sourceId = e.dataTransfer.getData('text/plain');
-          if (dropFilter(sourceId)) {
-            e.preventDefault();
-            dropAction(sourceId, thisId);
-          }
+          const sourceId = e.dataTransfer.getData('text');
+          e.preventDefault();
+          dropAction(sourceId, thisId);
         },
       }
     );
@@ -71,7 +65,6 @@ class DropTarget extends React.Component { // eslint-disable-line no-unused-vars
 DropTarget.propTypes = {
   children: React.PropTypes.element.isRequired,
   id: React.PropTypes.string.isRequired,
-  dropFilter: React.PropTypes.func.isRequired,
   dropAction: React.PropTypes.func.isRequired,
 };
 
@@ -156,7 +149,6 @@ class TableHeader extends React.Component {
       headers.push((
         <DropTarget
           id={'aggregate:insert:' + i.toString()}
-          dropFilter={(s) => s.startsWith('aggregate')}
           dropAction={this.props.dropAction}
         >
           <div style={{
@@ -173,7 +165,6 @@ class TableHeader extends React.Component {
     headers.push((
       <DropTarget
         id="divider:insert"
-        dropFilter={(s) => s.startsWith('aggregate') || s.startsWith('expander')}
         dropAction={this.props.dropAction}
       >
         <div style={{
@@ -200,7 +191,6 @@ class TableHeader extends React.Component {
       headers.push((
         <DropTarget
           id={'expander:insert:' + (i + 1).toString()}
-          dropFilter={()=>{return true; }}
           dropAction={this.props.dropAction}
         >
           <div style={{
