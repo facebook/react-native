@@ -230,6 +230,8 @@ void CSSNodeInit(const CSSNodeRef node) {
   node->layout.measuredDimensions[CSSDimensionHeight] = CSSUndefined;
   node->layout.cachedLayout.widthMeasureMode = (CSSMeasureMode) -1;
   node->layout.cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
+  node->layout.cachedLayout.computedWidth = -1;
+  node->layout.cachedLayout.computedHeight = -1;
 }
 
 static void _CSSNodeMarkDirty(const CSSNodeRef node) {
@@ -2084,90 +2086,74 @@ static const char *getModeName(const CSSMeasureMode mode, const bool performLayo
   return performLayout ? kLayoutModeNames[mode] : kMeasureModeNames[mode];
 }
 
-static bool canUseCachedMeasurement(const bool isTextNode,
-                                    const float availableWidth,
-                                    const float availableHeight,
-                                    const float marginRow,
-                                    const float marginColumn,
-                                    const CSSMeasureMode widthMeasureMode,
-                                    const CSSMeasureMode heightMeasureMode,
-                                    CSSCachedMeasurement cachedLayout) {
-  const bool isHeightSame = (cachedLayout.heightMeasureMode == CSSMeasureModeUndefined &&
-                             heightMeasureMode == CSSMeasureModeUndefined) ||
-                            (cachedLayout.heightMeasureMode == heightMeasureMode &&
-                             eq(cachedLayout.availableHeight, availableHeight));
+static inline bool newSizeIsExactAndMatchesOldMeasuredSize(CSSMeasureMode sizeMode,
+                                                           float size,
+                                                           float lastComputedSize) {
+  return sizeMode == CSSMeasureModeExactly && eq(size, lastComputedSize);
+}
 
-  const bool isWidthSame = (cachedLayout.widthMeasureMode == CSSMeasureModeUndefined &&
-                            widthMeasureMode == CSSMeasureModeUndefined) ||
-                           (cachedLayout.widthMeasureMode == widthMeasureMode &&
-                            eq(cachedLayout.availableWidth, availableWidth));
+static inline bool oldSizeIsUnspecifiedAndStillFits(CSSMeasureMode sizeMode,
+                                                    float size,
+                                                    CSSMeasureMode lastSizeMode,
+                                                    float lastComputedSize) {
+  return sizeMode == CSSMeasureModeAtMost && lastSizeMode == CSSMeasureModeUndefined &&
+         size >= lastComputedSize;
+}
 
-  if (isHeightSame && isWidthSame) {
-    return true;
+static inline bool newMeasureSizeIsStricterAndStillValid(CSSMeasureMode sizeMode,
+                                                         float size,
+                                                         CSSMeasureMode lastSizeMode,
+                                                         float lastSize,
+                                                         float lastComputedSize) {
+  return lastSizeMode == CSSMeasureModeAtMost && sizeMode == CSSMeasureModeAtMost &&
+         lastSize > size && lastComputedSize <= size;
+}
+
+static bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
+                                           const CSSMeasureMode widthMode,
+                                           const float width,
+                                           const CSSMeasureMode heightMode,
+                                           const float height,
+                                           const CSSMeasureMode lastWidthMode,
+                                           const float lastWidth,
+                                           const CSSMeasureMode lastHeightMode,
+                                           const float lastHeight,
+                                           const float lastComputedWidth,
+                                           const float lastComputedHeight,
+                                           const float marginRow,
+                                           const float marginColumn) {
+  if (lastComputedHeight < 0 || lastComputedWidth < 0) {
+    return false;
   }
 
-  const bool isHeightValid = (cachedLayout.heightMeasureMode == CSSMeasureModeUndefined &&
-                              heightMeasureMode == CSSMeasureModeAtMost &&
-                              cachedLayout.computedHeight <= (availableHeight - marginColumn)) ||
-                             (heightMeasureMode == CSSMeasureModeExactly &&
-                              eq(cachedLayout.computedHeight, availableHeight - marginColumn));
+  const bool hasSameWidthSpec = lastWidthMode == widthMode && eq(lastWidth, width);
+  const bool hasSameHeightSpec = lastHeightMode == heightMode && eq(lastHeight, height);
 
-  if (isWidthSame && isHeightValid) {
-    return true;
-  }
+  const bool widthIsCompatible =
+      hasSameWidthSpec ||
+      newSizeIsExactAndMatchesOldMeasuredSize(widthMode, width - marginRow, lastComputedWidth) ||
+      oldSizeIsUnspecifiedAndStillFits(widthMode,
+                                       width - marginRow,
+                                       lastWidthMode,
+                                       lastComputedWidth) ||
+      newMeasureSizeIsStricterAndStillValid(
+          widthMode, width - marginRow, lastWidthMode, lastWidth, lastComputedWidth);
 
-  const bool isWidthValid = (cachedLayout.widthMeasureMode == CSSMeasureModeUndefined &&
-                             widthMeasureMode == CSSMeasureModeAtMost &&
-                             cachedLayout.computedWidth <= (availableWidth - marginRow)) ||
-                            (widthMeasureMode == CSSMeasureModeExactly &&
-                             eq(cachedLayout.computedWidth, availableWidth - marginRow));
+  const bool heightIsCompatible = isTextNode || hasSameHeightSpec ||
+                                  newSizeIsExactAndMatchesOldMeasuredSize(heightMode,
+                                                                          height - marginColumn,
+                                                                          lastComputedHeight) ||
+                                  oldSizeIsUnspecifiedAndStillFits(heightMode,
+                                                                   height - marginColumn,
+                                                                   lastHeightMode,
+                                                                   lastComputedHeight) ||
+                                  newMeasureSizeIsStricterAndStillValid(heightMode,
+                                                                        height - marginColumn,
+                                                                        lastHeightMode,
+                                                                        lastHeight,
+                                                                        lastComputedHeight);
 
-  if (isHeightSame && isWidthValid) {
-    return true;
-  }
-
-  if (isHeightValid && isWidthValid) {
-    return true;
-  }
-
-  // We know this to be text so we can apply some more specialized heuristics.
-  if (isTextNode) {
-    if (isWidthSame) {
-      if (heightMeasureMode == CSSMeasureModeUndefined) {
-        // Width is the same and height is not restricted. Re-use cahced value.
-        return true;
-      }
-
-      if (heightMeasureMode == CSSMeasureModeAtMost &&
-          cachedLayout.computedHeight < (availableHeight - marginColumn)) {
-        // Width is the same and height restriction is greater than the cached
-        // height. Re-use cached
-        // value.
-        return true;
-      }
-
-      // Width is the same but height restriction imposes smaller height than
-      // previously measured.
-      // Update the cached value to respect the new height restriction.
-      cachedLayout.computedHeight = availableHeight - marginColumn;
-      return true;
-    }
-
-    if (cachedLayout.widthMeasureMode == CSSMeasureModeUndefined) {
-      if (widthMeasureMode == CSSMeasureModeUndefined ||
-          (widthMeasureMode == CSSMeasureModeAtMost &&
-           cachedLayout.computedWidth <= (availableWidth - marginRow))) {
-        // Previsouly this text was measured with no width restriction, if width
-        // is now restricted
-        // but to a larger value than the previsouly measured width we can
-        // re-use the measurement
-        // as we know it will fit.
-        return true;
-      }
-    }
-  }
-
-  return false;
+  return widthIsCompatible && heightIsCompatible;
 }
 
 //
@@ -2199,6 +2185,8 @@ bool layoutNodeInternal(const CSSNodeRef node,
     layout->nextCachedMeasurementsIndex = 0;
     layout->cachedLayout.widthMeasureMode = (CSSMeasureMode) -1;
     layout->cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
+    layout->cachedLayout.computedWidth = -1;
+    layout->cachedLayout.computedHeight = -1;
   }
 
   CSSCachedMeasurement *cachedResults = NULL;
@@ -2220,26 +2208,36 @@ bool layoutNodeInternal(const CSSNodeRef node,
     const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
     // First, try to use the layout cache.
-    if (canUseCachedMeasurement(node->isTextNode,
-                                availableWidth,
-                                availableHeight,
-                                marginAxisRow,
-                                marginAxisColumn,
-                                widthMeasureMode,
-                                heightMeasureMode,
-                                layout->cachedLayout)) {
+    if (CSSNodeCanUseCachedMeasurement(node->isTextNode,
+                                       widthMeasureMode,
+                                       availableWidth,
+                                       heightMeasureMode,
+                                       availableHeight,
+                                       layout->cachedLayout.widthMeasureMode,
+                                       layout->cachedLayout.availableWidth,
+                                       layout->cachedLayout.heightMeasureMode,
+                                       layout->cachedLayout.availableHeight,
+                                       layout->cachedLayout.computedWidth,
+                                       layout->cachedLayout.computedHeight,
+                                       marginAxisRow,
+                                       marginAxisColumn)) {
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
       for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-        if (canUseCachedMeasurement(node->isTextNode,
-                                    availableWidth,
-                                    availableHeight,
-                                    marginAxisRow,
-                                    marginAxisColumn,
-                                    widthMeasureMode,
-                                    heightMeasureMode,
-                                    layout->cachedMeasurements[i])) {
+        if (CSSNodeCanUseCachedMeasurement(node->isTextNode,
+                                           widthMeasureMode,
+                                           availableWidth,
+                                           heightMeasureMode,
+                                           availableHeight,
+                                           layout->cachedMeasurements[i].widthMeasureMode,
+                                           layout->cachedMeasurements[i].availableWidth,
+                                           layout->cachedMeasurements[i].heightMeasureMode,
+                                           layout->cachedMeasurements[i].availableHeight,
+                                           layout->cachedMeasurements[i].computedWidth,
+                                           layout->cachedMeasurements[i].computedHeight,
+                                           marginAxisRow,
+                                           marginAxisColumn)) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
