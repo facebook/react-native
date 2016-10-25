@@ -95,7 +95,7 @@ const KeyboardAvoidingView = React.createClass({
 
     const statusBarOffset = Platform.OS === 'android' ? StatusBar.currentHeight : 0;
     const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
-    const y2 = Math.min(frame.y + frame.height + statusBarOffset, keyboardFrame.screenY + keyboardFrame.height + statusBarOffset - this.props.keyboardVerticalOffset);
+    const y2 = Math.min(frame.y + frame.height + statusBarOffset, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
     return Math.max(y2 - y1, 0);
   },
 
