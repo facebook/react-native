@@ -3,6 +3,7 @@ cxx_library(
   srcs = [
     'glog_init.cpp',
   ],
+  xcode_public_headers_symlinks = True,
   exported_headers = ['fb/glog_init.h'],
   compiler_flags = [
     '-fexceptions',

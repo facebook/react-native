@@ -2,11 +2,13 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <folly/json.h>
+#include <cxxreact/Value.h>
 
+#ifdef WITH_FBJSCEXTENSION
 #undef ASSERT
 #include <JavaScriptCore/config.h>
-#include <cxxreact/Value.h>
 #include "OpaqueJSString.h"
+#endif
 
 #include <stdexcept>
 
@@ -15,11 +17,11 @@ using namespace facebook::react;
 
 #ifdef ANDROID
 #include <android/looper.h>
-void prepare() {
+static void prepare() {
   ALooper_prepare(0);
 }
 #else
-void prepare() {
+static void prepare() {
 }
 #endif
 
@@ -58,6 +60,7 @@ TEST(Value, ToJSONString) {
   JSGlobalContextRelease(ctx);
 }
 
+#ifdef WITH_FBJSCEXTENSION
 // Just test that handling invalid data doesn't crash.
 TEST(Value, FromBadUtf8) {
   prepare();
@@ -101,3 +104,5 @@ TEST(Value, BadUtf16) {
   v.toJSONString(0);
   JSGlobalContextRelease(ctx);
 }
+#endif
+

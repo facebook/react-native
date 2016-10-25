@@ -9,10 +9,11 @@
 
 package com.facebook.react.views.text;
 
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
- * Base class for {@link com.facebook.csslayout.CSSNode}s that represent inline images.
+ * Base class for {@link CSSNodeDEPRECATED}s that represent inline images.
  */
 public abstract class ReactTextInlineImageShadowNode extends LayoutShadowNode {
 

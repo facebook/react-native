@@ -208,6 +208,65 @@ describe('Bundler', function() {
       });
   });
 
+  it('loads and runs asset plugins', function() {
+    jest.mock('mockPlugin1', () => {
+      return asset => {
+        asset.extraReverseHash = asset.hash.split('').reverse().join('');
+        return asset;
+      };
+    }, {virtual: true});
+
+    jest.mock('asyncMockPlugin2', () => {
+      return asset => {
+        expect(asset.extraReverseHash).toBeDefined();
+        return new Promise((resolve) => {
+          asset.extraPixelCount = asset.width * asset.height;
+          resolve(asset);
+        });
+      };
+    }, {virtual: true});
+
+    const mockAsset = {
+      scales: [1,2,3],
+      files: [
+        '/root/img/img.png',
+        '/root/img/img@2x.png',
+        '/root/img/img@3x.png',
+      ],
+      hash: 'i am a hash',
+      name: 'img',
+      type: 'png',
+    };
+    assetServer.getAssetData.mockImpl(() => mockAsset);
+
+    return bundler.bundle({
+      entryFile: '/root/foo.js',
+      runBeforeMainModule: [],
+      runModule: true,
+      sourceMapUrl: 'source_map_url',
+      assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
+    }).then(bundle => {
+      expect(bundle.addAsset.mock.calls[1]).toEqual([{
+        __packager_asset: true,
+        fileSystemLocation: '/root/img',
+        httpServerLocation: '/assets/img',
+        width: 25,
+        height: 50,
+        scales: [1, 2, 3],
+        files: [
+          '/root/img/img.png',
+          '/root/img/img@2x.png',
+          '/root/img/img@3x.png',
+        ],
+        hash: 'i am a hash',
+        name: 'img',
+        type: 'png',
+        extraReverseHash: 'hsah a ma i',
+        extraPixelCount: 1250,
+      }]);
+    });
+  });
+
   pit('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>

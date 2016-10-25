@@ -168,6 +168,46 @@ class InternalSettings extends React.Component {
   }
 }
 
+class EventExample extends React.Component {
+  state = {
+    scrollX: new Animated.Value(0),
+  };
+
+  render() {
+    const opacity = this.state.scrollX.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
+    return (
+      <View>
+        <Animated.View
+          style={[
+            styles.block,
+            {
+              opacity,
+            }
+          ]}
+        />
+        <Animated.ScrollView
+          horizontal
+          style={{ height: 100, marginTop: 16 }}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { x: this.state.scrollX } }
+            }], {
+              useNativeDriver: true,
+            })
+          }
+        >
+          <View style={{ width: 600, backgroundColor: '#eee', justifyContent: 'center' }}>
+            <Text>Scroll me!</Text>
+          </View>
+        </Animated.ScrollView>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -280,7 +320,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
@@ -295,8 +335,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
@@ -426,6 +467,15 @@ exports.examples = [
     render: function() {
       return (
         <InternalSettings />
+      );
+    },
+  },
+  {
+    title: 'Animated events',
+    platform: 'android',
+    render: function() {
+      return (
+        <EventExample />
       );
     },
   },

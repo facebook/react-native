@@ -13,7 +13,6 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -22,6 +21,8 @@ const UIManager = require('UIManager');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -97,7 +98,7 @@ const statics = {
  *
  * ### Synthetic Touch Events
  *
- * For `View` repsonder props (e.g., `onResponderMove`), the synthetic touch event passed to them
+ * For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them
  * are of the following form:
  *
  * - `nativeEvent`
@@ -143,7 +144,7 @@ const View = React.createClass({
      * with the element. By default, the label is constructed by traversing all the
      * children and accumulating all the `Text` nodes separated by space.
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: PropTypes.node,
 
     /**
      * Indicates to accessibility services to treat UI component like a
@@ -509,6 +510,7 @@ const View = React.createClass({
 const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
     nativeBackgroundAndroid: true,
+    nativeForegroundAndroid: true,
   }
 });
 

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -36,6 +37,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  * @{link ReactTextShadowNode} hierarchy to calculate a {@link Spannable} text representing the
  * whole text subtree.
  */
+@ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
 
   @VisibleForTesting
@@ -93,7 +95,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   public void setSelectable(ReactTextView view, boolean isSelectable) {
     view.setTextIsSelectable(isSelectable);
   }
-  
+
   @ReactPropGroup(names = {
           ViewProps.BORDER_RADIUS,
           ViewProps.BORDER_TOP_LEFT_RADIUS,
@@ -140,7 +142,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
-  
+
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;

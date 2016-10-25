@@ -97,7 +97,6 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * @param reactTag the component tag
  * @param completion the completion block that will hand over the rootView, if any.
  *
- * @return the rootView
  */
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
 

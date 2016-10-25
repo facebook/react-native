@@ -16,7 +16,7 @@ var Image = require('Image');
 var NavigationContext = require('NavigationContext');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
-var ReactNative = require('react/lib/ReactNative');
+var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
@@ -165,13 +165,7 @@ type Event = Object;
  *     navigator: PropTypes.object.isRequired,
  *   }
  *
- *   constructor(props, context) {
- *     super(props, context);
- *     this._onForward = this._onForward.bind(this);
- *     this._onBack = this._onBack.bind(this);
- *   }
- *
- *   _onForward() {
+ *   _onForward = () => {
  *     this.props.navigator.push({
  *       title: 'Scene ' + nextIndex,
  *     });
@@ -836,6 +830,9 @@ var NavigatorIOS = React.createClass({
   },
 
   _handleNavigationComplete: function(e: Event) {
+    // Don't propagate to other NavigatorIOS instances this is nested in:
+    e.stopPropagation();
+
     if (this._toFocusOnNavigationComplete) {
       this._getFocusEmitter().emit('focus', this._toFocusOnNavigationComplete);
       this._toFocusOnNavigationComplete = null;

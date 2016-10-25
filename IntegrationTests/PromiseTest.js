@@ -65,7 +65,7 @@ class PromiseTest extends React.Component {
     }
   };
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return <View />;
   }
 }

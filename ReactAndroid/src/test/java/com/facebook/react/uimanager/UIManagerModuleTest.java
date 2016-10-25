@@ -22,28 +22,28 @@ import android.widget.TextView;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationPropertyUpdater;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.bridge.ReactTestHelper;
 
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
@@ -110,7 +110,6 @@ public class UIManagerModuleTest {
     UIManagerModule uiManagerModuleMock = mock(UIManagerModule.class);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class))
         .thenReturn(uiManagerModuleMock);
-
   }
 
   @Test
@@ -644,7 +643,7 @@ public class UIManagerModuleTest {
     executePendingChoreographerCallbacks();
 
     assertThat(rootView.getChildCount()).isEqualTo(2);
-    assertThat(((ViewGroup)rootView.getChildAt(0)).getChildCount()).isEqualTo(2);
+    assertThat(((ViewGroup) rootView.getChildAt(0)).getChildCount()).isEqualTo(2);
 
     uiManager.removeSubviewsFromContainerWithID(containerTag);
 
@@ -652,7 +651,7 @@ public class UIManagerModuleTest {
     executePendingChoreographerCallbacks();
 
     assertThat(rootView.getChildCount()).isEqualTo(2);
-    assertThat(((ViewGroup)rootView.getChildAt(0)).getChildCount()).isEqualTo(0);
+    assertThat(((ViewGroup) rootView.getChildAt(0)).getChildCount()).isEqualTo(0);
   }
 
   /**
@@ -821,7 +820,7 @@ public class UIManagerModuleTest {
     UIManagerModule uiManagerModule =  new UIManagerModule(
         mReactContext,
         viewManagers,
-        new UIImplementation(mReactContext, viewManagers));
+        new UIImplementationProvider());
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

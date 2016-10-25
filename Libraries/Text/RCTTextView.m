@@ -96,12 +96,16 @@
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.textColor = [UIColor blackColor];
+#if !TARGET_OS_TV
     _textView.scrollsToTop = NO;
+#endif
     _textView.scrollEnabled = NO;
     _textView.delegate = self;
 
     _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+#if !TARGET_OS_TV
     _scrollView.scrollsToTop = NO;
+#endif
     [_scrollView addSubview:_textView];
 
     [self addSubview:_scrollView];
@@ -283,11 +287,13 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
   if (_placeholder) {
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
-    _placeholderView.editable = NO;
     _placeholderView.userInteractionEnabled = NO;
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = NO;
+#if !TARGET_OS_TV
+    _placeholderView.editable = NO;
     _placeholderView.scrollsToTop = NO;
+#endif
     _placeholderView.attributedText =
     [[NSAttributedString alloc] initWithString:_placeholder attributes:@{
       NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),

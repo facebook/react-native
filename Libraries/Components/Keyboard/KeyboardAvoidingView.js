@@ -14,10 +14,11 @@
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
+
+const PropTypes = React.PropTypes;
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -87,7 +88,7 @@ const KeyboardAvoidingView = React.createClass({
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
-    if (!frame) {
+    if (!frame || !keyboardFrame) {
       return 0;
     }
 
@@ -148,7 +149,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {

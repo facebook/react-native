@@ -25,7 +25,6 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
-typedef void (*configureJSContextForIOSFuncType)(JSContextRef ctx, const char *cacheDir);
 
 typedef struct RCTJSCWrapper {
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
@@ -44,8 +43,17 @@ typedef struct RCTJSCWrapper {
   JSEvaluateScriptFuncType JSEvaluateScript;
   Class JSContext;
   Class JSValue;
-  configureJSContextForIOSFuncType configureJSContextForIOS;
 } RCTJSCWrapper;
 
 RCT_EXTERN RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC);
 RCT_EXTERN void RCTJSCWrapperRelease(RCTJSCWrapper *wrapper);
+
+/**
+ * Link time overridable initialization function to execute custom
+ * initialization code when loading custom JSC.
+ *
+ * By default it does nothing.
+ *
+ * @param handle to the dlopen'd JSC library.
+ */
+void __attribute__((visibility("hidden"))) RCTCustomJSCInit(void *handle);

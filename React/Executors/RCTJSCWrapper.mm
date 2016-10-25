@@ -16,11 +16,10 @@
 
 #include <dlfcn.h>
 
-#if HAS_FBGLOG
-#import <FBGLog/FBGLogSink.h>
 
-typedef void (*configureJSCLoggingForIOSFuncType)(int32_t, std::unique_ptr<google::LogSink>, void (*)());
-#endif
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
+  return;
+}
 
 static void *RCTCustomLibraryHandler(void)
 {
@@ -60,7 +59,6 @@ static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSEvaluateScript = JSEvaluateScript;
   wrapper->JSContext = [JSContext class];
   wrapper->JSValue = [JSValue class];
-  wrapper->configureJSContextForIOS = NULL;
 }
 
 static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
@@ -87,19 +85,11 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript");
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
-  wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
 
-#if HAS_FBGLOG
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    void *handle = dlsym(libraryHandle, "configureJSCLoggingForIOS");
-
-    if (handle) {
-      configureJSCLoggingForIOSFuncType logConfigFunc = (configureJSCLoggingForIOSFuncType)handle;
-      logConfigFunc(google::GLOG_INFO, FBGLogSink(), FBGLogFailureFunction);
-    }
+    RCTCustomJSCInit(libraryHandle);
   });
-#endif
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
