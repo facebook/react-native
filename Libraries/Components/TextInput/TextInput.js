@@ -16,10 +16,8 @@ const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
-const ReactNative = require('react/lib/ReactNative');
-const ReactChildren = require('react/lib/ReactChildren');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInputState = require('TextInputState');
@@ -32,6 +30,8 @@ const warning = require('fbjs/lib/warning');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const onlyMultiline = {
   onTextInput: true,
@@ -620,7 +620,7 @@ const TextInput = React.createClass({
     } else {
       var children = props.children;
       var childCount = 0;
-      ReactChildren.forEach(children, () => ++childCount);
+      React.Children.forEach(children, () => ++childCount);
       invariant(
         !(props.value && childCount),
         'Cannot specify both value and children.'
@@ -669,7 +669,7 @@ const TextInput = React.createClass({
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
     var childCount = 0;
-    ReactChildren.forEach(children, () => ++childCount);
+    React.Children.forEach(children, () => ++childCount);
     invariant(
       !(this.props.value && childCount),
       'Cannot specify both value and children.'

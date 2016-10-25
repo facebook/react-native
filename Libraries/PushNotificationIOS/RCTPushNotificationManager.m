@@ -22,6 +22,7 @@ NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotification
 NSString *const RCTErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 NSString *const RCTErrorRemoteNotificationRegistrationFailed = @"E_FAILED_TO_REGISTER_FOR_REMOTE_NOTIFICATIONS";
 
+#if !TARGET_OS_TV
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
@@ -58,11 +59,14 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 }
 
 @end
+#endif //TARGET_OS_TV
 
 @implementation RCTPushNotificationManager
 {
   RCTPromiseResolveBlock _requestPermissionsResolveBlock;
 }
+
+#if !TARGET_OS_TV
 
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -82,6 +86,8 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   formattedLocalNotification[@"remote"] = @NO;
   return formattedLocalNotification;
 }
+
+#endif //TARGET_OS_TV
 
 RCT_EXPORT_MODULE()
 
@@ -126,6 +132,8 @@ RCT_EXPORT_MODULE()
            @"remoteNotificationsRegistered",
            @"remoteNotificationRegistrationError"];
 }
+
+#if !TARGET_OS_TV
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
 {
@@ -357,5 +365,7 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
   }
   callback(@[formattedScheduledLocalNotifications]);
 }
+
+#endif //TARGET_OS_TV
 
 @end

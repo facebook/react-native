@@ -10,24 +10,83 @@
 
 // RUNS UNTRANSFORMED IN A WORKER PROCESS. ONLY USE NODE 4 COMPATIBLE FEATURES!
 
-const fs = require('fs');
-const dirname = require('path').dirname;
-
 const babel = require('babel-core');
-const generate = require('babel-generator').default;
-
+const babelGenerate = require('babel-generator').default;
+const collectDependencies = require('../JSTransformer/worker/collect-dependencies');
+const constantFolding = require('../JSTransformer/worker/constant-folding').plugin;
+const docblock = require('../node-haste/DependencyGraph/docblock');
+const fs = require('fs');
+const inline = require('../JSTransformer/worker/inline').plugin;
+const minify = require('../JSTransformer/worker/minify');
 const mkdirp = require('mkdirp');
+const path = require('path');
 const series = require('async/series');
 const sourceMap = require('source-map');
 
-const collectDependencies = require('../JSTransformer/worker/collect-dependencies');
-const constantFolding = require('../JSTransformer/worker/constant-folding').plugin;
-const inline = require('../JSTransformer/worker/inline').plugin;
-const minify = require('../JSTransformer/worker/minify');
+const basename = path.basename;
+const dirname = path.dirname;
+const defaultVariants = {default: {}};
+const moduleFactoryParameters = ['require', 'module', 'global', 'exports'];
 
-const docblock = require('../node-haste/DependencyGraph/docblock');
+function transformJSON(infile, options, outfile, callback) {
+  let json, value;
+  try {
+    json = fs.readFileSync(infile, 'utf8');
+    value = JSON.parse(json);
+  } catch (readError) {
+    callback(readError);
+    return;
+  }
+
+  const filename = options.filename || infile;
+  const code =
+    `__d(function(${moduleFactoryParameters.join(', ')}) { module.exports = \n${
+      json
+    }\n})`;
+
+  const moduleData = {
+    code,
+    map: null, // no source map for JSON files!
+    dependencies: [],
+  };
+  const transformed = {};
+
+  Object
+    .keys(options.variants || defaultVariants)
+    .forEach(key => (transformed[key] = moduleData));
+
+  const result = {
+    file: filename,
+    code: json,
+    transformed,
+    hasteID: value.name,
+  };
+
+  if (basename(filename) === 'package.json') {
+    result.package = {
+      name: value.name,
+      main: value.main,
+      browser: value.browser,
+      'react-native': value['react-native'],
+    };
+  }
+
+  try {
+    writeResult(outfile, result);
+  } catch (writeError) {
+    callback(writeError);
+    return;
+  }
+
+  callback(null);
+}
 
 function transformModule(infile, options, outfile, callback) {
+  const filename = options.filename || infile;
+  if (filename.endsWith('.json')) {
+    return transformJSON(infile, options, outfile, callback);
+  }
+
   let code, transform;
   try {
     transform = require(options.transform);
@@ -37,9 +96,7 @@ function transformModule(infile, options, outfile, callback) {
     return;
   }
 
-  const filename = options.filename || infile;
-  const variants = options.variants || {default: {}};
-
+  const variants = options.variants || defaultVariants;
   const tasks = {};
   Object.keys(variants).forEach(name => {
     tasks[name] = cb => transform({
@@ -111,26 +168,18 @@ function makeResult(ast, filename, sourceCode) {
   const dependencies = collectDependencies(ast);
   const file = wrapModule(ast);
 
-  const gen = generate(file, {
-    comments: false,
-    compact: true,
-    filename,
-    sourceMaps: true,
-    sourceMapTarget: filename,
-    sourceFileName: filename,
-  }, sourceCode);
+  const gen = generate(file, filename, sourceCode);
   return {code: gen.code, map: gen.map, dependencies};
 }
 
 function wrapModule(file) {
   const p = file.program;
   const t = babel.types;
-  const factory = t.functionExpression(t.identifier(''), [
-    t.identifier('require'),
-    t.identifier('module'),
-    t.identifier('global'),
-    t.identifier('exports')
-  ], t.blockStatement(p.body, p.directives));
+  const factory = t.functionExpression(
+    t.identifier(''),
+    moduleFactoryParameters.map(makeIdentifier),
+    t.blockStatement(p.body, p.directives),
+  );
   const def = t.callExpression(t.identifier('__d'), [factory]);
   return t.file(t.program([t.expressionStatement(def)]));
 }
@@ -142,18 +191,42 @@ function optimize(transformed, file, originalCode, options) {
   const dependencies = collectDependencies.forOptimization(
     optimized.ast, transformed.dependencies);
 
-  const gen = generate(optimized.ast, {
+  const inputMap = transformed.map;
+  const gen = generate(optimized.ast, file, originalCode);
+
+  const min = minify(
+    file,
+    gen.code,
+    inputMap && mergeSourceMaps(file, inputMap, gen.map),
+  );
+  return {code: min.code, map: inputMap && min.map, dependencies};
+}
+
+function optimizeCode(code, map, filename, options) {
+  const inlineOptions = Object.assign({isWrapped: true}, options);
+  return babel.transform(code, {
+    plugins: [[constantFolding], [inline, inlineOptions]],
+    babelrc: false,
+    code: false,
+    filename,
+  });
+}
+
+function generate(ast, filename, sourceCode) {
+  return babelGenerate(ast, {
     comments: false,
     compact: true,
-    filename: file,
+    filename,
+    sourceFileName: filename,
     sourceMaps: true,
-    sourceMapTarget: file,
-    sourceFileName: file,
-  }, originalCode);
+    sourceMapTarget: filename,
+  }, sourceCode);
+}
 
+function mergeSourceMaps(file, originalMap, secondMap) {
   const merged = new sourceMap.SourceMapGenerator();
-  const inputMap = new sourceMap.SourceMapConsumer(transformed.map);
-  new sourceMap.SourceMapConsumer(gen.map)
+  const inputMap = new sourceMap.SourceMapConsumer(originalMap);
+  new sourceMap.SourceMapConsumer(secondMap)
     .eachMapping(mapping => {
       const original = inputMap.originalPositionFor({
         line: mapping.originalLine,
@@ -170,24 +243,16 @@ function optimize(transformed, file, originalCode, options) {
         name: original.name || mapping.name,
       });
     });
-
-  const min = minify(file, gen.code, merged.toJSON());
-  return {code: min.code, map: min.map, dependencies};
-}
-
-function optimizeCode(code, map, filename, options) {
-  const inlineOptions = Object.assign({isWrapped: true}, options);
-  return babel.transform(code, {
-    plugins: [[constantFolding], [inline, inlineOptions]],
-    babelrc: false,
-    code: false,
-    filename,
-  });
+  return merged.toJSON();
 }
 
 function writeResult(outfile, result) {
   mkdirp.sync(dirname(outfile));
   fs.writeFileSync(outfile, JSON.stringify(result), 'utf8');
+}
+
+function makeIdentifier(name) {
+  return babel.types.identifier(name);
 }
 
 exports.transformModule = transformModule;

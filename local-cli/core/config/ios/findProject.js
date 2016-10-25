@@ -37,6 +37,9 @@ module.exports = function findProject(folder) {
     })
     .filter(project => {
       return path.dirname(project) === IOS_BASE || !TEST_PROJECTS.test(project);
+    })
+    .sort((projectA, projectB) => {
+      return path.dirname(projectA) === IOS_BASE? -1 : 1;
     });
 
   if (projects.length === 0) {

@@ -10,11 +10,13 @@
 package com.facebook.react.views.text;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Manages raw text nodes. Since they are used only as a virtual nodes any type of native view
  * operation will throw an {@link IllegalStateException}
  */
+@ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
 public class ReactVirtualTextViewManager extends ReactRawTextManager {
 
   @VisibleForTesting

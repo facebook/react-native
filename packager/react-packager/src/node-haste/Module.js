@@ -10,10 +10,10 @@
 
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
+const extractRequires = require('./lib/extractRequires');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('./fastpath');
-const extractRequires = require('./lib/extractRequires');
+const path = require('path');
 
 class Module {
 
@@ -115,12 +115,16 @@ class Module {
     return {id, moduleDocBlock};
   }
 
-  _readDocBlock(contentPromise) {
+  _read() {
+    if (!this._readPromise) {
+      this._readPromise = this._fastfs.readFile(this.path);
+    }
+    return this._readPromise;
+  }
+
+  _readDocBlock() {
     if (!this._docBlock) {
-      if (!contentPromise) {
-        contentPromise = this._fastfs.readWhile(this.path, whileInDocBlock);
-      }
-      this._docBlock = contentPromise
+      this._docBlock = this._read()
         .then(docBlock => this._parseDocBlock(docBlock));
     }
     return this._docBlock;
@@ -131,10 +135,9 @@ class Module {
       this.path,
       cacheKey('moduleData', transformOptions),
       () => {
-        const fileContentPromise = this._fastfs.readFile(this.path);
         return Promise.all([
-          fileContentPromise,
-          this._readDocBlock(fileContentPromise),
+          this._read(),
+          this._readDocBlock(),
         ]).then(([source, {id, moduleDocBlock}]) => {
           // Ignore requires in JSON files or generated code. An example of this
           // is prebuilt files like the SourceMap library.
@@ -192,21 +195,6 @@ class Module {
       path: this.path,
     };
   }
-}
-
-function whileInDocBlock(chunk, i, result) {
-  // consume leading whitespace
-  if (!/\S/.test(result)) {
-    return true;
-  }
-
-  // check for start of doc block
-  if (!/^\s*\/(\*{2}|\*?$)/.test(result)) {
-    return false;
-  }
-
-  // check for end of doc block
-  return !/\*\//.test(result);
 }
 
 // use weak map to speed up hash creation of known objects
