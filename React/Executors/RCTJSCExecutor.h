@@ -108,4 +108,9 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
                    arguments:(NSArray *)args
              jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
 
+/**
+ * Get the JavaScriptCore context associated with this executor instance.
+ */
+- (JSContext *)jsContext;
+
 @end

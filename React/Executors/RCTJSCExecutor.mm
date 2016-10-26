@@ -927,6 +927,11 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   return [NSData dataWithBytesNoCopy:startupCode.code.release() length:startupCode.size freeWhenDone:YES];
 }
 
+- (JSContext *)jsContext
+{
+  return [self context].context;
+}
+
 @end
 
 @implementation RCTJSContextProvider
