@@ -22,7 +22,7 @@ var LoggingTestModule = {
   logToConsoleAfterWait: function(str,timeout_ms) {
     setTimeout(function() {
       console.log(str);
-    },timeout_ms);
+    }, timeout_ms);
   },
   warning: function(str) {
     warning(false, str);
