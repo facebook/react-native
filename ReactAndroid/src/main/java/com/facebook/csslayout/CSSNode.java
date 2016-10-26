@@ -72,6 +72,10 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     mHasSetMargin = false;
     mHasSetBorder = false;
     mHasSetPosition = false;
+
+    mMeasureFunction = null;
+    mData = null;
+
     jni_CSSNodeReset(mNativePointer);
   }
 
