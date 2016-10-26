@@ -615,7 +615,7 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 
 // Flex
 
-- (void)setFlex:(CGFloat)value
+- (void)setFlex:(float)value
 {
   CSSNodeStyleSetFlex(_cssNode, value);
 }
