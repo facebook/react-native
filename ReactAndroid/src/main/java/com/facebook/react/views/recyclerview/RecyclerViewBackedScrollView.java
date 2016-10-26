@@ -297,7 +297,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     @Override
     public long getItemId(int position) {
-      // this should return the view's actual ID to work properly with the view we're extending.
       return reactTagFor(mViews.get(position));
     }
 

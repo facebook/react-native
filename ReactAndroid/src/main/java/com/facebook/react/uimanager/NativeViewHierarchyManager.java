@@ -204,9 +204,9 @@ public class NativeViewHierarchyManager {
   }
 
   /**
-   * Creates a {@link View} and adds it to a corresponding {@link ViewManager}.
+   * Creates a view and adds it to a corresponding {@link ViewManager}.
    *
-   * The tag (a.k.a. React Tag) is saved with {@link View#setTag(Object)}.  It is necessary to use
+   * The tag (a.k.a. React Tag) is stored with {@link View#setTag(Object)}.  It is necessary to use
    * {@link ViewMethodsUtil#reactTagFor(View)} wherever the original
    * tag is needed e.g. when communicating with the Shadow DOM or with JS about a particular react
    * tag.
@@ -229,6 +229,10 @@ public class NativeViewHierarchyManager {
       View view = viewManager.createView(themedContext, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
+
+      // Use android View tag field to store React tag. This is possible since we don't inflate
+      // React views from layout xmls. Thus it is easier to just reuse that field instead of
+      // creating another (potentially much more expensive) mapping from view to React tag
       view.setTag(tag);
       if (initialProps != null) {
         viewManager.updateProperties(view, initialProps);
@@ -247,13 +251,13 @@ public class NativeViewHierarchyManager {
     StringBuilder stringBuilder = new StringBuilder();
 
     if (null != viewToManage) {
-      stringBuilder.append("View tag:" + viewToManage.getTag() + "\n");
+      stringBuilder.append("View tag:" + reactTagFor(viewToManage) + "\n");
       stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
       for (int index=0; index<viewManager.getChildCount(viewToManage); index+=16) {
         for (int innerOffset=0;
              ((index+innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
              innerOffset++) {
-          stringBuilder.append(viewManager.getChildAt(viewToManage, index+innerOffset).getTag() + ",");
+          stringBuilder.append(reactTagFor(viewManager.getChildAt(viewToManage, index+innerOffset)) + ",");
         }
         stringBuilder.append("\n");
       }
@@ -526,12 +530,12 @@ public class NativeViewHierarchyManager {
    */
   protected void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
-    int originalReactTag = reactTagFor(view);
-    if (!mRootTags.get(originalReactTag)) {
+    int reactTag = reactTagFor(view);
+    if (!mRootTags.get(reactTag)) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      resolveViewManager(originalReactTag).onDropViewInstance(view);
+      resolveViewManager(reactTag).onDropViewInstance(view);
     }
-    ViewManager viewManager = mTagsToViewManagers.get(originalReactTag);
+    ViewManager viewManager = mTagsToViewManagers.get(reactTag);
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
@@ -543,8 +547,8 @@ public class NativeViewHierarchyManager {
       }
       viewGroupManager.removeAllViews(viewGroup);
     }
-    mTagsToViews.remove(originalReactTag);
-    mTagsToViewManagers.remove(originalReactTag);
+    mTagsToViews.remove(reactTag);
+    mTagsToViewManagers.remove(reactTag);
   }
 
   public void removeRootView(int rootViewTag) {

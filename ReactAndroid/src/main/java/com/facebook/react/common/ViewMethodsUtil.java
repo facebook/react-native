@@ -2,9 +2,6 @@ package com.facebook.react.common;
 
 import android.view.View;
 
-/**
- * Various utility methods for {@link View}.
- */
 public class ViewMethodsUtil {
 
     /**

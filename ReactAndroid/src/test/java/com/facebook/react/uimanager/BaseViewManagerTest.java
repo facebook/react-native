@@ -75,14 +75,14 @@ public class BaseViewManagerTest {
 
   @After
   public void teardown() {
-    TestIdUtil.resetTestState();
+    TestIdUtil.resetStateInTest();
   }
 
   @Test
   public void testUsingATestIdNotFoundInResources() {
     when(context.getPackageName()).thenReturn("com.foo");
     sut.setTestId(view, testID);
-    verify(view).setId(eq(10));
+    verify(view).setId(eq(1));
   }
 
   @Test
