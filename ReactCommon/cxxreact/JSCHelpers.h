@@ -38,6 +38,11 @@ void installGlobalFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback);
 
+void installGlobalProxy(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSObjectGetPropertyCallback callback);
+
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);

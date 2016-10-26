@@ -11,8 +11,6 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
-
 const TimePickerAndroid = {
   async open(options: Object): Promise<Object> {
     return Promise.reject({

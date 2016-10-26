@@ -15,6 +15,7 @@
 #include "ExecutorToken.h"
 #include "JSCHelpers.h"
 #include "Value.h"
+#include "JSCNativeModules.h"
 
 namespace facebook {
 namespace react {
@@ -74,6 +75,12 @@ public:
   virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
+  template <typename T>
+  Value callFunctionSync(
+      const std::string& module, const std::string& method, T&& args) {
+    return callFunctionSyncWithValue(module, method,
+                                     toValue(m_context, std::forward<T>(args)));
+  }
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
@@ -85,6 +92,7 @@ public:
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
+  void setContextName(const std::string& name);
 
 private:
   JSGlobalContextRef m_context;
@@ -96,11 +104,13 @@ private:
   std::string m_deviceCacheDir;
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
   folly::Optional<Object> m_flushedQueueJS;
+  folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
 
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
@@ -115,10 +125,14 @@ private:
       const folly::dynamic& jscConfig);
 
   void initOnJSVMThread() throw(JSException);
+  // This method is experimental, and may be modified or removed.
+  Value callFunctionSyncWithValue(
+    const std::string& module, const std::string& method, Value value);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
+  void callNativeModules(Value&&);
   void flush();
-  void flushQueueImmediate(std::string queueJSON);
+  void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
 
   int addWebWorker(std::string scriptURL, JSValueRef workerRef, JSValueRef globalObjRef);
@@ -131,10 +145,8 @@ private:
 
   template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
+  JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 
-  JSValueRef nativeRequireModuleConfig(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
   JSValueRef nativeStartWorker(
       size_t argumentCount,
       const JSValueRef arguments[]);

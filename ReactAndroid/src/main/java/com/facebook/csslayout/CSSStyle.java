@@ -12,7 +12,7 @@ package com.facebook.csslayout;
 import java.util.Arrays;
 
 /**
- * The CSS style definition for a {@link CSSNode}.
+ * The CSS style definition for a {@link CSSNodeDEPRECATED}.
  */
 public class CSSStyle {
 
@@ -25,12 +25,14 @@ public class CSSStyle {
   public CSSPositionType positionType;
   public CSSWrap flexWrap;
   public CSSOverflow overflow;
-  public float flex;
+  public float flexGrow;
+  public float flexShrink;
+  public float flexBasis;
 
   public Spacing margin = new Spacing();
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
-  public Spacing position = new Spacing();
+  public Spacing position = new Spacing(CSSConstants.UNDEFINED);
 
   public float[] dimensions = new float[2];
 
@@ -54,19 +56,14 @@ public class CSSStyle {
     positionType = CSSPositionType.RELATIVE;
     flexWrap = CSSWrap.NOWRAP;
     overflow = CSSOverflow.VISIBLE;
-    flex = 0f;
+    flexGrow = 0;
+    flexShrink = 0;
+    flexBasis = CSSConstants.UNDEFINED;
 
     margin.reset();
     padding.reset();
     border.reset();
     position.reset();
-
-    position.setDefault(Spacing.LEFT, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.RIGHT, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.TOP, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.BOTTOM, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.START, CSSConstants.UNDEFINED);
-    position.setDefault(Spacing.END, CSSConstants.UNDEFINED);
 
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
 

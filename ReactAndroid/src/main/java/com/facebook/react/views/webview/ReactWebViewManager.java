@@ -15,18 +15,22 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Picture;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 
-import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -36,14 +40,21 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import android.content.Intent;
-import android.net.Uri;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopMessageEvent;
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * Manages instances of {@link WebView}
@@ -66,12 +77,14 @@ import android.net.Uri;
  *  - canGoBack - boolean, whether there is anything on a history stack to go back
  *  - canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
+@ReactModule(name = ReactWebViewManager.REACT_CLASS)
 public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
-  private static final String REACT_CLASS = "RCTWebView";
+  protected static final String REACT_CLASS = "RCTWebView";
 
   private static final String HTML_ENCODING = "UTF-8";
   private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+  private static final String BRIDGE_NAME = "__REACT_WEB_VIEW_BRIDGE";
 
   private static final String HTTP_METHOD_POST = "POST";
 
@@ -79,12 +92,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_GO_FORWARD = 2;
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
+  public static final int COMMAND_POST_MESSAGE = 5;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
   private static final String BLANK_URL = "about:blank";
 
   private WebViewConfig mWebViewConfig;
+  private @Nullable WebView.PictureListener mPictureListener;
 
   private static class ReactWebViewClient extends WebViewClient {
 
@@ -97,6 +112,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (!mLastLoadFailed) {
         ReactWebView reactWebView = (ReactWebView) webView;
         reactWebView.callInjectedJavaScript();
+        reactWebView.linkBridge();
         emitFinishEvent(webView, url);
       }
     }
@@ -115,14 +131,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
+        if (url.startsWith("http://") || url.startsWith("https://") ||
+            url.startsWith("file://")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url)); 
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);   
-          return true;   
-        }              
+          view.getContext().startActivity(intent);
+          return true;
+        }
     }
 
     @Override
@@ -166,13 +183,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               createWebViewEvent(webView, url)));
     }
 
-    private static void dispatchEvent(WebView webView, Event event) {
-      ReactContext reactContext = (ReactContext) webView.getContext();
-      EventDispatcher eventDispatcher =
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(event);
-    }
-
     private WritableMap createWebViewEvent(WebView webView, String url) {
       WritableMap event = Arguments.createMap();
       event.putDouble("target", webView.getId());
@@ -193,6 +203,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private boolean messagingEnabled = false;
+
+    private class ReactWebViewBridge {
+      ReactWebView mContext;
+
+      ReactWebViewBridge(ReactWebView c) {
+        mContext = c;
+      }
+
+      @JavascriptInterface
+      public void postMessage(String message) {
+        mContext.onMessage(message);
+      }
+    }
 
     /**
      * WebView must be created with an context of the current activity
@@ -224,12 +248,54 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       injectedJS = js;
     }
 
+    public void setMessagingEnabled(boolean enabled) {
+      if (messagingEnabled == enabled) {
+        return;
+      }
+
+      messagingEnabled = enabled;
+      if (enabled) {
+        addJavascriptInterface(new ReactWebViewBridge(this), BRIDGE_NAME);
+        linkBridge();
+      } else {
+        removeJavascriptInterface(BRIDGE_NAME);
+      }
+    }
+
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
           injectedJS != null &&
           !TextUtils.isEmpty(injectedJS)) {
         loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
       }
+    }
+
+    public void linkBridge() {
+      if (messagingEnabled) {
+        if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          // See isNative in lodash
+          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+          evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+              if (value.equals("true")) {
+                FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+              }
+            }
+          });
+        }
+
+        loadUrl("javascript:(" +
+          "window.originalPostMessage = window.postMessage," +
+          "window.postMessage = function(data) {" +
+            BRIDGE_NAME + ".postMessage(String(data));" +
+          "}" +
+        ")");
+      }
+    }
+
+    public void onMessage(String message) {
+      dispatchEvent(this, new TopMessageEvent(this.getId(), message));
     }
 
     private void cleanupCallbacksAndDestroy() {
@@ -295,7 +361,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setDomStorageEnabled(enabled);
   }
 
-
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {
     if (userAgent != null) {
@@ -312,6 +377,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "messagingEnabled")
+  public void setMessagingEnabled(WebView view, boolean enabled) {
+    ((ReactWebView) view).setMessagingEnabled(enabled);
   }
 
   @ReactProp(name = "source")
@@ -368,6 +438,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.loadUrl(BLANK_URL);
   }
 
+  @ReactProp(name = "onContentSizeChange")
+  public void setOnContentSizeChange(WebView view, boolean sendContentSizeChangeEvents) {
+    if (sendContentSizeChangeEvents) {
+      view.setPictureListener(getPictureListener());
+    } else {
+      view.setPictureListener(null);
+    }
+  }
+
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, WebView view) {
     // Do not register default touch emitter and let WebView implementation handle touches
@@ -380,7 +459,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
-        "stopLoading", COMMAND_STOP_LOADING);
+        "stopLoading", COMMAND_STOP_LOADING,
+        "postMessage", COMMAND_POST_MESSAGE);
   }
 
   @Override
@@ -398,6 +478,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       case COMMAND_STOP_LOADING:
         root.stopLoading();
         break;
+      case COMMAND_POST_MESSAGE:
+        try {
+          JSONObject eventInitDict = new JSONObject();
+          eventInitDict.put("data", args.getString(0));
+          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+        } catch (JSONException e) {
+          throw new RuntimeException(e);
+        }
+        break;
     }
   }
 
@@ -406,5 +495,29 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     super.onDropViewInstance(webView);
     ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
+  }
+
+  private WebView.PictureListener getPictureListener() {
+    if (mPictureListener == null) {
+      mPictureListener = new WebView.PictureListener() {
+        @Override
+        public void onNewPicture(WebView webView, Picture picture) {
+          dispatchEvent(
+            webView,
+            new ContentSizeChangeEvent(
+              webView.getId(),
+              webView.getWidth(),
+              webView.getContentHeight()));
+        }
+      };
+    }
+    return mPictureListener;
+  }
+
+  private static void dispatchEvent(WebView webView, Event event) {
+    ReactContext reactContext = (ReactContext) webView.getContext();
+    EventDispatcher eventDispatcher =
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    eventDispatcher.dispatchEvent(event);
   }
 }

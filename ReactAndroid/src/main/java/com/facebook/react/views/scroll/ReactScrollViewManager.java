@@ -17,10 +17,11 @@ import android.graphics.Color;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -28,11 +29,13 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  private static final String REACT_CLASS = "RCTScrollView";
+  protected static final String REACT_CLASS = "RCTScrollView";
+
   private @Nullable FpsListener mFpsListener = null;
 
   public ReactScrollViewManager() {

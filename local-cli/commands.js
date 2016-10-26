@@ -10,37 +10,43 @@
  */
 'use strict';
 
-const Config = require('./util/Config');
-const getUserCommands = require('./rnpm/core/src/getCommands');
+const getUserCommands = require('./core/getCommands');
+
+import type {ConfigT} from './util/Config';
 
 export type Command = {
   name: string,
   description?: string,
   usage?: string,
-  func: (argv: Array<string>, config: Config, args: Object) => ?Promise<void>,
+  func: (argv: Array<string>, config: ConfigT, args: Object) => ?Promise<void>,
   options?: Array<{
     command: string,
     description?: string,
     parse?: (val: string) => any,
-    default?: (config: Config) => any | any,
+    default?: (config: ConfigT) => any | any,
   }>,
   examples?: Array<{
     desc: string,
     cmd: string,
   }>,
+  pkg?: {
+    version: string,
+    name: string,
+  },
 };
 
 const documentedCommands = [
+  require('./android/android'),
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
-  require('./rnpm/link/link'),
-  require('./rnpm/link/unlink'),
-  require('./rnpm/install/install'),
-  require('./rnpm/install/uninstall'),
+  require('./link/link'),
+  require('./link/unlink'),
+  require('./install/install'),
+  require('./install/uninstall'),
   require('./upgrade/upgrade'),
   require('./logAndroid/logAndroid'),
   require('./logIOS/logIOS'),
@@ -55,7 +61,7 @@ const undocumentedCommands = [
     func: () => {
       console.log([
         'Looks like React Native project already exists in the current',
-        'folder. Run this command from a different folder or remove node_modules/react-native'
+        'folder. Run this command from a different folder or remove node_modules/react-native',
       ].join('\n'));
     },
   },

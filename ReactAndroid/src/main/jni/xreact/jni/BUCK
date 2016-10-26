@@ -16,7 +16,7 @@ EXPORTED_HEADERS = [
 
 cxx_library(
   name='jni',
-  soname = 'libreactnativejnifb.so',
+  soname = 'libreactnativejnifb.$(ext)',
   header_namespace = 'xreact/jni',
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   deps = JSC_DEPS + [
@@ -28,6 +28,7 @@ cxx_library(
     react_native_xplat_target('cxxreact:module'),
   ],
   srcs = glob(['*.cpp']),
+  xcode_public_headers_symlinks = True,
   exported_headers = EXPORTED_HEADERS,
   headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
   preprocessor_flags = [
@@ -38,7 +39,7 @@ cxx_library(
     '-Wall',
     '-Werror',
     '-fexceptions',
-    '-std=c++11',
+    '-std=c++1y',
     '-fvisibility=hidden',
     '-frtti',
     '-Wno-pessimizing-move',

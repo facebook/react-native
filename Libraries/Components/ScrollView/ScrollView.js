@@ -16,7 +16,7 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
 const React = require('React');
-const ReactNative = require('react/lib/ReactNative');
+const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -251,10 +251,12 @@ const ScrollView = React.createClass({
     scrollsToTop: PropTypes.bool,
     /**
      * When true, shows a horizontal scroll indicator.
+     * The default value is true.
      */
     showsHorizontalScrollIndicator: PropTypes.bool,
     /**
      * When true, shows a vertical scroll indicator.
+     * The default value is true.
      */
     showsVerticalScrollIndicator: PropTypes.bool,
     /**
@@ -390,7 +392,7 @@ const ScrollView = React.createClass({
 
   _handleScroll: function(e: Object) {
     if (__DEV__) {
-      if (this.props.onScroll && !this.props.scrollEventThrottle && Platform.OS === 'ios') {
+      if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
         console.log( // eslint-disable-line no-console-disallow
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
@@ -473,6 +475,9 @@ const ScrollView = React.createClass({
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: ([baseStyle, this.props.style]: ?Array<any>),
+      // Override the onContentSizeChange from props, since this event can
+      // bubble up from TextInputs
+      onContentSizeChange: null,
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchEnd: this.scrollResponderHandleTouchEnd,
@@ -529,7 +534,7 @@ const ScrollView = React.createClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
-          <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
+          <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
         );
@@ -545,12 +550,16 @@ const ScrollView = React.createClass({
 
 const styles = StyleSheet.create({
   baseVertical: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
     flexDirection: 'column',
+    overflow: 'scroll',
   },
   baseHorizontal: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
     flexDirection: 'row',
+    overflow: 'scroll',
   },
   contentContainerHorizontal: {
     flexDirection: 'row',

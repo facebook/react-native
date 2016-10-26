@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
   if (position)
     return YES;
     
-  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
+  NSUInteger allowedLength = textField.maxLength.integerValue - MIN(textField.maxLength.integerValue, textField.text.length) + range.length;
   if (string.length > allowedLength) {
     if (string.length > 1) {
       // Truncate the input string so the result is exactly maxLength
@@ -86,6 +86,7 @@ RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
 RCT_REMAP_VIEW_PROPERTY(editable, enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(clearButtonMode, UITextFieldViewMode)

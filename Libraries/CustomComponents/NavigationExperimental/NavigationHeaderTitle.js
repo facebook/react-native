@@ -43,7 +43,7 @@ const {
 } = ReactNative;
 
 type Props = {
-  children?: ReactElement<any>,
+  children?: React.Element<any>,
   style?: any,
   textStyle?: any,
   viewProps?: any,

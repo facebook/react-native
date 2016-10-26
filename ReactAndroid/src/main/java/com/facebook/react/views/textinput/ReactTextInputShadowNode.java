@@ -62,7 +62,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
     setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
   }
 
   @Override
@@ -80,12 +85,17 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
     editText.setPadding(
-        (int) Math.ceil(getPadding().get(Spacing.START)),
-        (int) Math.ceil(getPadding().get(Spacing.TOP)),
-        (int) Math.ceil(getPadding().get(Spacing.END)),
-        (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
+        (int) Math.floor(getPadding(Spacing.START)),
+        (int) Math.floor(getPadding(Spacing.TOP)),
+        (int) Math.floor(getPadding(Spacing.END)),
+        (int) Math.floor(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -115,7 +125,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     if (mComputedPadding != null) {
       float[] updatedPadding = mComputedPadding;
       if (getLayoutDirection() == CSSDirection.RTL) {
-        updatedPadding = spacingToFloatArrayForRTL(getPadding());
+        updatedPadding = new float[] {
+            getPadding(Spacing.END),
+            getPadding(Spacing.TOP),
+            getPadding(Spacing.START),
+            getPadding(Spacing.BOTTOM),
+        };
       }
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), updatedPadding);
       mComputedPadding = null;
@@ -128,8 +143,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           preparedSpannableText,
           mJsEventCount,
           mContainsImages,
-          getPadding(),
-          getEffectiveLineHeight(),
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
           mTextAlign
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
@@ -139,27 +156,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void setPadding(int spacingType, float padding) {
     super.setPadding(spacingType, padding);
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
     markUpdated();
-  }
-
-  private float[] spacingToFloatArray(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.START),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.END),
-        spacing.get(Spacing.BOTTOM),
-    };
-  }
-
-  // Since TextInput communicate with native component but not CSSLayout,
-  // So flip the padding for RTL is necessary when the padding is updated
-  private float[] spacingToFloatArrayForRTL(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.END),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.START),
-        spacing.get(Spacing.BOTTOM),
-    };
   }
 }

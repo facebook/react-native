@@ -11,6 +11,7 @@
 #include "JCallback.h"
 #include "JExecutorToken.h"
 #include "ReadableNativeArray.h"
+#include "ReadableNativeMap.h"
 
 namespace facebook {
 namespace react {
@@ -144,8 +145,7 @@ jvalue extract(std::weak_ptr<Instance>& instance, ExecutorToken token, char type
       value.l = ReadableNativeArray::newObjectCxxArgs(arg).release();
       break;
     case 'M':
-      // HACK: Workaround for constructing ReadableNativeMap
-      value.l = ExposedReadableNativeArray(folly::dynamic::array(arg)).getMap(0).release();
+      value.l = ReadableNativeMap::newObjectCxxArgs(arg).release();
       break;
     case 'X':
       value.l = extractCallback(instance, token, arg).release();

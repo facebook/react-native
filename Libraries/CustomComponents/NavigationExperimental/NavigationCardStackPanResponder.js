@@ -8,11 +8,11 @@
  *
  * @providesModule NavigationCardStackPanResponder
  * @flow
- * @typechecks
  */
 'use strict';
 
 const Animated = require('Animated');
+const I18nManager = require('I18nManager');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
 
 const clamp = require('clamp');
@@ -150,10 +150,13 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
+    const currentValue = I18nManager.isRTL && axis === 'dx' ?
+      this._startValue + (gesture[axis] / distance) :
+      this._startValue - (gesture[axis] / distance);
 
     const value = clamp(
       index - 1,
-      this._startValue - (gesture[axis] / distance),
+      currentValue,
       index
     );
 
@@ -171,7 +174,9 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
     const index = props.navigationState.index;
-    const distance = gesture[axis];
+    const distance = I18nManager.isRTL && axis === 'dx' ?
+      -gesture[axis] :
+      gesture[axis];
 
     props.position.stopAnimation((value: number) => {
       this._reset();

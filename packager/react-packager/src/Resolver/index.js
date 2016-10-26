@@ -9,11 +9,12 @@
 'use strict';
 
 
-const path = require('path');
 const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
+
 const declareOpts = require('../lib/declareOpts');
-const Promise = require('promise');
+const defaults = require('../../../defaults');
+const pathJoin = require('path').join;
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -57,6 +58,10 @@ const validateOpts = declareOpts({
   minifyCode: {
     type: 'function',
   },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -70,7 +75,7 @@ const getDependenciesValidateOpts = declareOpts({
   },
   unbundle: {
     type: 'boolean',
-    default: false
+    default: false,
   },
   recursive: {
     type: 'boolean',
@@ -92,23 +97,17 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
-      providesModuleNodeModules: [
-        'react-native',
-        'react-native-windows',
-        // Parse requires AsyncStorage. They will
-        // change that to require('react-native') which
-        // should work after this release and we can
-        // remove it from here.
-        'parse',
-      ],
-      platforms: ['ios', 'android', 'windows', 'web'],
+      providesModuleNodeModules: defaults.providesModuleNodeModules,
+      platforms: defaults.platforms,
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
+      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      // for jest-haste-map
+      resetCache: options.resetCache,
     });
 
     this._minifyCode = opts.minifyCode;
@@ -154,14 +153,14 @@ class Resolver {
     const opts = getDependenciesValidateOpts(options);
 
     const prelude = opts.dev
-        ? path.join(__dirname, 'polyfills/prelude_dev.js')
-        : path.join(__dirname, 'polyfills/prelude.js');
+        ? pathJoin(__dirname, 'polyfills/prelude_dev.js')
+        : pathJoin(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = defaults.moduleSystem;
 
     return [
       prelude,
-      moduleSystem
+      moduleSystem,
     ].map(moduleName => this._depGraph.createPolyfill({
       file: moduleName,
       id: moduleName,
@@ -170,17 +169,7 @@ class Resolver {
   }
 
   _getPolyfillDependencies() {
-    const polyfillModuleNames = [
-      path.join(__dirname, 'polyfills/polyfills.js'),
-      path.join(__dirname, 'polyfills/console.js'),
-      path.join(__dirname, 'polyfills/error-guard.js'),
-      path.join(__dirname, 'polyfills/Number.es6.js'),
-      path.join(__dirname, 'polyfills/String.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.es6.js'),
-      path.join(__dirname, 'polyfills/Object.es7.js'),
-      path.join(__dirname, 'polyfills/babelHelpers.js'),
-    ].concat(this._polyfillModuleNames);
+    const polyfillModuleNames = defaults.polyfills.concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
       (polyfillModuleName, idx) => this._depGraph.createPolyfill({
@@ -236,7 +225,7 @@ class Resolver {
     code,
     meta = {},
     dev = true,
-    minify = false
+    minify = false,
   }) {
     if (module.isJSON()) {
       code = `module.exports = ${code}`;

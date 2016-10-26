@@ -1,8 +1,8 @@
 CXX_LIBRARY_COMPILER_FLAGS = []
 REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
 if THIS_IS_FBOBJC:
-  inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS)
-  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.combined_flags_as_dict()['compiler_flags']
+  inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
+  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
   REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
 
 def kwargs_add(base_kwargs, **new_kwargs):
@@ -49,9 +49,12 @@ elif THIS_IS_FBOBJC:
     ios_library(
       name = 'bridge',
       header_path_prefix = "cxxreact",
-      inherited_buck_flags = buck_flags(STATIC_LIBRARY_IOS_FLAGS),
+      inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
       frameworks = [
         '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+      ],
+      tests = [
+        react_native_xplat_target('cxxreact/tests:tests')
       ],
       **kwargs_add(
         kwargs,
@@ -66,9 +69,9 @@ cxx_library(
   name = 'module',
   force_static = True,
   compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+  xcode_public_headers_symlinks = True,
   exported_headers = [
     'CxxModule.h',
-    'FollySupport.h',
     'JsArgumentHelpers.h',
     'JsArgumentHelpers-inl.h',
   ],
@@ -85,13 +88,14 @@ cxx_library(
   name = 'samplemodule',
   soname = 'libxplat_react_module_samplemodule.so',
   srcs = ['SampleCxxModule.cpp'],
+  xcode_public_headers_symlinks = True,
   exported_headers = ['SampleCxxModule.h'],
   header_namespace = '',
   compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
     '-fno-omit-frame-pointer',
     '-Wall',
     '-Werror',
-    '-std=c++11',
+    '-std=c++1y',
     '-fexceptions',
   ],
   deps = [
@@ -103,59 +107,38 @@ cxx_library(
   ],
 )
 
+CXXREACT_PUBLIC_HEADERS = [
+  'CxxMessageQueue.h',
+  'CxxNativeModule.h',
+  'Executor.h',
+  'ExecutorToken.h',
+  'ExecutorTokenFactory.h',
+  'Instance.h',
+  'JSCExecutor.h',
+  'JSCHelpers.h',
+  'JSCNativeModules.h',
+  'JSCWebWorker.h',
+  'JSModulesUnbundle.h',
+  'MessageQueueThread.h',
+  'MethodCall.h',
+  'ModuleRegistry.h',
+  'NativeModule.h',
+  'NativeToJsBridge.h',
+  'noncopyable.h',
+  'Platform.h',
+  'SystraceSection.h',
+  'Unicode.h',
+  'Value.h',
+]
+
 react_library(
-  soname = 'libreactnativefb.so',
+  soname = 'libreactnativefb.$(ext)',
   header_namespace = 'cxxreact',
   force_static = True,
-  srcs = [
-    'CxxMessageQueue.cpp',
-    'CxxNativeModule.cpp',
-    'Executor.cpp',
-    'Instance.cpp',
-    'JSCExecutor.cpp',
-    'JSCHelpers.cpp',
-    'JSCLegacyProfiler.cpp',
-    'JSCLegacyTracing.cpp',
-    'JSCMemory.cpp',
-    'JSCPerfStats.cpp',
-    'JSCSamplingProfiler.cpp',
-    'JSCTracing.cpp',
-    'JSCWebWorker.cpp',
-    'MethodCall.cpp',
-    'ModuleRegistry.cpp',
-    'NativeToJsBridge.cpp',
-    'Platform.cpp',
-    'Value.cpp',
-  ],
-  headers = [
-    'JSCLegacyProfiler.h',
-    'JSCLegacyTracing.h',
-    'JSCMemory.h',
-    'JSCPerfStats.h',
-    'JSCSamplingProfiler.h',
-    'JSCTracing.h',
-  ],
-  exported_headers = [
-    'CxxMessageQueue.h',
-    'CxxNativeModule.h',
-    'Executor.h',
-    'ExecutorToken.h',
-    'ExecutorTokenFactory.h',
-    'Instance.h',
-    'JSCExecutor.h',
-    'JSCHelpers.h',
-    'JSCWebWorker.h',
-    'JSModulesUnbundle.h',
-    'MessageQueueThread.h',
-    'MethodCall.h',
-    'ModuleRegistry.h',
-    'NativeModule.h',
-    'NativeToJsBridge.h',
-    'noncopyable.h',
-    'Platform.h',
-    'SystraceSection.h',
-    'Value.h',
-  ],
+  srcs = glob(['*.cpp']),
+  headers = glob(['*.h'], excludes=CXXREACT_PUBLIC_HEADERS),
+  xcode_public_headers_symlinks = True,
+  exported_headers = CXXREACT_PUBLIC_HEADERS,
   preprocessor_flags = [
     '-DLOG_TAG="ReactNative"',
     '-DWITH_FBSYSTRACE=1',
@@ -165,6 +148,7 @@ react_library(
     '-fexceptions',
     '-fvisibility=hidden',
     '-frtti',
+    '-std=c++1y',
   ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
   deps = [
     ':module',

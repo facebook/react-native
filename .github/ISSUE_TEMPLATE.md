@@ -1,21 +1,21 @@
-Hey there and thank you for using React Native!
+We use GitHub Issues for bugs.
 
-React Native, as you've probably heard, is getting really popular and truth is we're getting a bit overwhelmed by the activity surrounding it. There are just too many issues for us to manage properly.
+If you have a non-bug question, ask on Stack Overflow: http://stackoverflow.com/questions/tagged/react-native
 
-Do the checklist before filing an issue:
+If you have a feature request, post it on Product Pains: https://productpains.com/product/react-native/
 
-- [ ] Is this something you can **debug and fix**? Send a pull request! Bug fixes and documentation fixes are welcome.
-- [ ] Have a usage question? Ask your question on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). We use StackOverflow for usage question and GitHub for bugs.
-- [ ] Have an idea for a feature? Post the feature request on [Product Pains](https://productpains.com/product/react-native/). It has a voting system to surface the important issues. GitHub issues should only be used for bugs.
+--- Please use this template, and delete everything above this line before submitting your issue --- 
 
+### Description
 
-None of the above, create a bug report
-------------------------------------------------------------------
+[FILL THIS OUT: Explain what you did, what you expected to happen, and what actually happens.]
 
-Make sure to add **all the information needed to understand the bug** so that someone can help. If the info is missing we'll add the 'Needs more information' label and close the issue until there is enough information.
+### Reproduction
 
-- [ ] Provide a **minimal code snippet** / [rnplay](https://rnplay.org/) example that reproduces the bug.
-- [ ] Provide **screenshots** where appropriate
-- [ ] What's the **version** of React Native you're using?
-- [ ] Does this occur on iOS, Android or both?
-- [ ] Are you using Mac, Linux or Windows?
+[FILL THIS OUT: Try to reproduce your bug on rnplay.org and provide a link. If you can't reproduce the bug on rnplay.org, provide a sample project.]
+
+### Additional Information
+
+* React Native version: [FILL THIS OUT]
+* Platform: [FILL THIS OUT: iOS, Android, or both?]
+* Operating System: [FILL THIS OUT: MacOS, Linux, or Windows?]

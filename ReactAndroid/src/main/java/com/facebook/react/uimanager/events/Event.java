@@ -39,7 +39,7 @@ public abstract class Event<T extends Event> {
    */
   protected void init(int viewTag) {
     mViewTag = viewTag;
-    mTimestampMs = SystemClock.nanoTime();
+    mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
   }
 

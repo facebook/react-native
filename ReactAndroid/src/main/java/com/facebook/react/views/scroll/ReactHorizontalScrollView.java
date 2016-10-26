@@ -25,8 +25,8 @@ import android.widget.HorizontalScrollView;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.facebook.react.views.view.ReactClippingViewGroup;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.

@@ -12,11 +12,12 @@
 
 var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
-var ReactPropTypes = require('react/lib/ReactPropTypes');
 var View = require('View');
 var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
+
+var ReactPropTypes = React.PropTypes;
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',
@@ -25,7 +26,7 @@ var STYLE_ATTRIBUTES = [
   'Large',
   'Inverse',
   'SmallInverse',
-  'LargeInverse'
+  'LargeInverse',
 ];
 
 var indeterminateType = function(props, propName, componentName) {

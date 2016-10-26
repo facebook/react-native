@@ -14,6 +14,7 @@
 #import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
+#import "RCTTextSelection.h"
 #import "UIView+React.h"
 
 @interface RCTUITextView : UITextView
@@ -95,15 +96,17 @@
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.textColor = [UIColor blackColor];
+#if !TARGET_OS_TV
     _textView.scrollsToTop = NO;
+#endif
     _textView.scrollEnabled = NO;
     _textView.delegate = self;
 
     _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+#if !TARGET_OS_TV
     _scrollView.scrollsToTop = NO;
+#endif
     [_scrollView addSubview:_textView];
-
-    _previousSelectionRange = _textView.selectedTextRange;
 
     [self addSubview:_scrollView];
   }
@@ -284,11 +287,13 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
   if (_placeholder) {
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
-    _placeholderView.editable = NO;
     _placeholderView.userInteractionEnabled = NO;
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = NO;
+#if !TARGET_OS_TV
+    _placeholderView.editable = NO;
     _placeholderView.scrollsToTop = NO;
+#endif
     _placeholderView.attributedText =
     [[NSAttributedString alloc] initWithString:_placeholder attributes:@{
       NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
@@ -450,6 +455,26 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (NSString *)text
 {
   return _textView.text;
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  UITextRange *currentSelection = _textView.selectedTextRange;
+  UITextPosition *start = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [_textView textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    _textView.selectedTextRange = selectedTextRange;
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
 }
 
 - (void)setText:(NSString *)text

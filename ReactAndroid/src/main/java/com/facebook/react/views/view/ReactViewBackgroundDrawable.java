@@ -43,7 +43,7 @@ import com.facebook.csslayout.Spacing;
  * {@code mBorderWidthResult} and similar. When only background color is set we won't allocate any
  * extra/unnecessary objects.
  */
-/* package */ class ReactViewBackgroundDrawable extends Drawable {
+public class ReactViewBackgroundDrawable extends Drawable {
 
   private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
   private static final int DEFAULT_BORDER_RGB = 0x00FFFFFF & DEFAULT_BORDER_COLOR;
@@ -145,7 +145,7 @@ import com.facebook.csslayout.Spacing;
       super.getOutline(outline);
       return;
     }
-    if((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
+    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
       updatePath();
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
@@ -175,11 +175,7 @@ import com.facebook.csslayout.Spacing;
   private void setBorderRGB(int position, float rgb) {
     // set RGB component
     if (mBorderRGB == null) {
-      mBorderRGB = new Spacing();
-      mBorderRGB.setDefault(Spacing.LEFT, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.TOP, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.RIGHT, DEFAULT_BORDER_RGB);
-      mBorderRGB.setDefault(Spacing.BOTTOM, DEFAULT_BORDER_RGB);
+      mBorderRGB = new Spacing(DEFAULT_BORDER_RGB);
     }
     if (!FloatUtil.floatsEqual(mBorderRGB.getRaw(position), rgb)) {
       mBorderRGB.set(position, rgb);
@@ -190,11 +186,7 @@ import com.facebook.csslayout.Spacing;
   private void setBorderAlpha(int position, float alpha) {
     // set Alpha component
     if (mBorderAlpha == null) {
-      mBorderAlpha = new Spacing();
-      mBorderAlpha.setDefault(Spacing.LEFT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.TOP, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.RIGHT, DEFAULT_BORDER_ALPHA);
-      mBorderAlpha.setDefault(Spacing.BOTTOM, DEFAULT_BORDER_ALPHA);
+      mBorderAlpha = new Spacing(DEFAULT_BORDER_ALPHA);
     }
     if (!FloatUtil.floatsEqual(mBorderAlpha.getRaw(position), alpha)) {
       mBorderAlpha.set(position, alpha);
@@ -291,7 +283,6 @@ import com.facebook.csslayout.Spacing;
     float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
 
-
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
         new float[] {
@@ -368,6 +359,7 @@ import com.facebook.csslayout.Spacing;
     // maybe draw borders?
     if (getBorderWidth(Spacing.LEFT) > 0 || getBorderWidth(Spacing.TOP) > 0 ||
         getBorderWidth(Spacing.RIGHT) > 0 || getBorderWidth(Spacing.BOTTOM) > 0) {
+      Rect bounds = getBounds();
 
       int borderLeft = getBorderWidth(Spacing.LEFT);
       int borderTop = getBorderWidth(Spacing.TOP);
@@ -378,8 +370,10 @@ import com.facebook.csslayout.Spacing;
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
 
-      int width = getBounds().width();
-      int height = getBounds().height();
+      int top = bounds.top;
+      int left = bounds.left;
+      int width = bounds.width();
+      int height = bounds.height();
 
       // If the path drawn previously is of the same color,
       // there would be a slight white space between borders
@@ -396,44 +390,44 @@ import com.facebook.csslayout.Spacing;
       if (borderLeft > 0 && colorLeft != Color.TRANSPARENT) {
         mPaint.setColor(colorLeft);
         mPathForBorder.reset();
-        mPathForBorder.moveTo(0, 0);
-        mPathForBorder.lineTo(borderLeft, borderTop);
-        mPathForBorder.lineTo(borderLeft, height - borderBottom);
-        mPathForBorder.lineTo(0, height);
-        mPathForBorder.lineTo(0, 0);
+        mPathForBorder.moveTo(left, top);
+        mPathForBorder.lineTo(left + borderLeft, top + borderTop);
+        mPathForBorder.lineTo(left + borderLeft, top + height - borderBottom);
+        mPathForBorder.lineTo(left, top + height);
+        mPathForBorder.lineTo(left, top);
         canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderTop > 0 && colorTop != Color.TRANSPARENT) {
         mPaint.setColor(colorTop);
         mPathForBorder.reset();
-        mPathForBorder.moveTo(0, 0);
-        mPathForBorder.lineTo(borderLeft, borderTop);
-        mPathForBorder.lineTo(width - borderRight, borderTop);
-        mPathForBorder.lineTo(width, 0);
-        mPathForBorder.lineTo(0, 0);
+        mPathForBorder.moveTo(left, top);
+        mPathForBorder.lineTo(left + borderLeft, top + borderTop);
+        mPathForBorder.lineTo(left + width - borderRight, top + borderTop);
+        mPathForBorder.lineTo(left + width, top);
+        mPathForBorder.lineTo(left, top);
         canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderRight > 0 && colorRight != Color.TRANSPARENT) {
         mPaint.setColor(colorRight);
         mPathForBorder.reset();
-        mPathForBorder.moveTo(width, 0);
-        mPathForBorder.lineTo(width, height);
-        mPathForBorder.lineTo(width - borderRight, height - borderBottom);
-        mPathForBorder.lineTo(width - borderRight, borderTop);
-        mPathForBorder.lineTo(width, 0);
+        mPathForBorder.moveTo(left + width, top);
+        mPathForBorder.lineTo(left + width, top + height);
+        mPathForBorder.lineTo(left + width - borderRight, top + height - borderBottom);
+        mPathForBorder.lineTo(left + width - borderRight, top + borderTop);
+        mPathForBorder.lineTo(left + width, top);
         canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderBottom > 0 && colorBottom != Color.TRANSPARENT) {
         mPaint.setColor(colorBottom);
         mPathForBorder.reset();
-        mPathForBorder.moveTo(0, height);
-        mPathForBorder.lineTo(width, height);
-        mPathForBorder.lineTo(width - borderRight, height - borderBottom);
-        mPathForBorder.lineTo(borderLeft, height - borderBottom);
-        mPathForBorder.lineTo(0, height);
+        mPathForBorder.moveTo(left, top + height);
+        mPathForBorder.lineTo(left + width, top + height);
+        mPathForBorder.lineTo(left + width - borderRight, top + height - borderBottom);
+        mPathForBorder.lineTo(left + borderLeft, top + height - borderBottom);
+        mPathForBorder.lineTo(left, top + height);
         canvas.drawPath(mPathForBorder, mPaint);
       }
 

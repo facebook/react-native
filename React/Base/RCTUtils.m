@@ -11,6 +11,7 @@
 
 #import <mach/mach_time.h>
 #import <objc/message.h>
+#import <objc/runtime.h>
 
 #import <UIKit/UIKit.h>
 
@@ -423,6 +424,8 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
     errorInfo[@"domain"] = RCTErrorDomain;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  errorInfo[@"userInfo"] = RCTNullIfNil(error.userInfo);
+
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
 
@@ -434,7 +437,7 @@ BOOL RCTRunningInTestEnvironment(void)
   static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    isTestEnvironment = NSClassFromString(@"SenTestCase") || NSClassFromString(@"XCTest");
+    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest");
   });
   return isTestEnvironment;
 }
@@ -490,45 +493,10 @@ BOOL RCTForceTouchAvailable(void)
     (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
 }
 
-UIAlertView *__nullable RCTAlertView(NSString *title,
-                                     NSString *__nullable message,
-                                     id __nullable delegate,
-                                     NSString *__nullable cancelButtonTitle,
-                                     NSArray<NSString *> *__nullable otherButtonTitles)
-{
-  if (RCTRunningInAppExtension()) {
-    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
-    return nil;
-  }
-
-  UIAlertView *alertView = [UIAlertView new];
-  alertView.title = title;
-  alertView.message = message;
-  alertView.delegate = delegate;
-  if (cancelButtonTitle != nil) {
-    [alertView addButtonWithTitle:cancelButtonTitle];
-    alertView.cancelButtonIndex = 0;
-  }
-  for (NSString *buttonTitle in otherButtonTitles) {
-    [alertView addButtonWithTitle:buttonTitle];
-  }
-  return alertView;
-}
-
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-}
-
-id RCTNullIfNil(id __nullable value)
-{
-  return value ?: (id)kCFNull;
-}
-
-id __nullable RCTNilIfNull(id __nullable value)
-{
-  return value == (id)kCFNull ? nil : value;
 }
 
 double RCTZeroIfNaN(double value)
@@ -593,7 +561,7 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   return output;
 }
 
-NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
+NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path
@@ -740,17 +708,15 @@ NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param)
   if (!URL) {
     return nil;
   }
+
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL
                                            resolvingAgainstBaseURL:YES];
-
-  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
-  for (NSString *item in [components.percentEncodedQuery componentsSeparatedByString:@"&"].reverseObjectEnumerator) {
-    NSArray *keyValue = [item componentsSeparatedByString:@"="];
-    NSString *key = [keyValue.firstObject stringByRemovingPercentEncoding];
-    if ([key isEqualToString:param]) {
-      return [keyValue.lastObject stringByRemovingPercentEncoding];
+  for (NSURLQueryItem *queryItem in [components.queryItems reverseObjectEnumerator]) {
+    if ([queryItem.name isEqualToString:param]) {
+      return queryItem.value;
     }
   }
+
   return nil;
 }
 
@@ -760,30 +726,15 @@ NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *p
   if (!URL) {
     return nil;
   }
+
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL
                                            resolvingAgainstBaseURL:YES];
 
-  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
-
-  // Unhelpfully, iOS doesn't provide this set as a constant
-  static NSCharacterSet *URLParamCharacterSet;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet new];
-    [characterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    [characterSet removeCharactersInString:@"&=?"];
-    URLParamCharacterSet = [characterSet copy];
-  });
-
-  NSString *encodedParam =
-  [param stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
-
   __block NSInteger paramIndex = NSNotFound;
-  NSMutableArray *queryItems = [[components.percentEncodedQuery componentsSeparatedByString:@"&"] mutableCopy];
+  NSMutableArray<NSURLQueryItem *> *queryItems = [components.queryItems mutableCopy];
   [queryItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:
-   ^(NSString *item, NSUInteger i, BOOL *stop) {
-     NSArray *keyValue = [item componentsSeparatedByString:@"="];
-     if ([keyValue.firstObject isEqualToString:encodedParam]) {
+   ^(NSURLQueryItem *item, NSUInteger i, BOOL *stop) {
+     if ([item.name isEqualToString:param]) {
        paramIndex = i;
        *stop = YES;
      }
@@ -794,16 +745,14 @@ NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *p
       [queryItems removeObjectAtIndex:paramIndex];
     }
   } else {
-    NSString *encodedValue =
-    [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
-
-    NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
+    NSURLQueryItem *newItem  = [NSURLQueryItem queryItemWithName:param
+                                                           value:value];
     if (paramIndex == NSNotFound) {
       [queryItems addObject:newItem];
     } else {
       [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
     }
   }
-  components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
+  components.queryItems = queryItems;
   return components.URL;
 }

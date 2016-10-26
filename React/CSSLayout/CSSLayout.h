@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +28,7 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 
 #define CSSUndefined NAN
 
-#include <CSSLayout/CSSMacros.h>
+#include "CSSMacros.h"
 
 CSS_EXTERN_C_BEGIN
 
@@ -55,6 +56,7 @@ typedef enum CSSJustify {
 typedef enum CSSOverflow {
   CSSOverflowVisible,
   CSSOverflowHidden,
+  CSSOverflowScroll,
 } CSSOverflow;
 
 // Note: auto is only a valid value for alignSelf. It is NOT a valid value for
@@ -76,18 +78,6 @@ typedef enum CSSWrapType {
   CSSWrapTypeNoWrap,
   CSSWrapTypeWrap,
 } CSSWrapType;
-
-// Note: left and top are shared between position[2] and position[4], so
-// they have to be before right and bottom.
-typedef enum CSSPosition {
-  CSSPositionLeft,
-  CSSPositionTop,
-  CSSPositionRight,
-  CSSPositionBottom,
-  CSSPositionStart,
-  CSSPositionEnd,
-  CSSPositionCount,
-} CSSPosition;
 
 typedef enum CSSMeasureMode {
   CSSMeasureModeUndefined,
@@ -111,6 +101,7 @@ typedef enum CSSEdge {
   CSSEdgeHorizontal,
   CSSEdgeVertical,
   CSSEdgeAll,
+  CSSEdgeCount,
 } CSSEdge;
 
 typedef enum CSSPrintOptions {
@@ -131,21 +122,31 @@ typedef CSSSize (*CSSMeasureFunc)(void *context,
                                   float height,
                                   CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(void *context);
+typedef int (*CSSLogger)(const char *format, ...);
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+typedef void (*CSSAssertFailFunc)(const char *message);
+#endif
 
 // CSSNode
-CSSNodeRef CSSNodeNew();
-void CSSNodeInit(CSSNodeRef node);
-void CSSNodeFree(CSSNodeRef node);
+WIN_EXPORT CSSNodeRef CSSNodeNew(void);
+WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeFree(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeFreeRecursive(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeReset(const CSSNodeRef node);
+WIN_EXPORT int32_t CSSNodeGetInstanceCount(void);
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index);
-void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child);
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index);
-uint32_t CSSNodeChildCount(CSSNodeRef node);
+WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node,
+                                   const CSSNodeRef child,
+                                   const uint32_t index);
+WIN_EXPORT void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
+WIN_EXPORT CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index);
+WIN_EXPORT uint32_t CSSNodeChildCount(const CSSNodeRef node);
 
-void CSSNodeCalculateLayout(CSSNodeRef node,
-                            float availableWidth,
-                            float availableHeight,
-                            CSSDirection parentDirection);
+WIN_EXPORT void CSSNodeCalculateLayout(const CSSNodeRef node,
+                                       const float availableWidth,
+                                       const float availableHeight,
+                                       const CSSDirection parentDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -153,26 +154,29 @@ void CSSNodeCalculateLayout(CSSNodeRef node,
 // measure functions
 // depends on information not known to CSSLayout they must perform this dirty
 // marking manually.
-void CSSNodeMarkDirty(CSSNodeRef node);
-bool CSSNodeIsDirty(CSSNodeRef node);
+WIN_EXPORT void CSSNodeMarkDirty(const CSSNodeRef node);
+WIN_EXPORT bool CSSNodeIsDirty(const CSSNodeRef node);
 
-void CSSNodePrint(CSSNodeRef node, CSSPrintOptions options);
+WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options);
 
-bool CSSValueIsUndefined(float value);
+WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
-#define CSS_NODE_PROPERTY(type, name, paramName)          \
-  void CSSNodeSet##name(CSSNodeRef node, type paramName); \
-  type CSSNodeGet##name(CSSNodeRef node);
+#define CSS_NODE_PROPERTY(type, name, paramName)                           \
+  WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
+  WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)         \
-  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName); \
-  type CSSNodeStyleGet##name(CSSNodeRef node);
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                \
+  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName); \
+  WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node);
 
-#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)                  \
-  void CSSNodeStyleSet##name(CSSNodeRef node, CSSEdge edge, type paramName); \
-  type CSSNodeStyleGet##name(CSSNodeRef node, CSSEdge edge);
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)    \
+  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, \
+                                        const CSSEdge edge,    \
+                                        const type paramName); \
+  WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node, const CSSEdge edge);
 
-#define CSS_NODE_LAYOUT_PROPERTY(type, name) type CSSNodeLayoutGet##name(CSSNodeRef node);
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) \
+  WIN_EXPORT type CSSNodeLayoutGet##name(const CSSNodeRef node);
 
 CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
@@ -189,7 +193,8 @@ CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
 CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
-CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+
+WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
 CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
@@ -213,5 +218,13 @@ CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
 CSS_NODE_LAYOUT_PROPERTY(float, Width);
 CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
+
+WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+// Assert
+WIN_EXPORT void CSSAssertSetFailFunc(CSSAssertFailFunc func);
+WIN_EXPORT void CSSAssertFail(const char *message);
+#endif
 
 CSS_EXTERN_C_END

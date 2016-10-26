@@ -39,18 +39,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 public class UnpackingJSBundleLoader extends JSBundleLoader {
 
   /**
-   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacker unpacked js source file.
-   */
-  public static final int UNPACKED_JS_SOURCE = (1 << 0);
-
-  /**
-   * Flag passed to loadScriptFromOptimizedBundle to let the bridge know that
-   * the unpacker unpacked bytecode cache files.
-   */
-  public static final int UNPACKED_BC_CACHE = (1 << 1);
-
-  /**
    * Name of the lock files. Multiple processes can be spawned off the same app
    * and we need to guarantee that at most one unpacks files at any time. To
    * make that work any process is required to hold file system lock on
@@ -78,6 +66,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
   private final String mSourceURL;
   private final Context mContext;
   private final int mLoadFlags;
+  private final @Nullable Runnable mOnUnpackedCallback;
 
   /**
    * Description of what needs to be unpacked.
@@ -90,6 +79,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     mSourceURL = Assertions.assertNotNull(builder.sourceURL);
     mUnpackers = builder.unpackers.toArray(new Unpacker[builder.unpackers.size()]);
     mLoadFlags = builder.loadFlags;
+    mOnUnpackedCallback = builder.callback;
   }
 
   /**
@@ -97,18 +87,28 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
    * directory and unpacks everything again.
    */
   /* package */ void prepare() {
+    boolean unpacked = false;
+
     final File lockFilePath = new File(mContext.getFilesDir(), LOCK_FILE);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.prepare");
-    try (FileLocker lock = FileLocker.lock(lockFilePath)) {
-      prepareLocked();
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    // Make sure we don't release the lock by letting other thread close the lock file
+    synchronized(UnpackingJSBundleLoader.class) {
+      try (FileLocker lock = FileLocker.lock(lockFilePath)) {
+        unpacked = prepareLocked();
+      } catch (IOException ioe) {
+        throw new RuntimeException(ioe);
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
+    }
+
+    if (unpacked && mOnUnpackedCallback != null) {
+      mOnUnpackedCallback.run();
     }
   }
 
-  private void prepareLocked() throws IOException {
+  private boolean prepareLocked() throws IOException {
     final File dotFinishedFilePath = new File(mDirectoryPath, DOT_UNPACKED_FILE);
     boolean shouldReconstruct = !mDirectoryPath.exists() || !dotFinishedFilePath.exists();
 
@@ -118,7 +118,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     }
 
     if (!shouldReconstruct) {
-      return;
+      return false;
     }
 
     boolean succeeded = false;
@@ -150,6 +150,8 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
         SysUtil.dumbDeleteRecursive(mDirectoryPath);
       }
     }
+
+    return true;
   }
 
   @Override
@@ -213,6 +215,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     private @Nullable String sourceURL;
     private final ArrayList<Unpacker> unpackers;
     private int loadFlags;
+    private @Nullable Runnable callback;
 
     public Builder() {
       this.unpackers = new ArrayList<Unpacker>();
@@ -220,6 +223,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
       destinationPath = null;
       sourceURL = null;
       loadFlags = 0;
+      callback = null;
     }
 
     public Builder setContext(Context context) {
@@ -266,6 +270,11 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
      */
     Builder addUnpacker(Unpacker u) {
       unpackers.add(u);
+      return this;
+    }
+
+    public Builder setOnUnpackedCallback(Runnable callback) {
+      this.callback = callback;
       return this;
     }
 

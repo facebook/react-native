@@ -11,7 +11,7 @@
 'use strict';
 
 var React = require('React');
-var TimerMixin = require('TimerMixin');
+var TimerMixin = require('react-timer-mixin');
 
 var LazyRenderer = React.createClass({
   mixin: [TimerMixin],
@@ -34,7 +34,7 @@ var LazyRenderer = React.createClass({
     });
   },
 
-  render: function(): ?ReactElement {
+  render: function(): ?React.Element {
     return this.state._lazyRender ? null : this.props.render();
   },
 });

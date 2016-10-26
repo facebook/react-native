@@ -18,7 +18,7 @@
 #import "RCTJSCExecutor.h"
 #import "RCTBridge+Private.h"
 
-static const NSTimeInterval kTestTimeoutSeconds = 60;
+static const NSTimeInterval kTestTimeoutSeconds = 120;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 
 @implementation RCTTestRunner
@@ -117,6 +117,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     RCTAssert(_testController != nil, @"_testController should not be nil");
     testModule.controller = _testController;
     testModule.testSelector = test;
+    testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
     UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;

@@ -1,7 +1,16 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
 const isAbsolutePath = require('absolute-path');
-const path = require('./fastpath');
+const path = require('path');
 
 class Package {
 
@@ -58,7 +67,7 @@ class Package {
         return name;
       }
 
-      if (name[0] !== '/') {
+      if (!isAbsolutePath(name)) {
         const replacement = replacements[name];
         // support exclude with "someDependency": false
         return replacement === false
@@ -66,11 +75,11 @@ class Package {
           : replacement || name;
       }
 
-      if (!isAbsolutePath(name)) {
-        throw new Error(`Expected ${name} to be absolute path`);
+      let relPath = './' + path.relative(this.root, name);
+      if (path.sep !== '/') {
+        relPath = relPath.replace(path.sep, '/');
       }
 
-      const relPath = './' + path.relative(this.root, name);
       let redirect = replacements[relPath];
 
       // false is a valid value

@@ -16,6 +16,11 @@ const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
 
+// Verifies this is an Android project
+function checkAndroid(root) {
+  return fs.existsSync(path.join(root, 'android/gradlew'));
+}
+
 /**
  * Starts the app on a connected Android emulator or device.
  */
@@ -111,8 +116,9 @@ function buildAndRun(args) {
     console.log(chalk.red(
       'Could not install the app on the device, read the error above for details.\n' +
       'Make sure you have an Android emulator running or a device connected and have\n' +
-      'set up your Android development environment:\n' +
-      'https://facebook.github.io/react-native/docs/android-setup.html'
+      'set up your Android development environment.\n' +
+      'Go to https://facebook.github.io/react-native/docs/getting-started.html\n' +
+      'and check the Android tab for setup instructions.'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do

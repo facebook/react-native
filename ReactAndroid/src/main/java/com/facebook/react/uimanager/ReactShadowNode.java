@@ -13,15 +13,17 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
- * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
- * {@link CSSNode} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
+ * {@link CSSNodeDEPRECATED} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -41,7 +43,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
  * information.
  */
 @ReactPropertyHolder
-public class ReactShadowNode extends CSSNode {
+public class ReactShadowNode extends CSSNodeDEPRECATED {
 
   private int mReactTag;
   private @Nullable String mViewClassName;
@@ -59,6 +61,8 @@ public class ReactShadowNode extends CSSNode {
   private float mAbsoluteTop;
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
+  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -116,8 +120,50 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
+  public void setDefaultPadding(int spacingType, float padding) {
+    mDefaultPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void setPadding(int spacingType, float padding) {
+    mPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  private void updatePadding() {
+    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
+      if (spacingType == Spacing.LEFT ||
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      }
+    }
+  }
+
+  @Override
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     markUpdated();
     ReactShadowNode node = (ReactShadowNode) child;
@@ -214,7 +260,7 @@ public class ReactShadowNode extends CSSNode {
     return mReactTag;
   }
 
-  /* package */ final void setReactTag(int reactTag) {
+  public void setReactTag(int reactTag) {
     mReactTag = reactTag;
   }
 
