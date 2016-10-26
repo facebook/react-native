@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
@@ -95,7 +95,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
           @Override
           public void onRefresh() {
             reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
-                .dispatchEvent(new RefreshEvent(reactTagFrom(view)));
+                .dispatchEvent(new RefreshEvent(reactTagFor(view)));
           }
         });
   }

@@ -39,7 +39,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -82,7 +82,7 @@ public class NativeAnimatedNodeTraversalTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(reactTagFrom(view)).thenReturn(viewTag);
+    when(reactTagFor(view)).thenReturn(viewTag);
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
@@ -738,7 +738,7 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   private Event createScrollEvent(final View view, final double value) {
-    return new Event(reactTagFrom(view)) {
+    return new Event(reactTagFor(view)) {
       @Override
       public String getEventName() {
         return "topScroll";

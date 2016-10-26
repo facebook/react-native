@@ -88,7 +88,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_EN
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
@@ -819,7 +819,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       CatalystInstance catalystInstance) {
     UiThreadUtil.assertOnUiThread();
     catalystInstance.getJSModule(AppRegistry.class)
-        .unmountApplicationComponentAtRootTag(reactTagFrom(rootView));
+        .unmountApplicationComponentAtRootTag(reactTagFor(rootView));
   }
 
   private void tearDownReactContext(ReactContext reactContext) {

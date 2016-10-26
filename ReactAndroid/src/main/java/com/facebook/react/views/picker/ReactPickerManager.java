@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.picker.events.PickerItemSelectEvent;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -158,7 +158,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     @Override
     public void onItemSelected(int position) {
       mEventDispatcher.dispatchEvent( new PickerItemSelectEvent(
-              reactTagFrom(mReactPicker), position));
+              reactTagFor(mReactPicker), position));
     }
   }
 }

@@ -25,7 +25,7 @@ import com.facebook.react.views.textinput.ReactEditText;
 import com.facebook.react.views.textinput.ReactTextChangedEvent;
 import com.facebook.react.views.textinput.ReactTextInputEvent;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Test to verify that TextInput renders correctly
@@ -116,7 +116,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -124,7 +124,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             newText.toString(),
             "",
             start,
@@ -148,7 +148,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -156,7 +156,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             moreText,
             "",
             start,
@@ -180,7 +180,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -188,7 +188,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactTagFrom(reactEditText),
+            reactTagFor(reactEditText),
             moreText,
             "",
             start,

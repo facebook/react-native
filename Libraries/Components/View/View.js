@@ -272,16 +272,16 @@ const View = React.createClass({
      * 1. Defining a resource id in your android project's `res` folder (typically at
      *    `./android/app/src/main/res/values/ids.xml`).
      *
-     * 2. Adding your resource ids to `ids.xml` E.G.
+     * 2. Adding your resource ids to `ids.xml` e.g.
      *
      *    ```xml
      *    <?xml version="1.0" encoding="utf-8"?>
      *    <resources>
-     *      <item name="something" type="id"/>
+     *      <item name="login_button" type="id"/>
      *    </resources>
      *
      *    ```
-     * 3. Using the resource id as `testID` E.G. `<View testID="something">`.
+     * 3. Using the resource id as `testID` e.g. `<View testID="login_button">`.
      *
      */
     testID: PropTypes.string,

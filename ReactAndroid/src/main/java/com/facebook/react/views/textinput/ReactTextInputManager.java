@@ -50,10 +50,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
-import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.text.TextInlineImageSpan;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Manages instances of TextInput.
@@ -647,7 +646,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              reactTagFrom(mEditText),
+              reactTagFor(mEditText),
               s.toString(),
               PixelUtil.toDIPFromPixel(contentWidth),
               PixelUtil.toDIPFromPixel(contentHeight),
@@ -655,7 +654,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
-              reactTagFrom(mEditText),
+              reactTagFor(mEditText),
               newText,
               oldText,
               start,
@@ -680,15 +679,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
-                      reactTagFrom(editText)));
+                      reactTagFor(editText)));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
-                      reactTagFrom(editText)));
+                      reactTagFor(editText)));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      reactTagFrom(editText),
+                      reactTagFor(editText),
                       editText.getText().toString()));
             }
           }
@@ -705,7 +704,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                   reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      reactTagFrom(editText),
+                      reactTagFor(editText),
                       editText.getText().toString()));
             }
             if (actionId == EditorInfo.IME_ACTION_NEXT ||
@@ -751,7 +750,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
-            reactTagFrom(mEditText),
+            reactTagFor(mEditText),
             PixelUtil.toDIPFromPixel(contentWidth),
             PixelUtil.toDIPFromPixel(contentHeight)));
       }
@@ -779,7 +778,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
-                reactTagFrom(mReactEditText),
+                reactTagFor(mReactEditText),
                 start,
                 end
             ));

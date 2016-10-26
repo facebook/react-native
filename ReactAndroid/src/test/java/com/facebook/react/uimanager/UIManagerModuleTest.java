@@ -48,7 +48,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -484,22 +484,22 @@ public class UIManagerModuleTest {
     TestMoveDeleteHierarchy hierarchy = createMoveDeleteHierarchy(uiManager);
 
     View view0 = hierarchy.nativeRootView.getChildAt(0);
-    assertThat(reactTagFrom(view0)).isEqualTo(hierarchy.view0);
+    assertThat(reactTagFor(view0)).isEqualTo(hierarchy.view0);
 
     View viewWithChildren1 = hierarchy.nativeRootView.getChildAt(1);
-    assertThat(reactTagFrom(viewWithChildren1)).isEqualTo(hierarchy.viewWithChildren1);
+    assertThat(reactTagFor(viewWithChildren1)).isEqualTo(hierarchy.viewWithChildren1);
 
     View childView0 = ((ViewGroup) viewWithChildren1).getChildAt(0);
-    assertThat(reactTagFrom(childView0)).isEqualTo(hierarchy.childView0);
+    assertThat(reactTagFor(childView0)).isEqualTo(hierarchy.childView0);
 
     View childView1 = ((ViewGroup) viewWithChildren1).getChildAt(1);
-    assertThat(reactTagFrom(childView1)).isEqualTo(hierarchy.childView1);
+    assertThat(reactTagFor(childView1)).isEqualTo(hierarchy.childView1);
 
     View view2 = hierarchy.nativeRootView.getChildAt(2);
-    assertThat(reactTagFrom(view2)).isEqualTo(hierarchy.view2);
+    assertThat(reactTagFor(view2)).isEqualTo(hierarchy.view2);
 
     View view3 = hierarchy.nativeRootView.getChildAt(3);
-    assertThat(reactTagFrom(view3)).isEqualTo(hierarchy.view3);
+    assertThat(reactTagFor(view3)).isEqualTo(hierarchy.view3);
   }
 
   @Test

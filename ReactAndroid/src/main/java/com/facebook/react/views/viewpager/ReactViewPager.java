@@ -23,7 +23,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Wrapper view for {@link ViewPager}. It's forwarding calls to {@link ViewGroup#addView} to add
@@ -158,7 +158,7 @@ public class ReactViewPager extends ViewPager {
   }
 
   private int getReactTag() {
-    return reactTagFrom(this);
+    return reactTagFor(this);
   }
 
   private final EventDispatcher mEventDispatcher;

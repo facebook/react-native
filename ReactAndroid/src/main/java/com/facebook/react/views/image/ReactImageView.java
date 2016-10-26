@@ -59,7 +59,7 @@ import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -225,7 +225,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   private int getReactTag() {
-    return reactTagFrom(this);
+    return reactTagFor(this);
   }
 
   public void setBorderColor(int borderColor) {

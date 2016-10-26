@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Manages instances of {@code ReactSlider}.
@@ -81,7 +81,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
-                  reactTagFrom(seekbar),
+                  reactTagFor(seekbar),
                   ((ReactSlider)seekbar).toRealProgress(progress),
                   fromUser));
         }
@@ -95,7 +95,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
-                  reactTagFrom(seekbar),
+                  reactTagFor(seekbar),
                   ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
         }
       };

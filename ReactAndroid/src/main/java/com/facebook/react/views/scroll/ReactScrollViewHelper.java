@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 
-import static com.facebook.react.common.ViewHelperMethods.reactTagFrom;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Helper class that deals with emitting Scroll Events.
@@ -57,7 +57,7 @@ public class ReactScrollViewHelper {
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
-            reactTagFrom(scrollView),
+            reactTagFor(scrollView),
             scrollEventType,
             scrollView.getScrollX(),
             scrollView.getScrollY(),
