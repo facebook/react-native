@@ -104,13 +104,19 @@ const KeyboardAvoidingView = React.createClass({
     }
 
     const {duration, easing, endCoordinates} = event;
+    const {bottom} = this.state;
     const height = this.relativeKeyboardHeight(endCoordinates);
+
+    if (bottom === height) {
+      // If the keyboard height didn't change, there's no need to update the layout.
+      return;
+    }
 
     if (duration && easing) {
       LayoutAnimation.configureNext({
-        duration: duration,
+        duration,
         update: {
-          duration: duration,
+          duration,
           type: LayoutAnimation.Types[easing] || 'keyboard',
         },
       });
@@ -170,7 +176,7 @@ const KeyboardAvoidingView = React.createClass({
 
       case 'position':
         const positionStyle = {bottom: this.state.bottom};
-        const { contentContainerStyle } = this.props;
+        const {contentContainerStyle} = this.props;
 
         return (
           <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
