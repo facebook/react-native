@@ -47,8 +47,8 @@ function findMatchingSimulator(simulators, simulatorName) {
           version
         };
       }
-      if (simulator.name === simulatorName) {
-        return {
+      if (simulator.name === simulatorName && !match) {
+        match = {
           udid: simulator.udid,
           name: simulator.name,
           version
