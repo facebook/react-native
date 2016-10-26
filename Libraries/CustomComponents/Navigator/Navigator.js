@@ -66,6 +66,9 @@ var SCENE_DISABLED_NATIVE_PROPS = {
     opacity: 0,
   },
 };
+var SCENE_DISABLED_VISIBLE_NATIVE_PROPS = {
+  pointerEvents: 'none',
+};
 
 var __uid = 0;
 function getuid() {
@@ -280,6 +283,15 @@ var GESTURE_ACTIONS = [
  * In the above example, the newly pushed scene will float up from the bottom.
  * See `Navigator.SceneConfigs` for default animations and more info on
  * available [scene config options](/react-native/docs/navigator.html#configurescene).
+ *
+ * ### Additional Options
+ *
+ * Route objects can be arbitrary, but Navigator understands the following
+ * options if they are set on the `sceneOptions` key of the route:
+ *
+ *   - `retainPreviousView`: when transitioning to this route, keep the
+ *     previous view visible behind it. Useful for modals with a transparent
+ *     background.
  */
 var Navigator = React.createClass({
 
@@ -666,11 +678,17 @@ var Navigator = React.createClass({
   },
 
   /**
-   * Push a scene off the screen, so that opacity:0 scenes will not block touches sent to the presented scenes
+   * Disable user interaction with a scene, and (by default) also push it off the screen
    */
   _disableScene: function(sceneIndex) {
-    this.refs['scene_' + sceneIndex] &&
-      this.refs['scene_' + sceneIndex].setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
+    let sceneConstructor = this.refs['scene_' + sceneIndex];
+    let nextRoute = this.state.routeStack[sceneIndex + 1];
+
+    if (nextRoute && nextRoute.sceneOptions && nextRoute.sceneOptions.retainPreviousView) {
+        sceneConstructor.setNativeProps(SCENE_DISABLED_VISIBLE_NATIVE_PROPS);
+    } else {
+        sceneConstructor.setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
+    }
   },
 
   /**
