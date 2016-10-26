@@ -5,17 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule Platform
- * @flow
  */
 
-'use strict';
+#import <UIKit/UIKit.h>
+#import "RCTBridgeModule.h"
 
-var Platform = {
-  OS: 'ios',
-  get Version() { return require('NativeModules').IOSConstants.Version; },
-  select: (obj: Object) => obj.ios,
-};
-
-module.exports = Platform;
+@interface IOSConstants : NSObject <RCTBridgeModule>
+@end
