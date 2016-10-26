@@ -26,7 +26,7 @@ module.exports = function headerSearchPathIter(project, func) {
             buildSettings.HEADER_SEARCH_PATHS :
             []
         )
-        .filter(path => path.indexOf('react-native/React/**'))
+        .filter(path => path.indexOf('react-native/React/**') >= 0)
         .length > 0;
 
       if (shouldVisitBuildSettings) {

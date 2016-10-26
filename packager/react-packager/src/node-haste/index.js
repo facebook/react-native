@@ -9,26 +9,27 @@
 'use strict';
 
 const Cache = require('./Cache');
+const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
+const DeprecatedAssetMap = require('./DependencyGraph/DeprecatedAssetMap');
 const Fastfs = require('./fastfs');
 const FileWatcher = require('./FileWatcher');
+const HasteMap = require('./DependencyGraph/HasteMap');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const Polyfill = require('./Polyfill');
+const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
+const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
+
 const extractRequires = require('./lib/extractRequires');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
-const replacePatterns = require('./lib/replacePatterns');
-const path = require('./fastpath');
-const util = require('util');
 const os = require('os');
-const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
-const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
-const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
-const HasteMap = require('./DependencyGraph/HasteMap');
-const DeprecatedAssetMap = require('./DependencyGraph/DeprecatedAssetMap');
+const path = require('path');
+const replacePatterns = require('./lib/replacePatterns');
+const util = require('util');
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 

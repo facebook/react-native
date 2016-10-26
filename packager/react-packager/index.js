@@ -10,8 +10,6 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
-require('./src/node-haste/fastpath').replace();
-
 var debug = require('debug');
 var Activity = require('./src/Activity');
 

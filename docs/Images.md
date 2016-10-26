@@ -34,7 +34,7 @@ And `button.js` code contains
 <Image source={require('./img/check.png')} />
 ```
 
-Packager will bundle and serve the image corresponding to device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
+Packager will bundle and serve the image corresponding to the device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
 
 On Windows, you might need to restart the packager if you add new images to your project.
 
@@ -42,7 +42,7 @@ Here are some benefits that you get:
 
 1. Same system on iOS and Android.
 2. Images live in the same folder as your JS code. Components are self-contained.
-3. No global namespace, i.e. you don't have worry about name collisions.
+3. No global namespace, i.e. you don't have to worry about name collisions.
 4. Only the images that are actually used will be packaged into your app.
 5. Adding and changing images doesn't require app recompilation, just refresh the simulator as you normally do.
 6. The packager knows the image dimensions, no need to duplicate it in the code.
@@ -138,4 +138,4 @@ return (
 
 ## Off-thread Decoding
 
-Image decoding can take more than a frame-worth of time. This is one of the major source of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.
+Image decoding can take more than a frame-worth of time. This is one of the major sources of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.

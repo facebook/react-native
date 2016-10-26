@@ -656,6 +656,13 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   }
 
   @Override
+  public @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourceURL,
+      final File outputFile) {
+    return mDevServerHelper.downloadBundleResourceFromUrlSync(resourceURL, outputFile);
+  }
+
+  @Override
   public @Nullable String getLastErrorTitle() {
     return mLastErrorTitle;
   }

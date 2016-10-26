@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.Intent;
@@ -40,6 +41,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -76,9 +78,10 @@ import org.json.JSONException;
  *  - canGoBack - boolean, whether there is anything on a history stack to go back
  *  - canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
+@ReactModule(name = ReactWebViewManager.REACT_CLASS)
 public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
-  private static final String REACT_CLASS = "RCTWebView";
+  protected static final String REACT_CLASS = "RCTWebView";
 
   private static final String HTML_ENCODING = "UTF-8";
   private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
@@ -426,7 +429,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           ReadableMapKeySetIterator iter = headers.keySetIterator();
           while (iter.hasNextKey()) {
             String key = iter.nextKey();
-            headerMap.put(key, headers.getString(key));
+            if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
+              if (view.getSettings() != null) {
+                view.getSettings().setUserAgentString(headers.getString(key));
+              }
+            } else {
+              headerMap.put(key, headers.getString(key));
+            }
           }
         }
         view.loadUrl(url, headerMap);

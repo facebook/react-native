@@ -11,6 +11,8 @@ package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
+
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -44,6 +46,9 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void reloadSettings();
   void handleReloadJS();
   void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback);
+  @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourceURL,
+      final File outputFile);
   @Nullable String getLastErrorTitle();
   @Nullable StackFrame[] getLastErrorStack();
 }
