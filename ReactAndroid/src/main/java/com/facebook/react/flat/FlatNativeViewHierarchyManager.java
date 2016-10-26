@@ -191,8 +191,12 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
       int viewToDrop = viewsToDrop.keyAt(i);
       View view = null;
       if (viewToDrop > 0) {
-        view = resolveView(viewToDrop);
-        dropView(view);
+        try {
+          view = resolveView(viewToDrop);
+          dropView(view);
+        } catch (Exception e) {
+          // the view is already dropped, nothing we can do
+        }
       } else {
         // Root views are noted with a negative tag from StateBuilder.
         removeRootView(-viewToDrop);
@@ -229,7 +233,13 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
         SparseArray<View> detachedViews = flatViewGroup.getDetachedViews();
         for (int i = 0, size = detachedViews.size(); i < size; i++) {
           View detachedChild = detachedViews.valueAt(i);
-          dropView(detachedChild);
+          try {
+             dropView(detachedChild);
+          } catch (Exception e) {
+             // if the view is already dropped, ignore any exceptions
+             // in reality, we should find out the edge cases that cause
+             // this to happen and properly fix them.
+          }
           // trigger onDetachedFromWindow and clean up this detached/clipped view
           flatViewGroup.removeDetachedView(detachedChild);
         }
