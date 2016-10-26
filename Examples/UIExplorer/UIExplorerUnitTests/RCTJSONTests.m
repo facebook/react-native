@@ -42,6 +42,25 @@
   XCTAssertEqualObjects(json, RCTJSONStringify(text, NULL));
 }
 
+- (void)testEncodingNSError
+{
+  NSError *underlyingError = [NSError errorWithDomain:@"underlyingDomain" code:421 userInfo:nil];
+  NSError *err = [NSError errorWithDomain:@"domain" code:68 userInfo:@{@"NSUnderlyingError": underlyingError}];
+
+  // An assertion on the full object would be too brittle since it contains an iOS stack trace
+  // so we are relying on the behavior of RCTJSONParse, which is tested below.
+  NSDictionary<NSString *, id> *jsonObject = RCTJSErrorFromNSError(err);
+  NSString *jsonString = RCTJSONStringify(jsonObject, NULL);
+  NSDictionary<NSString *, id> *json = RCTJSONParse(jsonString, NULL);
+  XCTAssertEqualObjects(json[@"code"], @"EDOMAIN68");
+  XCTAssertEqualObjects(json[@"message"], @"The operation couldn’t be completed. (domain error 68.)");
+  XCTAssertEqualObjects(json[@"domain"], @"domain");
+  XCTAssertEqualObjects(json[@"userInfo"][@"NSUnderlyingError"][@"code"], @"421");
+  XCTAssertEqualObjects(json[@"userInfo"][@"NSUnderlyingError"][@"message"], @"underlying error");
+  XCTAssertEqualObjects(json[@"userInfo"][@"NSUnderlyingError"][@"domain"], @"underlyingDomain");
+}
+
+
 - (void)testDecodingObject
 {
   NSDictionary<NSString *, id> *obj = @{@"foo": @"bar"};
