@@ -8,11 +8,11 @@
  */
 'use strict';
 
+const Promise = require('promise');
+
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
-const ProgressBar = require('progress');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -85,10 +85,6 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
-  silent: {
-    type: 'boolean',
-    default: false,
-  },
   allowBundleUpdates: {
     type: 'boolean',
     default: false,
@@ -143,19 +139,20 @@ class Bundler {
     });
 
     this._resolver = new Resolver({
-      projectRoots: opts.projectRoots,
-      blacklistRE: opts.blacklistRE,
-      polyfillModuleNames: opts.polyfillModuleNames,
-      moduleFormat: opts.moduleFormat,
-      assetRoots: opts.assetRoots,
-      fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
+      assetRoots: opts.assetRoots,
+      blacklistRE: opts.blacklistRE,
       cache: this._cache,
+      extraNodeModules: opts.extraNodeModules,
+      fileWatcher: opts.fileWatcher,
+      minifyCode: this._transformer.minify,
+      moduleFormat: opts.moduleFormat,
+      polyfillModuleNames: opts.polyfillModuleNames,
+      projectRoots: opts.projectRoots,
+      resetCache: opts.resetCache,
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
-      extraNodeModules: opts.extraNodeModules,
-      minifyCode: this._transformer.minify,
     });
 
     this._projectRoots = opts.projectRoots;
@@ -259,6 +256,7 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
+    onProgress,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -305,6 +303,7 @@ class Bundler {
       isolateModuleIDs,
       generateSourceMaps,
       assetPlugins,
+      onProgress,
     });
   }
 
@@ -363,10 +362,14 @@ class Bundler {
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
+    onProgress = noop,
   }) {
     const findEventId = Activity.startEvent(
-      'Finding dependencies',
-      null,
+      'Transforming modules',
+      {
+        entry_point: entryFile,
+        environment: dev ? 'dev' : 'prod',
+      },
       {
         telemetric: true,
       },
@@ -374,17 +377,6 @@ class Bundler {
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgress = noop;
-      if (process.stdout.isTTY && !this._opts.silent) {
-        const bar = new ProgressBar('transformed :current/:total (:percent)', {
-          complete: '=',
-          incomplete: ' ',
-          width: 40,
-          total: 1,
-        });
-        onProgress = debouncedTick(bar);
-      }
-
       resolutionResponse = this.getDependencies({
         entryFile,
         dev,
@@ -770,25 +762,6 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 function filterObject(object, blacklist) {

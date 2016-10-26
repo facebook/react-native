@@ -28,13 +28,11 @@ var {
   CameraRoll,
   Image,
   ImageEditor,
-  NativeModules,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
-  UIManager,
   View,
 } = ReactNative;
 

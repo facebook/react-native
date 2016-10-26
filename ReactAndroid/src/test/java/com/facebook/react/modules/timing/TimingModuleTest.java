@@ -39,6 +39,8 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for {@link Timing}.
  */
+ // DISABLED, BROKEN https://circleci.com/gh/facebook/react-native/12068
+ // t=13905097
 @PrepareForTest({Arguments.class, SystemClock.class, ReactChoreographer.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(RobolectricTestRunner.class)

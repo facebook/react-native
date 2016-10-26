@@ -28,19 +28,32 @@ CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
 }
 
 void CSSNodeListFree(const CSSNodeListRef list) {
-  free(list->items);
-  free(list);
+  if (list) {
+    free(list->items);
+    free(list);
+  }
 }
 
 uint32_t CSSNodeListCount(const CSSNodeListRef list) {
-  return list->count;
+  if (list) {
+    return list->count;
+  }
+  return 0;
 }
 
-void CSSNodeListAdd(const CSSNodeListRef list, const CSSNodeRef node) {
-  CSSNodeListInsert(list, node, list->count);
+void CSSNodeListAdd(CSSNodeListRef *listp, const CSSNodeRef node) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListInsert(listp, node, (*listp)->count);
 }
 
-void CSSNodeListInsert(const CSSNodeListRef list, const CSSNodeRef node, const uint32_t index) {
+void CSSNodeListInsert(CSSNodeListRef *listp, const CSSNodeRef node, const uint32_t index) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListRef list = *listp;
+
   if (list->count == list->capacity) {
     list->capacity *= 2;
     list->items = realloc(list->items, sizeof(void *) * list->capacity);

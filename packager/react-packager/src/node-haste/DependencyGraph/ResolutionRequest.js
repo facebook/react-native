@@ -12,7 +12,7 @@ const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
-const path = require('../fastpath');
+const path = require('path');
 const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
@@ -356,9 +356,9 @@ class ResolutionRequest {
 
           const searchQueue = [];
           for (let currDir = path.dirname(fromModule.path);
-               currDir !== realPath.parse(fromModule.path).root;
+               currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
-            let searchPath = path.join(currDir, 'node_modules');
+            const searchPath = path.join(currDir, 'node_modules');
             if (this._fastfs.dirExists(searchPath)) {
               searchQueue.push(
                 path.join(searchPath, realModuleName)
@@ -399,7 +399,7 @@ class ResolutionRequest {
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
               `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              `  3. Reset packager cache: \`rm -fr $TMPDIR/react-*\` or \`npm start -- --reset-cache\`.`
+              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
             );
           });
         });

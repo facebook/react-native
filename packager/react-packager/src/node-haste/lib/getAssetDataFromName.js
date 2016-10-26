@@ -8,8 +8,8 @@
  */
 'use strict';
 
-const path = require('../fastpath');
 const getPlatformExtension = require('./getPlatformExtension');
+const path = require('path');
 
 function getAssetDataFromName(filename, platforms) {
   const ext = path.extname(filename);

@@ -34,6 +34,7 @@ type Props = {
   bounceFirstRowOnMount: boolean,
   dataSource: SwipeableListViewDataSource,
   maxSwipeDistance: number,
+  onScroll: ?Function,
   renderRow: Function,
   renderQuickActions: Function,
 };
@@ -64,7 +65,7 @@ class SwipeableListView extends React.Component {
   props: Props;
   state: State;
 
-  _listViewRef: ?ReactElement<any> = null;
+  _listViewRef: ?React.Element<any> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
 
   static getNewDataSource(): Object {
@@ -117,7 +118,7 @@ class SwipeableListView extends React.Component {
     }
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <ListView
         {...this.props}
@@ -131,13 +132,14 @@ class SwipeableListView extends React.Component {
     );
   }
 
-  _onScroll = (): void => {
+  _onScroll = (e): void => {
     // Close any opens rows on ListView scroll
     if (this.props.dataSource.getOpenRowID()) {
       this.setState({
         dataSource: this.state.dataSource.setOpenRowID(null),
       });
     }
+    this.props.onScroll && this.props.onScroll(e);
   }
 
   /**
@@ -161,7 +163,7 @@ class SwipeableListView extends React.Component {
     }
   }
 
-  _renderRow = (rowData: Object, sectionID: string, rowID: string): ReactElement<any> => {
+  _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe

@@ -212,7 +212,7 @@ describe('Bundle', () => {
       }).then(() => {
         otherBundle.setMainModuleId('foo');
         otherBundle.finalize({
-          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          runBeforeMainModule: ['InitializeCore'],
           runMainModule: true,
         });
 
@@ -243,11 +243,11 @@ describe('Bundle', () => {
                 line: 6
               },
               map: {
-                file: 'require-InitializeJavaScriptAppEngine.js',
+                file: 'require-InitializeCore.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
-                sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+                sources: [ 'require-InitializeCore.js' ],
+                sourcesContent: [';require("InitializeCore");'],
                 version: 3,
               }
             },

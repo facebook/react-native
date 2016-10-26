@@ -18,7 +18,6 @@ const Touchable = require('Touchable');
 const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const onlyChild = require('react/lib/onlyChild');
 const warning = require('fbjs/lib/warning');
 
 type Event = Object;
@@ -148,9 +147,9 @@ const TouchableWithoutFeedback = React.createClass({
     return this.props.delayPressOut || 0;
   },
 
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    const child = onlyChild(this.props.children);
+    const child = React.Children.only(this.props.children);
     let children = child.props.children;
     warning(
       !child.type || child.type.displayName !== 'Text',
