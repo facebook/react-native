@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.common.SetBuilder;
 
 /**
  * Keys for props that need to be shared across multiple classes.
