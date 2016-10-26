@@ -413,18 +413,28 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *userInfo;
   NSMutableDictionary<NSString *, id> *errorInfo =
   [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    if (error.userInfo) {
+      userInfo = [error.userInfo mutableCopy];
+      if (userInfo != nil && userInfo[NSUnderlyingErrorKey] != nil) {
+        NSError *underlyingError = error.userInfo[NSUnderlyingErrorKey];
+        NSString *underlyingCode = [NSString stringWithFormat:@"%d", (int)underlyingError.code];
+        userInfo[NSUnderlyingErrorKey] = RCTJSErrorFromCodeMessageAndNSError(underlyingCode, @"underlying error", underlyingError);
+      }
+    }
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
+    userInfo = nil;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
-  errorInfo[@"userInfo"] = RCTNullIfNil(error.userInfo);
+  errorInfo[@"userInfo"] = RCTNullIfNil(userInfo);
 
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
