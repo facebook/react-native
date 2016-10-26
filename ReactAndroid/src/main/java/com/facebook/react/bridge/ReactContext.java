@@ -339,4 +339,11 @@ public class ReactContext extends ContextWrapper {
     }
     return mCurrentActivity.get();
   }
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
+  public long getJavaScriptContext() {
+    return mCatalystInstance.getJavaScriptContext();
+  }
 }
