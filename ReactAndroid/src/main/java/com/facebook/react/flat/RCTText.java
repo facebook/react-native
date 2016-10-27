@@ -73,21 +73,18 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @Override
-  public void measure(
+  public long measure(
       CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+      CSSMeasureMode heightMode) {
 
     CharSequence text = getText();
     if (TextUtils.isEmpty(text)) {
       // to indicate that we don't have anything to display
       mText = null;
-      measureOutput.width = 0;
-      measureOutput.height = 0;
-      return;
+      return MeasureOutput.make(0, 0);
     } else {
       mText = text;
     }
@@ -112,8 +109,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       mDrawCommand = new DrawTextLayout(layout);
     }
 
-    measureOutput.width = mDrawCommand.getLayoutWidth();
-    measureOutput.height = mDrawCommand.getLayoutHeight();
+    return MeasureOutput.make(mDrawCommand.getLayoutWidth(), mDrawCommand.getLayoutHeight());
   }
 
   @Override

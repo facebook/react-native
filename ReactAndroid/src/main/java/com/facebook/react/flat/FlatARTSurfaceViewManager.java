@@ -23,13 +23,12 @@ import com.facebook.react.views.art.ARTSurfaceView;
 
   private static final CSSNodeAPI.MeasureFunction MEASURE_FUNCTION = new CSSNodeAPI.MeasureFunction() {
     @Override
-    public void measure(
+    public long measure(
         CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput) {
+        CSSMeasureMode heightMode) {
       throw new IllegalStateException("SurfaceView should have explicit width and height set");
     }
   };

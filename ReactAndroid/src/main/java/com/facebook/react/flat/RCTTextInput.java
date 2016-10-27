@@ -75,13 +75,12 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   }
 
   @Override
-  public void measure(
+  public long measure(
       CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+      CSSMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
@@ -103,8 +102,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
-    measureOutput.width = editText.getMeasuredWidth();
-    measureOutput.height = editText.getMeasuredHeight();
+    return MeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override
