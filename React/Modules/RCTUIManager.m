@@ -858,18 +858,21 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
   RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
 
   RCTShadowView *superShadowView = shadowView.superview;
-  RCTAssert(superShadowView != nil, @"shadowView super (of ID %@) not found", reactTag);
+  if (!superShadowView) {
+    RCTAssert(NO, @"shadowView super (of ID %@) not found", reactTag);
+    return;
+  }
 
   NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObject:shadowView];
   RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
   NSArray<NSNumber *> *removeAtIndices = @[@(indexOfView)];
   NSArray<NSNumber *> *addTags = @[newReactTag];
   [self manageChildren:superShadowView.reactTag
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:addTags
+       moveFromIndices:nil
+         moveToIndices:nil
+     addChildReactTags:addTags
           addAtIndices:removeAtIndices
-        removeAtIndices:removeAtIndices];
+       removeAtIndices:removeAtIndices];
 }
 
 RCT_EXPORT_METHOD(setChildren:(nonnull NSNumber *)containerTag
