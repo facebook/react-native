@@ -258,7 +258,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString*)notificationId fetchResult:(UIBackgroundFetchResult)result) {
   RCTRemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
   if (!completionHandler) {
-    RCTLogError(@"There is no completion handler with notification id: %@", notificationId)
+    RCTLogError(@"There is no completion handler with notification id: %@", notificationId);
     return;
   }
   completionHandler(result);
