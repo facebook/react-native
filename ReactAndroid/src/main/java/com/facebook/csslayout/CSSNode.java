@@ -487,15 +487,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       throw new RuntimeException("Measure function isn't defined!");
     }
 
-    MeasureOutput output = new MeasureOutput();
-    mMeasureFunction.measure(
+    return mMeasureFunction.measure(
           this,
           width,
           CSSMeasureMode.values()[widthMode],
           height,
-          CSSMeasureMode.values()[heightMode],
-          output);
-    return ((long) output.width) << 32 | ((long) output.height);
+          CSSMeasureMode.values()[heightMode]);
   }
 
   @Override
