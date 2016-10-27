@@ -414,11 +414,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   for (unsigned int i = 0; i < count; i++) {
     SEL selector = method_getName(methods[i]);
     const char *selectorName = sel_getName(selector);
-    if (strncmp(selectorName, "propConfig_", strlen("propConfig_")) != 0) {
+    if (strncmp(selectorName, "propConfig", strlen("propConfig")) != 0) {
       continue;
     }
 
-    NSString *name = @(selectorName + strlen("propConfig_"));
+    // We need to handle both propConfig_* and propConfigShadow_* methods
+    const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
+    if (!underscorePos) {
+      continue;
+    }
+
+    NSString *name = @(underscorePos + 1);
     NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
     if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
       RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
