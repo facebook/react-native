@@ -371,11 +371,19 @@ RCT_EXPORT_MODULE()
          forTask:(RCTNetworkTask *)task
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
+<<<<<<< HEAD:Libraries/Network/RCTNetworking.mm
 
   if (data.length == 0) {
     return;
   }
 
+=======
+
+  if (data.length == 0) {
+    return;
+  }
+
+>>>>>>> origin/master:Libraries/Network/RCTNetworking.mm
   NSString *responseString;
   if ([responseType isEqualToString:@"text"]) {
     responseString = [RCTNetworking decodeTextData:data fromResponse:task.response];
