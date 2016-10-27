@@ -45,6 +45,17 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private boolean mHasSetBorder = false;
   private boolean mHasSetPosition = false;
 
+  @DoNotStrip
+  private float mWidth = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mHeight = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mTop = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mLeft = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private int mLayoutDirection = 0;
+
   private native long jni_CSSNodeNew();
   public CSSNode() {
     mNativePointer = jni_CSSNodeNew();
@@ -72,6 +83,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     mHasSetMargin = false;
     mHasSetBorder = false;
     mHasSetPosition = false;
+
+    mWidth = CSSConstants.UNDEFINED;
+    mHeight = CSSConstants.UNDEFINED;
+    mTop = CSSConstants.UNDEFINED;
+    mLeft = CSSConstants.UNDEFINED;
+    mLayoutDirection = 0;
 
     mMeasureFunction = null;
     mData = null;
@@ -174,12 +191,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public void setDirection(CSSDirection direction) {
     jni_CSSNodeStyleSetDirection(mNativePointer, direction.ordinal());
-  }
-
-  private native int jni_CSSNodeLayoutGetDirection(long nativePointer);
-  @Override
-  public CSSDirection getLayoutDirection() {
-    return CSSDirection.values()[jni_CSSNodeLayoutGetDirection(mNativePointer)];
   }
 
   private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
@@ -450,28 +461,29 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
   }
 
-  private native float jni_CSSNodeLayoutGetLeft(long nativePointer);
   @Override
   public float getLayoutX() {
-    return jni_CSSNodeLayoutGetLeft(mNativePointer);
+    return mLeft;
   }
 
-  private native float jni_CSSNodeLayoutGetTop(long nativePointer);
   @Override
   public float getLayoutY() {
-    return jni_CSSNodeLayoutGetTop(mNativePointer);
+    return mTop;
   }
 
-  private native float jni_CSSNodeLayoutGetWidth(long nativePointer);
   @Override
   public float getLayoutWidth() {
-    return jni_CSSNodeLayoutGetWidth(mNativePointer);
+    return mWidth;
   }
 
-  private native float jni_CSSNodeLayoutGetHeight(long nativePointer);
   @Override
   public float getLayoutHeight() {
-    return jni_CSSNodeLayoutGetHeight(mNativePointer);
+    return mHeight;
+  }
+
+  @Override
+  public CSSDirection getLayoutDirection() {
+    return CSSDirection.values()[mLayoutDirection];
   }
 
   private native void jni_CSSNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
