@@ -329,12 +329,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 
   NSArray *config = @[
-                      self.name,
-                      RCTNullIfNil(constants),
-                      RCTNullIfNil(methods),
-                      RCTNullIfNil(promiseMethods),
-                      RCTNullIfNil(syncMethods)
-                      ];
+    self.name,
+    RCTNullIfNil(constants),
+    RCTNullIfNil(methods),
+    RCTNullIfNil(promiseMethods),
+    RCTNullIfNil(syncMethods)
+  ];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]));
   return config;
 }

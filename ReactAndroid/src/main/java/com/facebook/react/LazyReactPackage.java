@@ -10,11 +10,13 @@
 package com.facebook.react;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -47,5 +49,27 @@ public abstract class LazyReactPackage implements ReactPackage {
       }
     }
     return modules;
+  }
+
+  /**
+   * @param reactContext react application context that can be used to create View Managers.
+   * @return list of module specs that can create the View Managers.
+   */
+  public List<ModuleSpec> getViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    List<ModuleSpec> viewManagerModuleSpecs = getViewManagers(reactContext);
+    if (viewManagerModuleSpecs == null || viewManagerModuleSpecs.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    List<ViewManager> viewManagers = new ArrayList<>();
+    for (ModuleSpec moduleSpec : viewManagerModuleSpecs) {
+      viewManagers.add((ViewManager) moduleSpec.getProvider().get());
+    }
+    return viewManagers;
   }
 }

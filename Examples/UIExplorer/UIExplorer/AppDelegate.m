@@ -19,7 +19,9 @@
 #import "RCTJavaScriptLoader.h"
 #import "RCTLinkingManager.h"
 #import "RCTRootView.h"
+#if !TARGET_OS_TV
 #import "RCTPushNotificationManager.h"
+#endif
 
 @interface AppDelegate() <RCTBridgeDelegate>
 
@@ -79,6 +81,8 @@
 
 # pragma mark - Push Notifications
 
+#if !TARGET_OS_TV
+
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
@@ -108,5 +112,7 @@
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
+
+#endif
 
 @end

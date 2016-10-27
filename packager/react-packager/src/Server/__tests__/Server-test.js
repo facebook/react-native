@@ -47,9 +47,11 @@ describe('processRequest', () => {
     reqHandler(
       { url: requrl, headers:{}, ...reqOptions },
       {
+        statusCode: 200,
         headers: {},
         getHeader(header) { return this.headers[header]; },
         setHeader(header, value) { this.headers[header] = value; },
+        writeHead(statusCode) { this.statusCode = statusCode; },
         end(body) {
           this.body = body;
           resolve(this);
@@ -87,6 +89,7 @@ describe('processRequest', () => {
       jest.fn().mockReturnValue({
         getDependecyGraph: jest.fn().mockReturnValue({
           getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+          load: jest.fn(() => Promise.resolve()),
         }),
       });
 
@@ -156,7 +159,8 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.ios.includeRequire.map',
         dev: true,
         platform: undefined,
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
@@ -180,7 +184,8 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.map?platform=ios',
         dev: true,
         platform: 'ios',
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
@@ -204,7 +209,8 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
         dev: true,
         platform: undefined,
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
         entryModuleOnly: false,
         isolateModuleIDs: false,
@@ -434,7 +440,7 @@ describe('processRequest', () => {
           runModule: true,
           dev: true,
           platform: undefined,
-          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          runBeforeMainModule: ['InitializeCore'],
           unbundle: false,
           entryModuleOnly: false,
           isolateModuleIDs: false,
@@ -457,7 +463,7 @@ describe('processRequest', () => {
             sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',
             dev: false,
             platform: undefined,
-            runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+            runBeforeMainModule: ['InitializeCore'],
             unbundle: false,
             entryModuleOnly: false,
             isolateModuleIDs: false,

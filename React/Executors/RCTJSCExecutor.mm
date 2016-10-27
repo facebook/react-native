@@ -34,6 +34,8 @@
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
+RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
+RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
@@ -346,6 +348,12 @@ static NSThread *newJavaScriptThread(void)
       installBasicSynchronousHooksOnContext(context);
     }
 
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    if (!threadDictionary[RCTFBJSContextClassKey] || !threadDictionary[RCTFBJSValueClassKey]) {
+      threadDictionary[RCTFBJSContextClassKey] = self->_jscWrapper->JSContext;
+      threadDictionary[RCTFBJSValueClassKey] = self->_jscWrapper->JSValue;
+    }
+
     __weak RCTJSCExecutor *weakSelf = self;
 
     context[@"nativeRequireModuleConfig"] = ^NSArray *(NSString *moduleName) {
@@ -357,7 +365,7 @@ static NSThread *newJavaScriptThread(void)
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"nativeRequireModuleConfig", @{ @"moduleName": moduleName });
       NSArray *result = [strongSelf->_bridge configForModuleName:moduleName];
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"js_call,config");
-      return result;
+      return RCTNullIfNil(result);
     };
 
     context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
@@ -397,7 +405,7 @@ static NSThread *newJavaScriptThread(void)
     context[@"nativeTraceEndAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
       if (RCTProfileIsProfiling()) {
         [weakBridge.flowIDMapLock lock];
-        NSUInteger newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+        NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
         _RCTProfileEndFlowEvent(newCookie);
         CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
         [weakBridge.flowIDMapLock unlock];
@@ -936,7 +944,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
 @implementation RCTJSContextProvider
 {
   dispatch_semaphore_t _semaphore;
-  BOOL _useCustomJSCLibrary;
   NSThread *_javaScriptThread;
   JSContext *_context;
   RCTJSCWrapper *_jscWrapper;

@@ -340,7 +340,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     var headers = this.responseHeaders || {};
     return Object.keys(headers).map((headerName) => {
       return headerName + ': ' + headers[headerName];
-    }).join('\n');
+    }).join('\r\n');
   }
 
   getResponseHeader(header: string): ?string {
@@ -468,8 +468,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   setReadyState(newState: number): void {
     this.readyState = newState;
     this.dispatchEvent({type: 'readystatechange'});
-    if (newState === this.DONE && !this._aborted) {
-      if (this._hasError) {
+    if (newState === this.DONE) {
+      if (this._aborted) {
+        this.dispatchEvent({type: 'abort'});
+      } else if (this._hasError) {
         if (this._timedOut) {
           this.dispatchEvent({type: 'timeout'});
         } else {
@@ -478,6 +480,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       } else {
         this.dispatchEvent({type: 'load'});
       }
+      this.dispatchEvent({type: 'loadend'});
     }
   }
 

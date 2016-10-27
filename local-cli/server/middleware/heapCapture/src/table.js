@@ -75,6 +75,73 @@ DropTarget.propTypes = {
   dropAction: React.PropTypes.func.isRequired,
 };
 
+class ExpanderConfiguration extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    const aggrow = this.props.aggrow;
+    const expander = this.props.expander;
+    return (
+      <Draggable id={'expander:add:' + expander.toString()}>
+        <div
+          style={{
+            width: 'auto',
+            height: '26px',
+            border: '1px solid darkGray',
+            margin: '2px',
+          }}>
+          {aggrow.getExpanderName(expander)}
+        </div>
+      </Draggable>
+    );
+  }
+}
+
+class TableConfiguration extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+  }
+  renderExpander(ex) {
+    return (<ExpanderConfiguration aggrow={this.props.aggrow} expander={ex} />);
+  }
+  render() {
+    const expanderText = this.state.expanded ? '>>' : '<<';
+    const aggrow = this.props.aggrow;
+    let config = [];
+    if (this.state.expanded) {
+      config = aggrow.getExpanders().map((ex) => this.renderExpander(ex));
+    }
+    return (
+      <div style={{
+          width: this.state.expanded ? '512px' : '26px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          borderLeft: '2px solid black',
+        }}>
+        <div style={{
+            width: '100%',
+            height: '26px',
+            border: '1px solid darkGray',
+          }}
+          onClick={ (e) => this.setState({expanded: !this.state.expanded}) }>
+          { expanderText }
+        </div>
+        { config }
+      </div>
+    );
+  }
+}
+
+TableConfiguration.propTypes = {
+  aggrow: React.PropTypes.object.isRequired,
+};
+
 class TableHeader extends React.Component {
   constructor(props) {
     super(props);
@@ -307,25 +374,42 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       active.splice(dIndex, 0, dragged);
       aggrow.setActiveExpanders(active);
       this.setState({cursor:0});
+    } else if (s.startsWith('expander:add:')) {
+      let dIndex = -1;
+      const sExpander = parseInt(s.substring(13), 10);
+      if (d.startsWith('expander:insert:')) {
+        dIndex = parseInt(d.substr(16), 10);
+      } else if (d === 'divider:insert') {
+        dIndex = 0;
+      } else {
+        throw 'not allowed to drag ' + s + ' to ' + d;
+      }
+      const active = aggrow.getActiveExpanders();
+      active.splice(dIndex, 0, sExpander);
+      aggrow.setActiveExpanders(active);
+      this.setState({cursor:0});
     }
   }
 
   render() {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <TableHeader aggrow={this.state.aggrow} dropAction={(s, d) => this.dropAction(s, d)} />
-        <div
-          style={{
-            width: '100%',
-            flexGrow: '1',
-            overflow: 'scroll'
-          }}
-          onScroll={ (e) => this.scroll(e) }
-          ref={(div) => { this._scrollDiv = div; } }>
-          <div style={{ position: 'relative' }}>
-            { this.renderVirtualizedRows() }
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'row' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', }}>
+          <TableHeader aggrow={this.state.aggrow} dropAction={(s, d) => this.dropAction(s, d)} />
+          <div
+            style={{
+              width: '100%',
+              flexGrow: '1',
+              overflow: 'scroll'
+            }}
+            onScroll={ (e) => this.scroll(e) }
+            ref={(div) => { this._scrollDiv = div; } }>
+            <div style={{ position: 'relative' }}>
+              { this.renderVirtualizedRows() }
+            </div>
           </div>
         </div>
+        <TableConfiguration aggrow={this.state.aggrow} />
       </div>
     );
   }

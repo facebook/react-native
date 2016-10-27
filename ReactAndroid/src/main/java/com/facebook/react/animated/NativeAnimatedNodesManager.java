@@ -89,6 +89,8 @@ import javax.annotation.Nullable;
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
+    } else if ("division".equals(type)) {
+      node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {

@@ -1,8 +1,28 @@
 include_defs('//ReactAndroid/DEFS')
 
+IMAGE_EVENT_FILES = [
+  'ImageLoadEvent.java',
+]
+
+android_library(
+  name = 'imageevents',
+  srcs = IMAGE_EVENT_FILES,
+  deps = [
+    react_native_dep('third-party/android/support-annotations:android-support-annotations'),
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  ],
+  visibility = ['PUBLIC'],
+)
+
 android_library(
   name = 'image',
-  srcs = glob(['*.java']),
+  srcs = glob(['*.java'], excludes = IMAGE_EVENT_FILES),
+  exported_deps = [
+    ':imageevents',
+  ],
   deps = [
     CSSLAYOUT_TARGET,
     react_native_dep('libraries/fresco/fresco-react-native:fbcore'),

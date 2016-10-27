@@ -16,7 +16,6 @@ import java.util.List;
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spanned;
@@ -34,7 +33,7 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -121,7 +120,7 @@ public class ReactTextTest {
         JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
-        getSingleSpan((TextView)rootView.getChildAt(0), CustomStyleSpan.class);
+        getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
     assertThat(customStyleSpan.getWeight() & Typeface.BOLD).isNotZero();
     assertThat(customStyleSpan.getStyle() & Typeface.ITALIC).isZero();
   }
@@ -435,7 +434,7 @@ public class ReactTextTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
-        new UIImplementation(reactContext, viewManagers));
+        new UIImplementationProvider());
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

@@ -22,22 +22,17 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.JSTimersExecution;
 import com.facebook.react.modules.core.Timing;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static org.mockito.Mockito.*;
 
@@ -187,6 +182,62 @@ public class TimingModuleTest {
     mTiming.onHostResume();
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+  }
+
+  @Test
+  public void testHeadlessJsTaskInBackground() {
+    mTiming.onHostPause();
+    mTiming.onHeadlessJsTaskStart(42);
+    mTiming.createTimer(mExecutorTokenMock, 41, 1, 0, true);
+
+    stepChoreographerFrame();
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+
+    reset(mJSTimersMock);
+    mTiming.onHeadlessJsTaskFinish(42);
+    stepChoreographerFrame();
+    verifyNoMoreInteractions(mJSTimersMock);
+  }
+
+  @Test
+  public void testHeadlessJsTaskInForeground() {
+    mTiming.onHostResume();
+    mTiming.onHeadlessJsTaskStart(42);
+    mTiming.createTimer(mExecutorTokenMock, 41, 1, 0, true);
+
+    stepChoreographerFrame();
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+
+    reset(mJSTimersMock);
+    mTiming.onHeadlessJsTaskFinish(42);
+    stepChoreographerFrame();
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+
+    reset(mJSTimersMock);
+    mTiming.onHostPause();
+    verifyNoMoreInteractions(mJSTimersMock);
+  }
+
+  @Test
+  public void testHeadlessJsTaskIntertwine() {
+    mTiming.onHostResume();
+    mTiming.onHeadlessJsTaskStart(42);
+    mTiming.createTimer(mExecutorTokenMock, 41, 1, 0, true);
+    mTiming.onHostPause();
+
+    stepChoreographerFrame();
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+
+    reset(mJSTimersMock);
+    mTiming.onHostResume();
+    mTiming.onHeadlessJsTaskFinish(42);
+    stepChoreographerFrame();
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+
+    reset(mJSTimersMock);
+    mTiming.onHostPause();
+    stepChoreographerFrame();
+    verifyNoMoreInteractions(mJSTimersMock);
   }
 
   @Test

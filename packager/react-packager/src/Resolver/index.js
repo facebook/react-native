@@ -57,6 +57,10 @@ const validateOpts = declareOpts({
   minifyCode: {
     type: 'function',
   },
+  resetCache: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -105,10 +109,12 @@ class Resolver {
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
+      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      // for jest-haste-map
+      resetCache: options.resetCache,
     });
 
     this._minifyCode = opts.minifyCode;

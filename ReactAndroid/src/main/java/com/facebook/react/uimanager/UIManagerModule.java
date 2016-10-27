@@ -85,12 +85,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
-      UIImplementation uiImplementation) {
+      UIImplementationProvider uiImplementationProvider) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerList);
-    mUIImplementation = uiImplementation;
+    mUIImplementation = uiImplementationProvider
+      .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
     reactContext.addLifecycleEventListener(this);
   }
@@ -209,7 +210,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
-    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight, mEventDispatcher);
+    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
 
   @ReactMethod
@@ -496,7 +497,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
           .arg("BatchId", batchId)
           .flush();
     try {
-      mUIImplementation.dispatchViewUpdates(mEventDispatcher, batchId);
+      mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

@@ -24,6 +24,25 @@ void installGlobalFunction(
   JSStringRelease(jsName);
 }
 
+void installGlobalProxy(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSObjectGetPropertyCallback callback) {
+  JSClassDefinition proxyClassDefintion = kJSClassDefinitionEmpty;
+  proxyClassDefintion.className = "_FBProxyClass";
+  proxyClassDefintion.getProperty = callback;
+  JSClassRef proxyClass = JSClassCreate(&proxyClassDefintion);
+
+  JSObjectRef proxyObj = JSObjectMake(ctx, proxyClass, nullptr);
+
+  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
+  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
+  JSObjectSetProperty(ctx, globalObject, jsName, proxyObj, 0, NULL);
+
+  JSStringRelease(jsName);
+  JSClassRelease(proxyClass);
+}
+
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text) {
