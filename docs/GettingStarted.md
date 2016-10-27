@@ -104,7 +104,7 @@ npm --version
 ```
 If it is not you can update npm:
 ```
-npm install npm@latest -gs
+npm install npm@latest -g
 ```
 > If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
 
