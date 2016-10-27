@@ -195,7 +195,7 @@ int32_t CSSNodeGetInstanceCount(void) {
 
 void CSSNodeInit(const CSSNodeRef node) {
   node->parent = NULL;
-  node->children = CSSNodeListNew(4);
+  node->children = NULL;
   node->hasNewLayout = true;
   node->isDirty = false;
 
@@ -257,7 +257,7 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node) {
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
   CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
-  CSSNodeListInsert(node->children, child, index);
+  CSSNodeListInsert(&node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
 }

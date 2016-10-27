@@ -138,7 +138,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 export ANDROID_HOME=~/Library/Android/sdk
 ```
 
-To avoid doing this every time you open a new Terminal, create (or edit) `~/.bashrc` using your favorite text editor and add the following lines:
+To avoid doing this every time you open a new terminal, add the following lines to your `~/.bashrc` or equivalent config file:
 
 ```
 export ANDROID_HOME=~/Library/Android/sdk

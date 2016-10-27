@@ -15,7 +15,7 @@ var messageHandlers = {
     for (var key in message.inject) {
       self[key] = JSON.parse(message.inject[key]);
     }
-    let error;
+    var error;
     try {
       importScripts(message.url);
     } catch (err) {
