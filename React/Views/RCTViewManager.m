@@ -86,11 +86,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray<NSString *> *)customDirectEventTypes
-{
-  return @[];
-}
-
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;

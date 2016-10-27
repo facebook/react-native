@@ -395,17 +395,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
+  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
+  NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
-  if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
-    NSArray<NSString *> *events = [self.manager customDirectEventTypes];
-    for (NSString *event in events) {
-      [directEvents addObject:RCTNormalizeInputEventName(event)];
-    }
-  }
-
-  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
     for (NSString *event in events) {
@@ -444,12 +438,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   free(methods);
 
 #if RCT_DEBUG
-  for (NSString *event in directEvents) {
-    if ([bubblingEvents containsObject:event]) {
-      RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                  "and a direct event", _name, event);
-    }
-  }
   for (NSString *event in bubblingEvents) {
     if ([directEvents containsObject:event]) {
       RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
