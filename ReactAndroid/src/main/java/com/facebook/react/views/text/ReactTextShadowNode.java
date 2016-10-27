@@ -33,7 +33,7 @@ import android.widget.TextView;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -59,7 +59,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
  * passed as "computedDataFromMeasure" down to shadow and native view.
  * <p/>
- * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used solely
+ * TODO(7255858): Rename *CSSNodeDEPRECATED to *ShadowView (or sth similar) as it's no longer is used solely
  * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
@@ -112,7 +112,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       sb.append(textCSSNode.mText);
     }
     for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
-      CSSNode child = textCSSNode.getChildAt(i);
+      CSSNodeDEPRECATED child = textCSSNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {

@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/running-on-device-android.html
 next: signed-apk-android
-props: native-components-android
+previous: headless-js-android
 ---
 
 ## Prerequisite: USB Debugging
