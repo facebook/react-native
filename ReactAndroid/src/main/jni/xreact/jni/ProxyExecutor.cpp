@@ -20,7 +20,7 @@ const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 static std::string executeJSCallWithProxy(
     jobject executor,
     const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
+    const folly::dynamic& arguments) {
   static auto executeJSCall =
     jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<jstring(jstring, jstring)>("executeJSCall");
 
@@ -88,20 +88,14 @@ void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
-  };
+  auto call = folly::dynamic::array(moduleId, methodId, std::move(arguments));
+
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
   m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
-  };
+  auto call = folly::dynamic::array(callbackId, std::move(arguments));
   std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
   m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }

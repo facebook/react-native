@@ -12,6 +12,7 @@
 #include <folly/json.h>
 #include <folly/ScopeGuard.h>
 
+#include <iterator>
 #include <unordered_set>
 #include <dlfcn.h>
 
@@ -98,10 +99,12 @@ void CxxMethodWrapper::invoke(jobject jCatalystInstance, ExecutorToken::jhybrido
       id1 = arguments->array[arguments->array.size() - 2].getInt();
       int id2 = arguments->array[arguments->array.size() - 1].getInt();
       second = [catalystInstance, executorToken, id2](std::vector<folly::dynamic> args) mutable {
+        folly::dynamic argsArray(std::make_move_iterator(args.begin()),
+                                 std::make_move_iterator(args.end()));
         ThreadScope guard;
         sCatalystInstanceInvokeCallback(
           catalystInstance.get(), executorToken.get(), id2,
-          ReadableNativeArray::newObjectCxxArgs(std::move(args)).get());
+          ReadableNativeArray::newObjectCxxArgs(std::move(argsArray)).get());
         catalystInstance.reset();
         executorToken.reset();
       };
@@ -110,10 +113,12 @@ void CxxMethodWrapper::invoke(jobject jCatalystInstance, ExecutorToken::jhybrido
     }
 
     first = [catalystInstance, executorToken, id1](std::vector<folly::dynamic> args) mutable {
+      folly::dynamic argsArray(std::make_move_iterator(args.begin()),
+                               std::make_move_iterator(args.end()));
       ThreadScope guard;
       sCatalystInstanceInvokeCallback(
         catalystInstance.get(), executorToken.get(), id1,
-        ReadableNativeArray::newObjectCxxArgs(std::move(args)).get());
+        ReadableNativeArray::newObjectCxxArgs(std::move(argsArray)).get());
       // This is necessary because by the time the lambda's dtor runs,
       // the guard has been destroyed, and it may not be possible to
       // get a JNIEnv* to clean up the captured global_ref.

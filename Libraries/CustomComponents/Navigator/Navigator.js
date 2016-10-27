@@ -102,6 +102,15 @@ var styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     top: 0,
+    transform: [
+      {translateX: 0},
+      {translateY: 0},
+      {scaleX: 1},
+      {scaleY: 1},
+      {rotate: '0deg'},
+      {skewX: '0deg'},
+      {skewY: '0deg'},
+    ],
   },
   baseScene: {
     position: 'absolute',
@@ -397,6 +406,8 @@ var Navigator = React.createClass({
 
     this._renderedSceneMap = new Map();
 
+    this._sceneRefs = [];
+
     var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
     invariant(
       routeStack.length >= 1,
@@ -669,8 +680,8 @@ var Navigator = React.createClass({
    * Push a scene off the screen, so that opacity:0 scenes will not block touches sent to the presented scenes
    */
   _disableScene: function(sceneIndex) {
-    this.refs['scene_' + sceneIndex] &&
-      this.refs['scene_' + sceneIndex].setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
+    this._sceneRefs[sceneIndex] &&
+      this._sceneRefs[sceneIndex].setNativeProps(SCENE_DISABLED_NATIVE_PROPS);
   },
 
   /**
@@ -693,8 +704,13 @@ var Navigator = React.createClass({
       // to prevent the enabled scene from flashing over the presented scene
       enabledSceneNativeProps.style.opacity = 0;
     }
-    this.refs['scene_' + sceneIndex] &&
-      this.refs['scene_' + sceneIndex].setNativeProps(enabledSceneNativeProps);
+    this._sceneRefs[sceneIndex] &&
+      this._sceneRefs[sceneIndex].setNativeProps(enabledSceneNativeProps);
+  },
+
+  _clearTransformations: function(sceneIndex) {
+    const defaultStyle = flattenStyle([styles.defaultSceneStyle]);
+    this._sceneRefs[sceneIndex].setNativeProps({ style: defaultStyle });
   },
 
   _onAnimationStart: function() {
@@ -726,7 +742,7 @@ var Navigator = React.createClass({
   },
 
   _setRenderSceneToHardwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
-    var viewAtIndex = this.refs['scene_' + sceneIndex];
+    var viewAtIndex = this._sceneRefs[sceneIndex];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
     }
@@ -968,7 +984,7 @@ var Navigator = React.createClass({
   },
 
   _transitionSceneStyle: function(fromIndex, toIndex, progress, index) {
-    var viewAtIndex = this.refs['scene_' + index];
+    var viewAtIndex = this._sceneRefs[index];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
     }
@@ -1092,6 +1108,10 @@ var Navigator = React.createClass({
     var presentedRoute = this.state.routeStack[this.state.presentedIndex];
     var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
+    // This is needed because scene at the pop index may be transformed
+    // with a configuration different from the configuration on the presented
+    // route.
+    this._clearTransformations(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
@@ -1248,7 +1268,9 @@ var Navigator = React.createClass({
     return (
       <View
         key={'scene_' + getRouteID(route)}
-        ref={'scene_' + i}
+        ref={(scene) => {
+          this._sceneRefs[i] = scene;
+        }}
         onStartShouldSetResponderCapture={() => {
           return (this.state.transitionFromIndex != null);
         }}
