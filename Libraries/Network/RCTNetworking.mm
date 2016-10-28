@@ -333,60 +333,57 @@ RCT_EXPORT_MODULE()
   return callback(nil, nil);
 }
 
-+ (NSString *)decodeTextData:(NSData *)data fromResponse:(NSURLResponse *)response withCarryStorage:(NSMutableData*)carryStorage
++ (NSString *)decodeTextData:(NSData *)data fromResponse:(NSURLResponse *)response withCarryData:(NSMutableData*)inputCarryData
 {
   NSStringEncoding encoding = NSUTF8StringEncoding;
   if (response.textEncodingName) {
     CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
     encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
   }
-	
-	BOOL wasCarryStorageProvided = carryStorage != nil;
-	
-	if(carryStorage == nil)
-	{
-		carryStorage = [NSMutableData new];
-	}
-	
-  [carryStorage appendData:data];
-	
+  
+  NSMutableData* currentCarryData = inputCarryData ?: [NSMutableData new];
+  [currentCarryData appendData:data];
+  
   // Attempt to decode text
-  NSString *encodedResponse = [[NSString alloc] initWithData:carryStorage encoding:encoding];
-	
-  NSMutableData* newCarryStorage = [NSMutableData new];
-	
-  if(!encodedResponse && data.length > 0)
-  {
-		if(wasCarryStorageProvided)
-		{
-			//If decode failed, we attempt to trim broken character bytes from the data.
-			CFStringEncoding cfEncoding = CFStringConvertNSStringEncodingToEncoding(encoding);
-			CFIndex maxCharLength = CFStringGetMaximumSizeForEncoding(1, cfEncoding);
-			
-			while(carryStorage.length > 0 && newCarryStorage.length < maxCharLength)
-			{
-				[newCarryStorage replaceBytesInRange:NSMakeRange(0, 0) withBytes:[carryStorage subdataWithRange:NSMakeRange(carryStorage.length - 1, 1)].bytes length:1];
-				carryStorage.length -= 1;
-				encodedResponse = [[NSString alloc] initWithData:carryStorage encoding:encoding];
-				
-				if(encodedResponse != nil)
-				{
-					break;
-				}
-			}
-		}
-		else
-		{
-			// We don't have an encoding, or the encoding is incorrect, so now we try to guess
-			[NSString stringEncodingForData:data
-											encodingOptions:nil
-											convertedString:&encodedResponse
-									usedLossyConversion:NULL];
-		}
-	}
-	
-	[carryStorage setData:newCarryStorage];
-
+  NSString *encodedResponse = [[NSString alloc] initWithData:currentCarryData encoding:encoding];
+  
+  NSData* newCarryData = nil;
+  
+  if (!encodedResponse && data.length > 0) {
+    if (inputCarryData) {
+      // If decode failed, we attempt to trim broken character bytes from the data.
+      CFStringEncoding cfEncoding = CFStringConvertNSStringEncodingToEncoding(encoding);
+      CFIndex maxCharLength = CFStringGetMaximumSizeForEncoding(1, cfEncoding);
+      
+      NSUInteger finalLength = currentCarryData.length - 1;
+      
+      while (finalLength > 0 && currentCarryData.length - finalLength < maxCharLength) {
+        encodedResponse = [[NSString alloc] initWithData:[currentCarryData subdataWithRange:NSMakeRange(0, finalLength)]
+                                                encoding:encoding];
+        
+        if (encodedResponse != nil) {
+          break;
+        }
+        
+        finalLength -= 1;
+      }
+      
+      newCarryData = [currentCarryData subdataWithRange:NSMakeRange(finalLength, currentCarryData.length - finalLength)];
+      currentCarryData.length = finalLength;
+    }
+    else {
+      // We don't have an encoding, or the encoding is incorrect, so now we try to guess
+      [NSString stringEncodingForData:data
+                      encodingOptions:nil
+                      convertedString:&encodedResponse
+                  usedLossyConversion:NULL];
+    }
+  }
+  
+  if (inputCarryData) {
+    [inputCarryData setData:newCarryData];
+  }
+  
   return encodedResponse;
 }
 
@@ -402,8 +399,8 @@ RCT_EXPORT_MODULE()
 
   NSString *responseString;
   if ([responseType isEqualToString:@"text"]) {
-		//No carry storage is required here because the entire data has been loaded.
-		responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryStorage:nil];
+    // No carry storage is required here because the entire data has been loaded.
+    responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
     if (!responseString) {
       RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
       return;
@@ -456,23 +453,28 @@ RCT_EXPORT_MODULE()
   RCTURLRequestProgressBlock downloadProgressBlock = nil;
   if (incrementalUpdates) {
     if ([responseType isEqualToString:@"text"]) {
-			
-			//We need this to carry over bytes, which could not be decoded into text (such as broken UTF-8 characters).
-			//The incremental data block holds the ownership of this object, and will be released upon release of the block.
-			NSMutableData* incrementalDataCarryStorage = [NSMutableData new];
-			
+      
+      // We need this to carry over bytes, which could not be decoded into text (such as broken UTF-8 characters).
+      // The incremental data block holds the ownership of this object, and will be released upon release of the block.
+      NSMutableData* incrementalDataCarry = [NSMutableData new];
+      
       incrementalDataBlock = ^(NSData *data, int64_t progress, int64_t total) {
-				NSUInteger initialCarryLength = incrementalDataCarryStorage.length;
-				
-				NSString *responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryStorage:incrementalDataCarryStorage];
+        NSUInteger initialCarryLength = incrementalDataCarry.length;
+        
+        NSString *responseString = [RCTNetworking decodeTextData:data
+                                                    fromResponse:task.response
+                                                withCarryData:incrementalDataCarry];
         if (!responseString) {
           RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
           return;
         }
-				
-				//Update progress to include the previous carry length and reduce the current carry length.
-				NSArray<id> *responseJSON = @[task.requestID, responseString, @(progress + initialCarryLength - incrementalDataCarryStorage.length), @(total)];
-				
+        
+        // Update progress to include the previous carry length and reduce the current carry length.
+        NSArray<id> *responseJSON = @[task.requestID,
+                                      responseString,
+                                      @(progress + initialCarryLength - incrementalDataCarry.length),
+                                      @(total)];
+        
         [self sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
       };
     } else {
