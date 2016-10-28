@@ -23,13 +23,15 @@
 
 @end
 
-@interface RCTUnicodeDecodeTests : XCTestCase @end
+@interface RCTUnicodeDecodeTests : XCTestCase
+
+@end
 
 @implementation RCTUnicodeDecodeTests
 
 - (void)testUnicodeDecode
 {
-  NSString* unicodeString = @"😀😀";
+  NSString* unicodeString = @"\U0001F602\U0001F602";
   NSData* unicodeBytes = [unicodeString dataUsingEncoding:NSUTF8StringEncoding];
   
   NSURLResponse* fakeResponse = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"testurl://"]
@@ -43,13 +45,13 @@
   
   [parsedString appendString:[RCTNetworking decodeTextData:[unicodeBytes subdataWithRange:NSMakeRange(0, 7)]
                                               fromResponse:fakeResponse
-                                             withCarryData:carryStorage]];
+                                             withCarryData:carryStorage] ?: @""];
   
   XCTAssert(carryStorage.length == 3);
   
   [parsedString appendString:[RCTNetworking decodeTextData:[unicodeBytes subdataWithRange:NSMakeRange(7, unicodeBytes.length - 7)]
                                               fromResponse:fakeResponse
-                                             withCarryData:carryStorage]];
+                                             withCarryData:carryStorage] ?: @""];
   
   XCTAssert(carryStorage.length == 0);
   

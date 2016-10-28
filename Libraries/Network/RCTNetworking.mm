@@ -353,7 +353,10 @@ RCT_EXPORT_MODULE()
     if (inputCarryData) {
       // If decode failed, we attempt to trim broken character bytes from the data.
       CFStringEncoding cfEncoding = CFStringConvertNSStringEncodingToEncoding(encoding);
-      CFIndex maxCharLength = CFStringGetMaximumSizeForEncoding(1, cfEncoding);
+      // Taking a single unichar is not good enough, due to Unicode combining character sequences or characters outside the BMP.
+      // See https://www.objc.io/issues/9-strings/unicode/#common-pitfalls
+      // We'll attempt with a sequence of two characters, the most common combining character sequence and characters outside the BMP (emojis).
+      CFIndex maxCharLength = CFStringGetMaximumSizeForEncoding(2, cfEncoding);
       
       NSUInteger finalLength = currentCarryData.length - 1;
       
@@ -368,10 +371,14 @@ RCT_EXPORT_MODULE()
         finalLength -= 1;
       }
       
-      newCarryData = [currentCarryData subdataWithRange:NSMakeRange(finalLength, currentCarryData.length - finalLength)];
-      currentCarryData.length = finalLength;
-    }
-    else {
+      if (encodedResponse != nil) {
+        newCarryData = [currentCarryData subdataWithRange:NSMakeRange(finalLength, currentCarryData.length - finalLength)];
+        currentCarryData.length = finalLength;
+      } else {
+        // Encoding of currently procided data failed, perhaps due to a broken unicode sequences. We'll pass the entire data as carry for the next round.
+        newCarryData = currentCarryData;
+      }
+    } else {
       // We don't have an encoding, or the encoding is incorrect, so now we try to guess
       [NSString stringEncodingForData:data
                       encodingOptions:nil
@@ -463,7 +470,7 @@ RCT_EXPORT_MODULE()
         
         NSString *responseString = [RCTNetworking decodeTextData:data
                                                     fromResponse:task.response
-                                                withCarryData:incrementalDataCarry];
+                                                   withCarryData:incrementalDataCarry];
         if (!responseString) {
           RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
           return;
