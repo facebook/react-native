@@ -73,6 +73,10 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.templatePath('_buckconfig'),
       this.destinationPath('.buckconfig')
     );
+    this.fs.copy(
+      this.templatePath('_babelrc'),
+      this.destinationPath('.babelrc')
+    );
   },
 
   writing: function() {

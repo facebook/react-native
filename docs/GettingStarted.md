@@ -98,6 +98,14 @@ Node.js comes with npm, which lets you install the React Native command line int
 npm install -g react-native-cli
 ```
 
+Ensure your version of npm is greater than 3:
+```
+npm --version
+```
+If it is not you can update npm:
+```
+npm install npm@latest -g
+```
 > If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
