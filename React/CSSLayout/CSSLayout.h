@@ -116,12 +116,12 @@ typedef struct CSSSize {
 } CSSSize;
 
 typedef struct CSSNode *CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(void *context,
+typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float width,
                                   CSSMeasureMode widthMode,
                                   float height,
                                   CSSMeasureMode heightMode);
-typedef void (*CSSPrintFunc)(void *context);
+typedef void (*CSSPrintFunc)(CSSNodeRef node);
 typedef int (*CSSLogger)(const char *format, ...);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED

@@ -38,9 +38,9 @@ CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
   CGFloat _effectiveLetterSpacing;
 }
 
-static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
+static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
 {
-  RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
+  RCTShadowText *shadowText = (__bridge RCTShadowText *)CSSNodeGetContext(node);
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
   [shadowText calculateTextFrame:textStorage];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
@@ -477,7 +477,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 {
   CGRect textFrame = UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size},
                                            self.paddingAsInsets);
-  
+
 
   if (_adjustsFontSizeToFit) {
     textFrame = [self updateStorage:textStorage toFitFrame:textFrame];

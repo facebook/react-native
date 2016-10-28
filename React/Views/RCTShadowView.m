@@ -50,9 +50,9 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 // cssNode api
 
-static void RCTPrint(void *context)
+static void RCTPrint(CSSNodeRef node)
 {
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)CSSNodeGetContext(node);
   printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
