@@ -456,7 +456,7 @@ static void _CSSNodePrint(const CSSNodeRef node,
   gLogger("{");
 
   if (node->print) {
-    node->print(node->context);
+    node->print(node);
   }
 
   if (options & CSSPrintOptionsLayout) {
@@ -1263,7 +1263,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
     } else {
       // Measure the text under the current constraints.
       const CSSSize measuredSize =
-          node->measure(node->context, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
+          node->measure(node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
 
       node->layout.measuredDimensions[CSSDimensionWidth] =
           boundAxis(node,
@@ -2284,7 +2284,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
     if (gPrintChanges && gPrintSkips) {
       printf("%s%d.{[skipped] ", getSpacer(gDepth), gDepth);
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
       printf("wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
              getModeName(widthMeasureMode, performLayout),
@@ -2299,7 +2299,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
     if (gPrintChanges) {
       printf("%s%d.{%s", getSpacer(gDepth), gDepth, needToVisitNode ? "*" : "");
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
       printf("wm: %s, hm: %s, aw: %f ah: %f %s\n",
              getModeName(widthMeasureMode, performLayout),
@@ -2320,7 +2320,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
     if (gPrintChanges) {
       printf("%s%d.}%s", getSpacer(gDepth), gDepth, needToVisitNode ? "*" : "");
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
       printf("wm: %s, hm: %s, d: (%f, %f) %s\n",
              getModeName(widthMeasureMode, performLayout),

@@ -64,19 +64,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 - (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
- * DEPRECATED: declare properties of type RCTDirectEventBlock instead
- *
- * Returns an array of names of events that can be sent by native views. This
- * should return non-bubbling, directly-dispatched event types. The event name
- * should not include a prefix such as 'on' or 'top', as this will be applied
- * as needed.
- *
- * Note that this method is not inherited when you subclass a view module, and
- * you should not call [super customDirectEventTypes] when overriding it.
- */
-- (NSArray<NSString *> *)customDirectEventTypes __deprecated_msg("Use RCTDirectEventBlock props instead.");
-
-/**
  * Called to notify manager that layout has finished, in case any calculated
  * properties need to be copied over from shadow view to view.
  */

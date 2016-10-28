@@ -134,14 +134,11 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
     return mIsTextNode;
   }
 
-  MeasureOutput measure(MeasureOutput measureOutput, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
+  long measure(float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }
-    measureOutput.height = CSSConstants.UNDEFINED;
-    measureOutput.width = CSSConstants.UNDEFINED;
-    Assertions.assertNotNull(mMeasureFunction).measure(this, width, widthMode, height, heightMode, measureOutput);
-    return measureOutput;
+    return Assertions.assertNotNull(mMeasureFunction).measure(this, width, widthMode, height, heightMode);
   }
 
   /**
