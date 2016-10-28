@@ -91,12 +91,16 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
 
     final File lockFilePath = new File(mContext.getFilesDir(), LOCK_FILE);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.prepare");
-    try (FileLocker lock = FileLocker.lock(lockFilePath)) {
-      unpacked = prepareLocked();
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    // Make sure we don't release the lock by letting other thread close the lock file
+    synchronized(UnpackingJSBundleLoader.class) {
+      try (FileLocker lock = FileLocker.lock(lockFilePath)) {
+        unpacked = prepareLocked();
+      } catch (IOException ioe) {
+        throw new RuntimeException(ioe);
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
     }
 
     if (unpacked && mOnUnpackedCallback != null) {

@@ -116,10 +116,10 @@ dependencies {
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
 
-Modify your `android/app/build.gradle` and replace `compile project(':react-native-custom-module')` with:
+Modify your `android/app/build.gradle`, and add:
 
 ```gradle
-compile(project(':react-native-custom-module')) {
+configurations.all {
     exclude group: 'com.facebook.react', module: 'react-native'
 }
 ```

@@ -67,7 +67,7 @@ The keys to integrating React Native components into your Android application ar
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
 3. Create your actual React Native components in JavaScript.
-4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
+4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_modules/` to your `build.gradle` file.
 4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
@@ -425,7 +425,7 @@ import React
 ```
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
-  let jsCodeLocation = NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
   let mockData:NSDictionary = ["scores":
       [
           ["name":"Alex", "value":"42"],
@@ -441,7 +441,7 @@ import React
   )
   let vc = UIViewController()
   vc.view = rootView
-  self.presentViewController(vc, animated: true, completion: nil)
+  self.present(vc, animated: true, completion: nil)
 }
 ```
 

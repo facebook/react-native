@@ -52,13 +52,12 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNodeAP
   }
 
   @Override
-  public void measure(
+  public long measure(
       CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+      CSSMeasureMode heightMode) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
       ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
@@ -71,7 +70,6 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNodeAP
       mMeasured.add(style);
     }
 
-    measureOutput.height = mHeight.get(style);
-    measureOutput.width = mWidth.get(style);
+    return MeasureOutput.make(mWidth.get(style), mHeight.get(style));
   }
 }

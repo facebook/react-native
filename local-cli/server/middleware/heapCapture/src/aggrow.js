@@ -16,7 +16,7 @@
 // pivot around frames in the middle of a stack by callers / callees
 // graphing?
 
-function stringInterner() { // eslint-disable-line no-unused-vars
+function StringInterner() { // eslint-disable-line no-unused-vars
   const strings = [];
   const ids = {};
   return {
@@ -37,20 +37,16 @@ function stringInterner() { // eslint-disable-line no-unused-vars
   };
 }
 
-function stackData(stackIdMap, maxDepth) { // eslint-disable-line no-unused-vars
-  return {
-    maxDepth: maxDepth,
-    get: function getStack(id) {
-      return stackIdMap[id];
-    },
-  };
-}
-
-function stackRegistry() { // eslint-disable-line no-unused-vars
+function StackRegistry() { // eslint-disable-line no-unused-vars
   return {
     root: { id: 0 },
     nodeCount: 1,
+    maxDepth: -1,
+    stackIdMap: null,
     insert: function insertNode(parent, frameId) {
+      if (this.stackIdMap !== null) {
+        throw 'stacks already flattened';
+      }
       let node = parent[frameId];
       if (node === undefined) {
         node = { id: this.nodeCount };
@@ -59,7 +55,13 @@ function stackRegistry() { // eslint-disable-line no-unused-vars
       }
       return node;
     },
+    get: function getStackArray(id) {
+      return this.stackIdMap[id];
+    },
     flatten: function flattenStacks() {
+      if (this.stackIdMap !== null) {
+        return;
+      }
       let stackFrameCount = 0;
       function countStacks(tree, depth) {
         let leaf = true;
@@ -109,13 +111,150 @@ function stackRegistry() { // eslint-disable-line no-unused-vars
         return stackIdMap[id];
       }
       flattenStacksImpl(this.root, []);
-
-      return new stackData(stackIdMap, maxStackDepth);
+      this.root = null;
+      this.stackIdMap = stackIdMap;
+      this.maxDepth = maxStackDepth;
     },
   };
 }
 
-function aggrow(numRows) { // eslint-disable-line no-unused-vars
+function AggrowData(columns) { // eslint-disable-line no-unused-vars
+  const columnCount = columns.length;
+  const columnConverter = columns.map(c => {
+    switch (c.type) {
+      case 'int':     // stores raw value
+        return (i) => i;
+      case 'string':  // stores interned id of string
+        return (s) => c.strings.intern(s);
+      case 'stack':   // stores id of stack node
+        return (s) => s.id;
+      default:
+        throw 'unknown AggrowData column type';
+    }
+  });
+  return {
+    data: new Int32Array(0),
+    columns: columns,
+    rowCount: 0,
+    rowInserter: function rowInserter(numRows) {
+      console.log(
+        'increasing row data from ' + (this.data.length * 4).toLocaleString() + ' B to ' +
+        (this.data.length * 4 + numRows * columnCount * 4).toLocaleString() + ' B'
+      );
+      const newData = new Int32Array(this.data.length + numRows * columnCount);
+      newData.set(this.data);
+      let currOffset = this.data.length;
+      const endOffset = newData.length;
+      this.data = newData;
+      this.rowCount = newData.length / columnCount;
+      return {
+        insertRow: function insertRow() {
+          if (currOffset >= endOffset) {
+            throw 'tried to insert data off end of added range';
+          }
+          if (arguments.length !== columnCount) {
+            throw 'expected data for ' + columnCount.toString() + ' columns, got' +
+              arguments.length.toString() + ' columns';
+          }
+          for (let i = 0; i < arguments.length; i++) {
+            newData[currOffset + i] = columnConverter[i](arguments[i]);
+          }
+          currOffset += columnCount;
+        },
+        done: function done() {
+          if (currOffset !== endOffset) {
+            throw 'unfilled rows';
+          }
+        },
+      };
+    },
+  };
+}
+
+function Aggrow(aggrowData) {
+  const columns = aggrowData.columns;
+  const columnCount = columns.length;
+  const data = aggrowData.data;
+  function columnIndex(columnName, columnType) {
+    const index = columns.findIndex(c => c.name === columnName && c.type === columnType);
+    if (index < 0) {
+      throw 'did not find data column ' + columnName + ' with type ' + columnType;
+    }
+    return index;
+  }
+  for (let i = 0; i < columns.length; i++) {
+    if (columns[i].type === 'stack') {
+      columns[i].stacks.flatten();
+    }
+  }
+  return {
+    expander: new AggrowExpander(aggrowData.rowCount),
+    addSumAggregator: function addSumAggregator(aggregatorName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addAggregator(
+        aggregatorName,
+        function aggregateSize(indices) {
+          let size = 0;
+          for (let i = 0; i < indices.length; i++) {
+            const row = indices[i];
+            size += data[row * columnCount + index];
+          }
+          return size;
+        },
+        (value) => value.toLocaleString(),
+        (a, b) => b - a,
+      );
+    },
+    addCountAggregator: function addCountAggregator(aggregatorName) {
+      return this.expander.addAggregator(
+        aggregatorName,
+        function aggregateCount(indices) {
+          return indices.length;
+        },
+        (value) => value.toLocaleString(),
+        (a, b) => b - a,
+      );
+    },
+    addStringExpander: function addStringExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'string');
+      const strings = columns[index].strings;
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => strings.get(data[row * columnCount + index]),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addNumberExpander: function addNumberExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => data[row * columnCount + index].toLocaleString(),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addPointerExpander: function addPointerExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => '0x' + (data[row * columnCount + index] >>> 0).toString(),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addStackExpander: function addStackExpander(expanderName, columnName, formatter) {
+      // TODO: options for caller/callee, pivoting
+      const index = columnIndex(columnName, 'stack');
+      const stacks = columns[index].stacks;
+      return this.expander.addCalleeStackExpander(
+        expanderName,
+        stacks.maxDepth,
+        (row) => stacks.get(data[row * columnCount + index]),
+        formatter,
+      );
+    },
+  };
+}
+
+function AggrowExpander(numRows) { // eslint-disable-line no-unused-vars
   // expander ID definitions
   const FIELD_EXPANDER_ID_MIN       = 0x0000;
   const FIELD_EXPANDER_ID_MAX       = 0x7fff;
