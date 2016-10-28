@@ -491,7 +491,7 @@ Apple has blocked implicit cleartext HTTP resource loading. So we need to add th
 
 ```bash
 # From the root of your project, where the `node_modules` directory is located.
-$ npm start
+$ react-native start
 ```
 
 ### Run the App
@@ -732,11 +732,11 @@ That's it, your activity is ready to run some JavaScript code.
 
 To run your app, you need to first start the development server. To do this, simply run the following command in your root folder:
 
-    $ npm start
+    $ react-native start
 
 Now build and run your Android app as normal (`./gradlew installDebug` from command-line; in Android Studio just create debug build as usual).
 
-> If you are using Android Studio for your builds and not the Gradle Wrapper directly, make sure you install [watchman](https://facebook.github.io/watchman/) before running `npm start`. It will prevent the packager from crashing due to conflicts between Android Studio and the React Native packager.
+> If you are using Android Studio for your builds and not the Gradle Wrapper directly, make sure you install [watchman](https://facebook.github.io/watchman/) before running `react-native start`. It will prevent the packager from crashing due to conflicts between Android Studio and the React Native packager.
 
 Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
 
