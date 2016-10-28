@@ -105,21 +105,31 @@ function loadModuleImplementation(moduleId, module) {
   // factory to keep any require cycles inside the factory from causing an
   // infinite require loop.
   module.isInitialized = true;
-  const exports = module.exports = {};
+  module.exports = {};
   const {factory} = module;
   try {
     if (__DEV__) {
       Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
     }
 
-    const moduleObject = {exports};
+    const moduleObject = {
+      get id() {
+        return moduleId;
+      },
+      get exports() {
+        return module.exports;
+      },
+      set exports(value) {
+        module.exports = value;
+      }
+    };
     if (__DEV__ && module.hot) {
       moduleObject.hot = module.hot;
     }
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
-    factory(global, require, moduleObject, exports);
+    factory.call(module.exports, global, require, moduleObject, module.exports);
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {
@@ -129,7 +139,7 @@ function loadModuleImplementation(moduleId, module) {
     if (__DEV__) {
       Systrace.endEvent();
     }
-    return (module.exports = moduleObject.exports);
+    return module.exports;
   } catch (e) {
     module.hasError = true;
     module.isInitialized = false;
