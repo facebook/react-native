@@ -375,7 +375,7 @@ RCT_EXPORT_MODULE()
         newCarryData = [currentCarryData subdataWithRange:NSMakeRange(finalLength, currentCarryData.length - finalLength)];
         currentCarryData.length = finalLength;
       } else {
-        // Encoding of currently procided data failed, perhaps due to a broken unicode sequences. We'll pass the entire data as carry for the next round.
+        // Decoding of currently provided data failed, perhaps due to a broken unicode sequences. We'll pass the entire data as carry for the next round.
         newCarryData = currentCarryData;
       }
     } else {
