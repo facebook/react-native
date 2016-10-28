@@ -12,11 +12,17 @@
 
 #import "RCTDefines.h"
 
+static NSString * const EXTRAPOLATE_TYPE_IDENTITY = @"identity";
+static NSString * const EXTRAPOLATE_TYPE_CLAMP = @"clamp";
+static NSString * const EXTRAPOLATE_TYPE_EXTEND = @"extend";
+
 RCT_EXTERN CGFloat RCTInterpolateValue(CGFloat value,
-                                       CGFloat fromMin,
-                                       CGFloat fromMax,
-                                       CGFloat toMin,
-                                       CGFloat toMax);
+                                       CGFloat inputMin,
+                                       CGFloat inputMax,
+                                       CGFloat outputMin,
+                                       CGFloat outputMax,
+                                       NSString *extrapolateLeft,
+                                       NSString *extrapolateRight);
 
 RCT_EXTERN CGFloat RCTRadiansToDegrees(CGFloat radians);
 RCT_EXTERN CGFloat RCTDegreesToRadians(CGFloat degrees);

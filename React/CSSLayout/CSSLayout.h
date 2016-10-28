@@ -116,12 +116,12 @@ typedef struct CSSSize {
 } CSSSize;
 
 typedef struct CSSNode *CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(void *context,
+typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float width,
                                   CSSMeasureMode widthMode,
                                   float height,
                                   CSSMeasureMode heightMode);
-typedef void (*CSSPrintFunc)(void *context);
+typedef void (*CSSPrintFunc)(CSSNodeRef node);
 typedef int (*CSSLogger)(const char *format, ...);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
@@ -133,6 +133,7 @@ WIN_EXPORT CSSNodeRef CSSNodeNew(void);
 WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
 WIN_EXPORT void CSSNodeFree(const CSSNodeRef node);
 WIN_EXPORT void CSSNodeFreeRecursive(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeReset(const CSSNodeRef node);
 WIN_EXPORT int32_t CSSNodeGetInstanceCount(void);
 
 WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node,
@@ -192,7 +193,8 @@ CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
 CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
-CSS_NODE_STYLE_PROPERTY(float, Flex, flex);
+
+WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
 CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
 CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);

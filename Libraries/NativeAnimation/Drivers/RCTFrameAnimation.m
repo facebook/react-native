@@ -7,17 +7,27 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTAnimationDriverNode.h"
+#import "RCTFrameAnimation.h"
 
 #import <UIKit/UIKit.h>
 
+#import "RCTConvert.h"
 #import "RCTAnimationUtils.h"
 #import "RCTDefines.h"
 #import "RCTValueAnimatedNode.h"
 
 const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
 
-@implementation RCTAnimationDriverNode
+@interface RCTFrameAnimation ()
+
+@property (nonatomic, strong) NSNumber *animationId;
+@property (nonatomic, strong) RCTValueAnimatedNode *valueNode;
+@property (nonatomic, assign) BOOL animationHasBegun;
+@property (nonatomic, assign) BOOL animationHasFinished;
+
+@end
+
+@implementation RCTFrameAnimation
 {
   NSArray<NSNumber *> *_frames;
   CGFloat _toValue;
@@ -25,25 +35,25 @@ const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
   NSTimeInterval _delay;
   NSTimeInterval _animationStartTime;
   NSTimeInterval _animationCurrentTime;
-  RCTValueAnimatedNode *_valueNode;
   RCTResponseSenderBlock _callback;
 }
 
-- (instancetype)initWithId:(nonnull NSNumber *)animationId
-                     delay:(NSTimeInterval)delay
-                   toValue:(CGFloat)toValue
-                    frames:(nonnull NSArray<NSNumber *> *)frames
-                   forNode:(nonnull RCTValueAnimatedNode *)valueNode
-                  callBack:(nullable RCTResponseSenderBlock)callback
+- (instancetype)initWithId:(NSNumber *)animationId
+                    config:(NSDictionary *)config
+                   forNode:(RCTValueAnimatedNode *)valueNode
+                  callBack:(nullable RCTResponseSenderBlock)callback;
 {
   if ((self = [super init])) {
+    NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
+    NSTimeInterval delay = [RCTConvert double:config[@"delay"]];
+    NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
+
     _animationId = animationId;
-    _toValue = toValue;
+    _toValue = toValue.floatValue;
     _fromValue = valueNode.value;
     _valueNode = valueNode;
     _delay = delay;
     _frames = [frames copy];
-    _outputValue = @0;
     _callback = [callback copy];
   }
   return self;
@@ -118,15 +128,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                             fromInterval,
                                             toInterval,
                                             fromFrameValue.doubleValue,
-                                            toFrameValue.doubleValue);
+                                            toFrameValue.doubleValue,
+                                            EXTRAPOLATE_TYPE_EXTEND,
+                                            EXTRAPOLATE_TYPE_EXTEND);
 
   [self updateOutputWithFrameOutput:frameOutput];
 }
 
 - (void)updateOutputWithFrameOutput:(CGFloat)frameOutput
 {
-  CGFloat outputValue = RCTInterpolateValue(frameOutput, 0, 1, _fromValue, _toValue);
-  _outputValue = @(outputValue);
+  CGFloat outputValue = RCTInterpolateValue(frameOutput,
+                                            0,
+                                            1,
+                                            _fromValue,
+                                            _toValue,
+                                            EXTRAPOLATE_TYPE_EXTEND,
+                                            EXTRAPOLATE_TYPE_EXTEND);
+
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
 }

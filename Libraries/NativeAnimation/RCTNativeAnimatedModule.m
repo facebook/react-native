@@ -9,7 +9,9 @@
 #import "RCTNativeAnimatedModule.h"
 
 #import "RCTAdditionAnimatedNode.h"
-#import "RCTAnimationDriverNode.h"
+#import "RCTAnimationDriver.h"
+#import "RCTFrameAnimation.h"
+#import "RCTSpringAnimation.h"
 #import "RCTAnimationUtils.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
@@ -27,9 +29,9 @@
 @implementation RCTNativeAnimatedModule
 {
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
-  NSMutableDictionary<NSNumber *, RCTAnimationDriverNode *> *_animationDrivers;
-  NSMutableSet<RCTAnimationDriverNode *> *_activeAnimations;
-  NSMutableSet<RCTAnimationDriverNode *> *_finishedAnimations;
+  NSMutableDictionary<NSNumber *, id<RCTAnimationDriver>> *_animationDrivers;
+  NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
+  NSMutableSet<id<RCTAnimationDriver>> *_finishedAnimations;
   NSMutableSet<RCTValueAnimatedNode *> *_updatedValueNodes;
   NSMutableSet<RCTPropsAnimatedNode *> *_propAnimationNodes;
   CADisplayLink *_displayLink;
@@ -87,6 +89,7 @@ RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
   }
 
   RCTAnimatedNode *node = [[nodeClass alloc] initWithTag:tag config:config];
+
   _animationNodes[tag] = node;
 
   if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
@@ -129,24 +132,28 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
                   config:(NSDictionary<NSString *, id> *)config
                   endCallback:(RCTResponseSenderBlock)callBack)
 {
-  if (RCT_DEBUG && ![config[@"type"] isEqual:@"frames"]) {
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
+
+  NSString *type = config[@"type"];
+  id<RCTAnimationDriver>animationDriver;
+
+  if ([type isEqual:@"frames"]) {
+    animationDriver = [[RCTFrameAnimation alloc] initWithId:animationId
+                                                     config:config
+                                                    forNode:valueNode
+                                                   callBack:callBack];
+
+  } else if ([type isEqual:@"spring"]) {
+    animationDriver = [[RCTSpringAnimation alloc] initWithId:animationId
+                                                      config:config
+                                                     forNode:valueNode
+                                                    callBack:callBack];
+
+  } else {
     RCTLogError(@"Unsupported animation type: %@", config[@"type"]);
     return;
   }
 
-  NSTimeInterval delay = [RCTConvert double:config[@"delay"]];
-  NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
-  NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
-
-  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
-
-  RCTAnimationDriverNode *animationDriver =
-  [[RCTAnimationDriverNode alloc] initWithId:animationId
-                                       delay:delay
-                                     toValue:toValue.doubleValue
-                                      frames:frames
-                                     forNode:valueNode
-                                    callBack:callBack];
   [_activeAnimations addObject:animationDriver];
   _animationDrivers[animationId] = animationDriver;
   [animationDriver startAnimation];
@@ -155,7 +162,7 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
 {
-  RCTAnimationDriverNode *driver = _animationDrivers[animationId];
+  id<RCTAnimationDriver>driver = _animationDrivers[animationId];
   if (driver) {
     [driver removeAnimation];
     [_animationDrivers removeObjectForKey:animationId];
@@ -172,6 +179,7 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
     RCTLogError(@"Not a value node.");
     return;
   }
+
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   valueNode.value = value.floatValue;
   [valueNode setNeedsUpdate];
@@ -272,7 +280,7 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
 {
   // Step Current active animations
   // This also recursively marks children nodes as needing update
-  for (RCTAnimationDriverNode *animationDriver in _activeAnimations) {
+  for (id<RCTAnimationDriver>animationDriver in _activeAnimations) {
     [animationDriver stepAnimation];
   }
 
@@ -283,7 +291,7 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
   }
 
   // Cleanup nodes and prepare for next cycle. Remove updated nodes from bucket.
-  for (RCTAnimationDriverNode *driverNode in _activeAnimations) {
+  for (id<RCTAnimationDriver>driverNode in _activeAnimations) {
     [driverNode cleanupAnimationUpdate];
   }
   for (RCTValueAnimatedNode *valueNode in _updatedValueNodes) {
@@ -291,13 +299,13 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
   }
   [_updatedValueNodes removeAllObjects];
 
-  for (RCTAnimationDriverNode *driverNode in _activeAnimations) {
+  for (id<RCTAnimationDriver>driverNode in _activeAnimations) {
     if (driverNode.animationHasFinished) {
       [driverNode removeAnimation];
       [_finishedAnimations addObject:driverNode];
     }
   }
-  for (RCTAnimationDriverNode *driverNode in _finishedAnimations) {
+  for (id<RCTAnimationDriver>driverNode in _finishedAnimations) {
     [_activeAnimations removeObject:driverNode];
     [_animationDrivers removeObjectForKey:driverNode.animationId];
   }

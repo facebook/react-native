@@ -67,7 +67,7 @@ The keys to integrating React Native components into your Android application ar
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
 3. Create your actual React Native components in JavaScript.
-4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
+4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_modules/` to your `build.gradle` file.
 4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
@@ -83,11 +83,15 @@ The keys to integrating React Native components into your Android application ar
 
 The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
+> To ensure a smooth experience, make sure your `android` project is under `$root/android`.
+
 <block class="objc swift" />
 
 ### General
 
 First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+
+> To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
 ### CocoaPods
 
@@ -421,7 +425,7 @@ import React
 ```
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
-  let jsCodeLocation = NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
   let mockData:NSDictionary = ["scores":
       [
           ["name":"Alex", "value":"42"],
@@ -437,7 +441,7 @@ import React
   )
   let vc = UIViewController()
   vc.view = rootView
-  self.presentViewController(vc, animated: true, completion: nil)
+  self.present(vc, animated: true, completion: nil)
 }
 ```
 
