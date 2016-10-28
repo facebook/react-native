@@ -132,13 +132,13 @@ const mockNativeModules = {
         width: 750,
       },
     },
-    RCTModalFullscreenView: {
+    ModalFullscreenView: {
       Constants: {},
     },
-    RCTScrollView: {
+    ScrollView: {
       Constants: {},
     },
-    RCTView: {
+    View: {
       Constants: {},
     },
   },
