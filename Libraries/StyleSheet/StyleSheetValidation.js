@@ -13,6 +13,7 @@
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
+var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -33,7 +34,9 @@ class StyleSheetValidation {
       style,
       prop,
       caller,
-      ReactPropTypeLocations.prop
+      ReactPropTypeLocations.prop,
+      null,
+      ReactPropTypesSecret
     );
     if (error) {
       styleError(error.message, style, caller);

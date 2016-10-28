@@ -20,8 +20,8 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
   private final int mDrawerState;
 
-  public DrawerStateChangedEvent(int viewId, long timestampMs, int drawerState) {
-    super(viewId, timestampMs);
+  public DrawerStateChangedEvent(int viewId, int drawerState) {
+    super(viewId);
     mDrawerState = drawerState;
   }
 

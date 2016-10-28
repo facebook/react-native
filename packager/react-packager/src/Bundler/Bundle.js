@@ -5,19 +5,41 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
+
+const BundleBase = require('./BundleBase');
+const ModuleTransport = require('../lib/ModuleTransport');
 
 const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
-const BundleBase = require('./BundleBase');
-const ModuleTransport = require('../lib/ModuleTransport');
 const crypto = require('crypto');
+
+import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 class Bundle extends BundleBase {
-  constructor({sourceMapUrl, dev, minify} = {}) {
+
+  _dev: boolean | void;
+  _inlineSourceMap: string | void;
+  _minify: boolean | void;
+  _numRequireCalls: number;
+  _ramBundle: mixed | void;
+  _ramGroups: Array<string> | void;
+  _shouldCombineSourceMaps: boolean;
+  _sourceMap: boolean;
+  _sourceMapUrl: string | void;
+
+  constructor({sourceMapUrl, dev, minify, ramGroups}: {
+    sourceMapUrl?: string,
+    dev?: boolean,
+    minify?: boolean,
+    ramGroups?: Array<string>,
+  } = {}) {
     super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
@@ -26,10 +48,20 @@ class Bundle extends BundleBase {
     this._dev = dev;
     this._minify = minify;
 
+    this._ramGroups = ramGroups;
     this._ramBundle = null; // cached RAM Bundle
   }
 
-  addModule(resolver, resolutionResponse, module, moduleTransport) {
+  addModule(
+    resolver: {wrapModule: (options: any) => Promise<{code: any, map: any}>},
+    resolutionResponse: mixed,
+    module: mixed,
+    moduleTransport: ModuleTransport,
+    /* $FlowFixMe: this code is inherently incorrect, because it modifies the
+     * signature of the base class function "addModule", originally returning
+     * a number. That means callsites using an instance typed as the base class
+     * would be broken. This must be refactored. */
+  ): Promise<void> {
     const index = super.addModule(moduleTransport);
     return resolver.wrapModule({
       resolutionResponse,
@@ -52,22 +84,26 @@ class Bundle extends BundleBase {
     });
   }
 
-  finalize(options) {
+  finalize(options: FinalizeOptions) {
     options = options || {};
     if (options.runMainModule) {
+      /* $FlowFixMe: this is unsound, as nothing enforces runBeforeMainModule
+       * to be available if `runMainModule` is true. Refactor. */
       options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      /* $FlowFixMe: this is unsound, as nothing enforces the module ID to have
+       * been set beforehand. */
       this._addRequireCall(super.getMainModuleId());
     }
 
-    super.finalize();
+    super.finalize(options);
   }
 
-  _addRequireCall(moduleId) {
+  _addRequireCall(moduleId: string) {
     const code = `;require(${JSON.stringify(moduleId)});`;
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
-      id: this._numRequireCalls - 1,
+      id: -this._numRequireCalls - 1,
       code,
       virtual: true,
       sourceCode: code,
@@ -87,12 +123,12 @@ class Bundle extends BundleBase {
     return this._inlineSourceMap;
   }
 
-  getSource(options) {
+  getSource(options: GetSourceOptions) {
     super.assertFinalized();
 
     options = options || {};
 
-    let source = super.getSource();
+    let source = super.getSource(options);
 
     if (options.inlineSourceMap) {
       source += SOURCEMAPPING_URL + this._getInlineSourceMap(options.dev);
@@ -103,7 +139,7 @@ class Bundle extends BundleBase {
     return source;
   }
 
-  getUnbundle(type) {
+  getUnbundle() {
     this.assertFinalized();
     if (!this._ramBundle) {
       const modules = this.getModules().slice();
@@ -111,10 +147,17 @@ class Bundle extends BundleBase {
       // separate modules we need to preload from the ones we don't
       const [startupModules, lazyModules] = partition(modules, shouldPreload);
 
+      const ramGroups = this._ramGroups;
+      let groups;
       this._ramBundle = {
         startupModules,
         lazyModules,
-        allModules: modules,
+        get groups() {
+          if (!groups) {
+            groups = createGroups(ramGroups || [], lazyModules);
+          }
+          return groups;
+        },
       };
     }
 
@@ -158,7 +201,7 @@ class Bundle extends BundleBase {
     return result;
   }
 
-  getSourceMap(options) {
+  getSourceMap(options: {excludeSource?: boolean}) {
     super.assertFinalized();
 
     if (this._shouldCombineSourceMaps) {
@@ -174,12 +217,14 @@ class Bundle extends BundleBase {
       names: [],
       mappings: mappings,
       sourcesContent: options.excludeSource
-        ? [] : modules.map(module => module.sourceCode)
+        ? [] : modules.map(module => module.sourceCode),
     };
     return map;
   }
 
   getEtag() {
+    /* $FlowFixMe: we must pass options, or rename the
+     * base `getSource` function, as it does not actually need options. */
     var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
     return eTag;
   }
@@ -246,6 +291,7 @@ class Bundle extends BundleBase {
 
   getDebugInfo() {
     return [
+      /* $FlowFixMe: this is unsound as the module ID could be unset. */
       '<div><h3>Main Module:</h3> ' + super.getMainModuleId() + '</div>',
       '<style>',
       'pre.collapsed {',
@@ -264,6 +310,10 @@ class Bundle extends BundleBase {
                _.escape(m.code) + '</pre></code></div>';
       }).join('\n'),
     ].join('\n');
+  }
+
+  setRamGroups(ramGroups: Array<string>) {
+    this._ramGroups = ramGroups;
   }
 
   toJSON() {
@@ -317,6 +367,93 @@ function partition(array, predicate) {
   const excluded = [];
   array.forEach(item => (predicate(item) ? included : excluded).push(item));
   return [included, excluded];
+}
+
+function * filter(iterator, predicate) {
+  for (const value of iterator) {
+    if (predicate(value)) {
+      yield value;
+    }
+  }
+}
+
+function * subtree(moduleTransport: ModuleTransport, moduleTransportsByPath, seen = new Set()) {
+  seen.add(moduleTransport.id);
+  for (const [, {path}] of moduleTransport.meta.dependencyPairs || []) {
+    const dependency = moduleTransportsByPath.get(path);
+    if (dependency && !seen.has(dependency.id)) {
+      yield dependency.id;
+      yield * subtree(dependency, moduleTransportsByPath, seen);
+    }
+  }
+}
+
+class ArrayMap extends Map {
+  get(key) {
+    let array = super.get(key);
+    if (!array) {
+      array = [];
+      this.set(key, array);
+    }
+    return array;
+  }
+}
+
+function createGroups(ramGroups: Array<string>, lazyModules) {
+  // build two maps that allow to lookup module data
+  // by path or (numeric) module id;
+  const byPath = new Map();
+  const byId = new Map();
+  lazyModules.forEach(m => {
+    byPath.set(m.sourcePath, m);
+    byId.set(m.id, m.sourcePath);
+  });
+
+  // build a map of group root IDs to an array of module IDs in the group
+  const result = new Map(
+    ramGroups
+      .map(modulePath => {
+        const root = byPath.get(modulePath);
+        if (!root) {
+          throw Error(`Group root ${modulePath} is not part of the bundle`);
+        }
+        return [
+          root.id,
+          // `subtree` yields the IDs of all transitive dependencies of a module
+          new Set(subtree(byPath.get(root.sourcePath), byPath)),
+        ];
+      })
+  );
+
+  if (ramGroups.length > 1) {
+    // build a map of all grouped module IDs to an array of group root IDs
+    const all = new ArrayMap();
+    for (const [parent, children] of result) {
+      for (const module of children) {
+        all.get(module).push(parent);
+      }
+    }
+
+    // find all module IDs that are part of more than one group
+    const doubles = filter(all, ([, parents]) => parents.length > 1);
+    for (const [moduleId, parents] of doubles) {
+      // remove them from their groups
+      /* $FlowFixMe: this assumes the element exists. */
+      parents.forEach(p => result.get(p).delete(moduleId));
+
+      // print a warning for each removed module
+      const parentNames = parents.map(byId.get, byId);
+      const lastName = parentNames.pop();
+      console.warn(
+        /* $FlowFixMe: this assumes the element exists. */
+        `Module ${byId.get(moduleId)} belongs to groups ${
+          parentNames.join(', ')}, and ${lastName
+          }. Removing it from all groups.`
+      );
+    }
+  }
+
+  return result;
 }
 
 module.exports = Bundle;

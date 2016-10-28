@@ -19,8 +19,8 @@ var {
   TouchableOpacity,
 } = ReactNative;
 
-var TransparentHitTestExample = React.createClass({
-  render: function() {
+class TransparentHitTestExample extends React.Component {
+  render() {
     return (
       <View style={{flex: 1}}>
         <TouchableOpacity onPress={() => alert('Hi!')}>
@@ -37,8 +37,8 @@ var TransparentHitTestExample = React.createClass({
           opacity: 0.0}} />
       </View>
     );
-  },
-});
+  }
+}
 
 exports.title = '<TransparentHitTestExample>';
 exports.displayName = 'TransparentHitTestExample';
@@ -46,6 +46,6 @@ exports.description = 'Transparent view receiving touch events';
 exports.examples = [
   {
     title: 'TransparentHitTestExample',
-    render(): ReactElement<any> { return <TransparentHitTestExample />; }
+    render(): React.Element<any> { return <TransparentHitTestExample />; }
   }
 ];

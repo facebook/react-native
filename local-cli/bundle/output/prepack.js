@@ -16,8 +16,8 @@ function buildPrepackBundle(packagerClient, requestOptions) {
 
 function savePrepackBundle(bundle, options, log) {
   const {
-    'bundle-output': bundleOutput,
-    'bridge-config': bridgeConfig,
+    bundleOutput,
+    bridgeConfig,
   } = options;
 
   const result = bundle.build({

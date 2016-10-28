@@ -5,98 +5,121 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ *
  */
 'use strict';
 
+import type {Event, EventData, Options} from './Types';
+
 const chalk = require('chalk');
 const events = require('events');
+const formatData = require('./formatData');
+const normaliseEventData = require('./normaliseEventData');
+const os = require('os');
 
-const _eventStarts = Object.create(null);
-const _eventEmitter = new events.EventEmitter();
+let ENABLED = true;
+let UUID = 1;
 
-let _uuid = 1;
-let _enabled = true;
+const session = `${os.hostname()}-${Date.now()}`;
+const EVENT_INDEX: {[key: number]: Event} = Object.create(null);
+const EVENT_EMITTER = new events.EventEmitter();
 
-function endEvent(eventId) {
-  const eventEndTime = Date.now();
-  if (!_eventStarts[eventId]) {
-    throw new Error('event(' + eventId + ') either ended or never started');
+function startEvent(name: string, data: EventData = {}, options: Options = {}): number {
+  if (name == null) {
+    throw new Error('No event name specified!');
   }
 
-  _writeAction({
-    action: 'endEvent',
-    eventId: eventId,
-    tstamp: eventEndTime
-  });
-}
-
-function startEvent(eventName, data) {
-  const eventStartTime = Date.now();
-
-  if (eventName == null) {
-    throw new Error('No event name specified');
-  }
-
-  if (data == null) {
-    data = null;
-  }
-
-  const eventId = _uuid++;
-  const action = {
-    action: 'startEvent',
-    data: data,
-    eventId: eventId,
-    eventName: eventName,
-    tstamp: eventStartTime,
+  const id = UUID++;
+  EVENT_INDEX[id] = {
+    data: normaliseEventData(data),
+    id,
+    options,
+    name,
+    session,
+    startTimeStamp: process.hrtime(),
   };
-  _eventStarts[eventId] = action;
-  _writeAction(action);
+  logEvent(id, 'startEvent');
 
-  return eventId;
+  return id;
 }
 
-function disable() {
-  _enabled = false;
+function endEvent(id: number): void {
+  const event = getEvent(id);
+  const delta = process.hrtime(event.startTimeStamp);
+  event.durationMs = Math.round((delta[0] * 1e9 + delta[1]) / 1e6);
+  logEvent(id, 'endEvent');
 }
 
-function _writeAction(action) {
-  _eventEmitter.emit(action.action, action);
+function getEvent(id: number): Event {
+  if (!EVENT_INDEX[id]) {
+    throw new Error(`Event(${id}) either ended or never started`);
+  }
 
-  if (!_enabled) {
+  return EVENT_INDEX[id];
+}
+
+function forgetEvent(id: number): void {
+  delete EVENT_INDEX[id];
+}
+
+function logEvent(id: number, phase: 'startEvent' | 'endEvent'): void {
+  const event = getEvent(id);
+  EVENT_EMITTER.emit(phase, id);
+
+  if (!ENABLED) {
     return;
   }
 
-  const data = action.data ? ': ' + JSON.stringify(action.data) : '';
-  const fmtTime = new Date(action.tstamp).toLocaleTimeString();
+  const {
+    name,
+    durationMs,
+    options,
+  } = event;
 
-  switch (action.action) {
+  const logTimeStamp = new Date().toLocaleString();
+  const dataString = formatData(event);
+  const {telemetric, silent} = options;
+
+  switch (phase) {
     case 'startEvent':
-      console.log(chalk.dim(
-        '[' + fmtTime + '] ' +
-        '<START> ' + action.eventName +
-        data
-      ));
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(chalk.dim(`[${logTimeStamp}] <START> ${name}${dataString}`));
+      }
       break;
 
     case 'endEvent':
-      const startAction = _eventStarts[action.eventId];
-      const startData = startAction.data ? ': ' + JSON.stringify(startAction.data) : '';
-      console.log(chalk.dim(
-        '[' + fmtTime + '] ' +
-        '<END>   ' + startAction.eventName +
-        ' (' + (action.tstamp - startAction.tstamp) + 'ms)' +
-        startData
-      ));
-      delete _eventStarts[action.eventId];
+      if (!silent) {
+        // eslint-disable-next-line no-console-disallow
+        console.log(
+          chalk.dim(`[${logTimeStamp}] <END>   ${name}${dataString}`) +
+          (telemetric ? chalk.reset.cyan(` (${+durationMs}ms)`) : chalk.dim(` (${+durationMs}ms)`))
+        );
+      }
+      forgetEvent(id);
       break;
 
     default:
-      throw new Error('Unexpected scheduled action type: ' + action.action);
+      throw new Error(`Unexpected event phase "${phase}"!`);
   }
 }
 
+function enable(): void {
+  ENABLED = true;
+}
 
-exports.endEvent = endEvent;
-exports.startEvent = startEvent;
-exports.disable = disable;
-exports.eventEmitter = _eventEmitter;
+function disable(): void {
+  ENABLED = false;
+}
+
+module.exports = {
+  startEvent,
+  endEvent,
+  getEvent,
+  forgetEvent,
+  enable,
+  disable,
+  eventEmitter: EVENT_EMITTER,
+};

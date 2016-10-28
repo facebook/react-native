@@ -56,12 +56,13 @@ type SubViewProps = NavigationSceneRendererProps & {
   onNavigateBack: ?Function,
 };
 
-type SubViewRenderer = (subViewProps: SubViewProps) => ?ReactElement<any>;
+type SubViewRenderer = (subViewProps: SubViewProps) => ?React.Element<any>;
 
 type DefaultProps = {
   renderLeftComponent: SubViewRenderer,
   renderRightComponent: SubViewRenderer,
   renderTitleComponent: SubViewRenderer,
+  statusBarHeight: number | Animated.Value,
 };
 
 type Props = NavigationSceneRendererProps & {
@@ -71,6 +72,7 @@ type Props = NavigationSceneRendererProps & {
   renderTitleComponent: SubViewRenderer,
   style?: any,
   viewProps?: any,
+  statusBarHeight: number | Animated.Value,
 };
 
 type SubViewName = 'left' | 'title' | 'right';
@@ -103,6 +105,8 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: (props: SubViewProps) => {
       return null;
     },
+
+    statusBarHeight: STATUSBAR_HEIGHT,
   };
 
   static propTypes = {
@@ -112,6 +116,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: PropTypes.func,
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
+    statusBarHeight: PropTypes.number,
     viewProps: PropTypes.shape(View.propTypes),
   };
 
@@ -123,7 +128,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const { scenes, style, viewProps } = this.props;
 
     const scenesProps = scenes.map(scene => {
@@ -132,16 +137,26 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       return props;
     });
 
+    const barHeight = (this.props.statusBarHeight instanceof Animated.Value)
+      ? Animated.add(this.props.statusBarHeight, new Animated.Value(APPBAR_HEIGHT))
+      : APPBAR_HEIGHT + this.props.statusBarHeight;
+
     return (
-      <View style={[ styles.appbar, style ]} {...viewProps}>
+      <Animated.View style={[
+          styles.appbar,
+          { height: barHeight },
+          style
+        ]}
+        {...viewProps}
+      >
         {scenesProps.map(this._renderLeft, this)}
         {scenesProps.map(this._renderTitle, this)}
         {scenesProps.map(this._renderRight, this)}
-      </View>
+      </Animated.View>
     );
   }
 
-  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderLeft(props: NavigationSceneRendererProps): ?React.Element<any> {
     return this._renderSubView(
       props,
       'left',
@@ -150,7 +165,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderTitle(props: NavigationSceneRendererProps): ?React.Element<any> {
     return this._renderSubView(
       props,
       'title',
@@ -159,7 +174,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderRight(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderRight(props: NavigationSceneRendererProps): ?React.Element<any> {
     return this._renderSubView(
       props,
       'right',
@@ -173,7 +188,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     name: SubViewName,
     renderer: SubViewRenderer,
     styleInterpolator: NavigationStyleInterpolator,
-  ): ?ReactElement<any> {
+  ): ?React.Element<any> {
     const {
       scene,
       navigationState,
@@ -206,6 +221,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
         key={name + '_' + key}
         style={[
           styles[name],
+          { marginTop: this.props.statusBarHeight },
           styleInterpolator(props),
         ]}>
         {subView}
@@ -227,19 +243,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
     elevation: 4,
     flexDirection: 'row',
-    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
     justifyContent: 'flex-start',
-    left: 0,
-    marginBottom: 16, // This is needed for elevation shadow
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
 
   title: {
     bottom: 0,
     left: APPBAR_HEIGHT,
-    marginTop: STATUSBAR_HEIGHT,
     position: 'absolute',
     right: APPBAR_HEIGHT,
     top: 0,
@@ -248,14 +257,12 @@ const styles = StyleSheet.create({
   left: {
     bottom: 0,
     left: 0,
-    marginTop: STATUSBAR_HEIGHT,
     position: 'absolute',
     top: 0,
   },
 
   right: {
     bottom: 0,
-    marginTop: STATUSBAR_HEIGHT,
     position: 'absolute',
     right: 0,
     top: 0,

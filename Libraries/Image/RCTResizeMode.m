@@ -15,6 +15,7 @@ RCT_ENUM_CONVERTER(RCTResizeMode, (@{
   @"cover": @(RCTResizeModeCover),
   @"contain": @(RCTResizeModeContain),
   @"stretch": @(RCTResizeModeStretch),
+  @"center": @(RCTResizeModeCenter),
   @"repeat": @(RCTResizeModeRepeat),
 }), RCTResizeModeStretch, integerValue)
 

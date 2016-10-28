@@ -42,30 +42,27 @@ var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
 
-var WebViewExample = React.createClass({
+class WebViewExample extends React.Component {
+  state = {
+    url: DEFAULT_URL,
+    status: 'No Page Loaded',
+    backButtonEnabled: false,
+    forwardButtonEnabled: false,
+    loading: true,
+    scalesPageToFit: true,
+  };
 
-  getInitialState: function() {
-    return {
-      url: DEFAULT_URL,
-      status: 'No Page Loaded',
-      backButtonEnabled: false,
-      forwardButtonEnabled: false,
-      loading: true,
-      scalesPageToFit: true,
-    };
-  },
+  inputText = '';
 
-  inputText: '',
-
-  handleTextInputChange: function(event) {
+  handleTextInputChange = (event) => {
     var url = event.nativeEvent.text;
     if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;
     }
     this.inputText = url;
-  },
+  };
 
-  render: function() {
+  render() {
     this.inputText = this.state.url;
 
     return (
@@ -120,26 +117,26 @@ var WebViewExample = React.createClass({
         </View>
       </View>
     );
-  },
+  }
 
-  goBack: function() {
+  goBack = () => {
     this.refs[WEBVIEW_REF].goBack();
-  },
+  };
 
-  goForward: function() {
+  goForward = () => {
     this.refs[WEBVIEW_REF].goForward();
-  },
+  };
 
-  reload: function() {
+  reload = () => {
     this.refs[WEBVIEW_REF].reload();
-  },
+  };
 
-  onShouldStartLoadWithRequest: function(event) {
+  onShouldStartLoadWithRequest = (event) => {
     // Implement any custom loading logic here, don't forget to return!
     return true;
-  },
+  };
 
-  onNavigationStateChange: function(navState) {
+  onNavigationStateChange = (navState) => {
     this.setState({
       backButtonEnabled: navState.canGoBack,
       forwardButtonEnabled: navState.canGoForward,
@@ -148,13 +145,13 @@ var WebViewExample = React.createClass({
       loading: navState.loading,
       scalesPageToFit: true
     });
-  },
+  };
 
-  onSubmitEditing: function(event) {
+  onSubmitEditing = (event) => {
     this.pressGoButton();
-  },
+  };
 
-  pressGoButton: function() {
+  pressGoButton = () => {
     var url = this.inputText.toLowerCase();
     if (url === this.state.url) {
       this.reload();
@@ -165,36 +162,33 @@ var WebViewExample = React.createClass({
     }
     // dismiss keyboard
     this.refs[TEXT_INPUT_REF].blur();
-  },
+  };
+}
 
-});
-
-var Button = React.createClass({
-  _handlePress: function() {
+class Button extends React.Component {
+  _handlePress = () => {
     if (this.props.enabled !== false && this.props.onPress) {
       this.props.onPress();
     }
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
-        <View style={[styles.button, this.props.enabled ? {} : styles.buttonDisabled]}>
-          <Text style={styles.buttonText}>{this.props.text}</Text>
+        <View style={styles.button}>
+          <Text>{this.props.text}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
   }
-});
+}
 
-var ScaledWebView = React.createClass({
+class ScaledWebView extends React.Component {
+  state = {
+    scalingEnabled: true,
+  };
 
-  getInitialState: function() {
-    return {
-      scalingEnabled: true,
-    }
-  },
-
-  render: function() {
+  render() {
     return (
       <View>
         <WebView
@@ -220,8 +214,55 @@ var ScaledWebView = React.createClass({
         </View>
       </View>
     );
-  },
-})
+  }
+}
+
+class MessagingTest extends React.Component {
+  webview = null
+
+  state = {
+    messagesReceivedFromWebView: 0,
+    message: '',
+  }
+
+  onMessage = e => this.setState({
+    messagesReceivedFromWebView: this.state.messagesReceivedFromWebView + 1,
+    message: e.nativeEvent.data,
+  })
+
+  postMessage = () => {
+    if (this.webview) {
+      this.webview.postMessage('"Hello" from React Native!');
+    }
+  }
+
+  render(): ReactElement<any> {
+    const {messagesReceivedFromWebView, message} = this.state;
+
+    return (
+      <View style={[styles.container, { height: 200 }]}>
+        <View style={styles.container}>
+          <Text>Messages received from web view: {messagesReceivedFromWebView}</Text>
+          <Text>{message || '(No message)'}</Text>
+          <View style={styles.buttons}>
+            <Button text="Send Message to Web View" enabled onPress={this.postMessage} />
+          </View>
+        </View>
+        <View style={styles.container}>
+          <WebView
+            ref={webview => { this.webview = webview; }}
+            style={{
+              backgroundColor: BGWASH,
+              height: 100,
+            }}
+            source={require('./messagingtest.html')}
+            onMessage={this.onMessage}
+          />
+        </View>
+      </View>
+    );
+  }
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -343,15 +384,15 @@ exports.description = 'Base component to display web content';
 exports.examples = [
   {
     title: 'Simple Browser',
-    render(): ReactElement<any> { return <WebViewExample />; }
+    render(): React.Element<any> { return <WebViewExample />; }
   },
   {
     title: 'Scale Page to Fit',
-    render(): ReactElement<any> { return <ScaledWebView/>; }
+    render(): React.Element<any> { return <ScaledWebView/>; }
   },
   {
     title: 'Bundled HTML',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <WebView
           style={{
@@ -366,7 +407,7 @@ exports.examples = [
   },
   {
     title: 'Static HTML',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <WebView
           style={{
@@ -381,7 +422,7 @@ exports.examples = [
   },
   {
     title: 'POST Test',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <WebView
           style={{
@@ -397,5 +438,9 @@ exports.examples = [
         />
       );
     }
+  },
+  {
+    title: 'Mesaging Test',
+    render(): ReactElement<any> { return <MessagingTest />; }
   }
 ];

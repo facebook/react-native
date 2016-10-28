@@ -81,7 +81,7 @@ describe('bezier', function(){
       repeat(10)(function () {
         var a = Math.random(), b = 2*Math.random()-0.5, c = 1-a, d = 1-b;
         var easing = bezier(a, b, c, d);
-        assertClose(easing(0.5), 0.5);
+        assertClose(easing(0.5), 0.5, 2);
       });
     });
     it('should be symetrical', function () {

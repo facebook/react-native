@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+var ReactPropTypes = require('React').PropTypes;
 var ColorPropType = require('ColorPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -29,6 +29,18 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   fontWeight: ReactPropTypes.oneOf(
     ['normal' /*default*/, 'bold',
      '100', '200', '300', '400', '500', '600', '700', '800', '900']
+  ),
+  /**
+   * @platform ios
+   */
+  fontVariant: ReactPropTypes.arrayOf(
+    ReactPropTypes.oneOf([
+      'small-caps',
+      'oldstyle-nums',
+      'lining-nums',
+      'tabular-nums',
+      'proportional-nums',
+    ])
   ),
   textShadowOffset: ReactPropTypes.shape(
     {width: ReactPropTypes.number, height: ReactPropTypes.number}

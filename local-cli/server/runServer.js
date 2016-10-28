@@ -8,21 +8,25 @@
  */
 'use strict';
 
+const ReactPackager = require('../../packager/react-packager');
+
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
+const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
+const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
+const indexPageMiddleware = require('./middleware/indexPage');
+const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
-const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const path = require('path');
-const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
-const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
@@ -37,7 +41,9 @@ function runServer(args, config, readyCallback) {
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
+    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
+    .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 
@@ -83,13 +89,8 @@ function getPackagerServer(args, config) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     assetRoots: args.assetRoots,
-    assetExts: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', 'pdf', // Document formats
-    ],
-    resetCache: args.resetCache || args['reset-cache'],
+    assetExts: defaultAssetExts.concat(args.assetExts),
+    resetCache: args.resetCache,
     verbose: args.verbose,
   });
 }

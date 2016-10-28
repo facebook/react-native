@@ -30,23 +30,28 @@ var {
   TouchableHighlight,
 } = ReactNative;
 
-var UIExplorerButton = React.createClass({
-  propTypes: {
+class UIExplorerButton extends React.Component {
+  props: {onPress?: Function};
+
+  static propTypes = {
     onPress: React.PropTypes.func,
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <TouchableHighlight
         onPress={this.props.onPress}
         style={styles.button}
         underlayColor="grey">
         <Text>
-          {this.props.children}
+          {
+            // $FlowFixMe found when converting React.createClass to ES6
+            this.props.children}
         </Text>
       </TouchableHighlight>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   button: {

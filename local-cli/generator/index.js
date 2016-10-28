@@ -8,6 +8,7 @@
  */
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 var utils = require('../generator-utils');
@@ -15,7 +16,6 @@ var utils = require('../generator-utils');
 module.exports = yeoman.generators.NamedBase.extend({
   constructor: function() {
     yeoman.generators.NamedBase.apply(this, arguments);
-
     this.option('skip-ios', {
       desc: 'Skip generating iOS files',
       type: Boolean,
@@ -23,6 +23,11 @@ module.exports = yeoman.generators.NamedBase.extend({
     });
     this.option('skip-android', {
       desc: 'Skip generating Android files',
+      type: Boolean,
+      defaults: false
+    });
+    this.option('skip-jest', {
+      desc: 'Skip installing Jest',
       type: Boolean,
       defaults: false
     });
@@ -108,5 +113,41 @@ module.exports = yeoman.generators.NamedBase.extend({
     }
 
     this.npmInstall(`react@${reactVersion}`, { '--save': true, '--save-exact': true });
+    if (!this.options['skip-jest']) {
+      this.npmInstall(`jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion}`.split(' '), {
+        saveDev: true,
+        '--save-exact': true
+      });
+      fs.writeFileSync(
+        path.join(
+          this.destinationRoot(),
+          '.babelrc'
+        ),
+        '{\n"presets": ["react-native"]\n}'
+      );
+
+      this.fs.copy(
+        this.templatePath('__tests__'),
+        this.destinationPath('__tests__'),
+        {
+          nodir: false
+        }
+      );
+
+      var packageJSONPath = path.join(
+        this.destinationRoot(),
+        'package.json'
+      );
+      var packageJSON = JSON.parse(
+        fs.readFileSync(
+          packageJSONPath
+        )
+      );
+      packageJSON.scripts.test = 'jest';
+      packageJSON.jest = {
+        preset: 'jest-react-native'
+      };
+      fs.writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, '\t'));
+    }
   }
 });

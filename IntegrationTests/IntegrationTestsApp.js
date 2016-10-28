@@ -42,13 +42,12 @@ require('LoggingTestModule');
 
 type Test = any;
 
-var IntegrationTestsApp = React.createClass({
-  getInitialState: function() {
-    return {
-      test: (null: ?Test),
-    };
-  },
-  render: function() {
+class IntegrationTestsApp extends React.Component {
+  state = {
+    test: (null: ?Test),
+  };
+
+  render() {
     if (this.state.test) {
       return (
         <ScrollView>
@@ -79,7 +78,7 @@ var IntegrationTestsApp = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

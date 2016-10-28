@@ -30,26 +30,28 @@ var {
   View,
 } = ReactNative;
 
-var ExampleBox = React.createClass({
-  getInitialState: function() {
-    return {
-      log: [],
-    };
-  },
-  handleLog: function(msg) {
+class ExampleBox extends React.Component {
+  state = {
+    log: [],
+  };
+
+  handleLog = (msg) => {
     this.state.log = this.state.log.concat([msg]);
-  },
-  flushReactChanges: function() {
+  };
+
+  flushReactChanges = () => {
     this.forceUpdate();
-  },
+  };
+
   /**
    * Capture phase of bubbling to append separator before any of the bubbling
    * happens.
    */
-  handleTouchCapture: function() {
+  handleTouchCapture = () => {
     this.state.log = this.state.log.concat(['---']);
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <View>
         <View
@@ -66,11 +68,10 @@ var ExampleBox = React.createClass({
       </View>
     );
   }
-});
+}
 
-
-var NoneExample = React.createClass({
-  render: function() {
+class NoneExample extends React.Component {
+  render() {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -96,14 +97,14 @@ var NoneExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 /**
  * Special demo text that makes itself untouchable so that it doesn't destroy
  * the experiment and confuse the output.
  */
-var DemoText = React.createClass({
-  render: function() {
+class DemoText extends React.Component {
+  render() {
     return (
       <View pointerEvents="none">
         <Text
@@ -113,10 +114,10 @@ var DemoText = React.createClass({
       </View>
     );
   }
-});
+}
 
-var BoxNoneExample = React.createClass({
-  render: function() {
+class BoxNoneExample extends React.Component {
+  render() {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -150,10 +151,10 @@ var BoxNoneExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var BoxOnlyExample = React.createClass({
-  render: function() {
+class BoxOnlyExample extends React.Component {
+  render() {
     return (
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
@@ -187,7 +188,7 @@ var BoxOnlyExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 type ExampleClass = {
   Component: ReactClass<any>,

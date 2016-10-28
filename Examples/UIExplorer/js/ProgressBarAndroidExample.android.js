@@ -52,14 +52,11 @@ var MovingBar = React.createClass({
   },
 });
 
-var ProgressBarAndroidExample = React.createClass({
+class ProgressBarAndroidExample extends React.Component {
+  static title = '<ProgressBarAndroid>';
+  static description = 'Horizontal bar to show the progress of some operation.';
 
-  statics: {
-    title: '<ProgressBarAndroid>',
-    description: 'Horizontal bar to show the progress of some operation.',
-  },
-
-  render: function() {
+  render() {
     return (
       <UIExplorerPage title="ProgressBar Examples">
         <UIExplorerBlock title="Horizontal Indeterminate ProgressBar">
@@ -79,7 +76,7 @@ var ProgressBarAndroidExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 module.exports = ProgressBarAndroidExample;

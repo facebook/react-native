@@ -6,6 +6,7 @@
 #include <folly/String.h>
 #include <glog/logging.h>
 
+#include "SystraceSection.h"
 #include "Value.h"
 
 namespace facebook {
@@ -21,6 +22,25 @@ void installGlobalFunction(
   JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
   JSObjectSetProperty(ctx, globalObject, jsName, functionObj, 0, NULL);
   JSStringRelease(jsName);
+}
+
+void installGlobalProxy(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSObjectGetPropertyCallback callback) {
+  JSClassDefinition proxyClassDefintion = kJSClassDefinitionEmpty;
+  proxyClassDefintion.className = "_FBProxyClass";
+  proxyClassDefintion.getProperty = callback;
+  JSClassRef proxyClass = JSClassCreate(&proxyClassDefintion);
+
+  JSObjectRef proxyObj = JSObjectMake(ctx, proxyClass, nullptr);
+
+  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
+  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
+  JSObjectSetProperty(ctx, globalObject, jsName, proxyObj, 0, NULL);
+
+  JSStringRelease(jsName);
+  JSClassRelease(proxyClass);
 }
 
 JSValueRef makeJSCException(
@@ -41,6 +61,7 @@ String jsStringFromBigString(const JSBigString& bigstr) {
 }
 
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
+  SystraceSection s("evaluateScript");
   JSValueRef exn, result;
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {

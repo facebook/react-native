@@ -63,14 +63,18 @@ RCT_EXPORT_MODULE()
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit"
-                    args:body ? @[name, body] : @[name]];
+  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
+                  method:@"emit"
+                    args:body ? @[name, body] : @[name]
+              completion:NULL];
 }
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                    args:body ? @[name, body] : @[name]];
+  [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
+                  method:@"emit"
+                    args:body ? @[name, body] : @[name]
+              completion:NULL];
 }
 
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
@@ -81,8 +85,10 @@ RCT_EXPORT_MODULE()
   }
 
   name = RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
-                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];
+  [_bridge enqueueJSCall:@"RCTEventEmitter"
+                  method:@"receiveEvent"
+                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
+              completion:NULL];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type

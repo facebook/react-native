@@ -75,6 +75,30 @@ var RecyclerViewBackedScrollView = React.createClass({
     this.props.onContentSizeChange(width, height);
   },
 
+  /**
+   * A helper function to scroll to a specific point  in the scrollview.
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollTo: function(
+    y?: number | { x?: number, y?: number, animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ) {
+    if (typeof y === 'number') {
+      console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = y || {});
+    }
+    this.getScrollResponder().scrollResponderScrollTo({x: x || 0, y: y || 0, animated: animated !== false});
+  },
+
   render: function() {
     var recyclerProps = {
       ...this.props,

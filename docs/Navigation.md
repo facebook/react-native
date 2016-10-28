@@ -12,7 +12,7 @@ This guide covers the various navigation components available in React Native. I
 
 ## Navigator
 
-`Navigator` provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. This is the same component you used to build your first navigation stack in the [navigators tutorial](docs/navigators.html).
+`Navigator` provides a JavaScript implementation of a navigation stack, so it works on both iOS and Android and is easy to customize. This is the same component you used to build your first navigation stack in the [navigators tutorial](docs/using-navigators.html).
 
 ![](img/NavigationStack-Navigator.gif)
 

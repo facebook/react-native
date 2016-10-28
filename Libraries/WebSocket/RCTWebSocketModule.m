@@ -9,6 +9,8 @@
 
 #import "RCTWebSocketModule.h"
 
+#import <objc/runtime.h>
+
 #import "RCTConvert.h"
 #import "RCTUtils.h"
 

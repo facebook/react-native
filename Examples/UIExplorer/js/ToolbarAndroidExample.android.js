@@ -32,25 +32,23 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var SwitchAndroid = require('SwitchAndroid');
+var Switch = require('Switch');
 var ToolbarAndroid = require('ToolbarAndroid');
 
-var ToolbarAndroidExample = React.createClass({
-  statics: {
-    title: '<ToolbarAndroid>',
-    description: 'Examples of using the Android toolbar.'
-  },
-  getInitialState: function() {
-    return {
-      actionText: 'Example app with toolbar component',
-      toolbarSwitch: false,
-      colorProps: {
-        titleColor: '#3b5998',
-        subtitleColor: '#6a7180',
-      },
-    };
-  },
-  render: function() {
+class ToolbarAndroidExample extends React.Component {
+  static title = '<ToolbarAndroid>';
+  static description = 'Examples of using the Android toolbar.';
+
+  state = {
+    actionText: 'Example app with toolbar component',
+    toolbarSwitch: false,
+    colorProps: {
+      titleColor: '#3b5998',
+      subtitleColor: '#6a7180',
+    },
+  };
+
+  render() {
     return (
       <UIExplorerPage title="<ToolbarAndroid>">
         <UIExplorerBlock title="Toolbar with title/subtitle and actions">
@@ -69,7 +67,7 @@ var ToolbarAndroidExample = React.createClass({
             logo={require('image!launcher_icon')}
             style={styles.toolbar}>
             <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
-              <SwitchAndroid
+              <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={(value) => this.setState({'toolbarSwitch': value})} />
               <Text>{'\'Tis but a switch'}</Text>
@@ -117,13 +115,14 @@ var ToolbarAndroidExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-  _onActionSelected: function(position) {
+  }
+
+  _onActionSelected = (position) => {
     this.setState({
       actionText: 'Selected ' + toolbarActions[position].title,
     });
-  },
-});
+  };
+}
 
 var toolbarActions = [
   {title: 'Create', icon: require('image!ic_create_black_48dp'), show: 'always'},

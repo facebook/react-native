@@ -41,9 +41,8 @@ var alertMessage = 'Credibly reintermediate next-generation potentialities after
 /**
  * Simple alert examples.
  */
-var SimpleAlertExampleBlock = React.createClass({
-
-  render: function() {
+class SimpleAlertExampleBlock extends React.Component {
+  render() {
     return (
       <View>
         <TouchableHighlight style={styles.wrapper}
@@ -107,25 +106,40 @@ var SimpleAlertExampleBlock = React.createClass({
             <Text>Alert with too many buttons</Text>
           </View>
         </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => Alert.alert(
+            'Alert Title',
+            null,
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed!')},
+            ],
+            {
+              cancelable: false
+            }
+          )}>
+          <View style={styles.button}>
+            <Text>Alert that cannot be dismissed</Text>
+          </View>
+        </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-var AlertExample = React.createClass({
-  statics: {
-    title: 'Alert',
-    description: 'Alerts display a concise and informative message ' +
-    'and prompt the user to make a decision.',
-  },
-  render: function() {
+class AlertExample extends React.Component {
+  static title = 'Alert';
+
+  static description = 'Alerts display a concise and informative message ' +
+  'and prompt the user to make a decision.';
+
+  render() {
     return (
       <UIExplorerBlock title={'Alert'}>
         <SimpleAlertExampleBlock />
       </UIExplorerBlock>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   wrapper: {

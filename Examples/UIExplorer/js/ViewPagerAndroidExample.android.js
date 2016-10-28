@@ -45,16 +45,16 @@ var IMAGE_URIS = [
   'http://apod.nasa.gov/apod/image/1510/lunareclipse_27Sep_beletskycrop4.jpg',
 ];
 
-var LikeCount = React.createClass({
-  getInitialState: function() {
-    return {
-      likes: 7,
-    };
-  },
-  onClick: function() {
+class LikeCount extends React.Component {
+  state = {
+    likes: 7,
+  };
+
+  onClick = () => {
     this.setState({likes: this.state.likes + 1});
-  },
-  render: function() {
+  };
+
+  render() {
     var thumbsUp = '\uD83D\uDC4D';
     return (
       <View style={styles.likeContainer}>
@@ -68,16 +68,17 @@ var LikeCount = React.createClass({
         </Text>
       </View>
     );
-  },
-});
+  }
+}
 
-var Button = React.createClass({
-  _handlePress: function() {
+class Button extends React.Component {
+  _handlePress = () => {
     if (this.props.enabled && this.props.onPress) {
       this.props.onPress();
     }
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View style={[styles.button, this.props.enabled ? {} : styles.buttonDisabled]}>
@@ -86,10 +87,10 @@ var Button = React.createClass({
       </TouchableWithoutFeedback>
     );
   }
-});
+}
 
-var ProgressBar = React.createClass({
-  render: function() {
+class ProgressBar extends React.Component {
+  render() {
     var fractionalPosition = (this.props.progress.position + this.props.progress.offset);
     var progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
     return (
@@ -98,43 +99,40 @@ var ProgressBar = React.createClass({
       </View>
     );
   }
-});
+}
 
-var ViewPagerAndroidExample = React.createClass({
-  statics: {
-    title: '<ViewPagerAndroid>',
-    description: 'Container that allows to flip left and right between child views.'
-  },
-  getInitialState: function() {
-    return {
-      page: 0,
-      animationsAreEnabled: true,
-      scrollEnabled: true,
-      progress: {
-        position: 0,
-        offset: 0,
-      },
-    };
-  },
+class ViewPagerAndroidExample extends React.Component {
+  static title = '<ViewPagerAndroid>';
+  static description = 'Container that allows to flip left and right between child views.';
 
-  onPageSelected: function(e) {
+  state = {
+    page: 0,
+    animationsAreEnabled: true,
+    scrollEnabled: true,
+    progress: {
+      position: 0,
+      offset: 0,
+    },
+  };
+
+  onPageSelected = (e) => {
     this.setState({page: e.nativeEvent.position});
-  },
+  };
 
-  onPageScroll: function(e) {
+  onPageScroll = (e) => {
     this.setState({progress: e.nativeEvent});
-  },
+  };
 
-  onPageScrollStateChanged: function(state : ViewPagerScrollState) {
+  onPageScrollStateChanged = (state : ViewPagerScrollState) => {
     this.setState({scrollState: state});
-  },
+  };
 
-  move: function(delta) {
+  move = (delta) => {
     var page = this.state.page + delta;
     this.go(page);
-  },
+  };
 
-  go: function(page) {
+  go = (page) => {
     if (this.state.animationsAreEnabled) {
       this.viewPager.setPage(page);
     } else {
@@ -142,9 +140,9 @@ var ViewPagerAndroidExample = React.createClass({
     }
 
     this.setState({page});
-  },
+  };
 
-  render: function() {
+  render() {
     var pages = [];
     for (var i = 0; i < PAGES; i++) {
       var pageStyle = {
@@ -207,8 +205,8 @@ var ViewPagerAndroidExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   buttons: {

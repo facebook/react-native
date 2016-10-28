@@ -10,8 +10,20 @@
 #import "RCTAnimatedNode.h"
 #import <UIKit/UIKit.h>
 
+@class RCTValueAnimatedNode;
+
+@protocol RCTValueAnimatedNodeObserver <NSObject>
+
+- (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
+
+@end
+
 @interface RCTValueAnimatedNode : RCTAnimatedNode
 
+- (void)setOffset:(CGFloat)offset;
+- (void)flattenOffset;
+
 @property (nonatomic, assign) CGFloat value;
+@property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;
 
 @end

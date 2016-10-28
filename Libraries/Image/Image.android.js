@@ -16,7 +16,6 @@ var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -30,9 +29,15 @@ var resolveAssetSource = require('resolveAssetSource');
 var Set = require('Set');
 var filterObject = require('fbjs/lib/filterObject');
 
+var PropTypes = React.PropTypes;
 var {
   ImageLoader,
 } = NativeModules;
+
+let _requestId = 1;
+function generateRequestId() {
+  return _requestId++;
+}
 
 /**
  * <Image> - A react component for displaying different types of images,
@@ -60,6 +65,7 @@ var {
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   loadingIndicatorSrc: true,
+  resizeMethod: true,
   resizeMode: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
@@ -125,6 +131,46 @@ var Image = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * The mechanism that should be used to resize the image when the image's dimensions
+     * differ from the image view's dimensions. Defaults to `auto`.
+     *
+     * - `auto`: Use heuristics to pick between `resize` and `scale`.
+     *
+     * - `resize`: A software operation which changes the encoded image in memory before it
+     * gets decoded. This should be used instead of `scale` when the image is much larger
+     * than the view.
+     *
+     * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
+     * faster (usually hardware accelerated) and produces higher quality images. This
+     * should be used if the image is smaller than the view. It should also be used if the
+     * image is slightly bigger than the view.
+     *
+     * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
+     *
+     * @platform android
+     */
+    resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
+    /**
+     * Determines how to resize the image when the frame doesn't match the raw
+     * image dimensions.
+     *
+     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal
+     * to or larger than the corresponding dimension of the view (minus padding).
+     *
+     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal to
+     * or less than the corresponding dimension of the view (minus padding).
+     *
+     * 'stretch': Scale width and height independently, This may change the
+     * aspect ratio of the src.
+     *
+     * 'center': Scale the image down so that it is completely visible,
+     * if bigger than the area of the view.
+     * The image will not be scaled up.
+     */
+    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'center']),
   },
 
   statics: {
@@ -148,9 +194,29 @@ var Image = React.createClass({
      * Prefetches a remote image for later use by downloading it to the disk
      * cache
      */
-    prefetch(url: string) {
-      return ImageLoader.prefetchImage(url);
+    prefetch(url: string, callback: ?Function) {
+      const requestId = generateRequestId();
+      callback && callback(requestId);
+      return ImageLoader.prefetchImage(url, requestId);
     },
+
+    /**
+     * Abort prefetch request
+     */
+    abortPrefetch(requestId: number) {
+      ImageLoader.abortRequest(requestId);
+    },
+
+    /**
+     * Perform cache interrogation.
+     *
+     * @param urls the list of image URLs to check the cache for.
+     * @return a mapping from url to cache status, such as "disk" or "memory". If a requested URL is
+     *         not in the mapping, it means it's not in the cache.
+     */
+    async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+      return await ImageLoader.queryCache(urls);
+    }
   },
 
   mixins: [NativeMethodsMixin],
@@ -270,9 +336,6 @@ var cfg = {
   nativeOnly: {
     src: true,
     loadingIndicatorSrc: true,
-    defaultImageSrc: true,
-    imageTag: true,
-    progressHandlerRegistered: true,
     shouldNotifyLoadEvents: true,
   },
 };

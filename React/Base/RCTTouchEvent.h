@@ -18,6 +18,7 @@
 @interface RCTTouchEvent : NSObject <RCTEvent>
 
 - (instancetype)initWithEventName:(NSString *)eventName
+                         reactTag:(NSNumber *)reactTag
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
                    changedIndexes:(NSArray<NSNumber *> *)changedIndexes
                     coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;

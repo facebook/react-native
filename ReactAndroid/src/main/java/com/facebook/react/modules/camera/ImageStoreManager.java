@@ -27,7 +27,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = "ImageStoreManager")
 public class ImageStoreManager extends ReactContextBaseJavaModule {
 
   private static final int BUFFER_SIZE = 8192;

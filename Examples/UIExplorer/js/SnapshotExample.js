@@ -32,12 +32,10 @@ var {
   View,
 } = ReactNative;
 
-var ScreenshotExample = React.createClass({
-  getInitialState() {
-    return {
-      uri: undefined,
-    };
-  },
+class ScreenshotExample extends React.Component {
+  state = {
+    uri: undefined,
+  };
 
   render() {
     return (
@@ -48,15 +46,15 @@ var ScreenshotExample = React.createClass({
         <Image style={style.image} source={{uri: this.state.uri}}/>
       </View>
     );
-  },
+  }
 
-  takeScreenshot() {
+  takeScreenshot = () => {
     UIManager
       .takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
       .then((uri) => this.setState({uri}))
       .catch((error) => alert(error));
-  }
-});
+  };
+}
 
 var style = StyleSheet.create({
   button: {
@@ -76,6 +74,6 @@ exports.description = 'API to capture images from the screen.';
 exports.examples = [
   {
     title: 'Take screenshot',
-    render(): ReactElement<any> { return <ScreenshotExample />; }
+    render(): React.Element<any> { return <ScreenshotExample />; }
   },
 ];

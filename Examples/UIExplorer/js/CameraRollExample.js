@@ -35,28 +35,26 @@ const {
   TouchableOpacity
 } = ReactNative;
 
+const invariant = require('fbjs/lib/invariant');
+
 const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-const CAMERA_ROLL_VIEW = 'camera_roll_view';
-
-const CameraRollExample = React.createClass({
-
-  getInitialState() {
-    return {
-      groupTypes: 'SavedPhotos',
-      sliderValue: 1,
-      bigImages: true,
-    };
-  },
-
+class CameraRollExample extends React.Component {
+  state = {
+    groupTypes: 'SavedPhotos',
+    sliderValue: 1,
+    bigImages: true,
+  };
+  _cameraRollView: ?CameraRollView;
   render() {
     return (
       <View>
         <Switch
           onValueChange={this._onSwitchChange}
-          value={this.state.bigImages} />
+          value={this.state.bigImages}
+        />
         <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
         <Slider
           value={this.state.sliderValue}
@@ -64,16 +62,16 @@ const CameraRollExample = React.createClass({
         />
         <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
-          ref={CAMERA_ROLL_VIEW}
+          ref={(ref) => { this._cameraRollView = ref; }}
           batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
         />
       </View>
     );
-  },
+  }
 
-  loadAsset(asset){
+  loadAsset = (asset) => {
     if (this.props.navigator) {
       this.props.navigator.push({
         title: 'Camera Roll Image',
@@ -82,13 +80,13 @@ const CameraRollExample = React.createClass({
         passProps: { asset: asset },
       });
     }
-  },
+  };
 
-  _renderImage(asset) {
+  _renderImage = (asset) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
-    const location = asset.node.location.longitude ?
-      JSON.stringify(asset.node.location) : 'Unknown location';
+    const {location} = asset.node;
+    const locationStr = location ? JSON.stringify(location) : 'Unknown location';
     return (
       <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
         <View style={styles.row}>
@@ -98,29 +96,30 @@ const CameraRollExample = React.createClass({
           />
           <View style={styles.info}>
             <Text style={styles.url}>{asset.node.image.uri}</Text>
-            <Text>{location}</Text>
+            <Text>{locationStr}</Text>
             <Text>{asset.node.group_name}</Text>
             <Text>{new Date(asset.node.timestamp).toString()}</Text>
           </View>
         </View>
       </TouchableOpacity>
     );
-  },
+  };
 
-  _onSliderChange(value) {
+  _onSliderChange = (value) => {
     const options = CameraRoll.GroupTypesOptions;
     const index = Math.floor(value * options.length * 0.99);
     const groupTypes = options[index];
     if (groupTypes !== this.state.groupTypes) {
       this.setState({groupTypes: groupTypes});
     }
-  },
+  };
 
-  _onSwitchChange(value) {
-    this.refs[CAMERA_ROLL_VIEW].rendererChanged();
+  _onSwitchChange = (value) => {
+    invariant(this._cameraRollView, 'ref should be set');
+    this._cameraRollView.rendererChanged();
     this.setState({ bigImages: value });
-  }
-});
+  };
+}
 
 const styles = StyleSheet.create({
   row: {
@@ -144,6 +143,6 @@ exports.description = 'Example component that uses CameraRoll to list user\'s ph
 exports.examples = [
   {
     title: 'Photos',
-    render(): ReactElement<any> { return <CameraRollExample />; }
+    render(): React.Element<any> { return <CameraRollExample />; }
   }
 ];

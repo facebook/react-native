@@ -9,11 +9,12 @@
 'use strict';
 
 jest.unmock('../');
+jest.unmock('../../../../defaults');
 jest.mock('path');
 
-
+const {join: pathJoin} = require.requireActual('path');
 const DependencyGraph = jest.fn();
-jest.setMock('node-haste', DependencyGraph);
+jest.setMock('../../node-haste', DependencyGraph);
 let Module;
 let Polyfill;
 
@@ -36,7 +37,7 @@ describe('Resolver', function() {
       return polyfill;
     });
 
-    DependencyGraph.replacePatterns = require.requireActual('node-haste/lib/lib/replacePatterns');
+    DependencyGraph.replacePatterns = require.requireActual('../../node-haste/lib/replacePatterns');
     DependencyGraph.prototype.createPolyfill = jest.fn();
     DependencyGraph.prototype.getDependencies = jest.fn();
 
@@ -219,7 +220,11 @@ describe('Resolver', function() {
                 'polyfills/Object.es7.js',
               ],
             },
-          ]);
+          ].map(({id, file, dependencies}) => ({
+            id: pathJoin(__dirname, '..', id),
+            file: pathJoin(__dirname, '..', file),
+            dependencies: dependencies.map((d => pathJoin(__dirname, '..', d))),
+          })));
         });
     });
 
@@ -295,7 +300,7 @@ describe('Resolver', function() {
                 'polyfills/Array.es6.js',
                 'polyfills/Object.es7.js',
                 'polyfills/babelHelpers.js',
-              ]
+              ].map(d => pathJoin(__dirname, '..', d))
             },
           ]);
         });

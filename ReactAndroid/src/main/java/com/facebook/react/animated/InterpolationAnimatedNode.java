@@ -1,5 +1,6 @@
 package com.facebook.react.animated;
 
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -11,6 +12,10 @@ import javax.annotation.Nullable;
  * Currently only a linear interpolation is supported on an input range of an arbitrary size.
  */
 /*package*/ class InterpolationAnimatedNode extends ValueAnimatedNode {
+
+  public static final String EXTRAPOLATE_TYPE_IDENTITY = "identity";
+  public static final String EXTRAPOLATE_TYPE_CLAMP = "clamp";
+  public static final String EXTRAPOLATE_TYPE_EXTEND = "extend";
 
   private static double[] fromDoubleArray(ReadableArray ary) {
     double[] res = new double[ary.size()];
@@ -25,19 +30,62 @@ import javax.annotation.Nullable;
       double inputMin,
       double inputMax,
       double outputMin,
-      double outputMax) {
+      double outputMax,
+      String extrapolateLeft,
+      String extrapolateRight) {
+    double result = value;
+
+    // Extrapolate
+    if (result < inputMin) {
+      switch (extrapolateLeft) {
+        case EXTRAPOLATE_TYPE_IDENTITY:
+          return result;
+        case EXTRAPOLATE_TYPE_CLAMP:
+          result = inputMin;
+          break;
+        case EXTRAPOLATE_TYPE_EXTEND:
+          break;
+        default:
+          throw new JSApplicationIllegalArgumentException(
+            "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation");
+      }
+    }
+
+    if (result > inputMax) {
+      switch (extrapolateRight) {
+        case EXTRAPOLATE_TYPE_IDENTITY:
+          return result;
+        case EXTRAPOLATE_TYPE_CLAMP:
+          result = inputMax;
+          break;
+        case EXTRAPOLATE_TYPE_EXTEND:
+          break;
+        default:
+          throw new JSApplicationIllegalArgumentException(
+            "Invalid extrapolation type " + extrapolateRight + "for right extrapolation");
+      }
+    }
+
     return outputMin + (outputMax - outputMin) *
-      (value - inputMin) / (inputMax - inputMin);
+      (result - inputMin) / (inputMax - inputMin);
   }
 
-  /*package*/ static double interpolate(double value, double[] inputRange, double[] outputRange) {
+  /*package*/ static double interpolate(
+      double value,
+      double[] inputRange,
+      double[] outputRange,
+      String extrapolateLeft,
+      String extrapolateRight
+  ) {
     int rangeIndex = findRangeIndex(value, inputRange);
     return interpolate(
       value,
       inputRange[rangeIndex],
       inputRange[rangeIndex + 1],
       outputRange[rangeIndex],
-      outputRange[rangeIndex + 1]);
+      outputRange[rangeIndex + 1],
+      extrapolateLeft,
+      extrapolateRight);
   }
 
   private static int findRangeIndex(double value, double[] ranges) {
@@ -52,11 +100,15 @@ import javax.annotation.Nullable;
 
   private final double mInputRange[];
   private final double mOutputRange[];
+  private final String mExtrapolateLeft;
+  private final String mExtrapolateRight;
   private @Nullable ValueAnimatedNode mParent;
 
   public InterpolationAnimatedNode(ReadableMap config) {
     mInputRange = fromDoubleArray(config.getArray("inputRange"));
     mOutputRange = fromDoubleArray(config.getArray("outputRange"));
+    mExtrapolateLeft = config.getString("extrapolateLeft");
+    mExtrapolateRight = config.getString("extrapolateRight");
   }
 
   @Override
@@ -84,6 +136,6 @@ import javax.annotation.Nullable;
       throw new IllegalStateException("Trying to update interpolation node that has not been " +
         "attached to the parent");
     }
-    mValue = interpolate(mParent.mValue, mInputRange, mOutputRange);
+    mValue = interpolate(mParent.mValue, mInputRange, mOutputRange, mExtrapolateLeft, mExtrapolateRight);
   }
 }

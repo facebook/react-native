@@ -31,13 +31,10 @@ var {
   ScrollView
 } = ReactNative;
 
-var AssetScaledImageExample = React.createClass({
-
-  getInitialState() {
-    return {
-      asset: this.props.asset
-    };
-  },
+class AssetScaledImageExample extends React.Component {
+  state = {
+    asset: this.props.asset
+  };
 
   render() {
     var image = this.state.asset.node.image;
@@ -57,8 +54,8 @@ var AssetScaledImageExample = React.createClass({
         </View>
       </ScrollView>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   row: {

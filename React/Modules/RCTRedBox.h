@@ -11,9 +11,11 @@
 
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
+#import "RCTErrorCustomizer.h"
 
 @interface RCTRedBox : NSObject <RCTBridgeModule>
 
+- (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer;
 - (void)showError:(NSError *)error;
 - (void)showErrorMessage:(NSString *)message;
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details;

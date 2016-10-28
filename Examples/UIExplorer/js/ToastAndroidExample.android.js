@@ -35,18 +35,12 @@ var {
 var UIExplorerBlock = require('UIExplorerBlock');
 var UIExplorerPage = require('UIExplorerPage');
 
-var ToastExample = React.createClass({
+class ToastExample extends React.Component {
+  static title = 'Toast Example';
+  static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
+  state = {};
 
-  statics: {
-    title: 'Toast Example',
-    description: 'Example that demonstrates the use of an Android Toast to provide feedback.',
-  },
-
-  getInitialState: function() {
-    return {};
-  },
-
-  render: function() {
+  render() {
     return (
       <UIExplorerPage title="ToastAndroid">
         <UIExplorerBlock title="Simple toast">
@@ -60,13 +54,49 @@ var ToastExample = React.createClass({
           <TouchableWithoutFeedback
             onPress={() =>
               ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG)}>
-            <Text style={styles.text}>Click me too.</Text>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with top gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with top gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.TOP,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with center gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with center gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toast with bottom gravity">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.showWithGravity(
+                'This is a toast with bottom gravity',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+              )
+            }>
+            <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   text: {

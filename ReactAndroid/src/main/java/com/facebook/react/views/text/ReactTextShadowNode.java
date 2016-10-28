@@ -27,13 +27,18 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
+import android.view.Gravity;
 import android.widget.TextView;
 
+import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -55,7 +60,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
  * passed as "computedDataFromMeasure" down to shadow and native view.
  * <p/>
- * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used solely
+ * TODO(7255858): Rename *CSSNodeDEPRECATED to *ShadowView (or sth similar) as it's no longer is used solely
  * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
@@ -108,7 +113,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       sb.append(textCSSNode.mText);
     }
     for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
-      CSSNode child = textCSSNode.getChildAt(i);
+      CSSNodeDEPRECATED child = textCSSNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
@@ -168,6 +173,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                     textCSSNode.mTextShadowRadius,
                     textCSSNode.mTextShadowColor)));
       }
+      if (!Float.isNaN(textCSSNode.getEffectiveLineHeight())) {
+        ops.add(new SetSpanOperation(
+                start,
+                end,
+                new CustomLineHeightSpan(textCSSNode.getEffectiveLineHeight())));
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
     }
   }
@@ -190,28 +201,32 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
 
     textCSSNode.mContainsImages = false;
+    textCSSNode.mHeightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images
     for (int i = ops.size() - 1; i >= 0; i--) {
       SetSpanOperation op = ops.get(i);
       if (op.what instanceof TextInlineImageSpan) {
+        int height = ((TextInlineImageSpan)op.what).getHeight();
         textCSSNode.mContainsImages = true;
+        if (Float.isNaN(textCSSNode.mHeightOfTallestInlineImage) || height > textCSSNode.mHeightOfTallestInlineImage) {
+          textCSSNode.mHeightOfTallestInlineImage = height;
+        }
       }
       op.execute(sb);
     }
     return sb;
   }
 
-  private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
-      new CSSNode.MeasureFunction() {
+  private static final CSSNodeAPI.MeasureFunction TEXT_MEASURE_FUNCTION =
+      new CSSNodeAPI.MeasureFunction() {
         @Override
-        public void measure(
-            CSSNode node,
+        public long measure(
+            CSSNodeAPI node,
             float width,
             CSSMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode,
-            MeasureOutput measureOutput) {
+            CSSMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
@@ -236,8 +251,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) Math.ceil(desiredWidth),
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                1.f,
+                0.f,
                 true);
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
@@ -247,8 +262,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 boring.width,
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                1.f,
+                0.f,
                 boring,
                 true);
           } else {
@@ -258,23 +273,18 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
-                1,
-                0,
+                1.f,
+                0.f,
                 true);
           }
 
-          measureOutput.height = layout.getHeight();
-          measureOutput.width = layout.getWidth();
           if (reactCSSNode.mNumberOfLines != UNSET &&
               reactCSSNode.mNumberOfLines < layout.getLineCount()) {
-            measureOutput.height = layout.getLineBottom(reactCSSNode.mNumberOfLines - 1);
-          }
-          if (reactCSSNode.mLineHeight != UNSET) {
-            int lines = reactCSSNode.mNumberOfLines != UNSET
-                ? Math.min(reactCSSNode.mNumberOfLines, layout.getLineCount())
-                : layout.getLineCount();
-            float lineHeight = PixelUtil.toPixelFromSP(reactCSSNode.mLineHeight);
-            measureOutput.height = lineHeight * lines;
+            return MeasureOutput.make(
+                layout.getWidth(),
+                layout.getLineBottom(reactCSSNode.mNumberOfLines - 1));
+          } else {
+            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -282,8 +292,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   /**
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
-   * 
-   * This code is duplicated in ReactTextInputManager 
+   *
+   * This code is duplicated in ReactTextInputManager
    * TODO: Factor into a common place they can both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
@@ -293,7 +303,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
-  private int mLineHeight = UNSET;
+  private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
@@ -301,6 +311,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
+  protected int mTextAlign = Gravity.NO_GRAVITY;
 
   private float mTextShadowOffsetDx = 0;
   private float mTextShadowOffsetDy = 0;
@@ -340,12 +351,35 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private final boolean mIsVirtual;
 
   protected boolean mContainsImages = false;
+  private float mHeightOfTallestInlineImage = Float.NaN;
 
   public ReactTextShadowNode(boolean isVirtual) {
     mIsVirtual = isVirtual;
     if (!isVirtual) {
       setMeasureFunction(TEXT_MEASURE_FUNCTION);
     }
+  }
+
+  // Returns a line height which takes into account the requested line height
+  // and the height of the inline images.
+  public float getEffectiveLineHeight() {
+    boolean useInlineViewHeight = !Float.isNaN(mLineHeight) &&
+        !Float.isNaN(mHeightOfTallestInlineImage) &&
+        mHeightOfTallestInlineImage > mLineHeight;
+    return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
+  }
+
+  // Return text alignment according to LTR or RTL style
+  private int getTextAlign() {
+    int textAlign = mTextAlign;
+    if (getLayoutDirection() == CSSDirection.RTL) {
+      if (textAlign == Gravity.RIGHT) {
+        textAlign = Gravity.LEFT;
+      } else if (textAlign == Gravity.LEFT) {
+        textAlign = Gravity.RIGHT;
+      }
+    }
+    return textAlign;
   }
 
   @Override
@@ -358,7 +392,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   @Override
-  protected void markUpdated() {
+  public void markUpdated() {
     super.markUpdated();
     // We mark virtual anchor node as dirty as updated text needs to be re-measured
     if (!mIsVirtual) {
@@ -374,13 +408,32 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
   public void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
     markUpdated();
   }
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
   public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight;
+    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(@Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      mTextAlign = Gravity.NO_GRAVITY;
+    } else if ("left".equals(textAlign)) {
+      mTextAlign = Gravity.LEFT;
+    } else if ("right".equals(textAlign)) {
+      mTextAlign = Gravity.RIGHT;
+    } else if ("center".equals(textAlign)) {
+      mTextAlign = Gravity.CENTER_HORIZONTAL;
+    } else if ("justify".equals(textAlign)) {
+      // Fallback gracefully for cross-platform compat instead of error
+      mTextAlign = Gravity.LEFT;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
     markUpdated();
   }
 
@@ -413,15 +466,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-    
+
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
   }
-    
+
   /**
-  /* This code is duplicated in ReactTextInputManager 
+  /* This code is duplicated in ReactTextInputManager
   /* TODO: Factor into a common place they can both use
   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
@@ -440,9 +493,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       markUpdated();
     }
   }
-  
+
   /**
-  /* This code is duplicated in ReactTextInputManager 
+  /* This code is duplicated in ReactTextInputManager
   /* TODO: Factor into a common place they can both use
   */
   @ReactProp(name = ViewProps.FONT_STYLE)
@@ -530,7 +583,16 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mPreparedSpannableText != null) {
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(mPreparedSpannableText, UNSET, mContainsImages, getPadding());
+        new ReactTextUpdate(
+          mPreparedSpannableText,
+          UNSET,
+          mContainsImages,
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
+          getTextAlign()
+        );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

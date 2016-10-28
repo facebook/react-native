@@ -16,8 +16,7 @@ var {
 
 var { TestModule } = ReactNative.NativeModules;
 
-var PropertiesUpdateTest = React.createClass({
-
+class PropertiesUpdateTest extends React.Component {
   render() {
     if (this.props.markTestPassed) {
       TestModule.markTestPassed(true);
@@ -26,7 +25,7 @@ var PropertiesUpdateTest = React.createClass({
       <View/>
     );
   }
-});
+}
 
 PropertiesUpdateTest.displayName = 'PropertiesUpdateTest';
 

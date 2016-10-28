@@ -51,7 +51,6 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -83,6 +82,7 @@ public class ReactImageView extends GenericDraweeView {
    */
   private static final Matrix sMatrix = new Matrix();
   private static final Matrix sInverse = new Matrix();
+  private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
@@ -192,7 +192,7 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_START));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -202,18 +202,19 @@ public class ReactImageView extends GenericDraweeView {
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD,
+                mImageSource.getSource(), imageInfo.getWidth(), imageInfo.getHeight()));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
+              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_ERROR));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), SystemClock.nanoTime(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
@@ -257,6 +258,11 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
     mScaleType = scaleType;
+    mIsDirty = true;
+  }
+
+  public void setResizeMethod(ImageResizeMethod resizeMethod) {
+    mResizeMethod = resizeMethod;
     mIsDirty = true;
   }
 
@@ -451,12 +457,18 @@ public class ReactImageView extends GenericDraweeView {
     mImageSource = mSources.get(0);
   }
 
-  private static boolean shouldResize(ImageSource imageSource) {
+  private boolean shouldResize(ImageSource imageSource) {
     // Resizing is inferior to scaling. See http://frescolib.org/docs/resizing-rotating.html#_
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
-    return
-      UriUtil.isLocalContentUri(imageSource.getUri()) ||
-      UriUtil.isLocalFileUri(imageSource.getUri());
+    if (mResizeMethod == ImageResizeMethod.AUTO) {
+      return
+        UriUtil.isLocalContentUri(imageSource.getUri()) ||
+        UriUtil.isLocalFileUri(imageSource.getUri());
+    } else if (mResizeMethod == ImageResizeMethod.RESIZE) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

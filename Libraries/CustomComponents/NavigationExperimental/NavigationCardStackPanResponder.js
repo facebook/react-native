@@ -8,11 +8,11 @@
  *
  * @providesModule NavigationCardStackPanResponder
  * @flow
- * @typechecks
  */
 'use strict';
 
 const Animated = require('Animated');
+const I18nManager = require('I18nManager');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
 
 const clamp = require('clamp');
@@ -40,14 +40,6 @@ const POSITION_THRESHOLD = 1 / 3;
 const RESPOND_THRESHOLD = 15;
 
 /**
- * The distance from the edge of the navigator which gesture response can start for.
- * For horizontal scroll views, a distance of 30 from the left of the screen is the
- * standard maximum position to start touch responsiveness.
- */
-const RESPOND_POSITION_MAX_HORIZONTAL = 30;
-const RESPOND_POSITION_MAX_VERTICAL = null;
-
-/**
  * The threshold (in pixels) to finish the gesture action.
  */
 const DISTANCE_THRESHOLD = 100;
@@ -64,6 +56,10 @@ export type NavigationGestureDirection =  'horizontal' | 'vertical';
 
 type Props = NavigationSceneRendererProps & {
   onNavigateBack: ?Function,
+  /**
+  * The distance from the edge of the navigator which gesture response can start for.
+  **/
+  gestureResponseDistance: ?number,
 };
 
 /**
@@ -115,8 +111,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       layout.width.__getValue();
 
     const positionMax = isVertical ?
-      RESPOND_POSITION_MAX_VERTICAL :
-      RESPOND_POSITION_MAX_HORIZONTAL;
+      props.gestureResponseDistance :
+      /**
+      * For horizontal scroll views, a distance of 30 from the left of the screen is the
+      * standard maximum position to start touch responsiveness.
+      */
+      props.gestureResponseDistance || 30;
 
     if (positionMax != null && currentDragPosition > positionMax) {
       return false;
@@ -150,10 +150,13 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
+    const currentValue = I18nManager.isRTL && axis === 'dx' ?
+      this._startValue + (gesture[axis] / distance) :
+      this._startValue - (gesture[axis] / distance);
 
     const value = clamp(
       index - 1,
-      this._startValue - (gesture[axis] / distance),
+      currentValue,
       index
     );
 
@@ -171,7 +174,9 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
     const index = props.navigationState.index;
-    const distance = gesture[axis];
+    const distance = I18nManager.isRTL && axis === 'dx' ?
+      -gesture[axis] :
+      gesture[axis];
 
     props.position.stopAnimation((value: number) => {
       this._reset();

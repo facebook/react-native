@@ -13,6 +13,8 @@
 
 const Animated = require('Animated');
 
+import type React from 'react';
+
 // Object Instances
 
 export type NavigationAnimatedValue = Animated.Value;
@@ -70,6 +72,9 @@ export type NavigationTransitionProps = {
   // The active scene, corresponding to the route at
   // `navigationState.routes[navigationState.index]`.
   scene: NavigationScene,
+
+  // The gesture distance for `horizontal` and `vertical` transitions
+  gestureResponseDistance?: ?number,
 };
 
 // Similar to `NavigationTransitionProps`, except that the prop `scene`
@@ -109,7 +114,7 @@ export type NavigationAnimationSetter = (
 
 export type NavigationSceneRenderer = (
   props: NavigationSceneRendererProps,
-) => ?ReactElement<any>;
+) => ?React.Element<any>;
 
 export type NavigationStyleInterpolator = (
   props: NavigationSceneRendererProps,

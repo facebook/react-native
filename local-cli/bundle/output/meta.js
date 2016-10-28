@@ -8,6 +8,8 @@
  */
 'use strict';
 
+/* global Buffer: true */
+
 const crypto = require('crypto');
 
 const isUTF8 = encoding => /^utf-?8$/i.test(encoding);
@@ -15,7 +17,7 @@ const isUTF8 = encoding => /^utf-?8$/i.test(encoding);
 const constantFor = encoding =>
   /^ascii$/i.test(encoding) ? 1 :
   isUTF8(encoding) ? 2 :
-  /^(?:utf-?16(?:le)?|ucs-?2)$/ ? 3 : 0;
+  /^(?:utf-?16(?:le)?|ucs-?2)$/.test(encoding) ? 3 : 0;
 
 module.exports = function(code, encoding) {
   const hash = crypto.createHash('sha1');

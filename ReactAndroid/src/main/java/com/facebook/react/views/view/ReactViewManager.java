@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
+import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
@@ -25,17 +26,15 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ViewProps;
 
 /**
  * View manager for AndroidViews (plain React Views).
  */
+@ReactModule(name = ReactViewManager.REACT_CLASS)
 public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @VisibleForTesting
@@ -105,7 +104,15 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
   }
 
-  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "nativeForegroundAndroid")
+  public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
+    view.setForeground(fg == null
+        ? null
+        : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
+  }
+
+  @ReactProp(name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
@@ -135,9 +142,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
-    view.setBorderColor(
-        SPACING_TYPES[index],
-        color == null ? CSSConstants.UNDEFINED : (float) color);
+    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)

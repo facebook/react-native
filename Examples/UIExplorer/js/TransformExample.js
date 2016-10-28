@@ -30,24 +30,22 @@ var {
   View,
 } = ReactNative;
 
-var Flip = React.createClass({
-  getInitialState() {
-    return {
-      theta: new Animated.Value(45),
-    };
-  },
+class Flip extends React.Component {
+  state = {
+    theta: new Animated.Value(45),
+  };
 
   componentDidMount() {
     this._animate();
-  },
+  }
 
-  _animate() {
+  _animate = () => {
     this.state.theta.setValue(0);
     Animated.timing(this.state.theta, {
       toValue: 360,
       duration: 5000,
     }).start(this._animate);
-  },
+  };
 
   render() {
     return (
@@ -83,7 +81,7 @@ var Flip = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -215,7 +213,7 @@ exports.examples = [
   {
     title: 'Perspective',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
-    render(): ReactElement<any> { return <Flip />; }
+    render(): React.Element<any> { return <Flip />; }
   },
   {
     title: 'Translate, Rotate, Scale',

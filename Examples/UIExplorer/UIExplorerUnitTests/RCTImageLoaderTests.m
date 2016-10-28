@@ -61,7 +61,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
@@ -92,7 +92,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];

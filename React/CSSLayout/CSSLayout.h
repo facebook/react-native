@@ -7,10 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef __LAYOUT_H
-#define __LAYOUT_H
+#pragma once
 
+#include <assert.h>
 #include <math.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -18,189 +23,208 @@
 // Not defined in MSVC++
 #ifndef NAN
 static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *)__nan)
+#define NAN (*(const float *) __nan)
 #endif
 
-#define CSS_UNDEFINED NAN
+#define CSSUndefined NAN
 
 #include "CSSMacros.h"
 
 CSS_EXTERN_C_BEGIN
 
-typedef enum {
-  CSS_DIRECTION_INHERIT = 0,
-  CSS_DIRECTION_LTR,
-  CSS_DIRECTION_RTL
-} css_direction_t;
+typedef enum CSSDirection {
+  CSSDirectionInherit,
+  CSSDirectionLTR,
+  CSSDirectionRTL,
+} CSSDirection;
 
-typedef enum {
-  CSS_FLEX_DIRECTION_COLUMN = 0,
-  CSS_FLEX_DIRECTION_COLUMN_REVERSE,
-  CSS_FLEX_DIRECTION_ROW,
-  CSS_FLEX_DIRECTION_ROW_REVERSE
-} css_flex_direction_t;
+typedef enum CSSFlexDirection {
+  CSSFlexDirectionColumn,
+  CSSFlexDirectionColumnReverse,
+  CSSFlexDirectionRow,
+  CSSFlexDirectionRowReverse,
+} CSSFlexDirection;
 
-typedef enum {
-  CSS_JUSTIFY_FLEX_START = 0,
-  CSS_JUSTIFY_CENTER,
-  CSS_JUSTIFY_FLEX_END,
-  CSS_JUSTIFY_SPACE_BETWEEN,
-  CSS_JUSTIFY_SPACE_AROUND
-} css_justify_t;
+typedef enum CSSJustify {
+  CSSJustifyFlexStart,
+  CSSJustifyCenter,
+  CSSJustifyFlexEnd,
+  CSSJustifySpaceBetween,
+  CSSJustifySpaceAround,
+} CSSJustify;
 
-typedef enum {
-  CSS_OVERFLOW_VISIBLE = 0,
-  CSS_OVERFLOW_HIDDEN
-} css_overflow_t;
+typedef enum CSSOverflow {
+  CSSOverflowVisible,
+  CSSOverflowHidden,
+  CSSOverflowScroll,
+} CSSOverflow;
 
 // Note: auto is only a valid value for alignSelf. It is NOT a valid value for
 // alignItems.
-typedef enum {
-  CSS_ALIGN_AUTO = 0,
-  CSS_ALIGN_FLEX_START,
-  CSS_ALIGN_CENTER,
-  CSS_ALIGN_FLEX_END,
-  CSS_ALIGN_STRETCH
-} css_align_t;
+typedef enum CSSAlign {
+  CSSAlignAuto,
+  CSSAlignFlexStart,
+  CSSAlignCenter,
+  CSSAlignFlexEnd,
+  CSSAlignStretch,
+} CSSAlign;
 
-typedef enum {
-  CSS_POSITION_RELATIVE = 0,
-  CSS_POSITION_ABSOLUTE
-} css_position_type_t;
+typedef enum CSSPositionType {
+  CSSPositionTypeRelative,
+  CSSPositionTypeAbsolute,
+} CSSPositionType;
 
-typedef enum {
-  CSS_NOWRAP = 0,
-  CSS_WRAP
-} css_wrap_type_t;
+typedef enum CSSWrapType {
+  CSSWrapTypeNoWrap,
+  CSSWrapTypeWrap,
+} CSSWrapType;
 
-// Note: left and top are shared between position[2] and position[4], so
-// they have to be before right and bottom.
-typedef enum {
-  CSS_LEFT = 0,
-  CSS_TOP,
-  CSS_RIGHT,
-  CSS_BOTTOM,
-  CSS_START,
-  CSS_END,
-  CSS_POSITION_COUNT
-} css_position_t;
+typedef enum CSSMeasureMode {
+  CSSMeasureModeUndefined,
+  CSSMeasureModeExactly,
+  CSSMeasureModeAtMost,
+  CSSMeasureModeCount,
+} CSSMeasureMode;
 
-typedef enum {
-  CSS_MEASURE_MODE_UNDEFINED = 0,
-  CSS_MEASURE_MODE_EXACTLY,
-  CSS_MEASURE_MODE_AT_MOST,
-  CSS_MEASURE_MODE_COUNT
-} css_measure_mode_t;
+typedef enum CSSDimension {
+  CSSDimensionWidth,
+  CSSDimensionHeight,
+} CSSDimension;
 
-typedef enum {
-  CSS_WIDTH = 0,
-  CSS_HEIGHT
-} css_dimension_t;
+typedef enum CSSEdge {
+  CSSEdgeLeft,
+  CSSEdgeTop,
+  CSSEdgeRight,
+  CSSEdgeBottom,
+  CSSEdgeStart,
+  CSSEdgeEnd,
+  CSSEdgeHorizontal,
+  CSSEdgeVertical,
+  CSSEdgeAll,
+  CSSEdgeCount,
+} CSSEdge;
 
-typedef struct {
-  float available_width;
-  float available_height;
-  css_measure_mode_t width_measure_mode;
-  css_measure_mode_t height_measure_mode;
+typedef enum CSSPrintOptions {
+  CSSPrintOptionsLayout = 1,
+  CSSPrintOptionsStyle = 2,
+  CSSPrintOptionsChildren = 4,
+} CSSPrintOptions;
 
-  float computed_width;
-  float computed_height;
-} css_cached_measurement_t;
+typedef struct CSSSize {
+  float width;
+  float height;
+} CSSSize;
 
-enum {
-  // This value was chosen based on empiracle data. Even the most complicated
-  // layouts should not require more than 16 entries to fit within the cache.
-  CSS_MAX_CACHED_RESULT_COUNT = 16
-};
+typedef struct CSSNode *CSSNodeRef;
+typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
+                                  float width,
+                                  CSSMeasureMode widthMode,
+                                  float height,
+                                  CSSMeasureMode heightMode);
+typedef void (*CSSPrintFunc)(CSSNodeRef node);
+typedef int (*CSSLogger)(const char *format, ...);
 
-typedef struct {
-  float position[4];
-  float dimensions[2];
-  css_direction_t direction;
+#ifdef CSS_ASSERT_FAIL_ENABLED
+typedef void (*CSSAssertFailFunc)(const char *message);
+#endif
 
-  float flex_basis;
+// CSSNode
+WIN_EXPORT CSSNodeRef CSSNodeNew(void);
+WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeFree(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeFreeRecursive(const CSSNodeRef node);
+WIN_EXPORT void CSSNodeReset(const CSSNodeRef node);
+WIN_EXPORT int32_t CSSNodeGetInstanceCount(void);
 
-  // Instead of recomputing the entire layout every single time, we
-  // cache some information to break early when nothing changed
-  bool should_update;
-  int generation_count;
-  css_direction_t last_parent_direction;
+WIN_EXPORT void CSSNodeInsertChild(const CSSNodeRef node,
+                                   const CSSNodeRef child,
+                                   const uint32_t index);
+WIN_EXPORT void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
+WIN_EXPORT CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index);
+WIN_EXPORT uint32_t CSSNodeChildCount(const CSSNodeRef node);
 
-  int next_cached_measurements_index;
-  css_cached_measurement_t cached_measurements[CSS_MAX_CACHED_RESULT_COUNT];
-  float measured_dimensions[2];
+WIN_EXPORT void CSSNodeCalculateLayout(const CSSNodeRef node,
+                                       const float availableWidth,
+                                       const float availableHeight,
+                                       const CSSDirection parentDirection);
 
-  css_cached_measurement_t cached_layout;
-} css_layout_t;
+// Mark a node as dirty. Only valid for nodes with a custom measure function
+// set.
+// CSSLayout knows when to mark all other nodes as dirty but because nodes with
+// measure functions
+// depends on information not known to CSSLayout they must perform this dirty
+// marking manually.
+WIN_EXPORT void CSSNodeMarkDirty(const CSSNodeRef node);
+WIN_EXPORT bool CSSNodeIsDirty(const CSSNodeRef node);
 
-typedef struct {
-  float dimensions[2];
-} css_dim_t;
+WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options);
 
-typedef struct {
-  css_direction_t direction;
-  css_flex_direction_t flex_direction;
-  css_justify_t justify_content;
-  css_align_t align_content;
-  css_align_t align_items;
-  css_align_t align_self;
-  css_position_type_t position_type;
-  css_wrap_type_t flex_wrap;
-  css_overflow_t overflow;
-  float flex;
-  float margin[6];
-  float position[4];
-  /**
-   * You should skip all the rules that contain negative values for the
-   * following attributes. For example:
-   *   {padding: 10, paddingLeft: -5}
-   * should output:
-   *   {left: 10 ...}
-   * the following two are incorrect:
-   *   {left: -5 ...}
-   *   {left: 0 ...}
-   */
-  float padding[6];
-  float border[6];
-  float dimensions[2];
-  float minDimensions[2];
-  float maxDimensions[2];
-} css_style_t;
+WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
-typedef struct css_node css_node_t;
-struct css_node {
-  css_style_t style;
-  css_layout_t layout;
-  int children_count;
-  int line_index;
+#define CSS_NODE_PROPERTY(type, name, paramName)                           \
+  WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
+  WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);
 
-  css_node_t* next_child;
+#define CSS_NODE_STYLE_PROPERTY(type, name, paramName)                                \
+  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName); \
+  WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node);
 
-  css_dim_t (*measure)(void *context, float width, css_measure_mode_t widthMode, float height, css_measure_mode_t heightMode);
-  void (*print)(void *context);
-  struct css_node* (*get_child)(void *context, int i);
-  bool (*is_dirty)(void *context);
-  bool (*is_text_node)(void *context);
-  void *context;
-};
+#define CSS_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)    \
+  WIN_EXPORT void CSSNodeStyleSet##name(const CSSNodeRef node, \
+                                        const CSSEdge edge,    \
+                                        const type paramName); \
+  WIN_EXPORT type CSSNodeStyleGet##name(const CSSNodeRef node, const CSSEdge edge);
 
-// Lifecycle of nodes and children
-css_node_t *new_css_node(void);
-void init_css_node(css_node_t *node);
-void free_css_node(css_node_t *node);
+#define CSS_NODE_LAYOUT_PROPERTY(type, name) \
+  WIN_EXPORT type CSSNodeLayoutGet##name(const CSSNodeRef node);
 
-// Print utilities
-typedef enum {
-  CSS_PRINT_LAYOUT = 1,
-  CSS_PRINT_STYLE = 2,
-  CSS_PRINT_CHILDREN = 4,
-} css_print_options_t;
-void print_css_node(css_node_t *node, css_print_options_t options);
+CSS_NODE_PROPERTY(void *, Context, context);
+CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
+CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
+CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
+CSS_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
-// Function that computes the layout!
-void layoutNode(css_node_t *node, float availableWidth, float availableHeight, css_direction_t parentDirection);
-bool isUndefined(float value);
+CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);
+CSS_NODE_STYLE_PROPERTY(CSSFlexDirection, FlexDirection, flexDirection);
+CSS_NODE_STYLE_PROPERTY(CSSJustify, JustifyContent, justifyContent);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignContent, alignContent);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignItems, alignItems);
+CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
+CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
+CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
+
+WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
+CSS_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
+
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Position, position);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Margin, margin);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Padding, padding);
+CSS_NODE_STYLE_EDGE_PROPERTY(float, Border, border);
+
+CSS_NODE_STYLE_PROPERTY(float, Width, width);
+CSS_NODE_STYLE_PROPERTY(float, Height, height);
+CSS_NODE_STYLE_PROPERTY(float, MinWidth, minWidth);
+CSS_NODE_STYLE_PROPERTY(float, MinHeight, minHeight);
+CSS_NODE_STYLE_PROPERTY(float, MaxWidth, maxWidth);
+CSS_NODE_STYLE_PROPERTY(float, MaxHeight, maxHeight);
+
+CSS_NODE_LAYOUT_PROPERTY(float, Left);
+CSS_NODE_LAYOUT_PROPERTY(float, Top);
+CSS_NODE_LAYOUT_PROPERTY(float, Right);
+CSS_NODE_LAYOUT_PROPERTY(float, Bottom);
+CSS_NODE_LAYOUT_PROPERTY(float, Width);
+CSS_NODE_LAYOUT_PROPERTY(float, Height);
+CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
+
+WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+// Assert
+WIN_EXPORT void CSSAssertSetFailFunc(CSSAssertFailFunc func);
+WIN_EXPORT void CSSAssertFail(const char *message);
+#endif
 
 CSS_EXTERN_C_END
-
-#endif

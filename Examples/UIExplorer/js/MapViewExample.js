@@ -160,16 +160,13 @@ var MapRegionInput = React.createClass({
 
 });
 
-var MapViewExample = React.createClass({
-
-  getInitialState() {
-    return {
-      isFirstLoad: true,
-      mapRegion: undefined,
-      mapRegionInput: undefined,
-      annotations: [],
-    };
-  },
+class MapViewExample extends React.Component {
+  state = {
+    isFirstLoad: true,
+    mapRegion: undefined,
+    mapRegionInput: undefined,
+    annotations: [],
+  };
 
   render() {
     return (
@@ -187,23 +184,23 @@ var MapViewExample = React.createClass({
         />
       </View>
     );
-  },
+  }
 
-  _getAnnotations(region) {
+  _getAnnotations = (region) => {
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
       title: 'You Are Here',
     }];
-  },
+  };
 
-  _onRegionChange(region) {
+  _onRegionChange = (region) => {
     this.setState({
       mapRegionInput: region,
     });
-  },
+  };
 
-  _onRegionChangeComplete(region) {
+  _onRegionChangeComplete = (region) => {
     if (this.state.isFirstLoad) {
       this.setState({
         mapRegionInput: region,
@@ -211,27 +208,23 @@ var MapViewExample = React.createClass({
         isFirstLoad: false,
       });
     }
-  },
+  };
 
-  _onRegionInputChanged(region) {
+  _onRegionInputChanged = (region) => {
     this.setState({
       mapRegion: region,
       mapRegionInput: region,
       annotations: this._getAnnotations(region),
     });
-  },
+  };
+}
 
-});
-
-var AnnotationExample = React.createClass({
-
-  getInitialState() {
-    return {
-      isFirstLoad: true,
-      annotations: [],
-      mapRegion: undefined,
-    };
-  },
+class AnnotationExample extends React.Component {
+  state = {
+    isFirstLoad: true,
+    annotations: [],
+    mapRegion: undefined,
+  };
 
   render() {
     if (this.state.isFirstLoad) {
@@ -255,13 +248,17 @@ var AnnotationExample = React.createClass({
         annotations={this.state.annotations}
       />
     );
-  },
+  }
+}
 
-});
+class DraggableAnnotationExample extends React.Component {
+  state = {
+    isFirstLoad: true,
+    annotations: [],
+    mapRegion: undefined,
+  };
 
-var DraggableAnnotationExample = React.createClass({
-
-  createAnnotation(longitude, latitude) {
+  createAnnotation = (longitude, latitude) => {
     return {
       longitude,
       latitude,
@@ -275,15 +272,7 @@ var DraggableAnnotationExample = React.createClass({
         console.log('Drag state: ' + event.state);
       },
     };
-  },
-
-  getInitialState() {
-    return {
-      isFirstLoad: true,
-      annotations: [],
-      mapRegion: undefined,
-    };
-  },
+  };
 
   render() {
     if (this.state.isFirstLoad) {
@@ -305,9 +294,8 @@ var DraggableAnnotationExample = React.createClass({
         annotations={this.state.annotations}
       />
     );
-  },
-
-});
+  }
+}
 
 var styles = StyleSheet.create({
   map: {
@@ -412,7 +400,7 @@ exports.examples = [
     render() {
       return <AnnotationExample style={styles.map} annotation={{
         title: 'Thumbs Up!',
-        image: require('image!uie_thumb_big'),
+        image: require('./uie_thumb_big.png'),
       }}/>;
     }
   },
@@ -429,7 +417,7 @@ exports.examples = [
           </Text>
           <Image
             style={{width: 90, height: 65, resizeMode: 'cover'}}
-            source={require('image!uie_thumb_big')}
+            source={require('./uie_thumb_big.png')}
           />
         </View>,
       }}/>;

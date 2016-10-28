@@ -10,7 +10,7 @@
 #include <folly/Memory.h>
 
 #include <cxxreact/SystraceSection.h>
-#include <cxxreact/FollySupport.h>
+#include <cxxreact/ModuleRegistry.h>
 
 namespace facebook {
 namespace react {
@@ -20,7 +20,7 @@ const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 static std::string executeJSCallWithProxy(
     jobject executor,
     const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
+    const folly::dynamic& arguments) {
   static auto executeJSCall =
     jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<jstring(jstring, jstring)>("executeJSCall");
 
@@ -45,8 +45,10 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
 
   {
     SystraceSection s("collectNativeModuleDescriptions");
-    for (const auto& name : delegate->moduleNames()) {
-      nativeModuleConfig.push_back(delegate->getModuleConfig(name));
+    auto moduleRegistry = delegate->getModuleRegistry();
+    for (const auto& name : moduleRegistry->moduleNames()) {
+      auto config = moduleRegistry->getConfig(name);
+      nativeModuleConfig.push_back(config ? config->config : nullptr);
     }
   }
 
@@ -57,10 +59,7 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
   SystraceSection t("setGlobalVariable");
   setGlobalVariable(
     "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
-  setGlobalVariable(
-    "__fbBatchedBridgeSerializeNativeParams",
-    folly::make_unique<JSBigStdString>("1"));
+    folly::make_unique<JSBigStdString>(folly::toJson(config)));
 }
 
 ProxyExecutor::~ProxyExecutor() {
@@ -78,7 +77,8 @@ void ProxyExecutor::loadApplicationScript(
   loadApplicationScript(
     m_executor.get(),
     jni::make_jstring(sourceURL).get());
-  executeJSCallWithProxy(m_executor.get(), "flushedQueue", std::vector<folly::dynamic>());
+  // We can get pending calls here to native but the queue will be drained when
+  // we launch the application.
 }
 
 void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
@@ -88,22 +88,16 @@ void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
-  };
+  auto call = folly::dynamic::array(moduleId, methodId, std::move(arguments));
+
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
-  m_delegate->callNativeModules(*this, result, true);
+  m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
-  };
+  auto call = folly::dynamic::array(callbackId, std::move(arguments));
   std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_delegate->callNativeModules(*this, result, true);
+  m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::setGlobalVariable(std::string propName,

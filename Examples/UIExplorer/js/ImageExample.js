@@ -61,7 +61,15 @@ var NetworkImageCallbackExample = React.createClass({
           source={this.props.source}
           style={[styles.base, {overflow: 'visible'}]}
           onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)}
-          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`)}
+          onLoad={(event) => {
+            // Currently this image source feature is only available on iOS.
+            if (event.nativeEvent.source) {
+              const url = event.nativeEvent.source.url;
+              this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms) for URL ${url}`);
+            } else {
+              this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`);
+            }
+          }}
           onLoadEnd={() => {
             this._loadEventFired(`✔ onLoadEnd (+${new Date() - mountTime}ms)`);
             this.setState({startLoadPrefetched: true}, () => {
@@ -78,7 +86,15 @@ var NetworkImageCallbackExample = React.createClass({
             source={this.props.prefetchedSource}
             style={[styles.base, {overflow: 'visible'}]}
             onLoadStart={() => this._loadEventFired(`✔ (prefetched) onLoadStart (+${new Date() - mountTime}ms)`)}
-            onLoad={() => this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms)`)}
+            onLoad={(event) => {
+              // Currently this image source feature is only available on iOS.
+              if (event.nativeEvent.source) {
+                const url = event.nativeEvent.source.url;
+                this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms) for URL ${url}`);
+              } else {
+                this._loadEventFired(`✔ (prefetched) onLoad (+${new Date() - mountTime}ms)`);
+              }
+            }}
             onLoadEnd={() => this._loadEventFired(`✔ (prefetched) onLoadEnd (+${new Date() - mountTime}ms)`)}
           />
           : null}
@@ -165,7 +181,7 @@ var MultipleSourcesExample = React.createClass({
   },
   render: function() {
     return (
-      <View style={styles.container}>
+      <View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={styles.touchableText}
@@ -180,7 +196,7 @@ var MultipleSourcesExample = React.createClass({
         </View>
         <Text>Container image size: {this.state.width}x{this.state.height} </Text>
         <View
-          style={[styles.imageContainer, {height: this.state.height, width: this.state.width}]} >
+          style={{height: this.state.height, width: this.state.width}} >
           <Image
             style={{flex: 1}}
             source={[
@@ -587,7 +603,49 @@ exports.examples = [
     render: function() {
       return <MultipleSourcesExample />;
     },
-    platform: 'android',
+  },
+  {
+    title: 'Legacy local image',
+    description:
+      'Images shipped with the native bundle, but not managed ' +
+      'by the JS packager',
+    render: function() {
+      return (
+        <Image
+          source={require('image!legacy_image')}
+        />
+      );
+    },
+  },
+  {
+    title: 'Bundled images',
+    description:
+      'Images shipped in a separate native bundle',
+    render: function() {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <Image
+            source={{
+              url: 'ImageInBundle',
+              bundle: 'UIExplorerBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={{borderColor: 'yellow', borderWidth: 4}}
+          />
+          <Image
+            source={{
+              url: 'ImageInAssetCatalog',
+              bundle: 'UIExplorerBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={{marginLeft: 10, borderColor: 'blue', borderWidth: 4}}
+          />
+        </View>
+      );
+    },
+    platform: 'ios',
   },
 ];
 

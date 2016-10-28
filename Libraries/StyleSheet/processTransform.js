@@ -26,14 +26,22 @@ var stringifySafe = require('stringifySafe');
  * interface to native code.
  */
 function processTransform(transform: Object): Object {
+  if (__DEV__) {
+    _validateTransforms(transform);
+  }
+
+  // Android implementation of transform property accepts the list of transform
+  // properties as opposed to a transform Matrix. This is necessary to control
+  // transform property updates completely on the native thread.
+  if (Platform.OS === 'android') {
+    return transform;
+  }
+
   var result = MatrixMath.createIdentityMatrix();
 
   transform.forEach(transformation => {
     var key = Object.keys(transformation)[0];
     var value = transformation[key];
-    if (__DEV__) {
-      _validateTransform(key, value, transformation);
-    }
 
     switch (key) {
       case 'matrix':
@@ -105,6 +113,14 @@ function _multiplyTransform(
 function _convertToRadians(value: string): number {
   var floatValue = parseFloat(value, 10);
   return value.indexOf('rad') > -1 ? floatValue : floatValue * Math.PI / 180;
+}
+
+function _validateTransforms(transform: Object): void {
+  transform.forEach(transformation => {
+    var key = Object.keys(transformation)[0];
+    var value = transformation[key];
+    _validateTransform(key, value, transformation);
+  });
 }
 
 function _validateTransform(key, value, transformation) {

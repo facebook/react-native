@@ -175,7 +175,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View
         onLayout={this._onLayout}
@@ -187,7 +187,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
   _onLayout(event: any): void {
     const {height, width} = event.nativeEvent.layout;
-
+    if (this.state.layout.initWidth === width &&
+      this.state.layout.initHeight === height) {
+      return;
+    }
     const layout = {
       ...this.state.layout,
       initHeight: height,
@@ -217,12 +220,13 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     };
 
     this._transitionProps = buildTransitionProps(this.props, nextState);
-    this.setState(nextState);
 
-    this.props.onTransitionEnd && this.props.onTransitionEnd(
-      this._transitionProps,
-      prevTransitionProps,
-    );
+    this.setState(nextState, () => {
+      this.props.onTransitionEnd && this.props.onTransitionEnd(
+        this._transitionProps,
+        prevTransitionProps,
+      );
+    });
   }
 }
 
@@ -247,6 +251,7 @@ function buildTransitionProps(
     position,
     progress,
     scenes,
+    // $FlowFixMe(>=0.32.0) - find can return undefined
     scene: scenes.find(isSceneActive),
   };
 }

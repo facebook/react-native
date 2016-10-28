@@ -24,11 +24,18 @@ var BlogPostLayout = React.createClass({
       <Site
         section="blog"
         title={this.props.metadata.title}
-        description={this.props.children.trim().split('\n')[0]}>
+        description={this.props.children.trim().split('\n')[0]}
+        path={'blog/' + this.props.metadata.path}
+        author={this.props.metadata.author}
+        authorTwitter={this.props.metadata.authorTwitter}
+        image={this.props.metadata.hero ? 'http://facebook.github.io' + this.props.metadata.hero : 'http://facebook.github.io/react-native/img/opengraph.png' }
+        >
         <section className="content wrap documentationContent">
           <BlogSidebar title={this.props.metadata.title} />
           <div className="inner-content">
-            <BlogPost post={this.props.metadata} content={this.props.children} />
+            <BlogPost
+              post={this.props.metadata}
+              content={this.props.children} />
           </div>
         </section>
       </Site>

@@ -39,42 +39,40 @@ exports.description = 'Examples of using the Geolocation API.';
 exports.examples = [
   {
     title: 'navigator.geolocation',
-    render: function(): ReactElement<any> {
+    render: function(): React.Element<any> {
       return <GeolocationExample />;
     },
   }
 ];
 
-var GeolocationExample = React.createClass({
-  watchID: (null: ?number),
+class GeolocationExample extends React.Component {
+  state = {
+    initialPosition: 'unknown',
+    lastPosition: 'unknown',
+  };
 
-  getInitialState: function() {
-    return {
-      initialPosition: 'unknown',
-      lastPosition: 'unknown',
-    };
-  },
+  watchID: ?number = null;
 
-  componentDidMount: function() {
+  componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         var initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      (error) => alert(error.message),
+      (error) => alert(JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition((position) => {
       var lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
     });
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View>
         <Text>
@@ -88,7 +86,7 @@ var GeolocationExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   title: {

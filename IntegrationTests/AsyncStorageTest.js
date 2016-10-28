@@ -167,13 +167,11 @@ function testOptimizedMultiGet() {
 }
 
 
-var AsyncStorageTest = React.createClass({
-  getInitialState() {
-    return {
-      messages: 'Initializing...',
-      done: false,
-    };
-  },
+class AsyncStorageTest extends React.Component {
+  state = {
+    messages: 'Initializing...',
+    done: false,
+  };
 
   componentDidMount() {
     done = () => this.setState({done: true}, TestModule.markTestCompleted);
@@ -182,7 +180,7 @@ var AsyncStorageTest = React.createClass({
       DEBUG && console.log(msg);
     };
     AsyncStorage.clear(testSetAndGet);
-  },
+  }
 
   render() {
     return (
@@ -195,7 +193,7 @@ var AsyncStorageTest = React.createClass({
       </View>
     );
   }
-});
+}
 
 AsyncStorageTest.displayName = 'AsyncStorageTest';
 

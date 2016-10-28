@@ -31,18 +31,14 @@ var {
   View,
 } = ReactNative;
 
-var SliderExample = React.createClass({
-  getDefaultProps() {
-    return {
-      value: 0,
-    }
-  },
+class SliderExample extends React.Component {
+  static defaultProps = {
+    value: 0,
+  };
 
-  getInitialState() {
-    return {
-      value: this.props.value,
-    };
-  },
+  state = {
+    value: this.props.value,
+  };
 
   render() {
     return (
@@ -56,15 +52,13 @@ var SliderExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var SlidingCompleteExample = React.createClass({
-  getInitialState() {
-    return {
-      slideCompletionValue: 0,
-      slideCompletionCount: 0,
-    };
-  },
+class SlidingCompleteExample extends React.Component {
+  state = {
+    slideCompletionValue: 0,
+    slideCompletionCount: 0,
+  };
 
   render() {
     return (
@@ -80,7 +74,7 @@ var SlidingCompleteExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   slider: {
@@ -101,19 +95,19 @@ exports.description = 'Slider input for numeric values';
 exports.examples = [
   {
     title: 'Default settings',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return <SliderExample />;
     }
   },
   {
     title: 'Initial value: 0.5',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return <SliderExample value={0.5} />;
     }
   },
   {
     title: 'minimumValue: -1, maximumValue: 2',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <SliderExample
           minimumValue={-1}
@@ -124,13 +118,13 @@ exports.examples = [
   },
   {
     title: 'step: 0.25',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return <SliderExample step={0.25} />;
     }
   },
   {
     title: 'onSlidingComplete',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <SlidingCompleteExample />
       );
@@ -139,7 +133,7 @@ exports.examples = [
   {
     title: 'Custom min/max track tint color',
     platform: 'ios',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <SliderExample
           minimumTrackTintColor={'red'}
@@ -151,21 +145,21 @@ exports.examples = [
   {
     title: 'Custom thumb image',
     platform: 'ios',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
     }
   },
   {
     title: 'Custom track image',
     platform: 'ios',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return <SliderExample trackImage={require('./slider.png')} />;
     }
   },
   {
     title: 'Custom min/max track image',
     platform: 'ios',
-    render(): ReactElement<any> {
+    render(): React.Element<any> {
       return (
         <SliderExample
           minimumTrackImage={require('./slider-left.png')}

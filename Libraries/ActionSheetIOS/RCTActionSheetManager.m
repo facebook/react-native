@@ -84,67 +84,39 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   UIView *sourceView = controller.view;
   CGRect sourceRect = [self sourceRectInView:sourceView anchorViewTag:anchorViewTag];
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+  UIAlertController *alertController =
+  [UIAlertController alertControllerWithTitle:title
+                                      message:message
+                               preferredStyle:UIAlertControllerStyleActionSheet];
 
-  if ([UIAlertController class] == nil) {
-
-    UIActionSheet *actionSheet = [UIActionSheet new];
-
-    actionSheet.title = title;
-    for (NSString *option in buttons) {
-      [actionSheet addButtonWithTitle:option];
-    }
-    actionSheet.destructiveButtonIndex = destructiveButtonIndex;
-    actionSheet.cancelButtonIndex = cancelButtonIndex;
-    actionSheet.delegate = self;
-
-    [_callbacks setObject:callback forKey:actionSheet];
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      [actionSheet showFromRect:sourceRect inView:sourceView animated:YES];
-    } else {
-      [actionSheet showInView:sourceView];
+  NSInteger index = 0;
+  for (NSString *option in buttons) {
+    UIAlertActionStyle style = UIAlertActionStyleDefault;
+    if (index == destructiveButtonIndex) {
+      style = UIAlertActionStyleDestructive;
+    } else if (index == cancelButtonIndex) {
+      style = UIAlertActionStyleCancel;
     }
 
-  } else
+    NSInteger localIndex = index;
+    [alertController addAction:[UIAlertAction actionWithTitle:option
+                                                        style:style
+                                                      handler:^(__unused UIAlertAction *action){
+      callback(@[@(localIndex)]);
+    }]];
 
-#endif
-
-  {
-    UIAlertController *alertController =
-    [UIAlertController alertControllerWithTitle:title
-                                        message:message
-                                 preferredStyle:UIAlertControllerStyleActionSheet];
-
-    NSInteger index = 0;
-    for (NSString *option in buttons) {
-      UIAlertActionStyle style = UIAlertActionStyleDefault;
-      if (index == destructiveButtonIndex) {
-        style = UIAlertActionStyleDestructive;
-      } else if (index == cancelButtonIndex) {
-        style = UIAlertActionStyleCancel;
-      }
-
-      NSInteger localIndex = index;
-      [alertController addAction:[UIAlertAction actionWithTitle:option
-                                                          style:style
-                                                        handler:^(__unused UIAlertAction *action){
-        callback(@[@(localIndex)]);
-      }]];
-
-      index++;
-    }
-
-    alertController.modalPresentationStyle = UIModalPresentationPopover;
-    alertController.popoverPresentationController.sourceView = sourceView;
-    alertController.popoverPresentationController.sourceRect = sourceRect;
-    if (!anchorViewTag) {
-      alertController.popoverPresentationController.permittedArrowDirections = 0;
-    }
-    [controller presentViewController:alertController animated:YES completion:nil];
-
-    alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+    index++;
   }
+
+  alertController.modalPresentationStyle = UIModalPresentationPopover;
+  alertController.popoverPresentationController.sourceView = sourceView;
+  alertController.popoverPresentationController.sourceRect = sourceRect;
+  if (!anchorViewTag) {
+    alertController.popoverPresentationController.permittedArrowDirections = 0;
+  }
+  [controller presentViewController:alertController animated:YES completion:nil];
+
+  alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
@@ -163,7 +135,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
   NSURL *URL = [RCTConvert NSURL:options[@"url"]];
   if (URL) {
-    if (URL.fileURL || [URL.scheme.lowercaseString isEqualToString:@"data"]) {
+    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
       NSError *error;
       NSData *data = [NSData dataWithContentsOfURL:URL
                                            options:(NSDataReadingOptions)0
@@ -195,36 +167,21 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   UIViewController *controller = RCTPresentedViewController();
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-  if (![UIActivityViewController instancesRespondToSelector:@selector(setCompletionWithItemsHandler:)]) {
-    // Legacy iOS 7 implementation
-    shareController.completionHandler = ^(NSString *activityType, BOOL completed) {
+  shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+    if (activityError) {
+      failureCallback(activityError);
+    } else {
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
-    };
-  } else
-
-#endif
-
-  {
-    // iOS 8 version
-    shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
-      if (activityError) {
-        failureCallback(activityError);
-      } else {
-        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
-      }
-    };
-
-    shareController.modalPresentationStyle = UIModalPresentationPopover;
-    NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-    if (!anchorViewTag) {
-      shareController.popoverPresentationController.permittedArrowDirections = 0;
     }
-    shareController.popoverPresentationController.sourceView = controller.view;
-    shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
+  };
+
+  shareController.modalPresentationStyle = UIModalPresentationPopover;
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+  if (!anchorViewTag) {
+    shareController.popoverPresentationController.permittedArrowDirections = 0;
   }
+  shareController.popoverPresentationController.sourceView = controller.view;
+  shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
 
   [controller presentViewController:shareController animated:YES completion:nil];
 

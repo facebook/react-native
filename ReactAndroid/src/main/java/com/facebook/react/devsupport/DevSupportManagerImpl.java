@@ -31,6 +31,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -43,12 +45,17 @@ import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WebsocketJavaScriptExecutor;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -76,7 +83,7 @@ import com.facebook.react.modules.debug.DeveloperSettings;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager {
+public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -114,6 +121,39 @@ public class DevSupportManagerImpl implements DevSupportManager {
   private int mLastErrorCookie = 0;
   private @Nullable ErrorType mLastErrorType;
 
+  private static class JscProfileTask extends AsyncTask<String, Void, Void> {
+    private static final MediaType JSON =
+      MediaType.parse("application/json; charset=utf-8");
+
+    private final String mSourceUrl;
+
+    private JscProfileTask(String sourceUrl) {
+      mSourceUrl = sourceUrl;
+    }
+
+    @Override
+    protected Void doInBackground(String... jsonData) {
+      try {
+        String jscProfileUrl =
+            Uri.parse(mSourceUrl).buildUpon()
+                .path("/jsc-profile")
+                .query(null)
+                .build()
+                .toString();
+        OkHttpClient client = new OkHttpClient();
+        for (String json: jsonData) {
+          RequestBody body = RequestBody.create(JSON, json);
+          Request request =
+            new Request.Builder().url(jscProfileUrl).post(body).build();
+          client.newCall(request).execute();
+        }
+      } catch (IOException e) {
+        FLog.e(ReactConstants.TAG, "Failed not talk to server", e);
+      }
+      return null;
+    }
+  }
+
   public DevSupportManagerImpl(
     Context applicationContext,
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
@@ -138,19 +178,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
-    mDevServerHelper = new DevServerHelper(
-        mDevSettings,
-        new DevServerHelper.PackagerCommandListener() {
-          @Override
-          public void onReload() {
-            UiThreadUtil.runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                handleReloadJS();
-              }
-            });
-          }
-        });
+    mDevServerHelper = new DevServerHelper(mDevSettings);
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
     mShakeDetector = new ShakeDetector(new ShakeDetector.ShakeListener() {
@@ -194,11 +222,14 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
-      FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
       if (e instanceof JSException) {
+        FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
         // TODO #11638796: convert the stack into something useful
-        showNewError(e.getMessage() + "\n\n" + ((JSException) e).getStack(), new StackFrame[] {},
-                     JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+        showNewError(
+            e.getMessage() + "\n\n" + ((JSException) e).getStack(),
+            new StackFrame[] {},
+            JSEXCEPTION_ERROR_COOKIE,
+            ErrorType.JS);
       } else {
         showNewJavaError(e.getMessage(), e);
       }
@@ -209,6 +240,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
 
   @Override
   public void showNewJavaError(String message, Throwable e) {
+    FLog.e(ReactConstants.TAG, "Exception in native call", e);
     showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE, ErrorType.NATIVE);
   }
 
@@ -252,6 +284,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
             // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
+              mRedBoxDialog.resetReporting(true);
             }
             mRedBoxDialog.show();
           }
@@ -276,7 +309,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this);
+              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
               mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
             }
             if (mRedBoxDialog.isShowing()) {
@@ -290,6 +323,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
               mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
+              mRedBoxDialog.resetReporting(true);
+            } else {
+              mRedBoxDialog.resetReporting(false);
             }
             mRedBoxDialog.show();
           }
@@ -343,7 +379,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
               }
             });
     options.put(
-      mApplicationContext.getString(R.string.catalyst_element_inspector),
+        mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -366,16 +402,32 @@ public class DevSupportManagerImpl implements DevSupportManager {
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
+            JSCHeapCapture.captureHeap(
+              mApplicationContext.getCacheDir().getPath(),
+              JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+          }
+        });
+    options.put(
+        mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
             try {
-              String heapDumpPath = mApplicationContext.getCacheDir().getPath();
-              List<String> captureFiles = JSCHeapCapture.captureHeap(heapDumpPath, 60000);
-              for (String captureFile : captureFiles) {
+              List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+              for (String result : pokeResults) {
                 Toast.makeText(
                   mCurrentContext,
-                  "Heap captured to " + captureFile,
+                  result == null
+                    ? "Started JSC Sampling Profiler"
+                    : "Stopped JSC Sampling Profiler",
                   Toast.LENGTH_LONG).show();
+                if (result != null) {
+                  new JscProfileTask(getSourceUrl()).executeOnExecutor(
+                      AsyncTask.THREAD_POOL_EXECUTOR,
+                      result);
+                }
               }
-            } catch (JSCHeapCapture.CaptureException e) {
+            } catch (JSCSamplingProfiler.ProfilerException e) {
               showNewJavaError(e.getMessage(), e);
             }
           }
@@ -480,6 +532,11 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public String getDownloadedJSBundleFile() {
     return mJSBundleTempFile.getAbsolutePath();
+  }
+
+  @Override
+  public String getHeapCaptureUploadUrl() {
+    return mDevServerHelper.getHeapCaptureUploadUrl();
   }
 
   /**
@@ -599,6 +656,13 @@ public class DevSupportManagerImpl implements DevSupportManager {
   }
 
   @Override
+  public @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourceURL,
+      final File outputFile) {
+    return mDevServerHelper.downloadBundleResourceFromUrlSync(resourceURL, outputFile);
+  }
+
+  @Override
   public @Nullable String getLastErrorTitle() {
     return mLastErrorTitle;
   }
@@ -606,6 +670,16 @@ public class DevSupportManagerImpl implements DevSupportManager {
   @Override
   public @Nullable StackFrame[] getLastErrorStack() {
     return mLastErrorStack;
+  }
+
+  @Override
+  public void onPackagerReloadCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handleReloadJS();
+      }
+    });
   }
 
   private void updateLastErrorInfo(
@@ -736,6 +810,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
         mIsReceiverRegistered = true;
       }
 
+      mDevServerHelper.openPackagerConnection(this);
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -775,6 +850,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
         mDevOptionsDialog.dismiss();
       }
 
+      mDevServerHelper.closePackagerConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

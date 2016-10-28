@@ -12,7 +12,7 @@ Android requires that all apps be digitally signed with a certificate before the
 
 ### Generating a signing key
 
-You can generate a private signing key using `keytool`.
+You can generate a private signing key using `keytool`. On Windows `keytool` must be run from `C:\Program Files\Java\jdkx.x.x_x\bin`.
 
     $ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
@@ -87,10 +87,10 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
-$ cd android && ./gradlew installRelease
+$ react-native run-android --variant=release
 ```
 
-Note that `installRelease` is only available if you've set up signing as described above.
+Note that `--variant=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 

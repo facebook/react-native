@@ -14,45 +14,55 @@
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
+const PropTypes = React.PropTypes;
+
 import type EmitterSubscription from 'EmitterSubscription';
 
 type Rect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 };
 type ScreenRect = {
-  screenX: number;
-  screenY: number;
-  width: number;
-  height: number;
+  screenX: number,
+  screenY: number,
+  width: number,
+  height: number,
 };
 type KeyboardChangeEvent = {
-  startCoordinates?: ScreenRect;
-  endCoordinates: ScreenRect;
-  duration?: number;
-  easing?: string;
+  startCoordinates?: ScreenRect,
+  endCoordinates: ScreenRect,
+  duration?: number,
+  easing?: string,
 };
 type LayoutEvent = {
   nativeEvent: {
-    layout: Rect;
+    layout: Rect,
   }
 };
 
 const viewRef = 'VIEW';
 
+/**
+ * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
+ * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
+ */
 const KeyboardAvoidingView = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
     ...View.propTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
+
+    /**
+     * The style of the content container(View) when behavior is 'position'.
+     */
+    contentContainerStyle: View.propTypes.style,
 
     /**
      * This is the distance between the top of the user screen and the react native view,
@@ -78,7 +88,7 @@ const KeyboardAvoidingView = React.createClass({
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
-    if (!frame) {
+    if (!frame || !keyboardFrame) {
       return 0;
     }
 
@@ -139,7 +149,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {
@@ -160,9 +170,11 @@ const KeyboardAvoidingView = React.createClass({
 
       case 'position':
         const positionStyle = {bottom: this.state.bottom};
+        const { contentContainerStyle } = this.props;
+
         return (
           <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
-            <View style={positionStyle}>
+            <View style={[contentContainerStyle, positionStyle]}>
               {children}
             </View>
           </View>

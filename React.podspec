@@ -81,7 +81,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTNetwork' do |ss|
     ss.dependency       'React/Core'
-    ss.source_files   = "Libraries/Network/*.{h,m}"
+    ss.source_files   = "Libraries/Network/*.{h,m,mm}"
     ss.preserve_paths = "Libraries/Network/*.js"
   end
 

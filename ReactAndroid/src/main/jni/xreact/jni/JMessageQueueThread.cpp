@@ -45,6 +45,10 @@ JMessageQueueThread::JMessageQueueThread(alias_ref<JavaMessageQueueThread::javao
 }
 
 void JMessageQueueThread::runOnQueue(std::function<void()>&& runnable) {
+  // For C++ modules, this can be called from an arbitrary thread
+  // managed by the module, via callJSCallback or callJSFunction.  So,
+  // we ensure that it is registered with the JVM.
+  jni::ThreadScope guard;
   static auto method = JavaMessageQueueThread::javaClassStatic()->
     getMethod<void(Runnable::javaobject)>("runOnQueue");
   method(m_jobj, JNativeRunnable::newObjectCxxArgs(wrapRunnable(std::move(runnable))).get());

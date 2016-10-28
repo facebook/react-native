@@ -17,8 +17,8 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
 
   public static final String EVENT_NAME = "topDrawerOpened";
 
-  public DrawerOpenedEvent(int viewId, long timestampMs) {
-    super(viewId, timestampMs);
+  public DrawerOpenedEvent(int viewId) {
+    super(viewId);
   }
 
   @Override

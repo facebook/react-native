@@ -20,11 +20,58 @@ var Platform = require('Platform');
  *
  * There will be no effect on devices that do not support Vibration, eg. the simulator.
  *
- * Note for android
+ * **Note for android**
  * add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
  *
- * Vibration patterns are currently unsupported.
+ * **Android Usage:**
+ *
+ * [0, 500, 200, 500]
+ * V(0.5s) --wait(0.2s)--> V(0.5s)
+ *
+ * [300, 500, 200, 500]
+ * --wait(0.3s)--> V(0.5s) --wait(0.2s)--> V(0.5s)
+ *
+ * **iOS Usage:**
+ * if first argument is 0, it will not be included in pattern array.
+ *
+ * [0, 1000, 2000, 3000]
+ * V(fixed) --wait(1s)--> V(fixed) --wait(2s)--> V(fixed) --wait(3s)--> V(fixed)
  */
+
+var _vibrating: boolean = false;
+var _id: number = 0; // _id is necessary to prevent race condition.
+
+function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
+  if (_vibrating) {
+    return;
+  }
+  _vibrating = true;
+  if (pattern[0] === 0) {
+    RCTVibration.vibrate();
+    pattern = pattern.slice(1);
+  }
+  if (pattern.length === 0) {
+    _vibrating = false;
+    return;
+  }
+  setTimeout(() => vibrateScheduler(++_id, pattern, repeat, 1), pattern[0]);
+}
+
+function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex: number) {
+  if (!_vibrating || id !== _id) {
+    return;
+  }
+  RCTVibration.vibrate();
+  if (nextIndex >= pattern.length) {
+    if (repeat) {
+      nextIndex = 0;
+    } else {
+      _vibrating = false;
+      return;
+    }
+  }
+  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex+1), pattern[nextIndex]);
+}
 
 var Vibration = {
   vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
@@ -37,10 +84,13 @@ var Vibration = {
         throw new Error('Vibration pattern should be a number or array');
       }
     } else {
+      if (_vibrating) {
+        return;
+      }
       if (typeof pattern === 'number') {
         RCTVibration.vibrate();
       } else if (Array.isArray(pattern)) {
-        console.warn('Vibration patterns are not supported on iOS');
+        vibrateByPattern(pattern, repeat);
       } else {
         throw new Error('Vibration pattern should be a number or array');
       }
@@ -48,12 +98,10 @@ var Vibration = {
   },
   /**
    * Stop vibration
-   *
-   * @platform android
    */
   cancel: function() {
     if (Platform.OS === 'ios') {
-      console.warn('Vibration.cancel is not supported on iOS');
+      _vibrating = false;
     } else {
       RCTVibration.cancel();
     }

@@ -105,11 +105,9 @@ RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
   NSURL *initialURL = nil;
   if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
     initialURL = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  } else if (&UIApplicationLaunchOptionsUserActivityDictionaryKey &&
-             self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+  } else {
     NSDictionary *userActivityDictionary =
       self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-
     if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
     }

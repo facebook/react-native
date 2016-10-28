@@ -43,6 +43,7 @@ public class UnpackingJSBundleLoaderTest {
 
   private static final String URL = "http://this.is.an.url";
   private static final int MOCK_UNPACKERS_NUM = 2;
+  private static final int UNPACKER_TEST_FLAGS = 129;
 
   @Rule
   public TemporaryFolder folder = new TemporaryFolder();
@@ -54,6 +55,8 @@ public class UnpackingJSBundleLoaderTest {
   private Context mContext;
   private CatalystInstanceImpl mCatalystInstanceImpl;
   private UnpackingJSBundleLoader.Unpacker[] mMockUnpackers;
+
+  private Runnable mCallback;
 
   @Before
   public void setUp() throws IOException {
@@ -74,6 +77,8 @@ public class UnpackingJSBundleLoaderTest {
     for (int i = 0; i < mMockUnpackers.length; ++i) {
       mMockUnpackers[i] = mock(UnpackingJSBundleLoader.Unpacker.class);
     }
+
+    mCallback = mock(Runnable.class);
   }
 
   private void addUnpackers() {
@@ -105,8 +110,19 @@ public class UnpackingJSBundleLoaderTest {
     verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
       eq(mDestinationPath.getPath()),
       eq(URL),
-      eq(UnpackingJSBundleLoader.UNPACKED_JS_SOURCE));
+      eq(0));
     verifyNoMoreInteractions(mCatalystInstanceImpl);
+  }
+
+  @Test
+  public void testSetLoadFlags() throws IOException {
+    mBuilder.setLoadFlags(UNPACKER_TEST_FLAGS)
+      .build()
+      .loadScript(mCatalystInstanceImpl);
+    verify(mCatalystInstanceImpl).loadScriptFromOptimizedBundle(
+      eq(mDestinationPath.getPath()),
+      eq(URL),
+      eq(UNPACKER_TEST_FLAGS));
   }
 
   @Test
@@ -180,5 +196,18 @@ public class UnpackingJSBundleLoaderTest {
     } finally {
       assertFalse(mDestinationPath.exists());
     }
+  }
+
+  @Test
+  public void testCallbackIsCalledAfterUnpack() {
+    mBuilder.setOnUnpackedCallback(mCallback).build().prepare();
+    verify(mCallback).run();
+  }
+
+  @Test
+  public void testCallbackIsNotCalledIfNothingIsUnpacked() {
+    mBuilder.build().prepare();
+    mBuilder.setOnUnpackedCallback(mCallback).build().prepare();
+    verifyNoMoreInteractions(mCallback);
   }
 }

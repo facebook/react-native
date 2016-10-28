@@ -16,15 +16,15 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var DummyDatePickerIOS = React.createClass({
-  render: function() {
+class DummyDatePickerIOS extends React.Component {
+  render() {
     return (
       <View style={[styles.dummyDatePickerIOS, this.props.style]}>
         <Text style={styles.datePickerText}>DatePickerIOS is not supported on this platform!</Text>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   dummyDatePickerIOS: {

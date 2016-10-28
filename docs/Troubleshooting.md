@@ -22,6 +22,8 @@ Then run the following to terminate the process:
 
 `$ kill -9 <PID>`
 
+On Windows you can find the process using port 8081 using [Resource Monitor](https://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) and stop it using Task Manager.
+
 #### Using a port other than 8081
 
 You can configure the packager to use a port other than 8081 by using the `port` parameter:
@@ -70,10 +72,10 @@ To revert the `User Search Header Paths` and `Header Search Paths` build setting
 
 ### No transports available
 
-React Native implements a polyfill for WebSockets. These [polyfills](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js) are initialized as part of the react-native module that you include in your application through `import React from 'react-native'`. If you load another module that requires WebSockets, such as [Firebase](https://github.com/facebook/react-native/issues/3645), be sure to load/require it after react-native:
+React Native implements a polyfill for WebSockets. These [polyfills](https://github.com/facebook/react-native/blob/master/Libraries/Core/InitializeCore.js) are initialized as part of the react-native module that you include in your application through `import React from 'react'`. If you load another module that requires WebSockets, such as [Firebase](https://github.com/facebook/react-native/issues/3645), be sure to load/require it after react-native:
 
 ```
-import React from 'react-native';
+import React from 'react';
 import Firebase from 'firebase';
 ```
 

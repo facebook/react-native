@@ -13,6 +13,9 @@
 
 var Marked = require('Marked');
 var React = require('React');
+var BlogPostHeader = require('BlogPostHeader');
+var BlogPostFooter = require('BlogPostFooter');
+var ExcerptLink = require('ExcerptLink');
 
 var BlogPost = React.createClass({
   render: function() {
@@ -28,16 +31,26 @@ var BlogPost = React.createClass({
     ][parseInt(match[2], 10) - 1];
     var day = parseInt(match[3], 10);
 
+    var postedOnDate = month + ' ' + day + ', ' + year;
+
+    var footer = <BlogPostFooter post={post} postedOnDate={postedOnDate} />;
+
+    if (this.props.excerpt) {
+      content = content.trim().split('\n')[0];
+      footer = <ExcerptLink href={'/react-native/blog/' + post.path} category={post.category} />;
+    }
+
     return (
-      <div>
-        <h1>{post.title}</h1>
-        <p className="meta">
-          {month} {day}, {year} by{' '}
-          <a href={post.authorURL} target="_blank">{post.author}</a>
-        </p>
-        <hr />
-        <Marked>{content}</Marked>
-      </div>
+      <article>
+        <BlogPostHeader
+          post={post}
+          postedOnDate={postedOnDate}
+          excerpt={this.props.excerpt} />
+        <div className="entry-content">
+          <Marked>{content}</Marked>
+        </div>
+        {footer}
+      </article>
     );
   }
 });

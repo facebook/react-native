@@ -56,31 +56,29 @@ function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
 }
 
-const StatusBarHiddenExample = React.createClass({
-  getInitialState() {
-    return {
-      animated: true,
-      hidden: false,
-      showHideTransition: getValue(showHideTransitions, 0),
-    };
-  },
+class StatusBarHiddenExample extends React.Component {
+  state = {
+    animated: true,
+    hidden: false,
+    showHideTransition: getValue(showHideTransitions, 0),
+  };
 
-  _showHideTransitionIndex: 0,
+  _showHideTransitionIndex = 0;
 
-  _onChangeAnimated() {
+  _onChangeAnimated = () => {
     this.setState({animated: !this.state.animated});
-  },
+  };
 
-  _onChangeHidden() {
+  _onChangeHidden = () => {
     this.setState({hidden: !this.state.hidden});
-  },
+  };
 
-  _onChangeTransition() {
+  _onChangeTransition = () => {
     this._showHideTransitionIndex++;
     this.setState({
       showHideTransition: getValue(showHideTransitions, this._showHideTransitionIndex),
     });
-  },
+  };
 
   render() {
     return (
@@ -116,27 +114,25 @@ const StatusBarHiddenExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-const StatusBarStyleExample = React.createClass({
-  getInitialState() {
-    return {
-      animated: true,
-      barStyle: getValue(barStyles, this._barStyleIndex),
-    };
-  },
+class StatusBarStyleExample extends React.Component {
+  _barStyleIndex = 0;
 
-  _barStyleIndex: 0,
-
-  _onChangeBarStyle() {
+  _onChangeBarStyle = () => {
     this._barStyleIndex++;
     this.setState({barStyle: getValue(barStyles, this._barStyleIndex)});
-  },
+  };
 
-  _onChangeAnimated() {
+  _onChangeAnimated = () => {
     this.setState({animated: !this.state.animated});
-  },
+  };
+
+  state = {
+    animated: true,
+    barStyle: getValue(barStyles, this._barStyleIndex),
+  };
 
   render() {
     return (
@@ -161,21 +157,19 @@ const StatusBarStyleExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-const StatusBarNetworkActivityExample = React.createClass({
-  getInitialState() {
-    return {
-      networkActivityIndicatorVisible: false,
-    };
-  },
+class StatusBarNetworkActivityExample extends React.Component {
+  state = {
+    networkActivityIndicatorVisible: false,
+  };
 
-  _onChangeNetworkIndicatorVisible() {
+  _onChangeNetworkIndicatorVisible = () => {
     this.setState({
       networkActivityIndicatorVisible: !this.state.networkActivityIndicatorVisible,
     });
-  },
+  };
 
   render() {
     return (
@@ -195,27 +189,25 @@ const StatusBarNetworkActivityExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-const StatusBarBackgroundColorExample = React.createClass({
-  getInitialState() {
-    return {
-      animated: true,
-      backgroundColor: getValue(colors, 0),
-    };
-  },
+class StatusBarBackgroundColorExample extends React.Component {
+  state = {
+    animated: true,
+    backgroundColor: getValue(colors, 0),
+  };
 
-  _colorIndex: 0,
+  _colorIndex = 0;
 
-  _onChangeBackgroundColor() {
+  _onChangeBackgroundColor = () => {
     this._colorIndex++;
     this.setState({backgroundColor: getValue(colors, this._colorIndex)});
-  },
+  };
 
-  _onChangeAnimated() {
+  _onChangeAnimated = () => {
     this.setState({animated: !this.state.animated});
-  },
+  };
 
   render() {
     return (
@@ -240,22 +232,19 @@ const StatusBarBackgroundColorExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
+class StatusBarTranslucentExample extends React.Component {
+  state = {
+    translucent: false,
+  };
 
-const StatusBarTranslucentExample = React.createClass({
-  getInitialState() {
-    return {
-      translucent: false,
-    };
-  },
-
-  _onChangeTranslucent() {
+  _onChangeTranslucent = () => {
     this.setState({
       translucent: !this.state.translucent,
     });
-  },
+  };
 
   render() {
     return (
@@ -272,10 +261,10 @@ const StatusBarTranslucentExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-const StatusBarStaticIOSExample = React.createClass({
+class StatusBarStaticIOSExample extends React.Component {
   render() {
     return (
       <View>
@@ -335,10 +324,10 @@ const StatusBarStaticIOSExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-const StatusBarStaticAndroidExample = React.createClass({
+class StatusBarStaticAndroidExample extends React.Component {
   render() {
     return (
       <View>
@@ -400,8 +389,8 @@ const StatusBarStaticAndroidExample = React.createClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
 const examples = [{
   title: 'StatusBar hidden',

@@ -94,8 +94,8 @@ class Board {
   }
 }
 
-var Cell = React.createClass({
-  cellStyle() {
+class Cell extends React.Component {
+  cellStyle = () => {
     switch (this.props.player) {
       case 1:
         return styles.cellX;
@@ -104,9 +104,9 @@ var Cell = React.createClass({
       default:
         return null;
     }
-  },
+  };
 
-  textStyle() {
+  textStyle = () => {
     switch (this.props.player) {
       case 1:
         return styles.cellTextX;
@@ -115,9 +115,9 @@ var Cell = React.createClass({
       default:
         return {};
     }
-  },
+  };
 
-  textContents() {
+  textContents = () => {
     switch (this.props.player) {
       case 1:
         return 'X';
@@ -126,7 +126,7 @@ var Cell = React.createClass({
       default:
         return '';
     }
-  },
+  };
 
   render() {
     return (
@@ -142,9 +142,9 @@ var Cell = React.createClass({
       </TouchableHighlight>
     );
   }
-});
+}
 
-var GameEndOverlay = React.createClass({
+class GameEndOverlay extends React.Component {
   render() {
     var board = this.props.board;
 
@@ -175,7 +175,7 @@ var GameEndOverlay = React.createClass({
       </View>
     );
   }
-});
+}
 
 var TicTacToeApp = React.createClass({
   getInitialState() {

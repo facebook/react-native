@@ -19,8 +19,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public static final String EVENT_NAME = "topShow";
 
-  protected ShowEvent(int viewTag, long timestampMs) {
-    super(viewTag, timestampMs);
+  protected ShowEvent(int viewTag) {
+    super(viewTag);
   }
 
   @Override

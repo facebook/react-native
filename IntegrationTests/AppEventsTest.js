@@ -32,24 +32,25 @@ type State = {
   elapsed?: string,
 };
 
-var AppEventsTest = React.createClass({
-  getInitialState(): State {
-    return {sent: 'none', received: 'none'};
-  },
-  componentDidMount: function() {
+class AppEventsTest extends React.Component {
+  state: State = {sent: 'none', received: 'none'};
+
+  componentDidMount() {
     NativeAppEventEmitter.addListener('testEvent', this.receiveEvent);
     var event = {data: TEST_PAYLOAD, ts: Date.now()};
     TestModule.sendAppEvent('testEvent', event);
     this.setState({sent: event});
-  },
-  receiveEvent: function(event: any) {
+  }
+
+  receiveEvent = (event: any) => {
     if (deepDiffer(event.data, TEST_PAYLOAD)) {
       throw new Error('Received wrong event: ' + JSON.stringify(event));
     }
     var elapsed = (Date.now() - event.ts) + 'ms';
     this.setState({received: event, elapsed}, TestModule.markTestCompleted);
-  },
-  render: function() {
+  };
+
+  render() {
     return (
       <View style={styles.container}>
         <Text>
@@ -58,7 +59,7 @@ var AppEventsTest = React.createClass({
       </View>
     );
   }
-});
+}
 
 AppEventsTest.displayName = 'AppEventsTest';
 

@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.common.SetBuilder;
 
 /**
  * Keys for props that need to be shared across multiple classes.
@@ -26,9 +25,13 @@ public class ViewProps {
   // !!! Keep in sync with LAYOUT_ONLY_PROPS below
   public static final String ALIGN_ITEMS = "alignItems";
   public static final String ALIGN_SELF = "alignSelf";
+  public static final String OVERFLOW = "overflow";
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
   public static final String FLEX = "flex";
+  public static final String FLEX_GROW = "flexGrow";
+  public static final String FLEX_SHRINK = "flexShrink";
+  public static final String FLEX_BASIS = "flexBasis";
   public static final String FLEX_DIRECTION = "flexDirection";
   public static final String FLEX_WRAP = "flexWrap";
   public static final String HEIGHT = "height";
@@ -72,9 +75,10 @@ public class ViewProps {
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
-  public static final String LINE_BREAK_MODE = "lineBreakMode";
+  public static final String ELLIPSIZE_MODE = "ellipsizeMode";
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
+  public static final String RESIZE_METHOD = "resizeMethod";
   public static final String TEXT_ALIGN = "textAlign";
   public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";
@@ -90,11 +94,14 @@ public class ViewProps {
   public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
   public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
   public static final int[] BORDER_SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
+      Spacing.ALL, Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP,
+      Spacing.ALL, Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.START, Spacing.END, Spacing.TOP,
       Spacing.BOTTOM
+  };
+  public static final int[] POSITION_SPACING_TYPES = {
+      Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM
   };
 
   private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(
@@ -106,6 +113,7 @@ public class ViewProps {
             FLEX_DIRECTION,
             FLEX_WRAP,
             JUSTIFY_CONTENT,
+            OVERFLOW,
 
             /* position */
             POSITION,
