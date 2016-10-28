@@ -347,47 +347,43 @@ RCT_EXPORT_MODULE()
   // Attempt to decode text
   NSString *encodedResponse = [[NSString alloc] initWithData:currentCarryData encoding:encoding];
   
-  NSData* newCarryData = nil;
-  
   if (!encodedResponse && data.length > 0) {
-    if (inputCarryData) {
+    if (encoding == NSUTF8StringEncoding && inputCarryData) {
       // If decode failed, we attempt to trim broken character bytes from the data.
+      // At this time, only UTF-8 support is enabled. Multibyte encodings, such as UTF-16 and UTF-32, require a lot of additional work
+      // to determine wether BOM was included in the first data packet. If so, save it, and attach it to each new data packet. If not,
+      // an encoding has to be selected with a suitable byte order (for ARM iOS, it would be little endianness).
+      
       CFStringEncoding cfEncoding = CFStringConvertNSStringEncodingToEncoding(encoding);
       // Taking a single unichar is not good enough, due to Unicode combining character sequences or characters outside the BMP.
       // See https://www.objc.io/issues/9-strings/unicode/#common-pitfalls
       // We'll attempt with a sequence of two characters, the most common combining character sequence and characters outside the BMP (emojis).
       CFIndex maxCharLength = CFStringGetMaximumSizeForEncoding(2, cfEncoding);
       
-      NSUInteger finalLength = currentCarryData.length - 1;
+      NSUInteger removedBytes = 1;
       
-      while (finalLength > 0 && currentCarryData.length - finalLength < maxCharLength) {
-        encodedResponse = [[NSString alloc] initWithData:[currentCarryData subdataWithRange:NSMakeRange(0, finalLength)]
+      while (removedBytes < maxCharLength) {
+        encodedResponse = [[NSString alloc] initWithData:[currentCarryData subdataWithRange:NSMakeRange(0, currentCarryData.length - removedBytes)]
                                                 encoding:encoding];
         
         if (encodedResponse != nil) {
           break;
         }
         
-        finalLength -= 1;
-      }
-      
-      if (encodedResponse != nil) {
-        newCarryData = [currentCarryData subdataWithRange:NSMakeRange(finalLength, currentCarryData.length - finalLength)];
-        currentCarryData.length = finalLength;
-      } else {
-        // Decoding of currently provided data failed, perhaps due to a broken unicode sequences. We'll pass the entire data as carry for the next round.
-        newCarryData = currentCarryData;
+        removedBytes += 1;
       }
     } else {
       // We don't have an encoding, or the encoding is incorrect, so now we try to guess
       [NSString stringEncodingForData:data
-                      encodingOptions:nil
+                      encodingOptions:@{ NSStringEncodingDetectionSuggestedEncodingsKey: @[ @(encoding) ] }
                       convertedString:&encodedResponse
                   usedLossyConversion:NULL];
     }
   }
   
   if (inputCarryData) {
+    NSUInteger encodedResponseLength = [encodedResponse dataUsingEncoding:encoding].length;
+    NSData* newCarryData = [currentCarryData subdataWithRange:NSMakeRange(encodedResponseLength, currentCarryData.length - encodedResponseLength)];
     [inputCarryData setData:newCarryData];
   }
   
