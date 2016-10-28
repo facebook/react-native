@@ -6,31 +6,33 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule BlogPost
+ * @providesModule BlogPostExcerpt
  */
 
 'use strict';
 
-var Marked = require('Marked');
 var React = require('React');
 var BlogPostHeader = require('BlogPostHeader');
-var BlogPostFooter = require('BlogPostFooter');
+var Marked = require('Marked');
 var ExcerptLink = require('ExcerptLink');
 
-var BlogPost = React.createClass({
+var BlogPostExcerpt = React.createClass({
   render: function() {
     var post = this.props.post;
-
     return (
-      <article className="entry-body">
-        <BlogPostHeader post={post} />
+      <article className="entry-excerpt">
+        <BlogPostHeader
+          post={post}
+          excerpt={true} />
         <div className="entry-content">
-          <Marked>{this.props.content}</Marked>
+          <Marked>{post.excerpt}</Marked>
         </div>
-        <BlogPostFooter post={post} />
+        <ExcerptLink
+          href={'/react-native/blog/' + post.path}
+          category={post.category} />
       </article>
     );
   }
 });
 
-module.exports = BlogPost;
+module.exports = BlogPostExcerpt;
