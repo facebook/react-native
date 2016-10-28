@@ -29,6 +29,7 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onUrlSchemeBlocked;
 
 @end
 
@@ -207,6 +208,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       @(UIWebViewNavigationTypeOther): @"other",
     };
   });
+  
+  if (!isJSNavigation && _urlSchemeBlacklist) {
+    for (id scheme in _urlSchemeBlacklist) {
+      if ([request.URL.scheme isEqualToString:scheme]) {
+        if (_onUrlSchemeBlocked) {
+          NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+          [event addEntriesFromDictionary: @{
+                                             @"scheme": request.URL.scheme,
+                                             @"url": (request.URL).absoluteString,
+                                             @"navigationType": navigationTypes[@(navigationType)]
+                                             }];
+          _onUrlSchemeBlocked(event);
+        }
+        
+        return NO;
+      }
+    }
+  }
 
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
