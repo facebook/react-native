@@ -22,7 +22,7 @@ var BlogPost = React.createClass({
     var post = this.props.post;
     var content = this.props.content;
 
-    var match = post.path.match(/([0-9]+)\/([0-9]+)\/([0-9]+)/);
+    var match = post.publishedAt.match(/([0-9]+)-([0-9]+)-([0-9]+)/);
     // Because JavaScript sucks at date handling :(
     var year = match[1];
     var month = [
