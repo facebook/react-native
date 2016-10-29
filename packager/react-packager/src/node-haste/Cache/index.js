@@ -16,8 +16,7 @@ const denodeify = require('denodeify');
 const fs = require('graceful-fs');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
-/* $FlowFixMe: missing function definition. */
-const tmpDir = require('os').tmpDir();
+const tmpDir = require('os').tmpdir();
 
 function getObjectValues<T>(object: {[key: string]: T}): Array<T> {
   return Object.keys(object).map(key => object[key]);
