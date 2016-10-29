@@ -92,6 +92,7 @@ public:
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
   virtual void destroy() override;
+  void setContextName(const std::string& name);
 
 private:
   JSGlobalContextRef m_context;

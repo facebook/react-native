@@ -88,6 +88,7 @@ var TouchableBounce = React.createClass({
       toValue: value,
       velocity,
       bounciness,
+      useNativeDriver: true,
     }).start(callback);
   },
 
@@ -131,7 +132,7 @@ var TouchableBounce = React.createClass({
     return 0;
   },
 
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}

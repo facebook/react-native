@@ -10,8 +10,9 @@
 
 const EventEmitter = require('events');
 
-const path = require('../fastpath');
 const getPlatformExtension = require('../lib/getPlatformExtension');
+const path = require('path');
+const throat = require('throat');
 
 const GENERIC_PLATFORM = 'generic';
 const NATIVE_PLATFORM = 'native';
@@ -33,6 +34,9 @@ class HasteMap extends EventEmitter {
     this._preferNativePlatform = preferNativePlatform;
     this._helpers = helpers;
     this._platforms = platforms;
+
+    this._processHastePackage = throat(1, this._processHastePackage.bind(this));
+    this._processHasteModule = throat(1, this._processHasteModule.bind(this));
   }
 
   build() {
@@ -94,7 +98,7 @@ class HasteMap extends EventEmitter {
 
     // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
     // a plain .js file.
-    let module = undefined;
+    let module;
     if (module == null && platform != null) {
       module = modulesMap[platform];
     }

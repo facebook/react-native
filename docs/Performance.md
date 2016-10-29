@@ -37,7 +37,7 @@ generate that frame within the allotted 16.67ms, then you will "drop a
 frame" and the UI will appear unresponsive.
 
 Now to confuse the matter a little bit, open up the developer menu in
-your app and toggle `Show FPS Monitor`. You will notice that there are
+your app and toggle `Show Perf Monitor`. You will notice that there are
 two different frame rates.
 
 #### JavaScript frame rate

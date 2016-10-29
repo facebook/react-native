@@ -214,8 +214,8 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
-  from "$buildDir/react-ndk/exported"
-  into "src/main/jni/prebuilt/lib"
+    from "$buildDir/react-ndk/exported"
+    into "src/main/jni/prebuilt/lib"
 }
 
 android {
@@ -243,9 +243,9 @@ android {
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
         java {
-          srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
-          exclude 'com/facebook/react/processing'
-          exclude 'com/facebook/react/module/processing'
+            srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
+            exclude 'com/facebook/react/processing'
+            exclude 'com/facebook/react/module/processing'
         }
     }
 

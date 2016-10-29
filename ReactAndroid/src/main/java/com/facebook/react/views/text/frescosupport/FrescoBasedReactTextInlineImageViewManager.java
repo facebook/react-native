@@ -15,6 +15,7 @@ import android.view.View;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 
@@ -22,10 +23,11 @@ import com.facebook.react.uimanager.ViewManager;
  * Manages Images embedded in Text nodes using Fresco. Since they are used only as a virtual nodes
  * any type of native view operation will throw an {@link IllegalStateException}.
  */
+@ReactModule(name = FrescoBasedReactTextInlineImageViewManager.REACT_CLASS)
 public class FrescoBasedReactTextInlineImageViewManager
   extends ViewManager<View, FrescoBasedReactTextInlineImageShadowNode> {
 
-  static final String REACT_CLASS = "RCTTextInlineImage";
+  protected static final String REACT_CLASS = "RCTTextInlineImage";
 
   private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
@@ -69,5 +71,4 @@ public class FrescoBasedReactTextInlineImageViewManager
   @Override
   public void updateExtraData(View root, Object extraData) {
   }
-
 }

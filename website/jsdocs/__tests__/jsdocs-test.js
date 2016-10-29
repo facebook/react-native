@@ -8,15 +8,18 @@
  *
  */
 'use strict';
+jest.disableAutomock();
 
 const fs = require('fs');
+const path = require('path');
+
 const jsDocs = require('../jsdocs');
-const libs = __dirname + '/../../../Libraries/';
+const libs = path.join(__dirname, '/../../../Libraries/');
 
 function checkWeCanParse(library) {
-  let path = libs + library;
-  let code = fs.readFileSync(path).toString();
-  let json = jsDocs(code);
+  const pathToCode = path.join(libs, library);
+  const code = fs.readFileSync(pathToCode).toString();
+  const json = jsDocs(code);
   expect(json).toBeTruthy();
 }
 
@@ -30,7 +33,7 @@ describe('parseSource', () => {
   });
 
   it('should not parse invalid code', () => {
-    let code = `
+    const code = `
     for x in range(10):
       print 'oops this isnt python'
     `;

@@ -14,20 +14,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTAnimationDriverNode : NSObject
+@protocol RCTAnimationDriver <NSObject>
 
 @property (nonatomic, readonly) NSNumber *animationId;
-@property (nonatomic, readonly) NSNumber *outputValue;
-
+@property (nonatomic, readonly) RCTValueAnimatedNode *valueNode;
 @property (nonatomic, readonly) BOOL animationHasBegun;
 @property (nonatomic, readonly) BOOL animationHasFinished;
 
 - (instancetype)initWithId:(NSNumber *)animationId
-                     delay:(NSTimeInterval)delay
-                   toValue:(CGFloat)toValue
-                    frames:(NSArray<NSNumber *> *)frames
+                    config:(NSDictionary *)config
                    forNode:(RCTValueAnimatedNode *)valueNode
-                  callBack:(nullable RCTResponseSenderBlock)callback NS_DESIGNATED_INITIALIZER;
+                  callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
 - (void)stopAnimation;

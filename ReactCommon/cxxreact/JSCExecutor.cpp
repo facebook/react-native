@@ -200,6 +200,11 @@ void JSCExecutor::destroy() {
   });
 }
 
+void JSCExecutor::setContextName(const std::string& name) {
+  String jsName = String(name.c_str());
+  JSGlobalContextSetName(m_context, static_cast<JSStringRef>(jsName));
+}
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 

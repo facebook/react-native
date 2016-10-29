@@ -27,7 +27,7 @@ const React = require('react');
 
 const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 
-import type { Example, ExampleModule } from 'ExampleTypes';
+import type { ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
   : ReactClass<any> {

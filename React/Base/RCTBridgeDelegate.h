@@ -88,6 +88,14 @@
  * to handle loading the JS yourself, you can do so by implementing this method.
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
+ * reporting.
+ */
+- (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
 
 @end

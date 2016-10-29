@@ -31,6 +31,8 @@ const View = require('View');
 
 const {PropTypes} = React;
 
+import type {ImageSource} from 'ImageSource';
+
 /**
  * Standard set of quick action buttons that can, if the user chooses, be used
  * with SwipeableListView. Each button takes an image and text with optional
@@ -39,13 +41,13 @@ const {PropTypes} = React;
 class SwipeableQuickActionButton extends React.Component {
   props: {
     accessibilityLabel?: string,
-    imageSource: $FlowFixMe,
-    imageStyle?: $FlowFixMe,
+    imageSource: ImageSource | number,
+    imageStyle?: ?View.propTypes.style,
     onPress?: Function,
-    style?: $FlowFixMe,
+    style?: ?View.propTypes.style,
     testID?: string,
-    text?: string,
-    textStyle?: $FlowFixMe,
+    text?: ?(string | Object | Array<string | Object>),
+    textStyle?: ?View.propTypes.style,
   };
 
   static propTypes = {
@@ -59,7 +61,7 @@ class SwipeableQuickActionButton extends React.Component {
     textStyle: Text.propTypes.style,
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     if (!this.props.imageSource && !this.props.text) {
       return null;
     }

@@ -13,15 +13,16 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
-const PropTypes = require('react/lib/ReactPropTypes');
+const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
-const UIManager = require('UIManager');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -52,8 +53,8 @@ const AccessibilityComponentType = [
   'radiobutton_unchecked',
 ];
 
-const forceTouchAvailable = (UIManager.RCTView.Constants &&
-  UIManager.RCTView.Constants.forceTouchAvailable) || false;
+const forceTouchAvailable = (NativeModules.IOSConstants &&
+  NativeModules.IOSConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
@@ -514,6 +515,7 @@ const RCTView = requireNativeComponent('RCTView', View, {
 });
 
 if (__DEV__) {
+  const UIManager = require('UIManager');
   const viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
   for (const prop in viewConfig.nativeProps) {
     const viewAny: any = View; // Appease flow

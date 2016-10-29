@@ -24,6 +24,7 @@
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTRedBox.h"
+#import "RCTDevLoadingView.h"
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -115,6 +116,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
 
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
+  } onProgress:^(RCTLoadingProgress *progressData) {
+#ifdef RCT_DEV
+    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+    [loadingView updateProgress:progressData];
+#endif
   }];
 
   // Synchronously initialize all native modules that cannot be loaded lazily
@@ -172,7 +178,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
-- (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
+- (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
 {
   [_performanceLogger markStartForTag:RCTPLScriptDownload];
 
@@ -183,18 +189,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     _onSourceLoad(error, source, sourceLength);
   };
 
-  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
+    [self.delegate loadSourceForBridge:_parentBridge onProgress:onProgress onComplete:onSourceLoad];
+  } else if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
   } else {
     RCTAssert(self.bundleURL, @"bundleURL must be non-nil when not implementing loadSourceForBridge");
 
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
+    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
           RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
           self.bundleURL = fallbackURL;
-          [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onComplete:onSourceLoad];
+          [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;
         }
       }
