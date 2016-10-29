@@ -11,13 +11,17 @@
  */
 'use strict';
 
+const prettyFormat = require('pretty-format');
 const Promise = require('fbjs/lib/Promise.native');
 
 if (__DEV__) {
   require('promise/setimmediate/rejection-tracking').enable({
     allRejections: true,
     onUnhandled: (id, error = {}) => {
-      const {message = null, stack = null} = error;
+      let {message = null, stack = null} = error;
+      if (!message) {
+        message = prettyFormat(error);
+      }
       const warning =
         `Possible Unhandled Promise Rejection (id: ${id}):\n` +
         (message == null ? '' : `${message}\n`) +
