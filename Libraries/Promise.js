@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const prettyFormat = require('pretty-format');
 const Promise = require('fbjs/lib/Promise.native');
 
 if (__DEV__) {
@@ -18,8 +19,8 @@ if (__DEV__) {
     allRejections: true,
     onUnhandled: (id, error = {}) => {
       let {message = null, stack = null} = error;
-      if (typeof error === 'string' || error instanceof String) {
-        message = error;
+      if (!message) {
+        message = prettyFormat(error);
       }
       const warning =
         `Possible Unhandled Promise Rejection (id: ${id}):\n` +
