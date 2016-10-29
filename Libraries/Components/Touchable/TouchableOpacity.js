@@ -87,7 +87,7 @@ var TouchableOpacity = React.createClass({
   setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150, useNativeDriver: true}
+      {toValue: value, duration: 150}
     ).start();
   },
 
