@@ -22,7 +22,6 @@
   if ((self = [super initWithFrame:frame])) {
     _color = [UIColor blackColor];
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
-    _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
   }
@@ -31,19 +30,23 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-- (void)setItems:(NSArray<NSDictionary *> *)items
+- (void)setComponents:(NSArray<NSArray *> *)components
 {
-  _items = [items copy];
+  _components = [components copy];
   [self setNeedsLayout];
 }
 
-- (void)setSelectedIndex:(NSInteger)selectedIndex
+- (void)setSelectedIndexes:(NSArray *)selectedIndexes
 {
-  if (_selectedIndex != selectedIndex) {
-    BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value
-    _selectedIndex = selectedIndex;
+  if (_selectedIndexes != selectedIndexes) {
+    BOOL animated = _selectedIndexes != nil; // Don't animate the initial value
+    _selectedIndexes = selectedIndexes;
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self selectRow:selectedIndex inComponent:0 animated:animated];
+      for (int component = 0; component < selectedIndexes.count; component++) {
+        [self selectRow:[selectedIndexes[component] integerValue]
+            inComponent:component
+               animated:animated];
+      }
     });
   }
 }
@@ -52,22 +55,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView
 {
-  return 1;
+  return _components.count;
 }
 
 - (NSInteger)pickerView:(__unused UIPickerView *)pickerView
-numberOfRowsInComponent:(__unused NSInteger)component
+numberOfRowsInComponent:(NSInteger)component
 {
-  return _items.count;
+  return _components[component].count;
 }
 
 #pragma mark - UIPickerViewDelegate methods
 
 - (NSString *)pickerView:(__unused UIPickerView *)pickerView
              titleForRow:(NSInteger)row
-            forComponent:(__unused NSInteger)component
+            forComponent:(NSInteger)component
 {
-  return [RCTConvert NSString:_items[row][@"label"]];
+  return [RCTConvert NSString:_components[component][row][@"label"]];
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
@@ -84,7 +87,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
       }
     }];
   }
-
+  
   label.font = _font;
   label.textColor = _color;
   label.textAlignment = _textAlign;
@@ -93,13 +96,18 @@ numberOfRowsInComponent:(__unused NSInteger)component
 }
 
 - (void)pickerView:(__unused UIPickerView *)pickerView
-      didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
+      didSelectRow:(NSInteger)row
+       inComponent:(NSInteger)component
 {
-  _selectedIndex = row;
+  NSMutableArray *selectedIndexes = [NSMutableArray arrayWithArray:_selectedIndexes];
+  selectedIndexes[component] = @(row);
+  _selectedIndexes = [NSArray arrayWithArray:selectedIndexes];
+  
   if (_onChange) {
     _onChange(@{
+      @"component": @(component),
       @"newIndex": @(row),
-      @"newValue": RCTNullIfNil(_items[row][@"value"]),
+      @"newValue": RCTNullIfNil(_components[component][row][@"value"]),
     });
   }
 }
