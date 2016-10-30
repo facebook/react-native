@@ -14,6 +14,7 @@
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTPerformanceLogger.h"
+#import "RCTMultipartDataTask.h"
 
 #include <sys/stat.h>
 
@@ -21,11 +22,27 @@ uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
+@implementation RCTLoadingProgress
+
+- (NSString *)description
+{
+  NSMutableString *desc = [NSMutableString new];
+  [desc appendString:_status ?: @"Loading"];
+
+  if (_total > 0) {
+    [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
+  }
+  [desc appendString:@"…"];
+  return desc;
+}
+
+@end
+
 @implementation RCTJavaScriptLoader
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-+ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
++ (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete
 {
   int64_t sourceLength;
   NSError *error;
@@ -42,7 +59,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   && error.code == RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously;
 
   if (isCannotLoadSyncError) {
-    attemptAsynchronousLoadOfBundleAtURL(scriptURL, onComplete);
+    attemptAsynchronousLoadOfBundleAtURL(scriptURL, onProgress, onComplete);
   } else {
     onComplete(error, nil, 0);
   }
@@ -135,7 +152,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
 }
 
-static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadBlock onComplete)
+static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadProgressBlock onProgress, RCTSourceLoadBlock onComplete)
 {
   scriptURL = sanitizeURL(scriptURL);
 
@@ -151,57 +168,75 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
     return;
   }
 
-  // Load remote script file
-  NSURLSessionDataTask *task =
-  [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
-   ^(NSData *data, NSURLResponse *response, NSError *error) {
 
-     // Handle general request errors
-     if (error) {
-       if ([error.domain isEqualToString:NSURLErrorDomain]) {
-         error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                                     code:RCTJavaScriptLoaderErrorURLLoadFailed
-                                 userInfo:
-                  @{
-                    NSLocalizedDescriptionKey:
-                      [@"Could not connect to development server.\n\n"
-                       "Ensure the following:\n"
-                       "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
-                       "- Node server URL is correctly set in AppDelegate\n\n"
-                       "URL: " stringByAppendingString:scriptURL.absoluteString],
-                    NSLocalizedFailureReasonErrorKey: error.localizedDescription,
-                    NSUnderlyingErrorKey: error,
-                    }];
-       }
-       onComplete(error, nil, 0);
-       return;
-     }
+  RCTMultipartDataTask *task = [[RCTMultipartDataTask alloc] initWithURL:scriptURL partHandler:^(NSInteger statusCode, NSDictionary *headers, NSData *data, NSError *error, BOOL done) {
+    if (!done) {
+      if (onProgress) {
+        onProgress(progressEventFromData(data));
+      }
+      return;
+    }
 
-     // Parse response as text
-     NSStringEncoding encoding = NSUTF8StringEncoding;
-     if (response.textEncodingName != nil) {
-       CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
-       if (cfEncoding != kCFStringEncodingInvalidId) {
-         encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
-       }
-     }
-     // Handle HTTP errors
-     if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
-       error = [NSError errorWithDomain:@"JSServer"
-                                   code:((NSHTTPURLResponse *)response).statusCode
-                               userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:encoding])];
-       onComplete(error, nil, 0);
-       return;
-     }
-     onComplete(nil, data, data.length);
-   }];
-  [task resume];
+    // Handle general request errors
+    if (error) {
+      if ([error.domain isEqualToString:NSURLErrorDomain]) {
+        error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                    code:RCTJavaScriptLoaderErrorURLLoadFailed
+                                userInfo:
+                 @{
+                   NSLocalizedDescriptionKey:
+                     [@"Could not connect to development server.\n\n"
+                      "Ensure the following:\n"
+                      "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
+                      "- Node server URL is correctly set in AppDelegate\n\n"
+                      "URL: " stringByAppendingString:scriptURL.absoluteString],
+                   NSLocalizedFailureReasonErrorKey: error.localizedDescription,
+                   NSUnderlyingErrorKey: error,
+                   }];
+      }
+      onComplete(error, nil, 0);
+      return;
+    }
+
+    // For multipart responses packager sets X-Http-Status header in case HTTP status code
+    // is different from 200 OK
+    NSString *statusCodeHeader = [headers valueForKey:@"X-Http-Status"];
+    if (statusCodeHeader) {
+      statusCode = [statusCodeHeader integerValue];
+    }
+
+    if (statusCode != 200) {
+      error = [NSError errorWithDomain:@"JSServer"
+                                  code:statusCode
+                              userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding])];
+      onComplete(error, nil, 0);
+      return;
+    }
+    onComplete(nil, data, data.length);
+  }];
+
+  [task startTask];
 }
 
 static NSURL *sanitizeURL(NSURL *url)
 {
   // Why we do this is lost to time. We probably shouldn't; passing a valid URL is the caller's responsibility not ours.
   return [RCTConvert NSURL:url.absoluteString];
+}
+
+static RCTLoadingProgress *progressEventFromData(NSData *rawData)
+{
+  NSString *text = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
+  id info = RCTJSONParse(text, nil);
+  if (!info || ![info isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+
+  RCTLoadingProgress *progress = [RCTLoadingProgress new];
+  progress.status = [info valueForKey:@"status"];
+  progress.done = [info valueForKey:@"done"];
+  progress.total = [info valueForKey:@"total"];
+  return progress;
 }
 
 static NSDictionary *userInfoForRawResponse(NSString *rawText)

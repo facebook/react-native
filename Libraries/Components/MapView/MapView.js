@@ -15,7 +15,6 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
-const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');

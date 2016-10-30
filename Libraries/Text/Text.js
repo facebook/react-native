@@ -21,7 +21,6 @@ const Touchable = require('Touchable');
 
 const createReactNativeComponentClass =
   require('react/lib/createReactNativeComponentClass');
-const merge = require('merge');
 const mergeFast = require('mergeFast');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
@@ -65,7 +64,7 @@ const viewConfig = {
  *     return (
  *       <Text style={styles.baseText}>
  *         <Text style={styles.titleText} onPress={this.onPressTitle}>
- *           {this.state.titleText}<br /><br />
+ *           {this.state.titleText}{'\n'}{'\n'}
  *         </Text>
  *         <Text numberOfLines={5}>
  *           {this.state.bodyText}
@@ -221,7 +220,7 @@ const Text = React.createClass({
   touchableHandlePress: (null: ?Function),
   touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     let newProps = this.props;
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {

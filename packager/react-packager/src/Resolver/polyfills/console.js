@@ -16,7 +16,7 @@
 
 /* eslint-disable */
 
-var inspect = (function() {
+const inspect = (function() {
   // Copyright Joyent, Inc. and other Node contributors.
   //
   // Permission is hereby granted, free of charge, to any person obtaining a
@@ -356,8 +356,8 @@ var inspect = (function() {
 })();
 
 
-var OBJECT_COLUMN_NAME = '(index)';
-var LOG_LEVELS = {
+const OBJECT_COLUMN_NAME = '(index)';
+const LOG_LEVELS = {
   trace: 0,
   info: 1,
   warn: 2,
@@ -371,7 +371,7 @@ function setupConsole(global) {
 
   function getNativeLogFunction(level) {
     return function() {
-      var str;
+      let str;
       if (arguments.length === 1 && typeof arguments[0] === 'string') {
         str = arguments[0];
       } else {
@@ -380,7 +380,7 @@ function setupConsole(global) {
         }).join(', ');
       }
 
-      var logLevel = level;
+      let logLevel = level;
       if (str.slice(0, 9) === 'Warning: ' && logLevel >= LOG_LEVELS.error) {
         // React warnings use console.error so that a stack trace is shown,
         // but we don't (currently) want these to show a redbox
@@ -391,7 +391,7 @@ function setupConsole(global) {
     };
   }
 
-  var repeat = function(element, n) {
+  function repeat(element, n) {
     return Array.apply(null, Array(n)).map(function() { return element; });
   };
 
@@ -431,7 +431,7 @@ function setupConsole(global) {
 
     // Join all elements in the row into a single string with | separators
     // (appends extra spaces to each cell to make separators  | alligned)
-    var joinRow = function(row, space) {
+    function joinRow(row, space) {
       var cells = row.map(function(cell, i) {
         var extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');
         return cell + extraSpaces;
@@ -465,7 +465,7 @@ function setupConsole(global) {
     Object.defineProperty(global, 'originalConsole', descriptor);
   }
 
-  var console = {
+  global.console = {
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
     log: getNativeLogFunction(LOG_LEVELS.info),
@@ -474,14 +474,6 @@ function setupConsole(global) {
     debug: getNativeLogFunction(LOG_LEVELS.trace),
     table: consoleTablePolyfill
   };
-
-  // don't reassign to the original descriptor. breaks on ios7
-  Object.defineProperty(global, 'console', {
-    value: console,
-    configurable: descriptor ? descriptor.configurable : true,
-    enumerable: descriptor ? descriptor.enumerable : true,
-    writable: descriptor ? descriptor.writable : true,
-  });
 
   // If available, also call the original `console` method since that is
   // sometimes useful. Ex: on OS X, this will let you see rich output in

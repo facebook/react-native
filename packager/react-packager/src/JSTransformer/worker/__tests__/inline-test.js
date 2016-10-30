@@ -277,5 +277,30 @@ describe('inline constants', () => {
     const {ast} = inline('arbitrary.hs', {ast: toAst(code)}, {dev: false});
     expect(toString(ast)).toEqual(code.replace(/__DEV__/, 'false'));
   });
-});
 
+  it('can work with wrapped modules', () => {
+    const code = `__arbitrary(function() {
+      var Platform = require('react-native').Platform;
+      var a = Platform.OS, b = Platform.select({android: 1, ios: 2});
+    });`;
+    const {ast} = inline(
+      'arbitrary', {code}, {dev: true, platform: 'android', isWrapped: true});
+    expect(toString(ast)).toEqual(
+      normalize(
+        code
+          .replace(/Platform\.OS/, '"android"')
+          .replace(/Platform\.select[^)]+\)/, 1)
+      )
+    );
+  });
+
+  it('can work with transformed require calls', () => {
+    const code = `__arbitrary(function() {
+      var a = require(123, 'react-native').Platform.OS;
+    });`;
+    const {ast} = inline(
+      'arbitrary', {code}, {dev: true, platform: 'android', isWrapped: true});
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/require\([^)]+\)\.Platform\.OS/, '"android"')));
+  });
+});

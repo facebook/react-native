@@ -9,17 +9,15 @@
 
 'use strict';
 
-const assert = require('assert');
-
+const babel = require('babel-core');
+const deepAssign = require('deep-assign');
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
 const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
+const jsdocApi = require('jsdoc-api');
 const path = require('path');
 const slugify = require('../core/slugify');
-const babel = require('babel-core');
-const jsdocApi = require('jsdoc-api');
-const deepAssign = require('deep-assign');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -42,7 +40,7 @@ function getNameFromPath(filepath) {
   filepath = removeExtName(filepath);
   if (filepath === 'LayoutPropTypes') {
     return 'Layout Props';
-  } else if (filepath == 'ShadowPropTypesIOS') {
+  } else if (filepath === 'ShadowPropTypesIOS') {
     return 'Shadow Props';
   } else if (filepath === 'TransformPropTypes') {
     return 'Transforms';
@@ -66,7 +64,7 @@ function getPlatformFromPath(filepath) {
 
 function getExamplePaths(componentName, componentPlatform) {
   const componentExample = '../Examples/UIExplorer/js/' + componentName + 'Example.';
-  let pathsToCheck = [
+  const pathsToCheck = [
     componentExample + 'js',
     componentExample + componentPlatform + '.js',
   ];
@@ -76,7 +74,7 @@ function getExamplePaths(componentName, componentPlatform) {
       componentExample + ANDROID_SUFFIX + '.js'
     );
   }
-  let paths = [];
+  const paths = [];
   pathsToCheck.map((p) => {
     if (fs.existsSync(p)) {
       paths.push(p);
@@ -88,7 +86,7 @@ function getExamplePaths(componentName, componentPlatform) {
 function getExamples(componentName, componentPlatform) {
   const paths = getExamplePaths(componentName, componentPlatform);
   if (paths) {
-    let examples = [];
+    const examples = [];
     paths.map((p) => {
       const platform = p.match(/Example\.(.*)\.js$/);
       let title = '';
@@ -244,7 +242,7 @@ function getTypedef(filepath, fileContent, json) {
   if (!json) {
     return typedefDocgen;
   }
-  let typedef = typedefDocgen;
+  const typedef = typedefDocgen;
   if (json.typedef && json.typedef.length !== 0) {
     json.typedef.forEach(def => {
       const typedefMatch = typedefDocgen.find(t => t.name === def.name);
@@ -317,7 +315,7 @@ function parseAPIJsDocFormat(filepath, fileContent) {
     identifier.order = index;
   });
   // Group by "kind"
-  let json = {};
+  const json = {};
   jsonParsed.forEach((identifier, index) => {
     let kind = identifier.kind;
     if (kind === 'function') {
@@ -410,7 +408,7 @@ function getTypehint(typehint) {
 }
 
 function getJsDocFormatType(entities) {
-  let modEntities = entities;
+  const modEntities = entities;
   if (entities) {
     if (typeof entities === 'object' && entities.length) {
       entities.map((entity, entityIndex) => {
@@ -441,11 +439,11 @@ function renderAPI(filepath, type) {
     const fileContent = fs.readFileSync(filepath).toString();
     let json = parseAPIInferred(filepath, fileContent);
     if (isJsDocFormat(fileContent)) {
-      let jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
+      const jsonJsDoc = parseAPIJsDocFormat(filepath, fileContent);
       // Combine method info with jsdoc formatted content
       const methods = json.methods;
       if (methods && methods.length) {
-        let modMethods = methods;
+        const modMethods = methods;
         methods.map((method, methodIndex) => {
           modMethods[methodIndex].params = getJsDocFormatType(method.params);
           modMethods[methodIndex].returns =
@@ -487,7 +485,7 @@ function renderStyle(filepath) {
 
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
-  '../Libraries/Components/ActivityIndicator/ActivityIndicatorIOS.ios.js',
+  '../Libraries/Components/Button.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
@@ -505,12 +503,9 @@ const components = [
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/Slider/Slider.js',
-  '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
-  '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
+  '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',
-  '../Libraries/Components/SwitchAndroid/SwitchAndroid.android.js',
-  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
@@ -528,10 +523,10 @@ const components = [
 const apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/AdSupport/AdSupportIOS.js',
-  '../Libraries/Utilities/Alert.js',
-  '../Libraries/Utilities/AlertIOS.js',
+  '../Libraries/Alert/Alert.js',
+  '../Libraries/Alert/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
-  '../Libraries/AppRegistry/AppRegistry.js',
+  '../Libraries/ReactNative/AppRegistry.js',
   '../Libraries/AppState/AppState.js',
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
@@ -544,14 +539,12 @@ const apis = [
   '../Libraries/Image/ImageEditor.js',
   '../Libraries/CameraRoll/ImagePickerIOS.js',
   '../Libraries/Image/ImageStore.js',
-  '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/Components/Keyboard/Keyboard.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
   '../node_modules/react/lib/NativeMethodsMixin.js',
-  '../Libraries/BatchedBridge/BatchedBridgedModules/NativeModules.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
@@ -560,7 +553,7 @@ const apis = [
   '../Libraries/Settings/Settings.ios.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
-  '../Libraries/Utilities/Systrace.js',
+  '../Libraries/Performance/Systrace.js',
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/Vibration.js',

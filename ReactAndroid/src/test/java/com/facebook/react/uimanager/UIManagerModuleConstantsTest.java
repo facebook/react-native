@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 import org.fest.assertions.data.MapEntry;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,12 +52,17 @@ public class UIManagerModuleConstantsTest {
   private static final Map TWIRL_DIRECT_EVENT_MAP = MapBuilder.of("registrationName", "onTwirl");
 
   private ReactApplicationContext mReactContext;
-  private UIImplementation mUIImplementation;
+  private UIImplementationProvider mUIImplementationProvider;
 
   @Before
   public void setUp() {
     mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
-    mUIImplementation = mock(UIImplementation.class);
+    mUIImplementationProvider = mock(UIImplementationProvider.class);
+    when(mUIImplementationProvider.createUIImplementation(
+      any(ReactApplicationContext.class),
+      any(List.class),
+      any(EventDispatcher.class)))
+      .thenReturn(mock(UIImplementation.class));
   }
 
   @Test
@@ -64,7 +71,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat(constants)
         .containsKey(CUSTOM_BUBBLING_EVENT_TYPES)
@@ -81,7 +88,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_BUBBLING_EVENT_TYPES))
         .contains(MapEntry.entry("onTwirl", TWIRL_BUBBLING_EVENT_MAP))
@@ -97,7 +104,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_DIRECT_EVENT_TYPES))
         .contains(MapEntry.entry("onTwirl", TWIRL_DIRECT_EVENT_MAP))
@@ -114,7 +121,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat(constants).containsKey("RedPandaPhotoOfTheDayView");
     assertThat((Map) constants.get("RedPandaPhotoOfTheDayView")).containsKey("Constants");
@@ -132,7 +139,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((String) valueAtPath(constants, "SomeView", "NativeProps", "fooProp"))
         .isEqualTo("number");
@@ -166,7 +173,7 @@ public class UIManagerModuleConstantsTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         mReactContext,
         viewManagers,
-        mUIImplementation);
+      mUIImplementationProvider);
     Map<String, Object> constants = uiManagerModule.getConstants();
     assertThat((Map) constants.get(CUSTOM_DIRECT_EVENT_TYPES)).containsKey("onTwirl");
 

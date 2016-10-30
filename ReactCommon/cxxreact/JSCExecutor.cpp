@@ -16,13 +16,14 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "FollySupport.h"
 #include "JSCHelpers.h"
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "Value.h"
-
+#include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
+#include "JSModulesUnbundle.h"
+#include "ModuleRegistry.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -79,15 +80,44 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
   return &funcWrapper::call;
 }
 
+template<JSValueRef (JSCExecutor::*method)(JSObjectRef object, JSStringRef propertyName)>
+inline JSObjectGetPropertyCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+         JSContextRef ctx,
+         JSObjectRef object,
+         JSStringRef propertyName,
+         JSValueRef *exception) {
+      try {
+        auto globalObj = JSContextGetGlobalObject(ctx);
+        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        return (executor->*method)(object, propertyName);
+      } catch (...) {
+        *exception = translatePendingCppExceptionToJSError(ctx, object);
+        return JSValueMakeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
 }
 
+}
+
+#if DEBUG
 static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
     size_t argumentCount,
     const JSValueRef arguments[],
-    JSValueRef *exception);
+    JSValueRef *exception) {
+  String execJSString = Value(ctx, arguments[0]).toString();
+  String jsURL = Value(ctx, arguments[1]).toString();
+  evaluateScript(ctx, execJSString, jsURL);
+  return JSValueMakeUndefined(ctx);
+}
+#endif
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
@@ -102,28 +132,15 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate->getModuleRegistry()),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
-  SystraceSection s("setBatchedBridgeConfig");
-
-  folly::dynamic nativeModuleConfig = folly::dynamic::array();
-
   {
-    SystraceSection s("collectNativeModuleNames");
-    for (auto& name : delegate->moduleNames()) {
-      nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
-    }
+    SystraceSection s("nativeModuleProxy object");
+    installGlobalProxy(m_context, "nativeModuleProxy",
+                       exceptionWrapMethod<&JSCExecutor::getNativeModule>());
   }
-
-  folly::dynamic config =
-    folly::dynamic::object
-      ("remoteModuleConfig", std::move(nativeModuleConfig));
-
-  SystraceSection t("setGlobalVariable");
-  setGlobalVariable(
-    "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
 }
 
 JSCExecutor::JSCExecutor(
@@ -139,6 +156,7 @@ JSCExecutor::JSCExecutor(
     m_owner(owner),
     m_deviceCacheDir(owner->m_deviceCacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate->getModuleRegistry()),
     m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
@@ -182,6 +200,11 @@ void JSCExecutor::destroy() {
   });
 }
 
+void JSCExecutor::setContextName(const std::string& name) {
+  String jsName = String(name.c_str());
+  JSGlobalContextSetName(m_context, static_cast<JSStringRef>(jsName));
+}
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
@@ -189,6 +212,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   configureJSCForAndroid(m_jscConfig);
   #endif
 
+  // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
@@ -203,16 +227,21 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
-  installNativeHook<&JSCExecutor::nativeRequireModuleConfig>("nativeRequireModuleConfig");
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
+  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
+
+  // Websorker support
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+
+  #if DEBUG
+  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
+  #endif
 
   #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
   addNativeTracingHooks(m_context);
@@ -250,6 +279,8 @@ void JSCExecutor::terminateOnJSVMThread() {
     terminateOwnedWebWorker(workerId);
   }
 
+  m_nativeModules.reset();
+
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
@@ -278,11 +309,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-
-    auto length = lseek(fd, 0, SEEK_END);
-    folly::checkUnixError(length, "Couldn't seek to the end of compiled bundle");
-
-    sourceCode = JSCreateCompiledSourceCode(fd, length, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
   } else {
     auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
     if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
@@ -296,7 +323,6 @@ void JSCExecutor::loadApplicationScript(
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
-      jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
@@ -638,6 +664,14 @@ void JSCExecutor::installNativeHook(const char* name) {
   installGlobalFunction(m_context, name, exceptionWrapMethod<method>());
 }
 
+JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
+  if (JSStringIsEqualToUTF8CString(propertyName, "name")) {
+    return Value(m_context, String("NativeModules"));
+  }
+
+  return m_nativeModules.getModule(m_context, propertyName);
+}
+
 JSValueRef JSCExecutor::nativePostMessage(
     size_t argumentCount,
     const JSValueRef arguments[]) {
@@ -669,18 +703,6 @@ JSValueRef JSCExecutor::nativeRequire(
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
   }
   return JSValueMakeUndefined(m_context);
-}
-
-JSValueRef JSCExecutor::nativeRequireModuleConfig(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  std::string moduleName = Value(m_context, arguments[0]).toString().str();
-  folly::dynamic config = m_delegate->getModuleConfig(moduleName);
-  return Value::fromDynamic(m_context, config);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
@@ -765,18 +787,6 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
     return JSValueMakeUndefined(m_context);
   }
   return Value::fromDynamic(m_context, result.result);
-}
-
-static JSValueRef nativeInjectHMRUpdate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  String execJSString = Value(ctx, arguments[0]).toString();
-  String jsURL = Value(ctx, arguments[1]).toString();
-  evaluateScript(ctx, execJSString, jsURL);
-  return JSValueMakeUndefined(ctx);
 }
 
 } }

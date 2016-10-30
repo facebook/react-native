@@ -80,7 +80,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  *         // The guesture has started. Show visual feedback so the user knows
  *         // what is happening!
  *
- *         // gestureState.{x,y}0 will be set to zero now
+ *         // gestureState.d{x,y} will be set to zero now
  *       },
  *       onPanResponderMove: (evt, gestureState) => {
  *         // The most recent move distance is gestureState.move{X,Y}

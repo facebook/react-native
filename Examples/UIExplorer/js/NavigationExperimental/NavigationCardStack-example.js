@@ -60,7 +60,7 @@ class YourApplication extends React.Component {
   }
 
   // User your own navigator (see Step 2).
-  render(): ReactElement {
+  render(): React.Element {
     return (
       <YourNavigator
         navigationState={this.state.navigationState}
@@ -134,7 +134,7 @@ class YourNavigator extends React.Component {
   }
 
   // Now use the `NavigationCardStack` to render the scenes.
-  render(): ReactElement {
+  render(): React.Element {
     return (
       <NavigationCardStack
         onNavigateBack={this._onPopRoute}
@@ -148,7 +148,7 @@ class YourNavigator extends React.Component {
   // Render a scene for route.
   // The detailed spec of `sceneProps` is defined at `NavigationTypeDefinition`
   // as type `NavigationSceneRendererProps`.
-  _renderScene(sceneProps: Object): ReactElement {
+  _renderScene(sceneProps: Object): React.Element {
     return (
       <YourScene
         route={sceneProps.scene.route}

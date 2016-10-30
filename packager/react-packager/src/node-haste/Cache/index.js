@@ -5,17 +5,20 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
-const denodeify = require('denodeify');
 const crypto = require('crypto');
+const denodeify = require('denodeify');
 const fs = require('graceful-fs');
 const isAbsolutePath = require('absolute-path');
-const path = require('../fastpath');
-const tmpDir = require('os').tmpDir();
+const path = require('path');
+const tmpDir = require('os').tmpdir();
 
-function getObjectValues(object) {
+function getObjectValues<T>(object: {[key: string]: T}): Array<T> {
   return Object.keys(object).map(key => object[key]);
 }
 
@@ -27,11 +30,26 @@ function debounce(fn, delay) {
   };
 }
 
+type Record = {
+  data: {[field: string]: Promise<mixed>},
+  metadata: {[field: string]: Promise<mixed>},
+};
+
 class Cache {
+
+  _cacheFilePath: string;
+  _data: {[filename: string]: Record};
+  _persistEventually: () => void;
+  _persisting: ?Promise<boolean> | void;
+
   constructor({
     resetCache,
     cacheKey,
     cacheDirectory = tmpDir,
+  }: {
+    resetCache: boolean,
+    cacheKey: string,
+    cacheDirectory: string,
   }) {
     this._cacheFilePath = Cache.getCacheFilePath(cacheDirectory, cacheKey);
     if (!resetCache) {
@@ -49,7 +67,11 @@ class Cache {
     return path.join(tmpdir, hash.digest('hex'));
   }
 
-  get(filepath, field, loaderCb) {
+  get(
+    filepath: string,
+    field: string,
+    loaderCb: (filepath: string) => Promise<mixed>,
+  ): Promise<mixed> {
     if (!isAbsolutePath(filepath)) {
       throw new Error('Use absolute paths');
     }
@@ -59,7 +81,7 @@ class Cache {
       : this.set(filepath, field, loaderCb(filepath));
   }
 
-  invalidate(filepath, field) {
+  invalidate(filepath: string, field: string) {
     if (this.has(filepath, field)) {
       if (field == null) {
         delete this._data[filepath];
@@ -73,15 +95,20 @@ class Cache {
     return this._persistCache();
   }
 
-  has(filepath, field) {
+  has(filepath: string, field: string) {
     return Object.prototype.hasOwnProperty.call(this._data, filepath) &&
       (field == null || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
   }
 
-  set(filepath, field, loaderPromise) {
+  set(
+    filepath: string,
+    field: string,
+    loaderPromise: Promise<mixed>,
+  ): Promise<mixed> {
     let record = this._data[filepath];
     if (!record) {
-      record = Object.create(null);
+      // $FlowFixMe: temporarily invalid record.
+      record = (Object.create(null): Record);
       this._data[filepath] = record;
       this._data[filepath].data = Object.create(null);
       this._data[filepath].metadata = Object.create(null);
@@ -127,7 +154,8 @@ class Cache {
         return Promise
           .all(fieldValues)
           .then(ref => {
-            const ret = Object.create(null);
+            // $FlowFixMe: temporarily invalid record.
+            const ret = (Object.create(null): Record);
             ret.metadata = record.metadata;
             ret.data = Object.create(null);
             fieldNames.forEach((field, index) =>
@@ -183,6 +211,7 @@ class Cache {
         ret[key] = Object.create(null);
         ret[key].metadata = Object.create(null);
         ret[key].data = Object.create(null);
+        // $FlowFixMe: we should maybe avoid Object.create().
         ret[key].metadata.mtime = record.metadata.mtime;
 
         Object.keys(record.data).forEach(field => {

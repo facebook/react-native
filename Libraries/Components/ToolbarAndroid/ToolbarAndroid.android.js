@@ -15,7 +15,6 @@ var Image = require('Image');
 var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var ReactPropTypes = require('react/lib/ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
 var ColorPropType = require('ColorPropType');
@@ -23,11 +22,13 @@ var ColorPropType = require('ColorPropType');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
+var ReactPropTypes = React.PropTypes;
+
 var optionalImageSource = ReactPropTypes.oneOfType([
   Image.propTypes.source,
   // Image.propTypes.source is required but we want it to be optional, so we OR
   // it with a nullable propType.
-  ReactPropTypes.oneOf([])
+  ReactPropTypes.oneOf([]),
 ]);
 
 /**
@@ -203,19 +204,6 @@ var ToolbarAndroid = React.createClass({
     }
   },
 });
-
-var toolbarAttributes = {
-  ...ReactNativeViewAttributes.UIView,
-  actions: true,
-  logo: true,
-  navIcon: true,
-  overflowIcon: true,
-  rtl: true,
-  subtitle: true,
-  subtitleColor: true,
-  title: true,
-  titleColor: true,
-};
 
 var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
   nativeOnly: {

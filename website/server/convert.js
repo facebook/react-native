@@ -191,9 +191,16 @@ function execute() {
       .replace(/\./g, '-')
       .replace(/\-md$/, '.html');
 
+    // Extract 2015-08-13 from 2015/08/13/blog-post-name-0-5.html
+    var match = filePath.match(/([0-9]+)\/([0-9]+)\/([0-9]+)/);
+    var year = match[1];
+    var month = match[2];
+    var day = match[3];
+    var publishedAt = year + '-' + month + '-' + day;
+
     var res = extractMetadata(fs.readFileSync(file, {encoding: 'utf8'}));
     var rawContent = res.rawContent;
-    var metadata = Object.assign({path: filePath, content: rawContent}, res.metadata);
+    var metadata = Object.assign({path: filePath, content: rawContent, publishedAt: publishedAt}, res.metadata);
 
     metadatasBlog.files.push(metadata);
 
@@ -210,7 +217,6 @@ function execute() {
       buildFile('BlogPageLayout', { page: page, perPage: perPage })
     );
   }
-
   fs.writeFileSync(
     'core/metadata-blog.js',
     '/**\n' +
@@ -219,6 +225,11 @@ function execute() {
     ' */\n' +
     'module.exports = ' + JSON.stringify(metadatasBlog, null, 2) + ';'
   );
+  fs.writeFileSync(
+    'server/metadata-blog.json',
+    JSON.stringify(metadatasBlog, null, 2)
+  );
+
 }
 
 if (argv.convert) {

@@ -28,8 +28,8 @@ if (__DEV__) {
 const ReactNative = {
   // Components
   get ActivityIndicator() { return require('ActivityIndicator'); },
-  get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
+  get Button() { return require('Button'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },
@@ -48,15 +48,12 @@ const ReactNative = {
   get ScrollView() { return require('ScrollView'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
   get Slider() { return require('Slider'); },
-  get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
   get SwipeableListView() { return require('SwipeableListView'); },
-  get SwitchAndroid() { return require('SwitchAndroid'); },
-  get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
   get Text() { return require('Text'); },
   get TextInput() { return require('TextInput'); },
@@ -79,7 +76,6 @@ const ReactNative = {
   get Animated() { return require('Animated'); },
   get AppRegistry() { return require('AppRegistry'); },
   get AppState() { return require('AppState'); },
-  get AppStateIOS() { return require('AppStateIOS'); },
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },
   get CameraRoll() { return require('CameraRoll'); },
@@ -89,12 +85,10 @@ const ReactNative = {
   get Easing() { return require('Easing'); },
   get I18nManager() { return require('I18nManager'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
-  get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
   get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
-  get LinkingIOS() { return require('LinkingIOS'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
@@ -133,7 +127,6 @@ const ReactNative = {
       }
       return require('react/lib/LinkedStateMixin');
     },
-    Perf: undefined,
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
@@ -151,7 +144,6 @@ const ReactNative = {
       }
       return require('NativeModules').TestModule;
     },
-    TestUtils: undefined,
     get batchedUpdates() {
       if (__DEV__) {
         warning(
@@ -187,14 +179,14 @@ if (__DEV__) {
     Object.defineProperty(ReactNative, key, {
       get() { throwOnWrongReactAPI(key); },
       enumerable: false,
-      configurable: false
+      configurable: false,
     });
   }
 }
 
 // Preserve getters with warnings on the internal ReactNative copy without
 // invoking them.
-const ReactNativeInternal = require('react/lib/ReactNative');
+const ReactNativeInternal = require('ReactNative');
 function applyForwarding(key) {
   if (__DEV__) {
     Object.defineProperty(
@@ -209,26 +201,4 @@ function applyForwarding(key) {
 for (const key in ReactNativeInternal) {
   applyForwarding(key);
 }
-
-if (__DEV__) {
-  Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('Perf', 'react-addons-perf');
-      }
-      return require('react/lib/ReactPerf');
-    }
-  });
-  Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('update', 'react-addons-test-utils');
-      }
-      return require('react/lib/ReactTestUtils');
-    }
-  });
-}
-
 module.exports = ReactNative;

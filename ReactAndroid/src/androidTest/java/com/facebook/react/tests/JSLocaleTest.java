@@ -18,7 +18,7 @@ import com.facebook.react.testing.StringRecordingModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
@@ -46,7 +46,7 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

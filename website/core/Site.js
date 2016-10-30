@@ -51,7 +51,7 @@ var Site = React.createClass({
       },
       {
         property: "og:image",
-        content: this.props.image ? this.props.image : "http://facebook.github.io/react-native/img/opengraph.png",
+        content: this.props.image ? this.props.image : "https://facebook.github.io/react-native/img/opengraph.png",
       },
       {
         property: "og:description",

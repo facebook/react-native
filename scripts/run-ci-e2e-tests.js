@@ -172,7 +172,7 @@ try {
     if (tryExecNTimes(
       () => {
         exec('sleep 10s');
-        return exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+        return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
       },
       numberOfRetries)) {
         echo('Failed to run iOS e2e tests');
