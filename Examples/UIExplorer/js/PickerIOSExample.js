@@ -119,6 +119,50 @@ class PickerExample extends React.Component {
   }
 }
 
+class PickerComponentsExample extends React.Component {
+  state = {
+    carMake: 'cadillac',
+    modelIndex: 0,
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.onValueChange = this.onValueChange.bind(this);
+  }
+
+  onValueChange(component, newValue, newIndex) {
+    this.setState({
+      carMake: (component === 0) ? newValue : this.state.carMake,
+      modelIndex: (component === 0) ? 0 : newIndex
+    });
+  }
+
+  render() {
+    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
+    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+
+    return (
+      <View>
+        <PickerIOS onValueChange={this.onValueChange}>
+          <PickerComponentIOS selectedValue={this.state.carMake}>
+            {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+              <PickerItemIOS
+                key={carMake}
+                value={carMake}
+                label={CAR_MAKES_AND_MODELS[carMake].name}
+              />
+            ))}
+          </PickerComponentIOS>
+          <PickerComponentIOS selectedValue={this.state.modelIndex}>
+            {CAR_MAKES_AND_MODELS[this.state.carMake].models.map((modelName, modelIndex) => (
+              <PickerItemIOS
+                key={this.state.carMake + '_' + modelIndex}
+                value={modelIndex}
+                label={modelName}
+              />
+            ))}
+          </PickerComponentIOS>
         </PickerIOS>
         <Text>You selected: {selectionString}</Text>
       </View>
@@ -159,6 +203,12 @@ exports.examples = [
   title: '<PickerIOS>',
   render: function(): React.Element<any> {
     return <PickerExample />;
+  },
+},
+{
+  title: '<PickerIOS> with multiple components',
+  render: function(): React.Element<any> {
+    return <PickerComponentsExample />;
   },
 },
 {
