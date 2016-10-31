@@ -135,6 +135,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .put(
+            "topKeyDown",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyDownCapture")))
         .build();
   }
 
@@ -620,7 +625,26 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (count == 0 && before == 0) {
         return;
       }
-
+      // If the string is only 1 character longer, we interpret it as a key press. It also triggers
+      // if only 1 character was pasted, but there is no way to monitor soft/virtual key presses
+      int diff = count - before;
+      if(diff == 1) {
+        // Mirrors behaviour of iOS
+        String key = ""+s.charAt(start+count-1);
+        key = key.equals("\n") ? "Enter" : key;
+        mEventDispatcher.dispatchEvent(
+                new ReactKeyDownEvent(
+                        mEditText.getId(),
+                        key));
+      }
+      // If the text is shorter we interpret as a backspace press (could also be a Cut from a
+      // selection)
+      if(diff < 0) {
+        mEventDispatcher.dispatchEvent(
+                new ReactKeyDownEvent(
+                        mEditText.getId(),
+                        "Backspace"));
+      }
       Assertions.assertNotNull(mPreviousText);
       String newText = s.toString().substring(start, start + count);
       String oldText = mPreviousText.substring(start, start + before);
@@ -701,6 +725,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 actionId == EditorInfo.IME_NULL) {
               EventDispatcher eventDispatcher =
                   reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+              eventDispatcher.dispatchEvent(
+                      new ReactKeyDownEvent(
+                              editText.getId(),
+                              "Enter"));
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
