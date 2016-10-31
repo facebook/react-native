@@ -48,6 +48,7 @@ function connectToDebuggerProxy() {
       return 'If you reload this page, it is going to break the debugging session. ' +
         'You should press' + refresh_shortcut + 'in simulator to reload.';
     };
+    updateVisibility();
   }
 
   function shutdownJSRuntime() {
@@ -55,6 +56,15 @@ function connectToDebuggerProxy() {
       worker.terminate();
       worker = null;
       window.onbeforeunload = null;
+    }
+  }
+
+  function updateVisibility() {
+    if (worker) {
+      worker.postMessage({
+        method: 'setDebuggerVisibility',
+        visibilityState: document.visibilityState,
+      });
     }
   }
 
@@ -103,6 +113,10 @@ function connectToDebuggerProxy() {
     }
     setTimeout(connectToDebuggerProxy, 500);
   };
+
+  // Let debuggerWorker.js know when we're not visible so that we can warn about
+  // poor performance when using remote debugging.
+  document.addEventListener('visibilitychange', updateVisibility, false);
 }
 
 connectToDebuggerProxy();
