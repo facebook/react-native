@@ -16,12 +16,12 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 /**
  * Event emitted when url scheme has been blocked from loading
  */
-public class UrlSchemeBlockedEvent extends Event<UrlSchemeBlockedEvent> {
+public class UrlSchemeRejectedEvent extends Event<UrlSchemeRejectedEvent> {
 
-  public static final String EVENT_NAME = "urlSchemeBlocked";
+  public static final String EVENT_NAME = "urlSchemeRejected";
   private WritableMap mEventData;
 
-  public UrlSchemeBlockedEvent(int viewId, WritableMap eventData) {
+  public UrlSchemeRejectedEvent(int viewId, WritableMap eventData) {
     super(viewId);
     mEventData = eventData;
   }

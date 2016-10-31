@@ -54,7 +54,7 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
-import com.facebook.react.views.webview.events.UrlSchemeBlockedEvent;
+import com.facebook.react.views.webview.events.UrlSchemeRejectedEvent;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -71,7 +71,7 @@ import org.json.JSONException;
  *  - topLoadingFinish
  *  - topLoadingStart
  *  - topLoadingError
- *  - urlSchemeBlocked
+ *  - urlSchemeRejected
  *
  * Each event will carry the following properties:
  *  - target - view's react tag
@@ -135,16 +135,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        ArrayList<String> urlSchemeBlacklist = ((ReactWebView)view).getUrlSchemeBlacklist();
-        if (urlSchemeBlacklist != null && urlSchemeBlacklist.size() > 0)
+        ArrayList<String> rejectedUrlSchemes = ((ReactWebView)view).getRejectedUrlSchemes();
+        if (rejectedUrlSchemes != null && rejectedUrlSchemes.size() > 0)
         {
           if (url.contains("://")) {
             String scheme = url.split("://")[0];
-            if (urlSchemeBlacklist.contains(scheme)) {
+            if (rejectedUrlSchemes.contains(scheme)) {
               final WritableMap params = Arguments.createMap();
               params.putString("scheme", scheme);
               params.putString("url", url);
-              dispatchEvent(view, new UrlSchemeBlockedEvent(view.getId(), params));
+              dispatchEvent(view, new UrlSchemeRejectedEvent(view.getId(), params));
               return true;
             }
           }
@@ -223,7 +223,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
     private boolean messagingEnabled = false;
-    private @Nullable ArrayList<String> urlSchemeBlacklist;
+    private @Nullable ArrayList<String> rejectedUrlSchemes;
 
 
     private class ReactWebViewBridge {
@@ -291,12 +291,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
-    public void setUrlSchemeBlacklist(@Nullable ArrayList<String> urlSchemeBlacklist) {
-      this.urlSchemeBlacklist = urlSchemeBlacklist;
+    public void setRejectedUrlSchemes(@Nullable ArrayList<String> rejectedUrlSchemes) {
+      this.rejectedUrlSchemes = rejectedUrlSchemes;
     }
 
-    public ArrayList<String> getUrlSchemeBlacklist() {
-      return urlSchemeBlacklist;
+    public ArrayList<String> getRejectedUrlSchemes() {
+      return rejectedUrlSchemes;
     }
 
     public void linkBridge() {
@@ -473,16 +473,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.loadUrl(BLANK_URL);
   }
 
-  @ReactProp(name = "urlSchemeBlacklist")
-  public void setUrlSchemeBlacklist(WebView view, @Nullable ReadableArray urlSchemeBlacklistArray) {
-    if (urlSchemeBlacklistArray != null) {
-      ArrayList<String> urlSchemeBlacklist = new ArrayList<String>();
+  @ReactProp(name = "rejectedUrlSchemes")
+  public void setRejectedUrlSchemes(WebView view, @Nullable ReadableArray rejectedUrlSchemesArray) {
+    if (rejectedUrlSchemesArray != null) {
+      ArrayList<String> rejectedUrlSchemes = new ArrayList<String>();
 
-      for (int i = 0; i < urlSchemeBlacklistArray.size(); i++) {
-        urlSchemeBlacklist.add(urlSchemeBlacklistArray.getString(i));
+      for (int i = 0; i < rejectedUrlSchemesArray.size(); i++) {
+        rejectedUrlSchemes.add(rejectedUrlSchemesArray.getString(i));
       }
 
-      ((ReactWebView) view).setUrlSchemeBlacklist(urlSchemeBlacklist);
+      ((ReactWebView) view).setRejectedUrlSchemes(rejectedUrlSchemes);
+    } else {
+      ((ReactWebView) view).setRejectedUrlSchemes(null);
     }
   }
 
@@ -571,6 +573,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(UrlSchemeBlockedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onUrlSchemeBlocked"));
+    return MapBuilder.of(UrlSchemeRejectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onUrlSchemeRejected"));
   }
 }

@@ -32,7 +32,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, weak) id<RCTWebViewDelegate> delegate;
 
 @property (nonatomic, copy) NSDictionary *source;
-@property (nonatomic, copy) NSArray *urlSchemeBlacklist;
+@property (nonatomic, copy) NSArray *rejectedUrlSchemes;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) BOOL messagingEnabled;

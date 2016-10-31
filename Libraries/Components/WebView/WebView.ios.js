@@ -311,14 +311,14 @@ class WebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
 
     /**
-     * Function that is invoked when a defined URL-scheme has been blocked.
+     * Function that is invoked when a defined URL-scheme has been rejected.
      */
-    onUrlSchemeBlocked: PropTypes.func,
+    onUrlSchemeRejected: PropTypes.func,
 
     /**
-     * An array defining blacklisted URL-schemes.
+     * An array defining rejected URL-schemes.
      */
-    urlSchemeBlacklist: PropTypes.array,
+    rejectedUrlSchemes: PropTypes.array,
 
     /**
      * Function that allows custom handling of any web view requests. Return
@@ -410,7 +410,7 @@ class WebView extends React.Component {
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
-        urlSchemeBlacklist={this.props.urlSchemeBlacklist}
+        rejectedUrlSchemes={this.props.rejectedUrlSchemes}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
@@ -420,7 +420,7 @@ class WebView extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
-        onUrlSchemeBlocked={this._onUrlSchemeBlocked}
+        onUrlSchemeRejected={this._onUrlSchemeRejected}
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
@@ -552,9 +552,9 @@ class WebView extends React.Component {
     onMessage && onMessage(event);
   }
 
-  _onUrlSchemeBlocked = (event: Event) => {
-    var onUrlSchemeBlocked = this.props.onUrlSchemeBlocked;
-    onUrlSchemeBlocked && onUrlSchemeBlocked(event);
+  _onUrlSchemeRejected = (event: Event) => {
+    var onUrlSchemeRejected = this.props.onUrlSchemeRejected;
+    onUrlSchemeRejected && onUrlSchemeRejected(event);
   };
 }
 
@@ -563,7 +563,7 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
-    onUrlSchemeBlocked: true,
+    onUrlSchemeRejected: true,
     onMessage: true,
     messagingEnabled: PropTypes.bool,
   },

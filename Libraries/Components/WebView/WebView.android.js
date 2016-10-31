@@ -137,14 +137,14 @@ class WebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
 
     /**
-     * Function that is invoked when a defined URL-scheme has been blocked.
+     * Function that is invoked when a defined URL-scheme has been rejected.
      */
-    onUrlSchemeBlocked: PropTypes.func,
+    onUrlSchemeRejected: PropTypes.func,
 
     /**
-     * An array defining blacklisted URL-schemes.
+     * An array defining rejected URL-schemes.
      */
-    urlSchemeBlacklist: PropTypes.array,
+    rejectedUrlSchemes: PropTypes.array,
 
     /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
@@ -223,7 +223,7 @@ class WebView extends React.Component {
         style={webViewStyles}
         source={resolveAssetSource(source)}
         scalesPageToFit={this.props.scalesPageToFit}
-        urlSchemeBlacklist={this.props.urlSchemeBlacklist}
+        rejectedUrlSchemes={this.props.rejectedUrlSchemes}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
@@ -236,7 +236,7 @@ class WebView extends React.Component {
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
-        onUrlSchemeBlocked={this.onUrlSchemeBlocked}
+        onUrlSchemeRejected={this.onUrlSchemeRejected}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
@@ -337,9 +337,9 @@ class WebView extends React.Component {
     onMessage && onMessage(event);
   }
 
-  onUrlSchemeBlocked = (event: Event) => {
-    var onUrlSchemeBlocked = this.props.onUrlSchemeBlocked;
-    onUrlSchemeBlocked && onUrlSchemeBlocked(event);
+  onUrlSchemeRejected = (event: Event) => {
+    var onUrlSchemeRejected = this.props.onUrlSchemeRejected;
+    onUrlSchemeRejected && onUrlSchemeRejected(event);
   };
 }
 
