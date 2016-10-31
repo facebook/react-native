@@ -133,7 +133,7 @@ class PickerComponentsExample extends React.Component {
         carMake: (component === 0) ? newValue : this.state.carMake,
         modelIndex: (component === 0) ? 0 : newIndex
       });
-    }
+    };
 
     return (
       <View>
