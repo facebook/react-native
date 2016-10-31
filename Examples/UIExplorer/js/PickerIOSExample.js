@@ -30,6 +30,7 @@ var {
   View,
 } = ReactNative;
 
+var PickerComponentIOS = PickerIOS.Component;
 var PickerItemIOS = PickerIOS.Item;
 
 var CAR_MAKES_AND_MODELS = {
@@ -86,28 +87,38 @@ class PickerExample extends React.Component {
       <View>
         <Text>Please choose a make for your car:</Text>
         <PickerIOS
-          selectedValue={this.state.carMake}
-          onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-          {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
-            <PickerItemIOS
-              key={carMake}
-              value={carMake}
-              label={CAR_MAKES_AND_MODELS[carMake].name}
-            />
-          ))}
+          onValueChange={(component, carMake) => this.setState({carMake, modelIndex: 0})}>
+          <PickerComponentIOS selectedValue={this.state.carMake}>
+            {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+              <PickerItemIOS
+                key={carMake}
+                value={carMake}
+                label={CAR_MAKES_AND_MODELS[carMake].name}
+              />
+            ))}
+          </PickerComponentIOS>
         </PickerIOS>
         <Text>Please choose a model of {make.name}:</Text>
         <PickerIOS
           selectedValue={this.state.modelIndex}
           key={this.state.carMake}
-          onValueChange={(modelIndex) => this.setState({modelIndex})}>
-          {CAR_MAKES_AND_MODELS[this.state.carMake].models.map((modelName, modelIndex) => (
-            <PickerItemIOS
-              key={this.state.carMake + '_' + modelIndex}
-              value={modelIndex}
-              label={modelName}
-            />
-          ))}
+          onValueChange={(component, modelIndex) => this.setState({modelIndex})}>
+            <PickerComponentIOS selectedValue={this.state.modelIndex}>
+              {CAR_MAKES_AND_MODELS[this.state.carMake].models.map((modelName, modelIndex) => (
+                <PickerItemIOS
+                  key={this.state.carMake + '_' + modelIndex}
+                  value={modelIndex}
+                  label={modelName}
+                />
+              ))}
+            </PickerComponentIOS>
+        </PickerIOS>
+        <Text>You selected: {selectionString}</Text>
+      </View>
+    );
+  }
+}
+
         </PickerIOS>
         <Text>You selected: {selectionString}</Text>
       </View>
@@ -125,15 +136,16 @@ class PickerStyleExample extends React.Component {
     return (
       <PickerIOS
         itemStyle={{fontSize: 25, color: 'red', textAlign: 'left', fontWeight: 'bold'}}
-        selectedValue={this.state.carMake}
-        onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-        {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
-          <PickerItemIOS
-            key={carMake}
-            value={carMake}
-            label={CAR_MAKES_AND_MODELS[carMake].name}
-          />
-        ))}
+        onValueChange={(component, carMake) => this.setState({carMake, modelIndex: 0})}>
+          <PickerComponentIOS selectedValue={this.state.carMake}>
+            {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+              <PickerItemIOS
+                key={carMake}
+                value={carMake}
+                label={CAR_MAKES_AND_MODELS[carMake].name}
+              />
+            ))}
+          </PickerComponentIOS>
       </PickerIOS>
     );
   }
