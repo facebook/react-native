@@ -125,26 +125,19 @@ class PickerComponentsExample extends React.Component {
     modelIndex: 0,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.onValueChange = this.onValueChange.bind(this);
-  }
-
-  onValueChange(component, newValue, newIndex) {
-    this.setState({
-      carMake: (component === 0) ? newValue : this.state.carMake,
-      modelIndex: (component === 0) ? 0 : newIndex
-    });
-  }
-
   render() {
     var make = CAR_MAKES_AND_MODELS[this.state.carMake];
     var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+    var onValueChange = (component, newValue, newIndex) => {
+      this.setState({
+        carMake: (component === 0) ? newValue : this.state.carMake,
+        modelIndex: (component === 0) ? 0 : newIndex
+      });
+    }
 
     return (
       <View>
-        <PickerIOS onValueChange={this.onValueChange}>
+        <PickerIOS onValueChange={onValueChange}>
           <PickerComponentIOS selectedValue={this.state.carMake}>
             {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
               <PickerItemIOS
