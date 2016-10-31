@@ -23,6 +23,8 @@
   if ((self = [super init])) {
     _nodeTag = tag;
     _config = [config copy];
+    _hasUpdated = NO;
+    _needsUpdate = YES;
   }
   return self;
 }
