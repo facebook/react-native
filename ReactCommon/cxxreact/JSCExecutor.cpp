@@ -132,7 +132,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
-    m_nativeModules(delegate->getModuleRegistry()),
+    m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
@@ -362,9 +362,12 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
-  bindBridge();
 
-  flush();
+  // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
+  if (m_delegate) {
+    bindBridge();
+    flush();
+  }
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
