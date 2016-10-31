@@ -13,8 +13,10 @@ module.exports = moduleName => {
 
   const Component = class extends RealComponent {
     render() {
+      const name = RealComponent.displayName || RealComponent.name;
+
       return React.createElement(
-        RealComponent.displayName || RealComponent.name,
+        name.replace(/^(RTC|RK)/,''),
         this.props,
         this.props.children,
       );

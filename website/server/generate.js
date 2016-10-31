@@ -14,6 +14,7 @@ var glob = require('glob');
 var fs = require('fs.extra');
 var mkdirp = require('mkdirp');
 var server = require('./server.js');
+var Feed = require('feed');
 
 require('./convert.js')();
 server.noconvert = true;
@@ -23,6 +24,49 @@ server.noconvert = true;
 // requests.
 var queue = Promise.resolve();
 
+// Generate RSS Feeds
+queue = queue.then(function() {
+  return new Promise(function(resolve, reject) {
+    var targetFile = 'build/react-native/blog/feed.xml';
+
+    var basePath = 'https://facebook.github.io/react-native/';
+    var blogPath = basePath + 'blog/';
+
+    var metadataBlog = JSON.parse(fs.readFileSync('server/metadata-blog.json'));
+    var latestPost = metadataBlog.files[0];
+    var feed = new Feed({
+      title: 'React Native Blog',
+      description: 'The best place to stay up-to-date with the latest React Native news and events.',
+      id: blogPath,
+      link: blogPath,
+      image: basePath + 'img/header_logo.png',
+      copyright: 'Copyright © ' + new Date().getFullYear() + ' Facebook Inc.',
+      updated: new Date(latestPost.publishedAt),
+    });
+
+    metadataBlog.files.forEach(function(post) {
+      var url = blogPath + post.path;
+      feed.addItem({
+        title: post.title,
+        id: url,
+        link: url,
+        date: new Date(post.publishedAt),
+        author: [{
+          name: post.author,
+          link: post.authorURL
+        }],
+        description: post.content.trim().split('\n')[0],
+      });
+    });
+
+    mkdirp.sync(targetFile.replace(new RegExp('/[^/]*$'), ''));
+    fs.writeFileSync(targetFile, feed.render('atom-1.0'));
+    console.log('Generated RSS feed')
+    resolve();
+  });
+});
+
+// Generate HTML for each non-source code JS file
 glob('src/**/*.*', function(er, files) {
   files.forEach(function(file) {
     var targetFile = file.replace(/^src/, 'build');
