@@ -92,5 +92,9 @@ CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node) {
 }
 
 CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index) {
-  return list->items[index];
+  if (CSSNodeListCount(list) > 0) {
+    return list->items[index];
+  }
+
+  return NULL;
 }
