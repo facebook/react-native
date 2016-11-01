@@ -69,6 +69,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (parent) {
     _parentNodes[parent.nodeTag] = parent;
   }
+  [self setNeedsUpdate];
 }
 
 - (void)onDetachedFromNode:(RCTAnimatedNode *)parent
@@ -79,6 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (parent) {
     [_parentNodes removeObjectForKey:parent.nodeTag];
   }
+  [self setNeedsUpdate];
 }
 
 - (void)detachNode
@@ -93,10 +95,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setNeedsUpdate
 {
-  if (_needsUpdate) {
-    // Has already been marked. Stop branch.
-    return;
-  }
   _needsUpdate = YES;
   for (RCTAnimatedNode *child in _childNodes.allValues) {
     [child setNeedsUpdate];
@@ -105,9 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cleanupAnimationUpdate
 {
-  if (_hasUpdated) {
-    _needsUpdate = NO;
-    _hasUpdated = NO;
+  if (!_needsUpdate) {
     for (RCTAnimatedNode *child in _childNodes.allValues) {
       [child cleanupAnimationUpdate];
     }
@@ -116,7 +112,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)updateNodeIfNecessary
 {
-  if (_needsUpdate && !_hasUpdated) {
+  if (_needsUpdate) {
     for (RCTAnimatedNode *parent in _parentNodes.allValues) {
       [parent updateNodeIfNecessary];
     }
@@ -126,7 +122,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)performUpdate
 {
-  _hasUpdated = YES;
+  _needsUpdate = NO;
   // To be overidden by subclasses
   // This method is called on a node only if it has been marked for update
   // during the current update loop

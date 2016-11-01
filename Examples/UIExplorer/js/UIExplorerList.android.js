@@ -180,6 +180,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./NativeAnimationsExample'),
   },
   {
+    key: 'NativeAnimationsProblemExample',
+    module: require('./NativeAnimationsProblemExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
