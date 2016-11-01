@@ -86,16 +86,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray<NSString *> *)customDirectEventTypes
-{
-  return @[];
-}
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{@"forceTouchAvailable": @(RCTForceTouchAvailable())};
-}
-
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;
