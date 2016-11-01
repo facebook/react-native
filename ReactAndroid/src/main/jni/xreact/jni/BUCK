@@ -5,6 +5,7 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 EXPORTED_HEADERS = [
   'CxxModuleWrapper.h',
+  'JSLoader.h',
   'NativeArray.h',
   'NativeCommon.h',
   'NativeMap.h',
