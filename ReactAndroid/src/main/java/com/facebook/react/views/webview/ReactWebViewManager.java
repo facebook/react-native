@@ -135,19 +135,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        ArrayList<String> rejectedUrlSchemes = ((ReactWebView)view).getRejectedUrlSchemes();
-        if (rejectedUrlSchemes != null && rejectedUrlSchemes.size() > 0)
-        {
-          if (url.contains("://")) {
-            String scheme = url.split("://")[0];
-            if (rejectedUrlSchemes.contains(scheme)) {
-              final WritableMap params = Arguments.createMap();
-              params.putString("scheme", scheme);
-              params.putString("url", url);
-              dispatchEvent(view, new UrlSchemeRejectedEvent(view.getId(), params));
-              return true;
-            }
-          }
+        if (((ReactWebView)view).isUrlSchemeRejected(url)) {
+          dispatchUrlSchemeRejectedEvent(view, url);
         }
 
         if (url.startsWith("http://") || url.startsWith("https://") ||
@@ -299,6 +288,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       return rejectedUrlSchemes;
     }
 
+    public Boolean isUrlSchemeRejected(String url) {
+      String scheme = getUrlScheme(url);
+      return scheme != null && rejectedUrlSchemes != null && rejectedUrlSchemes.contains(scheme);
+    }
+
     public void linkBridge() {
       if (messagingEnabled) {
         if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -432,6 +426,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         if (previousUrl != null && previousUrl.equals(url)) {
           return;
         }
+        if (((ReactWebView)view).isUrlSchemeRejected(url)) {
+          dispatchUrlSchemeRejectedEvent(view, url);
+          return;
+        }
         if (source.hasKey("method")) {
           String method = source.getString("method");
           if (method.equals(HTTP_METHOD_POST)) {
@@ -486,6 +484,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     } else {
       ((ReactWebView) view).setRejectedUrlSchemes(null);
     }
+  }
+
+  private static void dispatchUrlSchemeRejectedEvent(WebView view, String url) {
+    final WritableMap params = Arguments.createMap();
+    params.putString("scheme", getUrlScheme(url));
+    params.putString("url", url);
+    dispatchEvent(view, new UrlSchemeRejectedEvent(view.getId(), params));
+  }
+
+  private static String getUrlScheme(String url) {
+    if (url.contains("://"))
+      return url.split("://")[0];
+
+    return null;
   }
 
   @ReactProp(name = "onContentSizeChange")
