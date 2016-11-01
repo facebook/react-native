@@ -72,18 +72,18 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */
-@property (nonatomic, assign) CGFloat top;
-@property (nonatomic, assign) CGFloat left;
-@property (nonatomic, assign) CGFloat bottom;
-@property (nonatomic, assign) CGFloat right;
+@property (nonatomic, assign) float top;
+@property (nonatomic, assign) float left;
+@property (nonatomic, assign) float bottom;
+@property (nonatomic, assign) float right;
 
-@property (nonatomic, assign) CGFloat width;
-@property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) float width;
+@property (nonatomic, assign) float height;
 
-@property (nonatomic, assign) CGFloat minWidth;
-@property (nonatomic, assign) CGFloat maxWidth;
-@property (nonatomic, assign) CGFloat minHeight;
-@property (nonatomic, assign) CGFloat maxHeight;
+@property (nonatomic, assign) float minWidth;
+@property (nonatomic, assign) float maxWidth;
+@property (nonatomic, assign) float minHeight;
+@property (nonatomic, assign) float maxHeight;
 
 @property (nonatomic, assign) CGRect frame;
 
@@ -99,33 +99,33 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
-@property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, assign) CGFloat borderTopWidth;
-@property (nonatomic, assign) CGFloat borderLeftWidth;
-@property (nonatomic, assign) CGFloat borderBottomWidth;
-@property (nonatomic, assign) CGFloat borderRightWidth;
+@property (nonatomic, assign) float borderWidth;
+@property (nonatomic, assign) float borderTopWidth;
+@property (nonatomic, assign) float borderLeftWidth;
+@property (nonatomic, assign) float borderBottomWidth;
+@property (nonatomic, assign) float borderRightWidth;
 
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
  */
-@property (nonatomic, assign) CGFloat margin;
-@property (nonatomic, assign) CGFloat marginVertical;
-@property (nonatomic, assign) CGFloat marginHorizontal;
-@property (nonatomic, assign) CGFloat marginTop;
-@property (nonatomic, assign) CGFloat marginLeft;
-@property (nonatomic, assign) CGFloat marginBottom;
-@property (nonatomic, assign) CGFloat marginRight;
+@property (nonatomic, assign) float margin;
+@property (nonatomic, assign) float marginVertical;
+@property (nonatomic, assign) float marginHorizontal;
+@property (nonatomic, assign) float marginTop;
+@property (nonatomic, assign) float marginLeft;
+@property (nonatomic, assign) float marginBottom;
+@property (nonatomic, assign) float marginRight;
 
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
  */
-@property (nonatomic, assign) CGFloat padding;
-@property (nonatomic, assign) CGFloat paddingVertical;
-@property (nonatomic, assign) CGFloat paddingHorizontal;
-@property (nonatomic, assign) CGFloat paddingTop;
-@property (nonatomic, assign) CGFloat paddingLeft;
-@property (nonatomic, assign) CGFloat paddingBottom;
-@property (nonatomic, assign) CGFloat paddingRight;
+@property (nonatomic, assign) float padding;
+@property (nonatomic, assign) float paddingVertical;
+@property (nonatomic, assign) float paddingHorizontal;
+@property (nonatomic, assign) float paddingTop;
+@property (nonatomic, assign) float paddingLeft;
+@property (nonatomic, assign) float paddingBottom;
+@property (nonatomic, assign) float paddingRight;
 
 - (UIEdgeInsets)paddingAsInsets;
 
@@ -138,10 +138,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CSSAlign alignItems;
 @property (nonatomic, assign) CSSPositionType position;
 @property (nonatomic, assign) CSSWrapType flexWrap;
-@property (nonatomic, assign) CGFloat flex;
-@property (nonatomic, assign) CGFloat flexGrow;
-@property (nonatomic, assign) CGFloat flexShrink;
-@property (nonatomic, assign) CGFloat flexBasis;
+
+@property (nonatomic, assign) float flexGrow;
+@property (nonatomic, assign) float flexShrink;
+@property (nonatomic, assign) float flexBasis;
+
+- (void)setFlex:(float)flex;
 
 /**
  * z-index, used to override sibling order in the view

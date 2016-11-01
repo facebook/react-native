@@ -183,6 +183,10 @@ RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   valueNode.value = value.floatValue;
   [valueNode setNeedsUpdate];
+
+  [self updateViewsProps];
+
+  [valueNode cleanupAnimationUpdate];
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
@@ -265,6 +269,12 @@ RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
                      body:@{@"tag": node.nodeTag, @"value": @(value)}];
 }
 
+- (void)updateViewsProps
+{
+  for (RCTPropsAnimatedNode *propsNode in _propAnimationNodes) {
+    [propsNode updateNodeIfNecessary];
+  }
+}
 
 #pragma mark -- Animation Loop
 

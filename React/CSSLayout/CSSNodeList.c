@@ -12,7 +12,7 @@
 struct CSSNodeList {
   uint32_t capacity;
   uint32_t count;
-  void **items;
+  CSSNodeRef *items;
 };
 
 CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
@@ -21,7 +21,7 @@ CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(void *) * list->capacity);
+  list->items = malloc(sizeof(CSSNodeRef) * list->capacity);
   CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
@@ -56,7 +56,7 @@ void CSSNodeListInsert(CSSNodeListRef *listp, const CSSNodeRef node, const uint3
 
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(void *) * list->capacity);
+    list->items = realloc(list->items, sizeof(CSSNodeRef) * list->capacity);
     CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
@@ -92,5 +92,9 @@ CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node) {
 }
 
 CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index) {
-  return list->items[index];
+  if (CSSNodeListCount(list) > 0) {
+    return list->items[index];
+  }
+
+  return NULL;
 }

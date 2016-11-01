@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
 
 import javax.annotation.Nullable;
 
@@ -66,7 +67,18 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
   private final String mSourceURL;
   private final Context mContext;
   private final int mLoadFlags;
+  private final boolean mFinishOnBackgroundThread;
   private final @Nullable Runnable mOnUnpackedCallback;
+
+  /**
+   * Synchronizes unpacking within this process.
+   */
+  private static final Semaphore sProcessLock = new Semaphore(1);
+
+  /**
+   * Synchronizes unpacking across multiple processes.
+   */
+  private @Nullable FileLocker mFileLocker;
 
   /**
    * Description of what needs to be unpacked.
@@ -79,7 +91,9 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     mSourceURL = Assertions.assertNotNull(builder.sourceURL);
     mUnpackers = builder.unpackers.toArray(new Unpacker[builder.unpackers.size()]);
     mLoadFlags = builder.loadFlags;
+    mFinishOnBackgroundThread = builder.finishOnBackgroundThread;
     mOnUnpackedCallback = builder.callback;
+    mFileLocker = null;
   }
 
   /**
@@ -88,19 +102,20 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
    */
   /* package */ void prepare() {
     boolean unpacked = false;
+    try {
+      lock();
 
-    final File lockFilePath = new File(mContext.getFilesDir(), LOCK_FILE);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.prepare");
-
-    // Make sure we don't release the lock by letting other thread close the lock file
-    synchronized(UnpackingJSBundleLoader.class) {
-      try (FileLocker lock = FileLocker.lock(lockFilePath)) {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.prepare");
+      try {
         unpacked = prepareLocked();
-      } catch (IOException ioe) {
-        throw new RuntimeException(ioe);
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        if (!mFinishOnBackgroundThread || !unpacked) {
+          unlock();
+        }
       }
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(e);
     }
 
     if (unpacked && mOnUnpackedCallback != null) {
@@ -112,7 +127,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     final File dotFinishedFilePath = new File(mDirectoryPath, DOT_UNPACKED_FILE);
     boolean shouldReconstruct = !mDirectoryPath.exists() || !dotFinishedFilePath.exists();
 
-    byte[] buffer = new byte[IO_BUFFER_SIZE];
+    final byte[] buffer = new byte[IO_BUFFER_SIZE];
     for (int i = 0; i < mUnpackers.length && !shouldReconstruct; ++i) {
       shouldReconstruct = mUnpackers[i].shouldReconstructDir(mContext, buffer);
     }
@@ -132,16 +147,11 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
         unpacker.unpack(mContext, buffer);
       }
 
-      if (!dotFinishedFilePath.createNewFile()) {
-        throw new IOException("Could not create .unpacked file");
+      if (mFinishOnBackgroundThread) {
+        finishUnpackingOnBackgroundThread();
+      } else {
+        finishUnpacking();
       }
-
-      // It would be nice to fsync a few directories and files here. The thing is, if we crash and
-      // lose some data then it should be noticed on the next prepare invocation and the directory
-      // will be reconstructed. It is only crucial to fsync those files whose content is not
-      // verified on each start. Everything else is a tradeoff between perf with no crashes
-      // situation and perf when user experiences crashes. Fortunately Unpackers corresponding
-      // to files whose content is not checked handle fsyncs themselves.
 
       succeeded = true;
     } finally {
@@ -154,6 +164,46 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     return true;
   }
 
+  private void finishUnpacking() throws IOException {
+    for (Unpacker unpacker : mUnpackers) {
+      unpacker.finishUnpacking(mContext);
+    }
+
+    final File dotFinishedFilePath = new File(mDirectoryPath, DOT_UNPACKED_FILE);
+    if (!dotFinishedFilePath.createNewFile()) {
+      throw new IOException("Could not create .unpacked file");
+    }
+
+    // It would be nice to fsync a few directories and files here. The thing is, if we crash and
+    // lose some data then it should be noticed on the next prepare invocation and the directory
+    // will be reconstructed. It is only crucial to fsync those files whose content is not
+    // verified on each start. Everything else is a tradeoff between perf with no crashes
+    // situation and perf when user experiences crashes. Fortunately Unpackers corresponding
+    // to files whose content is not checked handle fsyncs themselves.
+  }
+
+  /**
+   * Finishes unpacking and unlocks the unpacker on a background thread.
+   */
+  private void finishUnpackingOnBackgroundThread() {
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+          Systrace.beginSection(
+            TRACE_TAG_REACT_JAVA_BRIDGE,
+            "UnpackingJSBundleLoader.finishUnpackingOnBackgroundThread()");
+          try {
+            finishUnpacking();
+            unlock();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          } finally {
+            Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+        }
+      }).start();
+  }
+
   @Override
   public void loadScript(CatalystInstanceImpl instance) {
     prepare();
@@ -163,14 +213,43 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
       mLoadFlags);
   }
 
+  private void lock() throws IOException, InterruptedException {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.lock");
+    try {
+      sProcessLock.acquire();
+      boolean success = false;
+
+      try {
+        Assertions.assertCondition(mFileLocker == null);
+        mFileLocker = FileLocker.lock(new File(mContext.getFilesDir(), LOCK_FILE));
+        success = true;
+      } finally {
+        if (!success) {
+          sProcessLock.release();
+        }
+      }
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  private void unlock() throws IOException {
+    Assertions.assertNotNull(mFileLocker).close();
+    mFileLocker = null;
+    sProcessLock.release();
+  }
+
   @Override
   public String getSourceUrl() {
     return mSourceURL;
   }
 
   static void fsync(File path) throws IOException {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "UnpackingJSBundleLoader.fsync");
     try (RandomAccessFile file = new RandomAccessFile(path, "r")) {
       file.getFD().sync();
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -215,6 +294,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     private @Nullable String sourceURL;
     private final ArrayList<Unpacker> unpackers;
     private int loadFlags;
+    private boolean finishOnBackgroundThread;
     private @Nullable Runnable callback;
 
     public Builder() {
@@ -223,6 +303,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
       destinationPath = null;
       sourceURL = null;
       loadFlags = 0;
+      finishOnBackgroundThread = true;
       callback = null;
     }
 
@@ -243,6 +324,11 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
 
     public Builder setLoadFlags(int loadFlags) {
       this.loadFlags = loadFlags;
+      return this;
+    }
+
+    public Builder setFinishOnBackgroundThread(boolean finishOnBackgroundThread) {
+      this.finishOnBackgroundThread = finishOnBackgroundThread;
       return this;
     }
 
@@ -316,6 +402,9 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
         }
       }
     }
+
+    public void finishUnpacking(Context context) throws IOException {
+    }
   }
 
   /**
@@ -333,8 +422,7 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     }
 
     @Override
-    public void unpack(Context context, byte[] ioBuffer) throws IOException {
-      super.unpack(context, ioBuffer);
+    public void finishUnpacking(Context context) throws IOException {
       fsync(Assertions.assertNotNull(mDestinationFilePath));
     }
   }

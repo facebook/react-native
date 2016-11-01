@@ -560,22 +560,23 @@ public class LayoutEngine {
       } else {
 
         // Measure the text under the current constraints.
-        MeasureOutput measureDim = node.measure(
-
-          layoutContext.measureOutput,
+        long measureOutput = node.measure(
           innerWidth,
           widthMeasureMode,
           innerHeight,
           heightMeasureMode
         );
 
+        int outputWidth = MeasureOutput.getWidth(measureOutput);
+        int outputHeight = MeasureOutput.getHeight(measureOutput);
+
         node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW,
           (widthMeasureMode == CSSMeasureMode.UNDEFINED || widthMeasureMode == CSSMeasureMode.AT_MOST) ?
-            measureDim.width + paddingAndBorderAxisRow :
+            outputWidth + paddingAndBorderAxisRow :
             availableWidth - marginAxisRow);
         node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN,
           (heightMeasureMode == CSSMeasureMode.UNDEFINED || heightMeasureMode == CSSMeasureMode.AT_MOST) ?
-            measureDim.height + paddingAndBorderAxisColumn :
+            outputHeight + paddingAndBorderAxisColumn :
             availableHeight - marginAxisColumn);
       }
 

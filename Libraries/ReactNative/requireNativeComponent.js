@@ -11,19 +11,19 @@
  */
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var UIManager = require('UIManager');
-var UnimplementedView = require('UnimplementedView');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const UIManager = require('UIManager');
+const UnimplementedView = require('UnimplementedView');
 
-var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
-var insetsDiffer = require('insetsDiffer');
-var matricesDiffer = require('matricesDiffer');
-var pointsDiffer = require('pointsDiffer');
-var processColor = require('processColor');
-var resolveAssetSource = require('resolveAssetSource');
-var sizesDiffer = require('sizesDiffer');
-var verifyPropTypes = require('verifyPropTypes');
-var warning = require('fbjs/lib/warning');
+const createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
+const insetsDiffer = require('insetsDiffer');
+const matricesDiffer = require('matricesDiffer');
+const pointsDiffer = require('pointsDiffer');
+const processColor = require('processColor');
+const resolveAssetSource = require('resolveAssetSource');
+const sizesDiffer = require('sizesDiffer');
+const verifyPropTypes = require('verifyPropTypes');
+const warning = require('fbjs/lib/warning');
 
 /**
  * Used to create React components that directly wrap native component
@@ -47,29 +47,34 @@ function requireNativeComponent(
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): Function {
-  var viewConfig = UIManager[viewName];
+  const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
     return UnimplementedView;
   }
-  var nativeProps = {
-    ...UIManager.RCTView.NativeProps,
-    ...viewConfig.NativeProps,
-  };
+
   viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};
   viewConfig.propTypes = componentInterface && componentInterface.propTypes;
-  for (var key in nativeProps) {
-    var useAttribute = false;
-    var attribute = {};
 
-    var differ = TypeToDifferMap[nativeProps[key]];
+  // The ViewConfig doesn't contain any props inherited from the view manager's
+  // superclass, so we manually merge in the RCTView ones. Other inheritance
+  // patterns are currenty not supported.
+  const nativeProps = {
+    ...UIManager.RCTView.NativeProps,
+    ...viewConfig.NativeProps,
+  };
+  for (const key in nativeProps) {
+    let useAttribute = false;
+    const attribute = {};
+
+    const differ = TypeToDifferMap[nativeProps[key]];
     if (differ) {
       attribute.diff = differ;
       useAttribute = true;
     }
 
-    var processor = TypeToProcessorMap[nativeProps[key]];
+    const processor = TypeToProcessorMap[nativeProps[key]];
     if (processor) {
       attribute.process = processor;
       useAttribute = true;
@@ -92,6 +97,7 @@ function requireNativeComponent(
       extraConfig && extraConfig.nativeOnly
     );
   }
+
   return createReactNativeComponentClass(viewConfig);
 }
 

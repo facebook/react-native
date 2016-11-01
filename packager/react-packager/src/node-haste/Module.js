@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const crypto = require('crypto');
@@ -15,7 +18,56 @@ const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 
+type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
+type TransformedCode = {
+  code?: string,
+  dependencies?: Array<string>,
+  dependencyOffsets?: Array<number>,
+  map?: string,
+};
+type TransformCode = (
+  module: Module,
+  sourceCode: string,
+  transformOptions: mixed,
+) => Promise<{
+  code: string,
+  dependencies?: Array<string>,
+  dependencyOffsets?: Array<number>,
+  map?: string,
+}>;
+type Cache = {
+  get<T>(
+    filePath: string,
+    key: string,
+    loadFunc: () => Promise<T>,
+  ): Promise<T>,
+  invalidate(filePath: string): void,
+};
+type Options = {cacheTransformResults?: boolean};
+type ModuleCache = {
+  getPackageForModule(m: Module): {
+    getName(): Promise<string>,
+    root: string,
+  },
+};
+type FastFs = {readFile: (filePath: string) => Promise<string>};
+type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
+
 class Module {
+
+  path: string;
+  type: string;
+
+  _fastfs: FastFs;
+  _moduleCache: ModuleCache;
+  _cache: Cache;
+  _extractor: Extractor;
+  _transformCode: TransformCode;
+  _depGraphHelpers: DepGraphHelpers;
+  _options: Options;
+
+  _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
+  _readPromise: Promise<string>;
 
   constructor({
     file,
@@ -26,6 +78,15 @@ class Module {
     transformCode,
     depGraphHelpers,
     options,
+  }: {
+    file: string,
+    fastfs: FastFs,
+    moduleCache: ModuleCache,
+    cache: Cache,
+    extractor: Extractor,
+    transformCode: TransformCode,
+    depGraphHelpers: DepGraphHelpers,
+    options: Options,
   }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
@@ -43,7 +104,7 @@ class Module {
     this._options = options;
   }
 
-  isHaste() {
+  isHaste(): Promise<boolean> {
     return this._cache.get(
       this.path,
       'isHaste',
@@ -51,15 +112,15 @@ class Module {
     );
   }
 
-  getCode(transformOptions) {
+  getCode(transformOptions: mixed) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions) {
+  getMap(transformOptions: mixed) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName() {
+  getName(): Promise<string> {
     return this._cache.get(
       this.path,
       'name',
@@ -91,7 +152,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions) {
+  getDependencies(transformOptions: mixed) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -130,7 +191,7 @@ class Module {
     return this._docBlock;
   }
 
-  read(transformOptions) {
+  read(transformOptions: mixed): Promise<TransformedCode> {
     return this._cache.get(
       this.path,
       cacheKey('moduleData', transformOptions),
@@ -152,6 +213,8 @@ class Module {
           return codePromise.then(result => {
             const {
               code,
+              /* $FlowFixMe: I don't think it should complain as there's
+                 a default value */
               dependencies = extern ? [] : this._extractor(code).deps.sync,
             } = result;
             if (this._options && this._options.cacheTransformResults === false) {
