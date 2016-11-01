@@ -23,7 +23,7 @@ type KeyboardEventName =
   | 'keyboardWillHide'
   | 'keyboardDidHide'
   | 'keyboardWillChangeFrame'
-  | 'keyboardDidChangeFrame'
+  | 'keyboardDidChangeFrame';
 
 type KeyboardEventData = {
   endCoordinates: {
