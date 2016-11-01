@@ -527,6 +527,8 @@ RCT_EXPORT_METHOD(show)
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(__unused UIAlertAction *action) {
                                                          [item callHandler];
+                                                         
+                                                         _actionSheet = nil;
                                                        }]];
         break;
       }
@@ -537,6 +539,8 @@ RCT_EXPORT_METHOD(show)
                                                        handler:^(__unused UIAlertAction *action) {
                                                          BOOL value = [self->_settings[item.key] boolValue];
                                                          [self updateSetting:item.key value:@(!value)]; // will call handler
+                                                         
+                                                         _actionSheet = nil;
                                                        }]];
         break;
       }
@@ -545,7 +549,9 @@ RCT_EXPORT_METHOD(show)
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:nil]];
+                                                 handler:^(UIAlertAction * _Nonnull action) {
+                                                   _actionSheet = nil;
+                                                 }]];
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
