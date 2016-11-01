@@ -295,7 +295,7 @@ RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
   RCTEventAnimation *driver =
   [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
 
-  _eventAnimationDrivers[NSString stringWithFormat:@"%@%@", viewTag, eventName] = driver;
+  _eventAnimationDrivers[[NSString stringWithFormat:@"%@%@", viewTag, eventName]] = driver;
 }
 
 RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
