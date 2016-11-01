@@ -549,7 +549,7 @@ RCT_EXPORT_METHOD(show)
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:^(UIAlertAction * _Nonnull action) {
+                                                 handler:^(__unused UIAlertAction *action) {
                                                    _actionSheet = nil;
                                                  }]];
 
