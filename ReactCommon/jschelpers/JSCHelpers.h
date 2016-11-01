@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "Executor.h"
 #include "Value.h"
 
 #include <JavaScriptCore/JSContextRef.h>
@@ -46,8 +45,6 @@ void installGlobalProxy(
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);
-
-String jsStringFromBigString(const JSBigString& bigstr);
 
 JSValueRef evaluateScript(
     JSContextRef ctx,

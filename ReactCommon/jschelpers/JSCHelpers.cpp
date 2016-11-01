@@ -2,11 +2,14 @@
 
 #include "JSCHelpers.h"
 
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+#endif
+
 #include <JavaScriptCore/JSStringRef.h>
 #include <folly/String.h>
 #include <glog/logging.h>
 
-#include "SystraceSection.h"
 #include "Value.h"
 
 namespace facebook {
@@ -52,16 +55,10 @@ JSValueRef makeJSCException(
   return JSValueToObject(ctx, exceptionString, NULL);
 }
 
-String jsStringFromBigString(const JSBigString& bigstr) {
-  if (bigstr.isAscii()) {
-    return String::createExpectingAscii(bigstr.c_str(), bigstr.size());
-  } else {
-    return String(bigstr.c_str());
-  }
-}
-
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
-  SystraceSection s("evaluateScript");
+#ifdef WITH_FBSYSTRACE
+  fbsystrace::FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "evaluateScript");
+#endif
   JSValueRef exn, result;
   result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {

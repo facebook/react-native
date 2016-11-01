@@ -9,6 +9,8 @@
 
 #include <folly/dynamic.h>
 
+#include <jschelpers/Value.h>
+
 #include "Executor.h"
 #include "ExecutorToken.h"
 #include "JSCExecutor.h"
@@ -16,7 +18,6 @@
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
 #include "NativeModule.h"
-#include "Value.h"
 
 namespace folly {
 

@@ -16,12 +16,14 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
 #include "Platform.h"
 #include "SystraceSection.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
+#include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 
