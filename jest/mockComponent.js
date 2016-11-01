@@ -16,7 +16,7 @@ module.exports = moduleName => {
       const name = RealComponent.displayName || RealComponent.name;
 
       return React.createElement(
-        name.replace(/^(RTC|RK)/,''),
+        name.replace(/^(RCT|RK)/,''),
         this.props,
         this.props.children,
       );
