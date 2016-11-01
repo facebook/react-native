@@ -41,6 +41,8 @@ static void *RCTCustomLibraryHandler(void)
   return handler;
 }
 
+const int32_t JSNoBytecodeFileFormatVersion = -1;
+
 static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
 {
   return new RCTJSCWrapper {
@@ -59,6 +61,7 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
     .JSValueIsNull = JSValueIsNull,
     .JSEvaluateScript = JSEvaluateScript,
     .JSEvaluateBytecodeBundle = NULL,
+    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };
@@ -87,6 +90,7 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
     .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
     .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
+    .JSBytecodeFileFormatVersion = *(const int32_t *)dlsym(libraryHandle, "JSBytecodeFileFormatVersion"),
     .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
     .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),
   };
