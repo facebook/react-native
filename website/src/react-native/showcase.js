@@ -313,7 +313,7 @@ var featured = [
   },
   {
     name: 'Safety Wizard',
-    icon: 'https://itunes.apple.com/gb/app/sme-safety-wizard/id957810075?mt=8',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple71/v4/1d/af/53/1daf5343-eeca-bec0-5c4f-09247845bb8e/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/sme-safety-wizard/id957810075',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.rnfdigital.safetywizard',
     infoLink: 'http://rnfdigital.com/safety-wizard-app-now-available-on-android/',
