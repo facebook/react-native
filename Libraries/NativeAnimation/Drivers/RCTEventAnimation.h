@@ -6,11 +6,19 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-#import "RCTBridgeModule.h"
+
+#import <Foundation/Foundation.h>
+
 #import "RCTValueAnimatedNode.h"
-#import "RCTEventEmitter.h"
 #import "RCTEventDispatcher.h"
 
-@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver>
+@interface RCTEventAnimation : NSObject
+
+@property (nonatomic, readonly, weak) RCTValueAnimatedNode *valueNode;
+
+- (instancetype)initWithEventPath:(NSArray<NSString *> *)eventPath
+                        valueNode:(RCTValueAnimatedNode *)valueNode;
+
+- (void)updateWithEvent:(id<RCTEvent>)event;
 
 @end
