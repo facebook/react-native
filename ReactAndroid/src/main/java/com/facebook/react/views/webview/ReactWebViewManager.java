@@ -137,6 +137,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (((ReactWebView)view).isUrlSchemeRejected(url)) {
           dispatchUrlSchemeRejectedEvent(view, url);
+          return true;
         }
 
         if (url.startsWith("http://") || url.startsWith("https://") ||
