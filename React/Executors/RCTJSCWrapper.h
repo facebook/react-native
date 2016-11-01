@@ -25,6 +25,7 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
+typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
 
 typedef struct RCTJSCWrapper {
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
@@ -41,6 +42,7 @@ typedef struct RCTJSCWrapper {
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
   JSEvaluateScriptFuncType JSEvaluateScript;
+  JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
   Class JSContext;
   Class JSValue;
 } RCTJSCWrapper;

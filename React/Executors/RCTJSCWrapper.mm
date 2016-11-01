@@ -26,7 +26,7 @@ static void *RCTCustomLibraryHandler(void)
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
+    handler = dlopen("@loader_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
     if (!handler) {
       const char *err = dlerror();
 
@@ -57,6 +57,7 @@ static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSValueIsUndefined = JSValueIsUndefined;
   wrapper->JSValueIsNull = JSValueIsNull;
   wrapper->JSEvaluateScript = JSEvaluateScript;
+  wrapper->JSEvaluateBytecodeBundle = NULL;
   wrapper->JSContext = [JSContext class];
   wrapper->JSValue = [JSValue class];
 }
@@ -83,6 +84,7 @@ static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
   wrapper->JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined");
   wrapper->JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull");
   wrapper->JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript");
+  wrapper->JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle");
   wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
   wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
 
