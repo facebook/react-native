@@ -93,6 +93,8 @@ import javax.annotation.Nullable;
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("modulus".equals(type)) {
+      node = new ModulusAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {
       node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
