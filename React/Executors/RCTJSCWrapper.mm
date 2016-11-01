@@ -41,73 +41,72 @@ static void *RCTCustomLibraryHandler(void)
   return handler;
 }
 
-static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
+static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
 {
-  wrapper->JSStringCreateWithCFString = JSStringCreateWithCFString;
-  wrapper->JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString;
-  wrapper->JSStringRelease = JSStringRelease;
-  wrapper->JSGlobalContextSetName = JSGlobalContextSetName;
-  wrapper->JSObjectSetProperty = JSObjectSetProperty;
-  wrapper->JSContextGetGlobalObject = JSContextGetGlobalObject;
-  wrapper->JSObjectGetProperty = JSObjectGetProperty;
-  wrapper->JSValueMakeFromJSONString = JSValueMakeFromJSONString;
-  wrapper->JSObjectCallAsFunction = JSObjectCallAsFunction;
-  wrapper->JSValueMakeNull = JSValueMakeNull;
-  wrapper->JSValueCreateJSONString = JSValueCreateJSONString;
-  wrapper->JSValueIsUndefined = JSValueIsUndefined;
-  wrapper->JSValueIsNull = JSValueIsNull;
-  wrapper->JSEvaluateScript = JSEvaluateScript;
-  wrapper->JSEvaluateBytecodeBundle = NULL;
-  wrapper->JSContext = [JSContext class];
-  wrapper->JSValue = [JSValue class];
+  return new RCTJSCWrapper {
+    .JSStringCreateWithCFString = JSStringCreateWithCFString,
+    .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
+    .JSStringRelease = JSStringRelease,
+    .JSGlobalContextSetName = JSGlobalContextSetName,
+    .JSObjectSetProperty = JSObjectSetProperty,
+    .JSContextGetGlobalObject = JSContextGetGlobalObject,
+    .JSObjectGetProperty = JSObjectGetProperty,
+    .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
+    .JSObjectCallAsFunction = JSObjectCallAsFunction,
+    .JSValueMakeNull = JSValueMakeNull,
+    .JSValueCreateJSONString = JSValueCreateJSONString,
+    .JSValueIsUndefined = JSValueIsUndefined,
+    .JSValueIsNull = JSValueIsNull,
+    .JSEvaluateScript = JSEvaluateScript,
+    .JSEvaluateBytecodeBundle = NULL,
+    .JSContext = [JSContext class],
+    .JSValue = [JSValue class],
+  };
 }
 
-static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
+static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
 {
   void *libraryHandle = RCTCustomLibraryHandler();
   if (!libraryHandle) {
-    RCTSetUpSystemLibraryPointers(wrapper);
-    return;
+    return RCTSetUpSystemLibraryPointers();
   }
 
-  wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
-  wrapper->JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString");
-  wrapper->JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease");
-  wrapper->JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName");
-  wrapper->JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty");
-  wrapper->JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject");
-  wrapper->JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty");
-  wrapper->JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString");
-  wrapper->JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction");
-  wrapper->JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull");
-  wrapper->JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString");
-  wrapper->JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined");
-  wrapper->JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull");
-  wrapper->JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript");
-  wrapper->JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle");
-  wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
-  wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
+  auto wrapper = new RCTJSCWrapper {
+    .JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString"),
+    .JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString"),
+    .JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease"),
+    .JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName"),
+    .JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty"),
+    .JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject"),
+    .JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty"),
+    .JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString"),
+    .JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction"),
+    .JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
+    .JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString"),
+    .JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined"),
+    .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
+    .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
+    .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
+    .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
+    .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),
+  };
 
   static dispatch_once_t once;
   dispatch_once(&once, ^{
     RCTCustomJSCInit(libraryHandle);
   });
+
+  return wrapper;
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
-  RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC) {
-    RCTSetUpCustomLibraryPointers(wrapper);
-  } else {
-    RCTSetUpSystemLibraryPointers(wrapper);
-  }
-  return wrapper;
+  return useCustomJSC
+    ? RCTSetUpCustomLibraryPointers()
+    : RCTSetUpSystemLibraryPointers();
 }
 
 void RCTJSCWrapperRelease(RCTJSCWrapper *wrapper)
 {
-  if (wrapper) {
-    free(wrapper);
-  }
+  delete wrapper;
 }
