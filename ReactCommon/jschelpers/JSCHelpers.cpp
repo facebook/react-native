@@ -15,6 +15,68 @@
 namespace facebook {
 namespace react {
 
+namespace {
+
+JSValueRef functionCaller(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  auto* f = static_cast<JSFunction*>(JSObjectGetPrivate(function));
+  return (*f)(ctx, thisObject, argumentCount, arguments);
+}
+
+JSClassRef createFuncClass() {
+  auto definition = kJSClassDefinitionEmpty;
+  definition.finalize = [](JSObjectRef object) {
+    auto* function = static_cast<JSFunction*>(JSObjectGetPrivate(object));
+    delete function;
+  };
+  definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
+
+  return JSClassCreate(&definition);
+}
+
+JSObjectRef makeFunction(
+    JSContextRef ctx,
+    JSStringRef name,
+    JSFunction function) {
+  static auto kClassDef = createFuncClass();
+  auto functionObject = Object(ctx, JSObjectMake(ctx, kClassDef, new JSFunction(std::move(function))));
+  functionObject.setProperty("name", Value(ctx, name));
+  return functionObject;
+}
+
+}
+
+JSObjectRef makeFunction(
+    JSContextRef ctx,
+    const char* name,
+    JSFunction function) {
+  return makeFunction(ctx, JSStringCreateWithUTF8CString(name), std::move(function));
+}
+
+void installGlobalFunction(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSFunction function) {
+  auto jsName = JSStringCreateWithUTF8CString(name);
+  auto functionObj = makeFunction(ctx, jsName, std::move(function));
+  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
+  JSObjectSetProperty(ctx, globalObject, jsName, functionObj, 0, NULL);
+  JSStringRelease(jsName);
+}
+
+JSObjectRef makeFunction(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSObjectCallAsFunctionCallback callback) {
+  auto jsName = String(name);
+  return JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
+}
+
 void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
