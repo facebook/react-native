@@ -30,7 +30,7 @@ async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<St
 
   let stackCopy = stack;
 
-  if (SourceCode.scriptURL && stack.length > 0 && isSourcedFromDisk(stack[0].file)) {
+  if (SourceCode.scriptURL) {
     let foundInternalSource: boolean = false;
     stackCopy = stack.map((frame: StackFrame) => {
       // If the sources exist on disk rather than appearing to come from the packager,
