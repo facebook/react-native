@@ -39,12 +39,12 @@ async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<St
       // the application to a surrounding debugging environment.
       if (!foundInternalSource && isSourcedFromDisk(frame.file)) {
         // Copy frame into new object and replace 'file' property
-        return Object.assign({}, frame, {file: SourceCode.scriptURL});
+        return {...frame, file: SourceCode.scriptURL};
       }
 
       foundInternalSource = true;
       return frame;
-    })
+    });
   }
 
   const response = await fetch(devServer.url + 'symbolicate', {
