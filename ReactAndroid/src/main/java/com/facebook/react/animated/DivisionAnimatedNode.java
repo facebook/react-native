@@ -38,7 +38,7 @@ import com.facebook.react.bridge.ReadableMap;
     for (int i = 0; i < mInputNodes.length; i++) {
       AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mInputNodes[i]);
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
-        double value = ((ValueAnimatedNode) animatedNode).mValue;
+        double value = ((ValueAnimatedNode) animatedNode).getValue();
         if (i == 0) {
           mValue = value;
           continue;
