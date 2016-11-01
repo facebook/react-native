@@ -19,6 +19,6 @@
 - (instancetype)initWithEventPath:(NSArray<NSString *> *)eventPath
                         valueNode:(RCTValueAnimatedNode *)valueNode;
 
-- (void) updateWithEvent:(id<RCTEvent>)event;
+- (void)updateWithEvent:(id<RCTEvent>)event;
 
 @end
