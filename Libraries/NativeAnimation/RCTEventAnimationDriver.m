@@ -24,16 +24,16 @@
   return self;
 }
 
-- (void) updateWithEvent:(id<RCTEvent>)event
+- (void)updateWithEvent:(id<RCTEvent>)event
 {
   NSArray *args = [event arguments];
   // Supported events args are in the following order: viewTag, eventName, eventData.
-  id curValue = args[2];
+  id currentValue = args[2];
   for (NSString *key in _eventPath) {
-    curValue = [curValue valueForKey:key];
+    currentValue = [currentValue valueForKey:key];
   }
 
-  _valueNode.value = ((NSNumber *)curValue).doubleValue;
+  _valueNode.value = ((NSNumber *)currentValue).doubleValue;
   [_valueNode setNeedsUpdate];
 }
 
