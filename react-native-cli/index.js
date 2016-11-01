@@ -38,6 +38,7 @@
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 var spawn = require('child_process').spawn;
 var chalk = require('chalk');
 var prompt = require('prompt');
@@ -74,6 +75,33 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
+// Use Yarn if available, it's much faster than the npm client.
+// Return the version of yarn installed on the system, null if yarn is not available.
+function getYarnVersionIfAvailable() {
+  let yarnVersion;
+  try {
+    // execSync returns a Buffer -> convert to string
+    if (process.platform.startsWith('win')) {
+      yarnVersion = (execSync('yarn --version').toString() || '').trim();
+    } else {
+      yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
+    }
+  } catch (error) {
+    return null;
+  }
+  // yarn < 0.16 has a 'missing manifest' bug
+  try {
+    if (semver.gte(yarnVersion, '0.16.0')) {
+      return yarnVersion;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Cannot parse yarn version: ' + yarnVersion);
+    return null;
+  }
+}
+
 checkForVersionArgument();
 
 var cli;
@@ -102,8 +130,8 @@ if (cli) {
       );
       process.exit(1);
     } else {
-      if (!argv.verbose) console.log('This may take some time...');
-      init(commands[1], argv.verbose, argv.version);
+      const rnPackage = argv.version;
+      init(commands[1], argv.verbose, rnPackage, argv.npm);
     }
     break;
   default:
@@ -117,7 +145,7 @@ if (cli) {
   }
 }
 
-function validatePackageName(name) {
+function validateProjectName(name) {
   if (!name.match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
     console.error(
       '"%s" is not a valid name for a project. Please use a valid identifier ' +
@@ -137,17 +165,24 @@ function validatePackageName(name) {
   }
 }
 
-function init(name, verbose, rnPackage) {
-  validatePackageName(name);
+/**
+ * @param name Project name, e.g. 'AwesomeApp'.
+ * @param verbose If true, will run 'npm install' in verbose mode (for debugging).
+ * @param rnPackage Version of React Native to install, e.g. '0.38.0'.
+ * @param forceNpmClient If true, always use the npm command line client,
+ *                       don't use yarn even if available.
+ */
+function init(name, verbose, rnPackage, forceNpmClient) {
+  validateProjectName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, verbose, rnPackage);
+    createAfterConfirmation(name, verbose, rnPackage, forceNpmClient);
   } else {
-    createProject(name, verbose, rnPackage);
+    createProject(name, verbose, rnPackage, forceNpmClient);
   }
 }
 
-function createAfterConfirmation(name, verbose, rnPackage) {
+function createAfterConfirmation(name, verbose, rnPackage, forceNpmClient) {
   prompt.start();
 
   var property = {
@@ -160,7 +195,7 @@ function createAfterConfirmation(name, verbose, rnPackage) {
 
   prompt.get(property, function (err, result) {
     if (result.yesno[0] === 'y') {
-      createProject(name, verbose, rnPackage);
+      createProject(name, verbose, rnPackage, forceNpmClient);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -168,7 +203,7 @@ function createAfterConfirmation(name, verbose, rnPackage) {
   });
 }
 
-function createProject(name, verbose, rnPackage) {
+function createProject(name, verbose, rnPackage, forceNpmClient) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -192,20 +227,18 @@ function createProject(name, verbose, rnPackage) {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
 
-  console.log('Installing react-native package from npm...');
-
   if (verbose) {
-    runVerbose(root, projectName, rnPackage);
+    runVerbose(root, projectName, rnPackage, forceNpmClient);
   } else {
-    run(root, projectName, rnPackage);
+    run(root, projectName, rnPackage, forceNpmClient);
   }
 }
 
 function getInstallPackage(rnPackage) {
   var packageToInstall = 'react-native';
-  var valideSemver = semver.valid(rnPackage);
-  if (valideSemver) {
-    packageToInstall += '@' + valideSemver;
+  var isValidSemver = semver.valid(rnPackage);
+  if (isValidSemver) {
+    packageToInstall += '@' + isValidSemver;
   } else if (rnPackage) {
     // for tar.gz or alternative paths
     packageToInstall = rnPackage;
@@ -213,23 +246,36 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function run(root, projectName, rnPackage) {
-  exec('npm install --save --save-exact ' + getInstallPackage(rnPackage), function(e, stdout, stderr) {
-    if (e) {
+function run(root, projectName, rnPackage, forceNpmClient) {
+  const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  let installCommand;
+  if (yarnVersion) {
+    console.log('Using yarn v' + yarnVersion);
+    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
+    installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
+  } else {
+    console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm...');
+    if (!forceNpmClient) {
+      console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
+    }
+    installCommand = 'npm install --save --save-exact ' + getInstallPackage(rnPackage);
+  }
+  exec(installCommand, function(err, stdout, stderr) {
+    if (err) {
       console.log(stdout);
       console.error(stderr);
-      console.error('`npm install --save --save-exact react-native` failed');
+      console.error('Command `' + installCommand + '` failed.');
       process.exit(1);
     }
-
     checkNodeVersion();
-
     cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
   });
 }
 
-function runVerbose(root, projectName, rnPackage) {
+function runVerbose(root, projectName, rnPackage, forceNpmClient) {
+  // Use npm client, yarn doesn't support --verbose yet
+  console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm. This might take a while...');
   var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
