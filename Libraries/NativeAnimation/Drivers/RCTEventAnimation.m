@@ -26,7 +26,7 @@
 
 - (void)updateWithEvent:(id<RCTEvent>)event
 {
-  NSArray *args = [event arguments];
+  NSArray *args = event.arguments;
   // Supported events args are in the following order: viewTag, eventName, eventData.
   id currentValue = args[2];
   for (NSString *key in _eventPath) {
