@@ -295,7 +295,7 @@ RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
   RCTEventAnimation *driver =
   [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
 
-  [_eventAnimationDrivers setObject:driver forKey:[NSString stringWithFormat:@"%@%@", viewTag, eventName]];
+  _eventAnimationDrivers[NSString stringWithFormat:@"%@%@", viewTag, eventName] = driver;
 }
 
 RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
@@ -313,12 +313,12 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
 {
   // Native animated events only work for events dispatched from the main queue.
-  if (!RCTIsMainQueue() || [_eventAnimationDrivers count] == 0) {
+  if (!RCTIsMainQueue() || _eventAnimationDrivers.count == 0) {
     return NO;
   }
 
-  NSString *key = [NSString stringWithFormat:@"%@%@", [event viewTag], [event eventName]];
-  RCTEventAnimation *driver = [_eventAnimationDrivers valueForKey:key];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
+  RCTEventAnimation *driver = _eventAnimationDrivers[key];
 
   if (driver) {
     [driver updateWithEvent:event];
