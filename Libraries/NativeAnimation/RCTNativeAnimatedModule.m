@@ -15,7 +15,7 @@
 #import "RCTAnimationUtils.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
-#import "RCTEventAnimationDriver.h"
+#import "RCTEventAnimation.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTLog.h"
 #import "RCTDiffClampAnimatedNode.h"
@@ -31,7 +31,7 @@
 {
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
   NSMutableDictionary<NSNumber *, id<RCTAnimationDriver>> *_animationDrivers;
-  NSMutableDictionary<NSString *, RCTEventAnimationDriver *> *_eventAnimationDrivers;
+  NSMutableDictionary<NSString *, RCTEventAnimation *> *_eventAnimationDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   NSMutableSet<id<RCTAnimationDriver>> *_finishedAnimations;
   NSMutableSet<RCTValueAnimatedNode *> *_updatedValueNodes;
@@ -292,8 +292,8 @@ RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
 
   NSArray<NSString *> *eventPath = [RCTConvert NSStringArray:eventMapping[@"nativeEventPath"]];
 
-  RCTEventAnimationDriver *driver =
-  [[RCTEventAnimationDriver alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
+  RCTEventAnimation *driver =
+  [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
 
   [_eventAnimationDrivers setObject:driver forKey:[NSString stringWithFormat:@"%@%@", viewTag, eventName]];
 }
@@ -318,7 +318,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   }
 
   NSString *key = [NSString stringWithFormat:@"%@%@", [event viewTag], [event eventName]];
-  RCTEventAnimationDriver *driver = [_eventAnimationDrivers valueForKey:key];
+  RCTEventAnimation *driver = [_eventAnimationDrivers valueForKey:key];
 
   if (driver) {
     [driver updateWithEvent:event];

@@ -12,7 +12,7 @@
 #import "RCTValueAnimatedNode.h"
 #import "RCTEventDispatcher.h"
 
-@interface RCTEventAnimationDriver : NSObject
+@interface RCTEventAnimation : NSObject
 
 @property (nonatomic, readonly, weak) RCTValueAnimatedNode *valueNode;
 
