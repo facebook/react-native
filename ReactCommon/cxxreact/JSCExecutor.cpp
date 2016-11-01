@@ -698,15 +698,12 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
-    try {
-      loadModule(moduleId);
-    } catch (const std::exception&) {
-      throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
-    }
-  } else {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
+  if (moduleId <= 0) {
+    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
+      Value(m_context, arguments[0]).toString().str()));
   }
+
+  loadModule(moduleId);
   return JSValueMakeUndefined(m_context);
 }
 
