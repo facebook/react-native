@@ -68,7 +68,7 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   XCTAssertEqual(actions.count, devItems.count + 1);
 }
 
-- (void)testExample
+- (void)testClosingActionSheetAfterAction
 {
   NSArray<RCTDevMenuItem *> *devItems = [_bridge.devMenu valueForKey:@"_presentedItems"];
   for (RCTDevMenuItem *item in devItems) {
