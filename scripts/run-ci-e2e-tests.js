@@ -57,7 +57,7 @@ try {
     }
   }
 
-  if (argv['android']) {
+  if (argv.android) {
     if (exec('./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"').code) {
       echo('Failed to compile Android binaries');
       exitCode = 1;
@@ -88,7 +88,7 @@ try {
 
   cd('EndToEndTest');
 
-  if (argv['android']) {
+  if (argv.android) {
     echo('Running an Android e2e test');
     echo('Installing e2e framework');
     if (tryExecNTimes(
@@ -122,7 +122,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('npm', ['start'], {
@@ -146,7 +146,7 @@ try {
     }
   }
 
-  if (argv['ios']) {
+  if (argv.ios) {
     echo('Running an iOS app');
     cd('ios');
     // Make sure we installed local version of react-native
@@ -156,7 +156,7 @@ try {
       throw Error(exitCode);
     }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'],
       {
@@ -183,7 +183,7 @@ try {
     cd('..');
   }
 
-  if (argv['js']) {
+  if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
     if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build android package');
@@ -200,13 +200,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    // Temporarily removed jest test until a RN fix to jest lands in a couple of days
-    // ping @bestander after 27.09.2016 if you see this
-    // if (exec(`npm test`).code) {
-    //   echo('Jest test failure');
-    //   exitCode = 1;
-    //   throw Error(exitCode);
-    // }
+    if (exec('npm test').code) {
+      echo('Jest test failure');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
 

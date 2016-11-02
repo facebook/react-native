@@ -1472,22 +1472,19 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
-  NSMutableDictionary<NSString *, NSDictionary *> *allJSConstants = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
-  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-
-     NSMutableDictionary<NSString *, id> *constantsNamespace =
-       [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+  [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
+     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
      // Add manager class
-     constantsNamespace[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
 
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     constantsNamespace[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1519,19 +1516,19 @@ RCT_EXPORT_METHOD(clearJSResponder)
        }
      }
 
-     allJSConstants[name] = constantsNamespace;
+     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+     constants[name] = moduleConstants;
   }];
 
 #if !TARGET_OS_TV
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 #endif
-  [allJSConstants addEntriesFromDictionary:@{
-    @"customBubblingEventTypes": bubblingEvents,
-    @"customDirectEventTypes": directEvents,
-    @"Dimensions": RCTExportedDimensions(NO)
-  }];
 
-  return allJSConstants;
+  constants[@"customBubblingEventTypes"] = bubblingEvents;
+  constants[@"customDirectEventTypes"] = directEvents;
+  constants[@"Dimensions"] = RCTExportedDimensions(NO);
+
+  return constants;
 }
 
 static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)

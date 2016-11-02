@@ -6,7 +6,7 @@
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 #include "CatalystInstanceImpl.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"

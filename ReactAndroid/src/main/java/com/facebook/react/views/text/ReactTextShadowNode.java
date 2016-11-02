@@ -221,13 +221,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private static final CSSNodeAPI.MeasureFunction TEXT_MEASURE_FUNCTION =
       new CSSNodeAPI.MeasureFunction() {
         @Override
-        public void measure(
+        public long measure(
             CSSNodeAPI node,
             float width,
             CSSMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode,
-            MeasureOutput measureOutput) {
+            CSSMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
@@ -279,11 +278,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 true);
           }
 
-          measureOutput.height = layout.getHeight();
-          measureOutput.width = layout.getWidth();
           if (reactCSSNode.mNumberOfLines != UNSET &&
               reactCSSNode.mNumberOfLines < layout.getLineCount()) {
-            measureOutput.height = layout.getLineBottom(reactCSSNode.mNumberOfLines - 1);
+            return MeasureOutput.make(
+                layout.getWidth(),
+                layout.getLineBottom(reactCSSNode.mNumberOfLines - 1));
+          } else {
+            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };

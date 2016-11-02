@@ -45,7 +45,6 @@ private:
   std::string stack_;
 };
 
-
 class String : public noncopyable {
 public:
   explicit String(const char* utf8) :

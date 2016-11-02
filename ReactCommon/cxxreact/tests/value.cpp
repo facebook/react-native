@@ -2,7 +2,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <folly/json.h>
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 
 #ifdef WITH_FBJSCEXTENSION
 #undef ASSERT
@@ -105,4 +105,3 @@ TEST(Value, BadUtf16) {
   JSGlobalContextRelease(ctx);
 }
 #endif
-

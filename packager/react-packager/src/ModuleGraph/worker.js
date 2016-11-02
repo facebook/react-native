@@ -29,14 +29,8 @@ const defaultVariants = {default: {}};
 const moduleFactoryParameters = ['require', 'module', 'global', 'exports'];
 
 function transformJSON(infile, options, outfile, callback) {
-  let json, value;
-  try {
-    json = fs.readFileSync(infile, 'utf8');
-    value = JSON.parse(json);
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
+  const json = fs.readFileSync(infile, 'utf8');
+  const value = JSON.parse(json);
 
   const filename = options.filename || infile;
   const code =
@@ -71,13 +65,7 @@ function transformJSON(infile, options, outfile, callback) {
     };
   }
 
-  try {
-    writeResult(outfile, result);
-  } catch (writeError) {
-    callback(writeError);
-    return;
-  }
-
+  writeResult(outfile, result);
   callback(null);
 }
 
@@ -87,14 +75,8 @@ function transformModule(infile, options, outfile, callback) {
     return transformJSON(infile, options, outfile, callback);
   }
 
-  let code, transform;
-  try {
-    transform = require(options.transform);
-    code = fs.readFileSync(infile, 'utf8');
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
+  const transform = require(options.transform);
+  const code = fs.readFileSync(infile, 'utf8');
 
   const variants = options.variants || defaultVariants;
   const tasks = {};
@@ -136,30 +118,18 @@ function transformModule(infile, options, outfile, callback) {
 }
 
 function optimizeModule(infile, outfile, options, callback) {
-  let data;
-  try {
-    data = JSON.parse(fs.readFileSync(infile, 'utf8'));
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
-
+  const data = JSON.parse(fs.readFileSync(infile, 'utf8'));
   const transformed = data.transformed;
   const result = Object.assign({}, data);
   result.transformed = {};
 
   const file = data.file;
   const code = data.code;
-  try {
-    Object.keys(transformed).forEach(key => {
-      result.transformed[key] = optimize(transformed[key], file, code, options);
-    });
 
-    writeResult(outfile, result);
-  } catch (error) {
-    callback(error);
-    return;
-  }
+  Object.keys(transformed).forEach(key => {
+    result.transformed[key] = optimize(transformed[key], file, code, options);
+  });
+  writeResult(outfile, result);
 
   callback(null);
 }

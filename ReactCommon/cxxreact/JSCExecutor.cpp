@@ -16,12 +16,14 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
 #include "Platform.h"
 #include "SystraceSection.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
+#include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 
@@ -132,7 +134,7 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
-    m_nativeModules(delegate->getModuleRegistry()),
+    m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
@@ -362,9 +364,12 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   String jsSourceURL(sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
-  bindBridge();
 
-  flush();
+  // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
+  if (m_delegate) {
+    bindBridge();
+    flush();
+  }
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
@@ -693,15 +698,12 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
-    try {
-      loadModule(moduleId);
-    } catch (const std::exception&) {
-      throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
-    }
-  } else {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
+  if (moduleId <= 0) {
+    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
+      Value(m_context, arguments[0]).toString().str()));
   }
+
+  loadModule(moduleId);
   return JSValueMakeUndefined(m_context);
 }
 
