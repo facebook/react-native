@@ -16,6 +16,16 @@
 
 #include <dlfcn.h>
 
+// Crash the app (with a descriptive stack trace) if a function that is not
+//  supported by the system JSC is called.
+#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME) \
+static void Unimplemented##FUNC_NAME(void* args...) { \
+assert(false);\
+}
+
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
+
+#undef UNIMPLEMENTED_SYSTEM_JSC_FUNCTION
 
 void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
   return;
@@ -60,8 +70,8 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
     .JSValueIsUndefined = JSValueIsUndefined,
     .JSValueIsNull = JSValueIsNull,
     .JSEvaluateScript = JSEvaluateScript,
-    .JSEvaluateBytecodeBundle = NULL,
     .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
+    .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };
