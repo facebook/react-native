@@ -143,6 +143,7 @@ To avoid doing this every time you open a new terminal, add the following lines 
 ```
 export ANDROID_HOME=~/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
 
 The second line will add the `android` tool to your path, which will come in handy in the next step.
@@ -235,6 +236,7 @@ Create or edit your `~/.bashrc` file and add the following lines:
 ```
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
 
 The second line will add the `android` tool to your path, which will come in handy in the next step.
