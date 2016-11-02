@@ -115,7 +115,6 @@ CXXREACT_PUBLIC_HEADERS = [
   'ExecutorTokenFactory.h',
   'Instance.h',
   'JSCExecutor.h',
-  'JSCHelpers.h',
   'JSCNativeModules.h',
   'JSCWebWorker.h',
   'JSModulesUnbundle.h',
@@ -124,11 +123,8 @@ CXXREACT_PUBLIC_HEADERS = [
   'ModuleRegistry.h',
   'NativeModule.h',
   'NativeToJsBridge.h',
-  'noncopyable.h',
   'Platform.h',
   'SystraceSection.h',
-  'Unicode.h',
-  'Value.h',
 ]
 
 react_library(
@@ -153,6 +149,7 @@ react_library(
   deps = [
     ':module',
     '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('jschelpers:jschelpers'),
     react_native_xplat_target('microprofiler:microprofiler'),
   ],
   visibility = [ 'PUBLIC' ],

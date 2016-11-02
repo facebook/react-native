@@ -7,9 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
-#include "JSCHelpers.h"
-
-#include "Value.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 namespace facebook {
 namespace react {

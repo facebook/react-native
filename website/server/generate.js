@@ -55,7 +55,7 @@ queue = queue.then(function() {
           name: post.author,
           link: post.authorURL
         }],
-        description: post.content.trim().split('\n')[0],
+        description: post.excerpt,
       });
     });
 

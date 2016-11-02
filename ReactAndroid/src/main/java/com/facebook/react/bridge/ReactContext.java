@@ -143,7 +143,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public boolean hasActiveCatalystInstance() {
-    return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
+    return mCatalystInstance != null && mCatalystInstance.isAcceptingCalls();
   }
 
   public LifecycleState getLifecycleState() {

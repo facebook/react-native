@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "Executor.h"
 #include "Value.h"
 
 #include <JavaScriptCore/JSContextRef.h>
@@ -11,6 +10,7 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <functional>
 
 namespace facebook {
 namespace react {
@@ -33,6 +33,23 @@ inline void throwJSExecutionExceptionWithStack(const char* msg, const char* stac
   throw JSException(msg, stack);
 }
 
+using JSFunction = std::function<JSValueRef(JSContextRef, JSObjectRef, size_t, const JSValueRef[])>;
+
+JSObjectRef makeFunction(
+    JSContextRef ctx,
+    const char* name,
+    JSFunction function);
+
+void installGlobalFunction(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSFunction function);
+
+JSObjectRef makeFunction(
+    JSGlobalContextRef ctx,
+    const char* name,
+    JSObjectCallAsFunctionCallback callback);
+
 void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
@@ -46,8 +63,6 @@ void installGlobalProxy(
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);
-
-String jsStringFromBigString(const JSBigString& bigstr);
 
 JSValueRef evaluateScript(
     JSContextRef ctx,
