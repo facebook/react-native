@@ -18,14 +18,16 @@ const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 
-type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
+import type ModuleCache from './ModuleCache';
+
+export type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
 type TransformedCode = {
   code?: string,
   dependencies?: Array<string>,
   dependencyOffsets?: Array<number>,
   map?: string,
 };
-type TransformCode = (
+export type TransformCode = (
   module: Module,
   sourceCode: string,
   transformOptions: mixed,
@@ -35,7 +37,7 @@ type TransformCode = (
   dependencyOffsets?: Array<number>,
   map?: string,
 }>;
-type Cache = {
+export type Cache = {
   get<T>(
     filePath: string,
     key: string,
@@ -43,15 +45,16 @@ type Cache = {
   ): Promise<T>,
   invalidate(filePath: string): void,
 };
-type Options = {cacheTransformResults?: boolean};
-type ModuleCache = {
-  getPackageForModule(m: Module): {
-    getName(): Promise<string>,
-    root: string,
-  },
+export type Options = {cacheTransformResults?: boolean};
+export type FastFs = {
+  readFile: (filePath: string) => Promise<string>,
+  closest: (innerFilePath: string, fileName: string) => string,
+  on: (
+    event: 'change',
+    onChange: (type: string, filePath: string, root: string) => void,
+  ) => FastFs,
 };
-type FastFs = {readFile: (filePath: string) => Promise<string>};
-type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
+export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
 
 class Module {
 
