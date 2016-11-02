@@ -20,13 +20,12 @@
 
 #import "RCTImageUtils.h"
 
-static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
+static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576 * 4; // 4MB
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode, NSString *responseDate)
 {
-    return [NSString stringWithFormat:@"%@|%g|%g|%g|%zd|%@",
-            imageTag, size.width, size.height, scale, resizeMode, responseDate];
+    return [NSString stringWithFormat:@"%@", imageTag];
 }
 
 @implementation RCTImageCache
@@ -38,7 +37,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 - (instancetype)init
 {
   _decodedImageCache = [NSCache new];
-  _decodedImageCache.totalCostLimit = 5 * 1024 * 1024; // 5MB
+  _decodedImageCache.totalCostLimit = 32 * 1024 * 1024; // 32MB
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(clearCache)
