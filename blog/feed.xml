@@ -14,7 +14,7 @@
         <link href="https://facebook.github.io/react-native/blog/2016/10/25/0-36-headless-js-the-keyboard-api-and-more.html">
         </link>
         <updated>2016-10-25T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Today we are releasing [React Native 0.36](https://github.com/facebook/react-native/releases/tag/v0.36.0). Read on to learn more about what's new.]]></summary>
+        <summary type="html"><![CDATA[Today we are releasing React Native 0.36. Read on to learn more about what's new.]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -26,7 +26,7 @@
         <link href="https://facebook.github.io/react-native/blog/2016/09/08/exponent-talks-unraveling-navigation.html">
         </link>
         <updated>2016-09-08T00:00:00Z</updated>
-        <summary type="html"><![CDATA[[Adam Miskiewicz](https://twitter.com/skevy) from [Exponent](http://getexponent.com/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponentjs/ex-navigation) React Native library at Exponent's office hours last week.]]></summary>
+        <summary type="html"><![CDATA[Adam Miskiewicz from Exponent talks about mobile navigation and the ex-navigation React Native library at Exponent's office hours last week.]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
@@ -50,7 +50,7 @@
         <link href="https://facebook.github.io/react-native/blog/2016/08/12/react-native-meetup-san-francisco.html">
         </link>
         <updated>2016-08-12T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Last week I had the opportunity to attend the [React Native Meetup](http://www.meetup.com/React-Native-San-Francisco/photos/27168649/#452793854) at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.]]></summary>
+        <summary type="html"><![CDATA[Last week I had the opportunity to attend the React Native Meetup at Zynga’s San Francisco office. With around 200 people in attendance, it served as a great place to meet other developers near me that are also interested in React Native.]]></summary>
         <author>
             <name>Héctor Ramos</name>
             <uri>https://twitter.com/hectorramos</uri>
