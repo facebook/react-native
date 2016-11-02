@@ -20,36 +20,14 @@ var ExcerptLink = require('ExcerptLink');
 var BlogPost = React.createClass({
   render: function() {
     var post = this.props.post;
-    var content = this.props.content;
-
-    var match = post.publishedAt.match(/([0-9]+)-([0-9]+)-([0-9]+)/);
-    // Because JavaScript sucks at date handling :(
-    var year = match[1];
-    var month = [
-      'January', 'February', 'March', 'April', 'May', 'June', 'July',
-      'August', 'September', 'October', 'November', 'December'
-    ][parseInt(match[2], 10) - 1];
-    var day = parseInt(match[3], 10);
-
-    var postedOnDate = month + ' ' + day + ', ' + year;
-
-    var footer = <BlogPostFooter post={post} postedOnDate={postedOnDate} />;
-
-    if (this.props.excerpt) {
-      content = content.trim().split('\n')[0];
-      footer = <ExcerptLink href={'/react-native/blog/' + post.path} category={post.category} />;
-    }
 
     return (
-      <article>
-        <BlogPostHeader
-          post={post}
-          postedOnDate={postedOnDate}
-          excerpt={this.props.excerpt} />
+      <article className="entry-body">
+        <BlogPostHeader post={post} />
         <div className="entry-content">
-          <Marked>{content}</Marked>
+          <Marked>{this.props.content}</Marked>
         </div>
-        {footer}
+        <BlogPostFooter post={post} />
       </article>
     );
   }

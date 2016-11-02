@@ -55,9 +55,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     SoLoader.loadLibrary(REACT_NATIVE_LIB);
   }
 
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
-  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
-
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
 
   // Access from any thread
@@ -245,6 +242,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public boolean isDestroyed() {
     return mDestroyed;
+  }
+
+  @Override
+  public boolean isAcceptingCalls() {
+    return !mDestroyed && mAcceptCalls;
   }
 
   /**

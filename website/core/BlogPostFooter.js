@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('React');
+var BlogPostDate = require('BlogPostDate');
 
 var BlogPostFooter = React.createClass({
   render: function() {
@@ -32,7 +33,7 @@ var BlogPostFooter = React.createClass({
           <div className="author-image">
             <span className="the-image" style={{backgroundImage: "url(" + authorImage + ")"}}></span>
           </div>
-          <p className="posted-on">Posted on {this.props.postedOnDate}</p>
+          <p className="posted-on">Posted on <BlogPostDate post={post} /></p>
           <p className="name-title">
             <a href={post.authorURL} target="_blank">
               {post.author}
