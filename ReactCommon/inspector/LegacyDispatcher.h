@@ -20,6 +20,10 @@ class JSGlobalObject;
 namespace facebook {
 namespace react {
 
+/*
+ * An dispatcher that is able to register JavaScriptCore agents that extend the InspectorAgentBase
+ * base class.
+ */
 class LegacyDispatcher : public Dispatcher {
 public:
   LegacyDispatcher(JSC::JSGlobalObject& globalObject);

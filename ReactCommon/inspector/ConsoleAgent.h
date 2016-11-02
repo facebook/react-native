@@ -17,6 +17,10 @@ class InjectedScriptManager;
 namespace facebook {
 namespace react {
 
+/**
+ * Implements the Console agent. Relies on Javascript to call the globally exposed method __inspectorLog
+ * to send logging events.
+ */
 class ConsoleAgent : public Agent {
 public:
   ConsoleAgent(JSC::JSGlobalObject& globalObject, Inspector::InjectedScriptManager* injectedScriptManager);

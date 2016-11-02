@@ -21,6 +21,10 @@ class JSArray;
 namespace facebook {
 namespace react {
 
+/*
+ * A dispatcher that allows agents to be implemented in Javascript. Provides the global method
+ * __registerInspectorAgent to register a JS agent.
+ */
 class JSDispatcher : public Dispatcher {
 public:
   JSDispatcher(JSC::JSGlobalObject& globalObject);

@@ -11,6 +11,10 @@
 namespace facebook {
 namespace react {
 
+/*
+ * A bidrectional channel that allows both sending events to the remote inspector and registering
+ * to receive events for a specific domain.
+ */
 class Channel {
 public:
   using MessageHandler = std::function<void(std::string message, int callId, const std::string& methodName, folly::dynamic args)>;
@@ -21,6 +25,10 @@ public:
   virtual void registerDomain(std::string domain, MessageHandler handler) = 0;
 };
 
+/*
+ * A dispatcher is responsible for one or multiple domains and registering them with the Channel
+ * when it is connected.
+ */
 class Dispatcher {
 public:
   virtual ~Dispatcher() {}

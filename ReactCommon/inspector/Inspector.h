@@ -16,7 +16,11 @@ namespace react {
 
 class InspectorController;
 class Sender;
-
+/**
+ * The inspector exposes method to query for available 'pages' and connect to a specific one.
+ * Available Javascript contextes needs to be registered when they are created and removed when
+ * they are torn down.
+ */
 class Inspector {
 private:
   class DuplexConnection;
@@ -36,7 +40,7 @@ public:
   public:
     void sendMessage(std::string message);
     void disconnect();
-    
+
     LocalConnection(std::shared_ptr<DuplexConnection> duplexConnection);
   private:
     std::shared_ptr<DuplexConnection> duplexConnection_;

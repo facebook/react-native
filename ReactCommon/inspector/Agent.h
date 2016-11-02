@@ -9,6 +9,9 @@
 namespace facebook {
 namespace react {
 
+/*
+ * An dispatcher that makes it simple to implement an agent that serves a single domain.
+ */
 class Agent : public Dispatcher {
 public:
   void onConnect(std::shared_ptr<Channel> channel) override;

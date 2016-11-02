@@ -14,6 +14,9 @@ namespace react {
 class LegacyInspectorEnvironment;
 class ConsoleAgent;
 
+/*
+ * An dispatcher that provides the existing agents in JavaScriptCore.
+ */
 class LegacyAgents : public LegacyDispatcher {
 public:
   LegacyAgents(
