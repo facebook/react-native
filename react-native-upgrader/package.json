@@ -1,0 +1,31 @@
+{
+  "name": "react-native-upgrader",
+  "version": "0.1.0",
+  "license": "BSD-3-Clause",
+  "description": "The React Native upgrader tool",
+  "main": "cli.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "babel-core": "^6.18.0",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-regenerator": "^6.16.1",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015-node": "^6.1.1",
+    "babel-register": "^6.18.0",
+    "npmlog": "^4.0.0",
+    "promise": "^7.1.1",
+    "rimraf": "^2.5.4",
+    "semver": "^5.0.3",
+    "shelljs": "^0.7.5",
+    "yeoman-environment": "1.5.3"
+  }
+}
