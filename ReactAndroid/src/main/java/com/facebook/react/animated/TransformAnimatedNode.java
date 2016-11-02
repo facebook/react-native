@@ -70,7 +70,7 @@ import java.util.List;
         if (node == null) {
           throw new IllegalArgumentException("Mapped style node does not exists");
         } else if (node instanceof ValueAnimatedNode) {
-          value = ((ValueAnimatedNode) node).mValue;
+          value = ((ValueAnimatedNode) node).getValue();
         } else {
           throw new IllegalArgumentException("Unsupported type of node used as a transform child " +
             "node " + node.getClass());

@@ -136,6 +136,25 @@ import javax.annotation.Nullable;
     mUpdatedNodes.add(node);
   }
 
+  public void setAnimatedNodeOffset(int tag, double offset) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).mOffset = offset;
+    mUpdatedNodes.add(node);
+  }
+
+  public void flattenAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).flattenOffset();
+  }
+
   public void startAnimatingNode(
     int animationId,
     int animatedNodeTag,
