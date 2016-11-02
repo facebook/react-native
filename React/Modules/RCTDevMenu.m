@@ -49,7 +49,6 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
 @property (nonatomic, assign, readonly) RCTDevMenuType type;
 @property (nonatomic, copy, readonly) NSString *key;
 @property (nonatomic, copy, readonly) NSString *title;
-@property (nonatomic, copy, readonly) NSString *selectedTitle;
 @property (nonatomic, copy) id value;
 
 @end
@@ -57,7 +56,9 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
 @implementation RCTDevMenuItem
 {
   id _handler; // block
+  NSString *_selectedTitle;
 }
+@synthesize title = _title;
 
 - (instancetype)initWithType:(RCTDevMenuType)type
                          key:(NSString *)key
@@ -74,6 +75,15 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
     _value = nil;
   }
   return self;
+}
+
+- (NSString *)title
+{
+  if (_type == RCTDevMenuTypeToggle && [_value boolValue]) {
+    return _selectedTitle;
+  }
+  
+  return _title;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -119,6 +129,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 @end
+
+typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketProxyDelegate>
 
@@ -521,40 +533,38 @@ RCT_EXPORT_METHOD(show)
 
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
-    switch (item.type) {
-      case RCTDevMenuTypeButton: {
-        [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(__unused UIAlertAction *action) {
-                                                         [item callHandler];
-                                                         
-                                                         _actionSheet = nil;
-                                                       }]];
-        break;
-      }
-      case RCTDevMenuTypeToggle: {
-        BOOL selected = [item.value boolValue];
-        [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(__unused UIAlertAction *action) {
-                                                         BOOL value = [self->_settings[item.key] boolValue];
-                                                         [self updateSetting:item.key value:@(!value)]; // will call handler
-                                                         
-                                                         _actionSheet = nil;
-                                                       }]];
-        break;
-      }
-    }
+    [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:[self alertActionHandlerForDevItem:item]]];
   }
-
+  
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:^(__unused UIAlertAction *action) {
-                                                   _actionSheet = nil;
-                                                 }]];
+                                                 handler:[self alertActionHandlerForDevItem:nil]]];
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
+}
+
+- (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item {
+  return ^(__unused UIAlertAction *action) {
+    if (item) {
+      switch (item.type) {
+        case RCTDevMenuTypeButton: {
+          [item callHandler];
+          break;
+        }
+          
+        case RCTDevMenuTypeToggle: {
+          BOOL value = [self->_settings[item.key] boolValue];
+          [self updateSetting:item.key value:@(!value)]; // will call handler
+          break;
+        }
+      }
+    }
+    
+    _actionSheet = nil;
+  };
 }
 
 
