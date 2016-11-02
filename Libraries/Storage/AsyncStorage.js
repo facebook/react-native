@@ -480,6 +480,19 @@ var AsyncStorage = {
       });
     });
   },
+
+  /**
+   * Call this set the storage location.
+   * @param storageLocation The storage location. Can be 'documents' or 'applicationSupport'.
+   *
+   * **Note**: changing this only sets the location for future actions and does not migrate
+   * the store from the previous location.
+   */
+  setStorageLocation: function(storageLocation: string) {
+    RCTAsyncStorage.setStorageLocation(storageLocation);
+  },
+  documents: RCTAsyncStorage.documents,
+  applicationSupport: RCTAsyncStorage.applicationSupport
 };
 
 // Not all native implementations support merge.
