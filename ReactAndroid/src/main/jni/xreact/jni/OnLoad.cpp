@@ -16,6 +16,10 @@
 #include "WebWorkers.h"
 #include "JCallback.h"
 
+#ifdef WITH_INSPECTOR
+#include "JInspector.h"
+#endif
+
 #include "WritableNativeMap.h"
 #include "WritableNativeArray.h"
 
@@ -181,6 +185,9 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ModuleRegistryHolder::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
+    #ifdef WITH_INSPECTOR
+    JInspector::registerNatives();
+    #endif
     registerJSLoaderNatives();
 
     NativeArray::registerNatives();

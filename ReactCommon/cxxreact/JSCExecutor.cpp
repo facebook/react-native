@@ -19,6 +19,10 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
+#ifdef WITH_INSPECTOR
+#include <inspector/Inspector.h>
+#endif
+
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "JSCNativeModules.h"
@@ -229,6 +233,10 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
 
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().registerGlobalContext("main", m_context);
+  #endif
+
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
@@ -282,6 +290,10 @@ void JSCExecutor::terminateOnJSVMThread() {
   }
 
   m_nativeModules.reset();
+
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().unregisterGlobalContext(m_context);
+  #endif
 
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
