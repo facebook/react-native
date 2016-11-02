@@ -201,9 +201,13 @@ JSCExecutor::~JSCExecutor() {
 
 void JSCExecutor::destroy() {
   *m_isDestroyed = true;
-  m_messageQueueThread->runOnQueueSync([this] () {
+  if (m_messageQueueThread.get()) {
+    m_messageQueueThread->runOnQueueSync([this] () {
+      terminateOnJSVMThread();
+    });
+  } else {
     terminateOnJSVMThread();
-  });
+  }
 }
 
 void JSCExecutor::setContextName(const std::string& name) {
