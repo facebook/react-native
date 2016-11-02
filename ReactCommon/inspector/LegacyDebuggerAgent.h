@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ConsoleAgent.h"
 #include "LegacyScriptDebugServer.h"
 
 #include <JavaScriptCore/config.h>
@@ -14,8 +15,6 @@ class JSGlobalObject;
 
 namespace facebook {
 namespace react {
-
-class ConsoleAgent;
 
 class LegacyDebuggerAgent : public Inspector::InspectorDebuggerAgent {
 public:

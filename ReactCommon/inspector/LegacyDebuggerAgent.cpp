@@ -37,8 +37,7 @@ InjectedScript LegacyDebuggerAgent::injectedScriptForEval(ErrorString* error, co
 }
 
 void LegacyDebuggerAgent::breakpointActionLog(JSC::ExecState* exec, const String& message) {
-  // TODO: Hook up
-  // consoleAgent_->log(exec, toStdString(message));
+  consoleAgent_->log(exec, toStdString(message));
 }
 
 }
