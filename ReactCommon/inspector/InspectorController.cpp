@@ -8,6 +8,7 @@
 #include "InspectorAgent.h"
 #include "PageAgent.h"
 #include "ConsoleAgent.h"
+#include "JSDispatcher.h"
 #include "LegacyAgents.h"
 
 #include <folly/Memory.h>
@@ -142,6 +143,7 @@ InspectorController::InspectorController(JSC::JSGlobalObject& globalObject)
   dispatchers_.push_back(std::move(inspectorAgent));
   dispatchers_.push_back(folly::make_unique<SchemaAgent>());
   dispatchers_.push_back(folly::make_unique<PageAgent>());
+  dispatchers_.push_back(folly::make_unique<JSDispatcher>(globalObject));
 
   auto consoleAgent = folly::make_unique<ConsoleAgent>(globalObject, environment->injectedScriptManager());
   auto legacyAgents = folly::make_unique<LegacyAgents>(globalObject, std::move(environment), consoleAgent.get());
