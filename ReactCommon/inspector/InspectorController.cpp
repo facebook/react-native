@@ -4,7 +4,10 @@
 
 #include "Error.h"
 #include "Agent.h"
+#include "LegacyInspectorEnvironment.h"
 #include "InspectorAgent.h"
+#include "PageAgent.h"
+#include "LegacyAgents.h"
 
 #include <folly/Memory.h>
 #include <folly/Conv.h>
@@ -132,10 +135,16 @@ private:
 
 InspectorController::InspectorController(JSC::JSGlobalObject& globalObject)
     : globalObject_(globalObject) {
+  auto environment = folly::make_unique<LegacyInspectorEnvironment>();
   auto inspectorAgent = folly::make_unique<InspectorAgent>();
   inspectorAgent_ = inspectorAgent.get();
   dispatchers_.push_back(std::move(inspectorAgent));
   dispatchers_.push_back(folly::make_unique<SchemaAgent>());
+  dispatchers_.push_back(folly::make_unique<PageAgent>());
+
+  auto legacyAgents = folly::make_unique<LegacyAgents>(globalObject, std::move(environment), nullptr);
+
+  dispatchers_.push_back(std::move(legacyAgents));
 }
 
 InspectorController::~InspectorController() {
