@@ -235,6 +235,7 @@ Create or edit your `~/.bashrc` file and add the following lines:
 ```
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform_tools
 ```
 
 The second line will add the `android` tool to your path, which will come in handy in the next step.
