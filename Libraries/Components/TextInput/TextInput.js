@@ -165,7 +165,7 @@ const DataDetectorTypes = [
  * This may cause issues with components that have position: 'absolute'
  * while keyboard is active. To avoid this behavior either specify `windowSoftInputMode`
  * in AndroidManifest.xml ( https://developer.android.com/guide/topics/manifest/activity-element.html )
- * neither control this param programmatically with native code.
+ * or control this param programmatically with native code.
  *
  */
 const TextInput = React.createClass({
