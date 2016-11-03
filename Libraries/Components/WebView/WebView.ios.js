@@ -334,6 +334,14 @@ class WebView extends React.Component {
      * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * A RefreshControl component, used to provide pull-to-refresh
+     * functionality for the WebView.
+     *
+     * See [RefreshControl](docs/refreshcontrol.html).
+     */
+    refreshControl: PropTypes.element
   };
 
   state = {
@@ -417,6 +425,18 @@ class WebView extends React.Component {
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         dataDetectorTypes={this.props.dataDetectorTypes}
       />;
+
+    const refreshControl = this.props.refreshControl;
+
+    if (refreshControl) {
+      return (
+        <RCTScrollView style={styles.container}>
+          {refreshControl}
+          {webView}
+          {otherView}
+        </RCTScrollView>
+      );
+    }
 
     return (
       <View style={styles.container}>
@@ -540,6 +560,15 @@ class WebView extends React.Component {
     onMessage && onMessage(event);
   }
 }
+
+var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, {
+  nativeOnly: {
+    onMomentumScrollBegin: true,
+    onMomentumScrollEnd : true,
+    onScrollBeginDrag: true,
+    onScrollEndDrag: true,
+  }
+});
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
   nativeOnly: {

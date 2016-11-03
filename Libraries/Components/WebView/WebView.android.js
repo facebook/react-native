@@ -152,6 +152,14 @@ class WebView extends React.Component {
      * start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * A RefreshControl component, used to provide pull-to-refresh
+     * functionality for the WebView.
+     *
+     * See [RefreshControl](docs/refreshcontrol.html).
+     */
+    refreshControl: PropTypes.element
   };
 
   static defaultProps = {
@@ -228,6 +236,19 @@ class WebView extends React.Component {
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
+
+    const refreshControl = this.props.refreshControl;
+
+    if (refreshControl) {
+      return React.cloneElement(
+        refreshControl,
+        {},
+          <View style={styles.container}>
+            {webView}
+            {otherView}
+          </View>
+      );
+    }
 
     return (
       <View style={styles.container}>
