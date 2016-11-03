@@ -36,6 +36,12 @@
     @com.facebook.common.internal.DoNotStrip *;
 }
 
+# Required for Fresco gif support - can be removed with the next Fresco release
+# See https://github.com/facebook/fresco/issues/1177
+-keep class com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl {
+  public AnimatedFactoryImpl(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier);
+}
+
 -keepclassmembers @com.facebook.proguard.annotations.KeepGettersAndSetters class * {
   void set*(***);
   *** get*();
