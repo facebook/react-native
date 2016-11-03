@@ -161,6 +161,20 @@ WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions option
 
 WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
+WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
+                                               const CSSMeasureMode widthMode,
+                                               const float width,
+                                               const CSSMeasureMode heightMode,
+                                               const float height,
+                                               const CSSMeasureMode lastWidthMode,
+                                               const float lastWidth,
+                                               const CSSMeasureMode lastHeightMode,
+                                               const float lastHeight,
+                                               const float lastComputedWidth,
+                                               const float lastComputedHeight,
+                                               const float marginRow,
+                                               const float marginColumn);
+
 #define CSS_NODE_PROPERTY(type, name, paramName)                           \
   WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
   WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);

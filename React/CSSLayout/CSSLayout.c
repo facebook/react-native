@@ -2090,7 +2090,7 @@ static inline bool newMeasureSizeIsStricterAndStillValid(CSSMeasureMode sizeMode
          lastSize > size && lastComputedSize <= size;
 }
 
-static bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
+bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
                                            const CSSMeasureMode widthMode,
                                            const float width,
                                            const CSSMeasureMode heightMode,
