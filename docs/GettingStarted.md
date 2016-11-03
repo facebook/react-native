@@ -235,9 +235,10 @@ Create or edit your `~/.bashrc` file and add the following lines:
 ```
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
+export PATH=${PATH}:${ANDROID_HOME}/platform_tools
 ```
 
-The second line will add the `android` tool to your path, which will come in handy in the next step.
+The second line will add the `android` tool to your path, which will come in handy in the next step. The third line will add the `adb` tool to your path, which is used to communicate with your Android device / emulator.
 
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 

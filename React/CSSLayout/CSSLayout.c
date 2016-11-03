@@ -658,12 +658,7 @@ static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axi
     return node->style.padding[CSSEdgeStart];
   }
 
-  const float leadingPadding = computedEdgeValue(node->style.padding, leading[axis], 0);
-  if (leadingPadding >= 0) {
-    return leadingPadding;
-  }
-
-  return 0;
+  return fmaxf(computedEdgeValue(node->style.padding, leading[axis], 0), 0);
 }
 
 static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -672,12 +667,7 @@ static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection ax
     return node->style.padding[CSSEdgeEnd];
   }
 
-  const float trailingPadding = computedEdgeValue(node->style.padding, trailing[axis], 0);
-  if (trailingPadding >= 0) {
-    return trailingPadding;
-  }
-
-  return 0;
+  return fmaxf(computedEdgeValue(node->style.padding, trailing[axis], 0), 0);
 }
 
 static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -686,12 +676,7 @@ static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis
     return node->style.border[CSSEdgeStart];
   }
 
-  const float leadingBorder = computedEdgeValue(node->style.border, leading[axis], 0);
-  if (leadingBorder >= 0) {
-    return leadingBorder;
-  }
-
-  return 0;
+  return fmaxf(computedEdgeValue(node->style.border, leading[axis], 0), 0);
 }
 
 static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -700,12 +685,7 @@ static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axi
     return node->style.border[CSSEdgeEnd];
   }
 
-  const float trailingBorder = computedEdgeValue(node->style.border, trailing[axis], 0);
-  if (trailingBorder >= 0) {
-    return trailingBorder;
-  }
-
-  return 0;
+  return fmaxf(computedEdgeValue(node->style.border, trailing[axis], 0), 0);
 }
 
 static inline float getLeadingPaddingAndBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -726,10 +706,7 @@ static inline float getPaddingAndBorderAxis(const CSSNodeRef node, const CSSFlex
 }
 
 static inline CSSAlign getAlignItem(const CSSNodeRef node, const CSSNodeRef child) {
-  if (child->style.alignSelf != CSSAlignAuto) {
-    return child->style.alignSelf;
-  }
-  return node->style.alignItems;
+  return child->style.alignSelf == CSSAlignAuto ? node->style.alignItems : child->style.alignSelf;
 }
 
 static inline CSSDirection resolveDirection(const CSSNodeRef node,
@@ -756,11 +733,8 @@ static inline CSSFlexDirection resolveAxis(const CSSFlexDirection flexDirection,
 
 static CSSFlexDirection getCrossFlexDirection(const CSSFlexDirection flexDirection,
                                               const CSSDirection direction) {
-  if (isColumnDirection(flexDirection)) {
-    return resolveAxis(CSSFlexDirectionRow, direction);
-  } else {
-    return CSSFlexDirectionColumn;
-  }
+  return isColumnDirection(flexDirection) ? resolveAxis(CSSFlexDirectionRow, direction)
+                                          : CSSFlexDirectionColumn;
 }
 
 static inline bool isFlex(const CSSNodeRef node) {
@@ -809,11 +783,8 @@ static float getLeadingPosition(const CSSNodeRef node, const CSSFlexDirection ax
 
   const float leadingPosition =
       computedEdgeValue(node->style.position, leading[axis], CSSUndefined);
-  if (!CSSValueIsUndefined(leadingPosition)) {
-    return leadingPosition;
-  }
 
-  return 0;
+  return CSSValueIsUndefined(leadingPosition) ? 0 : leadingPosition;
 }
 
 static float getTrailingPosition(const CSSNodeRef node, const CSSFlexDirection axis) {
@@ -827,11 +798,8 @@ static float getTrailingPosition(const CSSNodeRef node, const CSSFlexDirection a
 
   const float trailingPosition =
       computedEdgeValue(node->style.position, trailing[axis], CSSUndefined);
-  if (!CSSValueIsUndefined(trailingPosition)) {
-    return trailingPosition;
-  }
 
-  return 0;
+  return CSSValueIsUndefined(trailingPosition) ? 0 : trailingPosition;
 }
 
 static float boundAxisWithinMinAndMax(const CSSNodeRef node,
@@ -881,10 +849,8 @@ static void setTrailingPosition(const CSSNodeRef node,
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
 static float getRelativePosition(const CSSNodeRef node, const CSSFlexDirection axis) {
-  if (isLeadingPosDefined(node, axis)) {
-    return getLeadingPosition(node, axis);
-  }
-  return -getTrailingPosition(node, axis);
+  return isLeadingPosDefined(node, axis) ? getLeadingPosition(node, axis)
+                                         : -getTrailingPosition(node, axis);
 }
 
 static void setPosition(const CSSNodeRef node, const CSSDirection direction) {

@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
@@ -16,7 +18,28 @@ const Polyfill = require('./Polyfill');
 
 const path = require('path');
 
+import type {
+  Cache,
+  DepGraphHelpers,
+  FastFs,
+  Extractor,
+  TransformCode,
+  Options as ModuleOptions,
+} from './Module';
+
 class ModuleCache {
+
+  _moduleCache: {[filePath: string]: Module};
+  _packageCache: {[filePath: string]: Package};
+  _fastfs: FastFs;
+  _cache: Cache;
+  _extractRequires: Extractor;
+  _transformCode: TransformCode;
+  _depGraphHelpers: DepGraphHelpers;
+  _platforms: mixed;
+  _assetDependencies: mixed;
+  _moduleOptions: ModuleOptions;
+  _packageModuleMap: WeakMap<Module, string>;
 
   constructor({
     fastfs,
@@ -26,7 +49,15 @@ class ModuleCache {
     depGraphHelpers,
     assetDependencies,
     moduleOptions,
-  }, platforms) {
+  }: {
+    fastfs: FastFs,
+    cache: Cache,
+    extractRequires: Extractor,
+    transformCode: TransformCode,
+    depGraphHelpers: DepGraphHelpers,
+    assetDependencies: mixed,
+    moduleOptions: ModuleOptions,
+  }, platforms: mixed) {
     this._moduleCache = Object.create(null);
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
@@ -42,7 +73,7 @@ class ModuleCache {
     fastfs.on('change', this._processFileChange.bind(this));
   }
 
-  getModule(filePath) {
+  getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
@@ -62,7 +93,7 @@ class ModuleCache {
     return this._moduleCache;
   }
 
-  getAssetModule(filePath) {
+  getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
@@ -75,7 +106,7 @@ class ModuleCache {
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath) {
+  getPackage(filePath: string) {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
@@ -86,7 +117,7 @@ class ModuleCache {
     return this._packageCache[filePath];
   }
 
-  getPackageForModule(module) {
+  getPackageForModule(module: Module): ?Package {
     if (this._packageModuleMap.has(module)) {
       const packagePath = this._packageModuleMap.get(module);
       if (this._packageCache[packagePath]) {
@@ -105,7 +136,7 @@ class ModuleCache {
     return this.getPackage(packagePath);
   }
 
-  createPolyfill({file}) {
+  createPolyfill({file}: {file: string}) {
     return new Polyfill({
       file,
       cache: this._cache,

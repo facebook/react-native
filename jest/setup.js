@@ -20,6 +20,7 @@ global.Promise = require.requireActual('promise');
 global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
 
 jest
+  .mock('setupDevtools')
   .mock('npmlog');
 
 // there's a __mock__ for it.
@@ -113,7 +114,17 @@ const mockNativeModules = {
     ),
     prefetchImage: jest.fn(),
   },
+  KeyboardObserver: {
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
+  Networking: {
+    sendRequest: jest.fn(),
+    abortRequest: jest.fn(),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   SourceCode: {
     scriptURL: null,
   },
@@ -141,6 +152,15 @@ const mockNativeModules = {
     View: {
       Constants: {},
     },
+  },
+  WebSocketModule: {
+    connect: jest.fn(),
+    send: jest.fn(),
+    sendBinary: jest.fn(),
+    ping: jest.fn(),
+    close: jest.fn(),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
   },
 };
 

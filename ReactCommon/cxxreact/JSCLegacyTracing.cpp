@@ -9,7 +9,8 @@
 
 #include <fbsystrace.h>
 
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+
 #include "JSCTracing.h"
 
 static const char *ENABLED_FBSYSTRACE_PROFILE_NAME = "__fbsystrace__";
