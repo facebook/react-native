@@ -210,7 +210,15 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     this.setState(nextState);
   }
 
-  _onTransitionEnd(): void {
+  _onTransitionEnd({finished}): void {
+    // It is possible to cancel the transition, for example by pushing another
+    // and this._transitionProps are not what they are expected to be anymore.
+    // onTransitionEnd callback after cancellation, because this._prevTransitionProps
+    // route. This can lead to awkward behaviour if we don't bail out the
+    if (!finished) {
+      return;
+    }
+
     const prevTransitionProps = this._prevTransitionProps;
     this._prevTransitionProps = null;
 
