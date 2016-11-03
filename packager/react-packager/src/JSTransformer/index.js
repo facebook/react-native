@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const Logger = require('../Logger');
 const Promise = require('promise');
 
 const declareOpts = require('../lib/declareOpts');
@@ -115,6 +116,8 @@ class Transformer {
     return this
       ._transform(this._transformModulePath, fileName, code, options)
       .then(result => {
+        Logger.log(result.transformFileStartLogEntry);
+        Logger.log(result.transformFileEndLogEntry);
         debug('done transforming file', fileName);
         return result;
       })
