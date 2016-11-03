@@ -108,6 +108,13 @@ void installGlobalProxy(
   JSClassRelease(proxyClass);
 }
 
+void removeGlobal(JSGlobalContextRef ctx, const char* name) {
+  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
+  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
+  JSObjectSetProperty(ctx, globalObject, jsName, nullptr, 0, nullptr);
+  JSStringRelease(jsName);
+}
+
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text) {

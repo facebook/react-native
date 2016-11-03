@@ -27,6 +27,7 @@ cxx_library(
     '//xplat/fbsystrace:fbsystrace',
     react_native_xplat_target('cxxreact:bridge'),
     react_native_xplat_target('cxxreact:module'),
+    react_native_xplat_target('inspector:inspector'),
   ],
   srcs = glob(['*.cpp']),
   xcode_public_headers_symlinks = True,
@@ -35,6 +36,7 @@ cxx_library(
   preprocessor_flags = [
     '-DLOG_TAG="ReactNativeJNI"',
     '-DWITH_FBSYSTRACE=1',
+    '-DWITH_INSPECTOR=1',
   ],
   compiler_flags = [
     '-Wall',

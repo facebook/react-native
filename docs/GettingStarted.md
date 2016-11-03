@@ -230,6 +230,8 @@ export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
 
+> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
+
 <block class="windows android" />
 
 Go to **Control Panel** → **System and Security** → **System** → **Change settings** →

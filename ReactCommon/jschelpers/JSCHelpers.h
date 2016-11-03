@@ -60,6 +60,8 @@ void installGlobalProxy(
     const char* name,
     JSObjectGetPropertyCallback callback);
 
+void removeGlobal(JSGlobalContextRef ctx, const char* name);
+
 JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);
