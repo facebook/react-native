@@ -179,26 +179,36 @@ function startServerInNewWindow() {
   const launchPackagerScript = path.resolve(packagerDir, scriptFile);
   const procConfig = {cwd: packagerDir};
 
+  let proc;
+
   if (process.platform === 'darwin') {
     if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+      proc = child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+    } else {
+      proc = child_process.spawnSync('open', [launchPackagerScript], procConfig);
     }
-    return child_process.spawnSync('open', [launchPackagerScript], procConfig);
-
   } else if (process.platform === 'linux') {
     procConfig.detached = true;
     if (yargV.open){
-      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], procConfig);
+      proc = child_process.spawn('xterm', ['-e', 'sh', launchPackagerScript], procConfig);
+    } else {
+      proc = child_process.spawn('sh', [launchPackagerScript], procConfig);
     }
-    return child_process.spawn('sh', [launchPackagerScript], procConfig);
-
   } else if (/^win/.test(process.platform)) {
     procConfig.detached = true;
     procConfig.stdio = 'ignore';
-    return child_process.spawn('cmd.exe', ['/C', 'start', launchPackagerScript], procConfig);
+    proc = child_process.spawn('cmd.exe', ['/C', 'start', launchPackagerScript], procConfig);
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
+    return;
   }
+
+  if (yargV.runPackagerHere) {
+    proc.stdout.pipe(process.stdout);
+    proc.stderr.pipe(process.stderr);
+  }
+
+  return proc;
 }
 
 module.exports = {
