@@ -525,7 +525,7 @@ var showcase = React.createClass({
             </p>
 
             <div className="inner-content">
-              <p>If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcaseData.js">guidelines on GitHub</a> to update this page.</p>
+              <p>If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
             </div>
 
           </div>
