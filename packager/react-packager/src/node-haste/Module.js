@@ -56,6 +56,17 @@ export type FastFs = {
 };
 export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
 
+export type ConstructorArgs = {
+  file: string,
+  fastfs: FastFs,
+  moduleCache: ModuleCache,
+  cache: Cache,
+  extractor: Extractor,
+  transformCode: TransformCode,
+  depGraphHelpers: DepGraphHelpers,
+  options: Options,
+};
+
 class Module {
 
   path: string;
@@ -81,16 +92,7 @@ class Module {
     transformCode,
     depGraphHelpers,
     options,
-  }: {
-    file: string,
-    fastfs: FastFs,
-    moduleCache: ModuleCache,
-    cache: Cache,
-    extractor: Extractor,
-    transformCode: TransformCode,
-    depGraphHelpers: DepGraphHelpers,
-    options: Options,
-  }) {
+  }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }

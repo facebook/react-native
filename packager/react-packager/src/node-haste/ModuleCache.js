@@ -137,6 +137,7 @@ class ModuleCache {
   }
 
   createPolyfill({file}: {file: string}) {
+    /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
       file,
       cache: this._cache,
