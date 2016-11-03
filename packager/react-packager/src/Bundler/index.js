@@ -89,6 +89,10 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  manifestReferrence: {
+    type: 'object',
+    required: false,
+  },
 });
 
 const assetPropertyBlacklist = new Set([
@@ -120,7 +124,14 @@ class Bundler {
       mtime,
     ];
 
-    this._getModuleId = createModuleIdFactory();
+    const manifest = opts.manifestReferrence || null;
+    this._startModuleId = manifest ? (1 + manifest.lastId) : 0;
+    this._extenalModules = manifest ? manifest.modules : null;
+
+    this._getModuleId = createModuleIdFactory({
+      extenalModules: this._extenalModules,
+      startId: this._startModuleId,
+    });
 
     if (opts.transformModulePath) {
       const transformer = require(opts.transformModulePath);
@@ -264,6 +275,11 @@ class Bundler {
         response.dependencies = response.dependencies.filter(module =>
           module.path.endsWith(entryFile)
         );
+      } else if (this._extenalModules) {
+        /* If used extenal reference, we don't need polyfills again */ 
+        response.dependencies = response.dependencies.filter(module =>
+          module.name && !module.isPolyfill() && !this._extenalModules[module.name]
+        );
       } else {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
       }
@@ -390,6 +406,12 @@ class Bundler {
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
+      return Promise.all(response.dependencies.map(module =>
+        module.getName().then(name => {
+          module.name = name;
+        })
+      )).then(() => response);
+    }).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
       Activity.endEvent(findEventId);
@@ -511,7 +533,10 @@ class Bundler {
         {dev, platform, recursive},
         transformOptions,
         onProgress,
-        isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
+        isolateModuleIDs ? createModuleIdFactory({
+          extenalModules: this._extenalModules,
+          startId: this._startModuleId,
+        }) : this._getModuleId,
       );
     });
   }
@@ -591,7 +616,8 @@ class Bundler {
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
-        sourcePath: module.path
+        sourcePath: module.path,
+        isPolyfill: module.isPolyfill()
       });
     });
   }
@@ -748,10 +774,14 @@ function verifyRootExists(root) {
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
 
-function createModuleIdFactory() {
+function createModuleIdFactory({extenalModules, startId: nextId = 0}) {
   const fileToIdMap = Object.create(null);
-  let nextId = 0;
-  return ({path}) => {
+  return ({path, name}) => {
+    if (extenalModules && name) {
+      if (name in extenalModules) {
+        return extenalModules[name].id;
+      }
+    }
     if (!(path in fileToIdMap)) {
       fileToIdMap[path] = nextId;
       nextId += 1;

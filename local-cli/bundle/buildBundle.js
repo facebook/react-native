@@ -13,6 +13,7 @@ const Server = require('../../packager/react-packager/src/Server');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
+const fs = require('fs');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 
@@ -57,6 +58,12 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       nonPersistent: true,
       resetCache: args.resetCache,
     };
+
+    if (typeof args.manifestFile === 'string') {
+      options.manifestReferrence = JSON.parse(
+        fs.readFileSync(args.manifestFile, 'utf-8')
+      );
+    }
 
     packagerInstance = new Server(options);
     shouldClosePackager = true;

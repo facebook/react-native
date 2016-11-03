@@ -26,6 +26,8 @@ function ModuleTransport(data) {
   this.virtual = data.virtual;
   this.meta = data.meta;
   this.polyfill = data.polyfill;
+  this.isPolyfill = data.isPolyfill;
+  this.isRequireCall = data.isRequireCall;
   this.map = data.map;
 
   Object.freeze(this);
