@@ -123,7 +123,7 @@ const DatePickerIOS = React.createClass({
         <RCTDatePickerIOS
           ref={ picker => { this._picker = picker; } }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
+          date={props.date}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }
@@ -133,7 +133,7 @@ const DatePickerIOS = React.createClass({
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
-          onChange={this._onChange}
+          onDateChange={this._onChange}
         />
       </View>
     );
