@@ -259,6 +259,8 @@ class PushNotificationIOS {
       );
     }
     _notifHandlers.set(handler, listener);
+
+    return listener;
   }
 
   /**
