@@ -136,6 +136,18 @@ extern NSString *const RCTContentDidAppearNotification;
 - (void)cancelTouches;
 
 /**
+ * When set, any touches on the RCTRootView that are not matched up to any of the child
+ * views will be passed to siblings of the RCTRootView. See -[UIView hitTest:withEvent:]
+ * for details on iOS hit testing.
+ *
+ * Enable this to support a semi-transparent RN view that occupies the whole screen but
+ * has visible content below it that the user can interact with.
+ *
+ * The default value is NO.
+ */
+@property (nonatomic, assign) BOOL passThroughTouches;
+
+/**
  * Timings for hiding the loading view after the content has loaded. Both of
  * these values default to 0.25 seconds.
  */
