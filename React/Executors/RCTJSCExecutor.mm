@@ -252,20 +252,13 @@ static NSThread *newJavaScriptThread(void)
 }
 
 + (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                     applicationScript:(NSData *)applicationScript
-                                             sourceURL:(NSURL *)sourceURL
                                              JSContext:(JSContext **)JSContext
-                                                 error:(NSError **)error
 {
   const RCTJSContextData data = JSContextProvider.data;
   if (JSContext) {
     *JSContext = data.context;
   }
-  RCTJSCExecutor *executor = [[RCTJSCExecutor alloc] initWithJSContextData:data];
-  if (applicationScript && ![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
-    return nil; // error has been set by _synchronouslyExecuteApplicationScript:
-  }
-  return executor;
+  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
 }
 
 - (instancetype)initWithJSContextData:(const RCTJSContextData &)data
@@ -280,33 +273,29 @@ static NSThread *newJavaScriptThread(void)
   return self;
 }
 
-- (BOOL)_synchronouslyExecuteApplicationScript:(NSData *)script
-                                     sourceURL:(NSURL *)sourceURL
-                                     JSContext:(JSContext *)context
-                                         error:(NSError **)error
+- (NSError *)synchronouslyExecuteApplicationScript:(NSData *)script
+                                         sourceURL:(NSURL *)sourceURL
 {
-  TaggedScript taggedScript = loadTaggedScript(script, sourceURL, _performanceLogger, _randomAccessBundle, error);
+  NSError *loadError;
+  TaggedScript taggedScript = loadTaggedScript(script, sourceURL, _performanceLogger, _randomAccessBundle, &loadError);
 
-  if (!taggedScript.script) {
-    return NO;
+  if (loadError) {
+    return loadError;
   }
 
   if (taggedScript.tag == RCTScriptRAMBundle) {
-    registerNativeRequire(context, self);
+    registerNativeRequire(_context.context, self);
   }
 
-  NSError *returnedError = executeApplicationScript(taggedScript, sourceURL,
-                                                    _jscWrapper,
-                                                    _performanceLogger,
-                                                    _context.context.JSGlobalContextRef);
-  if (returnedError) {
-    if (error) {
-      *error = returnedError;
-    }
-    return NO;
-  } else {
-    return YES;
+  NSError *execError = executeApplicationScript(taggedScript, sourceURL,
+                                                _jscWrapper,
+                                                _performanceLogger,
+                                                _context.context.JSGlobalContextRef);
+  if (execError) {
+    return execError;
   }
+
+  return NULL;
 }
 
 - (RCTJavaScriptContext *)context
