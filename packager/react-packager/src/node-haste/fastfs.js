@@ -27,6 +27,13 @@ interface FileWatcher {
   on(event: 'all', handler: (type: string, filePath: string, rootPath: string, fstat: fs.Stats) => void): void,
 }
 
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
+
 class Fastfs extends EventEmitter {
 
   _name: string;
@@ -62,18 +69,10 @@ class Fastfs extends EventEmitter {
       return new File(root, true);
     });
     this._fastPaths = Object.create(null);
-    this._activity = activity;
 
-    let fastfsActivity;
-    if (activity) {
-      fastfsActivity = activity.startEvent(
-        'Building in-memory fs for ' + this._name,
-        null,
-        {
-          telemetric: true,
-        },
-      );
-    }
+    const buildingInMemoryFSLogEntry =
+      print(log(createActionStartEntry('Building in-memory fs for ' + this._name)));
+
     files.forEach(filePath => {
       const root = this._getRoot(filePath);
       if (root) {
@@ -88,9 +87,8 @@ class Fastfs extends EventEmitter {
         }
       }
     });
-    if (activity) {
-      activity.endEvent(fastfsActivity);
-    }
+
+    print(log(createActionEndEntry(buildingInMemoryFSLogEntry)));
 
     if (this._fileWatcher) {
       this._fileWatcher.on('all', this._processFileChange.bind(this));

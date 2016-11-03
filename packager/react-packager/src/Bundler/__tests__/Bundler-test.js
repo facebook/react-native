@@ -24,7 +24,7 @@ jest
   .mock('../Bundle')
   .mock('../PrepackBundle')
   .mock('../HMRBundle')
-  .mock('../../Activity')
+  .mock('../../Logger')
   .mock('../../lib/declareOpts');
 
 var Bundler = require('../');

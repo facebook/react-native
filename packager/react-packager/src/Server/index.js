@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
@@ -25,6 +24,13 @@ const path = require('path');
 const url = require('url');
 
 const debug = require('debug')('ReactNativePackager:Server');
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
   let timeout, args = [];
@@ -496,15 +502,13 @@ class Server {
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(decodeURI(req.url), true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    const assetEvent = Activity.startEvent(
-      'Processing asset request',
-      {
+
+    const processingAssetRequestLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Processing asset request',
         asset: assetPath[1],
-      },
-      {
-        displayFields: true,
-      },
-    );
+      })), ['asset']);
+
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => {
@@ -518,7 +522,9 @@ class Server {
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done(() => Activity.endEvent(assetEvent));
+      ).done(() => {
+        print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+      });
   }
 
   optionsHash(options) {
@@ -539,18 +545,15 @@ class Server {
         const deps = bundleDeps.get(bundle);
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
-          const updateExistingBundleEventId =
-            Activity.startEvent(
-              'Updating existing bundle',
-              {
-                outdated_modules: outdated.size,
-              },
-              {
-                telemetric: true,
-                displayFields: true,
-              },
-            );
+
+          const updatingExistingBundleLogEntry =
+            print(log(createActionStartEntry({
+              action_name: 'Updating existing bundle',
+              outdated_modules: outdated.size,
+            })), ['outdated_modules']);
+
           debug('Attempt to update existing bundle');
+
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
           deps.outdated = new Set();
@@ -604,8 +607,13 @@ class Server {
                 }
 
                 bundle.invalidateSource();
+
+                print(
+                  log(createActionEndEntry(updatingExistingBundleLogEntry)),
+                  ['outdated_modules'],
+                );
+
                 debug('Successfully updated existing bundle');
-                Activity.endEvent(updateExistingBundleEventId);
                 return bundle;
             });
           }).catch(e => {
@@ -652,17 +660,12 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
-    const startReqEventId = Activity.startEvent(
-      'Requesting bundle',
-      {
-        url: req.url,
+    const requestingBundleLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Requesting bundle',
+        bundle_url: req.url,
         entry_point: options.entryFile,
-      },
-      {
-        telemetric: true,
-        displayFields: ['url'],
-      },
-    );
+      })), ['bundle_url']);
 
     let consoleProgress = () => {};
     if (process.stdout.isTTY && !this._opts.silent) {
@@ -705,7 +708,7 @@ class Server {
             mres.end(bundleSource);
           }
           debug('Finished response');
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         } else if (requestType === 'map') {
           let sourceMap = p.getSourceMap({
             minify: options.minify,
@@ -718,12 +721,12 @@ class Server {
 
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
           mres.setHeader('Content-Type', 'application/json');
           mres.end(assetsList);
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         }
       },
       error => this._handleError(mres, this.optionsHash(options), error)
@@ -735,13 +738,9 @@ class Server {
   }
 
   _symbolicate(req, res) {
-    const startReqEventId = Activity.startEvent(
-      'Symbolicating',
-      null,
-      {
-        telemetric: true,
-      },
-    );
+    const symbolicatingLogEntry =
+      print(log(createActionStartEntry('Symbolicating')));
+
     new Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
@@ -795,7 +794,7 @@ class Server {
         res.end(JSON.stringify({error: error.message}));
       }
     ).done(() => {
-      Activity.endEvent(startReqEventId);
+      print(log(createActionEndEntry(symbolicatingLogEntry)));
     });
   }
 

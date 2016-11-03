@@ -9,7 +9,6 @@
 'use strict';
 
 
-const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
 
 const declareOpts = require('../lib/declareOpts');
@@ -89,7 +88,6 @@ class Resolver {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
-      activity: Activity,
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,

@@ -10,7 +10,9 @@
 
 jest.autoMockOff();
 jest.useRealTimers();
-jest.mock('fs');
+jest
+  .mock('fs')
+  .mock('../../Logger');
 
 // This is an ugly hack:
 // * jest-haste-map uses `find` for fast file system crawling which won't work

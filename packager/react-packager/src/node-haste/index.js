@@ -33,14 +33,15 @@ const util = require('util');
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 
-const defaultActivity = {
-  startEvent: () => {},
-  endEvent: () => {},
-};
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
 
 class DependencyGraph {
   constructor({
-    activity,
     roots,
     ignoreFilePath,
     fileWatcher,
@@ -65,7 +66,6 @@ class DependencyGraph {
     resetCache,
   }) {
     this._opts = {
-      activity: activity || defaultActivity,
       roots,
       ignoreFilePath: ignoreFilePath || (() => {}),
       fileWatcher,
@@ -116,14 +116,8 @@ class DependencyGraph {
     });
 
     this._loading = haste.build().then(hasteMap => {
-      const {activity} = this._opts;
-      const depGraphActivity = activity.startEvent(
-        'Initializing Packager',
-        null,
-        {
-          telemetric: true,
-        },
-      );
+      const initializingPackagerLogEntry =
+        print(log(createActionStartEntry('Initializing Packager')));
 
       const hasteFSFiles = hasteMap.hasteFS.getAllFiles();
 
@@ -134,7 +128,6 @@ class DependencyGraph {
         hasteFSFiles,
         {
           ignore: this._opts.ignoreFilePath,
-          activity: activity,
         }
       );
 
@@ -181,17 +174,13 @@ class DependencyGraph {
         }
       });
 
-      const hasteActivity = activity.startEvent(
-        'Building Haste Map',
-        null,
-        {
-          telemetric: true,
-        },
-      );
+      const buildingHasteMapLogEntry =
+        print(log(createActionStartEntry('Building Haste Map')));
+
       return this._hasteMap.build().then(
         map => {
-          activity.endEvent(hasteActivity);
-          activity.endEvent(depGraphActivity);
+          print(log(createActionEndEntry(buildingHasteMapLogEntry)));
+          print(log(createActionEndEntry(initializingPackagerLogEntry)));
           return map;
         },
         err => {
