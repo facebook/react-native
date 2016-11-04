@@ -11,12 +11,14 @@
 
 'use strict';
 
+type DependencyMap = Array<ModuleID>;
 type Exports = any;
 type FactoryFn = (
   global: Object,
   require: RequireFn,
   moduleObject: {exports: {}},
   exports: {},
+  dependencyMap: ?DependencyMap,
 ) => void;
 type HotModuleReloadingAcceptFn = Function;
 type HotModuleReloadingData = {|
@@ -29,12 +31,13 @@ type Module = {
 };
 type ModuleID = number;
 type ModuleDefinition = {|
+  dependencyMap: ?DependencyMap,
+  exports: Exports,
   factory: FactoryFn,
   hasError: boolean,
-  isInitialized: boolean,
-  exports: Exports,
-  verboseName?: string,
   hot?: HotModuleReloadingData,
+  isInitialized: boolean,
+  verboseName?: string,
 |};
 type ModuleMap =
   {[key: ModuleID]: (ModuleDefinition)};
@@ -50,8 +53,9 @@ if (__DEV__) {
 }
 
 function define(
-  moduleId: number,
   factory: FactoryFn,
+  moduleId: number,
+  dependencyMap?: DependencyMap,
 ) {
   if (moduleId in modules) {
     // prevent repeated calls to `global.nativeRequire` to overwrite modules
@@ -59,18 +63,20 @@ function define(
     return;
   }
   modules[moduleId] = {
+    dependencyMap,
+    exports: undefined,
     factory,
     hasError: false,
     isInitialized: false,
-    exports: undefined,
   };
   if (__DEV__) {
     // HMR
     modules[moduleId].hot = createHotReloadingObject();
 
     // DEBUGGABLE MODULES NAMES
-    // avoid unnecessary parameter in prod
-    const verboseName: string | void = arguments[2];
+    // we take `verboseName` from `arguments` to avoid an unused named parameter
+    // in `define` in production.
+    const verboseName: string | void = arguments[3];
     if (verboseName) {
       modules[moduleId].verboseName = verboseName;
       verboseNamesToModuleIds[verboseName] = moduleId;
@@ -90,14 +96,14 @@ function require(moduleId: ModuleID | VerboseModuleNameForDev) {
         'debugging purposes and will BREAK IN PRODUCTION!'
       );
     }
-  } else {
-    moduleId = +moduleId;
   }
 
-  const module = modules[moduleId];
+  //$FlowFixMe: at this point we know that moduleId is a number
+  const moduleIdReallyIsNumber: number = moduleId;
+  const module = modules[moduleIdReallyIsNumber];
   return module && module.isInitialized
     ? module.exports
-    : guardedLoadModule(moduleId, module);
+    : guardedLoadModule(moduleIdReallyIsNumber, module);
 }
 
 let inGuard = false;
@@ -146,7 +152,7 @@ function loadModuleImplementation(moduleId, module) {
   // infinite require loop.
   module.isInitialized = true;
   const exports = module.exports = {};
-  const {factory} = module;
+  const {factory, dependencyMap} = module;
   try {
     if (__DEV__) {
       // $FlowFixMe: we know that __DEV__ is const and `Systrace` exists
@@ -161,7 +167,7 @@ function loadModuleImplementation(moduleId, module) {
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     // and packager/react-packager/src/ModuleGraph/worker.js
-    factory(global, require, moduleObject, exports);
+    factory(global, require, moduleObject, exports, dependencyMap);
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {
@@ -239,7 +245,7 @@ if (__DEV__) {
     const mod = modules[id];
 
     if (!mod && factory) { // new modules need a factory
-      define(id, factory);
+      define(factory, id);
       return true; // new modules don't need to be accepted
     }
 

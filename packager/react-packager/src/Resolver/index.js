@@ -259,12 +259,12 @@ class Resolver {
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    '__d(',
-    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    'function(global, require, module, exports) {',
+    `__d(/* ${verboseName} */`,
+    'function(global, require, module, exports) {', // module factory
       code,
-    '\n}',
-    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    '\n}, ',
+    `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
+    dev ? `, null, ${JSON.stringify(verboseName)}` : '',
     ');',
   ].join('');
 }
