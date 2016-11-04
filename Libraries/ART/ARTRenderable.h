@@ -21,5 +21,6 @@
 @property (nonatomic, assign) CGLineCap strokeCap;
 @property (nonatomic, assign) CGLineJoin strokeJoin;
 @property (nonatomic, assign) ARTCGFloatArray strokeDash;
+@property (nonatomic, assign) ARTCGFloatArray gradientStroke;
 
 @end

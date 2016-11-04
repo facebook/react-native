@@ -1,4 +1,4 @@
-/**
+ /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -28,7 +28,7 @@
 
 - (void)renderLayerTo:(CGContextRef)context
 {
-  if ((!self.fill && !self.stroke) || !self.d) {
+  if ((!self.fill && !self.stroke && !self.gradientStroke.count) || !self.d) {
     return;
   }
 
@@ -47,7 +47,7 @@
       }
     }
   }
-  if (self.stroke) {
+  if (self.stroke && !self.gradientStroke.count) {
     CGContextSetStrokeColorWithColor(context, self.stroke);
     CGContextSetLineWidth(context, self.strokeWidth);
     CGContextSetLineCap(context, self.strokeCap);
@@ -59,9 +59,34 @@
     if (mode == kCGPathFill) {
       mode = kCGPathFillStroke;
     }
+    CGContextAddPath(context, self.d);
+  }
+  
+  if (self.gradientStroke.count) {
+    CGFloat* colors = self.gradientStroke.array;
+    CGContextAddPath(context, self.d);
+    CGRect rect = CGContextGetPathBoundingBox(context);
+    
+    CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
+    CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, self.gradientStroke.count/4);
+    CGColorSpaceRelease(baseSpace), baseSpace = NULL;
+    
+    CGContextSetLineWidth(context, self.strokeWidth);
+    CGContextSetLineCap(context, self.strokeCap);
+    CGContextSetLineJoin(context, self.strokeJoin);
+    
+    CGContextReplacePathWithStrokedPath(context);
+    CGContextClip(context);
+    
+    // Define the start and end points for the gradient
+    // This determines the direction in which the gradient is drawn
+    CGPoint startPoint = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
+    CGPoint endPoint = CGPointMake(CGRectGetMinX(rect), CGRectGetMinY(rect));
+
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGGradientRelease(gradient), gradient = NULL;
   }
 
-  CGContextAddPath(context, self.d);
   CGContextDrawPath(context, mode);
 }
 

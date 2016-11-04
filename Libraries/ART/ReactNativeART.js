@@ -85,6 +85,7 @@ var RenderableAttributes = merge(NodeAttributes, {
   strokeCap: true,
   strokeJoin: true,
   strokeDash: { diff: arrayDiffer },
+  gradientStroke: { diff: arrayDiffer },
 });
 
 var ShapeAttributes = merge(RenderableAttributes, {
@@ -375,6 +376,11 @@ class Shape extends React.Component {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
     var d = new Path(path).toJSON();
+    var gradientData = [];
+    if (props.gradientStroke != null) {
+        insertColorsIntoArray(props.gradientStroke, gradientData, 0);
+    }
+    
     return (
       <NativeShape
         fill={extractBrush(props.fill, props)}
@@ -385,6 +391,7 @@ class Shape extends React.Component {
         strokeJoin={extractStrokeJoin(props.strokeJoin)}
         strokeWidth={extractNumber(props.strokeWidth, 1)}
         transform={extractTransform(props)}
+        gradientStroke={gradientData}
 
         d={d}
       />

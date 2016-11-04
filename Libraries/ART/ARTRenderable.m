@@ -57,6 +57,18 @@
   _strokeDash = strokeDash;
 }
 
+- (void)setGradientStroke:(ARTCGFloatArray)gradientStroke
+{
+  if (gradientStroke.array == _gradientStroke.array) {
+    return;
+  }
+  if (_strokeDash.array) {
+    free(_gradientStroke.array);
+  }
+  [self invalidate];
+  _gradientStroke = gradientStroke;
+}
+
 - (void)dealloc
 {
   CGColorRelease(_stroke);
@@ -67,7 +79,7 @@
 
 - (void)renderTo:(CGContextRef)context
 {
-  if (self.opacity <= 0 || self.opacity >= 1 || (self.fill && self.stroke)) {
+  if (self.opacity <= 0 || self.opacity >= 1 || (self.fill && self.stroke && self.gradientStroke.count)) {
     // If we have both fill and stroke, we will need to paint this using normal compositing
     [super renderTo: context];
     return;
