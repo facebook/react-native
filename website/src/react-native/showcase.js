@@ -317,7 +317,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/gb/app/sme-safety-wizard/id957810075',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.rnfdigital.safetywizard',
     infoLink: 'http://rnfdigital.com/safety-wizard-app-now-available-on-android/',
-    infoTitle: 'Safety Wizard App now available on Android',
+    infoTitle: 'React Native enables android version of safety app',
     defaultLink: 'https://itunes.apple.com/gb/app/sme-safety-wizard/id957810075',
   }
 ];
