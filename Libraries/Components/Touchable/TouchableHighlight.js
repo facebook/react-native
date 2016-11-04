@@ -93,31 +93,43 @@ var TouchableHighlight = React.createClass({
     onHideUnderlay: React.PropTypes.func,
     /**
      * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     *
+     * @platform ios
      */
     hasTVPreferredFocus: React.PropTypes.bool,
 
     /**
      * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
+     *
+     * @platform ios
      */
     tvParallaxDisable: React.PropTypes.bool,
 
     /**
      * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     *
+     * @platform ios
      */
     tvParallaxShiftDistanceX: React.PropTypes.number,
 
     /**
      * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     *
+     * @platform ios
      */
     tvParallaxShiftDistanceY: React.PropTypes.number,
 
     /**
      * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
+     *
+     * @platform ios
      */
     tvParallaxTiltAngle: React.PropTypes.number,
 
     /**
      * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
+     *
+     * @platform ios
      */
     tvParallaxMagnification: React.PropTypes.number,
 
