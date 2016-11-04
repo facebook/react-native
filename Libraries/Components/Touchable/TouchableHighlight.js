@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');

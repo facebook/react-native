@@ -72,7 +72,7 @@ function setupDevtools() {
       return;
     }
     // This is breaking encapsulation of the React package. Move plz.
-    var ReactNativeComponentTree = require('react/lib/ReactNativeComponentTree');
+    var ReactNativeComponentTree = require('ReactNativeComponentTree');
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
       ComponentTree: {
         getClosestInstanceFromNode: function (node) {
@@ -90,8 +90,8 @@ function setupDevtools() {
           }
         }
       },
-      Mount: require('react/lib/ReactNativeMount'),
-      Reconciler: require('react/lib/ReactReconciler')
+      Mount: require('ReactNativeMount'),
+      Reconciler: require('ReactReconciler')
     });
     ws.onmessage = handleMessage;
   }

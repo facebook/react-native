@@ -12,7 +12,7 @@
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');

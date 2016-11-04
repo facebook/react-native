@@ -12,7 +12,7 @@
 'use strict';
 
 var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('react/lib/ReactNativePropRegistry');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');
@@ -95,7 +95,7 @@ module.exports = {
    * on the underlying platform. However, you should not rely on it being a
    * constant size, because on different platforms and screen densities its
    * value may be calculated differently.
-   * 
+   *
    * A line with hairline width may not be visible if your simulator is downscaled.
    */
   hairlineWidth,

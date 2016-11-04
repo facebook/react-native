@@ -15,7 +15,7 @@ const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 const UnimplementedView = require('UnimplementedView');
 
-const createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const insetsDiffer = require('insetsDiffer');
 const matricesDiffer = require('matricesDiffer');
 const pointsDiffer = require('pointsDiffer');
