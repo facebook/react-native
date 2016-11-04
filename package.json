@@ -132,7 +132,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.3.1"
+    "react": "~15.4.0-rc.4"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -160,7 +160,7 @@
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
     "event-target-shim": "^1.0.5",
-    "fbjs": "^0.8.3",
+    "fbjs": "^0.8.5",
     "fbjs-scripts": "^0.7.0",
     "fs-extra": "^0.26.2",
     "glob": "^5.0.15",
@@ -209,19 +209,21 @@
     "yeoman-generator": "0.21.2"
   },
   "devDependencies": {
+    "babel-eslint": "^7.0.0",
+    "eslint": "^3.8.1",
+    "eslint-plugin-babel": "^3.3.0",
+    "eslint-plugin-flowtype": "^2.20.0",
+    "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.33.0",
     "jest": "16.0.1",
     "jest-repl": "16.0.0",
     "jest-runtime": "16.0.0",
     "mock-fs": "^3.11.0",
     "portfinder": "0.4.0",
-    "react": "~15.3.1",
+    "react": "~15.4.0-rc.4",
+    "react-dom": "~15.4.0-rc.4",
+    "react-test-renderer": "~15.4.0-rc.4",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2",
-    "babel-eslint": "^7.0.0",
-    "eslint": "^3.8.1",
-    "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-flowtype": "^2.20.0",
-    "eslint-plugin-react": "^6.4.1"
+    "sinon": "^2.0.0-pre.2"
   }
 }
