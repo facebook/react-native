@@ -175,7 +175,7 @@ class StatusBar extends React.Component {
 
   /**
    * Show or hide the status bar
-   * @param hidden The dialog's title.
+   * @param hidden Hide the status bar.
    * @param animation Optional animation when
    *    changing the status bar hidden property.
    */
