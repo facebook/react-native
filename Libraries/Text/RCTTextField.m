@@ -56,7 +56,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
   [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
   if(context.nextFocusedView == self) {
     _jsRequestingFirstResponder = YES;

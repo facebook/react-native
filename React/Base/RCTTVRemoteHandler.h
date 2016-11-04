@@ -9,15 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTFrameUpdate.h"
-
 @class RCTBridge;
 
 @interface RCTTVRemoteHandler : NSObject
 
-@property(nonatomic, nonnull, readwrite, strong) NSArray *tvRemoteGestureRecognizers;
+@property(nonatomic, nonnull, strong) NSArray *tvRemoteGestureRecognizers;
 
-- (instancetype _Nullable)initWithBridge:(RCTBridge * _Nullable)bridge NS_DESIGNATED_INITIALIZER;
+//- (instancetype _Nullable)initWithBridge:(RCTBridge * _Nullable)bridge NS_DESIGNATED_INITIALIZER;
 - (void)cancel;
 
 @end
