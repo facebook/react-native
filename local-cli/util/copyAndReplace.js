@@ -11,8 +11,8 @@
 const fs = require('fs');
 
 function copyAndReplace(src, dest, replacements) {
-  console.log('src', src);
-  console.log('dest', dest);
+  console.log('DEBUG: copyAndReplace src', src);
+  console.log('DEBUG: copyAndReplace dest', dest);
   if (fs.lstatSync(src).isDirectory()) {
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest);
