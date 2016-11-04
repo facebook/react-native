@@ -88,8 +88,13 @@ const KeyboardAvoidingView = React.createClass({
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
+    const {bottom} = this.state;
     if (!frame || !keyboardFrame) {
       return 0;
+    }
+
+    if (bottom !== 0) {
+      return keyboardFrame.height;
     }
 
     const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
