@@ -18,11 +18,6 @@ const {EventEmitter} = require('events');
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
-interface Activity {
-  startEvent(title: string, m: mixed, opts: mixed): mixed,
-  endEvent(activity: mixed): void,
-}
-
 interface FileWatcher {
   on(event: 'all', handler: (type: string, filePath: string, rootPath: string, fstat: fs.Stats) => void): void,
 }
@@ -41,16 +36,14 @@ class Fastfs extends EventEmitter {
   _ignore: (filePath: string) => boolean;
   _roots: Array<File>;
   _fastPaths: {[filePath: string]: File};
-  _activity: mixed;
 
   constructor(
     name: string,
     roots: Array<string>,
     fileWatcher: FileWatcher,
     files: Array<string>,
-    {ignore, activity}: {
+    {ignore}: {
       ignore: (filePath: string) => boolean,
-      activity: Activity,
     },
   ) {
     super();

@@ -18,14 +18,14 @@ const Polyfill = require('./Polyfill');
 
 const path = require('path');
 
+import type Cache from './Cache';
 import type {
-  Cache,
   DepGraphHelpers,
-  FastFs,
   Extractor,
   TransformCode,
   Options as ModuleOptions,
 } from './Module';
+import type FastFs from './fastfs';
 
 class ModuleCache {
 

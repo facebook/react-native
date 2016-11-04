@@ -67,21 +67,24 @@ class Cache {
     return path.join(tmpdir, hash.digest('hex'));
   }
 
-  get(
+  get<T>(
     filepath: string,
     field: string,
-    loaderCb: (filepath: string) => Promise<mixed>,
-  ): Promise<mixed> {
+    loaderCb: (filepath: string) => Promise<T>,
+  ): Promise<T> {
     if (!isAbsolutePath(filepath)) {
       throw new Error('Use absolute paths');
     }
 
     return this.has(filepath, field)
-      ? this._data[filepath].data[field]
+      /* $FlowFixMe: this class is unsound as a whole because it uses
+       * untyped storage where in fact each "field" has a particular type.
+       * We cannot express this using Flow. */
+      ? (this._data[filepath].data[field]: Promise<T>)
       : this.set(filepath, field, loaderCb(filepath));
   }
 
-  invalidate(filepath: string, field: string) {
+  invalidate(filepath: string, field: ?string) {
     if (this.has(filepath, field)) {
       if (field == null) {
         delete this._data[filepath];
@@ -95,16 +98,16 @@ class Cache {
     return this._persistCache();
   }
 
-  has(filepath: string, field: string) {
+  has(filepath: string, field: ?string) {
     return Object.prototype.hasOwnProperty.call(this._data, filepath) &&
       (field == null || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
   }
 
-  set(
+  set<T>(
     filepath: string,
     field: string,
-    loaderPromise: Promise<mixed>,
-  ): Promise<mixed> {
+    loaderPromise: Promise<T>,
+  ): Promise<T> {
     let record = this._data[filepath];
     if (!record) {
       // $FlowFixMe: temporarily invalid record.

@@ -18,7 +18,9 @@ const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 
+import type Cache from './Cache';
 import type ModuleCache from './ModuleCache';
+import type FastFs from './fastfs';
 
 export type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
 type TransformedCode = {
@@ -37,23 +39,7 @@ export type TransformCode = (
   dependencyOffsets?: Array<number>,
   map?: string,
 }>;
-export type Cache = {
-  get<T>(
-    filePath: string,
-    key: string,
-    loadFunc: () => Promise<T>,
-  ): Promise<T>,
-  invalidate(filePath: string): void,
-};
 export type Options = {cacheTransformResults?: boolean};
-export type FastFs = {
-  readFile: (filePath: string) => Promise<string>,
-  closest: (innerFilePath: string, fileName: string) => string,
-  on: (
-    event: 'change',
-    onChange: (type: string, filePath: string, root: string) => void,
-  ) => FastFs,
-};
 export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
 
 export type ConstructorArgs = {

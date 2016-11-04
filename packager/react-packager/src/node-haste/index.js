@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const Cache = require('./Cache');
@@ -31,6 +34,12 @@ const path = require('path');
 const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
 
+import type {
+  TransformCode,
+  Options as ModuleOptions,
+  Extractor,
+} from './Module';
+
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 
 const {
@@ -41,6 +50,39 @@ const {
 } = require('../Logger');
 
 class DependencyGraph {
+
+  _opts: {
+    roots: Array<string>,
+    ignoreFilePath: (filePath: string) => boolean,
+    fileWatcher: FileWatcher,
+    assetRoots_DEPRECATED: Array<string>,
+    assetExts: Array<string>,
+    providesModuleNodeModules: mixed,
+    platforms: Set<mixed>,
+    preferNativePlatform: boolean,
+    extensions: Array<string>,
+    mocksPattern: mixed,
+    extractRequires: Extractor,
+    transformCode: TransformCode,
+    shouldThrowOnUnresolvedErrors: () => boolean,
+    enableAssetMap: boolean,
+    moduleOptions: ModuleOptions,
+    extraNodeModules: mixed,
+    useWatchman: boolean,
+    maxWorkers: number,
+    resetCache: boolean,
+  };
+  _cache: Cache;
+  _assetDependencies: mixed;
+  _helpers: DependencyGraphHelpers;
+  _fastfs: Fastfs;
+  _moduleCache: ModuleCache;
+  _hasteMap: HasteMap;
+  _deprecatedAssetMap: DeprecatedAssetMap;
+  _hasteMapError: ?Error;
+
+  _loading: ?Promise<mixed>;
+
   constructor({
     roots,
     ignoreFilePath,
@@ -64,6 +106,28 @@ class DependencyGraph {
     useWatchman,
     maxWorkers,
     resetCache,
+  }: {
+    roots: Array<string>,
+    ignoreFilePath: (filePath: string) => boolean,
+    fileWatcher: FileWatcher,
+    assetRoots_DEPRECATED: Array<string>,
+    assetExts: Array<string>,
+    providesModuleNodeModules: mixed,
+    platforms: mixed,
+    preferNativePlatform: boolean,
+    cache: Cache,
+    extensions: Array<string>,
+    mocksPattern: mixed,
+    extractRequires: Extractor,
+    transformCode: TransformCode,
+    shouldThrowOnUnresolvedErrors: () => boolean,
+    enableAssetMap: boolean,
+    assetDependencies: mixed,
+    moduleOptions: ?ModuleOptions,
+    extraNodeModules: mixed,
+    useWatchman: boolean,
+    maxWorkers: number,
+    resetCache: boolean,
   }) {
     this._opts = {
       roots,
@@ -187,6 +251,7 @@ class DependencyGraph {
           const error = new Error(
             `Failed to build DependencyGraph: ${err.message}`
           );
+          /* $FlowFixMe: monkey-patching */
           error.type = ERROR_BUILDING_DEP_GRAPH;
           error.stack = err.stack;
           throw error;
@@ -201,7 +266,7 @@ class DependencyGraph {
    * Returns a promise with the direct dependencies the module associated to
    * the given entryPath has.
    */
-  getShallowDependencies(entryPath, transformOptions) {
+  getShallowDependencies(entryPath: string, transformOptions: mixed) {
     return this._moduleCache
       .getModule(entryPath)
       .getDependencies(transformOptions);
@@ -214,7 +279,7 @@ class DependencyGraph {
   /**
    * Returns the module object for the given path.
    */
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string) {
     return this._moduleCache.getModule(entryFile);
   }
 
@@ -228,6 +293,12 @@ class DependencyGraph {
     transformOptions,
     onProgress,
     recursive = true,
+  }: {
+    entryPath: string,
+    platform: string,
+    transformOptions: mixed,
+    onProgress: () => void,
+    recursive: boolean,
   }) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);
@@ -258,11 +329,11 @@ class DependencyGraph {
     });
   }
 
-  matchFilesByPattern(pattern) {
+  matchFilesByPattern(pattern: RegExp) {
     return this.load().then(() => this._fastfs.matchFilesByPattern(pattern));
   }
 
-  _getRequestPlatform(entryPath, platform) {
+  _getRequestPlatform(entryPath: string, platform: string) {
     if (platform == null) {
       platform = getPlatformExtension(entryPath, this._opts.platforms);
     } else if (!this._opts.platforms.has(platform)) {
@@ -322,16 +393,30 @@ class DependencyGraph {
       }
       return this._loading;
     };
+    /* $FlowFixMe: there is a risk this happen before we assign that
+     * variable in the load() function. */
     this._loading = this._loading.then(resolve, resolve);
   }
 
-  createPolyfill(options) {
+  createPolyfill(options: {file: string}) {
     return this._moduleCache.createPolyfill(options);
   }
 
   getHasteMap() {
     return this._hasteMap;
   }
+
+  static Cache;
+  static Fastfs;
+  static FileWatcher;
+  static Module;
+  static Polyfill;
+  static extractRequires;
+  static getAssetDataFromName;
+  static getPlatformExtension;
+  static replacePatterns;
+  static getInverseDependencies;
+
 }
 
 Object.assign(DependencyGraph, {
@@ -348,6 +433,7 @@ Object.assign(DependencyGraph, {
 });
 
 function NotFoundError() {
+  /* $FlowFixMe: monkey-patching */
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
   var msg = util.format.apply(util, arguments);
