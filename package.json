@@ -18,6 +18,7 @@
     ],
     "timers": "fake",
     "moduleNameMapper": {
+      "^React$": "<rootDir>/Libraries/react-native/React.js",
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
@@ -30,7 +31,6 @@
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
         "react-native",
-        "react",
         "parse"
       ],
       "platforms": [
