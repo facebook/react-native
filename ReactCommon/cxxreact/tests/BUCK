@@ -37,6 +37,7 @@ if THIS_IS_FBOBJC:
     deps = [
       '//xplat/third-party/gmock:gtest',
       react_native_xplat_target('cxxreact:bridge'),
+      react_native_xplat_target('jschelpers:jschelpers'),
     ],
     visibility = [react_native_xplat_target('cxxreact/...')],
   )

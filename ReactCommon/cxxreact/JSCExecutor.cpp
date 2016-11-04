@@ -16,12 +16,18 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
+#ifdef WITH_INSPECTOR
+#include <inspector/Inspector.h>
+#endif
+
 #include "Platform.h"
 #include "SystraceSection.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
+#include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 
@@ -195,9 +201,13 @@ JSCExecutor::~JSCExecutor() {
 
 void JSCExecutor::destroy() {
   *m_isDestroyed = true;
-  m_messageQueueThread->runOnQueueSync([this] () {
+  if (m_messageQueueThread.get()) {
+    m_messageQueueThread->runOnQueueSync([this] () {
+      terminateOnJSVMThread();
+    });
+  } else {
     terminateOnJSVMThread();
-  });
+  }
 }
 
 void JSCExecutor::setContextName(const std::string& name) {
@@ -226,6 +236,10 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
+
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().registerGlobalContext("main", m_context);
+  #endif
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
@@ -280,6 +294,10 @@ void JSCExecutor::terminateOnJSVMThread() {
   }
 
   m_nativeModules.reset();
+
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().unregisterGlobalContext(m_context);
+  #endif
 
   JSGlobalContextRelease(m_context);
   m_context = nullptr;
@@ -696,15 +714,12 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
-    try {
-      loadModule(moduleId);
-    } catch (const std::exception&) {
-      throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
-    }
-  } else {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
+  if (moduleId <= 0) {
+    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
+      Value(m_context, arguments[0]).toString().str()));
   }
+
+  loadModule(moduleId);
   return JSValueMakeUndefined(m_context);
 }
 

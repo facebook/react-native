@@ -11,10 +11,11 @@
 #include <folly/json.h>
 #include <folly/Optional.h>
 
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
 #include "Executor.h"
 #include "ExecutorToken.h"
-#include "JSCHelpers.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 
 namespace facebook {

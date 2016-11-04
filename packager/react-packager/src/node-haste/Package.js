@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
@@ -12,9 +14,31 @@
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 
+import type {
+  Cache,
+  FastFs,
+} from './Module';
+
 class Package {
 
-  constructor({ file, fastfs, cache }) {
+  path: string;
+  root: string;
+  _fastfs: FastFs;
+  type: string;
+  _cache: Cache;
+
+  _reading: Promise<{
+    name: string,
+    'react-native': mixed,
+    browser: mixed,
+    main: ?string,
+  }>;
+
+  constructor({ file, fastfs, cache }: {
+    file: string,
+    fastfs: FastFs,
+    cache: Cache,
+  }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
@@ -39,6 +63,7 @@ class Package {
           main;
       }
 
+      /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
       return path.join(this.root, main);
     });
   }
@@ -59,7 +84,7 @@ class Package {
     this._cache.invalidate(this.path);
   }
 
-  redirectRequire(name) {
+  redirectRequire(name: string) {
     return this.read().then(json => {
       var replacements = getReplacements(json);
 
@@ -98,6 +123,7 @@ class Package {
       if (redirect) {
         return path.join(
           this.root,
+          /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
           redirect
         );
       }
@@ -128,10 +154,14 @@ function getReplacements(pkg) {
   }
 
   if (typeof rn === 'string') {
+    /* $FlowFixMe: It is likely unsafe to assume all packages would
+     * contain a "main" */
     rn = { [pkg.main]: rn };
   }
 
   if (typeof browser === 'string') {
+    /* $FlowFixMe: It is likely unsafe to assume all packages would
+     * contain a "main" */
     browser = { [pkg.main]: browser };
   }
 

@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const fs = require('fs');
@@ -15,8 +18,41 @@ const {EventEmitter} = require('events');
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
+interface Activity {
+  startEvent(title: string, m: mixed, opts: mixed): mixed,
+  endEvent(activity: mixed): void,
+}
+
+interface FileWatcher {
+  on(event: 'all', handler: (type: string, filePath: string, rootPath: string, fstat: fs.Stats) => void): void,
+}
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
+
 class Fastfs extends EventEmitter {
-  constructor(name, roots, fileWatcher, files, {ignore, activity}) {
+
+  _name: string;
+  _fileWatcher: FileWatcher;
+  _ignore: (filePath: string) => boolean;
+  _roots: Array<File>;
+  _fastPaths: {[filePath: string]: File};
+  _activity: mixed;
+
+  constructor(
+    name: string,
+    roots: Array<string>,
+    fileWatcher: FileWatcher,
+    files: Array<string>,
+    {ignore, activity}: {
+      ignore: (filePath: string) => boolean,
+      activity: Activity,
+    },
+  ) {
     super();
     this._name = name;
     this._fileWatcher = fileWatcher;
@@ -33,18 +69,10 @@ class Fastfs extends EventEmitter {
       return new File(root, true);
     });
     this._fastPaths = Object.create(null);
-    this._activity = activity;
 
-    let fastfsActivity;
-    if (activity) {
-      fastfsActivity = activity.startEvent(
-        'Building in-memory fs for ' + this._name,
-        null,
-        {
-          telemetric: true,
-        },
-      );
-    }
+    const buildingInMemoryFSLogEntry =
+      print(log(createActionStartEntry('Building in-memory fs for ' + this._name)));
+
     files.forEach(filePath => {
       const root = this._getRoot(filePath);
       if (root) {
@@ -59,16 +87,15 @@ class Fastfs extends EventEmitter {
         }
       }
     });
-    if (activity) {
-      activity.endEvent(fastfsActivity);
-    }
+
+    print(log(createActionEndEntry(buildingInMemoryFSLogEntry)));
 
     if (this._fileWatcher) {
       this._fileWatcher.on('all', this._processFileChange.bind(this));
     }
   }
 
-  stat(filePath) {
+  stat(filePath: string) {
     return Promise.resolve().then(() => this._getFile(filePath).stat());
   }
 
@@ -77,7 +104,10 @@ class Fastfs extends EventEmitter {
       .filter(filePath => !this._fastPaths[filePath].isDir);
   }
 
-  findFilesByExts(exts, { ignore } = {}) {
+  findFilesByExts(
+    exts: Array<string>,
+    {ignore}: {ignore: (filePath: string) => boolean} = {},
+  ) {
     return this.getAllFiles()
       .filter(filePath => (
         exts.indexOf(path.extname(filePath).substr(1)) !== -1 &&
@@ -85,11 +115,11 @@ class Fastfs extends EventEmitter {
       ));
   }
 
-  matchFilesByPattern(pattern) {
+  matchFilesByPattern(pattern: RegExp) {
     return this.getAllFiles().filter(file => file.match(pattern));
   }
 
-  readFile(filePath) {
+  readFile(filePath: string) {
     const file = this._getFile(filePath);
     if (!file) {
       throw new Error(`Unable to find file with path: ${filePath}`);
@@ -97,10 +127,11 @@ class Fastfs extends EventEmitter {
     return file.read();
   }
 
-  closest(filePath, name) {
+  closest(filePath: string, name: string) {
     for (let file = this._getFile(filePath).parent;
          file;
          file = file.parent) {
+       /* $FlowFixMe: will crash if not `isDir`, see constructor */
       if (file.children[name]) {
         return file.children[name].path;
       }
@@ -108,7 +139,7 @@ class Fastfs extends EventEmitter {
     return null;
   }
 
-  fileExists(filePath) {
+  fileExists(filePath: string) {
     let file;
     try {
       file = this._getFile(filePath);
@@ -122,7 +153,7 @@ class Fastfs extends EventEmitter {
     return file && !file.isDir;
   }
 
-  dirExists(filePath) {
+  dirExists(filePath: string) {
     let file;
     try {
       file = this._getFile(filePath);
@@ -136,12 +167,13 @@ class Fastfs extends EventEmitter {
     return file && file.isDir;
   }
 
-  matches(dir, pattern) {
+  matches(dir: string, pattern: RegExp) {
     const dirFile = this._getFile(dir);
     if (!dirFile.isDir) {
       throw new Error(`Expected file ${dirFile.path} to be a directory`);
     }
 
+    /* $FlowFixMe: will crash if not `isDir`, see constructor */
     return Object.keys(dirFile.children)
       .filter(name => name.match(pattern))
       .map(name => path.join(dirFile.path, name));
@@ -161,6 +193,7 @@ class Fastfs extends EventEmitter {
     const root = this._getRoot(filePath);
     if (!root) {
       const error = new Error(`File ${filePath} not found in any of the roots`);
+      /* $FlowFixMe: Monkey-patching Error. */
       error.type = NOT_FOUND_IN_ROOTS;
       throw error;
     }
@@ -210,7 +243,16 @@ class Fastfs extends EventEmitter {
 }
 
 class File {
-  constructor(filePath, isDir) {
+
+  path: string;
+  isDir: boolean;
+  children: ?{[filePath: string]: File};
+  parent: ?File;
+
+  _read: ?Promise<string>;
+  _stat: ?Promise<fs.Stats>;
+
+  constructor(filePath: string, isDir: boolean) {
     this.path = filePath;
     this.isDir = isDir;
     this.children = this.isDir ? Object.create(null) : null;
@@ -243,16 +285,19 @@ class File {
     return this._stat;
   }
 
-  addChild(file, fileMap) {
+  addChild(file: File, fileMap: {[filePath: string]: File}) {
     const parts = file.path.substr(this.path.length + 1).split(path.sep);
     if (parts.length === 1) {
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       this.children[parts[0]] = file;
       file.parent = this;
+    /* $FlowFixMe: will crash if not `isDir`, see constructor */
     } else if (this.children[parts[0]]) {
       this.children[parts[0]].addChild(file, fileMap);
     } else {
       const dir = new File(this.path + path.sep + parts[0], true);
       dir.parent = this;
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       this.children[parts[0]] = dir;
       fileMap[dir.path] = dir;
       dir.addChild(file, fileMap);
@@ -275,6 +320,7 @@ class File {
         return null;
       }
 
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       file = file.children[fileName];
     }
 
@@ -290,6 +336,7 @@ class File {
       throw new Error(`No parent to delete ${this.path} from`);
     }
 
+    /* $FlowFixMe: will crash if parent is not `isDir`, see constructor */
     delete this.parent.children[path.basename(this.path)];
   }
 }

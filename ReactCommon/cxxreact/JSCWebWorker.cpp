@@ -9,10 +9,11 @@
 
 #include <folly/Memory.h>
 
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 #include "MessageQueueThread.h"
 #include "Platform.h"
-#include "Value.h"
+#include "JSCUtils.h"
 
 #include <glog/logging.h>
 
@@ -122,7 +123,7 @@ JSValueRef JSCWebWorker::nativePostMessage(
   }
 
   webWorker->postMessageToOwner(msg);
-  
+
   return JSValueMakeUndefined(ctx);
 }
 

@@ -2,7 +2,7 @@
 
 #include "JSCPerfLogging.h"
 
-#include <cxxreact/JSCHelpers.h>
+#include <jschelpers/JSCHelpers.h>
 
 #include <fb/log.h>
 #include <fb/fbjni.h>

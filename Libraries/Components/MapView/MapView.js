@@ -27,7 +27,7 @@ const requireNativeComponent = require('requireNativeComponent');
 type Event = Object;
 
 /**
- * State an annotation on the map.
+ * State of an annotation on the map.
  */
 export type AnnotationDragState = $Enum<{
   /**
@@ -53,14 +53,18 @@ export type AnnotationDragState = $Enum<{
 }>;
 
 /**
- * **This component is only supported on iOS.**
+ * **IMPORTANT: This component is now DEPRECATED and will be removed
+ * in January 2017 (React Native version 0.42). This component only supports
+ * iOS.**
+ *
+ * **Please use
+ * [react-native-maps](https://github.com/airbnb/react-native-maps) by Airbnb
+ * instead of this component.** Our friends at Airbnb have done an amazing job
+ * building a cross-platform `MapView` component that is more feature
+ * complete. It is used extensively (over 9k installs / month).
  *
  * `MapView` is used to display embeddable maps and annotations using
  * `MKMapView`.
- *
- * For a cross-platform solution, check out
- * [react-native-maps](https://github.com/airbnb/react-native-maps)
- * by Airbnb.
  *
  * ```
  * import React, { Component } from 'react';
@@ -81,6 +85,19 @@ export type AnnotationDragState = $Enum<{
  */
 
 const MapView = React.createClass({
+
+  componentWillMount: function() {
+    console.warn(
+      'MapView is now deprecated and will be removed from React Native in version 0.42. ' +
+      'Please use the react-native-maps module which is more feature complete ' +
+      'and works on Android too: https://github.com/airbnb/react-native-maps\n' +
+      'It is actively maintained and used extensively.\n\n' +
+      'Once MapView is removed from React Native in v0.42, we will release the ' +
+      'code as deprecated-react-native-ios-mapview. You will be able to ' +
+      'continue using that and migrate to react-native-maps your own pace later.\n\n' +
+      'For more info, check out https://github.com/facebook/react-native/pull/10500'
+    );
+  },
 
   mixins: [NativeMethodsMixin],
 

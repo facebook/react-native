@@ -18,9 +18,23 @@
 
 #include <sys/stat.h>
 
-uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+static uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+static uint64_t const RCTBCBundleMagicNumber  = 0xFF4865726D657300;
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
+
+RCTScriptTag RCTParseMagicNumber(RCTMagicNumber magic)
+{
+  if (NSSwapLittleIntToHost(magic.first4) == RCTRAMBundleMagicNumber) {
+    return RCTScriptRAMBundle;
+  }
+
+  if (NSSwapLittleLongLongToHost(magic.first8) == RCTBCBundleMagicNumber) {
+    return RCTScriptBCBundle;
+  }
+
+  return RCTScriptString;
+}
 
 @implementation RCTLoadingProgress
 
@@ -112,7 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  uint32_t magicNumber;
+  RCTMagicNumber magicNumber = {.allBytes = 0};
   size_t readResult = fread(&magicNumber, sizeof(magicNumber), 1, bundle);
   fclose(bundle);
   if (readResult != 1) {
@@ -125,13 +139,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  magicNumber = NSSwapLittleIntToHost(magicNumber);
-  if (magicNumber != RCTRAMBundleMagicNumber) {
+  RCTScriptTag tag = RCTParseMagicNumber(magicNumber);
+  if (tag == RCTScriptString) {
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
                                userInfo:@{NSLocalizedDescriptionKey:
-                                            @"Cannot load non-RAM bundled files synchronously"}];
+                                            @"Cannot load text/javascript files synchronously"}];
     }
     return nil;
   }

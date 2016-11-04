@@ -19,7 +19,6 @@ const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const HMRBundle = require('./HMRBundle');
 const PrepackBundle = require('./PrepackBundle');
-const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
@@ -28,6 +27,13 @@ const version = require('../../../../package.json').version;
 const sizeOf = Promise.denodeify(imageSize);
 
 const noop = () => {};
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -364,16 +370,13 @@ class Bundler {
     finalizeBundle = noop,
     onProgress = noop,
   }) {
-    const findEventId = Activity.startEvent(
-      'Transforming modules',
-      {
+    const transformingFilesLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Transforming files',
         entry_point: entryFile,
         environment: dev ? 'dev' : 'prod',
-      },
-      {
-        telemetric: true,
-      },
-    );
+      })));
+
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
@@ -392,7 +395,7 @@ class Bundler {
     return Promise.resolve(resolutionResponse).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
-      Activity.endEvent(findEventId);
+      print(log(createActionEndEntry(transformingFilesLogEntry)));
       onResolutionResponse(response);
 
       // get entry file complete path (`entryFile` is relative to roots)

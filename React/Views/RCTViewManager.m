@@ -234,7 +234,7 @@ RCT_EXPORT_VIEW_PROPERTY(tvParallaxMagnification, float)
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
 {                                                                       \
   if ([view respondsToSelector:@selector(setBorder##SIDE##Width:)]) {   \
-    view.border##SIDE##Width = json ? [RCTConvert float:json] : defaultView.border##SIDE##Width; \
+    view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
   }                                                                     \
 }                                                                       \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTView)         \
