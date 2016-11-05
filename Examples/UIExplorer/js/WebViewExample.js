@@ -25,6 +25,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  Linking,
   StyleSheet,
   Text,
   TextInput,
@@ -179,6 +180,83 @@ class Button extends React.Component {
           <Text>{this.props.text}</Text>
         </View>
       </TouchableWithoutFeedback>
+    );
+  }
+}
+
+class ControlledWebView extends React.Component {
+  state = {
+    policies: [
+      {
+        // blocks navigation to login page
+        url: 'https://github.com/login.*',
+      }, {
+        // blocks any navigation to url that doesn't contain github.com
+        url: '^((?!(github.com)).)*$',
+      }
+    ],
+    showCustomLogin: false,
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.onNavigationBlocked = this.onNavigationBlocked.bind(this);
+  }
+
+  onNavigationBlocked({ nativeEvent }) {
+    const { url } = nativeEvent;
+
+    // url within the github.com domain, matched by first policy (login)
+    if (/github.com/.test(url)) {
+      this.setState({
+        showCustomLogin: true
+      });
+      return;
+    }
+
+    // url not within the github.com domain. Matches second policy
+    Linking.openURL(url);
+  }
+
+  render() {
+    const source = { uri: 'https://github.com/facebook/react-native'};
+    const { showCustomLogin, policies } = this.state;
+
+    return (
+      <View style={styles.container}>
+        {
+          showCustomLogin ?
+          this.customLoginRender() :
+          <WebView style={{
+            backgroundColor: BGWASH,
+            height: 200,
+          }}
+            source={source}
+            navigationBlockingPolicies={policies}
+            onNavigationBlocked={this.onNavigationBlocked}
+          />
+        }
+      </View>
+    );
+  }
+
+  customLoginRender() {
+    return (
+      <View style={{
+        backgroundColor: BGWASH,
+        height: 200,
+      }}>
+        <Text>Navigation to Login blocked</Text>
+        <View style={styles.buttons}>
+          <Button
+            text="Click to go back"
+            onPress={() => this.setState({
+              showCustomLogin: false
+            })}
+          />
+        </View>
+      </View>
     );
   }
 }
@@ -442,5 +520,9 @@ exports.examples = [
   {
     title: 'Mesaging Test',
     render(): ReactElement<any> { return <MessagingTest />; }
+  },
+  {
+    title: 'Controlled Navigation',
+    render(): React.Element<any> { return <ControlledWebView/>; }
   }
 ];

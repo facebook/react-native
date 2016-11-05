@@ -195,8 +195,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
-  BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
-
   static NSDictionary<NSNumber *, NSString *> *navigationTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
