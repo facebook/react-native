@@ -53,6 +53,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopNavigationBlockedEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
 
 import org.json.JSONObject;
@@ -135,7 +136,55 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.startsWith("http://") || url.startsWith("https://") ||
             url.startsWith("file://")) {
-          return false;
+              boolean shouldBlock = false;
+
+              ReadableMap[] policies = view.getNavigationBlockingPolicies();
+              ReadableMap policy;
+              boolean policyFulfilled = false;
+
+              if (policies != null) {
+                  WritableMap currentValues = createWebViewEvent(webView, url);
+                  currentValues.putString("currentURL", webView.getUrl());
+
+                  for (int i = 0; i < policies.length; i++) {
+                      policy = policies[i];
+                      ReadableMapKeySetIterator it = policy.keySetIterator();
+                      String policyKey;
+
+                      // has at least one rule
+                      if (it != null && it.hasNextKey()) {
+                          policyFulfilled = true;
+
+                          // loop until there are no more rules or one has been rejected already
+                          while (it.hasNextKey() && policyFulfilled) {
+                              policyKey = it.nextKey();
+
+                              if (!currentValues.hasKey(policyKey)) {
+                                  policyFulfilled = false;
+                                  continue;
+                              }
+
+                              policyFulfilled = currentValues.getString(policyKey)
+                                      .matches(policy.getString(policyKey));
+                          }
+                      }
+
+                      if (policyFulfilled) {
+                          shouldBlock = !shouldBlock;
+                          break;
+                      }
+                  }
+              }
+
+              if (shouldBlock) {
+                  dispatchEvent(
+                          webView,
+                          new TopNavigationBlockedEvent(
+                                  webView.getId(),
+                                  createWebViewEvent(webView, url)));
+              }
+
+              return shouldBlock;
         } else {
           try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -209,7 +258,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private @Nullable ReadableMap[] navigationBlockingPolicies;
     private boolean messagingEnabled = false;
+
 
     private class ReactWebViewBridge {
       ReactWebView mContext;
@@ -302,6 +353,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void onMessage(String message) {
       dispatchEvent(this, new TopMessageEvent(this.getId(), message));
+    }
+
+    public ReadableMap[] getNavigationBlockingPolicies() {
+        return navigationBlockingPolicies;
+    }
+
+    public void setNavigationBlockingPolicies(@Nullable ReadableArray policies) {
+        if (policies == null || policies.size() == 0) {
+            navigationBlockingPolicies = null;
+            return;
+        }
+
+        navigationBlockingPolicies = new ReadableMap[policies.size()];
+
+        for (int i = 0; i < policies.size(); i++) {
+            navigationBlockingPolicies[i] = policies.getMap(i);
+        }
     }
 
     private void cleanupCallbacksAndDestroy() {
@@ -462,6 +530,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     } else {
       view.setPictureListener(null);
     }
+  }
+
+  @ReactProp(name = "navigationBlockingPolicies")
+  public void setNavigationBlockingPolicies(WebView view, @Nullable ReadableArray policies) {
+      view.setNavigationBlockingPolicies(policies);
   }
 
   @Override
