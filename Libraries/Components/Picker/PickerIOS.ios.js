@@ -62,6 +62,8 @@ var PickerIOS = React.createClass({
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );
