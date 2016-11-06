@@ -10,26 +10,35 @@
  */
 'use strict';
 
-const walk = require('walk');
+const copyAndReplace = require('../util/copyAndReplace');
+const path = require('path');
+const walk = require('../util/walk');
 
 /**
  * Util for creating a new React Native project.
  * Copy the project from a template and use the correct project name in
  * all files.
- * @param srcPath e.g. 'templates/HelloWorld'
- * @param destPath e.g. '/Users/me/apps'
+ * @param srcPath e.g. '/Users/martin/AwesomeApp/node_modules/react-native/local-cli/templates/HelloWorld'
+ * @param destPath e.g. '/Users/martin/AwesomeApp'
  * @param newProjectName e.g. 'AwesomeApp'
  */
-function copyProjectTemplateAndReplace(
-	srcPath: string,
-	destPath: string,
-	newProjectName: string) {
-  walk(source).forEach(fileName => {
-    const newFileName = fileName.replace(/HelloWorld/g, newProjectName);
+function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName) {
+  if (!srcPath) throw new Error('Need a path to copy from');
+  if (!destPath) throw new Error('Need a path to copy to');
+  if (!newProjectName) throw new Error('Need a project name');
+
+  walk(srcPath).forEach(absoluteFilePath => {
+    const relativeFilePath = path.relative(srcPath, absoluteFilePath);
+    const relativeRenamedPath = relativeFilePath
+      .replace(/HelloWorld/g, newProjectName)
+      .replace(/helloworld/g, newProjectName.toLowerCase());
     copyAndReplace(
-      path.resolve(sourcePath, fileName),
-      path.resolve(destPath, newFileName),
-      {'HelloWorld': newProjectName}
+      absoluteFilePath,
+      path.resolve(destPath, relativeRenamedPath),
+      {
+        'HelloWorld': newProjectName,
+        'helloworld': newProjectName.toLowerCase(),
+      }
     );
   });
 }

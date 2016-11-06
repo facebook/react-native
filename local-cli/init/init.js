@@ -9,17 +9,18 @@
 'use strict';
 
 const copyProjectTemplateAndReplace = require('../generator/copyProjectTemplateAndReplace');
-var execSync = require('child_process').execSync;
-var fs = require('fs');
+const execSync = require('child_process').execSync;
+const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
-var semver = require('semver');
+const process = require('process');
+const semver = require('semver');
 
 /** 
  * Use Yarn if available, it's much faster than the npm client.
  * Return the version of yarn installed on the system, null if yarn is not available.
  */
-function getYarnVersionIfAvailable(): ?string {
+function getYarnVersionIfAvailable() {
   let yarnVersion;
   try {
     // execSync returns a Buffer -> convert to string
@@ -54,15 +55,11 @@ function getYarnVersionIfAvailable(): ?string {
 function init(projectDir, argsOrName) {
   console.log('Setting up new React Native app in ' + projectDir);
 
-  // argsOrName is:
-  // ['node', 'react-native', 'init', 'AwesomeApp', '--verbose']
-  // or:
-  // 'AwesomeApp'
   const args = Array.isArray(argsOrName)
-    ? argsOrName
-    : [argsOrName].concat(process.argv.slice(4));
+    ? argsOrName // ['AwesomeApp', '--verbose']
+    : [argsOrName].concat(process.argv.slice(4)); // 'AwesomeApp'
 
-  // args is be ['AwesomeApp', '--verbose']
+  // args is ['AwesomeApp', '--verbose']
   if (!args || args.lentgh == 0) {
     console.error('react-native init requires a project name.');
     return;
@@ -74,25 +71,13 @@ function init(projectDir, argsOrName) {
   generateProject(projectDir, newProjectName, options);
 }
 
-// Why this?
-// configuring: function() {
-//   utils.copyAndReplace(
-//     this.templatePath('../../../.flowconfig'),
-//     this.destinationPath('.flowconfig'),
-//     {
-//       'Libraries\/react-native\/react-native-interface.js' : 'node_modules/react-native/Libraries/react-native/react-native-interface.js',
-//       '^flow/$' : 'node_modules/react-native/flow\nflow/'
-//     }
-//   );
-// },
-
 /**
  * Generates a new React Native project based on the template.
  * @param Absolute path at which the project folder should be created.
  * @param options Command line arguments parsed by minimist.
  */
-function generateProject(destinationRoot: string, newProjectName: string, options: Object) {
-  var reactNativePackageJson = require('../package.json');
+function generateProject(destinationRoot, newProjectName, options) {
+  var reactNativePackageJson = require('../../package.json');
   var { peerDependencies } = reactNativePackageJson;
   if (!peerDependencies) {
     console.error('Missing React peer dependency in React Native\'s package.json. Aborting.');
@@ -107,7 +92,10 @@ function generateProject(destinationRoot: string, newProjectName: string, option
 
   const yarnVersion = (!options['npm']) && getYarnVersionIfAvailable();
 
-  copyProjectTemplateAndReplace('../templates/HelloWorld', destinationRoot, newProjectName);
+  copyProjectTemplateAndReplace(
+    path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
+    destinationRoot,
+    newProjectName);
 
   console.log('Installing React...');
   if (yarnVersion) {
@@ -132,7 +120,7 @@ function generateProject(destinationRoot: string, newProjectName: string, option
 /**
  * Add Jest-related stuff to package.json, which was created by the react-native-cli.
  */
-function addJestToPackageJson(destinationRoot: string) {
+function addJestToPackageJson(destinationRoot) {
   var packageJSONPath = path.join(destinationRoot, 'package.json');
   var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
 
