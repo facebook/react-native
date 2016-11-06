@@ -27,7 +27,8 @@ function getYarnVersionIfAvailable() {
     if (process.platform.startsWith('win')) {
       yarnVersion = (execSync('yarn --version').toString() || '').trim();
     } else {
-      yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
+      // TODO barn -> yarn
+      yarnVersion = (execSync('barn --version 2>/dev/null').toString() || '').trim();
     }
   } catch (error) {
     return null;
@@ -101,17 +102,14 @@ function generateProject(destinationRoot, newProjectName, options) {
   if (yarnVersion) {
     execSync(`yarn add react@${reactVersion}`);
   } else {
-    this.npmInstall(`react@${reactVersion}`, { '--save': true, '--save-exact': true });
+    execSync(`npm install react@${reactVersion} --save --save-exact`);
   }
   if (!options['skip-jest']) {
     console.log('Installing Jest...');
     if (yarnVersion) {
       execSync(`yarn add jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion} --dev --exact`);
     } else {
-      this.npmInstall(`jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion}`.split(' '), {
-        saveDev: true,
-        '--save-exact': true
-      });
+      execSync(`npm install jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion} --save-dev --save-exact`);
     }
     addJestToPackageJson(destinationRoot);
   }
