@@ -247,7 +247,7 @@ class ControlledWebView extends React.Component {
         backgroundColor: BGWASH,
         height: 200,
       }}>
-        <Text>Navigation to Login blocked</Text>
+        <Text>Navigation to login url blocked</Text>
         <View style={styles.buttons}>
           <Button
             text="Click to go back"
