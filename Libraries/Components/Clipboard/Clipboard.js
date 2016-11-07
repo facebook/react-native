@@ -10,13 +10,21 @@
  * @flow
  */
 'use strict';
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTClipboard = require('NativeModules').Clipboard;
 
-const Clipboard = require('NativeModules').Clipboard;
+type ClipboardEventName = "clipboardChanged";
 
 /**
- * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
+ * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android.
+ * You can subscribe to `clipboardChanged`, and `Clipboard` will tell you when the content has changed.
  */
-module.exports = {
+class Clipboard extends NativeEventEmitter {
+
+  constructor() {
+    super(RCTClipboard);
+  }
+
   /**
    * Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
    * ```javascript
@@ -25,9 +33,10 @@ module.exports = {
    * }
    * ```
    */
-  getString(): Promise<string> {
-    return Clipboard.getString();
-  },
+  getString(): Promise<String>{
+    return RCTClipboard.getString();
+  }
+
   /**
    * Set content of string type. You can use following code to set clipboard content
    * ```javascript
@@ -37,7 +46,9 @@ module.exports = {
    * ```
    * @param the content to be stored in the clipboard.
    */
-  setString(content: string) {
-    Clipboard.setString(content);
+  setString(content: string){
+    RCTClipboard.setString(content);
   }
-};
+}
+
+module.exports = new Clipboard();

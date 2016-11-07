@@ -8,7 +8,8 @@
  */
 
 #import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
 
-@interface RCTClipboard : NSObject <RCTBridgeModule>
+@interface RCTClipboard : RCTEventEmitter <RCTBridgeModule>
 
 @end
