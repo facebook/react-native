@@ -112,7 +112,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
   }
 
-  @ReactProp(name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
