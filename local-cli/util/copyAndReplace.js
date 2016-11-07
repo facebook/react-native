@@ -10,19 +10,22 @@
 
 const fs = require('fs');
 
-function copyAndReplace(src, dest, replacements) {
-  if (fs.lstatSync(src).isDirectory()) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest);
+function copyAndReplace(srcPath, destPath, replacements) {
+  if (fs.lstatSync(srcPath).isDirectory()) {
+    if (!fs.existsSync(destPath)) {
+      fs.mkdirSync(destPath);
     }
   } else {
-    let content = fs.readFileSync(src, 'utf8');
+    let content = fs.readFileSync(srcPath, 'utf8');
+    let srcPermissions = fs.statSync(srcPath).mode;
     Object.keys(replacements).forEach(regex =>
       content = content.replace(new RegExp(regex, 'g'), replacements[regex])
     );
-    fs.writeFileSync(dest, content);
+    fs.writeFileSync(destPath, content, {
+      encoding: 'utf8',
+      mode: srcPermissions,
+    });
   }
 }
 
 module.exports = copyAndReplace;
-
