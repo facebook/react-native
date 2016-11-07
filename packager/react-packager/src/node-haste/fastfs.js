@@ -5,22 +5,47 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
-const denodeify = require('denodeify');
+const fs = require('fs');
+const path = require('path');
+
 const {EventEmitter} = require('events');
-
-const fs = require('graceful-fs');
-const path = require('./fastpath');
-
-const readFile = denodeify(fs.readFile);
-const stat = denodeify(fs.stat);
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
+interface FileWatcher {
+  on(event: 'all', handler: (type: string, filePath: string, rootPath: string, fstat: fs.Stats) => void): void,
+}
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
+
 class Fastfs extends EventEmitter {
-  constructor(name, roots, fileWatcher, {ignore, crawling, activity}) {
+
+  _name: string;
+  _fileWatcher: FileWatcher;
+  _ignore: (filePath: string) => boolean;
+  _roots: Array<File>;
+  _fastPaths: {[filePath: string]: File};
+
+  constructor(
+    name: string,
+    roots: Array<string>,
+    fileWatcher: FileWatcher,
+    files: Array<string>,
+    {ignore}: {
+      ignore: (filePath: string) => boolean,
+    },
+  ) {
     super();
     this._name = name;
     this._fileWatcher = fileWatcher;
@@ -37,42 +62,33 @@ class Fastfs extends EventEmitter {
       return new File(root, true);
     });
     this._fastPaths = Object.create(null);
-    this._crawling = crawling;
-    this._activity = activity;
-  }
 
-  build() {
-    return this._crawling.then(files => {
-      let fastfsActivity;
-      const activity = this._activity;
-      if (activity) {
-        fastfsActivity = activity.startEvent('Building in-memory fs for ' + this._name);
-      }
-      files.forEach(filePath => {
-        const root = this._getRoot(filePath);
-        if (root) {
-          const newFile = new File(filePath, false);
-          const dirname = filePath.substr(0, filePath.lastIndexOf(path.sep));
-          const parent = this._fastPaths[dirname];
-          this._fastPaths[filePath] = newFile;
-          if (parent) {
-            parent.addChild(newFile, this._fastPaths);
-          } else {
-            root.addChild(newFile, this._fastPaths);
-          }
+    const buildingInMemoryFSLogEntry =
+      print(log(createActionStartEntry('Building in-memory fs for ' + this._name)));
+
+    files.forEach(filePath => {
+      const root = this._getRoot(filePath);
+      if (root) {
+        const newFile = new File(filePath, false);
+        const dirname = filePath.substr(0, filePath.lastIndexOf(path.sep));
+        const parent = this._fastPaths[dirname];
+        this._fastPaths[filePath] = newFile;
+        if (parent) {
+          parent.addChild(newFile, this._fastPaths);
+        } else {
+          root.addChild(newFile, this._fastPaths);
         }
-      });
-      if (activity) {
-        activity.endEvent(fastfsActivity);
-      }
-
-      if (this._fileWatcher) {
-        this._fileWatcher.on('all', this._processFileChange.bind(this));
       }
     });
+
+    print(log(createActionEndEntry(buildingInMemoryFSLogEntry)));
+
+    if (this._fileWatcher) {
+      this._fileWatcher.on('all', this._processFileChange.bind(this));
+    }
   }
 
-  stat(filePath) {
+  stat(filePath: string) {
     return Promise.resolve().then(() => this._getFile(filePath).stat());
   }
 
@@ -81,7 +97,10 @@ class Fastfs extends EventEmitter {
       .filter(filePath => !this._fastPaths[filePath].isDir);
   }
 
-  findFilesByExts(exts, { ignore } = {}) {
+  findFilesByExts(
+    exts: Array<string>,
+    {ignore}: {ignore: (filePath: string) => boolean} = {},
+  ) {
     return this.getAllFiles()
       .filter(filePath => (
         exts.indexOf(path.extname(filePath).substr(1)) !== -1 &&
@@ -89,11 +108,11 @@ class Fastfs extends EventEmitter {
       ));
   }
 
-  matchFilesByPattern(pattern) {
+  matchFilesByPattern(pattern: RegExp) {
     return this.getAllFiles().filter(file => file.match(pattern));
   }
 
-  readFile(filePath) {
+  readFile(filePath: string) {
     const file = this._getFile(filePath);
     if (!file) {
       throw new Error(`Unable to find file with path: ${filePath}`);
@@ -101,18 +120,11 @@ class Fastfs extends EventEmitter {
     return file.read();
   }
 
-  readWhile(filePath, predicate) {
-    const file = this._getFile(filePath);
-    if (!file) {
-      throw new Error(`Unable to find file with path: ${filePath}`);
-    }
-    return file.readWhile(predicate);
-  }
-
-  closest(filePath, name) {
+  closest(filePath: string, name: string) {
     for (let file = this._getFile(filePath).parent;
          file;
          file = file.parent) {
+       /* $FlowFixMe: will crash if not `isDir`, see constructor */
       if (file.children[name]) {
         return file.children[name].path;
       }
@@ -120,7 +132,7 @@ class Fastfs extends EventEmitter {
     return null;
   }
 
-  fileExists(filePath) {
+  fileExists(filePath: string) {
     let file;
     try {
       file = this._getFile(filePath);
@@ -134,7 +146,7 @@ class Fastfs extends EventEmitter {
     return file && !file.isDir;
   }
 
-  dirExists(filePath) {
+  dirExists(filePath: string) {
     let file;
     try {
       file = this._getFile(filePath);
@@ -148,12 +160,13 @@ class Fastfs extends EventEmitter {
     return file && file.isDir;
   }
 
-  matches(dir, pattern) {
+  matches(dir: string, pattern: RegExp) {
     const dirFile = this._getFile(dir);
     if (!dirFile.isDir) {
       throw new Error(`Expected file ${dirFile.path} to be a directory`);
     }
 
+    /* $FlowFixMe: will crash if not `isDir`, see constructor */
     return Object.keys(dirFile.children)
       .filter(name => name.match(pattern))
       .map(name => path.join(dirFile.path, name));
@@ -173,6 +186,7 @@ class Fastfs extends EventEmitter {
     const root = this._getRoot(filePath);
     if (!root) {
       const error = new Error(`File ${filePath} not found in any of the roots`);
+      /* $FlowFixMe: Monkey-patching Error. */
       error.type = NOT_FOUND_IN_ROOTS;
       throw error;
     }
@@ -222,7 +236,16 @@ class Fastfs extends EventEmitter {
 }
 
 class File {
-  constructor(filePath, isDir) {
+
+  path: string;
+  isDir: boolean;
+  children: ?{[filePath: string]: File};
+  parent: ?File;
+
+  _read: ?Promise<string>;
+  _stat: ?Promise<fs.Stats>;
+
+  constructor(filePath: string, isDir: boolean) {
     this.path = filePath;
     this.isDir = isDir;
     this.children = this.isDir ? Object.create(null) : null;
@@ -230,38 +253,44 @@ class File {
 
   read() {
     if (!this._read) {
-      this._read = readFile(this.path, 'utf8');
+      this._read = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.readFileSync(this.path, 'utf8'));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
     return this._read;
   }
 
-  readWhile(predicate) {
-    return readWhile(this.path, predicate).then(({result, completed}) => {
-      if (completed && !this._read) {
-        this._read = Promise.resolve(result);
-      }
-      return result;
-    });
-  }
-
   stat() {
     if (!this._stat) {
-      this._stat = stat(this.path);
+      this._stat = new Promise((resolve, reject) => {
+        try {
+          resolve(fs.statSync(this.path));
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
 
     return this._stat;
   }
 
-  addChild(file, fileMap) {
+  addChild(file: File, fileMap: {[filePath: string]: File}) {
     const parts = file.path.substr(this.path.length + 1).split(path.sep);
     if (parts.length === 1) {
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       this.children[parts[0]] = file;
       file.parent = this;
+    /* $FlowFixMe: will crash if not `isDir`, see constructor */
     } else if (this.children[parts[0]]) {
       this.children[parts[0]].addChild(file, fileMap);
     } else {
       const dir = new File(this.path + path.sep + parts[0], true);
       dir.parent = this;
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       this.children[parts[0]] = dir;
       fileMap[dir.path] = dir;
       dir.addChild(file, fileMap);
@@ -284,6 +313,7 @@ class File {
         return null;
       }
 
+      /* $FlowFixMe: will crash if not `isDir`, see constructor */
       file = file.children[fileName];
     }
 
@@ -299,64 +329,13 @@ class File {
       throw new Error(`No parent to delete ${this.path} from`);
     }
 
+    /* $FlowFixMe: will crash if parent is not `isDir`, see constructor */
     delete this.parent.children[path.basename(this.path)];
   }
 }
 
-function readWhile(filePath, predicate) {
-  return new Promise((resolve, reject) => {
-    fs.open(filePath, 'r', (openError, fd) => {
-      if (openError) {
-        reject(openError);
-        return;
-      }
-
-      read(
-        fd,
-        /*global Buffer: true*/
-        new Buffer(512),
-        makeReadCallback(fd, predicate, (readError, result, completed) => {
-          if (readError) {
-            reject(readError);
-          } else {
-            resolve({result, completed});
-          }
-        })
-      );
-    });
-  });
-}
-
-function read(fd, buffer, callback) {
-  fs.read(fd, buffer, 0, buffer.length, -1, callback);
-}
-
-function close(fd, error, result, complete, callback) {
-  fs.close(fd, closeError => callback(error || closeError, result, complete));
-}
-
-function makeReadCallback(fd, predicate, callback) {
-  let result = '';
-  let index = 0;
-  return function readCallback(error, bytesRead, buffer) {
-    if (error) {
-      close(fd, error, undefined, false, callback);
-      return;
-    }
-
-    const completed = bytesRead === 0;
-    const chunk = completed ? '' : buffer.toString('utf8', 0, bytesRead);
-    result += chunk;
-    if (completed || !predicate(chunk, index++, result)) {
-      close(fd, null, result, completed, callback);
-    } else {
-      read(fd, buffer, readCallback);
-    }
-  };
-}
-
 function isDescendant(root, child) {
-  return child.startsWith(root);
+  return root === child || child.startsWith(root + path.sep);
 }
 
 module.exports = Fastfs;

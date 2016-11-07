@@ -26,23 +26,22 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  PermissionsAndroid,
   StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   View,
 } = ReactNative;
-const DialogManager = require('NativeModules').DialogManagerAndroid;
-const Permissions = require('NativeModules').AndroidPermissions;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
-exports.title = '<Permissions>';
+exports.title = 'PermissionsAndroid';
 exports.description = 'Permissions example for API 23+.';
 
 class PermissionsExample extends React.Component {
   state = {
-    permission: 'android.permission.WRITE_EXTERNAL_STORAGE',
+    permission: PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     hasPermission: 'Not Checked',
   };
 
@@ -63,7 +62,7 @@ class PermissionsExample extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <Text style={styles.text}>Permission Status: {this.state.hasPermission}</Text>
-        <TouchableWithoutFeedback onPress={this._shouldExplainPermission}>
+        <TouchableWithoutFeedback onPress={this._requestPermission}>
           <View>
             <Text style={[styles.touchable, styles.text]}>Request Permission</Text>
           </View>
@@ -78,51 +77,28 @@ class PermissionsExample extends React.Component {
     });
   };
 
-  _checkPermission = () => {
-    Permissions.checkPermission(
-      this.state.permission,
-      (permission: string, result: boolean) => {
-        this.setState({
-          hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' + permission,
-        });
-      },
-      this._showError);
+  _checkPermission = async () => {
+    let result = await PermissionsAndroid.checkPermission(this.state.permission);
+    this.setState({
+      hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
+        this.state.permission,
+    });
   };
 
-  _shouldExplainPermission = () => {
-    Permissions.shouldShowRequestPermissionRationale(
+  _requestPermission = async () => {
+    let result = await PermissionsAndroid.requestPermission(
       this.state.permission,
-      (permission: string, shouldShow: boolean) => {
-        if (shouldShow) {
-          DialogManager.showAlert(
-            {
-              title: 'Permission Explanation',
-              message:
-                'The app needs the following permission ' + this.state.permission +
-                ' because of reasons. Please approve.'
-            },
-            this._showError,
-            this._requestPermission);
-        } else {
-          this._requestPermission();
-        }
+      {
+        title: 'Permission Explanation',
+        message:
+          'The app needs the following permission ' + this.state.permission +
+          ' because of reasons. Please approve.'
       },
-      this._showError);
-  };
-
-  _requestPermission = () => {
-    Permissions.requestPermission(
-      this.state.permission,
-      (permission: string, result: boolean) => {
-        this.setState({
-          hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' + permission,
-        });
-      },
-      this._showError);
-  };
-
-  _showError = () => {
-    DialogManager.showAlert({message: 'Error'}, {}, {});
+    );
+    this.setState({
+      hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
+        this.state.permission,
+    });
   };
 }
 
@@ -150,4 +126,3 @@ var styles = StyleSheet.create({
     color: '#007AFF',
   },
 });
-

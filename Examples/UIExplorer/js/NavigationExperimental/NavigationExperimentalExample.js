@@ -35,6 +35,7 @@ const View = require('View');
 const EXAMPLES = {
   'CardStack + Header + Tabs Example': require('./NavigationCardStack-NavigationHeader-Tabs-example'),
   'CardStack Example': require('./NavigationCardStack-example'),
+  'CardStack Without Gestures Example': require('./NavigationCardStack-NoGesture-example'),
   'Transitioner + Animated View Example': require('./NavigationTransitioner-AnimatedView-example'),
   'Transitioner + Animated View Pager Example': require('./NavigationTransitioner-AnimatedView-pager-example'),
 };

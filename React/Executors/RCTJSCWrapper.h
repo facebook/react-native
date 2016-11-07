@@ -11,13 +11,10 @@
 
 #import "RCTDefines.h"
 
-typedef JSStringRef (*JSValueToStringCopyFuncType)(JSContextRef, JSValueRef, JSValueRef *);
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
-typedef CFStringRef (*JSStringCopyCFStringFuncType)(CFAllocatorRef, JSStringRef);
 typedef JSStringRef (*JSStringCreateWithUTF8CStringFuncType)(const char *);
 typedef void (*JSStringReleaseFuncType)(JSStringRef);
 typedef void (*JSGlobalContextSetNameFuncType)(JSGlobalContextRef, JSStringRef);
-typedef JSGlobalContextRef (*JSContextGetGlobalContextFuncType)(JSContextRef);
 typedef void (*JSObjectSetPropertyFuncType)(JSContextRef, JSObjectRef, JSStringRef, JSValueRef, JSPropertyAttributes, JSValueRef *);
 typedef JSObjectRef (*JSContextGetGlobalObjectFuncType)(JSContextRef);
 typedef JSValueRef (*JSObjectGetPropertyFuncType)(JSContextRef, JSObjectRef, JSStringRef, JSValueRef *);
@@ -28,16 +25,20 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
-typedef void (*configureJSContextForIOSFuncType)(JSContextRef ctx, const char *cacheDir);
+typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
+
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
 
 typedef struct RCTJSCWrapper {
-  JSValueToStringCopyFuncType JSValueToStringCopy;
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
-  JSStringCopyCFStringFuncType JSStringCopyCFString;
   JSStringCreateWithUTF8CStringFuncType JSStringCreateWithUTF8CString;
   JSStringReleaseFuncType JSStringRelease;
   JSGlobalContextSetNameFuncType JSGlobalContextSetName;
-  JSContextGetGlobalContextFuncType JSContextGetGlobalContext;
   JSObjectSetPropertyFuncType JSObjectSetProperty;
   JSContextGetGlobalObjectFuncType JSContextGetGlobalObject;
   JSObjectGetPropertyFuncType JSObjectGetProperty;
@@ -48,10 +49,21 @@ typedef struct RCTJSCWrapper {
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
   JSEvaluateScriptFuncType JSEvaluateScript;
+  JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
+  const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;
-  configureJSContextForIOSFuncType configureJSContextForIOS;
 } RCTJSCWrapper;
 
 RCT_EXTERN RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC);
 RCT_EXTERN void RCTJSCWrapperRelease(RCTJSCWrapper *wrapper);
+
+/**
+ * Link time overridable initialization function to execute custom
+ * initialization code when loading custom JSC.
+ *
+ * By default it does nothing.
+ *
+ * @param handle to the dlopen'd JSC library.
+ */
+void __attribute__((visibility("hidden"))) RCTCustomJSCInit(void *handle);

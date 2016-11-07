@@ -19,8 +19,12 @@ const invariant = require('fbjs/lib/invariant');
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
 
-type EndResult = {finished: bool};
+type EndResult = {finished: boolean};
 type EndCallback = (result: EndResult) => void;
+type EventMapping = {
+  nativeEventPath: Array<string>,
+  animatedValueTag: number,
+};
 
 let nativeEventEmitter;
 
@@ -61,6 +65,14 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeValue(nodeTag, value);
   },
+  setAnimatedNodeOffset: function(nodeTag: number, offset: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.setAnimatedNodeOffset(nodeTag, offset);
+  },
+  flattenAnimatedNodeOffset: function(nodeTag: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
+  },
   connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
@@ -73,6 +85,14 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
+  addAnimatedEventToView: function(viewTag: number, eventName: string, eventMapping: EventMapping) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
+  },
+  removeAnimatedEventFromView(viewTag: number, eventName: string) {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
+  }
 };
 
 /**
@@ -135,6 +155,9 @@ function validateInterpolation(config: Object): void {
   var SUPPORTED_INTERPOLATION_PARAMS = {
     inputRange: true,
     outputRange: true,
+    extrapolate: true,
+    extrapolateRight: true,
+    extrapolateLeft: true,
   };
   for (var key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
@@ -155,6 +178,10 @@ function assertNativeAnimatedModule(): void {
   invariant(NativeAnimatedModule, 'Native animated module is not available');
 }
 
+function isNativeAnimatedAvailable(): boolean {
+  return !!NativeAnimatedModule;
+}
+
 module.exports = {
   API,
   validateProps,
@@ -164,6 +191,7 @@ module.exports = {
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
+  isNativeAnimatedAvailable,
   get nativeEventEmitter() {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);

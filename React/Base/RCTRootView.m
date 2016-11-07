@@ -40,6 +40,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 @property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
+@property (nonatomic, assign) BOOL passThroughTouches;
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
@@ -99,7 +100,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     [self showLoadingView];
   }
 
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   return self;
 }
@@ -123,6 +124,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   super.backgroundColor = backgroundColor;
   _contentView.backgroundColor = backgroundColor;
+}
+
+- (BOOL)passThroughTouches
+{
+  return _contentView.passThroughTouches;
+}
+
+- (void)setPassThroughTouches:(BOOL)passThroughTouches
+{
+  _contentView.passThroughTouches = passThroughTouches;
 }
 
 - (UIViewController *)reactViewController
@@ -236,6 +247,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"initialProps": _appProperties ?: @{},
   };
 
+  RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
   [bridge enqueueJSCall:@"AppRegistry"
                  method:@"runApplication"
                    args:@[moduleName, appParameters]
@@ -256,6 +268,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // The root view itself should never receive touches
+  UIView *hitView = [super hitTest:point withEvent:event];
+  if (self.passThroughTouches && hitView == self) {
+    return nil;
+  }
+  return hitView;
 }
 
 - (void)setAppProperties:(NSDictionary *)appProperties
@@ -379,6 +401,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (UIColor *)backgroundColor
 {
   return _backgroundColor;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // The root content view itself should never receive touches
+  UIView *hitView = [super hitTest:point withEvent:event];
+  if (_passThroughTouches && hitView == self) {
+    return nil;
+  }
+  return hitView;
 }
 
 - (void)invalidate

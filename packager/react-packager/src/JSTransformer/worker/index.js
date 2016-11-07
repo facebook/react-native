@@ -24,6 +24,14 @@ function transformCode(transform, filename, sourceCode, options, callback) {
   const params = makeTransformParams(filename, sourceCode, options.transform);
   const isJson = filename.endsWith('.json');
 
+  const transformFileStartLogEntry = {
+    action_name: 'Transforming file',
+    action_phase: 'start',
+    file_name: filename,
+    log_entry_label: 'Transforming file',
+    start_timestamp: process.hrtime(),
+  };
+
   transform(params, (error, transformed) => {
     if (error) {
       callback(error);
@@ -52,8 +60,20 @@ function transformCode(transform, filename, sourceCode, options, callback) {
       ? {dependencies: [], dependencyOffsets: []}
       : extractDependencies(code);
 
+    const timeDelta = process.hrtime(transformFileStartLogEntry.start_timestamp);
+    const duration_ms = Math.round((timeDelta[0] * 1e9 + timeDelta[1]) / 1e6);
+    const transformFileEndLogEntry = {
+      action_name: 'Transforming file',
+      action_phase: 'end',
+      file_name: filename,
+      duration_ms: duration_ms,
+      log_entry_label: 'Transforming file',
+    };
+
     result.code = code;
     result.map = map;
+    result.transformFileStartLogEntry = transformFileStartLogEntry;
+    result.transformFileEndLogEntry = transformFileEndLogEntry;
 
     callback(null, result);
   });

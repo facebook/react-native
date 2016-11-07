@@ -44,10 +44,10 @@ Take a look at the [Fetch Request docs](https://developer.mozilla.org/en-US/docs
 
 The above examples show how you can make a request. In many cases, you will want to do something with the response.
 
-Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that make it straightforward to write code that works in an asynchronous manner:
+Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that makes it straightforward to write code that works in an asynchronous manner:
 
   ```js
-  getMoviesFromApiAsync() {
+  function getMoviesFromApiAsync() {
     return fetch('https://facebook.github.io/react-native/movies.json')
       .then((response) => response.json())
       .then((responseJson) => {
@@ -62,7 +62,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
 You can also use the proposed ES2017 `async`/`await` syntax in a React Native app:
 
   ```js
-  async getMoviesFromApi() {
+  async function getMoviesFromApi() {
     try {
       let response = await fetch('https://facebook.github.io/react-native/movies.json');
       let responseJson = await response.json();

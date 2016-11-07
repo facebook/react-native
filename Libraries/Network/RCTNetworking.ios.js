@@ -52,7 +52,7 @@ class RCTNetworking extends NativeEventEmitter {
   }
 
   clearCookies(callback: (result: boolean) => any) {
-    console.warn('RCTNetworking.clearCookies is not supported on iOS');
+    RCTNetworkingNative.clearCookies(callback);
   }
 }
 

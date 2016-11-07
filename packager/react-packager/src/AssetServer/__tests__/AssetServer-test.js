@@ -11,27 +11,31 @@
 
 jest.disableAutomock();
 
-jest
-  .mock('crypto')
-  .mock('fs');
+jest.mock('fs');
 
 const Promise = require('promise');
 
-var AssetServer = require('../');
-var crypto = require('crypto');
-var fs = require('fs');
+const AssetServer = require('../');
+const crypto = require('crypto');
+const {EventEmitter} = require('events');
+const fs = require('fs');
+
+const {objectContaining} = jasmine;
 
 describe('AssetServer', () => {
+  let fileWatcher;
   beforeEach(() => {
     const NodeHaste = require('../../node-haste');
     NodeHaste.getAssetDataFromName = require.requireActual('../../node-haste/lib/getAssetDataFromName');
+    fileWatcher = new EventEmitter();
   });
 
   describe('assetServer.get', () => {
-    pit('should work for the simple case', () => {
+    it('should work for the simple case', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -53,10 +57,11 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should work for the simple case with platform ext', () => {
+    it('should work for the simple case with platform ext', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -90,10 +95,11 @@ describe('AssetServer', () => {
     });
 
 
-    pit('should work for the simple case with jpg', () => {
+    it('should work for the simple case with jpg', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpg'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -116,10 +122,11 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should pick the bigger one', () => {
+    it('should pick the bigger one', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -138,10 +145,11 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should pick the bigger one with platform ext', () => {
+    it('should pick the bigger one with platform ext', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -169,10 +177,11 @@ describe('AssetServer', () => {
       ]);
     });
 
-    pit('should support multiple project roots', () => {
+    it('should support multiple project roots', () => {
       const server = new AssetServer({
         projectRoots: ['/root', '/root2'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -197,18 +206,11 @@ describe('AssetServer', () => {
   });
 
   describe('assetServer.getAssetData', () => {
-    pit('should get assetData', () => {
-      const hash = {
-        update: jest.fn(),
-        digest: jest.fn(),
-      };
-
-      hash.digest.mockImpl(() => 'wow such hash');
-      crypto.createHash.mockImpl(() => hash);
-
+    it('should get assetData', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -223,8 +225,7 @@ describe('AssetServer', () => {
       });
 
       return server.getAssetData('imgs/b.png').then(data => {
-        expect(hash.update.mock.calls.length).toBe(4);
-        expect(data).toEqual({
+        expect(data).toEqual(objectContaining({
           type: 'png',
           name: 'b',
           scales: [1, 2, 4, 4.5],
@@ -234,23 +235,15 @@ describe('AssetServer', () => {
             '/root/imgs/b@4x.png',
             '/root/imgs/b@4.5x.png',
           ],
-          hash: 'wow such hash',
-        });
+        }));
       });
     });
 
-    pit('should get assetData for non-png images', () => {
-      const hash = {
-        update: jest.fn(),
-        digest: jest.fn(),
-      };
-
-      hash.digest.mockImpl(() => 'wow such hash');
-      crypto.createHash.mockImpl(() => hash);
-
+    it('should get assetData for non-png images', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpeg'],
+        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -265,8 +258,7 @@ describe('AssetServer', () => {
       });
 
       return server.getAssetData('imgs/b.jpg').then(data => {
-        expect(hash.update.mock.calls.length).toBe(4);
-        expect(data).toEqual({
+        expect(data).toEqual(objectContaining({
           type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
@@ -276,7 +268,51 @@ describe('AssetServer', () => {
             '/root/imgs/b@4x.jpg',
             '/root/imgs/b@4.5x.jpg',
           ],
-          hash: 'wow such hash',
+        }));
+      });
+    });
+
+    describe('hash:', () => {
+      let server, fileSystem;
+      beforeEach(() => {
+        server = new AssetServer({
+          projectRoots: ['/root'],
+          assetExts: ['jpg'],
+          fileWatcher,
+        });
+
+        fileSystem = {
+          'root': {
+            imgs: {
+              'b@1x.jpg': 'b1 image',
+              'b@2x.jpg': 'b2 image',
+              'b@4x.jpg': 'b4 image',
+              'b@4.5x.jpg': 'b4.5 image',
+            }
+          }
+        };
+
+       fs.__setMockFilesystem(fileSystem);
+      });
+
+      it('uses the file contents to build the hash', () => {
+        const hash = crypto.createHash('md5');
+        for (const name in fileSystem.root.imgs) {
+          hash.update(fileSystem.root.imgs[name]);
+        }
+
+        return server.getAssetData('imgs/b.jpg').then(data =>
+          expect(data).toEqual(objectContaining({hash: hash.digest('hex')}))
+        );
+      });
+
+      it('changes the hash when the passed-in file watcher emits an `all` event', () => {
+        return server.getAssetData('imgs/b.jpg').then(initialData => {
+          fileSystem.root.imgs['b@4x.jpg'] = 'updated data';
+          fileWatcher.emit('all', 'arbitrary', '/root', 'imgs/b@4x.jpg');
+          return server.getAssetData('imgs/b.jpg').then(data =>
+            expect(data.hash).not.toEqual(initialData.hash)
+          );
         });
       });
     });

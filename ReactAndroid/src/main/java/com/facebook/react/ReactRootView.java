@@ -15,10 +15,13 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -30,10 +33,10 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
-import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
@@ -56,7 +59,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
-  private @Nullable KeyboardListener mKeyboardListener;
+  private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable OnGenericMotionListener mOnGenericMotionListener;
   private int mRootViewTag;
   private boolean mWasMeasured = false;
@@ -77,15 +80,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-
-    if (widthMode == MeasureSpec.UNSPECIFIED || heightMode == MeasureSpec.UNSPECIFIED) {
-      throw new IllegalStateException(
-          "The root catalyst view must have a width and height given to it by it's parent view. " +
-          "You can do this by specifying MATCH_PARENT or explicit width and height in the layout.");
-    }
-
     setMeasuredDimension(
         MeasureSpec.getSize(widthMeasureSpec),
         MeasureSpec.getSize(heightMeasureSpec));
@@ -157,8 +151,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   @Override
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-    // No-op - override in order to still receive events to onInterceptTouchEvent
-    // even when some other view disallow that
+    // Override in order to still receive events to onInterceptTouchEvent even when some other
+    // views disallow that, but propagate it up the tree if possible.
+    if (getParent() != null) {
+      getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
+    }
   }
 
   @Override
@@ -170,7 +167,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     if (mIsAttachedToInstance) {
-      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
+      getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
   }
 
@@ -178,7 +175,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
+      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
   }
 
@@ -254,11 +251,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     mWasMeasured = true;
   }
 
-  private KeyboardListener getKeyboardListener() {
-    if (mKeyboardListener == null) {
-      mKeyboardListener = new KeyboardListener();
+  private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
+    if (mCustomGlobalLayoutListener == null) {
+      mCustomGlobalLayoutListener = new CustomGlobalLayoutListener();
     }
-    return mKeyboardListener;
+    return mCustomGlobalLayoutListener;
   }
 
   private void attachToReactInstanceManager() {
@@ -268,7 +265,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     mIsAttachedToInstance = true;
     Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
-    getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
+    getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
   }
 
   @Override
@@ -290,13 +287,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     mRootViewTag = rootViewTag;
   }
 
-  private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {
+  private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
     private final int mMinKeyboardHeightDetected;
 
     private int mKeyboardHeight = 0;
+    private int mDeviceRotation = 0;
 
-    /* package */ KeyboardListener() {
+    /* package */ CustomGlobalLayoutListener() {
       mVisibleViewArea = new Rect();
       mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }
@@ -304,16 +302,17 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     @Override
     public void onGlobalLayout() {
       if (mReactInstanceManager == null || !mIsAttachedToInstance ||
-          mReactInstanceManager.getCurrentReactContext() == null) {
-        FLog.w(
-            ReactConstants.TAG,
-            "Unable to dispatch keyboard events in JS as the react instance has not been attached");
+        mReactInstanceManager.getCurrentReactContext() == null) {
         return;
       }
+      checkForKeyboardEvents();
+      checkForDeviceOrientationChanges();
+    }
 
+    private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+        DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
       if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
         // keyboard is now showing, or the keyboard height has changed
         mKeyboardHeight = heightDiff;
@@ -330,6 +329,80 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         mKeyboardHeight = 0;
         sendEvent("keyboardDidHide", null);
       }
+    }
+
+    private void checkForDeviceOrientationChanges() {
+      final int rotation =
+        ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+          .getDefaultDisplay().getRotation();
+      if (mDeviceRotation == rotation) {
+        return;
+      }
+      mDeviceRotation = rotation;
+      // It's important to repopulate DisplayMetrics and export them before emitting the
+      // orientation change event, so that the Dimensions object returns the correct new values.
+      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      emitUpdateDimensionsEvent();
+      emitOrientationChanged(rotation);
+    }
+
+    private void emitOrientationChanged(final int newRotation) {
+      String name;
+      double rotationDegrees;
+      boolean isLandscape = false;
+
+      switch (newRotation) {
+        case Surface.ROTATION_0:
+          name = "portrait-primary";
+          rotationDegrees = 0.0;
+          break;
+        case Surface.ROTATION_90:
+          name = "landscape-primary";
+          rotationDegrees = -90.0;
+          isLandscape = true;
+          break;
+        case Surface.ROTATION_180:
+          name = "portrait-secondary";
+          rotationDegrees = 180.0;
+          break;
+        case Surface.ROTATION_270:
+          name = "landscape-secondary";
+          rotationDegrees = 90.0;
+          isLandscape = true;
+          break;
+        default:
+          return;
+      }
+      WritableMap map = Arguments.createMap();
+      map.putString("name", name);
+      map.putDouble("rotationDegrees", rotationDegrees);
+      map.putBoolean("isLandscape", isLandscape);
+
+      sendEvent("namedOrientationDidChange", map);
+    }
+
+    private void emitUpdateDimensionsEvent() {
+      DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+      DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+
+      WritableMap windowDisplayMetricsMap = Arguments.createMap();
+      windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
+      windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
+      windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
+      windowDisplayMetricsMap.putDouble("fontScale", windowDisplayMetrics.scaledDensity);
+      windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
+
+      WritableMap screenDisplayMetricsMap = Arguments.createMap();
+      screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
+      screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
+      screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
+      screenDisplayMetricsMap.putDouble("fontScale", screenDisplayMetrics.scaledDensity);
+      screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
+
+      WritableMap dimensionsMap = Arguments.createMap();
+      dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
+      dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
+      sendEvent("didUpdateDimensions", dimensionsMap);
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {

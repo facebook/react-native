@@ -33,11 +33,13 @@ class TreeTransformator {
         column: tree.columnNumber,
       });
       tree.functionName = original.name
-        || (path.posix.basename(original.source) + ':' + original.line);
+        || (path.posix.basename(original.source || '') + ':' + original.line);
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
       tree.columnNumber = original.column;
+    } else if (tree.deoptReason === 'outside_vm') {
+      tree.functionName = 'OUTSIDE VM';
     }
     tree.children = tree.children.map((t) => this.transformNode(t));
     return tree;
@@ -77,10 +79,11 @@ class TreeTransformator {
     }
 
     const parsedUrl = urlLib.parse(url);
+    const mapPath = parsedUrl.pathname.replace(/\.bundle$/, '.map');
     const options = {
       host: 'localhost',
       port: parsedUrl.port,
-      path: parsedUrl.pathname.replace(/\.bundle$/, '.map') + parsedUrl.search,
+      path: mapPath + parsedUrl.search + '&babelSourcemap=true',
     };
 
     http.get(options, (res) => {

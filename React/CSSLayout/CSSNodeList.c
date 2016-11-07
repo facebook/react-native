@@ -12,36 +12,51 @@
 struct CSSNodeList {
   uint32_t capacity;
   uint32_t count;
-  void **items;
+  CSSNodeRef *items;
 };
 
-CSSNodeListRef CSSNodeListNew(uint32_t initialCapacity) {
-  CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
+CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
+  const CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
   CSS_ASSERT(list != NULL, "Could not allocate memory for list");
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(void *) * list->capacity);
+  list->items = malloc(sizeof(CSSNodeRef) * list->capacity);
   CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
 }
 
-void CSSNodeListFree(CSSNodeListRef list) {
+void CSSNodeListFree(const CSSNodeListRef list) {
+  if (list) {
     free(list->items);
     free(list);
+  }
 }
 
-uint32_t CSSNodeListCount(CSSNodeListRef list) { return list->count; }
-
-void CSSNodeListAdd(CSSNodeListRef list, CSSNodeRef node) {
-  CSSNodeListInsert(list, node, list->count);
+uint32_t CSSNodeListCount(const CSSNodeListRef list) {
+  if (list) {
+    return list->count;
+  }
+  return 0;
 }
 
-void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index) {
+void CSSNodeListAdd(CSSNodeListRef *listp, const CSSNodeRef node) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListInsert(listp, node, (*listp)->count);
+}
+
+void CSSNodeListInsert(CSSNodeListRef *listp, const CSSNodeRef node, const uint32_t index) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListRef list = *listp;
+
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(void *) * list->capacity);
+    list->items = realloc(list->items, sizeof(CSSNodeRef) * list->capacity);
     CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
@@ -53,8 +68,8 @@ void CSSNodeListInsert(CSSNodeListRef list, CSSNodeRef node, uint32_t index) {
   list->items[index] = node;
 }
 
-CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, uint32_t index) {
-  CSSNodeRef removed = list->items[index];
+CSSNodeRef CSSNodeListRemove(const CSSNodeListRef list, const uint32_t index) {
+  const CSSNodeRef removed = list->items[index];
   list->items[index] = NULL;
 
   for (uint32_t i = index; i < list->count - 1; i++) {
@@ -66,7 +81,7 @@ CSSNodeRef CSSNodeListRemove(CSSNodeListRef list, uint32_t index) {
   return removed;
 }
 
-CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
+CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node) {
   for (uint32_t i = 0; i < list->count; i++) {
     if (list->items[i] == node) {
       return CSSNodeListRemove(list, i);
@@ -76,4 +91,10 @@ CSSNodeRef CSSNodeListDelete(CSSNodeListRef list, CSSNodeRef node) {
   return NULL;
 }
 
-CSSNodeRef CSSNodeListGet(CSSNodeListRef list, uint32_t index) { return list->items[index]; }
+CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index) {
+  if (CSSNodeListCount(list) > 0) {
+    return list->items[index];
+  }
+
+  return NULL;
+}

@@ -18,12 +18,14 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.Map;
 
 /**
  * {@link NativeModule} that allows JS to show an Android Toast.
  */
+@ReactModule(name = "ToastAndroid")
 public class ToastModule extends ReactContextBaseJavaModule {
 
   private static final String DURATION_SHORT_KEY = "SHORT";

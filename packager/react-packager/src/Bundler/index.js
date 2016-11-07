@@ -8,18 +8,16 @@
  */
 'use strict';
 
+const Promise = require('promise');
+
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
-const ProgressBar = require('progress');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const HMRBundle = require('./HMRBundle');
-const PrepackBundle = require('./PrepackBundle');
-const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
@@ -28,6 +26,13 @@ const version = require('../../../../package.json').version;
 const sizeOf = Promise.denodeify(imageSize);
 
 const noop = () => {};
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -85,7 +90,7 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
-  silent: {
+  allowBundleUpdates: {
     type: 'boolean',
     default: false,
   },
@@ -139,19 +144,20 @@ class Bundler {
     });
 
     this._resolver = new Resolver({
-      projectRoots: opts.projectRoots,
-      blacklistRE: opts.blacklistRE,
-      polyfillModuleNames: opts.polyfillModuleNames,
-      moduleFormat: opts.moduleFormat,
-      assetRoots: opts.assetRoots,
-      fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
+      assetRoots: opts.assetRoots,
+      blacklistRE: opts.blacklistRE,
       cache: this._cache,
+      extraNodeModules: opts.extraNodeModules,
+      fileWatcher: opts.fileWatcher,
+      minifyCode: this._transformer.minify,
+      moduleFormat: opts.moduleFormat,
+      polyfillModuleNames: opts.polyfillModuleNames,
+      projectRoots: opts.projectRoots,
+      resetCache: opts.resetCache,
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
-      extraNodeModules: opts.extraNodeModules,
-      minifyCode: this._transformer.minify,
     });
 
     this._projectRoots = opts.projectRoots;
@@ -253,6 +259,9 @@ class Bundler {
     entryModuleOnly,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
+    assetPlugins,
+    onProgress,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -280,6 +289,7 @@ class Bundler {
         bundle.finalize({
           runMainModule,
           runBeforeMainModule: runBeforeMainModuleIds,
+          allowUpdates: this._opts.allowBundleUpdates,
         });
         return bundle;
       });
@@ -296,44 +306,9 @@ class Bundler {
       onResolutionResponse,
       finalizeBundle,
       isolateModuleIDs,
-    });
-  }
-
-  prepackBundle({
-    entryFile,
-    runModule: runMainModule,
-    runBeforeMainModule,
-    sourceMapUrl,
-    dev,
-    platform,
-  }) {
-    const onModuleTransformed = ({module, transformed, response, bundle}) => {
-      const deps = Object.create(null);
-      const pairs = response.getResolvedDependencyPairs(module);
-      if (pairs) {
-        pairs.forEach(pair => {
-          deps[pair[0]] = pair[1].path;
-        });
-      }
-
-      return module.getName().then(name => {
-        bundle.addModule(name, transformed, deps, module.isPolyfill());
-      });
-    };
-    const finalizeBundle = ({bundle, response}) => {
-      const {mainModuleId} = response;
-      bundle.finalize({runBeforeMainModule, runMainModule, mainModuleId});
-      return bundle;
-    };
-
-    return this._buildBundle({
-      entryFile,
-      dev,
-      platform,
-      onModuleTransformed,
-      finalizeBundle,
-      minify: false,
-      bundle: new PrepackBundle(sourceMapUrl),
+      generateSourceMaps,
+      assetPlugins,
+      onProgress,
     });
   }
 
@@ -347,25 +322,23 @@ class Bundler {
     unbundle,
     resolutionResponse,
     isolateModuleIDs,
+    generateSourceMaps,
+    assetPlugins,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
+    onProgress = noop,
   }) {
-    const findEventId = Activity.startEvent('find dependencies');
+    const transformingFilesLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Transforming files',
+        entry_point: entryFile,
+        environment: dev ? 'dev' : 'prod',
+      })));
+
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgress = noop;
-      if (process.stdout.isTTY && !this._opts.silent) {
-        const bar = new ProgressBar('transformed :current/:total (:percent)', {
-          complete: '=',
-          incomplete: ' ',
-          width: 40,
-          total: 1,
-        });
-        onProgress = debouncedTick(bar);
-      }
-
       resolutionResponse = this.getDependencies({
         entryFile,
         dev,
@@ -374,12 +347,14 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle,
+        generateSourceMaps: unbundle || generateSourceMaps,
       });
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
-      Activity.endEvent(findEventId);
+      bundle.setRamGroups(response.transformOptions.transform.ramGroups);
+
+      print(log(createActionEndEntry(transformingFilesLogEntry)));
       onResolutionResponse(response);
 
       // get entry file complete path (`entryFile` is relative to roots)
@@ -400,8 +375,10 @@ class Bundler {
           module,
           bundle,
           entryFilePath,
+          assetPlugins,
           transformOptions: response.transformOptions,
           getModuleId: response.getModuleId,
+          dependencyPairs: response.getResolvedDependencyPairs(module),
         }).then(transformed => {
           modulesByName[transformed.name] = module;
           onModuleTransformed({
@@ -533,7 +510,15 @@ class Bundler {
     );
   }
 
-  _toModuleTransport({module, bundle, entryFilePath, transformOptions, getModuleId}) {
+  _toModuleTransport({
+    module,
+    bundle,
+    entryFilePath,
+    transformOptions,
+    getModuleId,
+    dependencyPairs,
+    assetPlugins,
+  }) {
     let moduleTransport;
     const moduleId = getModuleId(module);
 
@@ -542,7 +527,7 @@ class Bundler {
         this._generateAssetModule_DEPRECATED(bundle, module, moduleId);
     } else if (module.isAsset()) {
       moduleTransport = this._generateAssetModule(
-        bundle, module, moduleId, transformOptions.platform);
+        bundle, module, moduleId, assetPlugins, transformOptions.platform);
     }
 
     if (moduleTransport) {
@@ -566,7 +551,7 @@ class Bundler {
         id: moduleId,
         code,
         map,
-        meta: {dependencies, dependencyOffsets, preloaded},
+        meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
         sourcePath: module.path
       });
@@ -605,7 +590,7 @@ class Bundler {
     });
   }
 
-  _generateAssetObjAndCode(module, platform = null) {
+  _generateAssetObjAndCode(module, assetPlugins, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
 
@@ -623,7 +608,7 @@ class Bundler {
     return Promise.all([
       isImage ? sizeOf(module.path) : null,
       this._assetServer.getAssetData(relPath, platform),
-    ]).then(function(res) {
+    ]).then((res) => {
       const dimensions = res[0];
       const assetData = res[1];
       const asset = {
@@ -639,6 +624,8 @@ class Bundler {
         type: assetData.type,
       };
 
+      return this._applyAssetPlugins(assetPlugins, asset);
+    }).then((asset) => {
       const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
@@ -654,11 +641,30 @@ class Bundler {
     });
   }
 
+  _applyAssetPlugins(assetPlugins, asset) {
+    if (!assetPlugins.length) {
+      return asset;
+    }
 
-  _generateAssetModule(bundle, module, moduleId, platform = null) {
+    let [currentAssetPlugin, ...remainingAssetPlugins] = assetPlugins;
+    let assetPluginFunction = require(currentAssetPlugin);
+    let result = assetPluginFunction(asset);
+
+    // If the plugin was an async function, wait for it to fulfill before
+    // applying the remaining plugins
+    if (typeof result.then === 'function') {
+      return result.then(resultAsset =>
+        this._applyAssetPlugins(remainingAssetPlugins, resultAsset)
+      );
+    } else {
+      return this._applyAssetPlugins(remainingAssetPlugins, result);
+    }
+  }
+
+  _generateAssetModule(bundle, module, moduleId, assetPlugins = [], platform = null) {
     return Promise.all([
       module.getName(),
-      this._generateAssetObjAndCode(module, platform),
+      this._generateAssetObjAndCode(module, assetPlugins, platform),
     ]).then(([name, {asset, code, meta}]) => {
       bundle.addAsset(asset);
       return new ModuleTransport({
@@ -679,6 +685,10 @@ class Bundler {
       : null;
     return Promise.resolve(extraOptions)
       .then(extraOptions => Object.assign(options, extraOptions));
+  }
+
+  getResolver() {
+    return this._resolver;
   }
 }
 
@@ -714,25 +724,6 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 function filterObject(object, blacklist) {

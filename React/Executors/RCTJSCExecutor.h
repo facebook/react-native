@@ -28,6 +28,23 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
+ * A key to a reference to a JSContext class, held in the the current thread's
+ *  dictionary. The reference would point to the JSContext class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSCurrentContext()`
+ *  accessor, which will return the current JSContext in the currently used VM.
+ */
+RCT_EXTERN NSString *const RCTFBJSContextClassKey;
+
+/**
+ * A key to a reference to a JSValue class, held in the the current thread's
+ *  dictionary. The reference would point to the JSValue class in the JS VM
+ *  used in React (or ComponenetScript). It is recommended not to access it
+ *  through the thread's dictionary, but rather to use the `FBJSValue()` accessor.
+ */
+RCT_EXTERN NSString *const RCTFBJSValueClassKey;
+
+/**
  * @experimental
  * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
  * Avoid using this; it's experimental and is not likely to be supported long-term.
@@ -35,6 +52,11 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 @interface RCTJSContextProvider : NSObject
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+/**
+ * Marks whether the provider uses the custom implementation of JSC and not the system one.
+ */
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 @end
 
@@ -51,31 +73,35 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
+ * Specify a name for the JSContext used, which will be visible in debugging tools
+ * @default is "RCTJSContext"
+ */
+@property (nonatomic, copy) NSString *contextName;
+
+/**
  * Inits a new executor instance with given flag that's used
  * to initialize RCTJSCWrapper.
  */
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
- * Create a NSError from a JSError object.
- *
- * If available, the error's userInfo property will contain the JS stacktrace under
- * the RCTJSStackTraceKey key.
+ * @experimental
+ * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL.
  */
-- (NSError *)errorForJSError:(JSValue *)jsError;
++ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
+                                             JSContext:(JSContext **)JSContext;
 
 /**
  * @experimental
- * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
- * The returned executor has already executed the supplied application script synchronously.
- * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
- * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
+ * synchronouslyExecuteApplicationScript:sourceURL:JSContext:error:
+ *
+ * Run the provided JS Script/Bundle, blocking the caller until it finishes.
+ * If there is an error during execution, it is returned, otherwise `NULL` is
+ * returned.
  */
-+ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                     applicationScript:(NSData *)applicationScript
-                                             sourceURL:(NSURL *)sourceURL
-                                             JSContext:(JSContext **)JSContext
-                                                 error:(NSError **)error;
+- (NSError *)synchronouslyExecuteApplicationScript:(NSData *)script
+                                         sourceURL:(NSURL *)sourceURL;
 
 /**
  * Invokes the given module/method directly. The completion block will be called with the
@@ -87,5 +113,10 @@ RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
                       method:(NSString *)method
                    arguments:(NSArray *)args
              jsValueCallback:(RCTJavaScriptValueCallback)onComplete;
+
+/**
+ * Get the JavaScriptCore context associated with this executor instance.
+ */
+- (JSContext *)jsContext;
 
 @end

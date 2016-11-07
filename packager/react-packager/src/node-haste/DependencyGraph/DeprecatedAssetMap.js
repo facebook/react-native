@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -9,69 +9,22 @@
 'use strict';
 
 const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
-const Fastfs = require('../fastfs');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
-const path = require('../fastpath');
+const path = require('path');
 
 class DeprecatedAssetMap {
   constructor({
-    fsCrawl,
-    roots,
     assetExts,
-    fileWatcher,
-    ignoreFilePath,
     helpers,
-    activity,
-    enabled,
     platforms,
+    files,
   }) {
-    if (roots == null || roots.length === 0 || !enabled) {
-      this._disabled = true;
-      return;
-    }
-
     this._helpers = helpers;
     this._map = Object.create(null);
     this._assetExts = assetExts;
-    this._activity = activity;
     this._platforms = platforms;
 
-    if (!this._disabled) {
-      this._fastfs = new Fastfs(
-        'Assets',
-        roots,
-        fileWatcher,
-        { ignore: ignoreFilePath, crawling: fsCrawl, activity }
-      );
-
-      this._fastfs.on('change', this._processFileChange.bind(this));
-    }
-  }
-
-  build() {
-    if (this._disabled) {
-      return Promise.resolve();
-    }
-
-    return this._fastfs.build().then(
-      () => {
-        const activity = this._activity;
-        let processAsset_DEPRECATEDActivity;
-        if (activity) {
-          processAsset_DEPRECATEDActivity = activity.startEvent(
-            'Building (deprecated) Asset Map',
-          );
-        }
-
-        this._fastfs.findFilesByExts(this._assetExts).forEach(
-          file => this._processAsset(file)
-        );
-
-        if (activity) {
-          activity.endEvent(processAsset_DEPRECATEDActivity);
-        }
-      }
-    );
+    files.forEach(file => this._processAsset(file));
   }
 
   resolve(fromModule, toModuleName) {
@@ -101,7 +54,7 @@ class DeprecatedAssetMap {
     }
   }
 
-  _processFileChange(type, filePath, root, fstat) {
+  processFileChange(type, filePath, root, fstat) {
     const name = assetName(filePath);
     if (type === 'change' || type === 'delete') {
       delete this._map[name];

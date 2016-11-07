@@ -3,6 +3,8 @@
 #include "CxxNativeModule.h"
 #include "Instance.h"
 
+#include <iterator>
+
 #include <folly/json.h>
 
 #include <cxxreact/JsArgumentHelpers.h>
@@ -26,6 +28,24 @@ std::function<void(folly::dynamic)> makeCallback(
   };
 }
 
+namespace {
+
+/**
+ * CxxModule::Callback accepts a vector<dynamic>, makeCallback returns
+ * a callback that accepts a dynamic, adapt the second into the first.
+ * TODO: Callback types should be made equal (preferably
+ * function<void(dynamic)>) to avoid the extra copy and indirect call.
+ */
+CxxModule::Callback convertCallback(
+    std::function<void(folly::dynamic)> callback) {
+  return [callback = std::move(callback)](std::vector<folly::dynamic> args) {
+    callback(folly::dynamic(std::make_move_iterator(args.begin()),
+                            std::make_move_iterator(args.end())));
+  };
+}
+
+}
+
 CxxNativeModule::CxxNativeModule(std::weak_ptr<Instance> instance,
                                  std::unique_ptr<CxxModule> module)
   : instance_(instance)
@@ -37,14 +57,10 @@ std::string CxxNativeModule::getName() {
 }
 
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
-  // Same as MessageQueue.MethodTypes.remote
-  static const auto kMethodTypeRemote = "remote";
-  static const auto kMethodTypeSyncHook = "syncHook";
-
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
     assert(method.func || method.syncFunc);
-    descs.emplace_back(method.name, method.func ? kMethodTypeRemote : kMethodTypeSyncHook);
+    descs.emplace_back(method.name, method.func ? "async" : "sync");
   }
   return descs;
 }
@@ -90,10 +106,13 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   }
 
   if (method.callbacks == 1) {
-    first = makeCallback(instance_, token, params[params.size() - 1]);
+    first = convertCallback(
+        makeCallback(instance_, token, params[params.size() - 1]));
   } else if (method.callbacks == 2) {
-    first = makeCallback(instance_, token, params[params.size() - 2]);
-    second = makeCallback(instance_, token, params[params.size() - 1]);
+    first = convertCallback(
+        makeCallback(instance_, token, params[params.size() - 2]));
+    second = convertCallback(
+        makeCallback(instance_, token, params[params.size() - 1]));
   }
 
   params.resize(params.size() - method.callbacks);
@@ -162,4 +181,3 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
 
 }
 }
-

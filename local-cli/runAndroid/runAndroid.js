@@ -51,10 +51,15 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse() {
+function tryRunAdbReverse(device) {
   try {
     const adbPath = getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    // If a device is specified then tell adb to use it
+    if (device) {
+      adbArgs.unshift('-s', device);
+    }
 
     console.log(chalk.bold(
       `Running ${adbPath} ${adbArgs.join(' ')}`
@@ -63,7 +68,7 @@ function tryRunAdbReverse() {
     child_process.execFileSync(adbPath, adbArgs, {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
-  } catch(e) {
+  } catch (e) {
     console.log(chalk.yellow(
       `Could not run adb reverse: ${e.message}`
     ));
@@ -74,7 +79,7 @@ function tryRunAdbReverse() {
 function buildAndRun(args) {
   process.chdir(path.join(args.root, 'android'));
   try {
-    tryRunAdbReverse();
+    adb.getDevices().map((device) => tryRunAdbReverse(device));
 
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
@@ -111,8 +116,9 @@ function buildAndRun(args) {
     console.log(chalk.red(
       'Could not install the app on the device, read the error above for details.\n' +
       'Make sure you have an Android emulator running or a device connected and have\n' +
-      'set up your Android development environment:\n' +
-      'https://facebook.github.io/react-native/docs/android-setup.html'
+      'set up your Android development environment.\n' +
+      'Go to https://facebook.github.io/react-native/docs/getting-started.html\n' +
+      'and check the Android tab for setup instructions.'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do

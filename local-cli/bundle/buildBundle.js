@@ -8,12 +8,13 @@
  */
 
 const log = require('../util/log').out('bundle');
+const Promise = require('promise');
+const Server = require('../../packager/react-packager/src/Server');
+
 const outputBundle = require('./output/bundle');
 const path = require('path');
-const Promise = require('promise');
 const saveAssets = require('./saveAssets');
-const Server = require('../../packager/react-packager/src/Server');
-const defaultAssetExts = require('../../packager/defaultAssetExts');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -38,15 +39,20 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
-    let assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+
+    const transformModulePath =
+      args.transformer ? path.resolve(args.transformer) :
+      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+      undefined;
 
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
       assetRoots: config.getAssetRoots(),
-      blacklistRE: config.getBlacklistRE(args.platform),
+      blacklistRE: config.getBlacklistRE(),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-      transformModulePath: args.transformer,
+      transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       nonPersistent: true,
       resetCache: args.resetCache,

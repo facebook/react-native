@@ -9,38 +9,204 @@
 
 #include <string.h>
 
-#include "CSSLayout-internal.h"
+#include "CSSLayout.h"
+#include "CSSNodeList.h"
 
 #ifdef _MSC_VER
 #include <float.h>
 #define isnan _isnan
 
+#ifndef __cplusplus
+#define inline __inline
+#endif
+
 /* define fmaxf if < VC12 */
 #if _MSC_VER < 1800
-__forceinline const float fmaxf(const float a, const float b) { return (a > b) ? a : b; }
+__forceinline const float fmaxf(const float a, const float b) {
+  return (a > b) ? a : b;
+}
 #endif
 #endif
 
-#define POSITIVE_FLEX_IS_AUTO 0
+typedef struct CSSCachedMeasurement {
+  float availableWidth;
+  float availableHeight;
+  CSSMeasureMode widthMeasureMode;
+  CSSMeasureMode heightMeasureMode;
 
-CSSNodeRef CSSNodeNew() {
-  CSSNodeRef node = calloc(1, sizeof(CSSNode));
+  float computedWidth;
+  float computedHeight;
+} CSSCachedMeasurement;
+
+// This value was chosen based on empiracle data. Even the most complicated
+// layouts should not require more than 16 entries to fit within the cache.
+enum { CSS_MAX_CACHED_RESULT_COUNT = 16 };
+
+typedef struct CSSLayout {
+  float position[4];
+  float dimensions[2];
+  CSSDirection direction;
+
+  float computedFlexBasis;
+
+  // Instead of recomputing the entire layout every single time, we
+  // cache some information to break early when nothing changed
+  uint32_t generationCount;
+  CSSDirection lastParentDirection;
+
+  uint32_t nextCachedMeasurementsIndex;
+  CSSCachedMeasurement cachedMeasurements[CSS_MAX_CACHED_RESULT_COUNT];
+  float measuredDimensions[2];
+
+  CSSCachedMeasurement cachedLayout;
+} CSSLayout;
+
+typedef struct CSSStyle {
+  CSSDirection direction;
+  CSSFlexDirection flexDirection;
+  CSSJustify justifyContent;
+  CSSAlign alignContent;
+  CSSAlign alignItems;
+  CSSAlign alignSelf;
+  CSSPositionType positionType;
+  CSSWrapType flexWrap;
+  CSSOverflow overflow;
+  float flex;
+  float flexGrow;
+  float flexShrink;
+  float flexBasis;
+  float margin[CSSEdgeCount];
+  float position[CSSEdgeCount];
+  float padding[CSSEdgeCount];
+  float border[CSSEdgeCount];
+  float dimensions[2];
+  float minDimensions[2];
+  float maxDimensions[2];
+} CSSStyle;
+
+typedef struct CSSNode {
+  CSSStyle style;
+  CSSLayout layout;
+  uint32_t lineIndex;
+  bool hasNewLayout;
+  bool isTextNode;
+  CSSNodeRef parent;
+  CSSNodeListRef children;
+  bool isDirty;
+
+  struct CSSNode *nextChild;
+
+  CSSMeasureFunc measure;
+  CSSPrintFunc print;
+  void *context;
+} CSSNode;
+
+static void _CSSNodeMarkDirty(const CSSNodeRef node);
+
+#ifdef ANDROID
+#include <android/log.h>
+static int _csslayoutAndroidLog(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  const int result = __android_log_vprint(ANDROID_LOG_DEBUG, "css-layout", format, args);
+  va_end(args);
+  return result;
+}
+static CSSLogger gLogger = &_csslayoutAndroidLog;
+#else
+static CSSLogger gLogger = &printf;
+#endif
+
+static inline float computedEdgeValue(const float edges[CSSEdgeCount],
+                                      const CSSEdge edge,
+                                      const float defaultValue) {
+  CSS_ASSERT(edge <= CSSEdgeEnd, "Cannot get computed value of multi-edge shorthands");
+
+  if (!CSSValueIsUndefined(edges[edge])) {
+    return edges[edge];
+  }
+
+  if ((edge == CSSEdgeTop || edge == CSSEdgeBottom) &&
+      !CSSValueIsUndefined(edges[CSSEdgeVertical])) {
+    return edges[CSSEdgeVertical];
+  }
+
+  if ((edge == CSSEdgeLeft || edge == CSSEdgeRight || edge == CSSEdgeStart || edge == CSSEdgeEnd) &&
+      !CSSValueIsUndefined(edges[CSSEdgeHorizontal])) {
+    return edges[CSSEdgeHorizontal];
+  }
+
+  if (!CSSValueIsUndefined(edges[CSSEdgeAll])) {
+    return edges[CSSEdgeAll];
+  }
+
+  if (edge == CSSEdgeStart || edge == CSSEdgeEnd) {
+    return CSSUndefined;
+  }
+
+  return defaultValue;
+}
+
+static int32_t gNodeInstanceCount = 0;
+
+CSSNodeRef CSSNodeNew(void) {
+  const CSSNodeRef node = calloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
 
   CSSNodeInit(node);
   return node;
 }
 
-void CSSNodeFree(CSSNodeRef node) {
+void CSSNodeFree(const CSSNodeRef node) {
+  if (node->parent) {
+    CSSNodeListDelete(node->parent->children, node);
+    node->parent = NULL;
+  }
+
+  const uint32_t childCount = CSSNodeChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
+    const CSSNodeRef child = CSSNodeGetChild(node, i);
+    child->parent = NULL;
+  }
+
   CSSNodeListFree(node->children);
   free(node);
+  gNodeInstanceCount--;
 }
 
-void CSSNodeInit(CSSNodeRef node) {
+void CSSNodeFreeRecursive(const CSSNodeRef root) {
+  while (CSSNodeChildCount(root) > 0) {
+    const CSSNodeRef child = CSSNodeGetChild(root, 0);
+    CSSNodeRemoveChild(root, child);
+    CSSNodeFreeRecursive(child);
+  }
+  CSSNodeFree(root);
+}
+
+void CSSNodeReset(const CSSNodeRef node) {
+  CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot reset a node which still has children attached");
+  CSS_ASSERT(node->parent == NULL, "Cannot reset a node still attached to a parent");
+
+  CSSNodeListFree(node->children);
+  memset(node, 0, sizeof(CSSNode));
+  CSSNodeInit(node);
+}
+
+int32_t CSSNodeGetInstanceCount(void) {
+  return gNodeInstanceCount;
+}
+
+void CSSNodeInit(const CSSNodeRef node) {
   node->parent = NULL;
-  node->children = CSSNodeListNew(4);
+  node->children = NULL;
   node->hasNewLayout = true;
   node->isDirty = false;
+
+  node->style.flex = CSSUndefined;
+  node->style.flexGrow = CSSUndefined;
+  node->style.flexShrink = CSSUndefined;
+  node->style.flexBasis = CSSUndefined;
 
   node->style.alignItems = CSSAlignStretch;
   node->style.alignContent = CSSAlignFlexStart;
@@ -60,89 +226,161 @@ void CSSNodeInit(CSSNodeRef node) {
   node->style.maxDimensions[CSSDimensionWidth] = CSSUndefined;
   node->style.maxDimensions[CSSDimensionHeight] = CSSUndefined;
 
-  node->style.position[CSSPositionLeft] = CSSUndefined;
-  node->style.position[CSSPositionTop] = CSSUndefined;
-  node->style.position[CSSPositionRight] = CSSUndefined;
-  node->style.position[CSSPositionBottom] = CSSUndefined;
-  node->style.position[CSSPositionStart] = CSSUndefined;
-  node->style.position[CSSPositionEnd] = CSSUndefined;
-
-  node->style.margin[CSSPositionStart] = CSSUndefined;
-  node->style.margin[CSSPositionEnd] = CSSUndefined;
-  node->style.padding[CSSPositionStart] = CSSUndefined;
-  node->style.padding[CSSPositionEnd] = CSSUndefined;
-  node->style.border[CSSPositionStart] = CSSUndefined;
-  node->style.border[CSSPositionEnd] = CSSUndefined;
+  for (CSSEdge edge = CSSEdgeLeft; edge < CSSEdgeCount; edge++) {
+    node->style.position[edge] = CSSUndefined;
+    node->style.margin[edge] = CSSUndefined;
+    node->style.padding[edge] = CSSUndefined;
+    node->style.border[edge] = CSSUndefined;
+  }
 
   node->layout.dimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.dimensions[CSSDimensionHeight] = CSSUndefined;
 
   // Such that the comparison is always going to be false
-  node->layout.lastParentDirection = (CSSDirection)-1;
+  node->layout.lastParentDirection = (CSSDirection) -1;
   node->layout.nextCachedMeasurementsIndex = 0;
+  node->layout.computedFlexBasis = CSSUndefined;
 
   node->layout.measuredDimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.measuredDimensions[CSSDimensionHeight] = CSSUndefined;
-  node->layout.cached_layout.widthMeasureMode = (CSSMeasureMode)-1;
-  node->layout.cached_layout.heightMeasureMode = (CSSMeasureMode)-1;
+  node->layout.cachedLayout.widthMeasureMode = (CSSMeasureMode) -1;
+  node->layout.cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
+  node->layout.cachedLayout.computedWidth = -1;
+  node->layout.cachedLayout.computedHeight = -1;
 }
 
-void _CSSNodeMarkDirty(CSSNodeRef node) {
+static void _CSSNodeMarkDirty(const CSSNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
+    node->layout.computedFlexBasis = CSSUndefined;
     if (node->parent) {
       _CSSNodeMarkDirty(node->parent);
     }
   }
 }
 
-void CSSNodeInsertChild(CSSNodeRef node, CSSNodeRef child, uint32_t index) {
-  CSSNodeListInsert(node->children, child, index);
+void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
+  CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot set measure function: Nodes with measure functions cannot have children.");
+  node->measure = measureFunc;
+}
+
+CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node) {
+  return node->measure;
+}
+
+void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
+  CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
+  CSS_ASSERT(node->measure == NULL, "Cannot add child: Nodes with measure functions cannot have children.");
+  CSSNodeListInsert(&node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
 }
 
-void CSSNodeRemoveChild(CSSNodeRef node, CSSNodeRef child) {
-  CSSNodeListDelete(node->children, child);
-  child->parent = NULL;
-  _CSSNodeMarkDirty(node);
+void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child) {
+  if (CSSNodeListDelete(node->children, child) != NULL) {
+    child->parent = NULL;
+    _CSSNodeMarkDirty(node);
+  }
 }
 
-CSSNodeRef CSSNodeGetChild(CSSNodeRef node, uint32_t index) {
+CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index) {
   return CSSNodeListGet(node->children, index);
 }
 
-uint32_t CSSNodeChildCount(CSSNodeRef node) { return CSSNodeListCount(node->children); }
+inline uint32_t CSSNodeChildCount(const CSSNodeRef node) {
+  return CSSNodeListCount(node->children);
+}
 
-void CSSNodeMarkDirty(CSSNodeRef node) {
-  CSS_ASSERT(node->measure != NULL, "Nodes without custom measure functions "
-                                    "should not manually mark themselves as "
-                                    "dirty");
+void CSSNodeMarkDirty(const CSSNodeRef node) {
+  CSS_ASSERT(node->measure != NULL,
+             "Only leaf nodes with custom measure functions"
+             "should manually mark themselves as dirty");
   _CSSNodeMarkDirty(node);
 }
 
-bool CSSNodeIsDirty(CSSNodeRef node) { return node->isDirty; }
+bool CSSNodeIsDirty(const CSSNodeRef node) {
+  return node->isDirty;
+}
 
-#define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName)                                \
-  void CSSNodeSet##name(CSSNodeRef node, type paramName) { node->instanceName = paramName; }       \
-                                                                                                   \
-  type CSSNodeGet##name(CSSNodeRef node) { return node->instanceName; }
+inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexGrow)) {
+    return node->style.flexGrow;
+  }
+  if (!CSSValueIsUndefined(node->style.flex) && node->style.flex > 0) {
+    return node->style.flex;
+  }
+  return 0;
+}
 
-#define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName)                          \
-  void CSSNodeStyleSet##name(CSSNodeRef node, type paramName) {                                    \
-    if (node->style.instanceName != paramName) {                                                   \
-      node->style.instanceName = paramName;                                                        \
-      _CSSNodeMarkDirty(node);                                                                     \
-    }                                                                                              \
-  }                                                                                                \
-                                                                                                   \
-  type CSSNodeStyleGet##name(CSSNodeRef node) { return node->style.instanceName; }
+inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexShrink)) {
+    return node->style.flexShrink;
+  }
+  if (!CSSValueIsUndefined(node->style.flex) && node->style.flex < 0) {
+    return -node->style.flex;
+  }
+  return 0;
+}
 
-#define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName)                                    \
-  type CSSNodeLayoutGet##name(CSSNodeRef node) { return node->layout.instanceName; }
+inline float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
+  if (!CSSValueIsUndefined(node->style.flexBasis)) {
+    return node->style.flexBasis;
+  }
+  if (!CSSValueIsUndefined(node->style.flex)) {
+    return node->style.flex > 0 ? 0 : CSSUndefined;
+  }
+  return CSSUndefined;
+}
+
+void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex) {
+  if (node->style.flex != flex) {
+    node->style.flex = flex;
+    _CSSNodeMarkDirty(node);
+  }
+}
+
+#define CSS_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
+  void CSSNodeSet##name(const CSSNodeRef node, type paramName) {    \
+    node->instanceName = paramName;                                 \
+  }                                                                 \
+                                                                    \
+  type CSSNodeGet##name(const CSSNodeRef node) {                    \
+    return node->instanceName;                                      \
+  }
+
+#define CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(type, name, paramName, instanceName) \
+  void CSSNodeStyleSet##name(const CSSNodeRef node, const type paramName) {      \
+    if (node->style.instanceName != paramName) {                                 \
+      node->style.instanceName = paramName;                                      \
+      _CSSNodeMarkDirty(node);                                                   \
+    }                                                                            \
+  }
+
+#define CSS_NODE_STYLE_PROPERTY_IMPL(type, name, paramName, instanceName)  \
+  CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(type, name, paramName, instanceName) \
+                                                                           \
+  type CSSNodeStyleGet##name(const CSSNodeRef node) {                      \
+    return node->style.instanceName;                                       \
+  }
+
+#define CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName, defaultValue)    \
+  void CSSNodeStyleSet##name(const CSSNodeRef node, const CSSEdge edge, const type paramName) { \
+    if (node->style.instanceName[edge] != paramName) {                                          \
+      node->style.instanceName[edge] = paramName;                                               \
+      _CSSNodeMarkDirty(node);                                                                  \
+    }                                                                                           \
+  }                                                                                             \
+                                                                                                \
+  type CSSNodeStyleGet##name(const CSSNodeRef node, const CSSEdge edge) {                       \
+    return computedEdgeValue(node->style.instanceName, edge, defaultValue);                     \
+  }
+
+#define CSS_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
+  type CSSNodeLayoutGet##name(const CSSNodeRef node) {          \
+    return node->layout.instanceName;                           \
+  }
 
 CSS_NODE_PROPERTY_IMPL(void *, Context, context, context);
-CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
 CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
 CSS_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
@@ -156,35 +394,15 @@ CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignSelf, alignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSPositionType, PositionType, positionType, positionType);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrapType, FlexWrap, flexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSOverflow, Overflow, overflow, overflow);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, Flex, flex, flex);
 
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionLeft, positionLeft, position[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionTop, positionTop, position[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionRight, positionRight, position[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionBottom, positionBottom, position[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionStart, positionStart, position[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PositionEnd, positionEnd, position[CSSPositionEnd]);
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
+CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginLeft, marginLeft, margin[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginTop, marginTop, margin[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginRight, marginRight, margin[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginBottom, marginBottom, margin[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginStart, marginStart, margin[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, MarginEnd, marginEnd, margin[CSSPositionEnd]);
-
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingLeft, paddingLeft, padding[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingTop, paddingTop, padding[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingRight, paddingRight, padding[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingBottom, paddingBottom, padding[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingStart, paddingStart, padding[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, PaddingEnd, paddingEnd, padding[CSSPositionEnd]);
-
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderLeft, borderLeft, border[CSSPositionLeft]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderTop, borderTop, border[CSSPositionTop]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderRight, borderRight, border[CSSPositionRight]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderBottom, borderBottom, border[CSSPositionBottom]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderStart, borderStart, border[CSSPositionStart]);
-CSS_NODE_STYLE_PROPERTY_IMPL(float, BorderEnd, BorderEnd, border[CSSPositionEnd]);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Position, position, position, CSSUndefined);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Margin, margin, margin, 0);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Padding, padding, padding, 0);
+CSS_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border, 0);
 
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Width, width, dimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, Height, height, dimensions[CSSDimensionHeight]);
@@ -193,364 +411,329 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, MinHeight, minHeight, minDimensions[CSSDimen
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxWidth, maxWidth, maxDimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxHeight, maxHeight, maxDimensions[CSSDimensionHeight]);
 
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSPositionLeft]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSPositionTop]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[CSSPositionRight]);
-CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[CSSPositionBottom]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSEdgeLeft]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSEdgeTop]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[CSSEdgeRight]);
+CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[CSSEdgeBottom]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[CSSDimensionWidth]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[CSSDimensionHeight]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(CSSDirection, Direction, direction);
 
 uint32_t gCurrentGenerationCount = 0;
 
-bool layoutNodeInternal(CSSNode *node,
-    float availableWidth,
-    float availableHeight,
-    CSSDirection parentDirection,
-    CSSMeasureMode widthMeasureMode,
-    CSSMeasureMode heightMeasureMode,
-    bool performLayout,
-    char *reason);
+bool layoutNodeInternal(const CSSNodeRef node,
+                        const float availableWidth,
+                        const float availableHeight,
+                        const CSSDirection parentDirection,
+                        const CSSMeasureMode widthMeasureMode,
+                        const CSSMeasureMode heightMeasureMode,
+                        const bool performLayout,
+                        const char *reason);
 
-bool CSSValueIsUndefined(float value) { return isnan(value); }
+inline bool CSSValueIsUndefined(const float value) {
+  return isnan(value);
+}
 
-static bool eq(float a, float b) {
+static inline bool eq(const float a, const float b) {
   if (CSSValueIsUndefined(a)) {
     return CSSValueIsUndefined(b);
   }
   return fabs(a - b) < 0.0001;
 }
 
-static void indent(uint32_t n) {
-  for (uint32_t i = 0; i < n; ++i) {
-    printf("  ");
+static void indent(const uint32_t n) {
+  for (uint32_t i = 0; i < n; i++) {
+    gLogger("  ");
   }
 }
 
-static void print_number_0(const char *str, float number) {
+static void printNumberIfNotZero(const char *str, const float number) {
   if (!eq(number, 0)) {
-    printf("%s: %g, ", str, number);
+    gLogger("%s: %g, ", str, number);
   }
 }
 
-static void print_number_nan(const char *str, float number) {
-  if (!isnan(number)) {
-    printf("%s: %g, ", str, number);
+static void printNumberIfNotUndefined(const char *str, const float number) {
+  if (!CSSValueIsUndefined(number)) {
+    gLogger("%s: %g, ", str, number);
   }
 }
 
-static bool four_equal(float four[4]) {
+static bool eqFour(const float four[4]) {
   return eq(four[0], four[1]) && eq(four[0], four[2]) && eq(four[0], four[3]);
 }
 
-static void print_css_node_rec(CSSNode *node, CSSPrintOptions options, uint32_t level) {
+static void _CSSNodePrint(const CSSNodeRef node,
+                          const CSSPrintOptions options,
+                          const uint32_t level) {
   indent(level);
-  printf("{");
+  gLogger("{");
 
   if (node->print) {
-    node->print(node->context);
+    node->print(node);
   }
 
   if (options & CSSPrintOptionsLayout) {
-    printf("layout: {");
-    printf("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
-    printf("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
-    printf("top: %g, ", node->layout.position[CSSPositionTop]);
-    printf("left: %g", node->layout.position[CSSPositionLeft]);
-    printf("}, ");
+    gLogger("layout: {");
+    gLogger("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
+    gLogger("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
+    gLogger("top: %g, ", node->layout.position[CSSEdgeTop]);
+    gLogger("left: %g", node->layout.position[CSSEdgeLeft]);
+    gLogger("}, ");
   }
 
   if (options & CSSPrintOptionsStyle) {
     if (node->style.flexDirection == CSSFlexDirectionColumn) {
-      printf("flexDirection: 'column', ");
+      gLogger("flexDirection: 'column', ");
     } else if (node->style.flexDirection == CSSFlexDirectionColumnReverse) {
-      printf("flexDirection: 'column-reverse', ");
+      gLogger("flexDirection: 'column-reverse', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRow) {
-      printf("flexDirection: 'row', ");
+      gLogger("flexDirection: 'row', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRowReverse) {
-      printf("flexDirection: 'row-reverse', ");
+      gLogger("flexDirection: 'row-reverse', ");
     }
 
     if (node->style.justifyContent == CSSJustifyCenter) {
-      printf("justifyContent: 'center', ");
+      gLogger("justifyContent: 'center', ");
     } else if (node->style.justifyContent == CSSJustifyFlexEnd) {
-      printf("justifyContent: 'flex-end', ");
+      gLogger("justifyContent: 'flex-end', ");
     } else if (node->style.justifyContent == CSSJustifySpaceAround) {
-      printf("justifyContent: 'space-around', ");
+      gLogger("justifyContent: 'space-around', ");
     } else if (node->style.justifyContent == CSSJustifySpaceBetween) {
-      printf("justifyContent: 'space-between', ");
+      gLogger("justifyContent: 'space-between', ");
     }
 
     if (node->style.alignItems == CSSAlignCenter) {
-      printf("alignItems: 'center', ");
+      gLogger("alignItems: 'center', ");
     } else if (node->style.alignItems == CSSAlignFlexEnd) {
-      printf("alignItems: 'flex-end', ");
+      gLogger("alignItems: 'flex-end', ");
     } else if (node->style.alignItems == CSSAlignStretch) {
-      printf("alignItems: 'stretch', ");
+      gLogger("alignItems: 'stretch', ");
     }
 
     if (node->style.alignContent == CSSAlignCenter) {
-      printf("alignContent: 'center', ");
+      gLogger("alignContent: 'center', ");
     } else if (node->style.alignContent == CSSAlignFlexEnd) {
-      printf("alignContent: 'flex-end', ");
+      gLogger("alignContent: 'flex-end', ");
     } else if (node->style.alignContent == CSSAlignStretch) {
-      printf("alignContent: 'stretch', ");
+      gLogger("alignContent: 'stretch', ");
     }
 
     if (node->style.alignSelf == CSSAlignFlexStart) {
-      printf("alignSelf: 'flex-start', ");
+      gLogger("alignSelf: 'flex-start', ");
     } else if (node->style.alignSelf == CSSAlignCenter) {
-      printf("alignSelf: 'center', ");
+      gLogger("alignSelf: 'center', ");
     } else if (node->style.alignSelf == CSSAlignFlexEnd) {
-      printf("alignSelf: 'flex-end', ");
+      gLogger("alignSelf: 'flex-end', ");
     } else if (node->style.alignSelf == CSSAlignStretch) {
-      printf("alignSelf: 'stretch', ");
+      gLogger("alignSelf: 'stretch', ");
     }
 
-    print_number_nan("flex", node->style.flex);
+    printNumberIfNotUndefined("flexGrow", CSSNodeStyleGetFlexGrow(node));
+    printNumberIfNotUndefined("flexShrink", CSSNodeStyleGetFlexShrink(node));
+    printNumberIfNotUndefined("flexBasis", CSSNodeStyleGetFlexBasis(node));
 
     if (node->style.overflow == CSSOverflowHidden) {
-      printf("overflow: 'hidden', ");
+      gLogger("overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
-      printf("overflow: 'visible', ");
+      gLogger("overflow: 'visible', ");
+    } else if (node->style.overflow == CSSOverflowScroll) {
+      gLogger("overflow: 'scroll', ");
     }
 
-    if (four_equal(node->style.margin)) {
-      print_number_0("margin", node->style.margin[CSSPositionLeft]);
+    if (eqFour(node->style.margin)) {
+      printNumberIfNotZero("margin", computedEdgeValue(node->style.margin, CSSEdgeLeft, 0));
     } else {
-      print_number_0("marginLeft", node->style.margin[CSSPositionLeft]);
-      print_number_0("marginRight", node->style.margin[CSSPositionRight]);
-      print_number_0("marginTop", node->style.margin[CSSPositionTop]);
-      print_number_0("marginBottom", node->style.margin[CSSPositionBottom]);
-      print_number_0("marginStart", node->style.margin[CSSPositionStart]);
-      print_number_0("marginEnd", node->style.margin[CSSPositionEnd]);
+      printNumberIfNotZero("marginLeft", computedEdgeValue(node->style.margin, CSSEdgeLeft, 0));
+      printNumberIfNotZero("marginRight", computedEdgeValue(node->style.margin, CSSEdgeRight, 0));
+      printNumberIfNotZero("marginTop", computedEdgeValue(node->style.margin, CSSEdgeTop, 0));
+      printNumberIfNotZero("marginBottom", computedEdgeValue(node->style.margin, CSSEdgeBottom, 0));
+      printNumberIfNotZero("marginStart", computedEdgeValue(node->style.margin, CSSEdgeStart, 0));
+      printNumberIfNotZero("marginEnd", computedEdgeValue(node->style.margin, CSSEdgeEnd, 0));
     }
 
-    if (four_equal(node->style.padding)) {
-      print_number_0("padding", node->style.padding[CSSPositionLeft]);
+    if (eqFour(node->style.padding)) {
+      printNumberIfNotZero("padding", computedEdgeValue(node->style.padding, CSSEdgeLeft, 0));
     } else {
-      print_number_0("paddingLeft", node->style.padding[CSSPositionLeft]);
-      print_number_0("paddingRight", node->style.padding[CSSPositionRight]);
-      print_number_0("paddingTop", node->style.padding[CSSPositionTop]);
-      print_number_0("paddingBottom", node->style.padding[CSSPositionBottom]);
-      print_number_0("paddingStart", node->style.padding[CSSPositionStart]);
-      print_number_0("paddingEnd", node->style.padding[CSSPositionEnd]);
+      printNumberIfNotZero("paddingLeft", computedEdgeValue(node->style.padding, CSSEdgeLeft, 0));
+      printNumberIfNotZero("paddingRight", computedEdgeValue(node->style.padding, CSSEdgeRight, 0));
+      printNumberIfNotZero("paddingTop", computedEdgeValue(node->style.padding, CSSEdgeTop, 0));
+      printNumberIfNotZero("paddingBottom",
+                           computedEdgeValue(node->style.padding, CSSEdgeBottom, 0));
+      printNumberIfNotZero("paddingStart", computedEdgeValue(node->style.padding, CSSEdgeStart, 0));
+      printNumberIfNotZero("paddingEnd", computedEdgeValue(node->style.padding, CSSEdgeEnd, 0));
     }
 
-    if (four_equal(node->style.border)) {
-      print_number_0("borderWidth", node->style.border[CSSPositionLeft]);
+    if (eqFour(node->style.border)) {
+      printNumberIfNotZero("borderWidth", computedEdgeValue(node->style.border, CSSEdgeLeft, 0));
     } else {
-      print_number_0("borderLeftWidth", node->style.border[CSSPositionLeft]);
-      print_number_0("borderRightWidth", node->style.border[CSSPositionRight]);
-      print_number_0("borderTopWidth", node->style.border[CSSPositionTop]);
-      print_number_0("borderBottomWidth", node->style.border[CSSPositionBottom]);
-      print_number_0("borderStartWidth", node->style.border[CSSPositionStart]);
-      print_number_0("borderEndWidth", node->style.border[CSSPositionEnd]);
+      printNumberIfNotZero("borderLeftWidth",
+                           computedEdgeValue(node->style.border, CSSEdgeLeft, 0));
+      printNumberIfNotZero("borderRightWidth",
+                           computedEdgeValue(node->style.border, CSSEdgeRight, 0));
+      printNumberIfNotZero("borderTopWidth", computedEdgeValue(node->style.border, CSSEdgeTop, 0));
+      printNumberIfNotZero("borderBottomWidth",
+                           computedEdgeValue(node->style.border, CSSEdgeBottom, 0));
+      printNumberIfNotZero("borderStartWidth",
+                           computedEdgeValue(node->style.border, CSSEdgeStart, 0));
+      printNumberIfNotZero("borderEndWidth", computedEdgeValue(node->style.border, CSSEdgeEnd, 0));
     }
 
-    print_number_nan("width", node->style.dimensions[CSSDimensionWidth]);
-    print_number_nan("height", node->style.dimensions[CSSDimensionHeight]);
-    print_number_nan("maxWidth", node->style.maxDimensions[CSSDimensionWidth]);
-    print_number_nan("maxHeight", node->style.maxDimensions[CSSDimensionHeight]);
-    print_number_nan("minWidth", node->style.minDimensions[CSSDimensionWidth]);
-    print_number_nan("minHeight", node->style.minDimensions[CSSDimensionHeight]);
+    printNumberIfNotUndefined("width", node->style.dimensions[CSSDimensionWidth]);
+    printNumberIfNotUndefined("height", node->style.dimensions[CSSDimensionHeight]);
+    printNumberIfNotUndefined("maxWidth", node->style.maxDimensions[CSSDimensionWidth]);
+    printNumberIfNotUndefined("maxHeight", node->style.maxDimensions[CSSDimensionHeight]);
+    printNumberIfNotUndefined("minWidth", node->style.minDimensions[CSSDimensionWidth]);
+    printNumberIfNotUndefined("minHeight", node->style.minDimensions[CSSDimensionHeight]);
 
     if (node->style.positionType == CSSPositionTypeAbsolute) {
-      printf("position: 'absolute', ");
+      gLogger("position: 'absolute', ");
     }
 
-    print_number_nan("left", node->style.position[CSSPositionLeft]);
-    print_number_nan("right", node->style.position[CSSPositionRight]);
-    print_number_nan("top", node->style.position[CSSPositionTop]);
-    print_number_nan("bottom", node->style.position[CSSPositionBottom]);
+    printNumberIfNotUndefined("left",
+                              computedEdgeValue(node->style.position, CSSEdgeLeft, CSSUndefined));
+    printNumberIfNotUndefined("right",
+                              computedEdgeValue(node->style.position, CSSEdgeRight, CSSUndefined));
+    printNumberIfNotUndefined("top",
+                              computedEdgeValue(node->style.position, CSSEdgeTop, CSSUndefined));
+    printNumberIfNotUndefined("bottom",
+                              computedEdgeValue(node->style.position, CSSEdgeBottom, CSSUndefined));
   }
 
-  uint32_t childCount = CSSNodeListCount(node->children);
+  const uint32_t childCount = CSSNodeListCount(node->children);
   if (options & CSSPrintOptionsChildren && childCount > 0) {
-    printf("children: [\n");
-    for (uint32_t i = 0; i < childCount; ++i) {
-      print_css_node_rec(CSSNodeGetChild(node, i), options, level + 1);
+    gLogger("children: [\n");
+    for (uint32_t i = 0; i < childCount; i++) {
+      _CSSNodePrint(CSSNodeGetChild(node, i), options, level + 1);
     }
     indent(level);
-    printf("]},\n");
+    gLogger("]},\n");
   } else {
-    printf("},\n");
+    gLogger("},\n");
   }
 }
 
-void CSSNodePrint(CSSNode *node, CSSPrintOptions options) { print_css_node_rec(node, options, 0); }
+void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options) {
+  _CSSNodePrint(node, options, 0);
+}
 
-static CSSPosition leading[4] = {
-  [CSSFlexDirectionColumn] = CSSPositionTop,
-  [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
-  [CSSFlexDirectionRow] = CSSPositionLeft,
-  [CSSFlexDirectionRowReverse] = CSSPositionRight,
+static const CSSEdge leading[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeTop,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeBottom,
+        [CSSFlexDirectionRow] = CSSEdgeLeft,
+        [CSSFlexDirectionRowReverse] = CSSEdgeRight,
 };
-static CSSPosition trailing[4] = {
-  [CSSFlexDirectionColumn] = CSSPositionBottom,
-  [CSSFlexDirectionColumnReverse] = CSSPositionTop,
-  [CSSFlexDirectionRow] = CSSPositionRight,
-  [CSSFlexDirectionRowReverse] = CSSPositionLeft,
+static const CSSEdge trailing[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeBottom,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeTop,
+        [CSSFlexDirectionRow] = CSSEdgeRight,
+        [CSSFlexDirectionRowReverse] = CSSEdgeLeft,
 };
-static CSSPosition pos[4] = {
-  [CSSFlexDirectionColumn] = CSSPositionTop,
-  [CSSFlexDirectionColumnReverse] = CSSPositionBottom,
-  [CSSFlexDirectionRow] = CSSPositionLeft,
-  [CSSFlexDirectionRowReverse] = CSSPositionRight,
+static const CSSEdge pos[4] = {
+        [CSSFlexDirectionColumn] = CSSEdgeTop,
+        [CSSFlexDirectionColumnReverse] = CSSEdgeBottom,
+        [CSSFlexDirectionRow] = CSSEdgeLeft,
+        [CSSFlexDirectionRowReverse] = CSSEdgeRight,
 };
-static CSSDimension dim[4] = {
-  [CSSFlexDirectionColumn] = CSSDimensionHeight,
-  [CSSFlexDirectionColumnReverse] = CSSDimensionHeight,
-  [CSSFlexDirectionRow] = CSSDimensionWidth,
-  [CSSFlexDirectionRowReverse] = CSSDimensionWidth,
+static const CSSDimension dim[4] = {
+        [CSSFlexDirectionColumn] = CSSDimensionHeight,
+        [CSSFlexDirectionColumnReverse] = CSSDimensionHeight,
+        [CSSFlexDirectionRow] = CSSDimensionWidth,
+        [CSSFlexDirectionRowReverse] = CSSDimensionWidth,
 };
 
-static bool isRowDirection(CSSFlexDirection flexDirection) {
+static inline bool isRowDirection(const CSSFlexDirection flexDirection) {
   return flexDirection == CSSFlexDirectionRow || flexDirection == CSSFlexDirectionRowReverse;
 }
 
-static bool isColumnDirection(CSSFlexDirection flexDirection) {
+static inline bool isColumnDirection(const CSSFlexDirection flexDirection) {
   return flexDirection == CSSFlexDirectionColumn || flexDirection == CSSFlexDirectionColumnReverse;
 }
 
-static bool isFlexBasisAuto(CSSNode *node) {
-#if POSITIVE_FLEX_IS_AUTO
-  // All flex values are auto.
-  (void)node;
-  return true;
-#else
-  // A flex value > 0 implies a basis of zero.
-  return node->style.flex <= 0;
-#endif
+static inline float getLeadingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSEdgeStart])) {
+    return node->style.margin[CSSEdgeStart];
+  }
+
+  return computedEdgeValue(node->style.margin, leading[axis], 0);
 }
 
-static float getFlexGrowFactor(CSSNode *node) {
-  // Flex grow is implied by positive values for flex.
-  if (node->style.flex > 0) {
-    return node->style.flex;
+static float getTrailingMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSEdgeEnd])) {
+    return node->style.margin[CSSEdgeEnd];
   }
-  return 0;
+
+  return computedEdgeValue(node->style.margin, trailing[axis], 0);
 }
 
-static float getFlexShrinkFactor(CSSNode *node) {
-#if POSITIVE_FLEX_IS_AUTO
-  // A flex shrink factor of 1 is implied by non-zero values for flex.
-  if (node->style.flex != 0) {
-    return 1;
+static float getLeadingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSEdgeStart]) &&
+      node->style.padding[CSSEdgeStart] >= 0) {
+    return node->style.padding[CSSEdgeStart];
   }
-#else
-  // A flex shrink factor of 1 is implied by negative values for flex.
-  if (node->style.flex < 0) {
-    return 1;
-  }
-#endif
-  return 0;
+
+  return fmaxf(computedEdgeValue(node->style.padding, leading[axis], 0), 0);
 }
 
-static float getLeadingMargin(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSPositionStart])) {
-    return node->style.margin[CSSPositionStart];
+static float getTrailingPadding(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSEdgeEnd]) &&
+      node->style.padding[CSSEdgeEnd] >= 0) {
+    return node->style.padding[CSSEdgeEnd];
   }
 
-  return node->style.margin[leading[axis]];
+  return fmaxf(computedEdgeValue(node->style.padding, trailing[axis], 0), 0);
 }
 
-static float getTrailingMargin(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.margin[CSSPositionEnd])) {
-    return node->style.margin[CSSPositionEnd];
+static float getLeadingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSEdgeStart]) &&
+      node->style.border[CSSEdgeStart] >= 0) {
+    return node->style.border[CSSEdgeStart];
   }
 
-  return node->style.margin[trailing[axis]];
+  return fmaxf(computedEdgeValue(node->style.border, leading[axis], 0), 0);
 }
 
-static float getLeadingPadding(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSPositionStart])
-      && node->style.padding[CSSPositionStart] >= 0) {
-    return node->style.padding[CSSPositionStart];
+static float getTrailingBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSEdgeEnd]) &&
+      node->style.border[CSSEdgeEnd] >= 0) {
+    return node->style.border[CSSEdgeEnd];
   }
 
-  if (node->style.padding[leading[axis]] >= 0) {
-    return node->style.padding[leading[axis]];
-  }
-
-  return 0;
+  return fmaxf(computedEdgeValue(node->style.border, trailing[axis], 0), 0);
 }
 
-static float getTrailingPadding(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.padding[CSSPositionEnd])
-      && node->style.padding[CSSPositionEnd] >= 0) {
-    return node->style.padding[CSSPositionEnd];
-  }
-
-  if (node->style.padding[trailing[axis]] >= 0) {
-    return node->style.padding[trailing[axis]];
-  }
-
-  return 0;
-}
-
-static float getLeadingBorder(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSPositionStart])
-      && node->style.border[CSSPositionStart] >= 0) {
-    return node->style.border[CSSPositionStart];
-  }
-
-  if (node->style.border[leading[axis]] >= 0) {
-    return node->style.border[leading[axis]];
-  }
-
-  return 0;
-}
-
-static float getTrailingBorder(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.border[CSSPositionEnd])
-      && node->style.border[CSSPositionEnd] >= 0) {
-    return node->style.border[CSSPositionEnd];
-  }
-
-  if (node->style.border[trailing[axis]] >= 0) {
-    return node->style.border[trailing[axis]];
-  }
-
-  return 0;
-}
-
-static float getLeadingPaddingAndBorder(CSSNode *node, CSSFlexDirection axis) {
+static inline float getLeadingPaddingAndBorder(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingPadding(node, axis) + getLeadingBorder(node, axis);
 }
 
-static float getTrailingPaddingAndBorder(CSSNode *node, CSSFlexDirection axis) {
+static inline float getTrailingPaddingAndBorder(const CSSNodeRef node,
+                                                const CSSFlexDirection axis) {
   return getTrailingPadding(node, axis) + getTrailingBorder(node, axis);
 }
 
-static float getMarginAxis(CSSNode *node, CSSFlexDirection axis) {
+static inline float getMarginAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingMargin(node, axis) + getTrailingMargin(node, axis);
 }
 
-static float getPaddingAndBorderAxis(CSSNode *node, CSSFlexDirection axis) {
+static inline float getPaddingAndBorderAxis(const CSSNodeRef node, const CSSFlexDirection axis) {
   return getLeadingPaddingAndBorder(node, axis) + getTrailingPaddingAndBorder(node, axis);
 }
 
-static CSSAlign getAlignItem(CSSNode *node, CSSNode *child) {
-  if (child->style.alignSelf != CSSAlignAuto) {
-    return child->style.alignSelf;
-  }
-  return node->style.alignItems;
+static inline CSSAlign getAlignItem(const CSSNodeRef node, const CSSNodeRef child) {
+  return child->style.alignSelf == CSSAlignAuto ? node->style.alignItems : child->style.alignSelf;
 }
 
-static CSSDirection resolveDirection(CSSNode *node, CSSDirection parentDirection) {
-  CSSDirection direction = node->style.direction;
-
-  if (direction == CSSDirectionInherit) {
-    direction = parentDirection > CSSDirectionInherit ? parentDirection : CSSDirectionLTR;
+static inline CSSDirection resolveDirection(const CSSNodeRef node,
+                                            const CSSDirection parentDirection) {
+  if (node->style.direction == CSSDirectionInherit) {
+    return parentDirection > CSSDirectionInherit ? parentDirection : CSSDirectionLTR;
+  } else {
+    return node->style.direction;
   }
-
-  return direction;
 }
 
-static CSSFlexDirection getFlexDirection(CSSNode *node) { return node->style.flexDirection; }
-
-static CSSFlexDirection resolveAxis(CSSFlexDirection flexDirection, CSSDirection direction) {
+static inline CSSFlexDirection resolveAxis(const CSSFlexDirection flexDirection,
+                                           const CSSDirection direction) {
   if (direction == CSSDirectionRTL) {
     if (flexDirection == CSSFlexDirectionRow) {
       return CSSFlexDirectionRowReverse;
@@ -562,71 +745,80 @@ static CSSFlexDirection resolveAxis(CSSFlexDirection flexDirection, CSSDirection
   return flexDirection;
 }
 
-static CSSFlexDirection getCrossFlexDirection(
-    CSSFlexDirection flexDirection, CSSDirection direction) {
-  if (isColumnDirection(flexDirection)) {
-    return resolveAxis(CSSFlexDirectionRow, direction);
-  } else {
-    return CSSFlexDirectionColumn;
-  }
+static CSSFlexDirection getCrossFlexDirection(const CSSFlexDirection flexDirection,
+                                              const CSSDirection direction) {
+  return isColumnDirection(flexDirection) ? resolveAxis(CSSFlexDirectionRow, direction)
+                                          : CSSFlexDirectionColumn;
 }
 
-static float getFlex(CSSNode *node) { return node->style.flex; }
-
-static bool isFlex(CSSNode *node) {
-  return (node->style.positionType == CSSPositionTypeRelative && getFlex(node) != 0);
+static inline bool isFlex(const CSSNodeRef node) {
+  return (node->style.positionType == CSSPositionTypeRelative &&
+          (node->style.flexGrow != 0 || node->style.flexShrink != 0 || node->style.flex != 0));
 }
 
-static bool isFlexWrap(CSSNode *node) { return node->style.flexWrap == CSSWrapTypeWrap; }
-
-static float getDimWithMargin(CSSNode *node, CSSFlexDirection axis) {
-  return node->layout.measuredDimensions[dim[axis]] + getLeadingMargin(node, axis)
-      + getTrailingMargin(node, axis);
+static inline float getDimWithMargin(const CSSNodeRef node, const CSSFlexDirection axis) {
+  return node->layout.measuredDimensions[dim[axis]] + getLeadingMargin(node, axis) +
+         getTrailingMargin(node, axis);
 }
 
-static bool isStyleDimDefined(CSSNode *node, CSSFlexDirection axis) {
-  float value = node->style.dimensions[dim[axis]];
+static inline bool isStyleDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+  const float value = node->style.dimensions[dim[axis]];
   return !CSSValueIsUndefined(value) && value >= 0.0;
 }
 
-static bool isLayoutDimDefined(CSSNode *node, CSSFlexDirection axis) {
-  float value = node->layout.measuredDimensions[dim[axis]];
+static inline bool isLayoutDimDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+  const float value = node->layout.measuredDimensions[dim[axis]];
   return !CSSValueIsUndefined(value) && value >= 0.0;
 }
 
-static bool isLeadingPosDefined(CSSNode *node, CSSFlexDirection axis) {
-  return (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionStart]))
-      || !CSSValueIsUndefined(node->style.position[leading[axis]]);
+static inline bool isLeadingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+  return (isRowDirection(axis) &&
+          !CSSValueIsUndefined(
+              computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined))) ||
+         !CSSValueIsUndefined(computedEdgeValue(node->style.position, leading[axis], CSSUndefined));
 }
 
-static bool isTrailingPosDefined(CSSNode *node, CSSFlexDirection axis) {
-  return (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionEnd]))
-      || !CSSValueIsUndefined(node->style.position[trailing[axis]]);
+static inline bool isTrailingPosDefined(const CSSNodeRef node, const CSSFlexDirection axis) {
+  return (isRowDirection(axis) &&
+          !CSSValueIsUndefined(
+              computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined))) ||
+         !CSSValueIsUndefined(
+             computedEdgeValue(node->style.position, trailing[axis], CSSUndefined));
 }
 
-static bool isMeasureDefined(CSSNode *node) { return node->measure; }
+static float getLeadingPosition(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis)) {
+    const float leadingPosition =
+        computedEdgeValue(node->style.position, CSSEdgeStart, CSSUndefined);
+    if (!CSSValueIsUndefined(leadingPosition)) {
+      return leadingPosition;
+    }
+  }
 
-static float getLeadingPosition(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionStart])) {
-    return node->style.position[CSSPositionStart];
-  }
-  if (!CSSValueIsUndefined(node->style.position[leading[axis]])) {
-    return node->style.position[leading[axis]];
-  }
-  return 0;
+  const float leadingPosition =
+      computedEdgeValue(node->style.position, leading[axis], CSSUndefined);
+
+  return CSSValueIsUndefined(leadingPosition) ? 0 : leadingPosition;
 }
 
-static float getTrailingPosition(CSSNode *node, CSSFlexDirection axis) {
-  if (isRowDirection(axis) && !CSSValueIsUndefined(node->style.position[CSSPositionEnd])) {
-    return node->style.position[CSSPositionEnd];
+static float getTrailingPosition(const CSSNodeRef node, const CSSFlexDirection axis) {
+  if (isRowDirection(axis)) {
+    const float trailingPosition =
+        computedEdgeValue(node->style.position, CSSEdgeEnd, CSSUndefined);
+    if (!CSSValueIsUndefined(trailingPosition)) {
+      return trailingPosition;
+    }
   }
-  if (!CSSValueIsUndefined(node->style.position[trailing[axis]])) {
-    return node->style.position[trailing[axis]];
-  }
-  return 0;
+
+  const float trailingPosition =
+      computedEdgeValue(node->style.position, trailing[axis], CSSUndefined);
+
+  return CSSValueIsUndefined(trailingPosition) ? 0 : trailingPosition;
 }
 
-static float boundAxisWithinMinAndMax(CSSNode *node, CSSFlexDirection axis, float value) {
+static float boundAxisWithinMinAndMax(const CSSNodeRef node,
+                                      const CSSFlexDirection axis,
+                                      const float value) {
   float min = CSSUndefined;
   float max = CSSUndefined;
 
@@ -643,6 +835,7 @@ static float boundAxisWithinMinAndMax(CSSNode *node, CSSFlexDirection axis, floa
   if (!CSSValueIsUndefined(max) && max >= 0.0 && boundValue > max) {
     boundValue = max;
   }
+
   if (!CSSValueIsUndefined(min) && min >= 0.0 && boundValue < min) {
     boundValue = min;
   }
@@ -653,37 +846,243 @@ static float boundAxisWithinMinAndMax(CSSNode *node, CSSFlexDirection axis, floa
 // Like boundAxisWithinMinAndMax but also ensures that the value doesn't go
 // below the
 // padding and border amount.
-static float boundAxis(CSSNode *node, CSSFlexDirection axis, float value) {
+static inline float boundAxis(const CSSNodeRef node,
+                              const CSSFlexDirection axis,
+                              const float value) {
   return fmaxf(boundAxisWithinMinAndMax(node, axis, value), getPaddingAndBorderAxis(node, axis));
 }
 
-static void setTrailingPosition(CSSNode *node, CSSNode *child, CSSFlexDirection axis) {
-  float size = child->layout.measuredDimensions[dim[axis]];
-  child->layout.position[trailing[axis]]
-      = node->layout.measuredDimensions[dim[axis]] - size - child->layout.position[pos[axis]];
+static void setTrailingPosition(const CSSNodeRef node,
+                                const CSSNodeRef child,
+                                const CSSFlexDirection axis) {
+  const float size = child->layout.measuredDimensions[dim[axis]];
+  child->layout.position[trailing[axis]] =
+      node->layout.measuredDimensions[dim[axis]] - size - child->layout.position[pos[axis]];
 }
 
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
-static float getRelativePosition(CSSNode *node, CSSFlexDirection axis) {
-  if (isLeadingPosDefined(node, axis)) {
-    return getLeadingPosition(node, axis);
-  }
-  return -getTrailingPosition(node, axis);
+static float getRelativePosition(const CSSNodeRef node, const CSSFlexDirection axis) {
+  return isLeadingPosDefined(node, axis) ? getLeadingPosition(node, axis)
+                                         : -getTrailingPosition(node, axis);
 }
 
-static void setPosition(CSSNode *node, CSSDirection direction) {
-  CSSFlexDirection mainAxis = resolveAxis(getFlexDirection(node), direction);
-  CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
+static void setPosition(const CSSNodeRef node, const CSSDirection direction) {
+  const CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
+  const CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
+  const float relativePositionMain = getRelativePosition(node, mainAxis);
+  const float relativePositionCross = getRelativePosition(node, crossAxis);
 
-  node->layout.position[leading[mainAxis]]
-      = getLeadingMargin(node, mainAxis) + getRelativePosition(node, mainAxis);
-  node->layout.position[trailing[mainAxis]]
-      = getTrailingMargin(node, mainAxis) + getRelativePosition(node, mainAxis);
-  node->layout.position[leading[crossAxis]]
-      = getLeadingMargin(node, crossAxis) + getRelativePosition(node, crossAxis);
-  node->layout.position[trailing[crossAxis]]
-      = getTrailingMargin(node, crossAxis) + getRelativePosition(node, crossAxis);
+  node->layout.position[leading[mainAxis]] =
+      getLeadingMargin(node, mainAxis) + relativePositionMain;
+  node->layout.position[trailing[mainAxis]] =
+      getTrailingMargin(node, mainAxis) + relativePositionMain;
+  node->layout.position[leading[crossAxis]] =
+      getLeadingMargin(node, crossAxis) + relativePositionCross;
+  node->layout.position[trailing[crossAxis]] =
+      getTrailingMargin(node, crossAxis) + relativePositionCross;
+}
+
+static void computeChildFlexBasis(const CSSNodeRef node,
+                                  const CSSNodeRef child,
+                                  const float width,
+                                  const CSSMeasureMode widthMode,
+                                  const float height,
+                                  const CSSMeasureMode heightMode,
+                                  const CSSDirection direction) {
+  const CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
+  const bool isMainAxisRow = isRowDirection(mainAxis);
+
+  float childWidth;
+  float childHeight;
+  CSSMeasureMode childWidthMeasureMode;
+  CSSMeasureMode childHeightMeasureMode;
+
+  const bool isRowStyleDimDefined = isStyleDimDefined(child, CSSFlexDirectionRow);
+  const bool isColumnStyleDimDefined = isStyleDimDefined(child, CSSFlexDirectionColumn);
+
+  if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
+      !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
+    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+      child->layout.computedFlexBasis =
+          fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
+    }
+  } else if (isMainAxisRow && isRowStyleDimDefined) {
+    // The width is definite, so use that as the flex basis.
+    child->layout.computedFlexBasis = fmaxf(child->style.dimensions[CSSDimensionWidth],
+                                            getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+  } else if (!isMainAxisRow && isColumnStyleDimDefined) {
+    // The height is definite, so use that as the flex basis.
+    child->layout.computedFlexBasis = fmaxf(child->style.dimensions[CSSDimensionHeight],
+                                            getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+  } else {
+    // Compute the flex basis and hypothetical main size (i.e. the clamped
+    // flex basis).
+    childWidth = CSSUndefined;
+    childHeight = CSSUndefined;
+    childWidthMeasureMode = CSSMeasureModeUndefined;
+    childHeightMeasureMode = CSSMeasureModeUndefined;
+
+    if (isRowStyleDimDefined) {
+      childWidth =
+          child->style.dimensions[CSSDimensionWidth] + getMarginAxis(child, CSSFlexDirectionRow);
+      childWidthMeasureMode = CSSMeasureModeExactly;
+    }
+    if (isColumnStyleDimDefined) {
+      childHeight = child->style.dimensions[CSSDimensionHeight] +
+                    getMarginAxis(child, CSSFlexDirectionColumn);
+      childHeightMeasureMode = CSSMeasureModeExactly;
+    }
+
+    // The W3C spec doesn't say anything about the 'overflow' property,
+    // but all major browsers appear to implement the following logic.
+    if ((!isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+        node->style.overflow != CSSOverflowScroll) {
+      if (CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(width)) {
+        childWidth = width;
+        childWidthMeasureMode = CSSMeasureModeAtMost;
+      }
+    }
+
+    if ((isMainAxisRow && node->style.overflow == CSSOverflowScroll) ||
+        node->style.overflow != CSSOverflowScroll) {
+      if (CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(height)) {
+        childHeight = height;
+        childHeightMeasureMode = CSSMeasureModeAtMost;
+      }
+    }
+
+    // If child has no defined size in the cross axis and is set to stretch,
+    // set the cross
+    // axis to be measured exactly with the available inner width
+    if (!isMainAxisRow && !CSSValueIsUndefined(width) && !isRowStyleDimDefined &&
+        widthMode == CSSMeasureModeExactly && getAlignItem(node, child) == CSSAlignStretch) {
+      childWidth = width;
+      childWidthMeasureMode = CSSMeasureModeExactly;
+    }
+    if (isMainAxisRow && !CSSValueIsUndefined(height) && !isColumnStyleDimDefined &&
+        heightMode == CSSMeasureModeExactly && getAlignItem(node, child) == CSSAlignStretch) {
+      childHeight = height;
+      childHeightMeasureMode = CSSMeasureModeExactly;
+    }
+
+    // Measure the child
+    layoutNodeInternal(child,
+                       childWidth,
+                       childHeight,
+                       direction,
+                       childWidthMeasureMode,
+                       childHeightMeasureMode,
+                       false,
+                       "measure");
+
+    child->layout.computedFlexBasis =
+        fmaxf(isMainAxisRow ? child->layout.measuredDimensions[CSSDimensionWidth]
+                            : child->layout.measuredDimensions[CSSDimensionHeight],
+              getPaddingAndBorderAxis(child, mainAxis));
+  }
+}
+
+static void absoluteLayoutChild(const CSSNodeRef node,
+                                const CSSNodeRef child,
+                                const float width,
+                                const CSSMeasureMode widthMode,
+                                const CSSDirection direction) {
+  const CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
+  const CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
+  const bool isMainAxisRow = isRowDirection(mainAxis);
+
+  float childWidth = CSSUndefined;
+  float childHeight = CSSUndefined;
+  CSSMeasureMode childWidthMeasureMode = CSSMeasureModeUndefined;
+  CSSMeasureMode childHeightMeasureMode = CSSMeasureModeUndefined;
+
+  if (isStyleDimDefined(child, CSSFlexDirectionRow)) {
+    childWidth =
+        child->style.dimensions[CSSDimensionWidth] + getMarginAxis(child, CSSFlexDirectionRow);
+  } else {
+    // If the child doesn't have a specified width, compute the width based
+    // on the left/right
+    // offsets if they're defined.
+    if (isLeadingPosDefined(child, CSSFlexDirectionRow) &&
+        isTrailingPosDefined(child, CSSFlexDirectionRow)) {
+      childWidth = node->layout.measuredDimensions[CSSDimensionWidth] -
+                   (getLeadingBorder(node, CSSFlexDirectionRow) +
+                    getTrailingBorder(node, CSSFlexDirectionRow)) -
+                   (getLeadingPosition(child, CSSFlexDirectionRow) +
+                    getTrailingPosition(child, CSSFlexDirectionRow));
+      childWidth = boundAxis(child, CSSFlexDirectionRow, childWidth);
+    }
+  }
+
+  if (isStyleDimDefined(child, CSSFlexDirectionColumn)) {
+    childHeight =
+        child->style.dimensions[CSSDimensionHeight] + getMarginAxis(child, CSSFlexDirectionColumn);
+  } else {
+    // If the child doesn't have a specified height, compute the height
+    // based on the top/bottom
+    // offsets if they're defined.
+    if (isLeadingPosDefined(child, CSSFlexDirectionColumn) &&
+        isTrailingPosDefined(child, CSSFlexDirectionColumn)) {
+      childHeight = node->layout.measuredDimensions[CSSDimensionHeight] -
+                    (getLeadingBorder(node, CSSFlexDirectionColumn) +
+                     getTrailingBorder(node, CSSFlexDirectionColumn)) -
+                    (getLeadingPosition(child, CSSFlexDirectionColumn) +
+                     getTrailingPosition(child, CSSFlexDirectionColumn));
+      childHeight = boundAxis(child, CSSFlexDirectionColumn, childHeight);
+    }
+  }
+
+  // If we're still missing one or the other dimension, measure the content.
+  if (CSSValueIsUndefined(childWidth) || CSSValueIsUndefined(childHeight)) {
+    childWidthMeasureMode =
+        CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
+    childHeightMeasureMode =
+        CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
+
+    // According to the spec, if the main size is not definite and the
+    // child's inline axis is parallel to the main axis (i.e. it's
+    // horizontal), the child should be sized using "UNDEFINED" in
+    // the main size. Otherwise use "AT_MOST" in the cross axis.
+    if (!isMainAxisRow && CSSValueIsUndefined(childWidth) && widthMode != CSSMeasureModeUndefined) {
+      childWidth = width;
+      childWidthMeasureMode = CSSMeasureModeAtMost;
+    }
+
+    layoutNodeInternal(child,
+                       childWidth,
+                       childHeight,
+                       direction,
+                       childWidthMeasureMode,
+                       childHeightMeasureMode,
+                       false,
+                       "abs-measure");
+    childWidth = child->layout.measuredDimensions[CSSDimensionWidth] +
+                 getMarginAxis(child, CSSFlexDirectionRow);
+    childHeight = child->layout.measuredDimensions[CSSDimensionHeight] +
+                  getMarginAxis(child, CSSFlexDirectionColumn);
+  }
+
+  layoutNodeInternal(child,
+                     childWidth,
+                     childHeight,
+                     direction,
+                     CSSMeasureModeExactly,
+                     CSSMeasureModeExactly,
+                     true,
+                     "abs-layout");
+
+  if (isTrailingPosDefined(child, mainAxis) && !isLeadingPosDefined(child, mainAxis)) {
+    child->layout.position[leading[mainAxis]] = node->layout.measuredDimensions[dim[mainAxis]] -
+                                                child->layout.measuredDimensions[dim[mainAxis]] -
+                                                getTrailingPosition(child, mainAxis);
+  }
+
+  if (isTrailingPosDefined(child, crossAxis) && !isLeadingPosDefined(child, crossAxis)) {
+    child->layout.position[leading[crossAxis]] = node->layout.measuredDimensions[dim[crossAxis]] -
+                                                 child->layout.measuredDimensions[dim[crossAxis]] -
+                                                 getTrailingPosition(child, crossAxis);
+  }
 }
 
 //
@@ -798,66 +1197,68 @@ static void setPosition(CSSNode *node, CSSDirection direction) {
 //    undefined then it must also pass a measure mode of CSSMeasureModeUndefined
 //    in that dimension.
 //
-static void layoutNodeImpl(CSSNode *node,
-    float availableWidth,
-    float availableHeight,
-    CSSDirection parentDirection,
-    CSSMeasureMode widthMeasureMode,
-    CSSMeasureMode heightMeasureMode,
-    bool performLayout) {
+static void layoutNodeImpl(const CSSNodeRef node,
+                           const float availableWidth,
+                           const float availableHeight,
+                           const CSSDirection parentDirection,
+                           const CSSMeasureMode widthMeasureMode,
+                           const CSSMeasureMode heightMeasureMode,
+                           const bool performLayout) {
+  CSS_ASSERT(CSSValueIsUndefined(availableWidth) ? widthMeasureMode == CSSMeasureModeUndefined
+                                                 : true,
+             "availableWidth is indefinite so widthMeasureMode must be "
+             "CSSMeasureModeUndefined");
+  CSS_ASSERT(CSSValueIsUndefined(availableHeight) ? heightMeasureMode == CSSMeasureModeUndefined
+                                                  : true,
+             "availableHeight is indefinite so heightMeasureMode must be "
+             "CSSMeasureModeUndefined");
 
-  CSS_ASSERT(CSSValueIsUndefined(availableWidth) ? widthMeasureMode == CSSMeasureModeUndefined : true,
-      "availableWidth is indefinite so widthMeasureMode must be "
-      "CSSMeasureModeUndefined");
-  CSS_ASSERT(CSSValueIsUndefined(availableHeight) ? heightMeasureMode == CSSMeasureModeUndefined : true,
-      "availableHeight is indefinite so heightMeasureMode must be "
-      "CSSMeasureModeUndefined");
-
-  float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
-  float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
-  float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
-  float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
+  const float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
+  const float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
+  const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
+  const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
   // Set the resolved resolution in the node's layout.
-  CSSDirection direction = resolveDirection(node, parentDirection);
+  const CSSDirection direction = resolveDirection(node, parentDirection);
   node->layout.direction = direction;
 
   // For content (text) nodes, determine the dimensions based on the text
   // contents.
-  if (isMeasureDefined(node)) {
-    float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-    float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+  if (node->measure) {
+    const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+    const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
 
     if (widthMeasureMode == CSSMeasureModeExactly && heightMeasureMode == CSSMeasureModeExactly) {
-
       // Don't bother sizing the text if both dimensions are already defined.
-      node->layout.measuredDimensions[CSSDimensionWidth]
-          = boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
-      node->layout.measuredDimensions[CSSDimensionHeight]
-          = boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
+      node->layout.measuredDimensions[CSSDimensionWidth] =
+          boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
     } else if (innerWidth <= 0 || innerHeight <= 0) {
-
       // Don't bother sizing the text if there's no horizontal or vertical
       // space.
       node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow, 0);
-      node->layout.measuredDimensions[CSSDimensionHeight]
-          = boundAxis(node, CSSFlexDirectionColumn, 0);
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node, CSSFlexDirectionColumn, 0);
     } else {
-
       // Measure the text under the current constraints.
-      CSSSize measuredSize = node->measure(node->context,
+      const CSSSize measuredSize =
+          node->measure(node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
 
-          innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
-
-      node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
-          (widthMeasureMode == CSSMeasureModeUndefined || widthMeasureMode == CSSMeasureModeAtMost)
-              ? measuredSize.width + paddingAndBorderAxisRow
-              : availableWidth - marginAxisRow);
-      node->layout.measuredDimensions[CSSDimensionHeight] = boundAxis(
-          node, CSSFlexDirectionColumn, (heightMeasureMode == CSSMeasureModeUndefined
-                                            || heightMeasureMode == CSSMeasureModeAtMost)
-              ? measuredSize.height + paddingAndBorderAxisColumn
-              : availableHeight - marginAxisColumn);
+      node->layout.measuredDimensions[CSSDimensionWidth] =
+          boundAxis(node,
+                    CSSFlexDirectionRow,
+                    (widthMeasureMode == CSSMeasureModeUndefined ||
+                     widthMeasureMode == CSSMeasureModeAtMost)
+                        ? measuredSize.width + paddingAndBorderAxisRow
+                        : availableWidth - marginAxisRow);
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node,
+                    CSSFlexDirectionColumn,
+                    (heightMeasureMode == CSSMeasureModeUndefined ||
+                     heightMeasureMode == CSSMeasureModeAtMost)
+                        ? measuredSize.height + paddingAndBorderAxisColumn
+                        : availableHeight - marginAxisColumn);
     }
 
     return;
@@ -866,16 +1267,22 @@ static void layoutNodeImpl(CSSNode *node,
   // For nodes with no children, use the available values if they were provided,
   // or
   // the minimum size as indicated by the padding and border sizes.
-  uint32_t childCount = CSSNodeListCount(node->children);
+  const uint32_t childCount = CSSNodeListCount(node->children);
   if (childCount == 0) {
-    node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
-        (widthMeasureMode == CSSMeasureModeUndefined || widthMeasureMode == CSSMeasureModeAtMost)
-            ? paddingAndBorderAxisRow
-            : availableWidth - marginAxisRow);
-    node->layout.measuredDimensions[CSSDimensionHeight] = boundAxis(node, CSSFlexDirectionColumn,
-        (heightMeasureMode == CSSMeasureModeUndefined || heightMeasureMode == CSSMeasureModeAtMost)
-            ? paddingAndBorderAxisColumn
-            : availableHeight - marginAxisColumn);
+    node->layout.measuredDimensions[CSSDimensionWidth] =
+        boundAxis(node,
+                  CSSFlexDirectionRow,
+                  (widthMeasureMode == CSSMeasureModeUndefined ||
+                   widthMeasureMode == CSSMeasureModeAtMost)
+                      ? paddingAndBorderAxisRow
+                      : availableWidth - marginAxisRow);
+    node->layout.measuredDimensions[CSSDimensionHeight] =
+        boundAxis(node,
+                  CSSFlexDirectionColumn,
+                  (heightMeasureMode == CSSMeasureModeUndefined ||
+                   heightMeasureMode == CSSMeasureModeAtMost)
+                      ? paddingAndBorderAxisColumn
+                      : availableHeight - marginAxisColumn);
     return;
   }
 
@@ -887,85 +1294,84 @@ static void layoutNodeImpl(CSSNode *node,
     // there is no available
     // width,
     // the measurement will always be zero.
-    if (widthMeasureMode == CSSMeasureModeAtMost && availableWidth <= 0
-        && heightMeasureMode == CSSMeasureModeAtMost && availableHeight <= 0) {
+    if (widthMeasureMode == CSSMeasureModeAtMost && availableWidth <= 0 &&
+        heightMeasureMode == CSSMeasureModeAtMost && availableHeight <= 0) {
       node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow, 0);
-      node->layout.measuredDimensions[CSSDimensionHeight]
-          = boundAxis(node, CSSFlexDirectionColumn, 0);
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node, CSSFlexDirectionColumn, 0);
       return;
     }
 
     if (widthMeasureMode == CSSMeasureModeAtMost && availableWidth <= 0) {
       node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow, 0);
-      node->layout.measuredDimensions[CSSDimensionHeight] = boundAxis(node, CSSFlexDirectionColumn,
-          CSSValueIsUndefined(availableHeight) ? 0 : (availableHeight - marginAxisColumn));
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node,
+                    CSSFlexDirectionColumn,
+                    CSSValueIsUndefined(availableHeight) ? 0
+                                                         : (availableHeight - marginAxisColumn));
       return;
     }
 
     if (heightMeasureMode == CSSMeasureModeAtMost && availableHeight <= 0) {
-      node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow,
-          CSSValueIsUndefined(availableWidth) ? 0 : (availableWidth - marginAxisRow));
-      node->layout.measuredDimensions[CSSDimensionHeight]
-          = boundAxis(node, CSSFlexDirectionColumn, 0);
+      node->layout.measuredDimensions[CSSDimensionWidth] =
+          boundAxis(node,
+                    CSSFlexDirectionRow,
+                    CSSValueIsUndefined(availableWidth) ? 0 : (availableWidth - marginAxisRow));
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node, CSSFlexDirectionColumn, 0);
       return;
     }
 
     // If we're being asked to use an exact width/height, there's no need to
     // measure the children.
     if (widthMeasureMode == CSSMeasureModeExactly && heightMeasureMode == CSSMeasureModeExactly) {
-      node->layout.measuredDimensions[CSSDimensionWidth]
-          = boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
-      node->layout.measuredDimensions[CSSDimensionHeight]
-          = boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
+      node->layout.measuredDimensions[CSSDimensionWidth] =
+          boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
+      node->layout.measuredDimensions[CSSDimensionHeight] =
+          boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
       return;
     }
   }
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
-  CSSFlexDirection mainAxis = resolveAxis(getFlexDirection(node), direction);
-  CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
-  bool isMainAxisRow = isRowDirection(mainAxis);
-  CSSJustify justifyContent = node->style.justifyContent;
-  bool isNodeFlexWrap = isFlexWrap(node);
+  const CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
+  const CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
+  const bool isMainAxisRow = isRowDirection(mainAxis);
+  const CSSJustify justifyContent = node->style.justifyContent;
+  const bool isNodeFlexWrap = node->style.flexWrap == CSSWrapTypeWrap;
 
-  CSSNode *firstAbsoluteChild = NULL;
-  CSSNode *currentAbsoluteChild = NULL;
+  CSSNodeRef firstAbsoluteChild = NULL;
+  CSSNodeRef currentAbsoluteChild = NULL;
 
-  float leadingPaddingAndBorderMain = getLeadingPaddingAndBorder(node, mainAxis);
-  float trailingPaddingAndBorderMain = getTrailingPaddingAndBorder(node, mainAxis);
-  float leadingPaddingAndBorderCross = getLeadingPaddingAndBorder(node, crossAxis);
-  float paddingAndBorderAxisMain = getPaddingAndBorderAxis(node, mainAxis);
-  float paddingAndBorderAxisCross = getPaddingAndBorderAxis(node, crossAxis);
+  const float leadingPaddingAndBorderMain = getLeadingPaddingAndBorder(node, mainAxis);
+  const float trailingPaddingAndBorderMain = getTrailingPaddingAndBorder(node, mainAxis);
+  const float leadingPaddingAndBorderCross = getLeadingPaddingAndBorder(node, crossAxis);
+  const float paddingAndBorderAxisMain = getPaddingAndBorderAxis(node, mainAxis);
+  const float paddingAndBorderAxisCross = getPaddingAndBorderAxis(node, crossAxis);
 
-  CSSMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
-  CSSMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+  const CSSMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
+  const CSSMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
 
   // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
-  float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-  float availableInnerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
-  float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
-  float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
+  const float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+  const float availableInnerHeight =
+      availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+  const float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
+  const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
-  CSSNode *child;
-  uint32_t i;
-  float childWidth;
-  float childHeight;
-  CSSMeasureMode childWidthMeasureMode;
-  CSSMeasureMode childHeightMeasureMode;
-  for (i = 0; i < childCount; i++) {
-    child = CSSNodeListGet(node->children, i);
+  for (uint32_t i = 0; i < childCount; i++) {
+    const CSSNodeRef child = CSSNodeListGet(node->children, i);
 
     if (performLayout) {
       // Set the initial position (relative to the parent).
-      CSSDirection childDirection = resolveDirection(child, direction);
+      const CSSDirection childDirection = resolveDirection(child, direction);
       setPosition(child, childDirection);
     }
 
     // Absolute-positioned children don't participate in flex layout. Add them
     // to a list that we can process later.
     if (child->style.positionType == CSSPositionTypeAbsolute) {
-
       // Store a private linked list of absolutely positioned children
       // so that we can efficiently traverse them later.
       if (firstAbsoluteChild == NULL) {
@@ -977,86 +1383,13 @@ static void layoutNodeImpl(CSSNode *node,
       currentAbsoluteChild = child;
       child->nextChild = NULL;
     } else {
-
-      if (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow)) {
-
-        // The width is definite, so use that as the flex basis.
-        child->layout.flexBasis = fmaxf(child->style.dimensions[CSSDimensionWidth],
-            getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
-      } else if (!isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionColumn)) {
-
-        // The height is definite, so use that as the flex basis.
-        child->layout.flexBasis = fmaxf(child->style.dimensions[CSSDimensionHeight],
-            getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
-      } else if (!isFlexBasisAuto(child) && !CSSValueIsUndefined(availableInnerMainDim)) {
-
-        // If the basis isn't 'auto', it is assumed to be zero.
-        child->layout.flexBasis = fmaxf(0, getPaddingAndBorderAxis(child, mainAxis));
-      } else {
-
-        // Compute the flex basis and hypothetical main size (i.e. the clamped
-        // flex basis).
-        childWidth = CSSUndefined;
-        childHeight = CSSUndefined;
-        childWidthMeasureMode = CSSMeasureModeUndefined;
-        childHeightMeasureMode = CSSMeasureModeUndefined;
-
-        if (isStyleDimDefined(child, CSSFlexDirectionRow)) {
-          childWidth = child->style.dimensions[CSSDimensionWidth]
-              + getMarginAxis(child, CSSFlexDirectionRow);
-          childWidthMeasureMode = CSSMeasureModeExactly;
-        }
-        if (isStyleDimDefined(child, CSSFlexDirectionColumn)) {
-          childHeight = child->style.dimensions[CSSDimensionHeight]
-              + getMarginAxis(child, CSSFlexDirectionColumn);
-          childHeightMeasureMode = CSSMeasureModeExactly;
-        }
-
-        // According to the spec, if the main size is not definite and the
-        // child's inline axis is parallel to the main axis (i.e. it's
-        // horizontal), the child should be sized using "UNDEFINED" in
-        // the main size. Otherwise use "AT_MOST" in the cross axis.
-        if (!isMainAxisRow && CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(availableInnerWidth)) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
-        // The W3C spec doesn't say anything about the 'overflow' property,
-        // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(availableInnerHeight)) {
-            childHeight = availableInnerHeight;
-            childHeightMeasureMode = CSSMeasureModeAtMost;
-          }
-        }
-
-        // If child has no defined size in the cross axis and is set to stretch,
-        // set the cross
-        // axis to be measured exactly with the available inner width
-        if (!isMainAxisRow && !CSSValueIsUndefined(availableInnerWidth)
-            && !isStyleDimDefined(child, CSSFlexDirectionRow)
-            && widthMeasureMode == CSSMeasureModeExactly
-            && getAlignItem(node, child) == CSSAlignStretch) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeExactly;
-        }
-        if (isMainAxisRow && !CSSValueIsUndefined(availableInnerHeight)
-            && !isStyleDimDefined(child, CSSFlexDirectionColumn)
-            && heightMeasureMode == CSSMeasureModeExactly
-            && getAlignItem(node, child) == CSSAlignStretch) {
-          childHeight = availableInnerHeight;
-          childHeightMeasureMode = CSSMeasureModeExactly;
-        }
-
-        // Measure the child
-        layoutNodeInternal(child, childWidth, childHeight, direction, childWidthMeasureMode,
-            childHeightMeasureMode, false, "measure");
-
-        child->layout.flexBasis
-            = fmaxf(isMainAxisRow ? child->layout.measuredDimensions[CSSDimensionWidth]
-                                  : child->layout.measuredDimensions[CSSDimensionHeight],
-                getPaddingAndBorderAxis(child, mainAxis));
-      }
+      computeChildFlexBasis(node,
+                            child,
+                            availableInnerWidth,
+                            widthMeasureMode,
+                            availableInnerHeight,
+                            heightMeasureMode,
+                            direction);
     }
   }
 
@@ -1075,8 +1408,7 @@ static void layoutNodeImpl(CSSNode *node,
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;
 
-  while (endOfLineIndex < childCount) {
-
+  for (; endOfLineIndex < childCount; lineCount++, startOfLineIndex = endOfLineIndex) {
     // Number of items on the currently line. May be different than the
     // difference
     // between start and end indicates because we skip over absolute-positioned
@@ -1092,26 +1424,25 @@ static void layoutNodeImpl(CSSNode *node,
     float totalFlexGrowFactors = 0;
     float totalFlexShrinkScaledFactors = 0;
 
-    i = startOfLineIndex;
-
     // Maintain a linked list of the child nodes that can shrink and/or grow.
-    CSSNode *firstRelativeChild = NULL;
-    CSSNode *currentRelativeChild = NULL;
+    CSSNodeRef firstRelativeChild = NULL;
+    CSSNodeRef currentRelativeChild = NULL;
 
     // Add items to the current line until it's full or we run out of items.
-    while (i < childCount) {
-      child = CSSNodeListGet(node->children, i);
+    for (uint32_t i = startOfLineIndex; i < childCount; i++, endOfLineIndex++) {
+      const CSSNodeRef child = CSSNodeListGet(node->children, i);
       child->lineIndex = lineCount;
 
       if (child->style.positionType != CSSPositionTypeAbsolute) {
-        float outerFlexBasis = child->layout.flexBasis + getMarginAxis(child, mainAxis);
+        const float outerFlexBasis =
+            child->layout.computedFlexBasis + getMarginAxis(child, mainAxis);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
         // hit the end of the current line. Break out of the loop and lay out
         // the current line.
-        if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap
-            && itemsOnLine > 0) {
+        if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap &&
+            itemsOnLine > 0) {
           break;
         }
 
@@ -1119,12 +1450,13 @@ static void layoutNodeImpl(CSSNode *node,
         itemsOnLine++;
 
         if (isFlex(child)) {
-          totalFlexGrowFactors += getFlexGrowFactor(child);
+          totalFlexGrowFactors += CSSNodeStyleGetFlexGrow(child);
 
           // Unlike the grow factor, the shrink factor is scaled relative to the
           // child
           // dimension.
-          totalFlexShrinkScaledFactors += getFlexShrinkFactor(child) * child->layout.flexBasis;
+          totalFlexShrinkScaledFactors +=
+              -CSSNodeStyleGetFlexShrink(child) * child->layout.computedFlexBasis;
         }
 
         // Store a private linked list of children that need to be layed out.
@@ -1137,14 +1469,11 @@ static void layoutNodeImpl(CSSNode *node,
         currentRelativeChild = child;
         child->nextChild = NULL;
       }
-
-      i++;
-      endOfLineIndex++;
     }
 
     // If we don't need to measure the cross axis, we can skip the entire flex
     // step.
-    bool canSkipFlex = !performLayout && measureModeCrossDim == CSSMeasureModeExactly;
+    const bool canSkipFlex = !performLayout && measureModeCrossDim == CSSMeasureModeExactly;
 
     // In order to position the elements in the main axis, we have two
     // controls. The space between the beginning and the first element
@@ -1170,7 +1499,7 @@ static void layoutNodeImpl(CSSNode *node,
       remainingFreeSpace = -sizeConsumedOnCurrentLine;
     }
 
-    float originalRemainingFreeSpace = remainingFreeSpace;
+    const float originalRemainingFreeSpace = remainingFreeSpace;
     float deltaFreeSpace = 0;
 
     if (!canSkipFlex) {
@@ -1207,15 +1536,17 @@ static void layoutNodeImpl(CSSNode *node,
       float deltaFlexGrowFactors = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.flexBasis;
+        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
+          flexShrinkScaledFactor =
+              -CSSNodeStyleGetFlexShrink(currentRelativeChild) * childFlexBasis;
 
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
-            baseMainSize = childFlexBasis
-                + remainingFreeSpace / totalFlexShrinkScaledFactors * flexShrinkScaledFactor;
+            baseMainSize =
+                childFlexBasis +
+                remainingFreeSpace / totalFlexShrinkScaledFactors * flexShrinkScaledFactor;
             boundMainSize = boundAxis(currentRelativeChild, mainAxis, baseMainSize);
             if (baseMainSize != boundMainSize) {
               // By excluding this item's size and flex factor from remaining,
@@ -1229,12 +1560,12 @@ static void layoutNodeImpl(CSSNode *node,
             }
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+          flexGrowFactor = CSSNodeStyleGetFlexGrow(currentRelativeChild);
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
-            baseMainSize
-                = childFlexBasis + remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor;
+            baseMainSize =
+                childFlexBasis + remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor;
             boundMainSize = boundAxis(currentRelativeChild, mainAxis, baseMainSize);
             if (baseMainSize != boundMainSize) {
               // By excluding this item's size and flex factor from remaining,
@@ -1260,78 +1591,101 @@ static void layoutNodeImpl(CSSNode *node,
       deltaFreeSpace = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.flexBasis;
+        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
-          flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
-
+          flexShrinkScaledFactor =
+              -CSSNodeStyleGetFlexShrink(currentRelativeChild) * childFlexBasis;
           // Is this child able to shrink?
           if (flexShrinkScaledFactor != 0) {
-            updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childFlexBasis
-                    + remainingFreeSpace / totalFlexShrinkScaledFactors * flexShrinkScaledFactor);
+            float childSize;
+
+            if (totalFlexShrinkScaledFactors == 0) {
+              childSize = childFlexBasis + flexShrinkScaledFactor;
+            } else {
+              childSize =
+                  childFlexBasis +
+                  (remainingFreeSpace / totalFlexShrinkScaledFactors) * flexShrinkScaledFactor;
+            }
+
+            updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childSize);
           }
         } else if (remainingFreeSpace > 0) {
-          flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+          flexGrowFactor = CSSNodeStyleGetFlexGrow(currentRelativeChild);
 
           // Is this child able to grow?
           if (flexGrowFactor != 0) {
-            updatedMainSize = boundAxis(currentRelativeChild, mainAxis,
-                childFlexBasis + remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor);
+            updatedMainSize =
+                boundAxis(currentRelativeChild,
+                          mainAxis,
+                          childFlexBasis +
+                              remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor);
           }
         }
 
         deltaFreeSpace -= updatedMainSize - childFlexBasis;
 
+        float childWidth;
+        float childHeight;
+        CSSMeasureMode childWidthMeasureMode;
+        CSSMeasureMode childHeightMeasureMode;
+
         if (isMainAxisRow) {
           childWidth = updatedMainSize + getMarginAxis(currentRelativeChild, CSSFlexDirectionRow);
           childWidthMeasureMode = CSSMeasureModeExactly;
 
-          if (!CSSValueIsUndefined(availableInnerCrossDim)
-              && !isStyleDimDefined(currentRelativeChild, CSSFlexDirectionColumn)
-              && heightMeasureMode == CSSMeasureModeExactly
-              && getAlignItem(node, currentRelativeChild) == CSSAlignStretch) {
+          if (!CSSValueIsUndefined(availableInnerCrossDim) &&
+              !isStyleDimDefined(currentRelativeChild, CSSFlexDirectionColumn) &&
+              heightMeasureMode == CSSMeasureModeExactly &&
+              getAlignItem(node, currentRelativeChild) == CSSAlignStretch) {
             childHeight = availableInnerCrossDim;
             childHeightMeasureMode = CSSMeasureModeExactly;
           } else if (!isStyleDimDefined(currentRelativeChild, CSSFlexDirectionColumn)) {
             childHeight = availableInnerCrossDim;
-            childHeightMeasureMode
-                = CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined : CSSMeasureModeAtMost;
+            childHeightMeasureMode =
+                CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined : CSSMeasureModeAtMost;
           } else {
-            childHeight = currentRelativeChild->style.dimensions[CSSDimensionHeight]
-                + getMarginAxis(currentRelativeChild, CSSFlexDirectionColumn);
+            childHeight = currentRelativeChild->style.dimensions[CSSDimensionHeight] +
+                          getMarginAxis(currentRelativeChild, CSSFlexDirectionColumn);
             childHeightMeasureMode = CSSMeasureModeExactly;
           }
         } else {
-          childHeight
-              = updatedMainSize + getMarginAxis(currentRelativeChild, CSSFlexDirectionColumn);
+          childHeight =
+              updatedMainSize + getMarginAxis(currentRelativeChild, CSSFlexDirectionColumn);
           childHeightMeasureMode = CSSMeasureModeExactly;
 
-          if (!CSSValueIsUndefined(availableInnerCrossDim)
-              && !isStyleDimDefined(currentRelativeChild, CSSFlexDirectionRow)
-              && widthMeasureMode == CSSMeasureModeExactly
-              && getAlignItem(node, currentRelativeChild) == CSSAlignStretch) {
+          if (!CSSValueIsUndefined(availableInnerCrossDim) &&
+              !isStyleDimDefined(currentRelativeChild, CSSFlexDirectionRow) &&
+              widthMeasureMode == CSSMeasureModeExactly &&
+              getAlignItem(node, currentRelativeChild) == CSSAlignStretch) {
             childWidth = availableInnerCrossDim;
             childWidthMeasureMode = CSSMeasureModeExactly;
           } else if (!isStyleDimDefined(currentRelativeChild, CSSFlexDirectionRow)) {
             childWidth = availableInnerCrossDim;
-            childWidthMeasureMode
-                = CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeAtMost;
+            childWidthMeasureMode =
+                CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeAtMost;
           } else {
-            childWidth = currentRelativeChild->style.dimensions[CSSDimensionWidth]
-                + getMarginAxis(currentRelativeChild, CSSFlexDirectionRow);
+            childWidth = currentRelativeChild->style.dimensions[CSSDimensionWidth] +
+                         getMarginAxis(currentRelativeChild, CSSFlexDirectionRow);
             childWidthMeasureMode = CSSMeasureModeExactly;
           }
         }
 
-        bool requiresStretchLayout = !isStyleDimDefined(currentRelativeChild, crossAxis)
-            && getAlignItem(node, currentRelativeChild) == CSSAlignStretch;
+        const bool requiresStretchLayout =
+            !isStyleDimDefined(currentRelativeChild, crossAxis) &&
+            getAlignItem(node, currentRelativeChild) == CSSAlignStretch;
 
         // Recursively call the layout algorithm for this child with the updated
         // main size.
-        layoutNodeInternal(currentRelativeChild, childWidth, childHeight, direction,
-            childWidthMeasureMode, childHeightMeasureMode, performLayout && !requiresStretchLayout,
-            "flex");
+        layoutNodeInternal(currentRelativeChild,
+                           childWidth,
+                           childHeight,
+                           direction,
+                           childWidthMeasureMode,
+                           childHeightMeasureMode,
+                           performLayout && !requiresStretchLayout,
+                           "flex");
 
         currentRelativeChild = currentRelativeChild->nextChild;
       }
@@ -1348,47 +1702,58 @@ static void layoutNodeImpl(CSSNode *node,
     // that are aligned "stretch". We need to compute these stretch values and
     // set the final positions.
 
-    // If we are using "at most" rules in the main axis, we won't distribute
-    // any remaining space at this point.
-    if (measureModeMainDim == CSSMeasureModeAtMost) {
-      remainingFreeSpace = 0;
+    // If we are using "at most" rules in the main axis. Calculate the remaining space when
+    // constraint by the min size defined for the main axis.
+
+    if (measureModeMainDim == CSSMeasureModeAtMost && remainingFreeSpace > 0) {
+      if (!CSSValueIsUndefined(node->style.minDimensions[dim[mainAxis]]) &&
+          node->style.minDimensions[dim[mainAxis]] >= 0) {
+        remainingFreeSpace = fmax(0,
+                                  node->style.minDimensions[dim[mainAxis]] -
+                                      (availableInnerMainDim - remainingFreeSpace));
+      } else {
+        remainingFreeSpace = 0;
+      }
     }
 
-    // Use justifyContent to figure out how to allocate the remaining space
-    // available in the main axis.
-    if (justifyContent != CSSJustifyFlexStart) {
-      if (justifyContent == CSSJustifyCenter) {
+    switch (justifyContent) {
+      case CSSJustifyCenter:
         leadingMainDim = remainingFreeSpace / 2;
-      } else if (justifyContent == CSSJustifyFlexEnd) {
+        break;
+      case CSSJustifyFlexEnd:
         leadingMainDim = remainingFreeSpace;
-      } else if (justifyContent == CSSJustifySpaceBetween) {
-        remainingFreeSpace = fmaxf(remainingFreeSpace, 0);
+        break;
+      case CSSJustifySpaceBetween:
         if (itemsOnLine > 1) {
-          betweenMainDim = remainingFreeSpace / (itemsOnLine - 1);
+          betweenMainDim = fmaxf(remainingFreeSpace, 0) / (itemsOnLine - 1);
         } else {
           betweenMainDim = 0;
         }
-      } else if (justifyContent == CSSJustifySpaceAround) {
+        break;
+      case CSSJustifySpaceAround:
         // Space on the edges is half of the space between elements
         betweenMainDim = remainingFreeSpace / itemsOnLine;
         leadingMainDim = betweenMainDim / 2;
-      }
+        break;
+      case CSSJustifyFlexStart:
+        break;
     }
 
     float mainDim = leadingPaddingAndBorderMain + leadingMainDim;
     float crossDim = 0;
 
-    for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
-      child = CSSNodeListGet(node->children, i);
+    for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
+      const CSSNodeRef child = CSSNodeListGet(node->children, i);
 
-      if (child->style.positionType == CSSPositionTypeAbsolute
-          && isLeadingPosDefined(child, mainAxis)) {
+      if (child->style.positionType == CSSPositionTypeAbsolute &&
+          isLeadingPosDefined(child, mainAxis)) {
         if (performLayout) {
           // In case the child is position absolute and has left/top being
           // defined, we override the position to whatever the user said
           // (and margin/border).
-          child->layout.position[pos[mainAxis]] = getLeadingPosition(child, mainAxis)
-              + getLeadingBorder(node, mainAxis) + getLeadingMargin(child, mainAxis);
+          child->layout.position[pos[mainAxis]] = getLeadingPosition(child, mainAxis) +
+                                                  getLeadingBorder(node, mainAxis) +
+                                                  getLeadingMargin(child, mainAxis);
         }
       } else {
         if (performLayout) {
@@ -1405,7 +1770,8 @@ static void layoutNodeImpl(CSSNode *node,
             // If we skipped the flex step, then we can't rely on the
             // measuredDims because
             // they weren't computed. This means we can't call getDimWithMargin.
-            mainDim += betweenMainDim + getMarginAxis(child, mainAxis) + child->layout.flexBasis;
+            mainDim +=
+                betweenMainDim + getMarginAxis(child, mainAxis) + child->layout.computedFlexBasis;
             crossDim = availableInnerCrossDim;
           } else {
             // The main dimension is the sum of all the elements dimension plus
@@ -1424,11 +1790,11 @@ static void layoutNodeImpl(CSSNode *node,
     mainDim += trailingPaddingAndBorderMain;
 
     float containerCrossAxis = availableInnerCrossDim;
-    if (measureModeCrossDim == CSSMeasureModeUndefined
-        || measureModeCrossDim == CSSMeasureModeAtMost) {
+    if (measureModeCrossDim == CSSMeasureModeUndefined ||
+        measureModeCrossDim == CSSMeasureModeAtMost) {
       // Compute the cross axis from the max cross dimension of the children.
-      containerCrossAxis = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross)
-          - paddingAndBorderAxisCross;
+      containerCrossAxis = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross) -
+                           paddingAndBorderAxisCross;
 
       if (measureModeCrossDim == CSSMeasureModeAtMost) {
         containerCrossAxis = fminf(containerCrossAxis, availableInnerCrossDim);
@@ -1441,14 +1807,14 @@ static void layoutNodeImpl(CSSNode *node,
     }
 
     // Clamp to the min/max size specified on the container.
-    crossDim = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross)
-        - paddingAndBorderAxisCross;
+    crossDim = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross) -
+               paddingAndBorderAxisCross;
 
     // STEP 7: CROSS-AXIS ALIGNMENT
     // We can skip child alignment if we're just measuring the container.
     if (performLayout) {
-      for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
-        child = CSSNodeListGet(node->children, i);
+      for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
+        const CSSNodeRef child = CSSNodeListGet(node->children, i);
 
         if (child->style.positionType == CSSPositionTypeAbsolute) {
           // If the child is absolutely positioned and has a
@@ -1456,11 +1822,12 @@ static void layoutNodeImpl(CSSNode *node,
           // set, override all the previously computed positions to set it
           // correctly.
           if (isLeadingPosDefined(child, crossAxis)) {
-            child->layout.position[pos[crossAxis]] = getLeadingPosition(child, crossAxis)
-                + getLeadingBorder(node, crossAxis) + getLeadingMargin(child, crossAxis);
+            child->layout.position[pos[crossAxis]] = getLeadingPosition(child, crossAxis) +
+                                                     getLeadingBorder(node, crossAxis) +
+                                                     getLeadingMargin(child, crossAxis);
           } else {
-            child->layout.position[pos[crossAxis]]
-                = leadingPaddingAndBorderCross + getLeadingMargin(child, crossAxis);
+            child->layout.position[pos[crossAxis]] =
+                leadingPaddingAndBorderCross + getLeadingMargin(child, crossAxis);
           }
         } else {
           float leadingCrossDim = leadingPaddingAndBorderCross;
@@ -1468,39 +1835,50 @@ static void layoutNodeImpl(CSSNode *node,
           // For a relative children, we're either using alignItems (parent) or
           // alignSelf (child) in order to determine the position in the cross
           // axis
-          CSSAlign alignItem = getAlignItem(node, child);
+          const CSSAlign alignItem = getAlignItem(node, child);
 
           // If the child uses align stretch, we need to lay it out one more
           // time, this time
           // forcing the cross-axis size to be the computed cross size for the
           // current line.
           if (alignItem == CSSAlignStretch) {
-            childWidth = child->layout.measuredDimensions[CSSDimensionWidth]
-                + getMarginAxis(child, CSSFlexDirectionRow);
-            childHeight = child->layout.measuredDimensions[CSSDimensionHeight]
-                + getMarginAxis(child, CSSFlexDirectionColumn);
-            bool isCrossSizeDefinite = false;
+            const bool isCrossSizeDefinite =
+                (isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionColumn)) ||
+                (!isMainAxisRow && isStyleDimDefined(child, CSSFlexDirectionRow));
+
+            float childWidth;
+            float childHeight;
+            CSSMeasureMode childWidthMeasureMode;
+            CSSMeasureMode childHeightMeasureMode;
 
             if (isMainAxisRow) {
-              isCrossSizeDefinite = isStyleDimDefined(child, CSSFlexDirectionColumn);
               childHeight = crossDim;
+              childWidth = child->layout.measuredDimensions[CSSDimensionWidth] +
+                           getMarginAxis(child, CSSFlexDirectionRow);
             } else {
-              isCrossSizeDefinite = isStyleDimDefined(child, CSSFlexDirectionRow);
               childWidth = crossDim;
+              childHeight = child->layout.measuredDimensions[CSSDimensionHeight] +
+                            getMarginAxis(child, CSSFlexDirectionColumn);
             }
 
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
             if (!isCrossSizeDefinite) {
-              childWidthMeasureMode
-                  = CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
-              childHeightMeasureMode
-                  = CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
-              layoutNodeInternal(child, childWidth, childHeight, direction, childWidthMeasureMode,
-                  childHeightMeasureMode, true, "stretch");
+              childWidthMeasureMode =
+                  CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
+              childHeightMeasureMode = CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined
+                                                                        : CSSMeasureModeExactly;
+              layoutNodeInternal(child,
+                                 childWidth,
+                                 childHeight,
+                                 direction,
+                                 childWidthMeasureMode,
+                                 childHeightMeasureMode,
+                                 true,
+                                 "stretch");
             }
           } else if (alignItem != CSSAlignFlexStart) {
-            float remainingCrossDim = containerCrossAxis - getDimWithMargin(child, crossAxis);
+            const float remainingCrossDim = containerCrossAxis - getDimWithMargin(child, crossAxis);
 
             if (alignItem == CSSAlignCenter) {
               leadingCrossDim += remainingCrossDim / 2;
@@ -1517,77 +1895,90 @@ static void layoutNodeImpl(CSSNode *node,
 
     totalLineCrossDim += crossDim;
     maxLineMainDim = fmaxf(maxLineMainDim, mainDim);
-
-    // Reset variables for new line.
-    lineCount++;
-    startOfLineIndex = endOfLineIndex;
-    endOfLineIndex = startOfLineIndex;
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
   if (lineCount > 1 && performLayout && !CSSValueIsUndefined(availableInnerCrossDim)) {
-    float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
+    const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
     float crossDimLead = 0;
     float currentLead = leadingPaddingAndBorderCross;
 
-    CSSAlign alignContent = node->style.alignContent;
-    if (alignContent == CSSAlignFlexEnd) {
-      currentLead += remainingAlignContentDim;
-    } else if (alignContent == CSSAlignCenter) {
-      currentLead += remainingAlignContentDim / 2;
-    } else if (alignContent == CSSAlignStretch) {
-      if (availableInnerCrossDim > totalLineCrossDim) {
-        crossDimLead = (remainingAlignContentDim / lineCount);
-      }
+    switch (node->style.alignContent) {
+      case CSSAlignFlexEnd:
+        currentLead += remainingAlignContentDim;
+        break;
+      case CSSAlignCenter:
+        currentLead += remainingAlignContentDim / 2;
+        break;
+      case CSSAlignStretch:
+        if (availableInnerCrossDim > totalLineCrossDim) {
+          crossDimLead = (remainingAlignContentDim / lineCount);
+        }
+        break;
+      case CSSAlignAuto:
+      case CSSAlignFlexStart:
+        break;
     }
 
     uint32_t endIndex = 0;
-    for (i = 0; i < lineCount; ++i) {
+    for (uint32_t i = 0; i < lineCount; i++) {
       uint32_t startIndex = endIndex;
-      uint32_t j;
+      uint32_t ii;
 
       // compute the line's height and find the endIndex
       float lineHeight = 0;
-      for (j = startIndex; j < childCount; ++j) {
-        child = CSSNodeListGet(node->children, j);
-        if (child->style.positionType != CSSPositionTypeRelative) {
-          continue;
-        }
-        if (child->lineIndex != i) {
-          break;
-        }
-        if (isLayoutDimDefined(child, crossAxis)) {
-          lineHeight = fmaxf(lineHeight,
-              child->layout.measuredDimensions[dim[crossAxis]] + getMarginAxis(child, crossAxis));
+      for (ii = startIndex; ii < childCount; ii++) {
+        const CSSNodeRef child = CSSNodeListGet(node->children, ii);
+
+        if (child->style.positionType == CSSPositionTypeRelative) {
+          if (child->lineIndex != i) {
+            break;
+          }
+
+          if (isLayoutDimDefined(child, crossAxis)) {
+            lineHeight = fmaxf(lineHeight,
+                               child->layout.measuredDimensions[dim[crossAxis]] +
+                                   getMarginAxis(child, crossAxis));
+          }
         }
       }
-      endIndex = j;
+      endIndex = ii;
       lineHeight += crossDimLead;
 
       if (performLayout) {
-        for (j = startIndex; j < endIndex; ++j) {
-          child = CSSNodeListGet(node->children, j);
-          if (child->style.positionType != CSSPositionTypeRelative) {
-            continue;
-          }
+        for (ii = startIndex; ii < endIndex; ii++) {
+          const CSSNodeRef child = CSSNodeListGet(node->children, ii);
 
-          CSSAlign alignContentAlignItem = getAlignItem(node, child);
-          if (alignContentAlignItem == CSSAlignFlexStart) {
-            child->layout.position[pos[crossAxis]]
-                = currentLead + getLeadingMargin(child, crossAxis);
-          } else if (alignContentAlignItem == CSSAlignFlexEnd) {
-            child->layout.position[pos[crossAxis]] = currentLead + lineHeight
-                - getTrailingMargin(child, crossAxis)
-                - child->layout.measuredDimensions[dim[crossAxis]];
-          } else if (alignContentAlignItem == CSSAlignCenter) {
-            childHeight = child->layout.measuredDimensions[dim[crossAxis]];
-            child->layout.position[pos[crossAxis]] = currentLead + (lineHeight - childHeight) / 2;
-          } else if (alignContentAlignItem == CSSAlignStretch) {
-            child->layout.position[pos[crossAxis]]
-                = currentLead + getLeadingMargin(child, crossAxis);
-            // TODO(prenaux): Correctly set the height of items with indefinite
-            //                (auto) crossAxis dimension.
+          if (child->style.positionType == CSSPositionTypeRelative) {
+            switch (getAlignItem(node, child)) {
+              case CSSAlignFlexStart: {
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + getLeadingMargin(child, crossAxis);
+                break;
+              }
+              case CSSAlignFlexEnd: {
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + lineHeight - getTrailingMargin(child, crossAxis) -
+                    child->layout.measuredDimensions[dim[crossAxis]];
+                break;
+              }
+              case CSSAlignCenter: {
+                float childHeight = child->layout.measuredDimensions[dim[crossAxis]];
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + (lineHeight - childHeight) / 2;
+                break;
+              }
+              case CSSAlignStretch: {
+                child->layout.position[pos[crossAxis]] =
+                    currentLead + getLeadingMargin(child, crossAxis);
+                // TODO(prenaux): Correctly set the height of items with indefinite
+                //                (auto) crossAxis dimension.
+                break;
+              }
+              case CSSAlignAuto:
+                break;
+            }
           }
         }
       }
@@ -1597,10 +1988,10 @@ static void layoutNodeImpl(CSSNode *node,
   }
 
   // STEP 9: COMPUTING FINAL DIMENSIONS
-  node->layout.measuredDimensions[CSSDimensionWidth]
-      = boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
-  node->layout.measuredDimensions[CSSDimensionHeight]
-      = boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
+  node->layout.measuredDimensions[CSSDimensionWidth] =
+      boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
+  node->layout.measuredDimensions[CSSDimensionHeight] =
+      boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
 
   // If the user didn't specify a width or height for the node, set the
   // dimensions based on the children.
@@ -1609,144 +2000,44 @@ static void layoutNodeImpl(CSSNode *node,
     // doesn't go below the padding and border amount.
     node->layout.measuredDimensions[dim[mainAxis]] = boundAxis(node, mainAxis, maxLineMainDim);
   } else if (measureModeMainDim == CSSMeasureModeAtMost) {
-    node->layout.measuredDimensions[dim[mainAxis]]
-        = fmaxf(fminf(availableInnerMainDim + paddingAndBorderAxisMain,
+    node->layout.measuredDimensions[dim[mainAxis]] =
+        fmaxf(fminf(availableInnerMainDim + paddingAndBorderAxisMain,
                     boundAxisWithinMinAndMax(node, mainAxis, maxLineMainDim)),
-            paddingAndBorderAxisMain);
+              paddingAndBorderAxisMain);
   }
 
   if (measureModeCrossDim == CSSMeasureModeUndefined) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
-    node->layout.measuredDimensions[dim[crossAxis]]
-        = boundAxis(node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross);
+    node->layout.measuredDimensions[dim[crossAxis]] =
+        boundAxis(node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross);
   } else if (measureModeCrossDim == CSSMeasureModeAtMost) {
-    node->layout.measuredDimensions[dim[crossAxis]]
-        = fmaxf(fminf(availableInnerCrossDim + paddingAndBorderAxisCross,
-                    boundAxisWithinMinAndMax(
-                          node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross)),
-            paddingAndBorderAxisCross);
+    node->layout.measuredDimensions[dim[crossAxis]] =
+        fmaxf(fminf(availableInnerCrossDim + paddingAndBorderAxisCross,
+                    boundAxisWithinMinAndMax(node,
+                                             crossAxis,
+                                             totalLineCrossDim + paddingAndBorderAxisCross)),
+              paddingAndBorderAxisCross);
   }
 
-  // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-  currentAbsoluteChild = firstAbsoluteChild;
-  while (currentAbsoluteChild != NULL) {
-    // Now that we know the bounds of the container, perform layout again on the
-    // absolutely-positioned children.
-    if (performLayout) {
-
-      childWidth = CSSUndefined;
-      childHeight = CSSUndefined;
-
-      if (isStyleDimDefined(currentAbsoluteChild, CSSFlexDirectionRow)) {
-        childWidth = currentAbsoluteChild->style.dimensions[CSSDimensionWidth]
-            + getMarginAxis(currentAbsoluteChild, CSSFlexDirectionRow);
-      } else {
-        // If the child doesn't have a specified width, compute the width based
-        // on the left/right
-        // offsets if they're defined.
-        if (isLeadingPosDefined(currentAbsoluteChild, CSSFlexDirectionRow)
-            && isTrailingPosDefined(currentAbsoluteChild, CSSFlexDirectionRow)) {
-          childWidth = node->layout.measuredDimensions[CSSDimensionWidth]
-              - (getLeadingBorder(node, CSSFlexDirectionRow)
-                           + getTrailingBorder(node, CSSFlexDirectionRow))
-              - (getLeadingPosition(currentAbsoluteChild, CSSFlexDirectionRow)
-                           + getTrailingPosition(currentAbsoluteChild, CSSFlexDirectionRow));
-          childWidth = boundAxis(currentAbsoluteChild, CSSFlexDirectionRow, childWidth);
-        }
-      }
-
-      if (isStyleDimDefined(currentAbsoluteChild, CSSFlexDirectionColumn)) {
-        childHeight = currentAbsoluteChild->style.dimensions[CSSDimensionHeight]
-            + getMarginAxis(currentAbsoluteChild, CSSFlexDirectionColumn);
-      } else {
-        // If the child doesn't have a specified height, compute the height
-        // based on the top/bottom
-        // offsets if they're defined.
-        if (isLeadingPosDefined(currentAbsoluteChild, CSSFlexDirectionColumn)
-            && isTrailingPosDefined(currentAbsoluteChild, CSSFlexDirectionColumn)) {
-          childHeight = node->layout.measuredDimensions[CSSDimensionHeight]
-              - (getLeadingBorder(node, CSSFlexDirectionColumn)
-                            + getTrailingBorder(node, CSSFlexDirectionColumn))
-              - (getLeadingPosition(currentAbsoluteChild, CSSFlexDirectionColumn)
-                            + getTrailingPosition(currentAbsoluteChild, CSSFlexDirectionColumn));
-          childHeight = boundAxis(currentAbsoluteChild, CSSFlexDirectionColumn, childHeight);
-        }
-      }
-
-      // If we're still missing one or the other dimension, measure the content.
-      if (CSSValueIsUndefined(childWidth) || CSSValueIsUndefined(childHeight)) {
-        childWidthMeasureMode
-            = CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
-        childHeightMeasureMode
-            = CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
-
-        // According to the spec, if the main size is not definite and the
-        // child's inline axis is parallel to the main axis (i.e. it's
-        // horizontal), the child should be sized using "UNDEFINED" in
-        // the main size. Otherwise use "AT_MOST" in the cross axis.
-        if (!isMainAxisRow && CSSValueIsUndefined(childWidth) && !CSSValueIsUndefined(availableInnerWidth)) {
-          childWidth = availableInnerWidth;
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
-        // The W3C spec doesn't say anything about the 'overflow' property,
-        // but all major browsers appear to implement the following logic.
-        if (node->style.overflow == CSSOverflowHidden) {
-          if (isMainAxisRow && CSSValueIsUndefined(childHeight) && !CSSValueIsUndefined(availableInnerHeight)) {
-            childHeight = availableInnerHeight;
-            childHeightMeasureMode = CSSMeasureModeAtMost;
-          }
-        }
-
-        layoutNodeInternal(currentAbsoluteChild, childWidth, childHeight, direction,
-            childWidthMeasureMode, childHeightMeasureMode, false, "abs-measure");
-        childWidth = currentAbsoluteChild->layout.measuredDimensions[CSSDimensionWidth]
-            + getMarginAxis(currentAbsoluteChild, CSSFlexDirectionRow);
-        childHeight = currentAbsoluteChild->layout.measuredDimensions[CSSDimensionHeight]
-            + getMarginAxis(currentAbsoluteChild, CSSFlexDirectionColumn);
-      }
-
-      layoutNodeInternal(currentAbsoluteChild, childWidth, childHeight, direction,
-          CSSMeasureModeExactly, CSSMeasureModeExactly, true, "abs-layout");
-
-      if (isTrailingPosDefined(currentAbsoluteChild, mainAxis)
-          && !isLeadingPosDefined(currentAbsoluteChild, mainAxis)) {
-        currentAbsoluteChild->layout.position[leading[mainAxis]]
-            = node->layout.measuredDimensions[dim[mainAxis]]
-            - currentAbsoluteChild->layout.measuredDimensions[dim[mainAxis]]
-            - getTrailingPosition(currentAbsoluteChild, mainAxis);
-      }
-
-      if (isTrailingPosDefined(currentAbsoluteChild, crossAxis)
-          && !isLeadingPosDefined(currentAbsoluteChild, crossAxis)) {
-        currentAbsoluteChild->layout.position[leading[crossAxis]]
-            = node->layout.measuredDimensions[dim[crossAxis]]
-            - currentAbsoluteChild->layout.measuredDimensions[dim[crossAxis]]
-            - getTrailingPosition(currentAbsoluteChild, crossAxis);
-      }
-    }
-
-    currentAbsoluteChild = currentAbsoluteChild->nextChild;
-  }
-
-  // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
   if (performLayout) {
-    bool needsMainTrailingPos = false;
-    bool needsCrossTrailingPos = false;
-
-    if (mainAxis == CSSFlexDirectionRowReverse || mainAxis == CSSFlexDirectionColumnReverse) {
-      needsMainTrailingPos = true;
+    // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
+    for (currentAbsoluteChild = firstAbsoluteChild; currentAbsoluteChild != NULL;
+         currentAbsoluteChild = currentAbsoluteChild->nextChild) {
+      absoluteLayoutChild(
+          node, currentAbsoluteChild, availableInnerWidth, widthMeasureMode, direction);
     }
 
-    if (crossAxis == CSSFlexDirectionRowReverse || crossAxis == CSSFlexDirectionColumnReverse) {
-      needsCrossTrailingPos = true;
-    }
+    // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
+    const bool needsMainTrailingPos =
+        mainAxis == CSSFlexDirectionRowReverse || mainAxis == CSSFlexDirectionColumnReverse;
+    const bool needsCrossTrailingPos =
+        CSSFlexDirectionRowReverse || crossAxis == CSSFlexDirectionColumnReverse;
 
     // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
-      for (i = 0; i < childCount; ++i) {
-        child = CSSNodeListGet(node->children, i);
+      for (uint32_t i = 0; i < childCount; i++) {
+        const CSSNodeRef child = CSSNodeListGet(node->children, i);
 
         if (needsMainTrailingPos) {
           setTrailingPosition(node, child, mainAxis);
@@ -1767,18 +2058,21 @@ bool gPrintSkips = false;
 
 static const char *spacer = "                                                            ";
 
-static const char *getSpacer(unsigned long level) {
-  unsigned long spacerLen = strlen(spacer);
+static const char *getSpacer(const unsigned long level) {
+  const unsigned long spacerLen = strlen(spacer);
   if (level > spacerLen) {
-    level = spacerLen;
+    return &spacer[0];
+  } else {
+    return &spacer[spacerLen - level];
   }
-  return &spacer[spacerLen - level];
 }
 
-static const char *getModeName(CSSMeasureMode mode, bool performLayout) {
-  const char *kMeasureModeNames[CSSMeasureModeCount] = { "UNDEFINED", "EXACTLY", "AT_MOST" };
-  const char *kLayoutModeNames[CSSMeasureModeCount]
-      = { "LAY_UNDEFINED", "LAY_EXACTLY", "LAY_AT_MOST" };
+static const char *getModeName(const CSSMeasureMode mode, const bool performLayout) {
+  const char *kMeasureModeNames[CSSMeasureModeCount] = {"UNDEFINED", "EXACTLY", "AT_MOST"};
+  const char *kLayoutModeNames[CSSMeasureModeCount] = {"LAY_UNDEFINED",
+                                                       "LAY_EXACTLY",
+                                                       "LAY_AT_"
+                                                       "MOST"};
 
   if (mode >= CSSMeasureModeCount) {
     return "";
@@ -1787,91 +2081,74 @@ static const char *getModeName(CSSMeasureMode mode, bool performLayout) {
   return performLayout ? kLayoutModeNames[mode] : kMeasureModeNames[mode];
 }
 
-static bool canUseCachedMeasurement(bool isTextNode,
-    float availableWidth,
-    float availableHeight,
-    float margin_row,
-    float margin_column,
-    CSSMeasureMode widthMeasureMode,
-    CSSMeasureMode heightMeasureMode,
-    CSSCachedMeasurement cached_layout) {
+static inline bool newSizeIsExactAndMatchesOldMeasuredSize(CSSMeasureMode sizeMode,
+                                                           float size,
+                                                           float lastComputedSize) {
+  return sizeMode == CSSMeasureModeExactly && eq(size, lastComputedSize);
+}
 
-  bool is_height_same = (cached_layout.heightMeasureMode == CSSMeasureModeUndefined
-                            && heightMeasureMode == CSSMeasureModeUndefined)
-      || (cached_layout.heightMeasureMode == heightMeasureMode
-                            && eq(cached_layout.availableHeight, availableHeight));
+static inline bool oldSizeIsUnspecifiedAndStillFits(CSSMeasureMode sizeMode,
+                                                    float size,
+                                                    CSSMeasureMode lastSizeMode,
+                                                    float lastComputedSize) {
+  return sizeMode == CSSMeasureModeAtMost && lastSizeMode == CSSMeasureModeUndefined &&
+         size >= lastComputedSize;
+}
 
-  bool is_width_same = (cached_layout.widthMeasureMode == CSSMeasureModeUndefined
-                           && widthMeasureMode == CSSMeasureModeUndefined)
-      || (cached_layout.widthMeasureMode == widthMeasureMode
-                           && eq(cached_layout.availableWidth, availableWidth));
+static inline bool newMeasureSizeIsStricterAndStillValid(CSSMeasureMode sizeMode,
+                                                         float size,
+                                                         CSSMeasureMode lastSizeMode,
+                                                         float lastSize,
+                                                         float lastComputedSize) {
+  return lastSizeMode == CSSMeasureModeAtMost && sizeMode == CSSMeasureModeAtMost &&
+         lastSize > size && lastComputedSize <= size;
+}
 
-  if (is_height_same && is_width_same) {
-    return true;
+bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
+                                           const CSSMeasureMode widthMode,
+                                           const float width,
+                                           const CSSMeasureMode heightMode,
+                                           const float height,
+                                           const CSSMeasureMode lastWidthMode,
+                                           const float lastWidth,
+                                           const CSSMeasureMode lastHeightMode,
+                                           const float lastHeight,
+                                           const float lastComputedWidth,
+                                           const float lastComputedHeight,
+                                           const float marginRow,
+                                           const float marginColumn) {
+  if (lastComputedHeight < 0 || lastComputedWidth < 0) {
+    return false;
   }
 
-  bool is_height_valid = (cached_layout.heightMeasureMode == CSSMeasureModeUndefined
-                             && heightMeasureMode == CSSMeasureModeAtMost
-                             && cached_layout.computedHeight <= (availableHeight - margin_column))
-      || (heightMeasureMode == CSSMeasureModeExactly
-                             && eq(cached_layout.computedHeight, availableHeight - margin_column));
+  const bool hasSameWidthSpec = lastWidthMode == widthMode && eq(lastWidth, width);
+  const bool hasSameHeightSpec = lastHeightMode == heightMode && eq(lastHeight, height);
 
-  if (is_width_same && is_height_valid) {
-    return true;
-  }
+  const bool widthIsCompatible =
+      hasSameWidthSpec ||
+      newSizeIsExactAndMatchesOldMeasuredSize(widthMode, width - marginRow, lastComputedWidth) ||
+      oldSizeIsUnspecifiedAndStillFits(widthMode,
+                                       width - marginRow,
+                                       lastWidthMode,
+                                       lastComputedWidth) ||
+      newMeasureSizeIsStricterAndStillValid(
+          widthMode, width - marginRow, lastWidthMode, lastWidth, lastComputedWidth);
 
-  bool is_width_valid = (cached_layout.widthMeasureMode == CSSMeasureModeUndefined
-                            && widthMeasureMode == CSSMeasureModeAtMost
-                            && cached_layout.computedWidth <= (availableWidth - margin_row))
-      || (widthMeasureMode == CSSMeasureModeExactly
-                            && eq(cached_layout.computedWidth, availableWidth - margin_row));
+  const bool heightIsCompatible = isTextNode || hasSameHeightSpec ||
+                                  newSizeIsExactAndMatchesOldMeasuredSize(heightMode,
+                                                                          height - marginColumn,
+                                                                          lastComputedHeight) ||
+                                  oldSizeIsUnspecifiedAndStillFits(heightMode,
+                                                                   height - marginColumn,
+                                                                   lastHeightMode,
+                                                                   lastComputedHeight) ||
+                                  newMeasureSizeIsStricterAndStillValid(heightMode,
+                                                                        height - marginColumn,
+                                                                        lastHeightMode,
+                                                                        lastHeight,
+                                                                        lastComputedHeight);
 
-  if (is_height_same && is_width_valid) {
-    return true;
-  }
-
-  if (is_height_valid && is_width_valid) {
-    return true;
-  }
-
-  // We know this to be text so we can apply some more specialized heuristics.
-  if (isTextNode) {
-    if (is_width_same) {
-      if (heightMeasureMode == CSSMeasureModeUndefined) {
-        // Width is the same and height is not restricted. Re-use cahced value.
-        return true;
-      }
-
-      if (heightMeasureMode == CSSMeasureModeAtMost
-          && cached_layout.computedHeight < (availableHeight - margin_column)) {
-        // Width is the same and height restriction is greater than the cached
-        // height. Re-use cached
-        // value.
-        return true;
-      }
-
-      // Width is the same but height restriction imposes smaller height than
-      // previously measured.
-      // Update the cached value to respect the new height restriction.
-      cached_layout.computedHeight = availableHeight - margin_column;
-      return true;
-    }
-
-    if (cached_layout.widthMeasureMode == CSSMeasureModeUndefined) {
-      if (widthMeasureMode == CSSMeasureModeUndefined
-          || (widthMeasureMode == CSSMeasureModeAtMost
-                 && cached_layout.computedWidth <= (availableWidth - margin_row))) {
-        // Previsouly this text was measured with no width restriction, if width
-        // is now restricted
-        // but to a larger value than the previsouly measured width we can
-        // re-use the measurement
-        // as we know it will fit.
-        return true;
-      }
-    }
-  }
-
-  return false;
+  return widthIsCompatible && heightIsCompatible;
 }
 
 //
@@ -1882,26 +2159,29 @@ static bool canUseCachedMeasurement(bool isTextNode,
 //  Input parameters are the same as layoutNodeImpl (see above)
 //  Return parameter is true if layout was performed, false if skipped
 //
-bool layoutNodeInternal(CSSNode *node,
-    float availableWidth,
-    float availableHeight,
-    CSSDirection parentDirection,
-    CSSMeasureMode widthMeasureMode,
-    CSSMeasureMode heightMeasureMode,
-    bool performLayout,
-    char *reason) {
+bool layoutNodeInternal(const CSSNodeRef node,
+                        const float availableWidth,
+                        const float availableHeight,
+                        const CSSDirection parentDirection,
+                        const CSSMeasureMode widthMeasureMode,
+                        const CSSMeasureMode heightMeasureMode,
+                        const bool performLayout,
+                        const char *reason) {
   CSSLayout *layout = &node->layout;
 
   gDepth++;
 
-  bool needToVisitNode = (node->isDirty && layout->generationCount != gCurrentGenerationCount)
-      || layout->lastParentDirection != parentDirection;
+  const bool needToVisitNode =
+      (node->isDirty && layout->generationCount != gCurrentGenerationCount) ||
+      layout->lastParentDirection != parentDirection;
 
   if (needToVisitNode) {
     // Invalidate the cached results.
     layout->nextCachedMeasurementsIndex = 0;
-    layout->cached_layout.widthMeasureMode = (CSSMeasureMode)-1;
-    layout->cached_layout.heightMeasureMode = (CSSMeasureMode)-1;
+    layout->cachedLayout.widthMeasureMode = (CSSMeasureMode) -1;
+    layout->cachedLayout.heightMeasureMode = (CSSMeasureMode) -1;
+    layout->cachedLayout.computedWidth = -1;
+    layout->cachedLayout.computedHeight = -1;
   }
 
   CSSCachedMeasurement *cachedResults = NULL;
@@ -1918,40 +2198,59 @@ bool layoutNodeInternal(CSSNode *node,
   // most
   // expensive to measure, so it's worth avoiding redundant measurements if at
   // all possible.
-  if (isMeasureDefined(node)) {
-    float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
-    float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
+  if (node->measure) {
+    const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
+    const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
     // First, try to use the layout cache.
-    if (canUseCachedMeasurement(node->isTextNode, availableWidth, availableHeight, marginAxisRow,
-            marginAxisColumn, widthMeasureMode, heightMeasureMode, layout->cached_layout)) {
-      cachedResults = &layout->cached_layout;
+    if (CSSNodeCanUseCachedMeasurement(node->isTextNode,
+                                       widthMeasureMode,
+                                       availableWidth,
+                                       heightMeasureMode,
+                                       availableHeight,
+                                       layout->cachedLayout.widthMeasureMode,
+                                       layout->cachedLayout.availableWidth,
+                                       layout->cachedLayout.heightMeasureMode,
+                                       layout->cachedLayout.availableHeight,
+                                       layout->cachedLayout.computedWidth,
+                                       layout->cachedLayout.computedHeight,
+                                       marginAxisRow,
+                                       marginAxisColumn)) {
+      cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
       for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-        if (canUseCachedMeasurement(node->isTextNode, availableWidth, availableHeight,
-                marginAxisRow, marginAxisColumn, widthMeasureMode, heightMeasureMode,
-                layout->cachedMeasurements[i])) {
+        if (CSSNodeCanUseCachedMeasurement(node->isTextNode,
+                                           widthMeasureMode,
+                                           availableWidth,
+                                           heightMeasureMode,
+                                           availableHeight,
+                                           layout->cachedMeasurements[i].widthMeasureMode,
+                                           layout->cachedMeasurements[i].availableWidth,
+                                           layout->cachedMeasurements[i].heightMeasureMode,
+                                           layout->cachedMeasurements[i].availableHeight,
+                                           layout->cachedMeasurements[i].computedWidth,
+                                           layout->cachedMeasurements[i].computedHeight,
+                                           marginAxisRow,
+                                           marginAxisColumn)) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
       }
     }
   } else if (performLayout) {
-    if (eq(layout->cached_layout.availableWidth, availableWidth)
-        && eq(layout->cached_layout.availableHeight, availableHeight)
-        && layout->cached_layout.widthMeasureMode == widthMeasureMode
-        && layout->cached_layout.heightMeasureMode == heightMeasureMode) {
-
-      cachedResults = &layout->cached_layout;
+    if (eq(layout->cachedLayout.availableWidth, availableWidth) &&
+        eq(layout->cachedLayout.availableHeight, availableHeight) &&
+        layout->cachedLayout.widthMeasureMode == widthMeasureMode &&
+        layout->cachedLayout.heightMeasureMode == heightMeasureMode) {
+      cachedResults = &layout->cachedLayout;
     }
   } else {
     for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-      if (eq(layout->cachedMeasurements[i].availableWidth, availableWidth)
-          && eq(layout->cachedMeasurements[i].availableHeight, availableHeight)
-          && layout->cachedMeasurements[i].widthMeasureMode == widthMeasureMode
-          && layout->cachedMeasurements[i].heightMeasureMode == heightMeasureMode) {
-
+      if (eq(layout->cachedMeasurements[i].availableWidth, availableWidth) &&
+          eq(layout->cachedMeasurements[i].availableHeight, availableHeight) &&
+          layout->cachedMeasurements[i].widthMeasureMode == widthMeasureMode &&
+          layout->cachedMeasurements[i].heightMeasureMode == heightMeasureMode) {
         cachedResults = &layout->cachedMeasurements[i];
         break;
       }
@@ -1965,36 +2264,50 @@ bool layoutNodeInternal(CSSNode *node,
     if (gPrintChanges && gPrintSkips) {
       printf("%s%d.{[skipped] ", getSpacer(gDepth), gDepth);
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
       printf("wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
-          getModeName(widthMeasureMode, performLayout),
-          getModeName(heightMeasureMode, performLayout), availableWidth, availableHeight,
-          cachedResults->computedWidth, cachedResults->computedHeight, reason);
+             getModeName(widthMeasureMode, performLayout),
+             getModeName(heightMeasureMode, performLayout),
+             availableWidth,
+             availableHeight,
+             cachedResults->computedWidth,
+             cachedResults->computedHeight,
+             reason);
     }
   } else {
-
     if (gPrintChanges) {
       printf("%s%d.{%s", getSpacer(gDepth), gDepth, needToVisitNode ? "*" : "");
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
-      printf("wm: %s, hm: %s, aw: %f ah: %f %s\n", getModeName(widthMeasureMode, performLayout),
-          getModeName(heightMeasureMode, performLayout), availableWidth, availableHeight, reason);
+      printf("wm: %s, hm: %s, aw: %f ah: %f %s\n",
+             getModeName(widthMeasureMode, performLayout),
+             getModeName(heightMeasureMode, performLayout),
+             availableWidth,
+             availableHeight,
+             reason);
     }
 
-    layoutNodeImpl(node, availableWidth, availableHeight, parentDirection, widthMeasureMode,
-        heightMeasureMode, performLayout);
+    layoutNodeImpl(node,
+                   availableWidth,
+                   availableHeight,
+                   parentDirection,
+                   widthMeasureMode,
+                   heightMeasureMode,
+                   performLayout);
 
     if (gPrintChanges) {
       printf("%s%d.}%s", getSpacer(gDepth), gDepth, needToVisitNode ? "*" : "");
       if (node->print) {
-        node->print(node->context);
+        node->print(node);
       }
-      printf("wm: %s, hm: %s, d: (%f, %f) %s\n", getModeName(widthMeasureMode, performLayout),
-          getModeName(heightMeasureMode, performLayout),
-          layout->measuredDimensions[CSSDimensionWidth],
-          layout->measuredDimensions[CSSDimensionHeight], reason);
+      printf("wm: %s, hm: %s, d: (%f, %f) %s\n",
+             getModeName(widthMeasureMode, performLayout),
+             getModeName(heightMeasureMode, performLayout),
+             layout->measuredDimensions[CSSDimensionWidth],
+             layout->measuredDimensions[CSSDimensionHeight],
+             reason);
     }
 
     layout->lastParentDirection = parentDirection;
@@ -2010,7 +2323,7 @@ bool layoutNodeInternal(CSSNode *node,
       CSSCachedMeasurement *newCacheEntry;
       if (performLayout) {
         // Use the single layout cache entry.
-        newCacheEntry = &layout->cached_layout;
+        newCacheEntry = &layout->cachedLayout;
       } else {
         // Allocate a new measurement cache entry.
         newCacheEntry = &layout->cachedMeasurements[layout->nextCachedMeasurementsIndex];
@@ -2028,8 +2341,8 @@ bool layoutNodeInternal(CSSNode *node,
 
   if (performLayout) {
     node->layout.dimensions[CSSDimensionWidth] = node->layout.measuredDimensions[CSSDimensionWidth];
-    node->layout.dimensions[CSSDimensionHeight]
-        = node->layout.measuredDimensions[CSSDimensionHeight];
+    node->layout.dimensions[CSSDimensionHeight] =
+        node->layout.measuredDimensions[CSSDimensionHeight];
     node->hasNewLayout = true;
     node->isDirty = false;
   }
@@ -2039,8 +2352,10 @@ bool layoutNodeInternal(CSSNode *node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
-void CSSNodeCalculateLayout(
-    CSSNode *node, float availableWidth, float availableHeight, CSSDirection parentDirection) {
+void CSSNodeCalculateLayout(const CSSNodeRef node,
+                            const float availableWidth,
+                            const float availableHeight,
+                            const CSSDirection parentDirection) {
   // Increment the generation count. This will force the recursive routine to
   // visit
   // all dirty nodes at least once. Subsequent visits will be skipped if the
@@ -2048,34 +2363,42 @@ void CSSNodeCalculateLayout(
   // parameters don't change.
   gCurrentGenerationCount++;
 
+  float width = availableWidth;
+  float height = availableHeight;
   CSSMeasureMode widthMeasureMode = CSSMeasureModeUndefined;
   CSSMeasureMode heightMeasureMode = CSSMeasureModeUndefined;
 
-  if (!CSSValueIsUndefined(availableWidth)) {
+  if (!CSSValueIsUndefined(width)) {
     widthMeasureMode = CSSMeasureModeExactly;
   } else if (isStyleDimDefined(node, CSSFlexDirectionRow)) {
-    availableWidth = node->style.dimensions[dim[CSSFlexDirectionRow]]
-        + getMarginAxis(node, CSSFlexDirectionRow);
+    width =
+        node->style.dimensions[dim[CSSFlexDirectionRow]] + getMarginAxis(node, CSSFlexDirectionRow);
     widthMeasureMode = CSSMeasureModeExactly;
   } else if (node->style.maxDimensions[CSSDimensionWidth] >= 0.0) {
-    availableWidth = node->style.maxDimensions[CSSDimensionWidth];
+    width = node->style.maxDimensions[CSSDimensionWidth];
     widthMeasureMode = CSSMeasureModeAtMost;
   }
 
-  if (!CSSValueIsUndefined(availableHeight)) {
+  if (!CSSValueIsUndefined(height)) {
     heightMeasureMode = CSSMeasureModeExactly;
   } else if (isStyleDimDefined(node, CSSFlexDirectionColumn)) {
-    availableHeight = node->style.dimensions[dim[CSSFlexDirectionColumn]]
-        + getMarginAxis(node, CSSFlexDirectionColumn);
+    height = node->style.dimensions[dim[CSSFlexDirectionColumn]] +
+             getMarginAxis(node, CSSFlexDirectionColumn);
     heightMeasureMode = CSSMeasureModeExactly;
   } else if (node->style.maxDimensions[CSSDimensionHeight] >= 0.0) {
-    availableHeight = node->style.maxDimensions[CSSDimensionHeight];
+    height = node->style.maxDimensions[CSSDimensionHeight];
     heightMeasureMode = CSSMeasureModeAtMost;
   }
 
-  if (layoutNodeInternal(node, availableWidth, availableHeight, parentDirection, widthMeasureMode,
-          heightMeasureMode, true, "initial")) {
-
+  if (layoutNodeInternal(node,
+                         width,
+                         height,
+                         parentDirection,
+                         widthMeasureMode,
+                         heightMeasureMode,
+                         true,
+                         "initia"
+                         "l")) {
     setPosition(node, node->layout.direction);
 
     if (gPrintTree) {
@@ -2083,3 +2406,21 @@ void CSSNodeCalculateLayout(
     }
   }
 }
+
+void CSSLayoutSetLogger(CSSLogger logger) {
+  gLogger = logger;
+}
+
+#ifdef CSS_ASSERT_FAIL_ENABLED
+static CSSAssertFailFunc gAssertFailFunc;
+
+void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
+  gAssertFailFunc = func;
+}
+
+void CSSAssertFail(const char *message) {
+  if (gAssertFailFunc) {
+    (*gAssertFailFunc)(message);
+  }
+}
+#endif

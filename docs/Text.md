@@ -121,6 +121,22 @@ You also lose the ability to set up a default font for an entire subtree. The re
 </View>
 ```
 
+Assuming that `MyAppText` is a component that simply renders out its children into a `Text` component with styling, then `MyAppHeaderText` can be defined as follows:
+
+```javascript
+class MyAppHeaderText extends Component {
+  render() {
+    <MyAppText>
+      <Text style={{fontSize: 20}}>
+        {this.props.children}
+      </Text>
+    </MyAppText>
+  }
+}
+```
+
+Composing `MyAppText` in this way ensures that we get the styles from a top-level component, but leaves us the ability to add / override them in specific use cases.
+
 React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.
 
 ```javascript

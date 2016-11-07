@@ -400,7 +400,7 @@ exports.examples = [
     render() {
       return <AnnotationExample style={styles.map} annotation={{
         title: 'Thumbs Up!',
-        image: require('image!uie_thumb_big'),
+        image: require('./uie_thumb_big.png'),
       }}/>;
     }
   },
@@ -417,7 +417,7 @@ exports.examples = [
           </Text>
           <Image
             style={{width: 90, height: 65, resizeMode: 'cover'}}
-            source={require('image!uie_thumb_big')}
+            source={require('./uie_thumb_big.png')}
           />
         </View>,
       }}/>;

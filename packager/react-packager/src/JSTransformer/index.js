@@ -8,7 +8,9 @@
  */
 'use strict';
 
+const Logger = require('../Logger');
 const Promise = require('promise');
+
 const declareOpts = require('../lib/declareOpts');
 const os = require('os');
 const util = require('util');
@@ -35,6 +37,13 @@ const validateOpts = declareOpts({
     type: 'number',
     default: DEFAULT_MAX_CALL_TIME,
   },
+  worker: {
+    type: 'string',
+  },
+  methods: {
+    type: 'array',
+    default: [],
+  },
 });
 
 const maxConcurrentWorkers = ((cores, override) => {
@@ -49,10 +58,25 @@ const maxConcurrentWorkers = ((cores, override) => {
     return Math.floor(cores * 0.75);
   }
   if (cores < 24) {
-    return Math.floor(3/8 * cores + 3); // between cores *.75 and cores / 2
+    return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
   }
   return cores / 2;
 })(os.cpus().length, process.env.REACT_NATIVE_MAX_WORKERS);
+
+function makeFarm(worker, methods, timeout) {
+  return workerFarm(
+    {
+      autoStart: true,
+      maxConcurrentCallsPerWorker: 1,
+      maxConcurrentWorkers: maxConcurrentWorkers,
+      maxCallsPerWorker: MAX_CALLS_PER_WORKER,
+      maxCallTime: timeout,
+      maxRetries: MAX_RETRIES,
+    },
+    worker,
+    methods,
+  );
+}
 
 class Transformer {
   constructor(options) {
@@ -60,22 +84,21 @@ class Transformer {
 
     const {transformModulePath} = opts;
 
-    if (transformModulePath) {
+    if (opts.worker) {
+      this._workers =
+        makeFarm(opts.worker, opts.methods, opts.transformTimeoutInterval);
+      opts.methods.forEach(name => {
+        this[name] = this._workers[name];
+      });
+    }
+    else if (transformModulePath) {
       this._transformModulePath = require.resolve(transformModulePath);
 
-      this._workers = workerFarm(
-        {
-          autoStart: true,
-          maxConcurrentCallsPerWorker: 1,
-          maxConcurrentWorkers: maxConcurrentWorkers,
-          maxCallsPerWorker: MAX_CALLS_PER_WORKER,
-          maxCallTime: opts.transformTimeoutInterval,
-          maxRetries: MAX_RETRIES,
-        },
+      this._workers = makeFarm(
         require.resolve('./worker'),
-        ['minify', 'transformAndExtractDependencies']
+        ['minify', 'transformAndExtractDependencies'],
+        opts.transformTimeoutInterval,
       );
-
       this._transform = Promise.denodeify(this._workers.transformAndExtractDependencies);
       this.minify = Promise.denodeify(this._workers.minify);
     }
@@ -93,6 +116,8 @@ class Transformer {
     return this
       ._transform(this._transformModulePath, fileName, code, options)
       .then(result => {
+        Logger.log(result.transformFileStartLogEntry);
+        Logger.log(result.transformFileEndLogEntry);
         debug('done transforming file', fileName);
         return result;
       })
@@ -101,7 +126,7 @@ class Transformer {
           const timeoutErr = new Error(
             `TimeoutError: transforming ${fileName} took longer than ` +
             `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
-            `You can adjust timeout via the 'transformTimeoutInterval' option`
+            'You can adjust timeout via the \'transformTimeoutInterval\' option'
           );
           timeoutErr.type = 'TimeoutError';
           throw timeoutErr;

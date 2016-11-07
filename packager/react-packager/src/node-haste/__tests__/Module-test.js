@@ -78,17 +78,16 @@ describe('Module', () => {
   const createJSONModule =
     (options) => createModule({...options, file: '/root/package.json'});
 
-  beforeEach(function(done) {
+  beforeEach(function() {
     process.platform = 'linux';
     cache = createCache();
     fastfs = new Fastfs(
       'test',
       ['/root'],
       fileWatcher,
-      {crawling: Promise.resolve([fileName, '/root/package.json']), ignore: []},
+      ['/root/index.js', '/root/package.json'],
+      {ignore: []},
     );
-
-    fastfs.build().then(done);
   });
 
   describe('Module ID', () => {

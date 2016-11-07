@@ -39,7 +39,7 @@ exports.description = 'Examples of using the Geolocation API.';
 exports.examples = [
   {
     title: 'navigator.geolocation',
-    render: function(): ReactElement<any> {
+    render: function(): React.Element<any> {
       return <GeolocationExample />;
     },
   }
@@ -59,7 +59,7 @@ class GeolocationExample extends React.Component {
         var initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      (error) => alert(error),
+      (error) => alert(JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition((position) => {
