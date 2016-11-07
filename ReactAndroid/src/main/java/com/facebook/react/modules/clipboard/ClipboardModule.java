@@ -10,17 +10,16 @@
 package com.facebook.react.modules.clipboard;
 
 import android.annotation.SuppressLint;
-import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Build;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 
 /**
@@ -28,8 +27,6 @@ import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
  */
 @ReactModule(name = "Clipboard")
 public class ClipboardModule extends ReactContextBaseJavaModule implements ClipboardManager.OnPrimaryClipChangedListener {
-
-  RCTNativeAppEventEmitter eventEmitter;
 
   public ClipboardModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -51,7 +48,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule implements Clipb
 
   @Override
   public void onPrimaryClipChanged() {
-    getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("clipboardChanged", null);
+    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).emit("clipboardChanged", null);
   }
 
   @ReactMethod
