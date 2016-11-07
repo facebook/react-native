@@ -22,7 +22,7 @@ If you have suggestions for features that you think would be valuable on the roa
 
 ## Introducing Button
 
-With the release of RN v0.37, we're introducing a basic `<Button />` component that looks great on every platform. This addresses one of the most common pieces of feedback we get: React Native is one of the only mobile development toolkits without a button ready to use out of the box.
+Today we're introducing a basic `<Button />` component that looks great on every platform. This addresses one of the most common pieces of feedback we get: React Native is one of the only mobile development toolkits without a button ready to use out of the box.
 
 ![Simple Button on Android, iOS](/react-native/blog/img/button-android-ios.png)
 
