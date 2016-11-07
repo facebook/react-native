@@ -16,6 +16,10 @@
 #include <float.h>
 #define isnan _isnan
 
+#ifndef __cplusplus
+#define inline __inline
+#endif
+
 /* define fmaxf if < VC12 */
 #if _MSC_VER < 1800
 __forceinline const float fmaxf(const float a, const float b) {
