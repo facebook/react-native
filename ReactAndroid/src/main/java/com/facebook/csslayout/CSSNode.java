@@ -62,8 +62,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
-
-    mChildren = new ArrayList<>(4);
   }
 
   private native void jni_CSSNodeFree(long nativePointer);
@@ -98,7 +96,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int getChildCount() {
-    return mChildren.size();
+    return mChildren == null ? 0 : mChildren.size();
   }
 
   @Override
@@ -113,6 +111,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
     mChildren.add(i, child);
     child.mParent = this;
     jni_CSSNodeInsertChild(mNativePointer, child.mNativePointer, i);
@@ -136,7 +137,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int indexOf(CSSNode child) {
-    return mChildren.indexOf(child);
+    return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
   private native void jni_CSSNodeSetIsTextNode(long nativePointer, boolean isTextNode);
