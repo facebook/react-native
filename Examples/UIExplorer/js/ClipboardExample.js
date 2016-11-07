@@ -35,14 +35,25 @@ class ClipboardExample extends React.Component {
     content: 'Content will appear here'
   };
 
-  _setClipboardContent = async () => {
-    Clipboard.setString('Hello World');
+  componentDidMount(){
+    Clipboard.addListener('clipboardChanged', this._clipboardChanged.bind(this));
+  }
+
+  componentWillUnmount(){
+    Clipboard.removeListener('clipboardChanged', this._clipboardChanged);
+  }
+
+   async _clipboardChanged (){
     try {
       var content = await Clipboard.getString();
       this.setState({content});
     } catch (e) {
       this.setState({content:e.message});
     }
+  }
+
+  _setClipboardContent(){
+    Clipboard.setString('Hello World');
   };
 
   render() {

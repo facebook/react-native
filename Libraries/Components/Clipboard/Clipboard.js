@@ -18,9 +18,21 @@ type ClipboardEventName = "clipboardChanged";
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android.
  * You can subscribe to `clipboardChanged`, and `Clipboard` will tell you when the content has changed.
+ * ```javascript
+ * componentDidMount(){
+ *   Clipboard.addListener('clipboardChanged', this._clipboardChanged.bind(this));
+ * }
+ *
+ * componentWillUnmount(){
+ *   Clipboard.removeListener('clipboardChanged', this._clipboardChanged);
+ * }
+ * ```
  */
 class Clipboard extends NativeEventEmitter {
 
+  /**
+   * Do not use. The exported module will be a Singleton instance.
+   */
   constructor() {
     super(RCTClipboard);
   }
