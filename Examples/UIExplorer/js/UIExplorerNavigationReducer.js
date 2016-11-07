@@ -61,13 +61,12 @@ function StackReducer({initialState, getReducerForState, getPushedReducerForActi
   const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
   return function (lastState: ?NavigationState, action: any): NavigationState {
     if (!lastState) {
-      return initialState;
+      lastState = initialState;
     }
     const lastParentState = getNavigationState(lastState);
     if (!lastParentState) {
       return lastState;
     }
-
     const activeSubState = lastParentState.routes[lastParentState.index];
     const activeSubReducer = getReducerForStateWithDefault(activeSubState);
     const nextActiveState = activeSubReducer(activeSubState, action);
