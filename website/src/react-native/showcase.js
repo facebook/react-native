@@ -520,16 +520,12 @@ var showcase = React.createClass({
               <AppList apps={apps} />
             </div>
 
-            <p className="footnote">
-              Some of these are hybrid native/React Native apps.
-            </p>
-
             <div className="inner-content">
-              <p>If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
+              <p>Some of these are hybrid native/React Native apps. If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
             </div>
 
             <div className="inner-content">
-              <p>Also, <a href="https://github.com/ReactNativeNews/React-Native-Apps">a curated list of open source React Native apps</a> is being kept by React Native News. These apps may not be published to the App Store, but are good references.</p>
+              <p>Also, <a href="https://github.com/ReactNativeNews/React-Native-Apps">a curated list of open source React Native apps</a> is being kept by React Native News.</p>
             </div>
 
           </div>
