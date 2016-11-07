@@ -54,7 +54,7 @@ class ClipboardExample extends React.Component {
 
   _setClipboardContent(){
     Clipboard.setString('Hello World');
-  };
+  }
 
   render() {
     return (

@@ -13,8 +13,6 @@
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTClipboard = require('NativeModules').Clipboard;
 
-type ClipboardEventName = "clipboardChanged";
-
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android.
  * You can subscribe to `clipboardChanged`, and `Clipboard` will tell you when the content has changed.
