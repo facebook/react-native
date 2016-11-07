@@ -255,8 +255,18 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node) {
   }
 }
 
+void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
+  CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot set measure function: Nodes with measure functions cannot have children.");
+  node->measure = measureFunc;
+}
+
+CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node) {
+  return node->measure;
+}
+
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
   CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
+  CSS_ASSERT(node->measure == NULL, "Cannot add child: Nodes with measure functions cannot have children.");
   CSSNodeListInsert(&node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -278,7 +288,7 @@ inline uint32_t CSSNodeChildCount(const CSSNodeRef node) {
 }
 
 void CSSNodeMarkDirty(const CSSNodeRef node) {
-  CSS_ASSERT(node->measure != NULL || CSSNodeChildCount(node) > 0,
+  CSS_ASSERT(node->measure != NULL,
              "Only leaf nodes with custom measure functions"
              "should manually mark themselves as dirty");
   _CSSNodeMarkDirty(node);
@@ -367,7 +377,6 @@ void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex) {
   }
 
 CSS_NODE_PROPERTY_IMPL(void *, Context, context, context);
-CSS_NODE_PROPERTY_IMPL(CSSMeasureFunc, MeasureFunc, measureFunc, measure);
 CSS_NODE_PROPERTY_IMPL(CSSPrintFunc, PrintFunc, printFunc, print);
 CSS_NODE_PROPERTY_IMPL(bool, IsTextnode, isTextNode, isTextNode);
 CSS_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
@@ -1211,7 +1220,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
   // For content (text) nodes, determine the dimensions based on the text
   // contents.
-  if (node->measure && CSSNodeChildCount(node) == 0) {
+  if (node->measure) {
     const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
     const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
 
@@ -2185,7 +2194,7 @@ bool layoutNodeInternal(const CSSNodeRef node,
   // most
   // expensive to measure, so it's worth avoiding redundant measurements if at
   // all possible.
-  if (node->measure && CSSNodeChildCount(node) == 0) {
+  if (node->measure) {
     const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
     const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 

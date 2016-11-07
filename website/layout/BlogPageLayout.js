@@ -46,10 +46,10 @@ var BlogPageLayout = React.createClass({
               })
             }
             <div className="docs-prevnext">
-              {MetadataBlog.files.length > (page + 1) * perPage &&
-                <a className="docs-next" href={this.getPageURL(page + 1)}>&larr; Older posts</a>}
               {page > 0 &&
-                <a className="docs-prev" href={this.getPageURL(page - 1)}>Newer posts &rarr;</a>}
+                <a className="docs-prev" href={this.getPageURL(page - 1)}>&larr; Newer posts</a>}
+              {MetadataBlog.files.length > (page + 1) * perPage &&
+                <a className="docs-next" href={this.getPageURL(page + 1)}>Older posts &rarr;</a>}
             </div>
         </section>
       </Site>

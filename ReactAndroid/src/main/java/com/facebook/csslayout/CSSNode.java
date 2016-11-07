@@ -62,8 +62,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
-
-    mChildren = new ArrayList<>(4);
   }
 
   private native void jni_CSSNodeFree(long nativePointer);
@@ -98,7 +96,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int getChildCount() {
-    return mChildren.size();
+    return mChildren == null ? 0 : mChildren.size();
   }
 
   @Override
@@ -113,6 +111,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
     mChildren.add(i, child);
     child.mParent = this;
     jni_CSSNodeInsertChild(mNativePointer, child.mNativePointer, i);
@@ -136,7 +137,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int indexOf(CSSNode child) {
-    return mChildren.indexOf(child);
+    return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
   private native void jni_CSSNodeSetIsTextNode(long nativePointer, boolean isTextNode);
@@ -493,8 +494,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
+  // Implementation Note: Why this method needs to stay final
+  //
+  // We cache the jmethodid for this method in CSSLayout code. This means that even if a subclass
+  // were to override measure, we'd still call this implementation from layout code since the
+  // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip
-  public long measure(float width, int widthMode, float height, int heightMode) {
+  public final long measure(float width, int widthMode, float height, int heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }

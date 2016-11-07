@@ -18,7 +18,6 @@ const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const HMRBundle = require('./HMRBundle');
-const PrepackBundle = require('./PrepackBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
@@ -310,46 +309,6 @@ class Bundler {
       generateSourceMaps,
       assetPlugins,
       onProgress,
-    });
-  }
-
-  prepackBundle({
-    entryFile,
-    runModule: runMainModule,
-    runBeforeMainModule,
-    sourceMapUrl,
-    dev,
-    platform,
-    assetPlugins,
-  }) {
-    const onModuleTransformed = ({module, transformed, response, bundle}) => {
-      const deps = Object.create(null);
-      const pairs = response.getResolvedDependencyPairs(module);
-      if (pairs) {
-        pairs.forEach(pair => {
-          deps[pair[0]] = pair[1].path;
-        });
-      }
-
-      return module.getName().then(name => {
-        bundle.addModule(name, transformed, deps, module.isPolyfill());
-      });
-    };
-    const finalizeBundle = ({bundle, response}) => {
-      const {mainModuleId} = response;
-      bundle.finalize({runBeforeMainModule, runMainModule, mainModuleId});
-      return bundle;
-    };
-
-    return this._buildBundle({
-      entryFile,
-      dev,
-      platform,
-      onModuleTransformed,
-      finalizeBundle,
-      minify: false,
-      bundle: new PrepackBundle(sourceMapUrl),
-      assetPlugins,
     });
   }
 
