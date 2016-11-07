@@ -17,7 +17,7 @@ Mac OS and Xcode are required.
 - Open `Examples/Movies/Movies.xcodeproj` in Xcode
 - Hit the Run button
 
-See [Running on device](https://facebook.github.io/react-native/docs/running-on-device-ios.html) if you want to use a physical device.
+See [Running on device](https://facebook.github.io/react-native/docs/running-on-device.html) if you want to use a physical device.
 
 ### Running on Android
 
@@ -33,7 +33,7 @@ _Note: Building for the first time can take a while._
 
 Open the Movies app in your emulator.
 
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device-android.html) in case you want to use a physical device.
+See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) in case you want to use a physical device.
 
 ### Running with Buck
 
