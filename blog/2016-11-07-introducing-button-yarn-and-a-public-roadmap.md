@@ -22,7 +22,7 @@ If you have suggestions for features that you think would be valuable on the roa
 
 ## Introducing Button
 
-The new [`<Button />`](/react-native/docs/button.html) component is very easy to use and looks great on every platform out of the box.
+With the release of RN v0.37, we're introducing a basic `<Button />` component that looks great on every platform. This addresses one of the most common pieces of feedback we get: React Native is one of the only mobile development toolkits without a button ready to use out of the box.
 
 ![Simple Button on Android, iOS](/react-native/blog/img/button-android-ios.png)
 
@@ -34,11 +34,10 @@ The new [`<Button />`](/react-native/docs/button.html) component is very easy to
 />
 ```
 
-This addresses one of the most common pieces of feedback we get: React Native is one of the only mobile development toolkits without a button ready to use out of the box. While [custom buttons](/react-native/docs/handling-touches.html) aren't particularly hard to build or install, we aim to make React Native radically easy to learn. With the addition of a basic button into core, newcomers will be able to develop something awesome in their first day, rather than spending that time formatting a Button.
+Experienced React Native developers know how to make a button: use TouchableOpacity for the default look on iOS, TouchableNativeFeedback for the ripple effect on Android, then apply a few styles. Custom buttons aren't particularly hard to build or install, but we aim to make React Native radically easy to learn. With the addition of a basic button into core, newcomers will be able to develop something awesome in their first day, rather than spending that time formatting a Button and learning about Touchable nuances.
 
-This component is not meant to replace every button or be fully customizable, unlike other components in React Native core. The intention is to support common use cases while feeling native on every platform.
+Button is meant to work great and look native on every platform, so it won't support all the bells and whistles that custom buttons do. It is a great starting point, but is not meant to replace all your existing buttons. To learn more, check out the [new Button documentation](http://facebook.github.io/react-native/docs/button.html), complete with a runnable example!
 
-Take a look at the [Button documentation](/react-native/docs/button.html), complete with a working example!
 
 ## Speed up `react-native init` using Yarn
 
