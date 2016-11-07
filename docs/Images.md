@@ -80,7 +80,7 @@ Note that this approach provides no safety checks. It's up to you to guarantee t
 
 ## Network Images
 
-Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, *you will need to manually specify the dimensions of your image.*
+Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, *you will need to manually specify the dimensions of your image and you will need to serve your image over an https connection for security.*
 
 ```javascript
 // GOOD
