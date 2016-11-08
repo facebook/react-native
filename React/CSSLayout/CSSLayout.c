@@ -964,6 +964,16 @@ static void computeChildFlexBasis(const CSSNodeRef node,
       childHeightMeasureMode = CSSMeasureModeExactly;
     }
 
+    if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionWidth])) {
+      childWidth = child->style.maxDimensions[CSSDimensionWidth];
+      childWidthMeasureMode = CSSMeasureModeAtMost;
+    }
+
+    if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionHeight])) {
+      childHeight = child->style.maxDimensions[CSSDimensionHeight];
+      childHeightMeasureMode = CSSMeasureModeAtMost;
+    }
+
     // Measure the child
     layoutNodeInternal(child,
                        childWidth,
@@ -1670,6 +1680,16 @@ static void layoutNodeImpl(const CSSNodeRef node,
           }
         }
 
+        if (!CSSValueIsUndefined(currentRelativeChild->style.maxDimensions[CSSDimensionWidth])) {
+          childWidth = currentRelativeChild->style.maxDimensions[CSSDimensionWidth];
+          childWidthMeasureMode = CSSMeasureModeAtMost;
+        }
+
+        if (!CSSValueIsUndefined(currentRelativeChild->style.maxDimensions[CSSDimensionHeight])) {
+          childHeight = currentRelativeChild->style.maxDimensions[CSSDimensionHeight];
+          childHeightMeasureMode = CSSMeasureModeAtMost;
+        }
+
         const bool requiresStretchLayout =
             !isStyleDimDefined(currentRelativeChild, crossAxis) &&
             getAlignItem(node, currentRelativeChild) == CSSAlignStretch;
@@ -1857,6 +1877,16 @@ static void layoutNodeImpl(const CSSNodeRef node,
               childWidth = crossDim;
               childHeight = child->layout.measuredDimensions[CSSDimensionHeight] +
                             getMarginAxis(child, CSSFlexDirectionColumn);
+            }
+
+            if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionWidth])) {
+              childWidth = child->style.maxDimensions[CSSDimensionWidth];
+              childWidthMeasureMode = CSSMeasureModeAtMost;
+            }
+
+            if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionHeight])) {
+              childHeight = child->style.maxDimensions[CSSDimensionHeight];
+              childHeightMeasureMode = CSSMeasureModeAtMost;
             }
 
             // If the child defines a definite size for its cross axis, there's
