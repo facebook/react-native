@@ -134,9 +134,10 @@ class Bundler {
       }
     }
 
+    const transformCacheKey = cacheKeyParts.join('$');
     this._cache = new Cache({
       resetCache: opts.resetCache,
-      cacheKey: cacheKeyParts.join('$'),
+      cacheKey: transformCacheKey,
     });
 
     this._transformer = new Transformer({
@@ -157,7 +158,8 @@ class Bundler {
       resetCache: opts.resetCache,
       transformCode:
         (module, code, options) =>
-          this._transformer.transformFile(module.path, code, options),
+          this._transformer.transformFile(module.path, code, options, transformCacheKey),
+      transformCacheKey,
     });
 
     this._projectRoots = opts.projectRoots;

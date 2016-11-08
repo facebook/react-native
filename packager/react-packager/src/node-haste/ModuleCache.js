@@ -35,6 +35,7 @@ class ModuleCache {
   _cache: Cache;
   _extractRequires: Extractor;
   _transformCode: TransformCode;
+  _transformCacheKey: string;
   _depGraphHelpers: DepGraphHelpers;
   _platforms: mixed;
   _assetDependencies: mixed;
@@ -46,6 +47,7 @@ class ModuleCache {
     cache,
     extractRequires,
     transformCode,
+    transformCacheKey,
     depGraphHelpers,
     assetDependencies,
     moduleOptions,
@@ -54,6 +56,7 @@ class ModuleCache {
     cache: Cache,
     extractRequires: Extractor,
     transformCode: TransformCode,
+    transformCacheKey: string,
     depGraphHelpers: DepGraphHelpers,
     assetDependencies: mixed,
     moduleOptions: ModuleOptions,
@@ -64,6 +67,7 @@ class ModuleCache {
     this._cache = cache;
     this._extractRequires = extractRequires;
     this._transformCode = transformCode;
+    this._transformCacheKey = transformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
     this._platforms = platforms;
     this._assetDependencies = assetDependencies;
@@ -82,6 +86,7 @@ class ModuleCache {
         cache: this._cache,
         extractor: this._extractRequires,
         transformCode: this._transformCode,
+        transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
       });
@@ -145,6 +150,7 @@ class ModuleCache {
       fastfs: this._fastfs,
       moduleCache: this,
       transformCode: this._transformCode,
+      transformCacheKey: this._transformCacheKey,
     });
   }
 
