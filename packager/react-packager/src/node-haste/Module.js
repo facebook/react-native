@@ -19,7 +19,8 @@ const extractRequires = require('./lib/extractRequires');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('path');
+
+const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type Cache from './Cache';
 import type ModuleCache from './ModuleCache';
@@ -156,7 +157,7 @@ class Module {
               return this.path;
             }
 
-            return path.join(name, path.relative(p.root, this.path)).replace(/\\/g, '/');
+            return joinPath(name, relativePath(p.root, this.path)).replace(/\\/g, '/');
           });
       })
     );
@@ -322,7 +323,7 @@ class Module {
   }
 
   isJSON() {
-    return path.extname(this.path) === '.json';
+    return extname(this.path) === '.json';
   }
 
   isAsset() {
