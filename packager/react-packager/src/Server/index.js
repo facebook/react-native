@@ -14,7 +14,6 @@ const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 const ProgressBar = require('progress');
-const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
@@ -505,15 +504,14 @@ class Server {
           // This is safe as the asset url contains a hash of the asset.
           res.setHeader('Cache-Control', 'max-age=31536000');
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
+          print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
         },
         error => {
           console.error(error.stack);
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done(() => {
-        print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
-      });
+      );
   }
 
   optionsHash(options) {
@@ -776,15 +774,16 @@ class Server {
         });
       });
     }).then(
-      stack => res.end(JSON.stringify({stack: stack})),
+      stack => {
+        res.end(JSON.stringify({stack: stack}));
+        print(log(createActionEndEntry(symbolicatingLogEntry)));
+      },
       error => {
         console.error(error.stack || error);
         res.statusCode = 500;
         res.end(JSON.stringify({error: error.message}));
       }
-    ).done(() => {
-      print(log(createActionEndEntry(symbolicatingLogEntry)));
-    });
+    );
   }
 
   _sourceMapForURL(reqUrl) {

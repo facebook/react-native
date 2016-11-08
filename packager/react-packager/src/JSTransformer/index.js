@@ -9,9 +9,9 @@
 'use strict';
 
 const Logger = require('../Logger');
-const Promise = require('promise');
 
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
@@ -99,8 +99,8 @@ class Transformer {
         ['minify', 'transformAndExtractDependencies'],
         opts.transformTimeoutInterval,
       );
-      this._transform = Promise.denodeify(this._workers.transformAndExtractDependencies);
-      this.minify = Promise.denodeify(this._workers.minify);
+      this._transform = denodeify(this._workers.transformAndExtractDependencies);
+      this.minify = denodeify(this._workers.minify);
     }
   }
 

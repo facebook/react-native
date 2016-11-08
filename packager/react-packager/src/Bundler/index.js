@@ -11,8 +11,6 @@
 
 'use strict';
 
-const Promise = require('promise');
-
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
@@ -25,12 +23,13 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const version = require('../../../../package.json').version;
+const denodeify = require('denodeify');
 
 import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
 import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 
-const sizeOf = Promise.denodeify(imageSize);
+const sizeOf = denodeify(imageSize);
 
 const noop = () => {};
 

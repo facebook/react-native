@@ -12,7 +12,6 @@ jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
-const Promise = require('Promise');
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
 
