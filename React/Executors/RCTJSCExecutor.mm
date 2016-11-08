@@ -287,15 +287,10 @@ static NSThread *newJavaScriptThread(void)
     registerNativeRequire(_context.context, self);
   }
 
-  NSError *execError = executeApplicationScript(taggedScript, sourceURL,
-                                                _jscWrapper,
-                                                _performanceLogger,
-                                                _context.context.JSGlobalContextRef);
-  if (execError) {
-    return execError;
-  }
-
-  return NULL;
+  return executeApplicationScript(taggedScript, sourceURL,
+                                  _jscWrapper,
+                                  _performanceLogger,
+                                  _context.context.JSGlobalContextRef);
 }
 
 - (RCTJavaScriptContext *)context
