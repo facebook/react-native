@@ -33,9 +33,10 @@ import android.widget.TextView;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -59,7 +60,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
  * passed as "computedDataFromMeasure" down to shadow and native view.
  * <p/>
- * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used solely
+ * TODO(7255858): Rename *CSSNodeDEPRECATED to *ShadowView (or sth similar) as it's no longer is used solely
  * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
@@ -112,7 +113,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       sb.append(textCSSNode.mText);
     }
     for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
-      CSSNode child = textCSSNode.getChildAt(i);
+      CSSNodeDEPRECATED child = textCSSNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
@@ -220,13 +221,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private static final CSSNodeAPI.MeasureFunction TEXT_MEASURE_FUNCTION =
       new CSSNodeAPI.MeasureFunction() {
         @Override
-        public void measure(
+        public long measure(
             CSSNodeAPI node,
             float width,
             CSSMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode,
-            MeasureOutput measureOutput) {
+            CSSMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
@@ -278,11 +278,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 true);
           }
 
-          measureOutput.height = layout.getHeight();
-          measureOutput.width = layout.getWidth();
           if (reactCSSNode.mNumberOfLines != UNSET &&
               reactCSSNode.mNumberOfLines < layout.getLineCount()) {
-            measureOutput.height = layout.getLineBottom(reactCSSNode.mNumberOfLines - 1);
+            return MeasureOutput.make(
+                layout.getWidth(),
+                layout.getLineBottom(reactCSSNode.mNumberOfLines - 1));
+          } else {
+            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -585,7 +587,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           mPreparedSpannableText,
           UNSET,
           mContainsImages,
-          getPadding(),
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
           getTextAlign()
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

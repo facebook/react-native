@@ -14,10 +14,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.Application;
@@ -35,6 +35,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -61,6 +62,8 @@ import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.debug.DeveloperSettings;
@@ -72,6 +75,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
@@ -82,8 +86,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGER
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -106,6 +108,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * To instantiate an instance of this class use {@link #builder}.
  */
 /* package */ class XReactInstanceManagerImpl extends ReactInstanceManager {
+
+  private static final String TAG = XReactInstanceManagerImpl.class.getSimpleName();
 
   /* should only be accessed from main thread (UI thread) */
   private final List<ReactRootView> mAttachedRootViews = new ArrayList<>();
@@ -133,6 +137,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final JSCConfig mJSCConfig;
   private final boolean mLazyNativeModulesEnabled;
+  private final boolean mLazyViewManagersEnabled;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -291,7 +296,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     JSCConfig jscConfig,
     @Nullable RedBoxHandler redBoxHandler,
-    boolean lazyNativeModulesEnabled) {
+    boolean lazyNativeModulesEnabled,
+    boolean lazyViewManagersEnabled) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -319,6 +325,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
+    mLazyViewManagersEnabled = lazyViewManagersEnabled;
   }
 
   @Override
@@ -836,7 +843,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     FLog.i(ReactConstants.TAG, "Creating react context.");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
     mSourceUrl = jsBundleLoader.getSourceUrl();
-    NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
+    List<ModuleSpec> moduleSpecs = new ArrayList<>();
+    Map<Class, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
     JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
 
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
@@ -850,8 +858,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         "createAndProcessCoreModulesPackage");
     try {
       CoreModulesPackage coreModulesPackage =
-          new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
-      processPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+        new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
+      processPackage(
+        coreModulesPackage,
+        reactContext,
+        moduleSpecs,
+        reactModuleInfoMap,
+        jsModulesBuilder);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -862,7 +875,12 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
           TRACE_TAG_REACT_JAVA_BRIDGE,
           "createAndProcessCustomReactPackage");
       try {
-        processPackage(reactPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+        processPackage(
+          reactPackage,
+          reactContext,
+          moduleSpecs,
+          reactModuleInfoMap,
+          jsModulesBuilder);
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
@@ -873,7 +891,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
-       nativeModuleRegistry = nativeRegistryBuilder.build();
+       nativeModuleRegistry = new NativeModuleRegistry(moduleSpecs, reactModuleInfoMap);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
@@ -905,33 +923,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
 
-    ReactMarker.logMarker(RUN_JS_BUNDLE_START);
-    try {
-      catalystInstance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
-        new Callable<Void>() {
-          @Override
-          public Void call() throws Exception {
-            reactContext.initializeWithInstance(catalystInstance);
-
-            Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
-            try {
-              catalystInstance.runJSBundle();
-            } finally {
-              Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-              ReactMarker.logMarker(RUN_JS_BUNDLE_END);
-            }
-            return null;
-          }
-        }).get();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (ExecutionException e) {
-      if (e.getCause() instanceof RuntimeException) {
-        throw (RuntimeException) e.getCause();
-      } else {
-        throw new RuntimeException(e);
-      }
-    }
+    reactContext.initializeWithInstance(catalystInstance);
+    catalystInstance.runJSBundle();
 
     return reactContext;
   }
@@ -939,14 +932,35 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private void processPackage(
     ReactPackage reactPackage,
     ReactApplicationContext reactContext,
-    NativeModuleRegistry.Builder nativeRegistryBuilder,
+    List<ModuleSpec> moduleSpecs,
+    Map<Class, ReactModuleInfo> reactModuleInfoMap,
     JavaScriptModuleRegistry.Builder jsModulesBuilder) {
-    for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
-      nativeRegistryBuilder.add(nativeModule);
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
+      .arg("className", reactPackage.getClass().getSimpleName())
+      .flush();
+    if (mLazyNativeModulesEnabled && reactPackage instanceof LazyReactPackage) {
+      LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
+      ReactModuleInfoProvider instance = lazyReactPackage.getReactModuleInfoProvider();
+      Map<Class, ReactModuleInfo> map = instance.getReactModuleInfos();
+      if (!map.isEmpty()) {
+        reactModuleInfoMap.putAll(map);
+      }
+      moduleSpecs.addAll(lazyReactPackage.getNativeModules(reactContext));
+    } else {
+      FLog.d(
+        ReactConstants.TAG,
+        reactPackage.getClass().getSimpleName() +
+          " is not a LazyReactPackage, falling back to old version.");
+      for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
+        moduleSpecs.add(
+            new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
+      }
     }
+
     for (Class<? extends JavaScriptModule> jsModuleClass : reactPackage.createJSModules()) {
       jsModulesBuilder.add(jsModuleClass);
     }
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private void moveReactContextToCurrentLifecycleState() {

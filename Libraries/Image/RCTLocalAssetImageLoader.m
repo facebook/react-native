@@ -71,6 +71,7 @@ static NSBundle *bundleForPath(NSString *key)
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
                                     progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                   completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   __block volatile uint32_t cancelled = 0;

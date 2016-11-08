@@ -64,6 +64,15 @@
 - (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
 
 /**
+ * When loading initial JavaScript, do so synchronously when the bridge is created iff
+ * this returns true.  Otherwise, the JS will be fetched on a network thread, and
+ * executed on the JS thread.  Currently used only by C++ bridge.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
+
+/**
  * When initializing native modules that require main thread initialization, the bridge
  * will default to dispatch module creation blocks asynchrously. If we're blockingly
  * waiting on the main thread to finish bridge creation on the main thread, this will
@@ -77,6 +86,14 @@
  * The bridge will automatically attempt to load the JS source code from the
  * location specified by the `sourceURLForBridge:` method, however, if you want
  * to handle loading the JS yourself, you can do so by implementing this method.
+ */
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
+ * reporting.
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;

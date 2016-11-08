@@ -25,8 +25,14 @@ module.exports = {
   func: android,
   options: [{
     command: '--project-name [name]',
-    default: () => JSON.parse(
-      fs.readFileSync('package.json', 'utf8')
-    ).name,
+    default: () => {
+      try {
+        return JSON.parse(
+          fs.readFileSync('package.json', 'utf8')
+        ).name
+      } catch (e) {
+        return 'unknown-app-name'
+      }
+    },
   }],
 };

@@ -160,7 +160,7 @@ RCT_EXPORT_MODULE()
 - (void)timeout:(NSTimer *)timer
 {
   RCTLocationRequest *request = timer.userInfo;
-  NSString *message = [NSString stringWithFormat: @"Unable to fetch location within %zds.", (NSInteger)(timer.timeInterval * 1000.0)];
+  NSString *message = [NSString stringWithFormat: @"Unable to fetch location within %.1fs.", request.options.timeout];
   request.errorBlock(@[RCTPositionError(RCTPositionErrorTimeout, message)]);
   [_pendingRequests removeObject:request];
 

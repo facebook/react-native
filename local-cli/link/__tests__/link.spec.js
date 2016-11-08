@@ -21,6 +21,7 @@ jest.setMock(
 
 describe('link', () => {
   beforeEach(() => {
+    jest.resetModules();
     delete require.cache[require.resolve('../link')];
     log.level = 'silent';
   });

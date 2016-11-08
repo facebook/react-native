@@ -243,6 +243,36 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
+  public void setAnimatedNodeOffset(final int tag, final double value) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.setAnimatedNodeOffset(tag, value);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void flattenAnimatedNodeOffset(final int tag) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.flattenAnimatedNodeOffset(tag);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void extractAnimatedNodeOffset(final int tag) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.extractAnimatedNodeOffset(tag);
+      }
+    });
+  }
+
+  @ReactMethod
   public void startAnimatingNode(
       final int animationId,
       final int animatedNodeTag,

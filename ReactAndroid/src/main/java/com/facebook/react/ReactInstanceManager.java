@@ -235,6 +235,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
     protected @Nullable RedBoxHandler mRedBoxHandler;
     protected boolean mLazyNativeModulesEnabled;
+    protected boolean mLazyViewManagersEnabled;
 
     protected Builder() {
     }
@@ -372,6 +373,11 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setLazyViewManagersEnabled(boolean lazyViewManagersEnabled) {
+      mLazyViewManagersEnabled = lazyViewManagersEnabled;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -415,7 +421,8 @@ public abstract class ReactInstanceManager {
         mNativeModuleCallExceptionHandler,
         mJSCConfig,
         mRedBoxHandler,
-        mLazyNativeModulesEnabled);
+        mLazyNativeModulesEnabled,
+        mLazyViewManagersEnabled);
     }
   }
 }

@@ -10,7 +10,7 @@
     "node": ">=4"
   },
   "jest": {
-    "setupEnvScriptFile": "jestSupport/env.js",
+    "setupEnvScriptFile": "jest/setup.js",
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],

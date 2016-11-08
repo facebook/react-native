@@ -22,37 +22,127 @@ var support = React.createClass({
   },
   render: function() {
     return (
-      <Site section="support" title="Support">
+      <Site section="support" title="Help">
 
-        <section className="content wrap documentationContent nosidebar">
-          <div className="inner-content">
+        <section className="content wrap documentationContent helpSection nosidebar">
+          <div className="helpSection inner-content">
             <h1>Need help?</h1>
-            <div className="subHeader"></div>
             <p>
               At Facebook, there are dozens of engineers who work on React Native full-time. But there are far more people in the community who make key contributions and fix things. So if you need help with your React Native app, the right place to go depends on the type of help that you need.
             </p>
 
-            <H2>Technical Questions</H2>
-            <p>If you're wondering how to solve a specific technical problem in React Native, the best place to ask is on Stack Overflow. You can check <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with react-native, <a href="http://stackoverflow.com/questions/ask">ask your own</a>, or just Google it and click on the Stack Overflow answer that will inevitably come up.</p>
+            <div className="help-row">
+              <div className="help-col">
 
-            <H2>Random Questions</H2>
-            <p>If you have an open-ended question or you just want to get a general sense of what React Native folks talk about, check out the <a href="https://www.facebook.com/groups/react.native.community">React Native Community</a> Facebook group. It has thousands of developers and almost all posts get a response.</p>
+                <h2>Browse the docs</h2>
+                <p>
+                  Find what you're looking for in our detailed documentation and guides.
+                </p>
 
-            <H2>Urgent Questions</H2>
-            <p>If you need an answer right away, check out #react-native on the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux chat</a>. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.</p>
+                <ul>
+                  <li className="help-list-entry">
+                    <a href="/react-native/docs/getting-started.html">Getting Started</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="/react-native/docs/tutorial.html">The Basics Tutorial</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="/react-native/docs/integration-with-existing-apps.html">Integration With Existing Apps</a>
+                  </li>
+                </ul>
+                <h2>Explore samples</h2>
+                <p>
+                  Take apart these fully built applications, and get some inspiration for your own.
+                </p>
 
-            <H2>Feature Requests</H2>
-            <p>React Native uses <a href="https://productpains.com/product/react-native/">Product Pains</a> for feature requests. It has a voting system to surface which issues are most important to the community. So if you have a feature request, add it or upvote a similar one.</p>
+                <ul>
+                  <li className="help-list-entry">
+                    <a href="http://makeitopen.com/">Building the F8 2016 App</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer">UIExplorer</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>
+                  </li>
+                </ul>
 
-            <iframe
-              width="100%"
-              height="600px"
-              scrolling="yes"
-              src="https://productpains.com/widget.html?token=3b929306-e0f7-5c94-7d7c-ecc05d059748"
-              />
+                <h2>Stay up to date</h2>
+                <p>
+                  Find out what's happening in the world of React Native.
+                </p>
 
-            <H2>Bug Reports</H2>
-            <p>If you have discovered a bug in React Native, keep in mind that it's an open source project. Take a look at the <a href="https://github.com/facebook/react-native/">code on GitHub</a>, and see if it's something you could fix yourself. If you don't think you can fix it yourself, you can file it as a GitHub issue. Be sure to providing a crisp description and reproduction of the bug, to improve the chance that someone will be able to help you out.</p>
+                <ul>
+                  <li className="help-list-entry">
+                    <a href="https://twitter.com/reactnative">React Native on Twitter</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="/react-native/blog/">News and Updates</a>
+                  </li>
+                  <li className="help-list-entry">
+                    <a href="https://github.com/facebook/react-native/releases">Latest Releases</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="help-col">
+                <h2>Join the community</h2>
+                <p>
+                  Connect with other React Native developers. Show off your project, or ask how other people solved similar problems.
+                </p>
+
+                <ul className="help-list">
+                  <li className="help-list-entry">
+                    <h3>Frequently Asked Questions</h3>
+                    <p>
+                      Many React Native users are active on Stack Overflow. Browse <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a>, or ask your own technical question.
+                    </p>
+                  </li>
+                  <li className="help-list-entry">
+                    <h3>React Native Community</h3>
+                    <p>
+                      If you have an open-ended question or you just want to get a general sense of what React Native folks talk about, check out the <a href="https://www.facebook.com/groups/react.native.community">React Native Community</a> Facebook group. It has thousands of developers and almost all posts get a response.
+                    </p>
+                  </li>
+                  <li className="help-list-entry">
+                    <h3>Reactiflux Chat</h3>
+                    <p>
+                      If you need an answer right away, check out the <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native</a> channel. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="help-col">
+                <h2>Contribute</h2>
+                <p>
+                  React Native is open source! Issues and pull requests are welcome.
+                </p>
+
+                <ul className="help-list">
+                  <li className="help-list-entry">
+                    <h3>Get Involved</h3>
+                    <p>
+                      If you want to contribute, take a look at the list of <a href="https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Task%22">good first tasks</a> on GitHub.
+                    </p>
+                  </li>
+
+                  <li className="help-list-entry">
+                    <h3>Feature Requests</h3>
+                    <p>
+                      If you have a feature request, <a href="https://productpains.com/product/react-native/">add it to the list</a> or upvote a similar one. The voting system helps surface which issues are most important to the community.
+                    </p>
+                  </li>
+
+                  <li className="help-list-entry">
+                    <h3>Report a Bug</h3>
+                    <p>
+                      If you have discovered a bug in React Native, consider submitting a <a href="https://github.com/facebook/react-native/">pull request</a> with a fix. If you don't think you can fix it yourself, you can <a href="https://github.com/facebook/react-native/issues">open an issue</a> on GitHub.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 

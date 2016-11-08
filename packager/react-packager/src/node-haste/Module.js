@@ -5,17 +5,69 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
+const extractRequires = require('./lib/extractRequires');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('./fastpath');
-const extractRequires = require('./lib/extractRequires');
+const path = require('path');
+
+import type Cache from './Cache';
+import type ModuleCache from './ModuleCache';
+import type FastFs from './fastfs';
+
+export type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
+type TransformedCode = {
+  code?: string,
+  dependencies?: Array<string>,
+  dependencyOffsets?: Array<number>,
+  map?: string,
+};
+export type TransformCode = (
+  module: Module,
+  sourceCode: string,
+  transformOptions: mixed,
+) => Promise<{
+  code: string,
+  dependencies?: Array<string>,
+  dependencyOffsets?: Array<number>,
+  map?: string,
+}>;
+export type Options = {cacheTransformResults?: boolean};
+export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
+
+export type ConstructorArgs = {
+  file: string,
+  fastfs: FastFs,
+  moduleCache: ModuleCache,
+  cache: Cache,
+  extractor: Extractor,
+  transformCode: TransformCode,
+  depGraphHelpers: DepGraphHelpers,
+  options: Options,
+};
 
 class Module {
+
+  path: string;
+  type: string;
+
+  _fastfs: FastFs;
+  _moduleCache: ModuleCache;
+  _cache: Cache;
+  _extractor: Extractor;
+  _transformCode: TransformCode;
+  _depGraphHelpers: DepGraphHelpers;
+  _options: Options;
+
+  _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
+  _readPromise: Promise<string>;
 
   constructor({
     file,
@@ -26,7 +78,7 @@ class Module {
     transformCode,
     depGraphHelpers,
     options,
-  }) {
+  }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -43,7 +95,7 @@ class Module {
     this._options = options;
   }
 
-  isHaste() {
+  isHaste(): Promise<boolean> {
     return this._cache.get(
       this.path,
       'isHaste',
@@ -51,15 +103,15 @@ class Module {
     );
   }
 
-  getCode(transformOptions) {
+  getCode(transformOptions: mixed) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions) {
+  getMap(transformOptions: mixed) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName() {
+  getName(): Promise<string> {
     return this._cache.get(
       this.path,
       'name',
@@ -91,7 +143,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions) {
+  getDependencies(transformOptions: mixed) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -115,26 +167,29 @@ class Module {
     return {id, moduleDocBlock};
   }
 
-  _readDocBlock(contentPromise) {
+  _read() {
+    if (!this._readPromise) {
+      this._readPromise = this._fastfs.readFile(this.path);
+    }
+    return this._readPromise;
+  }
+
+  _readDocBlock() {
     if (!this._docBlock) {
-      if (!contentPromise) {
-        contentPromise = this._fastfs.readWhile(this.path, whileInDocBlock);
-      }
-      this._docBlock = contentPromise
+      this._docBlock = this._read()
         .then(docBlock => this._parseDocBlock(docBlock));
     }
     return this._docBlock;
   }
 
-  read(transformOptions) {
+  read(transformOptions: mixed): Promise<TransformedCode> {
     return this._cache.get(
       this.path,
       cacheKey('moduleData', transformOptions),
       () => {
-        const fileContentPromise = this._fastfs.readFile(this.path);
         return Promise.all([
-          fileContentPromise,
-          this._readDocBlock(fileContentPromise),
+          this._read(),
+          this._readDocBlock(),
         ]).then(([source, {id, moduleDocBlock}]) => {
           // Ignore requires in JSON files or generated code. An example of this
           // is prebuilt files like the SourceMap library.
@@ -149,6 +204,8 @@ class Module {
           return codePromise.then(result => {
             const {
               code,
+              /* $FlowFixMe: I don't think it should complain as there's
+                 a default value */
               dependencies = extern ? [] : this._extractor(code).deps.sync,
             } = result;
             if (this._options && this._options.cacheTransformResults === false) {
@@ -192,21 +249,6 @@ class Module {
       path: this.path,
     };
   }
-}
-
-function whileInDocBlock(chunk, i, result) {
-  // consume leading whitespace
-  if (!/\S/.test(result)) {
-    return true;
-  }
-
-  // check for start of doc block
-  if (!/^\s*\/(\*{2}|\*?$)/.test(result)) {
-    return false;
-  }
-
-  // check for end of doc block
-  return !/\*\//.test(result);
 }
 
 // use weak map to speed up hash creation of known objects
