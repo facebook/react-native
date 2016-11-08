@@ -16,10 +16,6 @@ The React Native packager runs on port 8081. If another process is already using
 
 Run the following command on a Mac to find the id for the process that is listening on port 8081:
 
-`$ sudo lsof -n -i4TCP:8081 | grep LISTEN`
-
-If that does not work, try:
-
 `$ sudo lsof -i :8081`
 
 Then run the following to terminate the process:

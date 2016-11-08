@@ -50,8 +50,6 @@ function server(argv, config, args) {
       );
       console.log('Most likely another process is already using this port');
       console.log('Run the following command to find out which process:');
-      console.log('\n  ', chalk.bold('lsof -n -i4TCP:' + args.port), '\n');
-      console.log('If that does not work, try:');
       console.log('\n  ', chalk.bold('lsof -i :' + args.port), '\n');
       console.log('Then, you can either shut down the other process:');
       console.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
