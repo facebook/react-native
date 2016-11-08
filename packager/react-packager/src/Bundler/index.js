@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const Promise = require('promise');
@@ -22,6 +25,10 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const version = require('../../../../package.json').version;
+
+import AssetServer from '../AssetServer';
+import Module from '../node-haste/Module';
+import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 
 const sizeOf = Promise.denodeify(imageSize);
 
@@ -102,9 +109,36 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
+type Options = {
+  projectRoots: Array<string>,
+  blacklistRE: RegExp,
+  moduleFormat: string,
+  polyfillModuleNames: Array<string>,
+  cacheVersion: string,
+  resetCache: boolean,
+  transformModulePath: string,
+  extraNodeModules: {},
+  nonPersistent: boolean,
+  assetRoots: Array<string>,
+  assetExts: Array<string>,
+  fileWatcher: {},
+  assetServer: AssetServer,
+  transformTimeoutInterval: ?number,
+  allowBundleUpdates: boolean,
+};
+
 class Bundler {
 
-  constructor(options) {
+  _opts: Options;
+  _getModuleId: (opts: Module) => number;
+  _cache: Cache;
+  _transformer: Transformer;
+  _resolver: Resolver;
+  _projectRoots: Array<string>;
+  _assetServer: AssetServer;
+  _transformOptionsModule: (path: string, options: {}, bunler: Bundler) => {};
+
+  constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
 
     opts.projectRoots.forEach(verifyRootExists);
@@ -128,6 +162,7 @@ class Bundler {
     this._getModuleId = createModuleIdFactory();
 
     if (opts.transformModulePath) {
+      /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
       if (typeof transformer.cacheKey !== 'undefined') {
         cacheKeyParts.push(transformer.cacheKey);
@@ -166,6 +201,7 @@ class Bundler {
     this._assetServer = opts.assetServer;
 
     if (opts.getTransformOptionsModulePath) {
+      /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       this._transformOptionsModule = require(
         opts.getTransformOptionsModulePath
       );
@@ -177,7 +213,12 @@ class Bundler {
     return this._cache.end();
   }
 
-  bundle(options) {
+  bundle(options: {
+    dev: boolean,
+    minify: boolean,
+    unbundle: boolean,
+    sourceMapUrl: string,
+  }) {
     const {dev, minify, unbundle} = options;
     const moduleSystemDeps =
       this._resolver.getModuleSystemDependencies({dev, unbundle});
@@ -232,7 +273,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options, host, port) {
+  hmrBundle(options: {platform: mixed}, host: string, port: number) {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -265,7 +306,7 @@ class Bundler {
     assetPlugins,
     onProgress,
   }) {
-    const onResolutionResponse = response => {
+    const onResolutionResponse = (response: ResolutionResponse) => {
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
       if (entryModuleOnly) {
         response.dependencies = response.dependencies.filter(module =>
@@ -275,7 +316,12 @@ class Bundler {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
       }
     };
-    const finalizeBundle = ({bundle, transformedModules, response, modulesByName}) =>
+    const finalizeBundle = ({bundle, transformedModules, response, modulesByName}: {
+      bundle: Bundle,
+      transformedModules: Array<{module: Module, transformed: {}}>,
+      response: ResolutionResponse,
+      modulesByName: {[name: string]: Module},
+    }) =>
       Promise.all(
         transformedModules.map(({module, transformed}) =>
           bundle.addModule(this._resolver, response, module, transformed)
@@ -330,7 +376,7 @@ class Bundler {
     onModuleTransformed = noop,
     finalizeBundle = noop,
     onProgress = noop,
-  }) {
+  }: *) {
     const transformingFilesLogEntry =
       print(log(createActionStartEntry({
         action_name: 'Transforming files',
@@ -401,7 +447,7 @@ class Bundler {
     });
   }
 
-  invalidateFile(filePath) {
+  invalidateFile(filePath: string) {
     this._cache.invalidate(filePath);
   }
 
@@ -412,6 +458,13 @@ class Bundler {
     minify = !dev,
     hot = false,
     generateSourceMaps = false,
+  }: {
+    entryFile: string,
+    platform: mixed,
+    dev?: boolean,
+    minify?: boolean,
+    hot?: boolean,
+    generateSourceMaps?: boolean,
   }) {
     return this.getTransformOptions(
       entryFile,
@@ -434,11 +487,11 @@ class Bundler {
     });
   }
 
-  stat(filePath) {
+  stat(filePath: string) {
     return this._resolver.stat(filePath);
   }
 
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string) {
     return this._resolver.getModuleForPath(entryFile);
   }
 
@@ -452,6 +505,16 @@ class Bundler {
     generateSourceMaps = false,
     isolateModuleIDs = false,
     onProgress,
+  }: {
+    entryFile: string,
+    platform: mixed,
+    dev?: boolean,
+    minify?: boolean,
+    hot?: boolean,
+    recursive?: boolean,
+    generateSourceMaps?: boolean,
+    isolateModuleIDs?: boolean,
+    onProgress?: () => mixed,
   }) {
     return this.getTransformOptions(
       entryFile,
@@ -480,7 +543,11 @@ class Bundler {
     });
   }
 
-  getOrderedDependencyPaths({ entryFile, dev, platform }) {
+  getOrderedDependencyPaths({ entryFile, dev, platform }: {
+    entryFile: string,
+    dev: boolean,
+    platform: mixed,
+  }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({ dependencies }) => {
         const ret = [];
@@ -592,7 +659,7 @@ class Bundler {
     });
   }
 
-  _generateAssetObjAndCode(module, assetPlugins, platform = null) {
+  _generateAssetObjAndCode(module, assetPlugins, platform: mixed = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
 
@@ -649,6 +716,7 @@ class Bundler {
     }
 
     let [currentAssetPlugin, ...remainingAssetPlugins] = assetPlugins;
+    /* $FlowFixMe: dynamic requires prevent static typing :'(  */
     let assetPluginFunction = require(currentAssetPlugin);
     let result = assetPluginFunction(asset);
 
@@ -663,7 +731,13 @@ class Bundler {
     }
   }
 
-  _generateAssetModule(bundle, module, moduleId, assetPlugins = [], platform = null) {
+  _generateAssetModule(
+    bundle,
+    module,
+    moduleId,
+    assetPlugins: Array<string> = [],
+    platform: mixed = null,
+  ) {
     return Promise.all([
       module.getName(),
       this._generateAssetObjAndCode(module, assetPlugins, platform),
@@ -681,7 +755,7 @@ class Bundler {
     });
   }
 
-  getTransformOptions(mainModuleName, options) {
+  getTransformOptions(mainModuleName: string, options: {}) {
     const extraOptions = this._transformOptionsModule
       ? this._transformOptionsModule(mainModuleName, options, this)
       : null;
