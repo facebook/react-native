@@ -114,25 +114,25 @@ choco install python2
 
 <block class="mac ios android" />
 
-### The React Native CLI
+### Yarn, The React Native CLI
 
-Node.js comes with npm, which lets you install the React Native command line interface.
+Node.js comes with npm, which lets you install [yarn](https://yarnpkg.com/) and the React Native command line interface. Yarn is a replacement for npm, which can manage node modules in a faster way. The React Native CLI will utilize yarn to speed up automatically, or fall back to npm if yarn is not installed. 
 
 <block class="windows linux android" />
 
-### The React Native CLI
+### Yarn, The React Native CLI
 
-Node.js comes with npm, which lets you install the React Native command line interface.
+Node.js comes with npm, which lets you install [yarn](https://yarnpkg.com/) and the React Native command line interface. Yarn is a replacement for npm, which can manage node modules in a faster way. The React Native CLI will utilize yarn to speed up automatically, or fall back to npm if yarn is not installed. 
 
 <block class="mac ios android" />
 
 Run the following command in a Terminal:
 
 ```
-npm install -g react-native-cli
+npm install -g yarn react-native-cli
 ```
 
-> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
+> If you get a *permission error*, try using sudo: `sudo npm install -g yarn react-native-cli`.
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
