@@ -140,7 +140,6 @@ class AssetServer {
         const dir = res[0];
         const files = res[1];
         const assetData = getAssetDataFromName(filename, new Set([platform]));
-        assetData.assetName = decodeURIComponent(assetData.assetName);
 
         const map = this._buildAssetMap(dir, files, platform);
 

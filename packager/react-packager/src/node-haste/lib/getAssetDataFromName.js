@@ -42,6 +42,7 @@ function getAssetDataFromName(filename, platforms) {
   } else {
     assetName = filename;
   }
+  assetName = decodeURIComponent(assetName);
 
   return {
     resolution: resolution,
