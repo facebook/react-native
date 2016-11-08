@@ -13,7 +13,6 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const path = require('path');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -24,6 +23,14 @@ const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const version = require('../../../../package.json').version;
 const denodeify = require('denodeify');
+
+const {
+  sep: pathSeparator,
+  join: joinPath,
+  relative: relativePath,
+  dirname: pathDirname,
+  extname,
+} = require('path');
 
 import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
@@ -154,7 +161,7 @@ class Bundler {
       'react-packager-cache',
       version,
       opts.cacheVersion,
-      opts.projectRoots.join(',').split(path.sep).join('-'),
+      opts.projectRoots.join(',').split(pathSeparator).join('-'),
       mtime,
     ];
 
@@ -191,8 +198,12 @@ class Bundler {
       projectRoots: opts.projectRoots,
       resetCache: opts.resetCache,
       transformCode:
-        (module, code, options) =>
-          this._transformer.transformFile(module.path, code, options, transformCacheKey),
+        (module, code, transformCodeOptions) => this._transformer.transformFile(
+          module.path,
+          code,
+          transformCodeOptions,
+          transformCacheKey,
+        ),
       transformCacheKey,
     });
 
@@ -228,22 +239,22 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, path) {
+  _sourceHMRURL(platform, hmrpath) {
     return this._hmrURL(
       '',
       platform,
       'bundle',
-      path,
+      hmrpath,
     );
   }
 
-  _sourceMappingHMRURL(platform, path) {
+  _sourceMappingHMRURL(platform, hmrpath) {
     // Chrome expects `sourceURL` when eval'ing code
     return this._hmrURL(
       '\/\/# sourceURL=',
       platform,
       'map',
-      path,
+      hmrpath,
     );
   }
 
@@ -255,12 +266,12 @@ class Bundler {
     }
 
     // Replaces '\' with '/' for Windows paths.
-    if (path.sep === '\\') {
+    if (pathSeparator === '\\') {
       filePath = filePath.replace(/\\/g, '/');
     }
 
     const extensionStart = filePath.lastIndexOf('.');
-    let resource = filePath.substring(
+    const resource = filePath.substring(
       matchingRoot.length,
       extensionStart !== -1 ? extensionStart : undefined,
     );
@@ -414,8 +425,9 @@ class Bundler {
         const numModuleSystemDependencies =
           this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
+        const dependencyIndex =
+          (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
 
-        const dependencyIndex = (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
         if (dependencyIndex in response.dependencies) {
           entryFilePath = response.dependencies[dependencyIndex].path;
         }
@@ -664,18 +676,18 @@ class Bundler {
 
   _generateAssetObjAndCode(module, assetPlugins, platform: mixed = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
-    var assetUrlPath = path.join('/assets', path.dirname(relPath));
+    var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
     // On Windows, change backslashes to slashes to get proper URL path from file path.
-    if (path.sep === '\\') {
+    if (pathSeparator === '\\') {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
     }
 
     // Test extension against all types supported by image-size module.
     // If it's not one of these, we won't treat it as an image.
-    let isImage = [
+    const isImage = [
       'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
-    ].indexOf(path.extname(module.path).slice(1)) !== -1;
+    ].indexOf(extname(module.path).slice(1)) !== -1;
 
     return Promise.all([
       isImage ? sizeOf(module.path) : null,
@@ -685,7 +697,7 @@ class Bundler {
       const assetData = res[1];
       const asset = {
         __packager_asset: true,
-        fileSystemLocation: path.dirname(module.path),
+        fileSystemLocation: pathDirname(module.path),
         httpServerLocation: assetUrlPath,
         width: dimensions ? dimensions.width / module.resolution : undefined,
         height: dimensions ? dimensions.height / module.resolution : undefined,
@@ -718,10 +730,10 @@ class Bundler {
       return asset;
     }
 
-    let [currentAssetPlugin, ...remainingAssetPlugins] = assetPlugins;
+    const [currentAssetPlugin, ...remainingAssetPlugins] = assetPlugins;
     /* $FlowFixMe: dynamic requires prevent static typing :'(  */
-    let assetPluginFunction = require(currentAssetPlugin);
-    let result = assetPluginFunction(asset);
+    const assetPluginFunction = require(currentAssetPlugin);
+    const result = assetPluginFunction(asset);
 
     // If the plugin was an async function, wait for it to fulfill before
     // applying the remaining plugins
@@ -763,7 +775,7 @@ class Bundler {
       ? this._transformOptionsModule(mainModuleName, options, this)
       : null;
     return Promise.resolve(extraOptions)
-      .then(extraOptions => Object.assign(options, extraOptions));
+      .then(extraOpts => Object.assign(options, extraOpts));
   }
 
   getResolver() {
@@ -773,7 +785,7 @@ class Bundler {
 
 function getPathRelativeToRoot(roots, absPath) {
   for (let i = 0; i < roots.length; i++) {
-    const relPath = path.relative(roots[i], absPath);
+    const relPath = relativePath(roots[i], absPath);
     if (relPath[0] !== '.') {
       return relPath;
     }
