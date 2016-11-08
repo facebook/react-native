@@ -13,38 +13,9 @@ const execSync = require('child_process').execSync;
 const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
+const printRunInstructions = require('../generator/printRunInstructions');
 const process = require('process');
-const semver = require('semver');
-
-/** 
- * Use Yarn if available, it's much faster than the npm client.
- * Return the version of yarn installed on the system, null if yarn is not available.
- */
-function getYarnVersionIfAvailable() {
-  let yarnVersion;
-  try {
-    // execSync returns a Buffer -> convert to string
-    if (process.platform.startsWith('win')) {
-      yarnVersion = (execSync('yarn --version').toString() || '').trim();
-    } else {
-      // TODO barn -> yarn
-      yarnVersion = (execSync('barn --version 2>/dev/null').toString() || '').trim();
-    }
-  } catch (error) {
-    return null;
-  }
-  // yarn < 0.16 has a 'missing manifest' bug
-  try {
-    if (semver.gte(yarnVersion, '0.16.0')) {
-      return yarnVersion;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Cannot parse yarn version: ' + yarnVersion);
-    return null;
-  }
-}
+const yarn = require('../util/yarn');
 
 /**
  * Creates the template for a React Native project given the provided
@@ -91,12 +62,16 @@ function generateProject(destinationRoot, newProjectName, options) {
     return;
   }
 
-  const yarnVersion = (!options['npm']) && getYarnVersionIfAvailable();
+  const yarnVersion =
+    (!options['npm']) &&
+    yarn.getYarnVersionIfAvailable() &&
+    yarn.isGlobalCliUsingYarn(destinationRoot);
 
   copyProjectTemplateAndReplace(
     path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
     destinationRoot,
-    newProjectName);
+    newProjectName
+  );
 
   console.log('Installing React...');
   if (yarnVersion) {
@@ -106,13 +81,15 @@ function generateProject(destinationRoot, newProjectName, options) {
   }
   if (!options['skip-jest']) {
     console.log('Installing Jest...');
+    const jestDeps = `jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion}`;
     if (yarnVersion) {
-      execSync(`yarn add jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion} --dev --exact`);
+      execSync(`yarn add {jestDeps} --dev --exact`);
     } else {
-      execSync(`npm install jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion} --save-dev --save-exact`);
+      execSync(`npm install {jestDeps} --save-dev --save-exact`);
     }
     addJestToPackageJson(destinationRoot);
   }
+  printRunInstructions(destinationRoot, newProjectName);
 };
 
 /**
