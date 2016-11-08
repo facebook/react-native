@@ -134,6 +134,8 @@ const DatePickerIOS = React.createClass({
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );
