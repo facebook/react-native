@@ -4,7 +4,7 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = package['version']
+  s.version             = "0.38.0-rc.0"
   s.summary             = package['description']
   s.description         = <<-DESC
                             React Native apps are built using the React JS
