@@ -31,8 +31,11 @@ type AttributeDiffer = (prevProp: mixed, nextProp: mixed) => boolean;
 type AttributePreprocessor = (nextProp: mixed) => mixed;
 
 type CustomAttributeConfiguration =
+  // $FlowFixMe(>=0.34.0)
   { diff: AttributeDiffer, process: AttributePreprocessor } |
+  // $FlowFixMe(>=0.34.0)
   { diff: AttributeDiffer } |
+  // $FlowFixMe(>=0.34.0)
   { process: AttributePreprocessor };
 
 type AttributeConfiguration =
