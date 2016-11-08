@@ -86,19 +86,6 @@ export type AnnotationDragState = $Enum<{
 
 const MapView = React.createClass({
 
-  componentWillMount: function() {
-    console.warn(
-      'MapView is now deprecated and will be removed from React Native in version 0.42. ' +
-      'Please use the react-native-maps module which is more feature complete ' +
-      'and works on Android too: https://github.com/airbnb/react-native-maps\n' +
-      'It is actively maintained and used extensively.\n\n' +
-      'Once MapView is removed from React Native in v0.42, we will release the ' +
-      'code as deprecated-react-native-ios-mapview. You will be able to ' +
-      'continue using that and migrate to react-native-maps your own pace later.\n\n' +
-      'For more info, check out https://github.com/facebook/react-native/pull/10500'
-    );
-  },
-
   mixins: [NativeMethodsMixin],
 
   propTypes: {

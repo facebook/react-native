@@ -40,6 +40,11 @@ import javax.annotation.Nullable;
     mOffset = 0;
   }
 
+  public void extractOffset() {
+    mOffset += mValue;
+    mValue = 0;
+  }
+
   public void onValueUpdate() {
     if (mValueListener == null) {
       return;

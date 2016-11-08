@@ -22,7 +22,6 @@ jest
   .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
-  .mock('../PrepackBundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
   .mock('../../lib/declareOpts');

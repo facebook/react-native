@@ -14,10 +14,8 @@
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 
-import type {
-  Cache,
-  FastFs,
-} from './Module';
+import type Cache from './Cache';
+import type FastFs from './fastfs';
 
 class Package {
 
@@ -74,7 +72,7 @@ class Package {
     );
   }
 
-  getName() {
+  getName(): Promise<string> {
     return this._cache.get(this.path, 'package-name', () =>
       this.read().then(json => json.name)
     );

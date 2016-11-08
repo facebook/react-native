@@ -157,6 +157,15 @@ import javax.annotation.Nullable;
     ((ValueAnimatedNode) node).flattenOffset();
   }
 
+  public void extractAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).extractOffset();
+  }
+
   public void startAnimatingNode(
     int animationId,
     int animatedNodeTag,

@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device-ios.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -72,7 +72,7 @@ The keys to integrating React Native components into your Android application ar
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device-android.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -612,7 +612,7 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      
+
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code

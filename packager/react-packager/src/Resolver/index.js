@@ -50,6 +50,9 @@ const validateOpts = declareOpts({
   transformCode: {
     type: 'function',
   },
+  transformCacheKey: {
+    type: 'string',
+  },
   extraNodeModules: {
     type: 'object',
     required: false,
@@ -102,10 +105,15 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
+      transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       // for jest-haste-map
       resetCache: options.resetCache,
+      moduleOptions: {
+        cacheTransformResults: true,
+        resetCache: options.resetCache,
+      },
     });
 
     this._minifyCode = opts.minifyCode;
