@@ -73,6 +73,10 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
   },
+  extractAnimatedNodeOffset: function(nodeTag: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
+  },
   connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
