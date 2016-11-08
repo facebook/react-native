@@ -161,8 +161,7 @@ WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions option
 
 WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
-WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
-                                               const CSSMeasureMode widthMode,
+WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
                                                const float width,
                                                const CSSMeasureMode heightMode,
                                                const float height,
@@ -195,7 +194,6 @@ WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const bool isTextNode,
 CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
-CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
 CSS_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
 CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);

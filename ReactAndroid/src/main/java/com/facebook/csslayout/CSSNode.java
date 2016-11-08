@@ -140,18 +140,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private native void jni_CSSNodeSetIsTextNode(long nativePointer, boolean isTextNode);
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    jni_CSSNodeSetIsTextNode(mNativePointer, isTextNode);
-  }
-
-  private native boolean jni_CSSNodeGetIsTextNode(long nativePointer);
-  @Override
-  public boolean isTextNode() {
-    return jni_CSSNodeGetIsTextNode(mNativePointer);
-  }
-
   private native void jni_CSSNodeCalculateLayout(long nativePointer);
   @Override
   public void calculateLayout(CSSLayoutContext layoutContext) {
