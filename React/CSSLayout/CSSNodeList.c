@@ -12,7 +12,7 @@
 struct CSSNodeList {
   uint32_t capacity;
   uint32_t count;
-  void **items;
+  CSSNodeRef *items;
 };
 
 CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
@@ -21,29 +21,42 @@ CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(void *) * list->capacity);
+  list->items = malloc(sizeof(CSSNodeRef) * list->capacity);
   CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
 }
 
 void CSSNodeListFree(const CSSNodeListRef list) {
-  free(list->items);
-  free(list);
+  if (list) {
+    free(list->items);
+    free(list);
+  }
 }
 
 uint32_t CSSNodeListCount(const CSSNodeListRef list) {
-  return list->count;
+  if (list) {
+    return list->count;
+  }
+  return 0;
 }
 
-void CSSNodeListAdd(const CSSNodeListRef list, const CSSNodeRef node) {
-  CSSNodeListInsert(list, node, list->count);
+void CSSNodeListAdd(CSSNodeListRef *listp, const CSSNodeRef node) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListInsert(listp, node, (*listp)->count);
 }
 
-void CSSNodeListInsert(const CSSNodeListRef list, const CSSNodeRef node, const uint32_t index) {
+void CSSNodeListInsert(CSSNodeListRef *listp, const CSSNodeRef node, const uint32_t index) {
+  if (!*listp) {
+    *listp = CSSNodeListNew(4);
+  }
+  CSSNodeListRef list = *listp;
+
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(void *) * list->capacity);
+    list->items = realloc(list->items, sizeof(CSSNodeRef) * list->capacity);
     CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 
@@ -79,5 +92,9 @@ CSSNodeRef CSSNodeListDelete(const CSSNodeListRef list, const CSSNodeRef node) {
 }
 
 CSSNodeRef CSSNodeListGet(const CSSNodeListRef list, const uint32_t index) {
-  return list->items[index];
+  if (CSSNodeListCount(list) > 0) {
+    return list->items[index];
+  }
+
+  return NULL;
 }

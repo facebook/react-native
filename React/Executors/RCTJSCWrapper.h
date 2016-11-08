@@ -25,7 +25,14 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
-typedef void (*configureJSContextForIOSFuncType)(JSContextRef ctx, const char *cacheDir);
+typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
+
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
 
 typedef struct RCTJSCWrapper {
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
@@ -42,9 +49,10 @@ typedef struct RCTJSCWrapper {
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
   JSEvaluateScriptFuncType JSEvaluateScript;
+  JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
+  const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;
-  configureJSContextForIOSFuncType configureJSContextForIOS;
 } RCTJSCWrapper;
 
 RCT_EXTERN RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC);

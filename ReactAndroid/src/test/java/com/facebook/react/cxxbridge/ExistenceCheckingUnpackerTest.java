@@ -71,7 +71,7 @@ public class ExistenceCheckingUnpackerTest extends UnpackerTestBase {
   @Test
   public void testFsyncsAfterUnpacking() throws IOException {
     mockStatic(UnpackingJSBundleLoader.class);
-    mUnpacker.unpack(mContext, mIOBuffer);
+    mUnpacker.finishUnpacking(mContext);
     verifyStatic(times(1));
     UnpackingJSBundleLoader.fsync(mDestinationPath);
   }

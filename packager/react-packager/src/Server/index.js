@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
@@ -19,12 +18,19 @@ const Promise = require('promise');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
-const defaultAssetExts = require('../../../defaultAssetExts');
+const defaults = require('../../../defaults');
 const mime = require('mime-types');
 const path = require('path');
 const url = require('url');
 
 const debug = require('debug')('ReactNativePackager:Server');
+
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
   let timeout, args = [];
@@ -81,7 +87,7 @@ const validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: defaultAssetExts,
+    default: defaults.assetExts,
   },
   transformTimeoutInterval: {
     type: 'number',
@@ -128,10 +134,7 @@ const bundleOpts = declareOpts({
   },
   runBeforeMainModule: {
     type: 'array',
-    default: [
-      // Ensures essential globals are available and are patched correctly.
-      'InitializeJavaScriptAppEngine'
-    ],
+    default: defaults.runBeforeMainModule,
   },
   unbundle: {
     type: 'boolean',
@@ -147,7 +150,7 @@ const bundleOpts = declareOpts({
   },
   isolateModuleIDs: {
     type: 'boolean',
-    default: false
+    default: false,
   },
   resolutionResponse: {
     type: 'object',
@@ -326,17 +329,6 @@ class Server {
     });
   }
 
-  buildPrepackBundle(options) {
-    return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = bundleOpts(options);
-      return this._bundler.prepackBundle(opts);
-    });
-  }
-
   buildBundleFromUrl(reqUrl) {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
@@ -487,7 +479,7 @@ class Server {
         'Accept-Ranges': 'bytes',
         'Content-Length': chunksize,
         'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
-        'Content-Type': mime.lookup(path.basename(assetPath[1]))
+        'Content-Type': mime.lookup(path.basename(assetPath[1])),
       });
 
       return data.slice(dataStart, dataEnd + 1);
@@ -499,7 +491,13 @@ class Server {
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(decodeURI(req.url), true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    const assetEvent = Activity.startEvent('Processing asset request', {asset: assetPath[1]});
+
+    const processingAssetRequestLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Processing asset request',
+        asset: assetPath[1],
+      })), ['asset']);
+
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => {
@@ -513,7 +511,9 @@ class Server {
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done(() => Activity.endEvent(assetEvent));
+      ).done(() => {
+        print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+      });
   }
 
   optionsHash(options) {
@@ -534,17 +534,15 @@ class Server {
         const deps = bundleDeps.get(bundle);
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
-          const updateExistingBundleEventId =
-            Activity.startEvent(
-              'Updating existing bundle',
-              {
-                outdatedModules: outdated.size,
-              },
-              {
-                telemetric: true,
-              },
-            );
+
+          const updatingExistingBundleLogEntry =
+            print(log(createActionStartEntry({
+              action_name: 'Updating existing bundle',
+              outdated_modules: outdated.size,
+            })), ['outdated_modules']);
+
           debug('Attempt to update existing bundle');
+
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
           deps.outdated = new Set();
@@ -576,7 +574,7 @@ class Server {
                 ...options,
                 resolutionResponse: response.copy({
                   dependencies: changedModules,
-                })
+                }),
               }).then(updateBundle => {
                 const oldModules = bundle.getModules();
                 const newModules = updateBundle.getModules();
@@ -598,8 +596,13 @@ class Server {
                 }
 
                 bundle.invalidateSource();
+
+                print(
+                  log(createActionEndEntry(updatingExistingBundleLogEntry)),
+                  ['outdated_modules'],
+                );
+
                 debug('Successfully updated existing bundle');
-                Activity.endEvent(updateExistingBundleEventId);
                 return bundle;
             });
           }).catch(e => {
@@ -646,17 +649,12 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
-    const startReqEventId = Activity.startEvent(
-      'Requesting bundle',
-      {
-        url: req.url,
-      },
-      {
-        telemetric: true,
-        entryPoint: options.entryFile,
-        details: req.url,
-      },
-    );
+    const requestingBundleLogEntry =
+      print(log(createActionStartEntry({
+        action_name: 'Requesting bundle',
+        bundle_url: req.url,
+        entry_point: options.entryFile,
+      })), ['bundle_url']);
 
     let consoleProgress = () => {};
     if (process.stdout.isTTY && !this._opts.silent) {
@@ -699,7 +697,7 @@ class Server {
             mres.end(bundleSource);
           }
           debug('Finished response');
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         } else if (requestType === 'map') {
           let sourceMap = p.getSourceMap({
             minify: options.minify,
@@ -712,12 +710,12 @@ class Server {
 
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
           mres.setHeader('Content-Type', 'application/json');
           mres.end(assetsList);
-          Activity.endEvent(startReqEventId);
+          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
         }
       },
       error => this._handleError(mres, this.optionsHash(options), error)
@@ -729,13 +727,9 @@ class Server {
   }
 
   _symbolicate(req, res) {
-    const startReqEventId = Activity.startEvent(
-      'Symbolicating',
-      null,
-      {
-        telemetric: true,
-      },
-    );
+    const symbolicatingLogEntry =
+      print(log(createActionStartEntry('Symbolicating')));
+
     new Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
@@ -789,7 +783,7 @@ class Server {
         res.end(JSON.stringify({error: error.message}));
       }
     ).done(() => {
-      Activity.endEvent(startReqEventId);
+      print(log(createActionEndEntry(symbolicatingLogEntry)));
     });
   }
 

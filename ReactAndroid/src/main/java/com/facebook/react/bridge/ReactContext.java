@@ -40,7 +40,8 @@ public class ReactContext extends ContextWrapper {
 
   private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
     "Tried to access a JS module before the React instance was fully set up. Calls to " +
-      "ReactContext#getJSModule should be protected by ReactContext#hasActiveCatalystInstance().";
+      "ReactContext#getJSModule should only happen once initialize() has been called on your " +
+      "native module.";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
@@ -338,5 +339,12 @@ public class ReactContext extends ContextWrapper {
       return null;
     }
     return mCurrentActivity.get();
+  }
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
+  public long getJavaScriptContext() {
+    return mCatalystInstance.getJavaScriptContext();
   }
 }

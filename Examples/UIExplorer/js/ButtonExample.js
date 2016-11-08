@@ -93,4 +93,18 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Disabled Button',
+    description: 'All interactions for the component are disabled.',
+    render: function() {
+      return (
+        <Button
+          disabled
+          onPress={onButtonPress}
+          title="I Am Disabled"
+          accessibilityLabel="See an informative alert"
+        />
+      );
+    },
+  },
 ];

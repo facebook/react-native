@@ -31,6 +31,7 @@ import com.facebook.react.modules.core.PermissionListener;
 @ReactModule(name = "PermissionsAndroid")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
+  private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
 
@@ -73,7 +74,11 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       promise.resolve(false);
       return;
     }
-    promise.resolve(getPermissionAwareActivity().shouldShowRequestPermissionRationale(permission));
+    try {
+      promise.resolve(getPermissionAwareActivity().shouldShowRequestPermissionRationale(permission));
+    } catch (IllegalStateException e) {
+      promise.reject(ERROR_INVALID_ACTIVITY, e);
+    }
   }
 
   /**
@@ -95,7 +100,10 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       return;
     }
 
-    mCallbacks.put(
+    try {
+      PermissionAwareActivity activity = getPermissionAwareActivity();
+
+      mCallbacks.put(
         mRequestCode, new Callback() {
           @Override
           public void invoke(Object... args) {
@@ -103,9 +111,11 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
           }
         });
 
-    PermissionAwareActivity activity = getPermissionAwareActivity();
-    activity.requestPermissions(new String[]{permission}, mRequestCode, this);
-    mRequestCode++;
+      activity.requestPermissions(new String[]{permission}, mRequestCode, this);
+      mRequestCode++;
+    } catch (IllegalStateException e) {
+      promise.reject(ERROR_INVALID_ACTIVITY, e);
+    }
   }
 
   /**
