@@ -9,9 +9,9 @@
 'use strict';
 
 const Logger = require('../Logger');
-const Promise = require('promise');
 
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
@@ -99,8 +99,8 @@ class Transformer {
         ['minify', 'transformAndExtractDependencies'],
         opts.transformTimeoutInterval,
       );
-      this._transform = Promise.denodeify(this._workers.transformAndExtractDependencies);
-      this.minify = Promise.denodeify(this._workers.minify);
+      this._transform = denodeify(this._workers.transformAndExtractDependencies);
+      this.minify = denodeify(this._workers.minify);
     }
   }
 
@@ -108,18 +108,17 @@ class Transformer {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName, code, options) {
+  transformFile(fileName, code, options, transformCacheKey) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
-      ._transform(this._transformModulePath, fileName, code, options)
-      .then(result => {
-        Logger.log(result.transformFileStartLogEntry);
-        Logger.log(result.transformFileEndLogEntry);
+      ._transform(this._transformModulePath, fileName, code, options, transformCacheKey)
+      .then(stats => {
+        Logger.log(stats.transformFileStartLogEntry);
+        Logger.log(stats.transformFileEndLogEntry);
         debug('done transforming file', fileName);
-        return result;
       })
       .catch(error => {
         if (error.type === 'TimeoutError') {

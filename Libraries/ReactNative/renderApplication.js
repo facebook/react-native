@@ -31,7 +31,7 @@ function renderApplication<Props>(
     'Expect to have a valid rootTag, instead got ', rootTag
   );
   ReactNative.render(
-    <AppContainer>
+    <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}
         rootTag={rootTag}

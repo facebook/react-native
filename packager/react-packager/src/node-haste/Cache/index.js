@@ -49,7 +49,7 @@ class Cache {
   }: {
     resetCache: boolean,
     cacheKey: string,
-    cacheDirectory: string,
+    cacheDirectory?: string,
   }) {
     this._cacheFilePath = Cache.getCacheFilePath(cacheDirectory, cacheKey);
     if (!resetCache) {

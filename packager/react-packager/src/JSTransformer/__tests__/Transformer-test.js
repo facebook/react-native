@@ -9,6 +9,7 @@
 'use strict';
 
 jest
+  .unmock('imurmurhash')
   .unmock('../../lib/ModuleTransport')
   .unmock('../');
 
@@ -26,6 +27,7 @@ const {any} = jasmine;
 describe('Transformer', function() {
   let options, workers, Cache;
   const fileName = '/an/arbitrary/file.js';
+  const transformCacheKey = 'abcdef';
   const transformModulePath = __filename;
 
   beforeEach(function() {
@@ -45,25 +47,15 @@ describe('Transformer', function() {
   it('passes transform module path, file path, source code, and options to the worker farm when transforming', () => {
     const transformOptions = {arbitrary: 'options'};
     const code = 'arbitrary(code)';
-    new Transformer(options).transformFile(fileName, code, transformOptions);
+    new Transformer(options).transformFile(fileName, code, transformOptions, transformCacheKey);
     expect(workers.transformAndExtractDependencies).toBeCalledWith(
       transformModulePath,
       fileName,
       code,
       transformOptions,
+      transformCacheKey,
       any(Function),
     );
-  });
-
-  pit('passes the data produced by the worker back', () => {
-    const transformer = new Transformer(options);
-    const result = { code: 'transformed', map: 'sourceMap' };
-    workers.transformAndExtractDependencies.mockImpl(function(transformPath, filename, code, options, callback) {
-      callback(null, result);
-    });
-
-    return transformer.transformFile(fileName, '', {})
-      .then(data => expect(data).toBe(result));
   });
 
   pit('should add file info to parse errors', function() {
@@ -71,19 +63,21 @@ describe('Transformer', function() {
     var message = 'message';
     var snippet = 'snippet';
 
-    workers.transformAndExtractDependencies.mockImpl(function(transformPath, filename, code, options, callback) {
-      var babelError = new SyntaxError(message);
-      babelError.type = 'SyntaxError';
-      babelError.description = message;
-      babelError.loc = {
-        line: 2,
-        column: 15,
-      };
-      babelError.codeFrame = snippet;
-      callback(babelError);
-    });
+    workers.transformAndExtractDependencies.mockImpl(
+      function(transformPath, filename, code, options, transformCacheKey, callback) {
+        var babelError = new SyntaxError(message);
+        babelError.type = 'SyntaxError';
+        babelError.description = message;
+        babelError.loc = {
+          line: 2,
+          column: 15,
+        };
+        babelError.codeFrame = snippet;
+        callback(babelError);
+      },
+    );
 
-    return transformer.transformFile(fileName, '', {})
+    return transformer.transformFile(fileName, '', {}, transformCacheKey)
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.message).toBe('SyntaxError ' + message);
