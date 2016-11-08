@@ -301,7 +301,7 @@ class DependencyGraph {
   }: {
     entryPath: string,
     platform: string,
-    transformOptions: mixed,
+    transformOptions: {},
     onProgress: () => void,
     recursive: boolean,
   }) {

@@ -307,6 +307,8 @@ class Bundler {
     onProgress,
   }) {
     const onResolutionResponse = (response: ResolutionResponse) => {
+      /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
+       * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
       if (entryModuleOnly) {
         response.dependencies = response.dependencies.filter(module =>
@@ -331,6 +333,8 @@ class Bundler {
           ? runBeforeMainModule
               .map(name => modulesByName[name])
               .filter(Boolean)
+              /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
+               * with `getModuleId`. */
               .map(response.getModuleId)
           : undefined;
 

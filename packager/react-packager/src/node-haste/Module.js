@@ -134,7 +134,7 @@ class Module {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName(): Promise<string> {
+  getName(): Promise<string | number> {
     return this._cache.get(
       this.path,
       'name',
