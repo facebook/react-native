@@ -14,6 +14,9 @@ const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
+const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
+  return `build/Build/Products/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+};
 
 function runIOS(argv, config, args) {
   process.chdir(args.projectPath);
@@ -93,10 +96,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     if (!appName) {
       appName = inferredSchemeName;
     }
-    let appPath = `build/Build/Products/Debug-iphonesimulator/${appName}.app`;
-    if (args.configuration === 'Release') {
-      appPath = `build/Build/Products/Release-iphonesimulator/${appName}.app`;
-    }
+    let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
     child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
@@ -118,7 +118,7 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
       appName = scheme;
     }
     const iosDeployInstallArgs = [
-      '--bundle', configuration === 'Release' ? 'build/Build/Products/Release-iphoneos/' + appName + '.app' : 'build/Build/Products/Debug-iphoneos/' + appName + '.app',
+      '--bundle', getBuildPath(configuration, appName, true),
       '--id' , selectedDevice.udid,
       '--justlaunch'
     ];
@@ -135,21 +135,16 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration) {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
       xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+      '-configuration', configuration,
       '-scheme', scheme,
       '-destination', `id=${udid}`,
       '-derivedDataPath', 'build',
     ];
-    if (configuration) {
-      xcodebuildArgs = [
-        ...xcodebuildArgs,
-        '-configuration', configuration,
-      ];
-    }
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
     const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
     let buildOutput = "";
@@ -171,7 +166,6 @@ function buildProject(xcodeProject, udid, scheme, configuration) {
   });
 }
 
-
 function matchingDevice(devices, deviceName) {
   if (deviceName === true && devices.length === 1)
   {
@@ -184,7 +178,6 @@ function matchingDevice(devices, deviceName) {
     }
   }
 }
-
 
 function matchingDeviceByUdid(devices, udid) {
   for (let i = devices.length - 1; i >= 0; i--) {
