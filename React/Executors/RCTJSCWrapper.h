@@ -11,6 +11,7 @@
 
 #import "RCTDefines.h"
 
+typedef void (*voidWithNoParamsFuncType)();
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
 typedef JSStringRef (*JSStringCreateWithUTF8CStringFuncType)(const char *);
 typedef void (*JSStringReleaseFuncType)(JSStringRef);
@@ -50,6 +51,7 @@ typedef struct RCTJSCWrapper {
   JSValueIsNullFuncType JSValueIsNull;
   JSEvaluateScriptFuncType JSEvaluateScript;
   JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
+  voidWithNoParamsFuncType configureJSCForIOS;
   const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;

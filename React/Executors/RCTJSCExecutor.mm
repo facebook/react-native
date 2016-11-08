@@ -339,6 +339,7 @@ static NSThread *newJavaScriptThread(void)
       [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
       RCTAssert(self->_context == nil, @"Didn't expect to set up twice");
+      self->_jscWrapper->configureJSCForIOS();
       context = [self->_jscWrapper->JSContext new];
       self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
@@ -990,6 +991,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 - (void)_createContext
 {
   _jscWrapper = RCTJSCWrapperCreate(_useCustomJSCLibrary);
+  _jscWrapper->configureJSCForIOS();
   _context = [_jscWrapper->JSContext new];
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
