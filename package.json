@@ -174,13 +174,11 @@
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
-    "jstransform": "^11.0.3",
     "lodash": "^4.16.6",
     "mime": "^1.3.4",
     "mime-types": "2.1.11",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
     "npmlog": "^2.0.4",
     "opn": "^3.0.2",
@@ -214,7 +212,9 @@
     "yeoman-generator": "0.21.2"
   },
   "devDependencies": {
+    "JSONStream": "1.2.1",
     "babel-eslint": "^7.0.0",
+    "duplexer": "0.1.1",
     "eslint": "^3.8.1",
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
@@ -225,11 +225,13 @@
     "jest-repl": "16.0.0",
     "jest-runtime": "16.0.0",
     "mock-fs": "^3.11.0",
+    "opener": "1.4.2",
     "portfinder": "0.4.0",
     "react": "~15.4.0-rc.4",
     "react-dom": "~15.4.0-rc.4",
     "react-test-renderer": "~15.4.0-rc.4",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2"
+    "sinon": "^2.0.0-pre.2",
+    "split": "1.0.0"
   }
 }
