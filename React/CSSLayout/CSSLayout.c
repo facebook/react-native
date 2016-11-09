@@ -259,8 +259,13 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
-  CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot set measure function: Nodes with measure functions cannot have children.");
-  node->measure = measureFunc;
+  // You can always NULLify the measure function of a node.
+  if (measureFunc == NULL) {
+    node->measure = NULL;
+  } else {
+    CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot set measure function: Nodes with measure functions cannot have children.");
+    node->measure = measureFunc;
+  }
 }
 
 CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node) {
