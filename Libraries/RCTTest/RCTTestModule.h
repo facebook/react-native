@@ -42,4 +42,6 @@ typedef NS_ENUM(NSInteger, RCTTestStatus) {
  */
 @property (nonatomic, readonly) RCTTestStatus status;
 
+@property (nonatomic, copy) NSString *testSuffix;
+
 @end

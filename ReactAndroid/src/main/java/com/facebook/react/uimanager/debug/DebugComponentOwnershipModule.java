@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.catalyst.uimanager.debug;
+package com.facebook.react.uimanager.debug;
 
 import javax.annotation.Nullable;
 
@@ -20,12 +20,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Native module that can asynchronously request the owners hierarchy of a react tag.
  *
  * Example returned owner hierarchy: ['RootView', 'Dialog', 'TitleView', 'Text']
  */
+@ReactModule(name = "DebugComponentOwnershipModule")
 public class DebugComponentOwnershipModule extends ReactContextBaseJavaModule {
 
   public interface RCTDebugComponentOwnership extends JavaScriptModule {

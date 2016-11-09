@@ -8,8 +8,10 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "RCTResizeMode.h"
 
 @class RCTBridge;
+@class RCTImageSource;
 
 @interface RCTImageView : UIImageView
 
@@ -18,6 +20,8 @@
 @property (nonatomic, assign) UIEdgeInsets capInsets;
 @property (nonatomic, strong) UIImage *defaultImage;
 @property (nonatomic, assign) UIImageRenderingMode renderingMode;
-@property (nonatomic, copy) NSString *src;
+@property (nonatomic, copy) NSArray<RCTImageSource *> *imageSources;
+@property (nonatomic, assign) CGFloat blurRadius;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
 
 @end

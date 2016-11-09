@@ -13,17 +13,20 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
+import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
- * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
- * {@link CSSNode} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
+ * {@link CSSNodeDEPRECATED} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
- * may use {@link #updateProperties} to persist some of the updated fields in the node instance that
+ * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
  * corresponds to a particular view type.
  *
  * Subclasses of {@link ReactShadowNode} should be created only from {@link ViewManager} that
@@ -39,7 +42,8 @@ import com.facebook.infer.annotation.Assertions;
  * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
  * information.
  */
-public class ReactShadowNode extends CSSNode {
+@ReactPropertyHolder
+public class ReactShadowNode extends CSSNodeDEPRECATED {
 
   private int mReactTag;
   private @Nullable String mViewClassName;
@@ -57,6 +61,8 @@ public class ReactShadowNode extends CSSNode {
   private float mAbsoluteTop;
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
+  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -92,7 +98,7 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
-  protected void markUpdated() {
+  public void markUpdated() {
     if (mNodeUpdated) {
       return;
     }
@@ -103,15 +109,61 @@ public class ReactShadowNode extends CSSNode {
     }
   }
 
+  public boolean hasUnseenUpdates() {
+    return mNodeUpdated;
+  }
+
   @Override
-  protected void dirty() {
+  public void dirty() {
     if (!isVirtual()) {
       super.dirty();
     }
   }
 
+  public void setDefaultPadding(int spacingType, float padding) {
+    mDefaultPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void setPadding(int spacingType, float padding) {
+    mPadding.set(spacingType, padding);
+    updatePadding();
+  }
+
+  private void updatePadding() {
+    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
+      if (spacingType == Spacing.LEFT ||
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+            CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      } else {
+        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          super.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        } else {
+          super.setPadding(spacingType, mPadding.getRaw(spacingType));
+        }
+      }
+    }
+  }
+
+  @Override
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     markUpdated();
     ReactShadowNode node = (ReactShadowNode) child;
@@ -119,16 +171,7 @@ public class ReactShadowNode extends CSSNode {
     int increase = node.mIsLayoutOnly ? node.mTotalNativeChildren : 1;
     mTotalNativeChildren += increase;
 
-    if (mIsLayoutOnly) {
-      ReactShadowNode parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += increase;
-        if (!parent.mIsLayoutOnly) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
+    updateNativeChildrenCountInParent(increase);
   }
 
   @Override
@@ -138,17 +181,33 @@ public class ReactShadowNode extends CSSNode {
 
     int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
     mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
+    return removed;
+  }
+
+  public void removeAllChildren() {
+    int decrease = 0;
+    for (int i = getChildCount() - 1; i >= 0; i--) {
+      ReactShadowNode removed = (ReactShadowNode) super.removeChildAt(i);
+      decrease += removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
+    }
+    markUpdated();
+
+    mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
+  }
+
+  private void updateNativeChildrenCountInParent(int delta) {
     if (mIsLayoutOnly) {
       ReactShadowNode parent = getParent();
       while (parent != null) {
-        parent.mTotalNativeChildren -= decrease;
+        parent.mTotalNativeChildren += delta;
         if (!parent.mIsLayoutOnly) {
           break;
         }
         parent = parent.getParent();
       }
     }
-    return removed;
   }
 
   /**
@@ -159,8 +218,13 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    BaseCSSPropertyApplicator.applyCSSProperties(this, styles);
+  public final void updateProperties(ReactStylesDiffMap props) {
+    ViewManagerPropertyUpdater.updateProps(this, props);
+    onAfterUpdateTransaction();
+  }
+
+  public void onAfterUpdateTransaction() {
+    // no-op
   }
 
   /**
@@ -173,7 +237,10 @@ public class ReactShadowNode extends CSSNode {
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
   }
 
-  /* package */ void dispatchUpdates(
+  /**
+   * @return true if layout (position or dimensions) changed, false otherwise.
+   */
+  /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
@@ -183,12 +250,27 @@ public class ReactShadowNode extends CSSNode {
     }
 
     if (hasNewLayout()) {
-      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
-      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
-      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      float newLeft = Math.round(absoluteX + getLayoutX());
+      float newTop = Math.round(absoluteY + getLayoutY());
+      float newRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      float newBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+
+      if (newLeft == mAbsoluteLeft &&
+          newRight == mAbsoluteRight &&
+          newTop == mAbsoluteTop &&
+          newBottom == mAbsoluteBottom) {
+        return false;
+      }
+
+      mAbsoluteLeft = newLeft;
+      mAbsoluteTop = newTop;
+      mAbsoluteRight = newRight;
+      mAbsoluteBottom = newBottom;
 
       nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -196,7 +278,7 @@ public class ReactShadowNode extends CSSNode {
     return mReactTag;
   }
 
-  /* package */ final void setReactTag(int reactTag) {
+  public void setReactTag(int reactTag) {
     mReactTag = reactTag;
   }
 
@@ -231,15 +313,15 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
-  /* package */ void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
+  public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 
@@ -264,6 +346,15 @@ public class ReactShadowNode extends CSSNode {
     ReactShadowNode removed = mNativeChildren.remove(i);
     removed.mNativeParent = null;
     return removed;
+  }
+
+  public void removeAllNativeChildren() {
+    if (mNativeChildren != null) {
+      for (int i = mNativeChildren.size() - 1; i >= 0; i--) {
+        mNativeChildren.get(i).mNativeParent = null;
+      }
+      mNativeChildren.clear();
+    }
   }
 
   public int getNativeChildCount() {

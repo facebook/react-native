@@ -11,7 +11,6 @@
  */
 'use strict';
 
-type ImageSource = {
-  uri: string;
-  isStatic: boolean;
-};
+export type ImageSource = {
+  uri: string,
+} | number;

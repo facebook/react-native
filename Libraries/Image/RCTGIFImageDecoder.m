@@ -30,11 +30,11 @@ RCT_EXPORT_MODULE()
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-  NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
+  NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
   UIImage *image = nil;
@@ -42,17 +42,17 @@ RCT_EXPORT_MODULE()
   if (imageCount > 1) {
 
     NSTimeInterval duration = 0;
-    NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-    NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<NSNumber *> *delays = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<id /* CGIMageRef */> *images = [NSMutableArray arrayWithCapacity:imageCount];
     for (size_t i = 0; i < imageCount; i++) {
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
       if (!image) {
-        image = [UIImage imageWithCGImage:imageRef];
+        image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       }
 
-      NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-      NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
+      NSDictionary<NSString *, id> *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+      NSDictionary<NSString *, id> *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
 
       const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
       NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE()
     }
     CFRelease(imageSource);
 
-    NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
+    NSMutableArray<NSNumber *> *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
     NSTimeInterval runningDuration = 0;
     for (NSNumber *delayNumber in delays) {
       [keyTimes addObject:@(runningDuration / duration)];
@@ -91,6 +91,7 @@ RCT_EXPORT_MODULE()
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
+    animation.removedOnCompletion = NO;
     image.reactKeyframeAnimation = animation;
 
   } else {
@@ -98,7 +99,7 @@ RCT_EXPORT_MODULE()
     // Don't bother creating an animation
     CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
     if (imageRef) {
-      image = [UIImage imageWithCGImage:imageRef];
+      image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       CFRelease(imageRef);
     }
     CFRelease(imageSource);

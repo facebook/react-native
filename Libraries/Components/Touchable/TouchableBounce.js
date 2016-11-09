@@ -12,24 +12,20 @@
 'use strict';
 
 var Animated = require('Animated');
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var Touchable = require('Touchable');
 
-var merge = require('merge');
-
 type Event = Object;
+
 type State = {
-  animationID: ?number;
+  animationID: ?number,
+  scale: Animated.Value,
 };
 
-/**
- * When the scroll view is disabled, this defines how far your touch may move
- * off of the button, before deactivating the button. Once deactivated, try
- * moving it back and you'll see that the button is once again reactivated!
- * Move it back and forth several times while the scroll view is disabled.
- */
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
 /**
  * Example of using the `TouchableMixin` to play well with other responder
  * locking views including `ScrollView`. `TouchableMixin` provides touchable
@@ -41,6 +37,12 @@ var TouchableBounce = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
+    /**
+     * When true, indicates that the view is an accessibility element. By default,
+     * all the touchable elements are accessible.
+     */
+    accessible: React.PropTypes.bool,
+
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
@@ -50,6 +52,23 @@ var TouchableBounce = React.createClass({
     onPressWithCompletion: React.PropTypes.func,
     // the function passed is called after the animation is complete
     onPressAnimationComplete: React.PropTypes.func,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * This defines how far your touch can start away from the button. This is
+     * added to `pressRetentionOffset` when moving off of the button.
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function(): State {
@@ -69,6 +88,7 @@ var TouchableBounce = React.createClass({
       toValue: value,
       velocity,
       bounciness,
+      useNativeDriver: true,
     }).start(callback);
   },
 
@@ -100,20 +120,28 @@ var TouchableBounce = React.createClass({
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
+  },
+
+  touchableGetHitSlop: function(): ?Object {
+    return this.props.hitSlop;
   },
 
   touchableGetHighlightDelayMS: function(): number {
     return 0;
   },
 
-  render: function(): ReactElement {
+  render: function(): React.Element<any> {
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
-        accessible={true}
+        accessible={this.props.accessible !== false}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityTraits={this.props.accessibilityTraits}
         testID={this.props.testID}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
@@ -121,6 +149,7 @@ var TouchableBounce = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   }

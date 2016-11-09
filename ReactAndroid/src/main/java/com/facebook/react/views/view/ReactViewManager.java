@@ -14,6 +14,8 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
+import android.annotation.TargetApi;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 
@@ -23,20 +25,16 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CSSColorUtil;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.*;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * View manager for AndroidViews (plain React Views).
  */
+@ReactModule(name = ReactViewManager.REACT_CLASS)
 public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @VisibleForTesting
@@ -45,18 +43,115 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
-  private static final String[] PROPS_BORDER_COLOR = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
-  private static final int[] sLocationBuf = new int[2];
 
-  @UIProp(UIProp.Type.STRING) public static final String PROP_ACCESSIBLE = "accessible";
-  @UIProp(UIProp.Type.NUMBER) public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING) public static final String PROP_BORDER_STYLE = "borderStyle";
-  @UIProp(UIProp.Type.STRING) public static final String PROP_POINTER_EVENTS = "pointerEvents";
-  @UIProp(UIProp.Type.MAP) public static final String PROP_NATIVE_BG = "nativeBackgroundAndroid";
+  @ReactProp(name = "accessible")
+  public void setAccessible(ReactViewGroup view, boolean accessible) {
+    view.setFocusable(accessible);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!CSSConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
+  }
+
+  @ReactProp(name = "borderStyle")
+  public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
+    view.setBorderStyle(borderStyle);
+  }
+
+  @ReactProp(name = "hitSlop")
+  public void setHitSlop(final ReactViewGroup view, @Nullable ReadableMap hitSlop) {
+    if (hitSlop == null) {
+      view.setHitSlopRect(null);
+    } else {
+      view.setHitSlopRect(new Rect(
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+      ));
+    }
+  }
+
+  @ReactProp(name = "pointerEvents")
+  public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
+    if (pointerEventsStr != null) {
+      PointerEvents pointerEvents =
+          PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+      view.setPointerEvents(pointerEvents);
+    }
+  }
+
+  @ReactProp(name = "nativeBackgroundAndroid")
+  public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
+    view.setTranslucentBackgroundDrawable(bg == null ?
+            null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+  }
+
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "nativeForegroundAndroid")
+  public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
+    view.setForeground(fg == null
+        ? null
+        : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
+  }
+
+  @ReactProp(name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
+  }
+
+  @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
+  public void setNeedsOffscreenAlphaCompositing(
+      ReactViewGroup view,
+      boolean needsOffscreenAlphaCompositing) {
+    view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_WIDTH,
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_TOP_WIDTH,
+      ViewProps.BORDER_BOTTOM_WIDTH,
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderWidth(ReactViewGroup view, int index, float width) {
+    if (!CSSConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(SPACING_TYPES[index], width);
+  }
+
+  @ReactPropGroup(names = {
+      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
+  }, customType = "Color")
+  public void setBorderColor(ReactViewGroup view, int index, Integer color) {
+    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  }
+
+  @ReactProp(name = ViewProps.COLLAPSABLE)
+  public void setCollapsable(ReactViewGroup view, boolean collapsable) {
+    // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
+    // handled in NativeViewHierarchyOptimizer
+  }
 
   @Override
   public String getName() {
@@ -66,82 +161,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @Override
   public ReactViewGroup createViewInstance(ThemedReactContext context) {
     return new ReactViewGroup(context);
-  }
-
-  @Override
-  public Map<String, UIProp.Type> getNativeProps() {
-    Map<String, UIProp.Type> nativeProps = super.getNativeProps();
-    Map<String, UIProp.Type> baseProps = BaseViewPropertyApplicator.getCommonProps();
-    for (Map.Entry<String, UIProp.Type> entry : baseProps.entrySet()) {
-      nativeProps.put(entry.getKey(), entry.getValue());
-    }
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      nativeProps.put(ViewProps.BORDER_WIDTHS[i], UIProp.Type.NUMBER);
-      nativeProps.put(PROPS_BORDER_COLOR[i], UIProp.Type.STRING);
-    }
-    return nativeProps;
-  }
-
-  @Override
-  public void updateView(ReactViewGroup view, CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-    ReactClippingViewGroupHelper.applyRemoveClippedSubviewsProperty(view, props);
-
-    // Border widths
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      String key = ViewProps.BORDER_WIDTHS[i];
-      if (props.hasKey(key)) {
-        float width = props.getFloat(key, CSSConstants.UNDEFINED);
-        if (!CSSConstants.isUndefined(width)) {
-          width = PixelUtil.toPixelFromDIP(width);
-        }
-        view.setBorderWidth(SPACING_TYPES[i], width);
-      }
-    }
-
-    // Border colors
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      String key = PROPS_BORDER_COLOR[i];
-      if (props.hasKey(key)) {
-        String color = props.getString(key);
-        float colorFloat = color == null ? CSSConstants.UNDEFINED : CSSColorUtil.getColor(color);
-        view.setBorderColor(SPACING_TYPES[i], colorFloat);
-      }
-    }
-
-    // Border radius
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(PixelUtil.toPixelFromDIP(props.getFloat(PROP_BORDER_RADIUS, 0.0f)));
-    }
-
-    if (props.hasKey(PROP_BORDER_STYLE)) {
-      view.setBorderStyle(props.getString(PROP_BORDER_STYLE));
-    }
-
-    if (props.hasKey(PROP_POINTER_EVENTS)) {
-      String pointerEventsStr = props.getString(PROP_POINTER_EVENTS);
-      if (pointerEventsStr != null) {
-        PointerEvents pointerEvents =
-            PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
-        view.setPointerEvents(pointerEvents);
-      }
-    }
-
-    // Native background
-    if (props.hasKey(PROP_NATIVE_BG)) {
-      ReadableMap map = props.getMap(PROP_NATIVE_BG);
-      view.setTranslucentBackgroundDrawable(map == null ?
-              null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), map));
-    }
-
-    if (props.hasKey(PROP_ACCESSIBLE)) {
-      view.setFocusable(props.getBoolean(PROP_ACCESSIBLE, false));
-    }
-
-    if (props.hasKey(ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)) {
-      view.setNeedsOffscreenAlphaCompositing(
-          props.getBoolean(ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING, false));
-    }
   }
 
   @Override
@@ -158,9 +177,8 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
               "Illegal number of arguments for 'updateHotspot' command");
         }
         if (Build.VERSION.SDK_INT >= 21) {
-          root.getLocationOnScreen(sLocationBuf);
-          float x = PixelUtil.toPixelFromDIP(args.getDouble(0)) - sLocationBuf[0];
-          float y = PixelUtil.toPixelFromDIP(args.getDouble(1)) - sLocationBuf[1];
+          float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
+          float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
           root.drawableHotspotChanged(x, y);
         }
         break;
@@ -184,6 +202,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     } else {
       parent.addView(child, index);
     }
+    reorderChildrenByZIndex(parent);
   }
 
   @Override
@@ -207,16 +226,26 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   }
 
   @Override
-  public void removeView(ReactViewGroup parent, View child) {
+  public void removeViewAt(ReactViewGroup parent, int index) {
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
+      View child = getChildAt(parent, index);
       if (child.getParent() != null) {
         parent.removeView(child);
       }
       parent.removeViewWithSubviewClippingEnabled(child);
     } else {
-      parent.removeView(child);
+      parent.removeViewAt(index);
     }
   }
 
+  @Override
+  public void removeAllViews(ReactViewGroup parent) {
+    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
+    if (removeClippedSubviews) {
+      parent.removeAllViewsWithSubviewClippingEnabled();
+    } else {
+      parent.removeAllViews();
+    }
+  }
 }

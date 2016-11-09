@@ -17,7 +17,7 @@
 'use strict';
 
 // NB: Taken straight from: https://github.com/IvanVergiliev/2048-react/blob/master/src/board.js
-//     with no modificiation except to format it for CommonJS and fix lint/flow errors
+//     with no modification except to format it for CommonJS and fix lint/flow errors
 
 var rotateLeft = function (matrix) {
   var rows = matrix.length;

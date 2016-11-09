@@ -9,18 +9,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RCTBridgeMethod.h"
+#import "RCTNullability.h"
+
 @class RCTBridge;
-
-typedef NS_ENUM(NSUInteger, RCTFunctionType) {
-  RCTFunctionTypeNormal,
-  RCTFunctionTypePromise,
-};
-
-typedef NS_ENUM(NSUInteger, RCTNullability) {
-  RCTNullabilityUnspecified,
-  RCTNullable,
-  RCTNonnullable,
-};
 
 @interface RCTMethodArgument : NSObject
 
@@ -30,19 +22,13 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
 
 @end
 
-@interface RCTModuleMethod : NSObject
+@interface RCTModuleMethod : NSObject <RCTBridgeMethod>
 
-@property (nonatomic, copy, readonly) NSString *JSMethodName;
 @property (nonatomic, readonly) Class moduleClass;
 @property (nonatomic, readonly) SEL selector;
-@property (nonatomic, readonly) RCTFunctionType functionType;
 
-- (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
+- (instancetype)initWithMethodSignature:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
-
-- (void)invokeWithBridge:(RCTBridge *)bridge
-                  module:(id)module
-               arguments:(NSArray *)arguments;
 
 @end

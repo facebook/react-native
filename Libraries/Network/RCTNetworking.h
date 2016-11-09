@@ -7,15 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#import "RCTEventEmitter.h"
+#import "RCTNetworkTask.h"
 
-#import "RCTBridge.h"
-#import "RCTDownloadTask.h"
+@interface RCTNetworking : RCTEventEmitter
 
-@interface RCTNetworking : NSObject <RCTBridgeModule>
+/**
+ * Does a handler exist for the specified request?
+ */
+- (BOOL)canHandleRequest:(NSURLRequest *)request;
 
-- (RCTDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request
-                             completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+/**
+ * Return an RCTNetworkTask for the specified request. This is useful for
+ * invoking the React Native networking stack from within native code.
+ */
+- (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
+                           completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
 
 @end
 

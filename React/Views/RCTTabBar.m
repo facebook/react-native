@@ -26,13 +26,11 @@
 {
   BOOL _tabsChanged;
   UITabBarController *_tabController;
-  NSMutableArray *_tabViews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _tabViews = [NSMutableArray new];
     _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
@@ -50,36 +48,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)dealloc
 {
   _tabController.delegate = nil;
+  [_tabController removeFromParentViewController];
 }
 
-- (NSArray *)reactSubviews
+- (void)insertReactSubview:(RCTTabBarItem *)subview atIndex:(NSInteger)atIndex
 {
-  return _tabViews;
-}
-
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
-  if (![view isKindOfClass:[RCTTabBarItem class]]) {
+  if (![subview isKindOfClass:[RCTTabBarItem class]]) {
     RCTLogError(@"subview should be of type RCTTabBarItem");
     return;
   }
-  [_tabViews insertObject:view atIndex:atIndex];
+  [super insertReactSubview:subview atIndex:atIndex];
   _tabsChanged = YES;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTTabBarItem *)subview
 {
-  if (_tabViews.count == 0) {
+  if (self.reactSubviews.count == 0) {
     RCTLogError(@"should have at least one view to remove a subview");
     return;
   }
-  [_tabViews removeObject:subview];
+  [super removeReactSubview:subview];
   _tabsChanged = YES;
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_tabController];
   _tabController.view.frame = self.bounds;
 }
 
@@ -91,7 +91,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_tabsChanged) {
 
-    NSMutableArray *viewControllers = [NSMutableArray array];
+    NSMutableArray<UIViewController *> *viewControllers = [NSMutableArray array];
     for (RCTTabBarItem *tab in [self reactSubviews]) {
       UIViewController *controller = tab.reactViewController;
       if (!controller) {
@@ -104,12 +104,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabsChanged = NO;
   }
 
-  [[self reactSubviews] enumerateObjectsUsingBlock:
-   ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
-    UIViewController *controller = _tabController.viewControllers[index];
+  [self.reactSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, __unused BOOL *stop) {
+
+    RCTTabBarItem *tab = (RCTTabBarItem *)view;
+    UIViewController *controller = self->_tabController.viewControllers[index];
+    if (self->_unselectedTintColor) {
+      [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self->_unselectedTintColor} forState:UIControlStateNormal];
+    }
+
+    [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
+
     controller.tabBarItem = tab.barItem;
     if (tab.selected) {
-      _tabController.selectedViewController = controller;
+      self->_tabController.selectedViewController = controller;
     }
   }];
 }
@@ -142,12 +149,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.translucent = translucent;
 }
 
+- (UITabBarItemPositioning)itemPositoning
+{
+#if TARGET_OS_TV
+  return 0;
+#else
+  return _tabController.tabBar.itemPositioning;
+#endif
+}
+
+- (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
+{
+#if !TARGET_OS_TV
+  _tabController.tabBar.itemPositioning = itemPositioning;
+#endif
+}
+
 #pragma mark - UITabBarControllerDelegate
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
-  RCTTabBarItem *tab = [self reactSubviews][index];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }

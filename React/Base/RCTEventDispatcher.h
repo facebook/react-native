@@ -11,21 +11,14 @@
 
 #import "RCTBridge.h"
 
-typedef NS_ENUM(NSInteger, RCTTextEventType) {
+typedef NS_ENUM(NSInteger, RCTTextEventType)
+{
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
   RCTTextEventTypeSubmit,
-  RCTTextEventTypeEnd
-};
-
-typedef NS_ENUM(NSInteger, RCTScrollEventType) {
-  RCTScrollEventTypeStart,
-  RCTScrollEventTypeMove,
-  RCTScrollEventTypeEnd,
-  RCTScrollEventTypeStartDeceleration,
-  RCTScrollEventTypeEndDeceleration,
-  RCTScrollEventTypeEndAnimation,
+  RCTTextEventTypeEnd,
+  RCTTextEventTypeKeyPress
 };
 
 /**
@@ -42,28 +35,36 @@ RCT_EXTERN const NSInteger RCTTextUpdateLagWarningThreshold;
 RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @protocol RCTEvent <NSObject>
-
 @required
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, copy, readonly) NSDictionary *body;
 @property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 
+// used directly for doing a JS call
 + (NSString *)moduleDotMethod;
+// must contain only JSON compatible values
+- (NSArray *)arguments;
 
 @end
 
-@interface RCTBaseEvent : NSObject <RCTEvent>
+/**
+ * This protocol allows observing events dispatched by RCTEventDispatcher.
+ */
+@protocol RCTEventDispatcherObserver <NSObject>
 
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body NS_DESIGNATED_INITIALIZER;
+/**
+ * Called before dispatching an event, on the same thread the event was
+ * dispatched from. Return YES if the event was handled and must not be
+ * sent to JS.
+ */
+- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event;
 
 @end
+
 
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
@@ -72,34 +73,54 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @interface RCTEventDispatcher : NSObject <RCTBridgeModule>
 
 /**
- * Send an application-specific event that does not relate to a specific
- * view, e.g. a navigation or data update notification.
+ * Deprecated, do not use.
  */
-- (void)sendAppEventWithName:(NSString *)name body:(id)body;
+- (void)sendAppEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a device or iOS event that does not relate to a specific view,
- * e.g.rotation, location, keyboard show/hide, background/awake, etc.
+ * Deprecated, do not use.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(id)body;
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a user input event. The body dictionary must contain a "target"
- * parameter, representing the React tag of the view sending the event
+ * Deprecated, do not use.
  */
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
+- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
+__deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
 
 /**
- * Send a text input/focus event.
+ * Send a text input/focus event. For internal use only.
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
+                          key:(NSString *)key
                    eventCount:(NSInteger)eventCount;
 
 /**
  * Send a pre-prepared event object.
+ *
+ * Events are sent to JS as soon as the thread is free to process them.
+ * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
+
+/**
+ * Add an event dispatcher observer.
+ */
+- (void)addDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
+
+/**
+ * Remove an event dispatcher observer.
+ */
+- (void)removeDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
+
+@end
+
+@interface RCTBridge (RCTEventDispatcher)
+
+- (RCTEventDispatcher *)eventDispatcher;
 
 @end

@@ -24,14 +24,14 @@ import com.facebook.react.bridge.ReadableArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.KEY_COLUMN;
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.TABLE_CATALYST;
-import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.VALUE_COLUMN;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 
 /**
  * Helper for database operations.
  */
-/* package */ class AsyncLocalStorageUtil {
+public class AsyncLocalStorageUtil {
 
   /**
    * Build the String required for an SQL select statement:
@@ -49,10 +49,10 @@ import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.VALUE_
    *  {a, b, c}
    * to be used in the SQL select statement: WHERE key in (?, ?, ?)
    */
-  /* package */ static String[] buildKeySelectionArgs(ReadableArray keys) {
-    String[] selectionArgs = new String[keys.size()];
-    for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-      selectionArgs[keyIndex] = keys.getString(keyIndex);
+  /* package */ static String[] buildKeySelectionArgs(ReadableArray keys, int start, int count) {
+    String[] selectionArgs = new String[count];
+    for (int keyIndex = 0; keyIndex < count; keyIndex++) {
+      selectionArgs[keyIndex] = keys.getString(start + keyIndex);
     }
     return selectionArgs;
   }
@@ -60,7 +60,7 @@ import static com.facebook.react.modules.storage.CatalystSQLiteOpenHelper.VALUE_
   /**
    * Returns the value of the given key, or null if not found.
    */
-  /* package */ static @Nullable String getItemImpl(SQLiteDatabase db, String key) {
+  public static @Nullable String getItemImpl(SQLiteDatabase db, String key) {
     String[] columns = {VALUE_COLUMN};
     String[] selectionArgs = {key};
 

@@ -8,72 +8,63 @@
  */
 'use strict';
 
-require('babel-core/register')({
-  only: /react-packager\/src/
-});
+require('../babelRegisterOnly')([/react-packager\/src/]);
 
-useGracefulFs();
+const debug = require('debug');
+const Logger = require('./src/Logger');
 
-var Activity = require('./src/Activity');
-var Server = require('./src/Server');
-var SocketInterface = require('./src/SocketInterface');
-
-exports.middleware = function(options) {
-  var server = new Server(options);
-  return server.processRequest.bind(server);
-};
-
-exports.Activity = Activity;
-
-// Renamed "package" to "bundle". But maintain backwards
-// compat.
-exports.buildPackage =
-exports.buildBundle = function(options, bundleOptions) {
-  var server = createServer(options);
-  return server.buildBundle(bundleOptions)
-    .then(function(p) {
+exports.createServer = createServer;
+exports.Logger = Logger;
+exports.getOrderedDependencyPaths = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.getOrderedDependencyPaths(bundleOptions)
+    .then(function(paths) {
       server.end();
-      return p;
+      return paths;
     });
 };
 
-exports.buildPackageFromUrl =
-exports.buildBundleFromUrl = function(options, reqUrl) {
-  var server = createServer(options);
-  return server.buildBundleFromUrl(reqUrl)
-    .then(function(p) {
-      server.end();
-      return p;
-    });
-};
-
-exports.getDependencies = function(options, main) {
-  var server = createServer(options);
-  return server.getDependencies(main)
-    .then(function(r) {
-      server.end();
-      return r.dependencies;
-    });
-};
-
-exports.createClientFor = function(options) {
-  return SocketInterface.getOrCreateSocketFor(options);
-};
-
-SocketInterface.listenOnServerMessages();
-
-function useGracefulFs() {
-  var fs = require('fs');
-  var gracefulFs = require('graceful-fs');
-  gracefulFs.gracefulify(fs);
+function enableDebug() {
+  // react-packager logs debug messages using the 'debug' npm package, and uses
+  // the following prefix throughout.
+  // To enable debugging, we need to set our pattern or append it to any
+  // existing pre-configured pattern to avoid disabling logging for
+  // other packages
+  var debugPattern = 'ReactNativePackager:*';
+  var existingPattern = debug.load();
+  if (existingPattern) {
+    debugPattern += ',' + existingPattern;
+  }
+  debug.enable(debugPattern);
 }
 
 function createServer(options) {
-  Activity.disable();
+  // the debug module is configured globally, we need to enable debugging
+  // *before* requiring any packages that use `debug` for logging
+  if (options.verbose) {
+    enableDebug();
+  }
+
+  var Server = require('./src/Server');
+  return new Server(omit(options, ['verbose']));
+}
+
+function createNonPersistentServer(options) {
+  Logger.disablePrinting();
   // Don't start the filewatcher or the cache.
   if (options.nonPersistent == null) {
     options.nonPersistent = true;
   }
 
-  return new Server(options);
+  return createServer(options);
+}
+
+function omit(obj, blacklistedKeys) {
+  return Object.keys(obj).reduce((clone, key) => {
+    if (blacklistedKeys.indexOf(key) === -1) {
+      clone[key] = obj[key];
+    }
+
+    return clone;
+  }, {});
 }

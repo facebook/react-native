@@ -7,111 +7,146 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDefines.h"
+
+#if RCT_DEV // Only supported in dev mode
+
 #import "RCTWebSocketManager.h"
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
-#import "RCTSparseArray.h"
+#import "RCTConvert.h"
+#import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTSRWebSocket.h"
 
-@implementation RCTSRWebSocket (React)
+#pragma mark - RCTWebSocketObserver
 
-- (NSNumber *)reactTag
-{
-  return objc_getAssociatedObject(self, _cmd);
+@interface RCTWebSocketObserver : NSObject <RCTSRWebSocketDelegate> {
+  NSURL *_url;
 }
 
-- (void)setReactTag:(NSNumber *)reactTag
-{
-  objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
+@property (nonatomic, strong) RCTSRWebSocket *socket;
+@property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
+@property (nonatomic, strong) dispatch_semaphore_t socketOpenSemaphore;
+
+- (instancetype)initWithURL:(NSURL *)url delegate:(id<RCTWebSocketProxyDelegate>)delegate;
 
 @end
 
-@interface RCTWebSocketManager () <RCTSRWebSocketDelegate>
+@implementation RCTWebSocketObserver
 
-@end
-
-@implementation RCTWebSocketManager
+- (instancetype)initWithURL:(NSURL *)url delegate:(id<RCTWebSocketProxyDelegate>)delegate
 {
-    RCTSparseArray *_sockets;
+  if ((self = [self init])) {
+    _url = url;
+    _delegate = delegate;
 }
-
-RCT_EXPORT_MODULE()
-
-@synthesize bridge = _bridge;
-
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _sockets = [RCTSparseArray new];
-  }
   return self;
 }
 
-- (void)dealloc
+- (void)start
 {
-  for (RCTSRWebSocket *socket in _sockets.allObjects) {
-    socket.delegate = nil;
-    [socket close];
-  }
+  [self stop];
+  _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  _socket.delegate = self;
+
+  [_socket open];
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
+- (void)stop
 {
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
-  webSocket.delegate = self;
-  webSocket.reactTag = socketID;
-  _sockets[socketID] = webSocket;
-  [webSocket open];
+  _socket.delegate = nil;
+  [_socket closeWithCode:1000 reason:@"Invalidated"];
+  _socket = nil;
 }
-
-RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
-{
-  [_sockets[socketID] send:message];
-}
-
-RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
-{
-  [_sockets[socketID] close];
-  _sockets[socketID] = nil;
-}
-
-#pragma mark - RCTSRWebSocketDelegate methods
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
-    @"data": message,
-    @"id": webSocket.reactTag
-  }];
+  if (_delegate) {
+    NSError *error = nil;
+    NSDictionary<NSString *, id> *msg = RCTJSONParse(message, &error);
+
+    if (!error) {
+      [_delegate socketProxy:[RCTWebSocketManager sharedInstance] didReceiveMessage:msg];
+    } else {
+      RCTLogError(@"WebSocketManager failed to parse message with error %@\n<message>\n%@\n</message>", error, message);
+    }
+  }
 }
 
-- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+- (void)reconnect
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketOpen" body:@{
-    @"id": webSocket.reactTag
-  }];
+  __weak RCTSRWebSocket *socket = _socket;
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    // Only reconnect if the observer wasn't stoppped while we were waiting
+    if (socket) {
+      [self start];
+    }
+  });
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketFailed" body:@{
-    @"message":error.localizedDescription,
-    @"id": webSocket.reactTag
-  }];
+  [self reconnect];
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code
-           reason:(NSString *)reason wasClean:(BOOL)wasClean
+- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
-    @"code": @(code),
-    @"reason": RCTNullIfNil(reason),
-    @"clean": @(wasClean),
-    @"id": webSocket.reactTag
-  }];
+  [self reconnect];
 }
 
 @end
+
+#pragma mark - RCTWebSocketManager
+
+@interface RCTWebSocketManager()
+
+@property (nonatomic, strong) NSMutableDictionary *sockets;
+@property (nonatomic, strong) dispatch_queue_t queue;
+
+@end
+
+@implementation RCTWebSocketManager
+
++ (instancetype)sharedInstance
+{
+  static RCTWebSocketManager *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [self new];
+  });
+
+  return sharedInstance;
+}
+
+- (void)setDelegate:(id<RCTWebSocketProxyDelegate>)delegate forURL:(NSURL *)url
+{
+  NSString *key = [url absoluteString];
+  RCTWebSocketObserver *observer = _sockets[key];
+
+  if (observer) {
+    if (!delegate) {
+      [observer stop];
+      [_sockets removeObjectForKey:key];
+    } else {
+      observer.delegate = delegate;
+    }
+  } else {
+    RCTWebSocketObserver *newObserver = [[RCTWebSocketObserver alloc] initWithURL:url delegate:delegate];
+    [newObserver start];
+    _sockets[key] = newObserver;
+  }
+}
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    _sockets = [NSMutableDictionary new];
+    _queue = dispatch_queue_create("com.facebook.react.WebSocketManager", DISPATCH_QUEUE_SERIAL);
+  }
+  return self;
+}
+
+@end
+
+#endif

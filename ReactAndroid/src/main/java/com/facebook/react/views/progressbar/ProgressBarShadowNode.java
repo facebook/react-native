@@ -19,20 +19,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
-import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
  * {@link android.R.attr.progressBarStyle} for possible styles. ReactProgressBarViewManager
  * manages how this style is applied to the ProgressBar.
  */
-public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.MeasureFunction {
+public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNodeAPI.MeasureFunction {
 
-  private @Nullable String style;
+  private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;
 
   private final SparseIntArray mHeight = new SparseIntArray();
   private final SparseIntArray mWidth = new SparseIntArray();
@@ -43,18 +43,24 @@ public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.Me
   }
 
   public @Nullable String getStyle() {
-    return style;
+    return mStyle;
   }
 
-  public void setStyle(String style) {
-    this.style = style;
+  @ReactProp(name = ReactProgressBarViewManager.PROP_STYLE)
+  public void setStyle(@Nullable String style) {
+    mStyle = style == null ? ReactProgressBarViewManager.DEFAULT_STYLE : style;
   }
 
   @Override
-  public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+  public long measure(
+      CSSNodeAPI node,
+      float width,
+      CSSMeasureMode widthMode,
+      float height,
+      CSSMeasureMode heightMode) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
-      ProgressBar progressBar = new ProgressBar(getThemedContext(), null, style);
+      ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
       final int spec = View.MeasureSpec.makeMeasureSpec(
           ViewGroup.LayoutParams.WRAP_CONTENT,
           View.MeasureSpec.UNSPECIFIED);
@@ -64,23 +70,6 @@ public class ProgressBarShadowNode extends ReactShadowNode implements CSSNode.Me
       mMeasured.add(style);
     }
 
-    measureOutput.height = mHeight.get(style);
-    measureOutput.width = mWidth.get(style);
-  }
-
-  @Override
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    super.updateProperties(styles);
-
-    if (styles.hasKey(ReactProgressBarViewManager.PROP_STYLE)) {
-      String style = styles.getString(ReactProgressBarViewManager.PROP_STYLE);
-      Assertions.assertNotNull(
-          style,
-          "style property should always be set for the progress bar component");
-      // TODO(7255944): Validate progressbar style attribute
-      setStyle(style);
-    } else {
-      setStyle(ReactProgressBarViewManager.DEFAULT_STYLE);
-    }
+    return MeasureOutput.make(mWidth.get(style), mHeight.get(style));
   }
 }

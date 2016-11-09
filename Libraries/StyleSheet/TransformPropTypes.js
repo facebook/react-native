@@ -11,7 +11,35 @@
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
+var deprecatedPropType = require('deprecatedPropType');
+
+var ReactPropTypes = require('React').PropTypes;
+
+var TransformMatrixPropType = function(
+  props : Object,
+  propName : string,
+  componentName : string
+) : ?Error {
+  if (props[propName]) {
+    return new Error(
+      'The transformMatrix style property is deprecated. ' +
+      'Use `transform: [{ matrix: ... }]` instead.'
+    );
+  }
+};
+
+var DecomposedMatrixPropType = function(
+  props : Object,
+  propName : string,
+  componentName : string
+) : ?Error {
+  if (props[propName]) {
+    return new Error(
+      'The decomposedMatrix style property is deprecated. ' +
+      'Use `transform: [...]` instead.'
+    );
+  }
+};
 
 var TransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
@@ -25,23 +53,22 @@ var TransformPropTypes = {
       ReactPropTypes.shape({scaleX: ReactPropTypes.number}),
       ReactPropTypes.shape({scaleY: ReactPropTypes.number}),
       ReactPropTypes.shape({translateX: ReactPropTypes.number}),
-      ReactPropTypes.shape({translateY: ReactPropTypes.number})
+      ReactPropTypes.shape({translateY: ReactPropTypes.number}),
+      ReactPropTypes.shape({skewX: ReactPropTypes.string}),
+      ReactPropTypes.shape({skewY: ReactPropTypes.string})
     ])
   ),
 
-  /*
-   * `transformMatrix` accepts a 4x4 matrix expressed as a row-major ordered
-   * array. This property is DEPRECATED and cannot be used simultaneously with
-   * the `transform` property.
-   */
-  transformMatrix: ReactPropTypes.arrayOf(ReactPropTypes.number),
+  /* Deprecated */
+  transformMatrix: TransformMatrixPropType,
+  decomposedMatrix: DecomposedMatrixPropType,
 
-  // DEPRECATED
-  rotation: ReactPropTypes.number,
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
+  /* Deprecated transform props used on Android only */
+  scaleX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  scaleY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  rotation: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
 };
 
 module.exports = TransformPropTypes;

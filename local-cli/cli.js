@@ -1,85 +1,30 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
-
 'use strict';
 
-var fs = require('fs');
-var spawn = require('child_process').spawn;
-var path = require('path');
-var generateAndroid = require('./generate-android.js');
-var init = require('./init.js');
-var install = require('./install.js');
-var bundle = require('./bundle.js');
-var newLibrary = require('./new-library.js');
-var runAndroid = require('./run-android.js');
-var runPackager = require('./run-packager.js');
+// gracefulify() has to be called before anything else runs
+require('graceful-fs').gracefulify(require('fs'));
 
-function printUsage() {
-  console.log([
-    'Usage: react-native <command>',
-    '',
-    'Commands:',
-    '  start: starts the webserver',
-    '  install: installs npm react components',
-    '  bundle: builds the javascript bundle for offline use',
-    '  new-library: generates a native library bridge',
-    '  android: generates an Android project for your app'
-  ].join('\n'));
-  process.exit(1);
-}
+// This file must be able to run in node 0.12 without babel so we can show that
+// it is not supported. This is why the rest of the cli code is in `cliEntry.js`.
+require('./server/checkNodeVersion')();
 
-function printInitWarning() {
-  console.log([
-    'Looks like React Native project already exists in the current',
-    'folder. Run this command from a different folder or remove node_modules/react-native'
-  ].join('\n'));
-  process.exit(1);
-}
+require('../packager/babelRegisterOnly')([
+  /private-cli\/src/,
+  /local-cli/,
+  /react-packager\/src/,
+]);
 
-function run() {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
-    printUsage();
-  }
-
-  switch (args[0]) {
-  case 'start':
-    runPackager();
-    break;
-  case 'install':
-    install.init();
-    break;
-  case 'bundle':
-    bundle.init(args);
-    break;
-  case 'new-library':
-    newLibrary.init(args);
-    break;
-  case 'init':
-    printInitWarning();
-    break;
-  case 'android':
-    generateAndroid(
-      process.cwd(),
-      JSON.parse(fs.readFileSync('package.json', 'utf8')).name
-    );
-    break;
-  case 'run-android':
-    runAndroid();
-    break;
-  default:
-    console.error('Command `%s` unrecognized', args[0]);
-    printUsage();
-  }
-  // Here goes any cli commands we need to
-}
+var cliEntry = require('./cliEntry');
 
 if (require.main === module) {
-  run();
+  cliEntry.run();
 }
 
-module.exports = {
-  run: run,
-  init: init,
-};
+module.exports = cliEntry;

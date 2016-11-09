@@ -26,7 +26,7 @@
 
 
 jest
- .autoMockOff()
+ .disableAutomock()
  .mock('ErrorUtils');
 
 var NavigationRouteStack = require('NavigationRouteStack');

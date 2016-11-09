@@ -22,28 +22,28 @@ public class UiThreadUtil {
   @Nullable private static Handler sMainHandler;
 
   /**
-   * @return whether the current thread is the UI thread.
+   * @return {@code true} if the current thread is the UI thread.
    */
   public static boolean isOnUiThread() {
     return Looper.getMainLooper().getThread() == Thread.currentThread();
   }
 
   /**
-   * Throws a {@link AssertionException} if the current thread is not the UI thread.
+   * Throws an {@link AssertionException} if the current thread is not the UI thread.
    */
   public static void assertOnUiThread() {
     SoftAssertions.assertCondition(isOnUiThread(), "Expected to run on UI thread!");
   }
 
   /**
-   * Throws a {@link AssertionException} if the current thread is the UI thread.
+   * Throws an {@link AssertionException} if the current thread is the UI thread.
    */
   public static void assertNotOnUiThread() {
     SoftAssertions.assertCondition(!isOnUiThread(), "Expected not to run on UI thread!");
   }
 
   /**
-   * Runs the given Runnable on the UI thread.
+   * Runs the given {@code Runnable} on the UI thread.
    */
   public static void runOnUiThread(Runnable runnable) {
     synchronized (UiThreadUtil.class) {

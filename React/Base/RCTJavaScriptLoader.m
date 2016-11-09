@@ -13,87 +13,266 @@
 #import "RCTConvert.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+#import "RCTPerformanceLogger.h"
+#import "RCTMultipartDataTask.h"
+
+#include <sys/stat.h>
+
+static uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+static uint64_t const RCTBCBundleMagicNumber  = 0xFF4865726D657300;
+
+NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
+
+RCTScriptTag RCTParseMagicNumber(RCTMagicNumber magic)
+{
+  if (NSSwapLittleIntToHost(magic.first4) == RCTRAMBundleMagicNumber) {
+    return RCTScriptRAMBundle;
+  }
+
+  if (NSSwapLittleLongLongToHost(magic.first8) == RCTBCBundleMagicNumber) {
+    return RCTScriptBCBundle;
+  }
+
+  return RCTScriptString;
+}
+
+@implementation RCTLoadingProgress
+
+- (NSString *)description
+{
+  NSMutableString *desc = [NSMutableString new];
+  [desc appendString:_status ?: @"Loading"];
+
+  if (_total > 0) {
+    [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
+  }
+  [desc appendString:@"…"];
+  return desc;
+}
+
+@end
 
 @implementation RCTJavaScriptLoader
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-+ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
++ (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete
 {
-  // Sanitize the script URL
-  scriptURL = [RCTConvert NSURL:scriptURL.absoluteString];
-
-  if (!scriptURL ||
-      (scriptURL.fileURL && ![[NSFileManager defaultManager] fileExistsAtPath:scriptURL.path])) {
-    NSError *error = [NSError errorWithDomain:@"JavaScriptLoader" code:1 userInfo:@{
-      NSLocalizedDescriptionKey: scriptURL ? [NSString stringWithFormat:@"Script at '%@' could not be found.", scriptURL] : @"No script URL provided"
-    }];
-    onComplete(error, nil);
+  int64_t sourceLength;
+  NSError *error;
+  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
+                                              sourceLength:&sourceLength
+                                                     error:&error];
+  if (data) {
+    onComplete(nil, data, sourceLength);
     return;
   }
 
-  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
-                                ^(NSData *data, NSURLResponse *response, NSError *error) {
+  const BOOL isCannotLoadSyncError =
+  [error.domain isEqualToString:RCTJavaScriptLoaderErrorDomain]
+  && error.code == RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously;
+
+  if (isCannotLoadSyncError) {
+    attemptAsynchronousLoadOfBundleAtURL(scriptURL, onProgress, onComplete);
+  } else {
+    onComplete(error, nil, 0);
+  }
+}
+
++ (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
+                                   sourceLength:(int64_t *)sourceLength
+                                          error:(NSError **)error
+{
+  NSString *unsanitizedScriptURLString = scriptURL.absoluteString;
+  // Sanitize the script URL
+  scriptURL = sanitizeURL(scriptURL);
+
+  if (!scriptURL) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorNoScriptURL
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            [NSString stringWithFormat:@"No script URL provided. Make sure the packager is "
+                                             @"running or you have embedded a JS bundle in your application bundle."
+                                             @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString]}];
+    }
+    return nil;
+  }
+
+  // Load local script file
+  if (!scriptURL.fileURL) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            [NSString stringWithFormat:@"Cannot load %@ URLs synchronously",
+                                             scriptURL.scheme]}];
+    }
+    return nil;
+  }
+
+  // Load the first 4 bytes to check if the bundle is regular or RAM ("Random Access Modules" bundle).
+  // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
+  // The benefit of RAM bundle over a regular bundle is that we can lazily inject
+  // modules into JSC as they're required.
+  FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
+  if (!bundle) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorFailedOpeningFile
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            [NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]}];
+    }
+    return nil;
+  }
+
+  RCTMagicNumber magicNumber = {.allBytes = 0};
+  size_t readResult = fread(&magicNumber, sizeof(magicNumber), 1, bundle);
+  fclose(bundle);
+  if (readResult != 1) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorFailedReadingFile
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            [NSString stringWithFormat:@"Error reading bundle %@", scriptURL.path]}];
+    }
+    return nil;
+  }
+
+  RCTScriptTag tag = RCTParseMagicNumber(magicNumber);
+  if (tag == RCTScriptString) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            @"Cannot load text/javascript files synchronously"}];
+    }
+    return nil;
+  }
+
+  struct stat statInfo;
+  if (stat(scriptURL.path.UTF8String, &statInfo) != 0) {
+    if (error) {
+      *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                   code:RCTJavaScriptLoaderErrorFailedStatingFile
+                               userInfo:@{NSLocalizedDescriptionKey:
+                                            [NSString stringWithFormat:@"Error stating bundle %@", scriptURL.path]}];
+    }
+    return nil;
+  }
+  if (sourceLength) {
+    *sourceLength = statInfo.st_size;
+  }
+  return [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
+}
+
+static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadProgressBlock onProgress, RCTSourceLoadBlock onComplete)
+{
+  scriptURL = sanitizeURL(scriptURL);
+
+  if (scriptURL.fileURL) {
+    // Reading in a large bundle can be slow. Dispatch to the background queue to do it.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSError *error = nil;
+      NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
+                                              options:NSDataReadingMappedIfSafe
+                                                error:&error];
+      onComplete(error, source, source.length);
+    });
+    return;
+  }
+
+
+  RCTMultipartDataTask *task = [[RCTMultipartDataTask alloc] initWithURL:scriptURL partHandler:^(NSInteger statusCode, NSDictionary *headers, NSData *data, NSError *error, BOOL done) {
+    if (!done) {
+      if (onProgress) {
+        onProgress(progressEventFromData(data));
+      }
+      return;
+    }
 
     // Handle general request errors
     if (error) {
       if ([error.domain isEqualToString:NSURLErrorDomain]) {
-        NSString *desc = [@"Could not connect to development server.\n\nEnsure the following:\n- Node server is running and available on the same network - run 'npm start' from react-native root\n- Node server URL is correctly set in AppDelegate\n\nURL: " stringByAppendingString:scriptURL.absoluteString];
-        NSDictionary *userInfo = @{
-          NSLocalizedDescriptionKey: desc,
-          NSLocalizedFailureReasonErrorKey: error.localizedDescription,
-          NSUnderlyingErrorKey: error,
-        };
-        error = [NSError errorWithDomain:@"JSServer"
-                                    code:error.code
-                                userInfo:userInfo];
+        error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                    code:RCTJavaScriptLoaderErrorURLLoadFailed
+                                userInfo:
+                 @{
+                   NSLocalizedDescriptionKey:
+                     [@"Could not connect to development server.\n\n"
+                      "Ensure the following:\n"
+                      "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
+                      "- Node server URL is correctly set in AppDelegate\n\n"
+                      "URL: " stringByAppendingString:scriptURL.absoluteString],
+                   NSLocalizedFailureReasonErrorKey: error.localizedDescription,
+                   NSUnderlyingErrorKey: error,
+                   }];
       }
-      onComplete(error, nil);
+      onComplete(error, nil, 0);
       return;
     }
 
-    // Parse response as text
-    NSStringEncoding encoding = NSUTF8StringEncoding;
-    if (response.textEncodingName != nil) {
-      CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
-      if (cfEncoding != kCFStringEncodingInvalidId) {
-        encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
-      }
+    // For multipart responses packager sets X-Http-Status header in case HTTP status code
+    // is different from 200 OK
+    NSString *statusCodeHeader = [headers valueForKey:@"X-Http-Status"];
+    if (statusCodeHeader) {
+      statusCode = [statusCodeHeader integerValue];
     }
-    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
 
-    // Handle HTTP errors
-    if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
-      NSDictionary *userInfo;
-      NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
-      if ([errorDetails isKindOfClass:[NSDictionary class]] &&
-          [errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
-        NSMutableArray *fakeStack = [NSMutableArray new];
-        for (NSDictionary *err in errorDetails[@"errors"]) {
-          [fakeStack addObject: @{
-            @"methodName": err[@"description"] ?: @"",
-            @"file": err[@"filename"] ?: @"",
-            @"lineNumber": err[@"lineNumber"] ?: @0
-          }];
-        }
-        userInfo = @{
-          NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
-          @"stack": fakeStack,
-        };
-      } else {
-        userInfo = @{NSLocalizedDescriptionKey: rawText};
-      }
+    if (statusCode != 200) {
       error = [NSError errorWithDomain:@"JSServer"
-                                  code:((NSHTTPURLResponse *)response).statusCode
-                              userInfo:userInfo];
-
-      onComplete(error, nil);
+                                  code:statusCode
+                              userInfo:userInfoForRawResponse([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding])];
+      onComplete(error, nil, 0);
       return;
     }
-    onComplete(nil, rawText);
+    onComplete(nil, data, data.length);
   }];
 
-  [task resume];
+  [task startTask];
+}
+
+static NSURL *sanitizeURL(NSURL *url)
+{
+  // Why we do this is lost to time. We probably shouldn't; passing a valid URL is the caller's responsibility not ours.
+  return [RCTConvert NSURL:url.absoluteString];
+}
+
+static RCTLoadingProgress *progressEventFromData(NSData *rawData)
+{
+  NSString *text = [[NSString alloc] initWithData:rawData encoding:NSUTF8StringEncoding];
+  id info = RCTJSONParse(text, nil);
+  if (!info || ![info isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+
+  RCTLoadingProgress *progress = [RCTLoadingProgress new];
+  progress.status = [info valueForKey:@"status"];
+  progress.done = [info valueForKey:@"done"];
+  progress.total = [info valueForKey:@"total"];
+  return progress;
+}
+
+static NSDictionary *userInfoForRawResponse(NSString *rawText)
+{
+  NSDictionary *parsedResponse = RCTJSONParse(rawText, nil);
+  if (![parsedResponse isKindOfClass:[NSDictionary class]]) {
+    return @{NSLocalizedDescriptionKey: rawText};
+  }
+  NSArray *errors = parsedResponse[@"errors"];
+  if (![errors isKindOfClass:[NSArray class]]) {
+    return @{NSLocalizedDescriptionKey: rawText};
+  }
+  NSMutableArray<NSDictionary *> *fakeStack = [NSMutableArray new];
+  for (NSDictionary *err in errors) {
+    [fakeStack addObject:
+     @{
+       @"methodName": err[@"description"] ?: @"",
+       @"file": err[@"filename"] ?: @"",
+       @"lineNumber": err[@"lineNumber"] ?: @0
+       }];
+  }
+  return @{NSLocalizedDescriptionKey: parsedResponse[@"message"] ?: @"No message provided", @"stack": [fakeStack copy]};
 }
 
 @end

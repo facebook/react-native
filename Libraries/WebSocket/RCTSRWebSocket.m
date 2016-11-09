@@ -48,8 +48,27 @@ typedef struct {
 
 static NSString *const RCTSRWebSocketAppendToSecKeyString = @"258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
-static inline int32_t validate_dispatch_data_partial_string(NSData *data);
-static inline void RCTSRFastLog(NSString *format, ...);
+//#define RCTSR_ENABLE_LOG
+#ifdef RCTSR_ENABLE_LOG
+#define RCTSRLog(format...) RCTLogInfo(format)
+#else
+#define RCTSRLog(...) do { } while (0)
+#endif
+
+// This is a hack, and probably not optimal
+static inline int32_t validate_dispatch_data_partial_string(NSData *data)
+{
+  static const int maxCodepointSize = 3;
+
+  for (int i = 0; i < maxCodepointSize; i++) {
+    NSString *str = [[NSString alloc] initWithBytesNoCopy:(char *)data.bytes length:data.length - i encoding:NSUTF8StringEncoding freeWhenDone:NO];
+    if (str) {
+      return (int32_t)data.length - i;
+    }
+  }
+
+  return -1;
+}
 
 @interface NSData (RCTSRWebSocket)
 
@@ -186,7 +205,7 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
   dispatch_queue_t _delegateDispatchQueue;
 
   dispatch_queue_t _workQueue;
-  NSMutableArray *_consumers;
+  NSMutableArray<RCTSRIOConsumer *> *_consumers;
 
   NSInputStream *_inputStream;
   NSOutputStream *_outputStream;
@@ -228,12 +247,12 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
 
   BOOL _isPumping;
 
-  NSMutableSet *_scheduledRunloops;
+  NSMutableSet<NSArray *> *_scheduledRunloops;
 
   // We use this to retain ourselves.
   __strong RCTSRWebSocket *_selfRetain;
 
-  NSArray *_requestedProtocols;
+  NSArray<NSString *> *_requestedProtocols;
   RCTSRIOConsumerPool *_consumerPool;
 }
 
@@ -244,7 +263,7 @@ static __strong NSData *CRLFCRLF;
   CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray *)protocols;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols
 {
   RCTAssertParam(request);
 
@@ -271,9 +290,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self initWithURL:URL protocols:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray *)protocols;
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols;
 {
-  NSURLRequest *request = URL ? [NSURLRequest requestWithURL:URL] : nil;
+  NSMutableURLRequest *request;
+  if (URL) {
+    // Build a mutable request so we can fill the cookie header.
+    request = [NSMutableURLRequest requestWithURL:URL];
+
+    // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+    // fetch). To get HTTPS-only cookies for wss URLs, replace wss with https
+    // in the URL.
+    NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+    if ([components.scheme isEqualToString:@"wss"]) {
+      components.scheme = @"https";
+    }
+
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
+  }
   return [self initWithURLRequest:request protocols:protocols];
 }
 
@@ -290,7 +325,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _consumerStopped = YES;
   _webSocketVersion = 13;
 
-  _workQueue = dispatch_queue_create(NULL, DISPATCH_QUEUE_SERIAL);
+  _workQueue = dispatch_queue_create("com.facebook.react.SRWebSocket", DISPATCH_QUEUE_SERIAL);
 
   // Going to set a specific on the queue so we can validate we're on the work queue
   dispatch_queue_set_specific(_workQueue, (__bridge void *)self, (__bridge void *)_workQueue, NULL);
@@ -395,7 +430,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSInteger responseCode = CFHTTPMessageGetResponseStatusCode(_receivedHTTPHeaders);
 
   if (responseCode >= 400) {
-    RCTSRFastLog(@"Request failed with response code %d", responseCode);
+    RCTSRLog(@"Request failed with response code %ld", responseCode);
     [self _failWithError:[NSError errorWithDomain:RCTSRWebSocketErrorDomain code:2132 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"received bad response code from server %ld", (long)responseCode], RCTSRHTTPResponseErrorKey:@(responseCode)}]];
     return;
   }
@@ -436,10 +471,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   [self _readUntilHeaderCompleteWithCallback:^(RCTSRWebSocket *socket,  NSData *data) {
-    CFHTTPMessageAppendBytes(_receivedHTTPHeaders, (const UInt8 *)data.bytes, data.length);
+    CFHTTPMessageAppendBytes(self->_receivedHTTPHeaders, (const UInt8 *)data.bytes, data.length);
 
-    if (CFHTTPMessageIsHeaderComplete(_receivedHTTPHeaders)) {
-      RCTSRFastLog(@"Finished reading headers %@", CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(_receivedHTTPHeaders)));
+    if (CFHTTPMessageIsHeaderComplete(self->_receivedHTTPHeaders)) {
+      RCTSRLog(@"Finished reading headers %@", CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(_receivedHTTPHeaders)));
       [socket _HTTPHeadersDidFinish];
     } else {
       [socket _readHTTPHeader];
@@ -449,14 +484,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)didConnect
 {
-  RCTSRFastLog(@"Connected");
+  RCTSRLog(@"Connected");
   CFHTTPMessageRef request = CFHTTPMessageCreateRequest(NULL, CFSTR("GET"), (__bridge CFURLRef)_url, kCFHTTPVersion1_1);
 
   // Set host first so it defaults
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Host"), (__bridge CFStringRef)(_url.port ? [NSString stringWithFormat:@"%@:%@", _url.host, _url.port] : _url.host));
 
   NSMutableData *keyBytes = [[NSMutableData alloc] initWithLength:16];
-  SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
+  int result = SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
+  assert(result == 0);
   _secKey = [keyBytes base64EncodedStringWithOptions:0];
   assert([_secKey length] == 24);
 
@@ -506,7 +542,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 
   if (_secure) {
-    NSMutableDictionary *SSLOptions = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, id> *SSLOptions = [NSMutableDictionary new];
 
     [_outputStream setProperty:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamPropertySocketSecurityLevel];
 
@@ -571,7 +607,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
     self.readyState = RCTSR_CLOSING;
 
-    RCTSRFastLog(@"Closing with code %d reason %@", code, reason);
+    RCTSRLog(@"Closing with code %ld reason %@", code, reason);
 
     if (wasConnecting) {
       [self _disconnect];
@@ -608,7 +644,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Need to shunt this on the _callbackQueue first to see if they received any messages
   [self _performDelegateBlock:^{
     [self closeWithCode:RCTSRStatusCodeProtocolError reason:message];
-    dispatch_async(_workQueue, ^{
+    dispatch_async(self->_workQueue, ^{
       [self _disconnect];
     });
   }];
@@ -618,7 +654,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   dispatch_async(_workQueue, ^{
     if (self.readyState != RCTSR_CLOSED) {
-      _failed = YES;
+      self->_failed = YES;
       [self _performDelegateBlock:^{
         if ([self.delegate respondsToSelector:@selector(webSocket:didFailWithError:)]) {
           [self.delegate webSocket:self didFailWithError:error];
@@ -626,9 +662,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }];
 
       self.readyState = RCTSR_CLOSED;
-      _selfRetain = nil;
+      self->_selfRetain = nil;
 
-      RCTSRFastLog(@"Failing with error %@", error.localizedDescription);
+      RCTSRLog(@"Failing with error %@", error.localizedDescription);
 
       [self _disconnect];
     }
@@ -678,7 +714,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   // Need to pingpong this off _callbackQueue first to make sure messages happen in order
   [self _performDelegateBlock:^{
-    dispatch_async(_workQueue, ^{
+    dispatch_async(self->_workQueue, ^{
       [self _sendFrameWithOpcode:RCTSROpCodePong data:pingData];
     });
   }];
@@ -686,7 +722,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)handlePong:(NSData *)pongData;
 {
-  RCTSRFastLog(@"Received pong");
+  RCTSRLog(@"Received pong");
   [self _performDelegateBlock:^{
     if ([self.delegate respondsToSelector:@selector(webSocket:didReceivePong:)]) {
       [self.delegate webSocket:self didReceivePong:pongData];
@@ -696,7 +732,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMessage:(id)message
 {
-  RCTSRFastLog(@"Received message");
+  RCTSRLog(@"Received message");
   [self _performDelegateBlock:^{
     [self.delegate webSocket:self didReceiveMessage:message];
   }];
@@ -742,7 +778,7 @@ static inline BOOL closeCodeIsValid(int closeCode)
   size_t dataSize = data.length;
   __block uint16_t closeCode = 0;
 
-  RCTSRFastLog(@"Received close frame");
+  RCTSRLog(@"Received close frame");
 
   if (dataSize == 1) {
     // TODO: handle error
@@ -779,7 +815,7 @@ static inline BOOL closeCodeIsValid(int closeCode)
 - (void)_disconnect;
 {
   [self assertOnWorkQueue];
-  RCTSRFastLog(@"Trying to disconnect");
+  RCTSRLog(@"Trying to disconnect");
   _closeWhenFinishedWriting = YES;
   [self _pumpWriting];
 }
@@ -955,7 +991,7 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
       [socket _closeWithProtocolError:@"Client must receive unmasked data"];
     }
 
-    size_t extra_bytes_needed = header.masked ? sizeof(_currentReadMaskKey) : 0;
+    size_t extra_bytes_needed = header.masked ? sizeof(self->_currentReadMaskKey) : 0;
 
     if (header.payload_length == 126) {
       extra_bytes_needed += sizeof(uint16_t);
@@ -985,7 +1021,7 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
         }
 
         if (header.masked) {
-          assert(mapped_size >= sizeof(_currentReadMaskOffset) + offset);
+          assert(mapped_size >= sizeof(self->_currentReadMaskOffset) + offset);
           memcpy(_socket->_currentReadMaskKey, ((uint8_t *)mapped_buffer) + offset, sizeof(_socket->_currentReadMaskKey));
         }
 
@@ -998,12 +1034,12 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
 - (void)_readFrameNew;
 {
   dispatch_async(_workQueue, ^{
-    _currentFrameData.length = 0;
+    self->_currentFrameData.length = 0;
 
-    _currentFrameOpcode = 0;
-    _currentFrameCount = 0;
-    _readOpCount = 0;
-    _currentStringScanPosition = 0;
+    self->_currentFrameOpcode = 0;
+    self->_currentFrameCount = 0;
+    self->_readOpCount = 0;
+    self->_currentStringScanPosition = 0;
 
     [self _readFrameContinue];
   });
@@ -1046,7 +1082,7 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
     if (!_failed) {
       [self _performDelegateBlock:^{
         if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
-          [self.delegate webSocket:self didCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
+          [self.delegate webSocket:self didCloseWithCode:self->_closeCode reason:self->_closeReason wasClean:YES];
         }
       }];
     }
@@ -1225,9 +1261,7 @@ static const char CRLFCRLFBytes[] = {'\r', '\n', '\r', '\n'};
     return;
   }
 
-  while ([self _innerPumpScanner]) {
-
-  }
+  while ([self _innerPumpScanner]) {}
 
   _isPumping = NO;
 }
@@ -1298,7 +1332,8 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     }
   } else {
     uint8_t *mask_key = frame_buffer + frame_buffer_size;
-    SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
+    int result = SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
+    assert(result == 0);
     frame_buffer_size += sizeof(uint32_t);
 
     // TODO: could probably optimize this with SIMD
@@ -1317,7 +1352,6 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode;
 {
   if (_secure && !_pinnedCertFound && (eventCode == NSStreamEventHasBytesAvailable || eventCode == NSStreamEventHasSpaceAvailable)) {
-
     NSArray *sslCerts = _urlRequest.RCTSR_SSLPinnedCertificates;
     if (sslCerts) {
       SecTrustRef secTrust = (__bridge SecTrustRef)[aStream propertyForKey:(__bridge id)kCFStreamPropertySSLPeerTrust];
@@ -1348,16 +1382,17 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     }
   }
 
+  assert(_workQueue != NULL);
   dispatch_async(_workQueue, ^{
     switch (eventCode) {
       case NSStreamEventOpenCompleted: {
-        RCTSRFastLog(@"NSStreamEventOpenCompleted %@", aStream);
+        RCTSRLog(@"NSStreamEventOpenCompleted %@", aStream);
         if (self.readyState >= RCTSR_CLOSING) {
           return;
         }
-        assert(_readBuffer);
+        assert(self->_readBuffer);
 
-        if (self.readyState == RCTSR_CONNECTING && aStream == _inputStream) {
+        if (self.readyState == RCTSR_CONNECTING && aStream == self->_inputStream) {
           [self didConnect];
         }
         [self _pumpWriting];
@@ -1366,52 +1401,54 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
       }
 
       case NSStreamEventErrorOccurred: {
-        RCTSRFastLog(@"NSStreamEventErrorOccurred %@ %@", aStream, [aStream.streamError copy]);
+        RCTSRLog(@"NSStreamEventErrorOccurred %@ %@", aStream, [aStream.streamError copy]);
         // TODO: specify error better!
         [self _failWithError:aStream.streamError];
-        _readBufferOffset = 0;
-        _readBuffer.length = 0;
+        self->_readBufferOffset = 0;
+        self->_readBuffer.length = 0;
         break;
 
       }
 
       case NSStreamEventEndEncountered: {
         [self _pumpScanner];
-        RCTSRFastLog(@"NSStreamEventEndEncountered %@", aStream);
+        RCTSRLog(@"NSStreamEventEndEncountered %@", aStream);
         if (aStream.streamError) {
           [self _failWithError:aStream.streamError];
         } else {
-          if (self.readyState != RCTSR_CLOSED) {
-            self.readyState = RCTSR_CLOSED;
-            _selfRetain = nil;
-          }
+          dispatch_async(self->_workQueue, ^{
+            if (self.readyState != RCTSR_CLOSED) {
+              self.readyState = RCTSR_CLOSED;
+              self->_selfRetain = nil;
+            }
 
-          if (!_sentClose && !_failed) {
-            _sentClose = YES;
-            // If we get closed in this state it's probably not clean because we should be sending this when we send messages
-            [self _performDelegateBlock:^{
-              if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
-                [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
-              }
-            }];
-          }
+            if (!self->_sentClose && !self->_failed) {
+              self->_sentClose = YES;
+              // If we get closed in this state it's probably not clean because we should be sending this when we send messages
+              [self _performDelegateBlock:^{
+                if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
+                  [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
+                }
+              }];
+            }
+          });
         }
 
         break;
       }
 
       case NSStreamEventHasBytesAvailable: {
-        RCTSRFastLog(@"NSStreamEventHasBytesAvailable %@", aStream);
+        RCTSRLog(@"NSStreamEventHasBytesAvailable %@", aStream);
         const int bufferSize = 2048;
         uint8_t buffer[bufferSize];
 
-        while (_inputStream.hasBytesAvailable) {
-          NSInteger bytes_read = [_inputStream read:buffer maxLength:bufferSize];
+        while (self->_inputStream.hasBytesAvailable) {
+          NSInteger bytes_read = [self->_inputStream read:buffer maxLength:bufferSize];
 
           if (bytes_read > 0) {
-            [_readBuffer appendBytes:buffer length:bytes_read];
+            [self->_readBuffer appendBytes:buffer length:bytes_read];
           } else if (bytes_read < 0) {
-            [self _failWithError:_inputStream.streamError];
+            [self _failWithError:self->_inputStream.streamError];
           }
 
           if (bytes_read != bufferSize) {
@@ -1423,13 +1460,13 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
       }
 
       case NSStreamEventHasSpaceAvailable: {
-        RCTSRFastLog(@"NSStreamEventHasSpaceAvailable %@", aStream);
+        RCTSRLog(@"NSStreamEventHasSpaceAvailable %@", aStream);
         [self _pumpWriting];
         break;
       }
 
       default:
-        RCTSRFastLog(@"(default)  %@", aStream);
+        RCTSRLog(@"(default)  %@", aStream);
         break;
     }
   });
@@ -1454,7 +1491,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 @implementation RCTSRIOConsumerPool
 {
   NSUInteger _poolSize;
-  NSMutableArray *_bufferedConsumers;
+  NSMutableArray<RCTSRIOConsumer *> *_bufferedConsumers;
 }
 
 - (instancetype)initWithBufferCapacity:(NSUInteger)poolSize;
@@ -1530,45 +1567,18 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     scheme = @"http";
   }
 
-  if (self.port) {
-    return [NSString stringWithFormat:@"%@://%@:%@/", scheme, self.host, self.port];
+  int defaultPort = ([scheme isEqualToString:@"https"] ? 443 :
+                     [scheme isEqualToString:@"http"] ? 80 :
+                     -1);
+  int port = self.port.intValue;
+  if (port > 0 && port != defaultPort) {
+    return [NSString stringWithFormat:@"%@://%@:%d", scheme, self.host, port];
   } else {
-    return [NSString stringWithFormat:@"%@://%@/", scheme, self.host];
+    return [NSString stringWithFormat:@"%@://%@", scheme, self.host];
   }
 }
 
 @end
-
-//#define RCTSR_ENABLE_LOG
-
-static inline void RCTSRFastLog(NSString *format, ...)
-{
-#ifdef RCTSR_ENABLE_LOG
-  __block va_list arg_list;
-  va_start (arg_list, format);
-
-  NSString *formattedString = [[NSString alloc] initWithFormat:format arguments:arg_list];
-
-  va_end(arg_list);
-
-  RCTLogInfo(@"[RCTSR] %@", formattedString);
-#endif
-}
-
-// This is a hack, and probably not optimal
-static inline int32_t validate_dispatch_data_partial_string(NSData *data)
-{
-  static const int maxCodepointSize = 3;
-
-  for (int i = 0; i < maxCodepointSize; i++) {
-    NSString *str = [[NSString alloc] initWithBytesNoCopy:(char *)data.bytes length:data.length - i encoding:NSUTF8StringEncoding freeWhenDone:NO];
-    if (str) {
-      return (int32_t)data.length - i;
-    }
-  }
-
-  return -1;
-}
 
 static _RCTSRRunLoopThread *networkThread = nil;
 static NSRunLoop *networkRunLoop = nil;

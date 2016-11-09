@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.jni.HybridData;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
@@ -20,9 +21,8 @@ import com.facebook.soloader.SoLoader;
  */
 @DoNotStrip
 public class WritableNativeMap extends ReadableNativeMap implements WritableMap {
-
   static {
-    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   @Override
@@ -30,14 +30,11 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   @Override
   public native void putDouble(String key, double value);
   @Override
+  public native void putInt(String key, int value);
+  @Override
   public native void putString(String key, String value);
   @Override
   public native void putNull(String key);
-
-  @Override
-  public void putInt(String key, int value) {
-    putDouble(key, value);
-  }
 
   // Note: this consumes the map so do not reuse it.
   @Override
@@ -61,6 +58,12 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
     Assertions.assertCondition(source instanceof ReadableNativeMap, "Illegal type provided");
     mergeNativeMap((ReadableNativeMap) source);
   }
+
+  public WritableNativeMap() {
+    super(initHybrid());
+  }
+
+  private static native HybridData initHybrid();
 
   private native void putNativeMap(String key, WritableNativeMap value);
   private native void putNativeArray(String key, WritableNativeArray value);

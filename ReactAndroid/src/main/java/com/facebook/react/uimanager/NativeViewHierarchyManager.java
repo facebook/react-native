@@ -9,9 +9,8 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
+import android.content.res.Resources;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -27,13 +26,19 @@ import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
+import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -58,57 +63,76 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * TODO(5483031): Only dispatch updates when shadow views have changed
  */
 @NotThreadSafe
-/* package */ final class NativeViewHierarchyManager {
+public class NativeViewHierarchyManager {
+
+  private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
 
   private final AnimationRegistry mAnimationRegistry;
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
   private final SparseBooleanArray mRootTags;
-  private final SparseArray<ThemedReactContext> mRootViewsContext;
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
-  private final RootViewManager mRootViewManager = new RootViewManager();
+  private final RootViewManager mRootViewManager;
+  private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
-  public NativeViewHierarchyManager(
-      AnimationRegistry animationRegistry,
-      ViewManagerRegistry viewManagers) {
-    mAnimationRegistry = animationRegistry;
+  private boolean mLayoutAnimationEnabled;
+
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
+    this(viewManagers, new RootViewManager());
+  }
+
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {
+    mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
-    mRootViewsContext = new SparseArray<>();
+    mRootViewManager = manager;
   }
 
-  public void updateProperties(int tag, CatalystStylesDiffMap props) {
-    UiThreadUtil.assertOnUiThread();
+  public final View resolveView(int tag) {
+    View view = mTagsToViews.get(tag);
+    if (view == null) {
+      throw new IllegalViewOperationException("Trying to resolve view with tag " + tag
+          + " which doesn't exist");
+    }
+    return view;
+  }
 
+  public final ViewManager resolveViewManager(int tag) {
     ViewManager viewManager = mTagsToViewManagers.get(tag);
     if (viewManager == null) {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
     }
+    return viewManager;
+  }
 
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag
-          + " which doesn't exist");
+  public AnimationRegistry getAnimationRegistry() {
+    return mAnimationRegistry;
+  }
+
+  public void setLayoutAnimationEnabled(boolean enabled) {
+    mLayoutAnimationEnabled = enabled;
+  }
+
+  public void updateProperties(int tag, ReactStylesDiffMap props) {
+    UiThreadUtil.assertOnUiThread();
+
+    try {
+      ViewManager viewManager = resolveViewManager(tag);
+      View viewToUpdate = resolveView(tag);
+      viewManager.updateProperties(viewToUpdate, props);
+    } catch (IllegalViewOperationException e) {
+      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
     }
-    viewManager.updateView(viewToUpdate, props);
   }
 
   public void updateViewExtraData(int tag, Object extraData) {
     UiThreadUtil.assertOnUiThread();
 
-    ViewManager viewManager = mTagsToViewManagers.get(tag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
-    }
-
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag + " which " +
-          "doesn't exist");
-    }
+    ViewManager viewManager = resolveViewManager(tag);
+    View viewToUpdate = resolveView(tag);
     viewManager.updateExtraData(viewToUpdate, extraData);
   }
 
@@ -120,66 +144,90 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       int width,
       int height) {
     UiThreadUtil.assertOnUiThread();
+    SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_VIEW,
+        "NativeViewHierarchyManager_updateLayout")
+        .arg("parentTag", parentTag)
+        .arg("tag", tag)
+        .flush();
+    try {
+      View viewToUpdate = resolveView(tag);
 
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag + " which " +
-          "doesn't exist");
-    }
+      // Even though we have exact dimensions, we still call measure because some platform views (e.g.
+      // Switch) assume that method will always be called before onLayout and onDraw. They use it to
+      // calculate and cache information used in the draw pass. For most views, onMeasure can be
+      // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
+      // out to not recursively call layout on its children: React Native already handles doing that.
+      //
+      // Also, note measure and layout need to be called *after* all View properties have been updated
+      // because of caching and calculation that may occur in onMeasure and onLayout. Layout
+      // operations should also follow the native view hierarchy and go top to bottom for consistency
+      // with standard layout passes (some views may depend on this).
 
-    // Even though we have exact dimensions, we still call measure because some platform views (e.g.
-    // Switch) assume that method will always be called before onLayout and onDraw. They use it to
-    // calculate and cache information used in the draw pass. For most views, onMeasure can be
-    // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
-    // out to not recursively call layout on its children: React Native already handles doing that.
-    //
-    // Also, note measure and layout need to be called *after* all View properties have been updated
-    // because of caching and calculation that may occur in onMeasure and onLayout. Layout
-    // operations should also follow the native view hierarchy and go top to bottom for consistency
-    // with standard layout passes (some views may depend on this).
+      viewToUpdate.measure(
+          View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+          View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
 
-    viewToUpdate.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-
-    // Check if the parent of the view has to layout the view, or the child has to lay itself out.
-    if (!mRootTags.get(parentTag)) {
-      ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
-      ViewGroupManager parentViewGroupManager;
-      if (parentViewManager instanceof ViewGroupManager) {
-        parentViewGroupManager = (ViewGroupManager) parentViewManager;
+      // Check if the parent of the view has to layout the view, or the child has to lay itself out.
+      if (!mRootTags.get(parentTag)) {
+        ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
+        ViewGroupManager parentViewGroupManager;
+        if (parentViewManager instanceof ViewGroupManager) {
+          parentViewGroupManager = (ViewGroupManager) parentViewManager;
+        } else {
+          throw new IllegalViewOperationException(
+              "Trying to use view with tag " + tag +
+                  " as a parent, but its Manager doesn't extends ViewGroupManager");
+        }
+        if (parentViewGroupManager != null
+            && !parentViewGroupManager.needsCustomLayoutForChildren()) {
+          updateLayout(viewToUpdate, x, y, width, height);
+        }
       } else {
-        throw new IllegalViewOperationException("Trying to use view with tag " + tag +
-            " as a parent, but its Manager doesn't extends ViewGroupManager");
+        updateLayout(viewToUpdate, x, y, width, height);
       }
-      if (parentViewGroupManager != null
-          && !parentViewGroupManager.needsCustomLayoutForChildren()) {
-        viewToUpdate.layout(x, y, x + width, y + height);
-      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
+    }
+  }
+
+  private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
+    if (mLayoutAnimationEnabled &&
+        mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
+      mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
     } else {
       viewToUpdate.layout(x, y, x + width, y + height);
     }
   }
 
   public void createView(
-      int rootViewTagForContext,
+      ThemedReactContext themedContext,
       int tag,
       String className,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     UiThreadUtil.assertOnUiThread();
-    ViewManager viewManager = mViewManagers.get(className);
+    SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_VIEW,
+        "NativeViewHierarchyManager_createView")
+        .arg("tag", tag)
+        .arg("className", className)
+        .flush();
+    try {
+      ViewManager viewManager = mViewManagers.get(className);
 
-    View view =
-        viewManager.createView(mRootViewsContext.get(rootViewTagForContext), mJSResponderHandler);
-    mTagsToViews.put(tag, view);
-    mTagsToViewManagers.put(tag, viewManager);
+      View view = viewManager.createView(themedContext, mJSResponderHandler);
+      mTagsToViews.put(tag, view);
+      mTagsToViewManagers.put(tag, viewManager);
 
-    // Use android View id field to store React tag. This is possible since we don't inflate
-    // React views from layout xmls. Thus it is easier to just reuse that field instead of
-    // creating another (potentially much more expensive) mapping from view to React tag
-    view.setId(tag);
-    if (initialProps != null) {
-      viewManager.updateView(view, initialProps);
+      // Use android View id field to store React tag. This is possible since we don't inflate
+      // React views from layout xmls. Thus it is easier to just reuse that field instead of
+      // creating another (potentially much more expensive) mapping from view to React tag
+      view.setId(tag);
+      if (initialProps != null) {
+        viewManager.updateProperties(view, initialProps);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
   }
 
@@ -191,17 +239,20 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       @Nullable int[] tagsToDelete) {
     StringBuilder stringBuilder = new StringBuilder();
 
-    stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
-    stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
-    for (int index=0; index<viewManager.getChildCount(viewToManage); index+=16) {
-      for (int innerOffset=0;
-           ((index+innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
-           innerOffset++) {
-        stringBuilder.append(viewManager.getChildAt(viewToManage, index+innerOffset).getId() + ",");
+    if (null != viewToManage) {
+      stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
+      stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
+      for (int index=0; index<viewManager.getChildCount(viewToManage); index+=16) {
+        for (int innerOffset=0;
+             ((index+innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
+             innerOffset++) {
+          stringBuilder.append(viewManager.getChildAt(viewToManage, index+innerOffset).getId() + ",");
+        }
+        stringBuilder.append("\n");
       }
-      stringBuilder.append("\n");
+      stringBuilder.append(" ],\n");
     }
-    stringBuilder.append(" ],\n");
+
     if (indicesToRemove != null) {
       stringBuilder.append("  indicesToRemove(" + indicesToRemove.length + "): [\n");
       for (int index = 0; index < indicesToRemove.length; index += 16) {
@@ -259,11 +310,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
-    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
-    ViewGroupManager viewManager = (ViewGroupManager) mTagsToViewManagers.get(tag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
-    }
+    final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
       throw new IllegalViewOperationException("Trying to manageChildren view with tag " + tag +
         " which doesn't exist\n detail: " +
@@ -312,19 +360,18 @@ import com.facebook.react.uimanager.events.EventDispatcher;
                       viewsToAdd,
                       tagsToDelete));
         }
-        View childView = viewManager.getChildAt(viewToManage, indicesToRemove[i]);
-        if (childView == null) {
-          throw new IllegalViewOperationException(
-              "Trying to remove a null view at index:"
-                  + indexToRemove + " view tag: " + tag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
+
+        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
+
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+            arrayContains(tagsToDelete, viewToRemove.getId())) {
+          // The view will be removed and dropped by the 'delete' layout animation
+          // instead, so do nothing
+        } else {
+          viewManager.removeViewAt(viewToManage, indexToRemove);
         }
-        viewManager.removeView(viewToManage, childView);
+
         lastIndexToRemove = indexToRemove;
       }
     }
@@ -351,7 +398,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     if (tagsToDelete != null) {
       for (int i = 0; i < tagsToDelete.length; i++) {
         int tagToDelete = tagsToDelete[i];
-        View viewToDestroy = mTagsToViews.get(tagToDelete);
+        final View viewToDestroy = mTagsToViews.get(tagToDelete);
         if (viewToDestroy == null) {
           throw new IllegalViewOperationException(
               "Trying to destroy unknown view tag: "
@@ -363,8 +410,77 @@ import com.facebook.react.uimanager.events.EventDispatcher;
                       viewsToAdd,
                       tagsToDelete));
         }
-        dropView(viewToDestroy);
+
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+          mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
+            @Override
+            public void onAnimationEnd() {
+              viewManager.removeView(viewToManage, viewToDestroy);
+              dropView(viewToDestroy);
+            }
+          });
+        } else {
+          dropView(viewToDestroy);
+        }
       }
+    }
+  }
+
+  private boolean arrayContains(@Nullable int[] array, int ele) {
+    if (array == null) {
+      return false;
+    }
+    for (int curEle : array) {
+      if (curEle == ele) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Simplified version of constructManageChildrenErrorMessage that only deals with adding children
+   * views
+   */
+  private static String constructSetChildrenErrorMessage(
+    ViewGroup viewToManage,
+    ViewGroupManager viewManager,
+    ReadableArray childrenTags) {
+    ViewAtIndex[] viewsToAdd = new ViewAtIndex[childrenTags.size()];
+    for (int i = 0; i < childrenTags.size(); i++) {
+      viewsToAdd[i] = new ViewAtIndex(childrenTags.getInt(i), i);
+    }
+    return constructManageChildrenErrorMessage(
+      viewToManage,
+      viewManager,
+      null,
+      viewsToAdd,
+      null
+    );
+  }
+
+  /**
+   * Simplified version of manageChildren that only deals with adding children views
+   */
+  public void setChildren(
+    int tag,
+    ReadableArray childrenTags) {
+    ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
+
+    for (int i = 0; i < childrenTags.size(); i++) {
+      View viewToAdd = mTagsToViews.get(childrenTags.getInt(i));
+      if (viewToAdd == null) {
+        throw new IllegalViewOperationException(
+          "Trying to add unknown view tag: "
+            + childrenTags.getInt(i) + "\n detail: " +
+            constructSetChildrenErrorMessage(
+              viewToManage,
+              viewManager,
+              childrenTags));
+      }
+      viewManager.addView(viewToManage, viewToAdd, i);
     }
   }
 
@@ -377,6 +493,13 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       int tag,
       SizeMonitoringFrameLayout view,
       ThemedReactContext themedContext) {
+    addRootViewGroup(tag, view, themedContext);
+  }
+
+  protected final void addRootViewGroup(
+      int tag,
+      ViewGroup view,
+      ThemedReactContext themedContext) {
     UiThreadUtil.assertOnUiThread();
     if (view.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
@@ -388,31 +511,29 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mTagsToViews.put(tag, view);
     mTagsToViewManagers.put(tag, mRootViewManager);
     mRootTags.put(tag, true);
-    mRootViewsContext.put(tag, themedContext);
     view.setId(tag);
   }
 
   /**
    * Releases all references to given native View.
    */
-  private void dropView(View view) {
+  protected void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      Assertions.assertNotNull(mTagsToViewManagers.get(view.getId())).onDropViewInstance(
-          (ThemedReactContext) view.getContext(),
-          view);
+      resolveViewManager(view.getId()).onDropViewInstance(view);
     }
     ViewManager viewManager = mTagsToViewManagers.get(view.getId());
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
-      for (int i = 0; i < viewGroupManager.getChildCount(viewGroup); i++) {
+      for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
         if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }
+      viewGroupManager.removeAllViews(viewGroup);
     }
     mTagsToViews.remove(view.getId());
     mTagsToViewManagers.remove(view.getId());
@@ -420,13 +541,13 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   public void removeRootView(int rootViewTag) {
     UiThreadUtil.assertOnUiThread();
-    SoftAssertions.assertCondition(
-        mRootTags.get(rootViewTag),
-        "View with tag " + rootViewTag + " is not registered as a root view");
+    if (!mRootTags.get(rootViewTag)) {
+        SoftAssertions.assertUnreachable(
+            "View with tag " + rootViewTag + " is not registered as a root view");
+    }
     View rootView = mTagsToViews.get(rootViewTag);
     dropView(rootView);
     mRootTags.delete(rootViewTag);
-    mRootViewsContext.remove(rootViewTag);
   }
 
   /**
@@ -440,8 +561,51 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
     }
 
-    // Puts x/y in outputBuffer[0]/[1]
+    View rootView = (View) RootViewUtil.getRootView(v);
+    // It is possible that the RootView can't be found because this view is no longer on the screen
+    // and has been removed by clipping
+    if (rootView == null) {
+      throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
+    }
+    rootView.getLocationInWindow(outputBuffer);
+    int rootX = outputBuffer[0];
+    int rootY = outputBuffer[1];
+
+    v.getLocationInWindow(outputBuffer);
+
+    outputBuffer[0] = outputBuffer[0] - rootX;
+    outputBuffer[1] = outputBuffer[1] - rootY;
+    outputBuffer[2] = v.getWidth();
+    outputBuffer[3] = v.getHeight();
+  }
+
+  /**
+   * Returns the coordinates of a view relative to the window (not just the RootView
+   * which is what measure will return)
+   *
+   * @param tag - the tag for the view
+   * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
+   *  relative to the device window
+   */
+  public void measureInWindow(int tag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    View v = mTagsToViews.get(tag);
+    if (v == null) {
+      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+    }
+
     v.getLocationOnScreen(outputBuffer);
+
+    // We need to remove the status bar from the height.  getLocationOnScreen will include the
+    // status bar.
+    Resources resources = v.getContext().getResources();
+    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
+    if (statusBarId > 0) {
+      int height = (int) resources.getDimension(statusBarId);
+      outputBuffer[1] -= height;
+    }
+
+    // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
     outputBuffer[3] = v.getHeight();
   }
@@ -451,19 +615,41 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
     }
-    return TouchTargetHelper.findTargetTagForTouch(touchY, touchX, (ViewGroup) view);
+    return TouchTargetHelper.findTargetTagForTouch(touchX, touchY, (ViewGroup) view);
   }
 
-  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    SoftAssertions.assertCondition(
-        !mRootTags.get(reactTag),
-        "Cannot block native responder on " + reactTag + " that is a root view");
-    ViewParent viewParent = blockNativeResponder ? mTagsToViews.get(reactTag).getParent() : null;
-    mJSResponderHandler.setJSResponder(reactTag, viewParent);
+  public void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    if (!blockNativeResponder) {
+      mJSResponderHandler.setJSResponder(initialReactTag, null);
+      return;
+    }
+
+    View view = mTagsToViews.get(reactTag);
+    if (initialReactTag != reactTag && view instanceof ViewParent) {
+      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
+      // have a parent of that View in reactTag, so we can use it.
+      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
+      return;
+    }
+
+    if (mRootTags.get(reactTag)) {
+      SoftAssertions.assertUnreachable(
+          "Cannot block native responder on " + reactTag + " that is a root view");
+    }
+    mJSResponderHandler
+        .setJSResponder(initialReactTag, view.getParent());
   }
 
   public void clearJSResponder() {
     mJSResponderHandler.clearJSResponder();
+  }
+
+  void configureLayoutAnimation(final ReadableMap config) {
+    mLayoutAnimator.initializeFromConfig(config);
+  }
+
+  void clearLayoutAnimation() {
+    mLayoutAnimator.reset();
   }
 
   /* package */ void startAnimationForNativeView(
@@ -513,12 +699,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           "with tag " + reactTag);
     }
 
-    ViewManager viewManager = mTagsToViewManagers.get(reactTag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException(
-          "ViewManager for view tag " + reactTag + " could not be found");
-    }
-
+    ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
   }
 
@@ -581,14 +762,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   /**
-   * @return Themed React context for view with a given {@param reactTag} - in the case of root
-   * view it returns the context from {@link #mRootViewsContext} and all the other cases it gets the
+   * @return Themed React context for view with a given {@param reactTag} -  it gets the
    * context directly from the view using {@link View#getContext}.
    */
   private ThemedReactContext getReactContextForView(int reactTag) {
-    if (mRootTags.get(reactTag)) {
-      return Assertions.assertNotNull(mRootViewsContext.get(reactTag));
-    }
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);

@@ -4,16 +4,14 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: native-modules-ios
+next: timers
+previous: animations
 ---
 
-## iOS
-Accessibility on iOS encompasses many topics, but for many, accessibility is synonymous with VoiceOver, a technology available since iOS 3.0. It acts as a screen reader, allowing people with visual impairments to use their iOS devices. Click [here](https://developer.apple.com/accessibility/ios/) to learn more.
+## Native App Accessibility (iOS and Android)
+Both iOS and Android provide APIs for making apps accessible to people with disabilities. In addition, both platforms provide bundled assistive technologies, like the screen readers VoiceOver (iOS) and TalkBack (Android) for the visually impaired. Similarly, in React Native we have included APIs designed to provide developers with support for making apps more accessible. Take note, iOS and Android differ slightly in their approaches, and thus the React Native implementations may vary by platform.
 
-## Android
-Accessibility on Android involves many diverse topics, one of which is enabling people with vision loss to use your application. For this community, Google provides a built-in screen reader service with Android called TalkBack. With TalkBack, you can use touch exploration and gestures to navigate a mobile device and application. TalkBack will read back the content on screen using text-to-speech and alert users to important notifications within your application. Click [here](https://support.google.com/accessibility/android) to learn more about Android accessibility features and [here](https://developer.android.com/guide/topics/ui/accessibility) to learn more about making your native applications accessible.
-
-## Making Accessible Apps
+## Making Apps Accessible
 
 ### Accessibility properties
 
@@ -26,7 +24,7 @@ On Android, ‘accessible={true}’ property for a react-native View will be tra
 ```javascript
 <View accessible={true}>
   <Text>text one</Text>
-  <Text >text two</Text>
+  <Text>text two</Text>
 </View>
 ```
 
@@ -84,7 +82,7 @@ Assign this property to a custom function which will be called when someone perf
 
 #### accessibilityComponentType (Android)
 
-In some cases, we also want to alert the end user of the type of selected component (ie, that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. For instances, we support ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’ and so on.
+In some cases, we also want to alert the end user of the type of selected component (i.e., that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. For instances, we support ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’ and so on.
 
 ```javascript
 <TouchableWithoutFeedback accessibilityComponentType=”button”
@@ -129,7 +127,7 @@ In the case of two overlapping UI components with the same parent, default acces
     <Text> First layout </Text>
   </View>
   <View style={{position: 'absolute', left: 10, top: 10, right: 10, height: 100,
-    backgroundColor: 'yellow'}} importantForAccessibility=”no-hide-descendant”>
+    backgroundColor: 'yellow'}} importantForAccessibility=”no-hide-descendants”>
     <Text> Second layout </Text>
   </View>
 </View>
@@ -149,7 +147,7 @@ _onPress: function() {
   “radiobutton_unchecked” : “radiobutton_checked”;
   if (this.state.radioButton === “radiobutton_checked”) {
     RCTUIManager.sendAccessibilityEvent(
-      React.findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       RCTUIManager.AccessibilityEventTypes.typeViewClicked);
   }
 }

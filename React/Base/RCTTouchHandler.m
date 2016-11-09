@@ -15,6 +15,7 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTTouchEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -23,7 +24,7 @@
 // module if we were to assume that modules and RootViews had a 1:1 relationship
 @implementation RCTTouchHandler
 {
-  __weak RCTBridge *_bridge;
+  __weak RCTEventDispatcher *_eventDispatcher;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -31,13 +32,14 @@
    * These must be kept track of because `UIKit` destroys the touch targets
    * if touches are canceled, and we have no other way to recover this info.
    */
-  NSMutableOrderedSet *_nativeTouches;
-  NSMutableArray *_reactTouches;
-  NSMutableArray *_touchViews;
+  NSMutableOrderedSet<UITouch *> *_nativeTouches;
+  NSMutableArray<NSMutableDictionary *> *_reactTouches;
+  NSMutableArray<UIView *> *_touchViews;
 
   BOOL _dispatchedInitialTouches;
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
+  uint16_t _coalescingKey;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -46,7 +48,7 @@
 
   if ((self = [super initWithTarget:self action:@selector(handleGestureUpdate:)])) {
 
-    _bridge = bridge;
+    _eventDispatcher = [bridge moduleForClass:[RCTEventDispatcher class]];
     _dispatchedInitialTouches = NO;
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
@@ -71,7 +73,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 #pragma mark - Bookkeeping for touch indices
 
-- (void)_recordNewTouches:(NSSet *)touches
+- (void)_recordNewTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
 
@@ -108,11 +110,9 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     }
 
     // Create touch
-    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
+    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:RCTMaxTouches];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   }
 }
 
-- (void)_recordRemovedTouches:(NSSet *)touches
+- (void)_recordRemovedTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
     NSUInteger index = [_nativeTouches indexOfObject:touch];
@@ -150,6 +150,13 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"locationX"] = @(touchViewLocation.x);
   reactTouch[@"locationY"] = @(touchViewLocation.y);
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
+
+  // TODO: force for a 'normal' touch is usually 1.0;
+  // should we expose a `normalTouchForce` constant somewhere (which would
+  // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
+  if (RCTForceTouchAvailable()) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+  }
 }
 
 /**
@@ -163,12 +170,12 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
  * (start/end/move/cancel) and the indices that represent "changed" `Touch`es
  * from that array.
  */
-- (void)_updateAndDispatchTouches:(NSSet *)touches
+- (void)_updateAndDispatchTouches:(NSSet<UITouch *> *)touches
                         eventName:(NSString *)eventName
                   originatingTime:(__unused CFTimeInterval)originatingTime
 {
   // Update touches
-  NSMutableArray *changedIndexes = [NSMutableArray new];
+  NSMutableArray<NSNumber *> *changedIndexes = [NSMutableArray new];
   for (UITouch *touch in touches) {
     NSInteger index = [_nativeTouches indexOfObject:touch];
     if (index == NSNotFound) {
@@ -185,19 +192,23 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
   // Deep copy the touches because they will be accessed from another thread
   // TODO: would it be safer to do this in the bridge or executor, rather than trusting caller?
-  NSMutableArray *reactTouches = [[NSMutableArray alloc] initWithCapacity:_reactTouches.count];
+  NSMutableArray<NSDictionary *> *reactTouches =
+    [[NSMutableArray alloc] initWithCapacity:_reactTouches.count];
   for (NSDictionary *touch in _reactTouches) {
     [reactTouches addObject:[touch copy]];
   }
 
-  eventName = RCTNormalizeInputEventName(eventName);
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
-                    args:@[eventName, reactTouches, changedIndexes]];
+  RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                         reactTag:self.view.reactTag
+                                                     reactTouches:reactTouches
+                                                   changedIndexes:changedIndexes
+                                                    coalescingKey:_coalescingKey];
+  [_eventDispatcher sendEvent:event];
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
 
-static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet *touches)
+static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
 {
   for (UITouch *touch in touches) {
     if (touch.phase == UITouchPhaseBegan ||
@@ -209,7 +220,7 @@ static BOOL RCTAllTouchesAreCancelledOrEnded(NSSet *touches)
   return YES;
 }
 
-static BOOL RCTAnyTouchesChanged(NSSet *touches)
+static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   for (UITouch *touch in touches) {
     if (touch.phase == UITouchPhaseBegan ||
@@ -238,11 +249,12 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   // dispatch the updates from the raw touch methods below.
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
 
-  // "start" has to record new touches beforeckirjiuhucekbebjditeucultigvijfe extracting the event.
+  _coalescingKey++;
+  // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
   if (_dispatchedInitialTouches) {
@@ -253,7 +265,7 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
 
@@ -263,10 +275,11 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   }
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
 
@@ -279,10 +292,11 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
   [self _recordRemovedTouches:touches];
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
 
@@ -308,6 +322,12 @@ static BOOL RCTAnyTouchesChanged(NSSet *touches)
 - (void)reset
 {
   _dispatchedInitialTouches = NO;
+}
+
+- (void)cancel
+{
+  self.enabled = NO;
+  self.enabled = YES;
 }
 
 @end

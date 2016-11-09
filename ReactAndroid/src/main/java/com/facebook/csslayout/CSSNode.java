@@ -1,396 +1,523 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<c3a1298e36789dcda4cc2776d48646a7>>
-
 package com.facebook.csslayout;
 
 import javax.annotation.Nullable;
 
+import java.util.List;
 import java.util.ArrayList;
 
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 
-/**
- * A CSS Node. It has a style object you can manipulate at {@link #style}. After calling
- * {@link #calculateLayout()}, {@link #layout} will be filled with the results of the layout.
- */
-public class CSSNode {
+public class CSSNode implements CSSNodeAPI<CSSNode> {
 
-  private static enum LayoutState {
-    /**
-     * Some property of this node or its children has changes and the current values in
-     * {@link #layout} are not valid.
-     */
-    DIRTY,
-
-    /**
-     * This node has a new layout relative to the last time {@link #markLayoutSeen()} was called.
-     */
-    HAS_NEW_LAYOUT,
-
-    /**
-     * {@link #layout} is valid for the node's properties and this layout has been marked as
-     * having been seen.
-     */
-    UP_TO_DATE,
+  static {
+    try {
+      SoLoader.loadLibrary("csslayout");
+    } catch (Exception ignored) {
+      // The user probably didn't call SoLoader.init(). Fall back to System.loadLibrary() instead.
+      System.out.println("Falling back to System.loadLibrary()");
+      System.loadLibrary("csslayout");
+    }
   }
 
-  public static interface MeasureFunction {
+  /**
+   * Get native instance count. Useful for testing only.
+   */
+  static native int jni_CSSNodeGetInstanceCount();
 
-    /**
-     * Should measure the given node and put the result in the given MeasureOutput.
-     *
-     * NB: measure is NOT guaranteed to be threadsafe/re-entrant safe!
-     */
-    public void measure(CSSNode node, float width, MeasureOutput measureOutput);
+  private CSSNode mParent;
+  private List<CSSNode> mChildren;
+  private MeasureFunction mMeasureFunction;
+  private long mNativePointer;
+  private Object mData;
+
+  private boolean mHasSetPadding = false;
+  private boolean mHasSetMargin = false;
+  private boolean mHasSetBorder = false;
+  private boolean mHasSetPosition = false;
+
+  @DoNotStrip
+  private float mWidth = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mHeight = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mTop = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mLeft = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private int mLayoutDirection = 0;
+
+  private native long jni_CSSNodeNew();
+  public CSSNode() {
+    mNativePointer = jni_CSSNodeNew();
+    if (mNativePointer == 0) {
+      throw new IllegalStateException("Failed to allocate native memory");
+    }
   }
 
-  // VisibleForTesting
-  /*package*/ final CSSStyle style = new CSSStyle();
-  /*package*/ final CSSLayout layout = new CSSLayout();
-  /*package*/ final CachedCSSLayout lastLayout = new CachedCSSLayout();
+  private native void jni_CSSNodeFree(long nativePointer);
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      jni_CSSNodeFree(mNativePointer);
+    } finally {
+      super.finalize();
+    }
+  }
 
-  public int lineIndex = 0;
+  private native void jni_CSSNodeReset(long nativePointer);
+  @Override
+  public void reset() {
+    mHasSetPadding = false;
+    mHasSetMargin = false;
+    mHasSetBorder = false;
+    mHasSetPosition = false;
 
-  private @Nullable ArrayList<CSSNode> mChildren;
-  private @Nullable CSSNode mParent;
-  private @Nullable MeasureFunction mMeasureFunction = null;
-  private LayoutState mLayoutState = LayoutState.DIRTY;
+    mWidth = CSSConstants.UNDEFINED;
+    mHeight = CSSConstants.UNDEFINED;
+    mTop = CSSConstants.UNDEFINED;
+    mLeft = CSSConstants.UNDEFINED;
+    mLayoutDirection = 0;
 
+    mMeasureFunction = null;
+    mData = null;
+
+    jni_CSSNodeReset(mNativePointer);
+  }
+
+  @Override
   public int getChildCount() {
     return mChildren == null ? 0 : mChildren.size();
   }
 
+  @Override
   public CSSNode getChildAt(int i) {
-    Assertions.assertNotNull(mChildren);
     return mChildren.get(i);
   }
 
+  private native void jni_CSSNodeInsertChild(long nativePointer, long childPointer, int index);
+  @Override
   public void addChildAt(CSSNode child, int i) {
     if (child.mParent != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
+
     if (mChildren == null) {
-      // 4 is kinda arbitrary, but the default of 10 seems really high for an average View.
       mChildren = new ArrayList<>(4);
     }
-
     mChildren.add(i, child);
     child.mParent = this;
-    dirty();
+    jni_CSSNodeInsertChild(mNativePointer, child.mNativePointer, i);
   }
 
+  private native void jni_CSSNodeRemoveChild(long nativePointer, long childPointer);
+  @Override
   public CSSNode removeChildAt(int i) {
-    Assertions.assertNotNull(mChildren);
-    CSSNode removed = mChildren.remove(i);
-    removed.mParent = null;
-    dirty();
-    return removed;
+
+    final CSSNode child = mChildren.remove(i);
+    child.mParent = null;
+    jni_CSSNodeRemoveChild(mNativePointer, child.mNativePointer);
+    return child;
   }
 
-  public @Nullable CSSNode getParent() {
+  @Override
+  public @Nullable
+  CSSNode getParent() {
     return mParent;
   }
 
-  /**
-   * @return the index of the given child, or -1 if the child doesn't exist in this node.
-   */
+  @Override
   public int indexOf(CSSNode child) {
-    Assertions.assertNotNull(mChildren);
-    return mChildren.indexOf(child);
+    return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  public void setMeasureFunction(MeasureFunction measureFunction) {
-    if (!valuesEqual(mMeasureFunction, measureFunction)) {
-      mMeasureFunction = measureFunction;
-      dirty();
+  private native void jni_CSSNodeCalculateLayout(long nativePointer);
+  @Override
+  public void calculateLayout(CSSLayoutContext layoutContext) {
+    jni_CSSNodeCalculateLayout(mNativePointer);
+  }
+
+  private native boolean jni_CSSNodeHasNewLayout(long nativePointer);
+  @Override
+  public boolean hasNewLayout() {
+    return jni_CSSNodeHasNewLayout(mNativePointer);
+  }
+
+  private native void jni_CSSNodeMarkDirty(long nativePointer);
+  @Override
+  public void dirty() {
+    jni_CSSNodeMarkDirty(mNativePointer);
+  }
+
+  private native boolean jni_CSSNodeIsDirty(long nativePointer);
+  @Override
+  public boolean isDirty() {
+    return jni_CSSNodeIsDirty(mNativePointer);
+  }
+
+  private native void jni_CSSNodeMarkLayoutSeen(long nativePointer);
+  @Override
+  public void markLayoutSeen() {
+    jni_CSSNodeMarkLayoutSeen(mNativePointer);
+  }
+
+  private native int jni_CSSNodeStyleGetDirection(long nativePointer);
+  @Override
+  public CSSDirection getStyleDirection() {
+    return CSSDirection.values()[jni_CSSNodeStyleGetDirection(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetDirection(long nativePointer, int direction);
+  @Override
+  public void setDirection(CSSDirection direction) {
+    jni_CSSNodeStyleSetDirection(mNativePointer, direction.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
+  @Override
+  public CSSFlexDirection getFlexDirection() {
+    return CSSFlexDirection.values()[jni_CSSNodeStyleGetFlexDirection(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetFlexDirection(long nativePointer, int flexDirection);
+  @Override
+  public void setFlexDirection(CSSFlexDirection flexDirection) {
+    jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetJustifyContent(long nativePointer);
+  @Override
+  public CSSJustify getJustifyContent() {
+    return CSSJustify.values()[jni_CSSNodeStyleGetJustifyContent(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetJustifyContent(long nativePointer, int justifyContent);
+  @Override
+  public void setJustifyContent(CSSJustify justifyContent) {
+    jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetAlignItems(long nativePointer);
+  @Override
+  public CSSAlign getAlignItems() {
+    return CSSAlign.values()[jni_CSSNodeStyleGetAlignItems(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetAlignItems(long nativePointer, int alignItems);
+  @Override
+  public void setAlignItems(CSSAlign alignItems) {
+    jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetAlignSelf(long nativePointer);
+  @Override
+  public CSSAlign getAlignSelf() {
+    return CSSAlign.values()[jni_CSSNodeStyleGetAlignSelf(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetAlignSelf(long nativePointer, int alignSelf);
+  @Override
+  public void setAlignSelf(CSSAlign alignSelf) {
+    jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetAlignContent(long nativePointer);
+  @Override
+  public CSSAlign getAlignContent() {
+    return CSSAlign.values()[jni_CSSNodeStyleGetAlignContent(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetAlignContent(long nativePointer, int alignContent);
+  @Override
+  public void setAlignContent(CSSAlign alignContent) {
+    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetPositionType(long nativePointer);
+  @Override
+  public CSSPositionType getPositionType() {
+    return CSSPositionType.values()[jni_CSSNodeStyleGetPositionType(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetPositionType(long nativePointer, int positionType);
+  @Override
+  public void setPositionType(CSSPositionType positionType) {
+    jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.ordinal());
+  }
+
+  private native void jni_CSSNodeStyleSetFlexWrap(long nativePointer, int wrapType);
+  @Override
+  public void setWrap(CSSWrap flexWrap) {
+    jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.ordinal());
+  }
+
+  private native int jni_CSSNodeStyleGetOverflow(long nativePointer);
+  @Override
+  public CSSOverflow getOverflow() {
+    return CSSOverflow.values()[jni_CSSNodeStyleGetOverflow(mNativePointer)];
+  }
+
+  private native void jni_CSSNodeStyleSetOverflow(long nativePointer, int overflow);
+  @Override
+  public void setOverflow(CSSOverflow overflow) {
+    jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.ordinal());
+  }
+
+  private native void jni_CSSNodeStyleSetFlex(long nativePointer, float flex);
+  @Override
+  public void setFlex(float flex) {
+    jni_CSSNodeStyleSetFlex(mNativePointer, flex);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexGrow(long nativePointer);
+  @Override
+  public float getFlexGrow() {
+    return jni_CSSNodeStyleGetFlexGrow(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexGrow(long nativePointer, float flexGrow);
+  @Override
+  public void setFlexGrow(float flexGrow) {
+    jni_CSSNodeStyleSetFlexGrow(mNativePointer, flexGrow);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexShrink(long nativePointer);
+  @Override
+  public float getFlexShrink() {
+    return jni_CSSNodeStyleGetFlexShrink(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexShrink(long nativePointer, float flexShrink);
+  @Override
+  public void setFlexShrink(float flexShrink) {
+    jni_CSSNodeStyleSetFlexShrink(mNativePointer, flexShrink);
+  }
+
+  private native float jni_CSSNodeStyleGetFlexBasis(long nativePointer);
+  @Override
+  public float getFlexBasis() {
+    return jni_CSSNodeStyleGetFlexBasis(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetFlexBasis(long nativePointer, float flexBasis);
+  @Override
+  public void setFlexBasis(float flexBasis) {
+    jni_CSSNodeStyleSetFlexBasis(mNativePointer, flexBasis);
+  }
+
+  private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
+  @Override
+  public float getMargin(int spacingType) {
+    if (!mHasSetMargin) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
     }
+    return jni_CSSNodeStyleGetMargin(mNativePointer, spacingType);
   }
 
+  private native void jni_CSSNodeStyleSetMargin(long nativePointer, int edge, float margin);
+  @Override
+  public void setMargin(int spacingType, float margin) {
+    mHasSetMargin = true;
+    jni_CSSNodeStyleSetMargin(mNativePointer, spacingType, margin);
+  }
+
+  private native float jni_CSSNodeStyleGetPadding(long nativePointer, int edge);
+  @Override
+  public float getPadding(int spacingType) {
+    if (!mHasSetPadding) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+    }
+    return jni_CSSNodeStyleGetPadding(mNativePointer, spacingType);
+  }
+
+  private native void jni_CSSNodeStyleSetPadding(long nativePointer, int edge, float padding);
+  @Override
+  public void setPadding(int spacingType, float padding) {
+    mHasSetPadding = true;
+    jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
+  }
+
+  private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
+  @Override
+  public float getBorder(int spacingType) {
+    if (!mHasSetBorder) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+    }
+    return jni_CSSNodeStyleGetBorder(mNativePointer, spacingType);
+  }
+
+  private native void jni_CSSNodeStyleSetBorder(long nativePointer, int edge, float border);
+  @Override
+  public void setBorder(int spacingType, float border) {
+    mHasSetBorder = true;
+    jni_CSSNodeStyleSetBorder(mNativePointer, spacingType, border);
+  }
+
+  private native float jni_CSSNodeStyleGetPosition(long nativePointer, int edge);
+  @Override
+  public float getPosition(int spacingType) {
+    if (!mHasSetPosition) {
+      return CSSConstants.UNDEFINED;
+    }
+    return jni_CSSNodeStyleGetPosition(mNativePointer, spacingType);
+  }
+
+  private native void jni_CSSNodeStyleSetPosition(long nativePointer, int edge, float position);
+  @Override
+  public void setPosition(int spacingType, float position) {
+    mHasSetPosition = true;
+    jni_CSSNodeStyleSetPosition(mNativePointer, spacingType, position);
+  }
+
+  private native float jni_CSSNodeStyleGetWidth(long nativePointer);
+  @Override
+  public float getStyleWidth() {
+    return jni_CSSNodeStyleGetWidth(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetWidth(long nativePointer, float width);
+  @Override
+  public void setStyleWidth(float width) {
+    jni_CSSNodeStyleSetWidth(mNativePointer, width);
+  }
+
+  private native float jni_CSSNodeStyleGetHeight(long nativePointer);
+  @Override
+  public float getStyleHeight() {
+    return jni_CSSNodeStyleGetHeight(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetHeight(long nativePointer, float height);
+  @Override
+  public void setStyleHeight(float height) {
+    jni_CSSNodeStyleSetHeight(mNativePointer, height);
+  }
+
+  private native float jni_CSSNodeStyleGetMinWidth(long nativePointer);
+  @Override
+  public float getStyleMinWidth() {
+    return jni_CSSNodeStyleGetMinWidth(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetMinWidth(long nativePointer, float minWidth);
+  @Override
+  public void setStyleMinWidth(float minWidth) {
+    jni_CSSNodeStyleSetMinWidth(mNativePointer, minWidth);
+  }
+
+  private native float jni_CSSNodeStyleGetMinHeight(long nativePointer);
+  @Override
+  public float getStyleMinHeight() {
+    return jni_CSSNodeStyleGetMinHeight(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetMinHeight(long nativePointer, float minHeight);
+  @Override
+  public void setStyleMinHeight(float minHeight) {
+    jni_CSSNodeStyleSetMinHeight(mNativePointer, minHeight);
+  }
+
+  private native float jni_CSSNodeStyleGetMaxWidth(long nativePointer);
+  @Override
+  public float getStyleMaxWidth() {
+    return jni_CSSNodeStyleGetMaxWidth(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetMaxWidth(long nativePointer, float maxWidth);
+  @Override
+  public void setStyleMaxWidth(float maxWidth) {
+    jni_CSSNodeStyleSetMaxWidth(mNativePointer, maxWidth);
+  }
+
+  private native float jni_CSSNodeStyleGetMaxHeight(long nativePointer);
+  @Override
+  public float getStyleMaxHeight() {
+    return jni_CSSNodeStyleGetMaxHeight(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetMaxHeight(long nativePointer, float maxheight);
+  @Override
+  public void setStyleMaxHeight(float maxheight) {
+    jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
+  }
+
+  @Override
+  public float getLayoutX() {
+    return mLeft;
+  }
+
+  @Override
+  public float getLayoutY() {
+    return mTop;
+  }
+
+  @Override
+  public float getLayoutWidth() {
+    return mWidth;
+  }
+
+  @Override
+  public float getLayoutHeight() {
+    return mHeight;
+  }
+
+  @Override
+  public CSSDirection getLayoutDirection() {
+    return CSSDirection.values()[mLayoutDirection];
+  }
+
+  private native void jni_CSSNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
+  @Override
+  public void setMeasureFunction(MeasureFunction measureFunction) {
+    mMeasureFunction = measureFunction;
+    jni_CSSNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
+  }
+
+  // Implementation Note: Why this method needs to stay final
+  //
+  // We cache the jmethodid for this method in CSSLayout code. This means that even if a subclass
+  // were to override measure, we'd still call this implementation from layout code since the
+  // overriding method will have a different jmethodid. This is final to prevent that mistake.
+  @DoNotStrip
+  public final long measure(float width, int widthMode, float height, int heightMode) {
+    if (!isMeasureDefined()) {
+      throw new RuntimeException("Measure function isn't defined!");
+    }
+
+    return mMeasureFunction.measure(
+          this,
+          width,
+          CSSMeasureMode.values()[widthMode],
+          height,
+          CSSMeasureMode.values()[heightMode]);
+  }
+
+  @Override
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
   }
 
-  /*package*/ MeasureOutput measure(MeasureOutput measureOutput, float width) {
-    if (!isMeasureDefined()) {
-      throw new RuntimeException("Measure function isn't defined!");
-    }
-    measureOutput.height = CSSConstants.UNDEFINED;
-    measureOutput.width = CSSConstants.UNDEFINED;
-    Assertions.assertNotNull(mMeasureFunction).measure(this, width, measureOutput);
-    return measureOutput;
-  }
-
-  /**
-   * Performs the actual layout and saves the results in {@link #layout}
-   */
-  public void calculateLayout(CSSLayoutContext layoutContext) {
-    layout.resetResult();
-    LayoutEngine.layoutNode(layoutContext, this, CSSConstants.UNDEFINED, null);
-  }
-
-  /**
-   * See {@link LayoutState#DIRTY}.
-   */
-  protected boolean isDirty() {
-    return mLayoutState == LayoutState.DIRTY;
-  }
-
-  /**
-   * See {@link LayoutState#HAS_NEW_LAYOUT}.
-   */
-  public boolean hasNewLayout() {
-    return mLayoutState == LayoutState.HAS_NEW_LAYOUT;
-  }
-
-  protected void dirty() {
-    if (mLayoutState == LayoutState.DIRTY) {
-      return;
-    } else if (mLayoutState == LayoutState.HAS_NEW_LAYOUT) {
-      throw new IllegalStateException("Previous layout was ignored! markLayoutSeen() never called");
-    }
-
-    mLayoutState = LayoutState.DIRTY;
-
-    if (mParent != null) {
-      mParent.dirty();
-    }
-  }
-
-  /*package*/ void markHasNewLayout() {
-    mLayoutState = LayoutState.HAS_NEW_LAYOUT;
-  }
-
-  /**
-   * Tells the node that the current values in {@link #layout} have been seen. Subsequent calls
-   * to {@link #hasNewLayout()} will return false until this node is laid out with new parameters.
-   * You must call this each time the layout is generated if the node has a new layout.
-   */
-  public void markLayoutSeen() {
-    if (!hasNewLayout()) {
-      throw new IllegalStateException("Expected node to have a new layout to be seen!");
-    }
-
-    mLayoutState = LayoutState.UP_TO_DATE;
-  }
-
-  private void toStringWithIndentation(StringBuilder result, int level) {
-    // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
-    StringBuilder indentation = new StringBuilder();
-    for (int i = 0; i < level; ++i) {
-      indentation.append("__");
-    }
-
-    result.append(indentation.toString());
-    result.append(layout.toString());
-
-    if (getChildCount() == 0) {
-      return;
-    }
-
-    result.append(", children: [\n");
-    for (int i = 0; i < getChildCount(); i++) {
-      getChildAt(i).toStringWithIndentation(result, level + 1);
-      result.append("\n");
-    }
-    result.append(indentation + "]");
-  }
-
   @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    this.toStringWithIndentation(sb, 0);
-    return sb.toString();
-  }
-
-  protected boolean valuesEqual(float f1, float f2) {
+  public boolean valuesEqual(float f1, float f2) {
     return FloatUtil.floatsEqual(f1, f2);
   }
 
-  protected <T> boolean valuesEqual(@Nullable T o1, @Nullable T o2) {
-    if (o1 == null) {
-      return o2 == null;
-    }
-    return o1.equals(o2);
+  @Override
+  public void setData(Object data) {
+    mData = data;
   }
 
-  public void setDirection(CSSDirection direction) {
-    if (!valuesEqual(style.direction, direction)) {
-      style.direction = direction;
-      dirty();
-    }
-  }
-
-  public void setFlexDirection(CSSFlexDirection flexDirection) {
-    if (!valuesEqual(style.flexDirection, flexDirection)) {
-      style.flexDirection = flexDirection;
-      dirty();
-    }
-  }
-
-  public void setJustifyContent(CSSJustify justifyContent) {
-    if (!valuesEqual(style.justifyContent, justifyContent)) {
-      style.justifyContent = justifyContent;
-      dirty();
-    }
-  }
-
-  public void setAlignItems(CSSAlign alignItems) {
-    if (!valuesEqual(style.alignItems, alignItems)) {
-      style.alignItems = alignItems;
-      dirty();
-    }
-  }
-
-  public void setAlignSelf(CSSAlign alignSelf) {
-    if (!valuesEqual(style.alignSelf, alignSelf)) {
-      style.alignSelf = alignSelf;
-      dirty();
-    }
-  }
-
-  public void setPositionType(CSSPositionType positionType) {
-    if (!valuesEqual(style.positionType, positionType)) {
-      style.positionType = positionType;
-      dirty();
-    }
-  }
-
-  public void setWrap(CSSWrap flexWrap) {
-    if (!valuesEqual(style.flexWrap, flexWrap)) {
-      style.flexWrap = flexWrap;
-      dirty();
-    }
-  }
-
-  public void setFlex(float flex) {
-    if (!valuesEqual(style.flex, flex)) {
-      style.flex = flex;
-      dirty();
-    }
-  }
-
-  public void setMargin(int spacingType, float margin) {
-    if (style.margin.set(spacingType, margin)) {
-      dirty();
-    }
-  }
-
-  public void setPadding(int spacingType, float padding) {
-    if (style.padding.set(spacingType, padding)) {
-      dirty();
-    }
-  }
-
-  public void setBorder(int spacingType, float border) {
-    if (style.border.set(spacingType, border)) {
-      dirty();
-    }
-  }
-
-  public void setPositionTop(float positionTop) {
-    if (!valuesEqual(style.positionTop, positionTop)) {
-      style.positionTop = positionTop;
-      dirty();
-    }
-  }
-
-  public void setPositionBottom(float positionBottom) {
-    if (!valuesEqual(style.positionBottom, positionBottom)) {
-      style.positionBottom = positionBottom;
-      dirty();
-    }
-  }
-
-  public void setPositionLeft(float positionLeft) {
-    if (!valuesEqual(style.positionLeft, positionLeft)) {
-      style.positionLeft = positionLeft;
-      dirty();
-    }
-  }
-
-  public void setPositionRight(float positionRight) {
-    if (!valuesEqual(style.positionRight, positionRight)) {
-      style.positionRight = positionRight;
-      dirty();
-    }
-  }
-
-  public void setStyleWidth(float width) {
-    if (!valuesEqual(style.width, width)) {
-      style.width = width;
-      dirty();
-    }
-  }
-
-  public void setStyleHeight(float height) {
-    if (!valuesEqual(style.height, height)) {
-      style.height = height;
-      dirty();
-    }
-  }
-
-  public float getLayoutX() {
-    return layout.left;
-  }
-
-  public float getLayoutY() {
-    return layout.top;
-  }
-
-  public float getLayoutWidth() {
-    return layout.width;
-  }
-
-  public float getLayoutHeight() {
-    return layout.height;
-  }
-
-  public CSSDirection getLayoutDirection() {
-    return layout.direction;
-  }
-
-  /**
-   * Get this node's padding, as defined by style + default padding.
-   */
-  public Spacing getStylePadding() {
-    return style.padding;
-  }
-
-  /**
-   * Get this node's width, as defined in the style.
-   */
-  public float getStyleWidth() {
-    return style.width;
-  }
-
-  /**
-   * Get this node's height, as defined in the style.
-   */
-  public float getStyleHeight() {
-    return style.height;
-  }
-
-  /**
-   * Get this node's direction, as defined in the style.
-   */
-  public CSSDirection getStyleDirection() {
-    return style.direction;
-  }
-
-  /**
-   * Set a default padding (left/top/right/bottom) for this node.
-   */
-  public void setDefaultPadding(int spacingType, float padding) {
-    if (style.padding.setDefault(spacingType, padding)) {
-      dirty();
-    }
+  @Override
+  public Object getData() {
+    return mData;
   }
 }

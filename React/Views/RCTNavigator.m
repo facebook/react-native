@@ -27,6 +27,20 @@ typedef NS_ENUM(NSUInteger, RCTNavigationLock) {
   RCTNavigationLockJavaScript
 };
 
+// By default the interactive pop gesture will be enabled when the navigation bar is displayed
+// and disabled when hidden
+// RCTPopGestureStateDefault maps to the default behavior (mentioned above). Once popGestureState
+// leaves this value, it can never be returned back to it. This is because, due to a limitation in
+// the iOS APIs, once we override the default behavior of the gesture recognizer, we cannot return
+// back to it.
+// RCTPopGestureStateEnabled will enable the gesture independent of nav bar visibility
+// RCTPopGestureStateDisabled will disable the gesture independent of nav bar visibility
+typedef NS_ENUM(NSUInteger, RCTPopGestureState) {
+  RCTPopGestureStateDefault = 0,
+  RCTPopGestureStateEnabled,
+  RCTPopGestureStateDisabled
+};
+
 NSInteger kNeverRequested = -1;
 NSInteger kNeverProgressed = -10000;
 
@@ -65,7 +79,7 @@ NSInteger kNeverProgressed = -10000;
  * pushes/pops accordingly. If `RCTNavigator` sees a `UIKit` driven push/pop, it
  * notifies JavaScript that this has happened, and expects that JavaScript will
  * eventually render more children to match `UIKit`. There's no rush for
- * JavaScript to catch up. But if it does rener anything, it must catch up to
+ * JavaScript to catch up. But if it does render anything, it must catch up to
  * UIKit. It cannot deviate.
  *
  * To implement this, we need a lock, which we store on the native thread. This
@@ -155,6 +169,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item
 {
+#if !TARGET_OS_TV
   if (self.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
     if (self.navigationLock == RCTNavigationLockNone) {
       self.navigationLock = RCTNavigationLockNative;
@@ -166,7 +181,9 @@ NSInteger kNeverProgressed = -10000;
       // recognizer when we lock the navigation.
       RCTAssert(NO, @"Should never receive gesture start while JS locks navigator");
     }
-  } else {
+  } else
+#endif //TARGET_OS_TV
+  {
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
@@ -191,17 +208,18 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
+@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
 
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
+@property (nonatomic, assign) RCTPopGestureState popGestureState;
+
 // Previous views are only mainted in order to detect incorrect
 // addition/removal of views below the `requestedTopOfStack`
-@property (nonatomic, copy, readwrite) NSArray *previousViews;
-@property (nonatomic, readwrite, strong) NSMutableArray *currentViews;
+@property (nonatomic, copy, readwrite) NSArray<RCTNavItem *> *previousViews;
 @property (nonatomic, readwrite, strong) RCTNavigationController *navigationController;
 /**
  * Display link is used to get high frequency sample rate during
@@ -269,6 +287,7 @@ NSInteger kNeverProgressed = -10000;
 }
 
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -282,7 +301,6 @@ NSInteger kNeverProgressed = -10000;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
     _previousRequestedTopOfStack = kNeverRequested; // So that we initialize with a push.
     _previousViews = @[];
-    _currentViews = [[NSMutableArray alloc] initWithCapacity:0];
     __weak RCTNavigator *weakSelf = self;
     _navigationController = [[RCTNavigationController alloc] initWithScrollCallback:^{
       [weakSelf dispatchFakeScrollEvent];
@@ -321,14 +339,47 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
+}
+
+- (void)setInteractivePopGestureEnabled:(BOOL)interactivePopGestureEnabled
+{
+#if !TARGET_OS_TV
+  _interactivePopGestureEnabled = interactivePopGestureEnabled;
+
+  _navigationController.interactivePopGestureRecognizer.delegate = self;
+  _navigationController.interactivePopGestureRecognizer.enabled = interactivePopGestureEnabled;
+
+  _popGestureState = interactivePopGestureEnabled ? RCTPopGestureStateEnabled : RCTPopGestureStateDisabled;
+#endif
+}
+
 - (void)dealloc
 {
+#if !TARGET_OS_TV
+  if (_navigationController.interactivePopGestureRecognizer.delegate == self) {
+    _navigationController.interactivePopGestureRecognizer.delegate = nil;
+  }
+#endif
   _navigationController.delegate = nil;
+  [_navigationController removeFromParentViewController];
 }
 
 - (UIViewController *)reactViewController
 {
   return _navigationController;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(__unused UIGestureRecognizer *)gestureRecognizer
+{
+  return _navigationController.viewControllers.count > 1;
 }
 
 /**
@@ -349,20 +400,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextFromViewControllerKey];
     RCTWrapperViewController *toController =
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
-    NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
-    NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
+
+    // This may be triggered by a navigation controller unrelated to me: if so, ignore.
+    if (fromController.navigationController != self->_navigationController ||
+        toController.navigationController != self->_navigationController) {
+      return;
+    }
+
+    NSUInteger indexOfFrom = [self.reactSubviews indexOfObject:fromController.navItem];
+    NSUInteger indexOfTo = [self.reactSubviews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
-    _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
-    _currentlyTransitioningFrom = indexOfFrom;
-    _currentlyTransitioningTo = indexOfTo;
-    _paused = NO;
+    self->_dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
+    self->_currentlyTransitioningFrom = indexOfFrom;
+    self->_currentlyTransitioningTo = indexOfTo;
+    self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
-    _currentlyTransitioningFrom = 0;
-    _currentlyTransitioningTo = 0;
-    _dummyView.frame = CGRectZero;
-    _paused = YES;
+    self->_currentlyTransitioningFrom = 0;
+    self->_currentlyTransitioningTo = 0;
+    self->_dummyView.frame = CGRectZero;
+    self.paused = YES;
     // Reset the parallel position tracker
   }];
 }
@@ -371,7 +429,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_navigationController.navigationLock == RCTNavigationLockNone) {
     _navigationController.navigationLock = RCTNavigationLockJavaScript;
+#if !TARGET_OS_TV
     _navigationController.interactivePopGestureRecognizer.enabled = NO;
+#endif
     return YES;
   }
   return NO;
@@ -380,7 +440,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)freeLock
 {
   _navigationController.navigationLock = RCTNavigationLockNone;
-  _navigationController.interactivePopGestureRecognizer.enabled = YES;
+
+  // Unless the pop gesture has been explicitly disabled (RCTPopGestureStateDisabled),
+  // Set interactivePopGestureRecognizer.enabled to YES
+  // If the popGestureState is RCTPopGestureStateDefault the default behavior will be maintained
+#if !TARGET_OS_TV
+  _navigationController.interactivePopGestureRecognizer.enabled = self.popGestureState != RCTPopGestureStateDisabled;
+#endif
 }
 
 /**
@@ -388,34 +454,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  * `requestedTopOfStack` changes, there had better be enough subviews present
  * to satisfy the push/pop.
  */
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTNavItem *)view atIndex:(NSInteger)atIndex
 {
   RCTAssert([view isKindOfClass:[RCTNavItem class]], @"RCTNavigator only accepts RCTNavItem subviews");
   RCTAssert(
     _navigationController.navigationLock == RCTNavigationLockJavaScript,
     @"Cannot change subviews from JS without first locking."
   );
-  [_currentViews insertObject:view atIndex:atIndex];
+  [super insertReactSubview:view atIndex:atIndex];
 }
 
-- (NSArray *)reactSubviews
+- (void)didUpdateReactSubviews
 {
-  return _currentViews;
+  // Do nothing, as subviews are managed by `reactBridgeDidFinishTransaction`
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_navigationController];
   _navigationController.view.frame = self.bounds;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTNavItem *)subview
 {
-  if (_currentViews.count <= 0 || subview == _currentViews[0]) {
+  if (self.reactSubviews.count <= 0 || subview == self.reactSubviews[0]) {
     RCTLogError(@"Attempting to remove invalid RCT subview of RCTNavigator");
     return;
   }
-  [_currentViews removeObject:subview];
+  [super removeReactSubview:subview];
 }
 
 - (void)handleTopOfStackChanged
@@ -429,10 +496,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)dispatchFakeScrollEvent
 {
-  [_bridge.eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
-                                   reactTag:self.reactTag
-                                 scrollView:nil
-                                   userData:nil];
+  [_bridge.eventDispatcher sendFakeScrollEvent:self.reactTag];
 }
 
 /**
@@ -442,7 +506,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIView *)reactSuperview
 {
   RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
-  return self.superview ? self.superview : self.reactNavSuperviewLink;
+  UIView *superview = [super reactSuperview];
+  return superview ?: self.reactNavSuperviewLink;
 }
 
 - (void)reactBridgeDidFinishTransaction
@@ -490,14 +555,14 @@ BOOL jsGettingtooSlow =
         jsGettingtooSlow)) {
     RCTLogError(@"JS has only made partial progress to catch up to UIKit");
   }
-  if (currentReactCount > _currentViews.count) {
+  if (currentReactCount > self.reactSubviews.count) {
     RCTLogError(@"Cannot adjust current top of stack beyond available views");
   }
 
   // Views before the previous React count must not have changed. Views greater than previousReactCount
   // up to currentReactCount may have changed.
-  for (NSUInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
-    if (_currentViews[i] != _previousViews[i]) {
+  for (NSUInteger i = 0; i < MIN(self.reactSubviews.count, MIN(_previousViews.count, previousReactCount)); i++) {
+    if (self.reactSubviews[i] != _previousViews[i]) {
       RCTLogError(@"current view should equal previous view");
     }
   }
@@ -506,7 +571,7 @@ BOOL jsGettingtooSlow =
   }
   if (jsGettingAhead) {
     if (reactPushOne) {
-      UIView *lastView = _currentViews.lastObject;
+      UIView *lastView = self.reactSubviews.lastObject;
       RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
@@ -525,7 +590,10 @@ BOOL jsGettingtooSlow =
     return;
   }
 
-  _previousViews = [_currentViews copy];
+  // Only make a copy of the subviews whose validity we expect to be able to check (in the loop, above),
+  // otherwise we would unnecessarily retain a reference to view(s) no longer on the React navigation stack:
+  NSUInteger expectedCount = MIN(currentReactCount, self.reactSubviews.count);
+  _previousViews = [[self.reactSubviews subarrayWithRange: NSMakeRange(0, expectedCount)] copy];
   _previousRequestedTopOfStack = _requestedTopOfStack;
 }
 

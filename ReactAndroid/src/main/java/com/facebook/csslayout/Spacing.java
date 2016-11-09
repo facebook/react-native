@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<6853e87a84818f1abb6573aee7d6bd55>>
-
 package com.facebook.csslayout;
 
-import javax.annotation.Nullable;
+import java.util.Arrays;
 
 /**
  * Class representing CSS spacing (padding, margin, and borders). This is mostly necessary to
@@ -37,29 +35,51 @@ public class Spacing {
    */
   public static final int BOTTOM = 3;
   /**
-   * Spacing type that represents vertical direction (top and bottom). E.g. {@code marginVertical}.
+   * Spacing type that represents start direction e.g. left in left-to-right, right in right-to-left.
    */
-  public static final int VERTICAL = 4;
+  public static final int START = 4;
+  /**
+   * Spacing type that represents end direction e.g. right in left-to-right, left in right-to-left.
+   */
+  public static final int END = 5;
   /**
    * Spacing type that represents horizontal direction (left and right). E.g.
    * {@code marginHorizontal}.
    */
-  public static final int HORIZONTAL = 5;
+  public static final int HORIZONTAL = 6;
   /**
-   * Spacing type that represents start direction e.g. left in left-to-right, right in right-to-left.
+   * Spacing type that represents vertical direction (top and bottom). E.g. {@code marginVertical}.
    */
-  public static final int START = 6;
-  /**
-   * Spacing type that represents end direction e.g. right in left-to-right, left in right-to-left.
-   */
-  public static final int END = 7;
+  public static final int VERTICAL = 7;
   /**
    * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
    */
   public static final int ALL = 8;
 
+  private static final int[] sFlagsMap = {
+    1, /*LEFT*/
+    2, /*TOP*/
+    4, /*RIGHT*/
+    8, /*BOTTOM*/
+    16, /*START*/
+    32, /*END*/
+    64, /*HORIZONTAL*/
+    128, /*VERTICAL*/
+    256, /*ALL*/
+  };
+
   private final float[] mSpacing = newFullSpacingArray();
-  @Nullable private float[] mDefaultSpacing = null;
+  private int mValueFlags = 0;
+  private float mDefaultValue;
+  private boolean mHasAliasesSet;
+
+  public Spacing() {
+    this(0);
+  }
+
+  public Spacing(float defaultValue) {
+    mDefaultValue = defaultValue;
+  }
 
   /**
    * Set a spacing value.
@@ -73,27 +93,21 @@ public class Spacing {
   public boolean set(int spacingType, float value) {
     if (!FloatUtil.floatsEqual(mSpacing[spacingType], value)) {
       mSpacing[spacingType] = value;
-      return true;
-    }
-    return false;
-  }
 
-  /**
-   * Set a default spacing value. This is used as a fallback when no spacing has been set for a
-   * particular direction.
-   *
-   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
-   * @param value the default value for this direction
-   * @return
-   */
-  public boolean setDefault(int spacingType, float value) {
-    if (mDefaultSpacing == null) {
-      mDefaultSpacing = newSpacingResultArray();
-    }
-    if (!FloatUtil.floatsEqual(mDefaultSpacing[spacingType], value)) {
-      mDefaultSpacing[spacingType] = value;
+      if (CSSConstants.isUndefined(value)) {
+        mValueFlags &= ~sFlagsMap[spacingType];
+      } else {
+        mValueFlags |= sFlagsMap[spacingType];
+      }
+
+      mHasAliasesSet =
+          (mValueFlags & sFlagsMap[ALL]) != 0 ||
+          (mValueFlags & sFlagsMap[VERTICAL]) != 0 ||
+          (mValueFlags & sFlagsMap[HORIZONTAL]) != 0;
+
       return true;
     }
+
     return false;
   }
 
@@ -103,18 +117,28 @@ public class Spacing {
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
    */
   public float get(int spacingType) {
-    int secondType = spacingType == TOP || spacingType == BOTTOM ? VERTICAL : HORIZONTAL;
-    float defaultValue = spacingType == START || spacingType == END ? CSSConstants.UNDEFINED : 0;
-    return
-        !CSSConstants.isUndefined(mSpacing[spacingType])
-            ? mSpacing[spacingType]
-            : !CSSConstants.isUndefined(mSpacing[secondType])
-              ? mSpacing[secondType]
-              : !CSSConstants.isUndefined(mSpacing[ALL])
-                ? mSpacing[ALL]
-                : mDefaultSpacing != null
-                  ? mDefaultSpacing[spacingType]
-                  : defaultValue;
+    float defaultValue = (spacingType == START || spacingType == END
+        ? CSSConstants.UNDEFINED
+        : mDefaultValue);
+
+    if (mValueFlags == 0) {
+      return defaultValue;
+    }
+
+    if ((mValueFlags & sFlagsMap[spacingType]) != 0) {
+      return mSpacing[spacingType];
+    }
+
+    if (mHasAliasesSet) {
+      int secondType = spacingType == TOP || spacingType == BOTTOM ? VERTICAL : HORIZONTAL;
+      if ((mValueFlags & sFlagsMap[secondType]) != 0) {
+        return mSpacing[secondType];
+      } else if ((mValueFlags & sFlagsMap[ALL]) != 0) {
+        return mSpacing[ALL];
+      }
+    }
+
+    return defaultValue;
   }
 
   /**
@@ -128,6 +152,28 @@ public class Spacing {
     return mSpacing[spacingType];
   }
 
+  /**
+   * Resets the spacing instance to its default state. This method is meant to be used when
+   * recycling {@link Spacing} instances.
+   */
+  public void reset() {
+    Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
+    mHasAliasesSet = false;
+    mValueFlags = 0;
+  }
+
+  /**
+   * Try to get start value and fallback to given type if not defined. This is used privately
+   * by the layout engine as a more efficient way to fetch direction-aware values by
+   * avoid extra method invocations.
+   */
+  float getWithFallback(int spacingType, int fallbackType) {
+    return
+        (mValueFlags & sFlagsMap[spacingType]) != 0
+            ? mSpacing[spacingType]
+            : get(fallbackType);
+  }
+
   private static float[] newFullSpacingArray() {
     return new float[] {
         CSSConstants.UNDEFINED,
@@ -139,24 +185,6 @@ public class Spacing {
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
         CSSConstants.UNDEFINED,
-    };
-  }
-
-  private static float[] newSpacingResultArray() {
-    return newSpacingResultArray(0);
-  }
-
-  private static float[] newSpacingResultArray(float defaultValue) {
-    return new float[] {
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        defaultValue,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        defaultValue,
     };
   }
 }

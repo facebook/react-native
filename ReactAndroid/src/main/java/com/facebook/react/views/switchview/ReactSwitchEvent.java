@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -23,8 +23,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
     private final boolean mIsChecked;
 
-    public ReactSwitchEvent(int viewId, long timestampMs, boolean isChecked) {
-        super(viewId, timestampMs);
+    public ReactSwitchEvent(int viewId, boolean isChecked) {
+        super(viewId);
         mIsChecked = isChecked;
     }
 

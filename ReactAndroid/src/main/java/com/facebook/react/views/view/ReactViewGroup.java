@@ -16,24 +16,25 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.animation.Animation;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.ReactHitSlopView;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
-import com.facebook.react.uimanager.MeasureSpecAssertions;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.*;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    CatalystInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
+    ReactInterceptingViewGroup, com.facebook.react.uimanager.ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -78,7 +79,7 @@ public class ReactViewGroup extends ViewGroup implements
   // temporary optimization/hack that is mainly applicable to the large list of images. The way
   // it's implemented is that we store an additional array of children in view node. We selectively
   // remove some of the views (detach) from it while still storing them in that additional array.
-  // We override all possible add methods for {@link ViewGroup} so that we can controll this process
+  // We override all possible add methods for {@link ViewGroup} so that we can control this process
   // whenever the option is set. We also override {@link ViewGroup#getChildAt} and
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.
@@ -86,6 +87,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable View[] mAllChildren = null;
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
+  private @Nullable Rect mHitSlopRect;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
@@ -111,19 +113,15 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  public void requestLayout() {
+    // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
+    // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
+  }
+
+  @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT) {
-      Drawable backgroundDrawble = getBackground();
-      if (mReactBackgroundDrawable != null && (backgroundDrawble instanceof LayerDrawable)) {
-        // extract translucent background portion from layerdrawable
-        super.setBackground(null);
-        LayerDrawable layerDrawable = (LayerDrawable) backgroundDrawble;
-        super.setBackground(layerDrawable.getDrawable(1));
-      } else if (backgroundDrawble instanceof ReactViewBackgroundDrawable) {
-        // mReactBackground is set for background
-        mReactBackgroundDrawable = null;
-        super.setBackground(null);
-      }
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
@@ -202,12 +200,16 @@ public class ReactViewGroup extends ViewGroup implements
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color) {
-    getOrCreateReactViewBackground().setBorderColor(position, color);
+  public void setBorderColor(int position, float rgb, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, rgb, alpha);
   }
 
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
   }
 
   public void setBorderStyle(@Nullable String style) {
@@ -222,7 +224,8 @@ public class ReactViewGroup extends ViewGroup implements
     mRemoveClippedSubviews = removeClippedSubviews;
     if (removeClippedSubviews) {
       mClippingRect = new Rect();
-      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      com.facebook.react.uimanager.ReactClippingViewGroupHelper
+        .calculateClippingRect(this, mClippingRect);
       mAllChildrenCount = getChildCount();
       int initialSize = Math.max(12, mAllChildrenCount);
       mAllChildren = new View[initialSize];
@@ -290,7 +293,15 @@ public class ReactViewGroup extends ViewGroup implements
     boolean intersects = clippingRect
         .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
     boolean needUpdateClippingRecursive = false;
-    if (!intersects && child.getParent() != null) {
+    // We never want to clip children that are being animated, as this can easily break layout :
+    // when layout animation changes size and/or position of views contained inside a listview that
+    // clips offscreen children, we need to ensure that, when view exits the viewport, final size
+    // and position is set prior to removing the view from its listview parent.
+    // Otherwise, when view gets re-attached again, i.e when it re-enters the viewport after scroll,
+    // it won't be size and located properly.
+    Animation animation = child.getAnimation();
+    boolean isAnimating = animation != null && !animation.hasEnded();
+    if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       super.removeViewsInLayout(idx - clippedSoFar, 1);
@@ -299,15 +310,16 @@ public class ReactViewGroup extends ViewGroup implements
       super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
-    } else if (intersects && !clippingRect.contains(sHelperRect)) {
-      // View is partially clipped.
+    } else if (intersects) {
+      // If there is any intersection we need to inform the child to update its clipping rect
       needUpdateClippingRecursive = true;
     }
     if (needUpdateClippingRecursive) {
-      if (child instanceof ReactClippingViewGroup) {
+      if (child instanceof com.facebook.react.uimanager.ReactClippingViewGroup) {
         // we don't use {@link sHelperRect} until the end of this loop, therefore it's safe
         // to call this method that may write to the same {@link sHelperRect} object.
-        ReactClippingViewGroup clippingChild = (ReactClippingViewGroup) child;
+        com.facebook.react.uimanager.ReactClippingViewGroup
+          clippingChild = (com.facebook.react.uimanager.ReactClippingViewGroup) child;
         if (clippingChild.getRemoveClippedSubviews()) {
           clippingChild.updateClippingRect();
         }
@@ -348,12 +360,28 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
-    updateClippingRect();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
   }
 
   @Override
   public PointerEvents getPointerEvents() {
     return mPointerEvents;
+  }
+
+  @Override
+  protected void dispatchSetPressed(boolean pressed) {
+    // Prevents the ViewGroup from dispatching the pressed state
+    // to it's children.
   }
 
   /*package*/ void setPointerEvents(PointerEvents pointerEvents) {
@@ -405,6 +433,16 @@ public class ReactViewGroup extends ViewGroup implements
       super.removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
+  }
+
+  /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
+    Assertions.assertCondition(mRemoveClippedSubviews);
+    Assertions.assertNotNull(mAllChildren);
+    for (int i = 0; i < mAllChildrenCount; i++) {
+      mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+    }
+    removeAllViewsInLayout();
+    mAllChildrenCount = 0;
   }
 
   private int indexOfChildInAllChildren(View child) {
@@ -482,6 +520,15 @@ public class ReactViewGroup extends ViewGroup implements
       }
     }
     return mReactBackgroundDrawable;
+  }
+
+  @Override
+  public @Nullable Rect getHitSlopRect() {
+    return mHitSlopRect;
+  }
+
+  public void setHitSlopRect(@Nullable Rect rect) {
+    mHitSlopRect = rect;
   }
 
 }

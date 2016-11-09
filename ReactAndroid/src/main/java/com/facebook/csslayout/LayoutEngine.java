@@ -1,428 +1,169 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<4795d7e8efc1dbbaadfe117105c8991a>>
-
 package com.facebook.csslayout;
 
+import com.facebook.infer.annotation.Assertions;
+
+import static com.facebook.csslayout.CSSLayout.DIMENSION_HEIGHT;
+import static com.facebook.csslayout.CSSLayout.DIMENSION_WIDTH;
+import static com.facebook.csslayout.CSSLayout.POSITION_BOTTOM;
+import static com.facebook.csslayout.CSSLayout.POSITION_LEFT;
+import static com.facebook.csslayout.CSSLayout.POSITION_RIGHT;
+import static com.facebook.csslayout.CSSLayout.POSITION_TOP;
+
 /**
- * Calculates layouts based on CSS style. See {@link #layoutNode(CSSNode, float)}.
+ * Calculates layouts based on CSS style. See {@link #layoutNode(CSSNodeDEPRECATED, float, float)}.
  */
 public class LayoutEngine {
 
-  private static enum PositionIndex {
-    TOP,
-    LEFT,
-    BOTTOM,
-    RIGHT,
-    START,
-    END,
+  private static final int CSS_FLEX_DIRECTION_COLUMN =
+      CSSFlexDirection.COLUMN.ordinal();
+  private static final int CSS_FLEX_DIRECTION_COLUMN_REVERSE =
+      CSSFlexDirection.COLUMN_REVERSE.ordinal();
+  private static final int CSS_FLEX_DIRECTION_ROW =
+      CSSFlexDirection.ROW.ordinal();
+  private static final int CSS_FLEX_DIRECTION_ROW_REVERSE =
+      CSSFlexDirection.ROW_REVERSE.ordinal();
+
+  private static final int CSS_POSITION_RELATIVE = CSSPositionType.RELATIVE.ordinal();
+  private static final int CSS_POSITION_ABSOLUTE = CSSPositionType.ABSOLUTE.ordinal();
+
+  private static final int[] leading = {
+      POSITION_TOP,
+      POSITION_BOTTOM,
+      POSITION_LEFT,
+      POSITION_RIGHT,
+  };
+
+  private static final int[] trailing = {
+      POSITION_BOTTOM,
+      POSITION_TOP,
+      POSITION_RIGHT,
+      POSITION_LEFT,
+  };
+
+  private static final int[] pos = {
+      POSITION_TOP,
+      POSITION_BOTTOM,
+      POSITION_LEFT,
+      POSITION_RIGHT,
+  };
+
+  private static final int[] dim = {
+      DIMENSION_HEIGHT,
+      DIMENSION_HEIGHT,
+      DIMENSION_WIDTH,
+      DIMENSION_WIDTH,
+  };
+
+  private static final int[] leadingSpacing = {
+      Spacing.TOP,
+      Spacing.BOTTOM,
+      Spacing.START,
+      Spacing.START
+  };
+
+  private static final int[] trailingSpacing = {
+      Spacing.BOTTOM,
+      Spacing.TOP,
+      Spacing.END,
+      Spacing.END
+  };
+
+  private static boolean isFlexBasisAuto(CSSNodeDEPRECATED node) {
+    return CSSConstants.isUndefined(node.style.flexBasis);
   }
 
-  private static enum DimensionIndex {
-    WIDTH,
-    HEIGHT,
+  private static float getFlexGrowFactor(CSSNodeDEPRECATED node) {
+    return node.style.flexGrow;
   }
 
-  private static void setLayoutPosition(CSSNode node, PositionIndex position, float value) {
-    switch (position) {
-      case TOP:
-        node.layout.top = value;
-        break;
-      case LEFT:
-        node.layout.left = value;
-        break;
-      case RIGHT:
-        node.layout.right = value;
-        break;
-      case BOTTOM:
-        node.layout.bottom = value;
-        break;
-      default:
-        throw new RuntimeException("Didn't get TOP, LEFT, RIGHT, or BOTTOM!");
-    }
+  private static float getFlexShrinkFactor(CSSNodeDEPRECATED node) {
+    return node.style.flexShrink;
   }
 
-  private static float getLayoutPosition(CSSNode node, PositionIndex position) {
-    switch (position) {
-      case TOP:
-        return node.layout.top;
-      case LEFT:
-        return node.layout.left;
-      case RIGHT:
-        return node.layout.right;
-      case BOTTOM:
-        return node.layout.bottom;
-      default:
-        throw new RuntimeException("Didn't get TOP, LEFT, RIGHT, or BOTTOM!");
-    }
-  }
 
-  private static void setLayoutDimension(CSSNode node, DimensionIndex dimension, float value) {
-    switch (dimension) {
-      case WIDTH:
-        node.layout.width = value;
-        break;
-      case HEIGHT:
-        node.layout.height = value;
-        break;
-      default:
-        throw new RuntimeException("Someone added a third dimension...");
-    }
-  }
-
-  private static float getLayoutDimension(CSSNode node, DimensionIndex dimension) {
-    switch (dimension) {
-      case WIDTH:
-        return node.layout.width;
-      case HEIGHT:
-        return node.layout.height;
-      default:
-        throw new RuntimeException("Someone added a third dimension...");
-    }
-  }
-
-  private static void setLayoutDirection(CSSNode node, CSSDirection direction) {
-    node.layout.direction = direction;
-  }
-
-  private static float getStylePosition(CSSNode node, PositionIndex position) {
-    switch (position) {
-      case TOP:
-        return node.style.positionTop;
-      case BOTTOM:
-        return node.style.positionBottom;
-      case LEFT:
-        return node.style.positionLeft;
-      case RIGHT:
-        return node.style.positionRight;
-      default:
-        throw new RuntimeException("Someone added a new cardinal direction...");
-    }
-  }
-
-  private static float getStyleDimension(CSSNode node, DimensionIndex dimension) {
-    switch (dimension) {
-      case WIDTH:
-        return node.style.width;
-      case HEIGHT:
-        return node.style.height;
-      default:
-        throw new RuntimeException("Someone added a third dimension...");
-    }
-  }
-
-  private static PositionIndex getLeading(CSSFlexDirection axis) {
-    switch (axis) {
-      case COLUMN:
-        return PositionIndex.TOP;
-      case COLUMN_REVERSE:
-        return PositionIndex.BOTTOM;
-      case ROW:
-        return PositionIndex.LEFT;
-      case ROW_REVERSE:
-        return PositionIndex.RIGHT;
-      default:
-        throw new RuntimeException("Didn't get TOP, LEFT, RIGHT, or BOTTOM!");
-    }
-  }
-
-  private static PositionIndex getTrailing(CSSFlexDirection axis) {
-    switch (axis) {
-      case COLUMN:
-        return PositionIndex.BOTTOM;
-      case COLUMN_REVERSE:
-        return PositionIndex.TOP;
-      case ROW:
-        return PositionIndex.RIGHT;
-      case ROW_REVERSE:
-        return PositionIndex.LEFT;
-      default:
-        throw new RuntimeException("Didn't get COLUMN, COLUMN_REVERSE, ROW, or ROW_REVERSE!");
-    }
-  }
-
-  private static PositionIndex getPos(CSSFlexDirection axis) {
-    switch (axis) {
-      case COLUMN:
-        return PositionIndex.TOP;
-      case COLUMN_REVERSE:
-        return PositionIndex.BOTTOM;
-      case ROW:
-        return PositionIndex.LEFT;
-      case ROW_REVERSE:
-        return PositionIndex.RIGHT;
-      default:
-        throw new RuntimeException("Didn't get COLUMN, COLUMN_REVERSE, ROW, or ROW_REVERSE!");
-    }
-  }
-
-  private static DimensionIndex getDim(CSSFlexDirection axis) {
-    switch (axis) {
-      case COLUMN:
-      case COLUMN_REVERSE:
-        return DimensionIndex.HEIGHT;
-      case ROW:
-      case ROW_REVERSE:
-        return DimensionIndex.WIDTH;
-      default:
-        throw new RuntimeException("Didn't get COLUMN, COLUMN_REVERSE, ROW, or ROW_REVERSE!");
-    }
-  }
-
-  private static boolean isDimDefined(CSSNode node, CSSFlexDirection axis) {
-    float value = getStyleDimension(node, getDim(axis));
-    return !CSSConstants.isUndefined(value) && value > 0.0;
-  }
-
-  private static boolean isPosDefined(CSSNode node, PositionIndex position) {
-    return !CSSConstants.isUndefined(getStylePosition(node, position));
-  }
-
-  private static float getPosition(CSSNode node, PositionIndex position) {
-    float result = getStylePosition(node, position);
-    return CSSConstants.isUndefined(result) ? 0 : result;
-  }
-
-  private static float getMargin(CSSNode node, PositionIndex position) {
-    switch (position) {
-      case TOP:
-        return node.style.margin.get(Spacing.TOP);
-      case BOTTOM:
-        return node.style.margin.get(Spacing.BOTTOM);
-      case LEFT:
-        return node.style.margin.get(Spacing.LEFT);
-      case RIGHT:
-        return node.style.margin.get(Spacing.RIGHT);
-      case START:
-        return node.style.margin.get(Spacing.START);
-      case END:
-        return node.style.margin.get(Spacing.END);
-      default:
-        throw new RuntimeException("Someone added a new cardinal direction...");
-    }
-  }
-
-  private static float getLeadingMargin(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float leadingMargin = node.style.margin.getRaw(Spacing.START);
-      if (!CSSConstants.isUndefined(leadingMargin)) {
-        return leadingMargin;
-      }
-    }
-
-    return getMargin(node, getLeading(axis));
-  }
-
-  private static float getTrailingMargin(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float trailingMargin = node.style.margin.getRaw(Spacing.END);
-      if (!CSSConstants.isUndefined(trailingMargin)) {
-        return trailingMargin;
-      }
-    }
-
-    return getMargin(node, getTrailing(axis));
-  }
-
-  private static float getPadding(CSSNode node, PositionIndex position) {
-    switch (position) {
-      case TOP:
-        return node.style.padding.get(Spacing.TOP);
-      case BOTTOM:
-        return node.style.padding.get(Spacing.BOTTOM);
-      case LEFT:
-        return node.style.padding.get(Spacing.LEFT);
-      case RIGHT:
-        return node.style.padding.get(Spacing.RIGHT);
-      case START:
-        return node.style.padding.get(Spacing.START);
-      case END:
-        return node.style.padding.get(Spacing.END);
-      default:
-        throw new RuntimeException("Someone added a new cardinal direction...");
-    }
-  }
-
-  private static float getLeadingPadding(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float leadingPadding = node.style.padding.getRaw(Spacing.START);
-      if (!CSSConstants.isUndefined(leadingPadding)) {
-        return leadingPadding;
-      }
-    }
-
-    return getPadding(node, getLeading(axis));
-  }
-
-  private static float getTrailingPadding(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float trailingPadding = node.style.padding.getRaw(Spacing.END);
-      if (!CSSConstants.isUndefined(trailingPadding)) {
-        return trailingPadding;
-      }
-    }
-
-    return getPadding(node, getTrailing(axis));
-  }
-
-  private static float getBorder(CSSNode node, PositionIndex position) {
-    switch (position) {
-      case TOP:
-        return node.style.border.get(Spacing.TOP);
-      case BOTTOM:
-        return node.style.border.get(Spacing.BOTTOM);
-      case LEFT:
-        return node.style.border.get(Spacing.LEFT);
-      case RIGHT:
-        return node.style.border.get(Spacing.RIGHT);
-      case START:
-        return node.style.border.get(Spacing.START);
-      case END:
-        return node.style.border.get(Spacing.END);
-      default:
-        throw new RuntimeException("Someone added a new cardinal direction...");
-    }
-  }
-
-  private static float getLeadingBorder(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float leadingBorder = node.style.border.getRaw(Spacing.START);
-      if (!CSSConstants.isUndefined(leadingBorder)) {
-        return leadingBorder;
-      }
-    }
-
-    return getBorder(node, getLeading(axis));
-  }
-
-  private static float getTrailingBorder(CSSNode node, CSSFlexDirection axis) {
-    if (isRowDirection(axis)) {
-      float trailingBorder = node.style.border.getRaw(Spacing.END);
-      if (!CSSConstants.isUndefined(trailingBorder)) {
-        return trailingBorder;
-      }
-    }
-
-    return getBorder(node, getTrailing(axis));
-  }
-
-  private static float getLeadingPaddingAndBorder(CSSNode node, CSSFlexDirection axis) {
-    return getLeadingPadding(node, axis) + getLeadingBorder(node, axis);
-  }
-
-  private static float getTrailingPaddingAndBorder(CSSNode node, CSSFlexDirection axis) {
-    return getTrailingPadding(node, axis) + getTrailingBorder(node, axis);
-  }
-
-  private static float getBorderAxis(CSSNode node, CSSFlexDirection axis) {
-    return getLeadingBorder(node, axis) + getTrailingBorder(node, axis);
-  }
-
-  private static float getMarginAxis(CSSNode node, CSSFlexDirection axis) {
-    return getLeadingMargin(node, axis) + getTrailingMargin(node, axis);
-  }
-
-  private static float getPaddingAndBorderAxis(CSSNode node, CSSFlexDirection axis) {
-    return getLeadingPaddingAndBorder(node, axis) + getTrailingPaddingAndBorder(node, axis);
-  }
-
-  private static float boundAxis(CSSNode node, CSSFlexDirection axis, float value) {
+  private static float boundAxisWithinMinAndMax(CSSNodeDEPRECATED node, int axis, float value) {
     float min = CSSConstants.UNDEFINED;
     float max = CSSConstants.UNDEFINED;
 
-    if (isColumnDirection(axis)) {
+    if (axis == CSS_FLEX_DIRECTION_COLUMN ||
+        axis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
       min = node.style.minHeight;
       max = node.style.maxHeight;
-    } else if (isRowDirection(axis)) {
+    } else if (axis == CSS_FLEX_DIRECTION_ROW ||
+               axis == CSS_FLEX_DIRECTION_ROW_REVERSE) {
       min = node.style.minWidth;
       max = node.style.maxWidth;
     }
 
     float boundValue = value;
 
-    if (!CSSConstants.isUndefined(max) && max >= 0.0 && boundValue > max) {
+    if (!Float.isNaN(max) && max >= 0.0 && boundValue > max) {
       boundValue = max;
     }
-    if (!CSSConstants.isUndefined(min) && min >= 0.0 && boundValue < min) {
+    if (!Float.isNaN(min) && min >= 0.0 && boundValue < min) {
       boundValue = min;
     }
 
     return boundValue;
   }
 
-  private static void setDimensionFromStyle(CSSNode node, CSSFlexDirection axis) {
-    // The parent already computed us a width or height. We just skip it
-    if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(axis)))) {
-      return;
-    }
-    // We only run if there's a width or height defined
-    if (!isDimDefined(node, axis)) {
-      return;
-    }
-
-    // The dimensions can never be smaller than the padding and border
-    float maxLayoutDimension = Math.max(
-        boundAxis(node, axis, getStyleDimension(node, getDim(axis))),
-        getPaddingAndBorderAxis(node, axis));
-    setLayoutDimension(node, getDim(axis), maxLayoutDimension);
+  private static float boundAxis(CSSNodeDEPRECATED node, int axis, float value) {
+    float paddingAndBorderAxis =
+      node.style.padding.getWithFallback(leadingSpacing[axis], leading[axis]) +
+      node.style.border.getWithFallback(leadingSpacing[axis], leading[axis]) +
+      node.style.padding.getWithFallback(trailingSpacing[axis], trailing[axis]) +
+      node.style.border.getWithFallback(trailingSpacing[axis], trailing[axis]);
+    return Math.max(boundAxisWithinMinAndMax(node, axis, value), paddingAndBorderAxis);
   }
 
-  private static void setTrailingPosition(
-      CSSNode node,
-      CSSNode child,
-      CSSFlexDirection axis) {
-    setLayoutPosition(
-        child,
-        getTrailing(axis),
-        getLayoutDimension(node, getDim(axis)) -
-            getLayoutDimension(child, getDim(axis)) -
-               getLayoutPosition(child, getPos(axis)));
-  }
-
-  private static float getRelativePosition(CSSNode node, CSSFlexDirection axis) {
-    float lead = getStylePosition(node, getLeading(axis));
-    if (!CSSConstants.isUndefined(lead)) {
+  private static float getRelativePosition(CSSNodeDEPRECATED node, int axis) {
+    float lead = node.style.position.getWithFallback(leadingSpacing[axis], leading[axis]);
+    if (!Float.isNaN(lead)) {
       return lead;
     }
-    return -getPosition(node, getTrailing(axis));
+
+    float trailingPos = node.style.position.getWithFallback(trailingSpacing[axis], trailing[axis]);
+    return Float.isNaN(trailingPos) ? 0 : -trailingPos;
   }
 
-  private static float getFlex(CSSNode node) {
-    return node.style.flex;
+  private static void setPosition(CSSNodeDEPRECATED node, CSSDirection direction) {
+    int mainAxis = resolveAxis(getFlexDirection(node), direction);
+    int crossAxis = getCrossFlexDirection(mainAxis, direction);
+
+    node.layout.position[leading[mainAxis]] = node.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) +
+      getRelativePosition(node, mainAxis);
+    node.layout.position[trailing[mainAxis]] = node.style.margin.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) +
+      getRelativePosition(node, mainAxis);
+    node.layout.position[leading[crossAxis]] = node.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) +
+      getRelativePosition(node, crossAxis);
+    node.layout.position[trailing[crossAxis]] = node.style.margin.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]) +
+      getRelativePosition(node, crossAxis);
   }
 
-  private static boolean isRowDirection(CSSFlexDirection flexDirection) {
-    return flexDirection == CSSFlexDirection.ROW ||
-           flexDirection == CSSFlexDirection.ROW_REVERSE;
-  }
-
-  private static boolean isColumnDirection(CSSFlexDirection flexDirection) {
-    return flexDirection == CSSFlexDirection.COLUMN ||
-           flexDirection == CSSFlexDirection.COLUMN_REVERSE;
-  }
-
-  private static CSSFlexDirection resolveAxis(
-      CSSFlexDirection axis,
+  private static int resolveAxis(
+      int axis,
       CSSDirection direction) {
     if (direction == CSSDirection.RTL) {
-      if (axis == CSSFlexDirection.ROW) {
-        return CSSFlexDirection.ROW_REVERSE;
-      } else if (axis == CSSFlexDirection.ROW_REVERSE) {
-        return CSSFlexDirection.ROW;
+      if (axis == CSS_FLEX_DIRECTION_ROW) {
+        return CSS_FLEX_DIRECTION_ROW_REVERSE;
+      } else if (axis == CSS_FLEX_DIRECTION_ROW_REVERSE) {
+        return CSS_FLEX_DIRECTION_ROW;
       }
     }
 
     return axis;
   }
 
-  private static CSSDirection resolveDirection(CSSNode node, CSSDirection parentDirection) {
+  private static CSSDirection resolveDirection(CSSNodeDEPRECATED node, CSSDirection parentDirection) {
     CSSDirection direction = node.style.direction;
     if (direction == CSSDirection.INHERIT) {
       direction = (parentDirection == null ? CSSDirection.LTR : parentDirection);
@@ -431,670 +172,1198 @@ public class LayoutEngine {
     return direction;
   }
 
-  private static CSSFlexDirection getFlexDirection(CSSNode node) {
-    return node.style.flexDirection;
+  private static int getFlexDirection(CSSNodeDEPRECATED node) {
+    return node.style.flexDirection.ordinal();
   }
 
-  private static CSSFlexDirection getCrossFlexDirection(
-      CSSFlexDirection flexDirection,
+  private static int getCrossFlexDirection(
+      int axis,
       CSSDirection direction) {
-    if (isColumnDirection(flexDirection)) {
-      return resolveAxis(CSSFlexDirection.ROW, direction);
+    if (axis == CSS_FLEX_DIRECTION_COLUMN ||
+        axis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
+      return resolveAxis(CSS_FLEX_DIRECTION_ROW, direction);
     } else {
-      return CSSFlexDirection.COLUMN;
+      return CSS_FLEX_DIRECTION_COLUMN;
     }
   }
 
-  private static CSSPositionType getPositionType(CSSNode node) {
-    return node.style.positionType;
-  }
-
-  private static CSSAlign getAlignItem(CSSNode node, CSSNode child) {
+  private static CSSAlign getAlignItem(CSSNodeDEPRECATED node, CSSNodeDEPRECATED child) {
     if (child.style.alignSelf != CSSAlign.AUTO) {
       return child.style.alignSelf;
     }
     return node.style.alignItems;
   }
 
-  private static CSSAlign getAlignContent(CSSNode node) {
-    return node.style.alignContent;
-  }
-
-  private static CSSJustify getJustifyContent(CSSNode node) {
-    return node.style.justifyContent;
-  }
-
-  private static boolean isFlexWrap(CSSNode node) {
-    return node.style.flexWrap == CSSWrap.WRAP;
-  }
-
-  private static boolean isFlex(CSSNode node) {
-    return getPositionType(node) == CSSPositionType.RELATIVE && getFlex(node) > 0;
-  }
-
-  private static boolean isMeasureDefined(CSSNode node) {
+  private static boolean isMeasureDefined(CSSNodeDEPRECATED node) {
     return node.isMeasureDefined();
-  }
-
-  private static float getDimWithMargin(CSSNode node, CSSFlexDirection axis) {
-    return getLayoutDimension(node, getDim(axis)) +
-        getLeadingMargin(node, axis) +
-        getTrailingMargin(node, axis);
-  }
-
-  private static boolean needsRelayout(CSSNode node, float parentMaxWidth) {
-    return node.isDirty() ||
-        !FloatUtil.floatsEqual(node.lastLayout.requestedHeight, node.layout.height) ||
-        !FloatUtil.floatsEqual(node.lastLayout.requestedWidth, node.layout.width) ||
-        !FloatUtil.floatsEqual(node.lastLayout.parentMaxWidth, parentMaxWidth);
   }
 
   /*package*/ static void layoutNode(
       CSSLayoutContext layoutContext,
-      CSSNode node,
-      float parentMaxWidth,
+      CSSNodeDEPRECATED node,
+      float availableWidth,
+      float availableHeight,
       CSSDirection parentDirection) {
-    if (needsRelayout(node, parentMaxWidth)) {
-      node.lastLayout.requestedWidth = node.layout.width;
-      node.lastLayout.requestedHeight = node.layout.height;
-      node.lastLayout.parentMaxWidth = parentMaxWidth;
+    // Increment the generation count. This will force the recursive routine to visit
+    // all dirty nodes at least once. Subsequent visits will be skipped if the input
+    // parameters don't change.
+    layoutContext.currentGenerationCount++;
 
-      layoutNodeImpl(layoutContext, node, parentMaxWidth, parentDirection);
-      node.lastLayout.copy(node.layout);
-    } else {
-      node.layout.copy(node.lastLayout);
+    CSSMeasureMode widthMeasureMode = CSSMeasureMode.UNDEFINED;
+    CSSMeasureMode heightMeasureMode = CSSMeasureMode.UNDEFINED;
+
+    if (!Float.isNaN(availableWidth)) {
+      widthMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.dimensions[DIMENSION_WIDTH] >= 0.0) {
+      float marginAxisRow = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+      availableWidth = node.style.dimensions[DIMENSION_WIDTH] + marginAxisRow;
+      widthMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.maxWidth >= 0.0) {
+      availableWidth = node.style.maxWidth;
+      widthMeasureMode = CSSMeasureMode.AT_MOST;
     }
 
-    node.markHasNewLayout();
+    if (!Float.isNaN(availableHeight)) {
+      heightMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.dimensions[DIMENSION_HEIGHT] >= 0.0) {
+      float marginAxisColumn = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+      availableHeight = node.style.dimensions[DIMENSION_HEIGHT] + marginAxisColumn;
+      heightMeasureMode = CSSMeasureMode.EXACTLY;
+    } else if (node.style.maxHeight >= 0.0) {
+      availableHeight = node.style.maxHeight;
+      heightMeasureMode = CSSMeasureMode.AT_MOST;
+    }
+
+    if (layoutNodeInternal(layoutContext, node, availableWidth, availableHeight, parentDirection, widthMeasureMode, heightMeasureMode, true, "initial")) {
+      setPosition(node, node.layout.direction);
+    }
   }
 
-  private static void layoutNodeImpl(
-      CSSLayoutContext layoutContext,
-      CSSNode node,
-      float parentMaxWidth,
-      CSSDirection parentDirection) {
-    for (int i = 0; i < node.getChildCount(); i++) {
-      node.getChildAt(i).layout.resetResult();
+  /*package*/ static boolean canUseCachedMeasurement(
+      float availableWidth,
+      float availableHeight,
+      float marginRow,
+      float marginColumn,
+      CSSMeasureMode widthMeasureMode,
+      CSSMeasureMode heightMeasureMode,
+      CSSCachedMeasurement cachedLayout) {
+
+    boolean isHeightSame =
+      (cachedLayout.heightMeasureMode == CSSMeasureMode.UNDEFINED && heightMeasureMode == CSSMeasureMode.UNDEFINED) ||
+        (cachedLayout.heightMeasureMode == heightMeasureMode && FloatUtil.floatsEqual(cachedLayout.availableHeight, availableHeight));
+
+    boolean isWidthSame =
+      (cachedLayout.widthMeasureMode == CSSMeasureMode.UNDEFINED && widthMeasureMode == CSSMeasureMode.UNDEFINED) ||
+        (cachedLayout.widthMeasureMode == widthMeasureMode && FloatUtil.floatsEqual(cachedLayout.availableWidth, availableWidth));
+
+    if (isHeightSame && isWidthSame) {
+      return true;
     }
 
-    /** START_GENERATED **/
-  
-    CSSDirection direction = resolveDirection(node, parentDirection);
-    CSSFlexDirection mainAxis = resolveAxis(getFlexDirection(node), direction);
-    CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
-    CSSFlexDirection resolvedRowAxis = resolveAxis(CSSFlexDirection.ROW, direction);
-  
-    // Handle width and height style attributes
-    setDimensionFromStyle(node, mainAxis);
-    setDimensionFromStyle(node, crossAxis);
-  
-    // Set the resolved resolution in the node's layout
-    setLayoutDirection(node, direction);
-  
-    // The position is set by the parent, but we need to complete it with a
-    // delta composed of the margin and left/top/right/bottom
-    setLayoutPosition(node, getLeading(mainAxis), getLayoutPosition(node, getLeading(mainAxis)) + getLeadingMargin(node, mainAxis) +
-      getRelativePosition(node, mainAxis));
-    setLayoutPosition(node, getTrailing(mainAxis), getLayoutPosition(node, getTrailing(mainAxis)) + getTrailingMargin(node, mainAxis) +
-      getRelativePosition(node, mainAxis));
-    setLayoutPosition(node, getLeading(crossAxis), getLayoutPosition(node, getLeading(crossAxis)) + getLeadingMargin(node, crossAxis) +
-      getRelativePosition(node, crossAxis));
-    setLayoutPosition(node, getTrailing(crossAxis), getLayoutPosition(node, getTrailing(crossAxis)) + getTrailingMargin(node, crossAxis) +
-      getRelativePosition(node, crossAxis));
-  
+    boolean isHeightValid =
+      (cachedLayout.heightMeasureMode == CSSMeasureMode.UNDEFINED && heightMeasureMode == CSSMeasureMode.AT_MOST && cachedLayout.computedHeight <= (availableHeight - marginColumn)) ||
+        (heightMeasureMode == CSSMeasureMode.EXACTLY && FloatUtil.floatsEqual(cachedLayout.computedHeight, availableHeight - marginColumn));
+
+    if (isWidthSame && isHeightValid) {
+      return true;
+    }
+
+    boolean isWidthValid =
+      (cachedLayout.widthMeasureMode == CSSMeasureMode.UNDEFINED && widthMeasureMode == CSSMeasureMode.AT_MOST && cachedLayout.computedWidth <= (availableWidth - marginRow)) ||
+        (widthMeasureMode == CSSMeasureMode.EXACTLY && FloatUtil.floatsEqual(cachedLayout.computedWidth, availableWidth - marginRow));
+
+    if (isHeightSame && isWidthValid) {
+      return true;
+    }
+
+    if (isHeightValid && isWidthValid) {
+      return true;
+    }
+
+    return false;
+  }
+
+  //
+  // This is a wrapper around the layoutNodeImpl function. It determines
+  // whether the layout request is redundant and can be skipped.
+  //
+  // Parameters:
+  //  Input parameters are the same as layoutNodeImpl (see below)
+  //  Return parameter is true if layout was performed, false if skipped
+  //
+  private static boolean layoutNodeInternal(
+      CSSLayoutContext layoutContext,
+      CSSNodeDEPRECATED node,
+      float availableWidth,
+      float availableHeight,
+      CSSDirection parentDirection,
+      CSSMeasureMode widthMeasureMode,
+      CSSMeasureMode heightMeasureMode,
+      boolean performLayout,
+      String reason) {
+    CSSLayout layout = node.layout;
+
+    boolean needToVisitNode = (node.isDirty() && layout.generationCount != layoutContext.currentGenerationCount) ||
+      layout.lastParentDirection != parentDirection;
+
+    if (needToVisitNode) {
+      // Invalidate the cached results.
+      layout.nextCachedMeasurementsIndex = 0;
+      layout.cachedLayout.widthMeasureMode = null;
+      layout.cachedLayout.heightMeasureMode = null;
+    }
+
+    CSSCachedMeasurement cachedResults = null;
+
+    // Determine whether the results are already cached. We maintain a separate
+    // cache for layouts and measurements. A layout operation modifies the positions
+    // and dimensions for nodes in the subtree. The algorithm assumes that each node
+    // gets layed out a maximum of one time per tree layout, but multiple measurements
+    // may be required to resolve all of the flex dimensions.
+    // We handle nodes with measure functions specially here because they are the most
+    // expensive to measure, so it's worth avoiding redundant measurements if at all possible.
     if (isMeasureDefined(node)) {
-      float width = CSSConstants.UNDEFINED;
-      if (isDimDefined(node, resolvedRowAxis)) {
-        width = node.style.width;
-      } else if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(resolvedRowAxis)))) {
-        width = getLayoutDimension(node, getDim(resolvedRowAxis));
+      float marginAxisRow =
+        node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) +
+        node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]);
+      float marginAxisColumn =
+        node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) +
+        node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]);
+
+      // First, try to use the layout cache.
+      if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+          widthMeasureMode, heightMeasureMode, layout.cachedLayout)) {
+        cachedResults = layout.cachedLayout;
       } else {
-        width = parentMaxWidth -
-          getMarginAxis(node, resolvedRowAxis);
+        // Try to use the measurement cache.
+        for (int i = 0; i < layout.nextCachedMeasurementsIndex; i++) {
+          if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+              widthMeasureMode, heightMeasureMode, layout.cachedMeasurements[i])) {
+            cachedResults = layout.cachedMeasurements[i];
+            break;
+          }
+        }
       }
-      width -= getPaddingAndBorderAxis(node, resolvedRowAxis);
-  
-      // We only need to give a dimension for the text if we haven't got any
-      // for it computed yet. It can either be from the style attribute or because
-      // the element is flexible.
-      boolean isRowUndefined = !isDimDefined(node, resolvedRowAxis) &&
-        CSSConstants.isUndefined(getLayoutDimension(node, getDim(resolvedRowAxis)));
-      boolean isColumnUndefined = !isDimDefined(node, CSSFlexDirection.COLUMN) &&
-        CSSConstants.isUndefined(getLayoutDimension(node, getDim(CSSFlexDirection.COLUMN)));
-  
-      // Let's not measure the text if we already know both dimensions
-      if (isRowUndefined || isColumnUndefined) {
-        MeasureOutput measureDim = node.measure(
-                    layoutContext.measureOutput,
-          width
+    } else if (performLayout) {
+      if (FloatUtil.floatsEqual(layout.cachedLayout.availableWidth, availableWidth) &&
+          FloatUtil.floatsEqual(layout.cachedLayout.availableHeight, availableHeight) &&
+          layout.cachedLayout.widthMeasureMode == widthMeasureMode &&
+          layout.cachedLayout.heightMeasureMode == heightMeasureMode) {
+
+        cachedResults = layout.cachedLayout;
+      }
+    } else {
+      for (int i = 0; i < layout.nextCachedMeasurementsIndex; i++) {
+        if (FloatUtil.floatsEqual(layout.cachedMeasurements[i].availableWidth, availableWidth) &&
+            FloatUtil.floatsEqual(layout.cachedMeasurements[i].availableHeight, availableHeight) &&
+            layout.cachedMeasurements[i].widthMeasureMode == widthMeasureMode &&
+            layout.cachedMeasurements[i].heightMeasureMode == heightMeasureMode) {
+
+          cachedResults = layout.cachedMeasurements[i];
+          break;
+        }
+      }
+    }
+
+    if (!needToVisitNode && cachedResults != null) {
+      layout.measuredDimensions[DIMENSION_WIDTH] = cachedResults.computedWidth;
+      layout.measuredDimensions[DIMENSION_HEIGHT] = cachedResults.computedHeight;
+    } else {
+      layoutNodeImpl(layoutContext, node, availableWidth, availableHeight, parentDirection, widthMeasureMode, heightMeasureMode, performLayout);
+
+      layout.lastParentDirection = parentDirection;
+
+      if (cachedResults == null) {
+        if (layout.nextCachedMeasurementsIndex == CSSLayout.MAX_CACHED_RESULT_COUNT) {
+          layout.nextCachedMeasurementsIndex = 0;
+        }
+
+        CSSCachedMeasurement newCacheEntry = null;
+        if (performLayout) {
+          // Use the single layout cache entry.
+          newCacheEntry = layout.cachedLayout;
+        } else {
+          // Allocate a new measurement cache entry.
+          newCacheEntry = layout.cachedMeasurements[layout.nextCachedMeasurementsIndex];
+          if (newCacheEntry == null) {
+            newCacheEntry = new CSSCachedMeasurement();
+            layout.cachedMeasurements[layout.nextCachedMeasurementsIndex] = newCacheEntry;
+          }
+          layout.nextCachedMeasurementsIndex++;
+        }
+
+        newCacheEntry.availableWidth = availableWidth;
+        newCacheEntry.availableHeight = availableHeight;
+        newCacheEntry.widthMeasureMode = widthMeasureMode;
+        newCacheEntry.heightMeasureMode = heightMeasureMode;
+        newCacheEntry.computedWidth = layout.measuredDimensions[DIMENSION_WIDTH];
+        newCacheEntry.computedHeight = layout.measuredDimensions[DIMENSION_HEIGHT];
+      }
+    }
+
+    if (performLayout) {
+      node.layout.dimensions[DIMENSION_WIDTH] = node.layout.measuredDimensions[DIMENSION_WIDTH];
+      node.layout.dimensions[DIMENSION_HEIGHT] = node.layout.measuredDimensions[DIMENSION_HEIGHT];
+      node.markHasNewLayout();
+    }
+
+    layout.generationCount = layoutContext.currentGenerationCount;
+    return (needToVisitNode || cachedResults == null);
+  }
+
+
+  //
+  // This is the main routine that implements a subset of the flexbox layout algorithm
+  // described in the W3C CSS documentation: https://www.w3.org/TR/css3-flexbox/.
+  //
+  // Limitations of this algorithm, compared to the full standard:
+  //  * Display property is always assumed to be 'flex' except for Text nodes, which
+  //    are assumed to be 'inline-flex'.
+  //  * The 'zIndex' property (or any form of z ordering) is not supported. Nodes are
+  //    stacked in document order.
+  //  * The 'order' property is not supported. The order of flex items is always defined
+  //    by document order.
+  //  * The 'visibility' property is always assumed to be 'visible'. Values of 'collapse'
+  //    and 'hidden' are not supported.
+  //  * The 'wrap' property supports only 'nowrap' (which is the default) or 'wrap'. The
+  //    rarely-used 'wrap-reverse' is not supported.
+  //  * Rather than allowing arbitrary combinations of flexGrow, flexShrink and
+  //    flexBasis, this algorithm supports only the three most common combinations:
+  //      flex: 0 is equiavlent to flex: 0 0 auto
+  //      flex: n (where n is a positive value) is equivalent to flex: n 1 auto
+  //          If POSITIVE_FLEX_IS_AUTO is 0, then it is equivalent to flex: n 0 0
+  //          This is faster because the content doesn't need to be measured, but it's
+  //          less flexible because the basis is always 0 and can't be overriden with
+  //          the width/height attributes.
+  //      flex: -1 (or any negative value) is equivalent to flex: 0 1 auto
+  //  * Margins cannot be specified as 'auto'. They must be specified in terms of pixel
+  //    values, and the default value is 0.
+  //  * The 'baseline' value is not supported for alignItems and alignSelf properties.
+  //  * Values of width, maxWidth, minWidth, height, maxHeight and minHeight must be
+  //    specified as pixel values, not as percentages.
+  //  * There is no support for calculation of dimensions based on intrinsic aspect ratios
+  //     (e.g. images).
+  //  * There is no support for forced breaks.
+  //  * It does not support vertical inline directions (top-to-bottom or bottom-to-top text).
+  //
+  // Deviations from standard:
+  //  * Section 4.5 of the spec indicates that all flex items have a default minimum
+  //    main size. For text blocks, for example, this is the width of the widest word.
+  //    Calculating the minimum width is expensive, so we forego it and assume a default
+  //    minimum main size of 0.
+  //  * Min/Max sizes in the main axis are not honored when resolving flexible lengths.
+  //  * The spec indicates that the default value for 'flexDirection' is 'row', but
+  //    the algorithm below assumes a default of 'column'.
+  //
+  // Input parameters:
+  //    - node: current node to be sized and layed out
+  //    - availableWidth & availableHeight: available size to be used for sizing the node
+  //      or CSS_UNDEFINED if the size is not available; interpretation depends on layout
+  //      flags
+  //    - parentDirection: the inline (text) direction within the parent (left-to-right or
+  //      right-to-left)
+  //    - widthMeasureMode: indicates the sizing rules for the width (see below for explanation)
+  //    - heightMeasureMode: indicates the sizing rules for the height (see below for explanation)
+  //    - performLayout: specifies whether the caller is interested in just the dimensions
+  //      of the node or it requires the entire node and its subtree to be layed out
+  //      (with final positions)
+  //
+  // Details:
+  //    This routine is called recursively to lay out subtrees of flexbox elements. It uses the
+  //    information in node.style, which is treated as a read-only input. It is responsible for
+  //    setting the layout.direction and layout.measured_dimensions fields for the input node as well
+  //    as the layout.position and layout.line_index fields for its child nodes. The
+  //    layout.measured_dimensions field includes any border or padding for the node but does
+  //    not include margins.
+  //
+  //    The spec describes four different layout modes: "fill available", "max content", "min content",
+  //    and "fit content". Of these, we don't use "min content" because we don't support default
+  //    minimum main sizes (see above for details). Each of our measure modes maps to a layout mode
+  //    from the spec (https://www.w3.org/TR/css3-sizing/#terms):
+  //      - CSS_MEASURE_MODE_UNDEFINED: max content
+  //      - CSS_MEASURE_MODE_EXACTLY: fill available
+  //      - CSS_MEASURE_MODE_AT_MOST: fit content
+  //
+  //    When calling layoutNodeImpl and layoutNodeInternal, if the caller passes an available size of
+  //    undefined then it must also pass a measure mode of CSS_MEASURE_MODE_UNDEFINED in that dimension.
+  //
+  private static void layoutNodeImpl(
+      CSSLayoutContext layoutContext,
+      CSSNodeDEPRECATED node,
+      float availableWidth,
+      float availableHeight,
+      CSSDirection parentDirection,
+      CSSMeasureMode widthMeasureMode,
+      CSSMeasureMode heightMeasureMode,
+      boolean performLayout) {
+
+    Assertions.assertCondition(Float.isNaN(availableWidth) ? widthMeasureMode == CSSMeasureMode.UNDEFINED : true, "availableWidth is indefinite so widthMeasureMode must be CSSMeasureMode.UNDEFINED");
+    Assertions.assertCondition(Float.isNaN(availableHeight) ? heightMeasureMode == CSSMeasureMode.UNDEFINED : true, "availableHeight is indefinite so heightMeasureMode must be CSSMeasureMode.UNDEFINED");
+
+    float paddingAndBorderAxisRow = ((node.style.padding.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) + (node.style.padding.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])));
+    float paddingAndBorderAxisColumn = ((node.style.padding.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) + (node.style.padding.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])));
+    float marginAxisRow = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+    float marginAxisColumn = (node.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+
+    // Set the resolved resolution in the node's layout.
+    CSSDirection direction = resolveDirection(node, parentDirection);
+    node.layout.direction = direction;
+
+    // For content (text) nodes, determine the dimensions based on the text contents.
+    if (isMeasureDefined(node)) {
+      float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+      float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+
+      if (widthMeasureMode == CSSMeasureMode.EXACTLY && heightMeasureMode == CSSMeasureMode.EXACTLY) {
+
+        // Don't bother sizing the text if both dimensions are already defined.
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, availableWidth - marginAxisRow);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, availableHeight - marginAxisColumn);
+      } else if (innerWidth <= 0 || innerHeight <= 0) {
+
+        // Don't bother sizing the text if there's no horizontal or vertical space.
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, 0);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, 0);
+      } else {
+
+        // Measure the text under the current constraints.
+        long measureOutput = node.measure(
+          innerWidth,
+          widthMeasureMode,
+          innerHeight,
+          heightMeasureMode
         );
-        if (isRowUndefined) {
-          node.layout.width = measureDim.width +
-            getPaddingAndBorderAxis(node, resolvedRowAxis);
-        }
-        if (isColumnUndefined) {
-          node.layout.height = measureDim.height +
-            getPaddingAndBorderAxis(node, CSSFlexDirection.COLUMN);
-        }
+
+        int outputWidth = MeasureOutput.getWidth(measureOutput);
+        int outputHeight = MeasureOutput.getHeight(measureOutput);
+
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW,
+          (widthMeasureMode == CSSMeasureMode.UNDEFINED || widthMeasureMode == CSSMeasureMode.AT_MOST) ?
+            outputWidth + paddingAndBorderAxisRow :
+            availableWidth - marginAxisRow);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN,
+          (heightMeasureMode == CSSMeasureMode.UNDEFINED || heightMeasureMode == CSSMeasureMode.AT_MOST) ?
+            outputHeight + paddingAndBorderAxisColumn :
+            availableHeight - marginAxisColumn);
       }
-      if (node.getChildCount() == 0) {
+
+      return;
+    }
+
+    // For nodes with no children, use the available values if they were provided, or
+    // the minimum size as indicated by the padding and border sizes.
+    int childCount = node.getChildCount();
+    if (childCount == 0) {
+      node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW,
+        (widthMeasureMode == CSSMeasureMode.UNDEFINED || widthMeasureMode == CSSMeasureMode.AT_MOST) ?
+          paddingAndBorderAxisRow :
+          availableWidth - marginAxisRow);
+      node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN,
+        (heightMeasureMode == CSSMeasureMode.UNDEFINED || heightMeasureMode == CSSMeasureMode.AT_MOST) ?
+          paddingAndBorderAxisColumn :
+          availableHeight - marginAxisColumn);
+      return;
+    }
+
+    // If we're not being asked to perform a full layout, we can handle a number of common
+    // cases here without incurring the cost of the remaining function.
+    if (!performLayout) {
+      // If we're being asked to size the content with an at most constraint but there is no available width,
+      // the measurement will always be zero.
+      if (widthMeasureMode == CSSMeasureMode.AT_MOST && availableWidth <= 0 &&
+          heightMeasureMode == CSSMeasureMode.AT_MOST && availableHeight <= 0) {
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, 0);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, 0);
+        return;
+      }
+
+      if (widthMeasureMode == CSSMeasureMode.AT_MOST && availableWidth <= 0) {
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, 0);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, Float.isNaN(availableHeight) ? 0 : (availableHeight - marginAxisColumn));
+        return;
+      }
+
+      if (heightMeasureMode == CSSMeasureMode.AT_MOST && availableHeight <= 0) {
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, Float.isNaN(availableWidth) ? 0 : (availableWidth - marginAxisRow));
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, 0);
+        return;
+      }
+
+      // If we're being asked to use an exact width/height, there's no need to measure the children.
+      if (widthMeasureMode == CSSMeasureMode.EXACTLY && heightMeasureMode == CSSMeasureMode.EXACTLY) {
+        node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, availableWidth - marginAxisRow);
+        node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, availableHeight - marginAxisColumn);
         return;
       }
     }
-  
+
+    // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
+    int mainAxis = resolveAxis(getFlexDirection(node), direction);
+    int crossAxis = getCrossFlexDirection(mainAxis, direction);
+    boolean isMainAxisRow = (mainAxis == CSS_FLEX_DIRECTION_ROW || mainAxis == CSS_FLEX_DIRECTION_ROW_REVERSE);
+    CSSJustify justifyContent = node.style.justifyContent;
+    boolean isNodeFlexWrap = (node.style.flexWrap == CSSWrap.WRAP);
+
+    CSSNodeDEPRECATED firstAbsoluteChild = null;
+    CSSNodeDEPRECATED currentAbsoluteChild = null;
+
+    float leadingPaddingAndBorderMain = (node.style.padding.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + node.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]));
+    float trailingPaddingAndBorderMain = (node.style.padding.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) + node.style.border.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]));
+    float leadingPaddingAndBorderCross = (node.style.padding.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) + node.style.border.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]));
+    float paddingAndBorderAxisMain = ((node.style.padding.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + node.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) + (node.style.padding.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) + node.style.border.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])));
+    float paddingAndBorderAxisCross = ((node.style.padding.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) + node.style.border.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis])) + (node.style.padding.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]) + node.style.border.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])));
+
+    CSSMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
+    CSSMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+
+    // STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
+    float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+    float availableInnerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+    float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
+    float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
+
+    // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
+    CSSNodeDEPRECATED child;
     int i;
-    int ii;
-    CSSNode child;
-    CSSFlexDirection axis;
-  
-    // Pre-fill some dimensions straight from the parent
-    for (i = 0; i < node.getChildCount(); ++i) {
+    float childWidth;
+    float childHeight;
+    CSSMeasureMode childWidthMeasureMode;
+    CSSMeasureMode childHeightMeasureMode;
+    for (i = 0; i < childCount; i++) {
       child = node.getChildAt(i);
-      // Pre-fill cross axis dimensions when the child is using stretch before
-      // we call the recursive layout pass
-      if (getAlignItem(node, child) == CSSAlign.STRETCH &&
-          getPositionType(child) == CSSPositionType.RELATIVE &&
-          !CSSConstants.isUndefined(getLayoutDimension(node, getDim(crossAxis))) &&
-          !isDimDefined(child, crossAxis)) {
-        setLayoutDimension(child, getDim(crossAxis), Math.max(
-          boundAxis(child, crossAxis, getLayoutDimension(node, getDim(crossAxis)) -
-            getPaddingAndBorderAxis(node, crossAxis) -
-            getMarginAxis(child, crossAxis)),
-          // You never want to go smaller than padding
-          getPaddingAndBorderAxis(child, crossAxis)
-        ));
-      } else if (getPositionType(child) == CSSPositionType.ABSOLUTE) {
-        // Pre-fill dimensions when using absolute position and both offsets for the axis are defined (either both
-        // left and right or top and bottom).
-        for (ii = 0; ii < 2; ii++) {
-          axis = (ii != 0) ? CSSFlexDirection.ROW : CSSFlexDirection.COLUMN;
-          if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(axis))) &&
-              !isDimDefined(child, axis) &&
-              isPosDefined(child, getLeading(axis)) &&
-              isPosDefined(child, getTrailing(axis))) {
-            setLayoutDimension(child, getDim(axis), Math.max(
-              boundAxis(child, axis, getLayoutDimension(node, getDim(axis)) -
-                getPaddingAndBorderAxis(node, axis) -
-                getMarginAxis(child, axis) -
-                getPosition(child, getLeading(axis)) -
-                getPosition(child, getTrailing(axis))),
-              // You never want to go smaller than padding
-              getPaddingAndBorderAxis(child, axis)
-            ));
-          }
-        }
+
+      if (performLayout) {
+        // Set the initial position (relative to the parent).
+        CSSDirection childDirection = resolveDirection(child, direction);
+        setPosition(child, childDirection);
       }
-    }
-  
-    float definedMainDim = CSSConstants.UNDEFINED;
-    if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis)))) {
-      definedMainDim = getLayoutDimension(node, getDim(mainAxis)) -
-          getPaddingAndBorderAxis(node, mainAxis);
-    }
-  
-    // We want to execute the next two loops one per line with flex-wrap
-    int startLine = 0;
-    int endLine = 0;
-    // int nextOffset = 0;
-    int alreadyComputedNextLayout = 0;
-    // We aggregate the total dimensions of the container in those two variables
-    float linesCrossDim = 0;
-    float linesMainDim = 0;
-    int linesCount = 0;
-    while (endLine < node.getChildCount()) {
-      // <Loop A> Layout non flexible children and count children by type
-  
-      // mainContentDim is accumulation of the dimensions and margin of all the
-      // non flexible children. This will be used in order to either set the
-      // dimensions of the node if none already exist, or to compute the
-      // remaining space left for the flexible children.
-      float mainContentDim = 0;
-  
-      // There are three kind of children, non flexible, flexible and absolute.
-      // We need to know how many there are in order to distribute the space.
-      int flexibleChildrenCount = 0;
-      float totalFlexible = 0;
-      int nonFlexibleChildrenCount = 0;
-  
-      float maxWidth;
-      for (i = startLine; i < node.getChildCount(); ++i) {
-        child = node.getChildAt(i);
-        float nextContentDim = 0;
-  
-        // It only makes sense to consider a child flexible if we have a computed
-        // dimension for the node.
-        if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis))) && isFlex(child)) {
-          flexibleChildrenCount++;
-          totalFlexible = totalFlexible + getFlex(child);
-  
-          // Even if we don't know its exact size yet, we already know the padding,
-          // border and margin. We'll use this partial information, which represents
-          // the smallest possible size for the child, to compute the remaining
-          // available space.
-          nextContentDim = getPaddingAndBorderAxis(child, mainAxis) +
-            getMarginAxis(child, mainAxis);
-  
+
+      // Absolute-positioned children don't participate in flex layout. Add them
+      // to a list that we can process later.
+      if (child.style.positionType == CSSPositionType.ABSOLUTE) {
+
+        // Store a private linked list of absolutely positioned children
+        // so that we can efficiently traverse them later.
+        if (firstAbsoluteChild == null) {
+          firstAbsoluteChild = child;
+        }
+        if (currentAbsoluteChild != null) {
+          currentAbsoluteChild.nextChild = child;
+        }
+        currentAbsoluteChild = child;
+        child.nextChild = null;
+      } else {
+
+        if (isMainAxisRow && (child.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0)) {
+
+          // The width is definite, so use that as the flex basis.
+          child.layout.computedFlexBasis = Math.max(child.style.dimensions[DIMENSION_WIDTH], ((child.style.padding.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + child.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) + (child.style.padding.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]) + child.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]))));
+        } else if (!isMainAxisRow && (child.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0)) {
+
+          // The height is definite, so use that as the flex basis.
+          child.layout.computedFlexBasis = Math.max(child.style.dimensions[DIMENSION_HEIGHT], ((child.style.padding.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + child.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) + (child.style.padding.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]) + child.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]))));
+        } else if (!isFlexBasisAuto(child) && !Float.isNaN(availableInnerMainDim)) {
+          if (Float.isNaN(child.layout.computedFlexBasis)) {
+            child.layout.computedFlexBasis = Math.max(child.style.flexBasis, ((child.style.padding.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) + (child.style.padding.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) + child.style.border.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]))));
+          }
         } else {
-          maxWidth = CSSConstants.UNDEFINED;
-          if (!isRowDirection(mainAxis)) {
-            maxWidth = parentMaxWidth -
-              getMarginAxis(node, resolvedRowAxis) -
-              getPaddingAndBorderAxis(node, resolvedRowAxis);
-  
-            if (isDimDefined(node, resolvedRowAxis)) {
-              maxWidth = getLayoutDimension(node, getDim(resolvedRowAxis)) -
-                getPaddingAndBorderAxis(node, resolvedRowAxis);
+
+          // Compute the flex basis and hypothetical main size (i.e. the clamped flex basis).
+          childWidth = CSSConstants.UNDEFINED;
+          childHeight = CSSConstants.UNDEFINED;
+          childWidthMeasureMode = CSSMeasureMode.UNDEFINED;
+          childHeightMeasureMode = CSSMeasureMode.UNDEFINED;
+
+          if ((child.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0)) {
+            childWidth = child.style.dimensions[DIMENSION_WIDTH] + (child.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + child.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+            childWidthMeasureMode = CSSMeasureMode.EXACTLY;
+          }
+          if ((child.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0)) {
+            childHeight = child.style.dimensions[DIMENSION_HEIGHT] + (child.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + child.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+            childHeightMeasureMode = CSSMeasureMode.EXACTLY;
+          }
+
+          // The W3C spec doesn't say anything about the 'overflow' property,
+          // but all major browsers appear to implement the following logic.
+          if ((!isMainAxisRow && node.style.overflow == CSSOverflow.SCROLL) || node.style.overflow != CSSOverflow.SCROLL) {
+            if (Float.isNaN(childWidth) && !Float.isNaN(availableInnerWidth)) {
+              childWidth = availableInnerWidth;
+              childWidthMeasureMode = CSSMeasureMode.AT_MOST;
             }
           }
-  
-          // This is the main recursive call. We layout non flexible children.
-          if (alreadyComputedNextLayout == 0) {
-            layoutNode(layoutContext, child, maxWidth, direction);
+
+          if ((isMainAxisRow && node.style.overflow == CSSOverflow.SCROLL) || node.style.overflow != CSSOverflow.SCROLL) {
+            if (Float.isNaN(childHeight) && !Float.isNaN(availableInnerHeight)) {
+              childHeight = availableInnerHeight;
+              childHeightMeasureMode = CSSMeasureMode.AT_MOST;
+            }
           }
-  
-          // Absolute positioned elements do not take part of the layout, so we
-          // don't use them to compute mainContentDim
-          if (getPositionType(child) == CSSPositionType.RELATIVE) {
-            nonFlexibleChildrenCount++;
-            // At this point we know the final size and margin of the element.
-            nextContentDim = getDimWithMargin(child, mainAxis);
+
+          // If child has no defined size in the cross axis and is set to stretch, set the cross
+          // axis to be measured exactly with the available inner width
+          if (!isMainAxisRow &&
+              !Float.isNaN(availableInnerWidth) &&
+              !(child.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0) &&
+              widthMeasureMode == CSSMeasureMode.EXACTLY &&
+              getAlignItem(node, child) == CSSAlign.STRETCH) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureMode.EXACTLY;
           }
+          if (isMainAxisRow &&
+              !Float.isNaN(availableInnerHeight) &&
+              !(child.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0) &&
+              heightMeasureMode == CSSMeasureMode.EXACTLY &&
+              getAlignItem(node, child) == CSSAlign.STRETCH) {
+            childHeight = availableInnerHeight;
+            childHeightMeasureMode = CSSMeasureMode.EXACTLY;
+          }
+
+          // Measure the child
+          layoutNodeInternal(layoutContext, child, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, false, "measure");
+
+          child.layout.computedFlexBasis = Math.max(isMainAxisRow ? child.layout.measuredDimensions[DIMENSION_WIDTH] : child.layout.measuredDimensions[DIMENSION_HEIGHT], ((child.style.padding.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) + (child.style.padding.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]) + child.style.border.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]))));
         }
-  
-        // The element we are about to add would make us go to the next line
-        if (isFlexWrap(node) &&
-            !CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis))) &&
-            mainContentDim + nextContentDim > definedMainDim &&
-            // If there's only one element, then it's bigger than the content
-            // and needs its own line
-            i != startLine) {
-          nonFlexibleChildrenCount--;
-          alreadyComputedNextLayout = 1;
-          break;
-        }
-        alreadyComputedNextLayout = 0;
-        mainContentDim = mainContentDim + nextContentDim;
-        endLine = i + 1;
       }
-  
-      // <Loop B> Layout flexible children and allocate empty space
-  
+    }
+
+    // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
+
+    // Indexes of children that represent the first and last items in the line.
+    int startOfLineIndex = 0;
+    int endOfLineIndex = 0;
+
+    // Number of lines.
+    int lineCount = 0;
+
+    // Accumulated cross dimensions of all lines so far.
+    float totalLineCrossDim = 0;
+
+    // Max main dimension of all the lines.
+    float maxLineMainDim = 0;
+
+    while (endOfLineIndex < childCount) {
+
+      // Number of items on the currently line. May be different than the difference
+      // between start and end indicates because we skip over absolute-positioned items.
+      int itemsOnLine = 0;
+
+      // sizeConsumedOnCurrentLine is accumulation of the dimensions and margin
+      // of all the children on the current line. This will be used in order to
+      // either set the dimensions of the node if none already exist or to compute
+      // the remaining space left for the flexible children.
+      float sizeConsumedOnCurrentLine = 0;
+
+      float totalFlexGrowFactors = 0;
+      float totalFlexShrinkScaledFactors = 0;
+
+      i = startOfLineIndex;
+
+      // Maintain a linked list of the child nodes that can shrink and/or grow.
+      CSSNodeDEPRECATED firstRelativeChild = null;
+      CSSNodeDEPRECATED currentRelativeChild = null;
+
+      // Add items to the current line until it's full or we run out of items.
+      while (i < childCount) {
+        child = node.getChildAt(i);
+        child.lineIndex = lineCount;
+
+        if (child.style.positionType != CSSPositionType.ABSOLUTE) {
+          float outerFlexBasis = child.layout.computedFlexBasis + (child.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.margin.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]));
+
+          // If this is a multi-line flow and this item pushes us over the available size, we've
+          // hit the end of the current line. Break out of the loop and lay out the current line.
+          if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap && itemsOnLine > 0) {
+            break;
+          }
+
+          sizeConsumedOnCurrentLine += outerFlexBasis;
+          itemsOnLine++;
+
+          if ((child.style.positionType == CSSPositionType.RELATIVE && (child.style.flexGrow != 0 || child.style.flexShrink != 0))) {
+            totalFlexGrowFactors += getFlexGrowFactor(child);
+
+            // Unlike the grow factor, the shrink factor is scaled relative to the child
+            // dimension.
+            totalFlexShrinkScaledFactors += getFlexShrinkFactor(child) * child.layout.computedFlexBasis;
+          }
+
+          // Store a private linked list of children that need to be layed out.
+          if (firstRelativeChild == null) {
+            firstRelativeChild = child;
+          }
+          if (currentRelativeChild != null) {
+            currentRelativeChild.nextChild = child;
+          }
+          currentRelativeChild = child;
+          child.nextChild = null;
+        }
+
+        i++;
+        endOfLineIndex++;
+      }
+
+      // If we don't need to measure the cross axis, we can skip the entire flex step.
+      boolean canSkipFlex = !performLayout && measureModeCrossDim == CSSMeasureMode.EXACTLY;
+
       // In order to position the elements in the main axis, we have two
       // controls. The space between the beginning and the first element
       // and the space between each two elements.
       float leadingMainDim = 0;
       float betweenMainDim = 0;
-  
-      // The remaining available space that needs to be allocated
-      float remainingMainDim = 0;
-      if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis)))) {
-        remainingMainDim = definedMainDim - mainContentDim;
-      } else {
-        remainingMainDim = Math.max(mainContentDim, 0) - mainContentDim;
+
+      // STEP 5: RESOLVING FLEXIBLE LENGTHS ON MAIN AXIS
+      // Calculate the remaining available space that needs to be allocated.
+      // If the main dimension size isn't known, it is computed based on
+      // the line length, so there's no more space left to distribute.
+      float remainingFreeSpace = 0;
+      if (!Float.isNaN(availableInnerMainDim)) {
+        remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine;
+      } else if (sizeConsumedOnCurrentLine < 0) {
+        // availableInnerMainDim is indefinite which means the node is being sized based on its content.
+        // sizeConsumedOnCurrentLine is negative which means the node will allocate 0 pixels for
+        // its content. Consequently, remainingFreeSpace is 0 - sizeConsumedOnCurrentLine.
+        remainingFreeSpace = -sizeConsumedOnCurrentLine;
       }
-  
-      // If there are flexible children in the mix, they are going to fill the
-      // remaining space
-      if (flexibleChildrenCount != 0) {
-        float flexibleMainDim = remainingMainDim / totalFlexible;
-        float baseMainDim;
-        float boundMainDim;
-  
-        // Iterate over every child in the axis. If the flex share of remaining
-        // space doesn't meet min/max bounds, remove this child from flex
-        // calculations.
-        for (i = startLine; i < endLine; ++i) {
-          child = node.getChildAt(i);
-          if (isFlex(child)) {
-            baseMainDim = flexibleMainDim * getFlex(child) +
-                getPaddingAndBorderAxis(child, mainAxis);
-            boundMainDim = boundAxis(child, mainAxis, baseMainDim);
-  
-            if (baseMainDim != boundMainDim) {
-              remainingMainDim -= boundMainDim;
-              totalFlexible -= getFlex(child);
+
+      float originalRemainingFreeSpace = remainingFreeSpace;
+      float deltaFreeSpace = 0;
+
+      if (!canSkipFlex) {
+        float childFlexBasis;
+        float flexShrinkScaledFactor;
+        float flexGrowFactor;
+        float baseMainSize;
+        float boundMainSize;
+
+        // Do two passes over the flex items to figure out how to distribute the remaining space.
+        // The first pass finds the items whose min/max constraints trigger, freezes them at those
+        // sizes, and excludes those sizes from the remaining space. The second pass sets the size
+        // of each flexible item. It distributes the remaining space amongst the items whose min/max
+        // constraints didn't trigger in pass 1. For the other items, it sets their sizes by forcing
+        // their min/max constraints to trigger again.
+        //
+        // This two pass approach for resolving min/max constraints deviates from the spec. The
+        // spec (https://www.w3.org/TR/css-flexbox-1/#resolve-flexible-lengths) describes a process
+        // that needs to be repeated a variable number of times. The algorithm implemented here
+        // won't handle all cases but it was simpler to implement and it mitigates performance
+        // concerns because we know exactly how many passes it'll do.
+
+        // First pass: detect the flex items whose min/max constraints trigger
+        float deltaFlexShrinkScaledFactors = 0;
+        float deltaFlexGrowFactors = 0;
+        currentRelativeChild = firstRelativeChild;
+        while (currentRelativeChild != null) {
+          childFlexBasis = currentRelativeChild.layout.computedFlexBasis;
+
+          if (remainingFreeSpace < 0) {
+            flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
+
+            // Is this child able to shrink?
+            if (flexShrinkScaledFactor != 0) {
+              baseMainSize = childFlexBasis +
+                remainingFreeSpace / totalFlexShrinkScaledFactors * flexShrinkScaledFactor;
+              boundMainSize = boundAxis(currentRelativeChild, mainAxis, baseMainSize);
+              if (baseMainSize != boundMainSize) {
+                // By excluding this item's size and flex factor from remaining, this item's
+                // min/max constraints should also trigger in the second pass resulting in the
+                // item's size calculation being identical in the first and second passes.
+                deltaFreeSpace -= boundMainSize - childFlexBasis;
+                deltaFlexShrinkScaledFactors -= flexShrinkScaledFactor;
+              }
+            }
+          } else if (remainingFreeSpace > 0) {
+            flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+
+            // Is this child able to grow?
+            if (flexGrowFactor != 0) {
+              baseMainSize = childFlexBasis +
+                remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor;
+              boundMainSize = boundAxis(currentRelativeChild, mainAxis, baseMainSize);
+              if (baseMainSize != boundMainSize) {
+                // By excluding this item's size and flex factor from remaining, this item's
+                // min/max constraints should also trigger in the second pass resulting in the
+                // item's size calculation being identical in the first and second passes.
+                deltaFreeSpace -= boundMainSize - childFlexBasis;
+                deltaFlexGrowFactors -= flexGrowFactor;
+              }
             }
           }
+
+          currentRelativeChild = currentRelativeChild.nextChild;
         }
-        flexibleMainDim = remainingMainDim / totalFlexible;
-  
-        // The non flexible children can overflow the container, in this case
-        // we should just assume that there is no space available.
-        if (flexibleMainDim < 0) {
-          flexibleMainDim = 0;
-        }
-        // We iterate over the full array and only apply the action on flexible
-        // children. This is faster than actually allocating a new array that
-        // contains only flexible children.
-        for (i = startLine; i < endLine; ++i) {
-          child = node.getChildAt(i);
-          if (isFlex(child)) {
-            // At this point we know the final size of the element in the main
-            // dimension
-            setLayoutDimension(child, getDim(mainAxis), boundAxis(child, mainAxis,
-              flexibleMainDim * getFlex(child) + getPaddingAndBorderAxis(child, mainAxis)
-            ));
-  
-            maxWidth = CSSConstants.UNDEFINED;
-            if (isDimDefined(node, resolvedRowAxis)) {
-              maxWidth = getLayoutDimension(node, getDim(resolvedRowAxis)) -
-                getPaddingAndBorderAxis(node, resolvedRowAxis);
-            } else if (!isRowDirection(mainAxis)) {
-              maxWidth = parentMaxWidth -
-                getMarginAxis(node, resolvedRowAxis) -
-                getPaddingAndBorderAxis(node, resolvedRowAxis);
+
+        totalFlexShrinkScaledFactors += deltaFlexShrinkScaledFactors;
+        totalFlexGrowFactors += deltaFlexGrowFactors;
+        remainingFreeSpace += deltaFreeSpace;
+
+        // Second pass: resolve the sizes of the flexible items
+        deltaFreeSpace = 0;
+        currentRelativeChild = firstRelativeChild;
+        while (currentRelativeChild != null) {
+          childFlexBasis = currentRelativeChild.layout.computedFlexBasis;
+          float updatedMainSize = childFlexBasis;
+
+          if (remainingFreeSpace < 0) {
+            flexShrinkScaledFactor = getFlexShrinkFactor(currentRelativeChild) * childFlexBasis;
+
+            // Is this child able to shrink?
+            if (flexShrinkScaledFactor != 0) {
+              updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childFlexBasis +
+                remainingFreeSpace / totalFlexShrinkScaledFactors * flexShrinkScaledFactor);
             }
-  
-            // And we recursively call the layout algorithm for this child
-            layoutNode(layoutContext, child, maxWidth, direction);
+          } else if (remainingFreeSpace > 0) {
+            flexGrowFactor = getFlexGrowFactor(currentRelativeChild);
+
+            // Is this child able to grow?
+            if (flexGrowFactor != 0) {
+              updatedMainSize = boundAxis(currentRelativeChild, mainAxis, childFlexBasis +
+                remainingFreeSpace / totalFlexGrowFactors * flexGrowFactor);
+            }
           }
+
+          deltaFreeSpace -= updatedMainSize - childFlexBasis;
+
+          if (isMainAxisRow) {
+            childWidth = updatedMainSize + (currentRelativeChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentRelativeChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+            childWidthMeasureMode = CSSMeasureMode.EXACTLY;
+
+            if (!Float.isNaN(availableInnerCrossDim) &&
+                !(currentRelativeChild.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0) &&
+                heightMeasureMode == CSSMeasureMode.EXACTLY &&
+                getAlignItem(node, currentRelativeChild) == CSSAlign.STRETCH) {
+              childHeight = availableInnerCrossDim;
+              childHeightMeasureMode = CSSMeasureMode.EXACTLY;
+            } else if (!(currentRelativeChild.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0)) {
+              childHeight = availableInnerCrossDim;
+              childHeightMeasureMode = Float.isNaN(childHeight) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.AT_MOST;
+            } else {
+              childHeight = currentRelativeChild.style.dimensions[DIMENSION_HEIGHT] + (currentRelativeChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentRelativeChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+              childHeightMeasureMode = CSSMeasureMode.EXACTLY;
+            }
+          } else {
+            childHeight = updatedMainSize + (currentRelativeChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentRelativeChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+            childHeightMeasureMode = CSSMeasureMode.EXACTLY;
+
+            if (!Float.isNaN(availableInnerCrossDim) &&
+                !(currentRelativeChild.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0) &&
+                widthMeasureMode == CSSMeasureMode.EXACTLY &&
+                getAlignItem(node, currentRelativeChild) == CSSAlign.STRETCH) {
+              childWidth = availableInnerCrossDim;
+              childWidthMeasureMode = CSSMeasureMode.EXACTLY;
+            } else if (!(currentRelativeChild.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0)) {
+              childWidth = availableInnerCrossDim;
+              childWidthMeasureMode = Float.isNaN(childWidth) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.AT_MOST;
+            } else {
+              childWidth = currentRelativeChild.style.dimensions[DIMENSION_WIDTH] + (currentRelativeChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentRelativeChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+              childWidthMeasureMode = CSSMeasureMode.EXACTLY;
+            }
+          }
+
+          boolean requiresStretchLayout = !(currentRelativeChild.style.dimensions[dim[crossAxis]] >= 0.0) &&
+            getAlignItem(node, currentRelativeChild) == CSSAlign.STRETCH;
+
+          // Recursively call the layout algorithm for this child with the updated main size.
+          layoutNodeInternal(layoutContext, currentRelativeChild, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, performLayout && !requiresStretchLayout, "flex");
+
+          currentRelativeChild = currentRelativeChild.nextChild;
         }
-  
-      // We use justifyContent to figure out how to allocate the remaining
-      // space available
-      } else {
-        CSSJustify justifyContent = getJustifyContent(node);
+      }
+
+      remainingFreeSpace = originalRemainingFreeSpace + deltaFreeSpace;
+
+      // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
+
+      // At this point, all the children have their dimensions set in the main axis.
+      // Their dimensions are also set in the cross axis with the exception of items
+      // that are aligned "stretch". We need to compute these stretch values and
+      // set the final positions.
+
+      // If we are using "at most" rules in the main axis, we won't distribute
+      // any remaining space at this point.
+      if (measureModeMainDim == CSSMeasureMode.AT_MOST) {
+        remainingFreeSpace = 0;
+      }
+
+      // Use justifyContent to figure out how to allocate the remaining space
+      // available in the main axis.
+      if (justifyContent != CSSJustify.FLEX_START) {
         if (justifyContent == CSSJustify.CENTER) {
-          leadingMainDim = remainingMainDim / 2;
+          leadingMainDim = remainingFreeSpace / 2;
         } else if (justifyContent == CSSJustify.FLEX_END) {
-          leadingMainDim = remainingMainDim;
+          leadingMainDim = remainingFreeSpace;
         } else if (justifyContent == CSSJustify.SPACE_BETWEEN) {
-          remainingMainDim = Math.max(remainingMainDim, 0);
-          if (flexibleChildrenCount + nonFlexibleChildrenCount - 1 != 0) {
-            betweenMainDim = remainingMainDim /
-              (flexibleChildrenCount + nonFlexibleChildrenCount - 1);
+          remainingFreeSpace = Math.max(remainingFreeSpace, 0);
+          if (itemsOnLine > 1) {
+            betweenMainDim = remainingFreeSpace / (itemsOnLine - 1);
           } else {
             betweenMainDim = 0;
           }
         } else if (justifyContent == CSSJustify.SPACE_AROUND) {
           // Space on the edges is half of the space between elements
-          betweenMainDim = remainingMainDim /
-            (flexibleChildrenCount + nonFlexibleChildrenCount);
+          betweenMainDim = remainingFreeSpace / itemsOnLine;
           leadingMainDim = betweenMainDim / 2;
         }
       }
-  
-      // <Loop C> Position elements in the main axis and compute dimensions
-  
-      // At this point, all the children have their dimensions set. We need to
-      // find their position. In order to do that, we accumulate data in
-      // variables that are also useful to compute the total dimensions of the
-      // container!
+
+      float mainDim = leadingPaddingAndBorderMain + leadingMainDim;
       float crossDim = 0;
-      float mainDim = leadingMainDim +
-        getLeadingPaddingAndBorder(node, mainAxis);
-  
-      for (i = startLine; i < endLine; ++i) {
+
+      for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
         child = node.getChildAt(i);
-        child.lineIndex = linesCount;
-  
-        if (getPositionType(child) == CSSPositionType.ABSOLUTE &&
-            isPosDefined(child, getLeading(mainAxis))) {
-          // In case the child is position absolute and has left/top being
-          // defined, we override the position to whatever the user said
-          // (and margin/border).
-          setLayoutPosition(child, getPos(mainAxis), getPosition(child, getLeading(mainAxis)) +
-            getLeadingBorder(node, mainAxis) +
-            getLeadingMargin(child, mainAxis));
-        } else {
-          // If the child is position absolute (without top/left) or relative,
-          // we put it at the current accumulated offset.
-          setLayoutPosition(child, getPos(mainAxis), getLayoutPosition(child, getPos(mainAxis)) + mainDim);
-  
-          // Define the trailing position accordingly.
-          if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis)))) {
-            setTrailingPosition(node, child, mainAxis);
+
+        if (child.style.positionType == CSSPositionType.ABSOLUTE &&
+          !Float.isNaN(child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]))) {
+          if (performLayout) {
+            // In case the child is position absolute and has left/top being
+            // defined, we override the position to whatever the user said
+            // (and margin/border).
+            child.layout.position[pos[mainAxis]] =
+              (Float.isNaN(child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) ?
+              0 :
+              child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) +
+              node.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) +
+              child.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]);
           }
-        }
-  
-        // Now that we placed the element, we need to update the variables
-        // We only need to do that for relative elements. Absolute elements
-        // do not take part in that phase.
-        if (getPositionType(child) == CSSPositionType.RELATIVE) {
-          // The main dimension is the sum of all the elements dimension plus
-          // the spacing.
-          mainDim = mainDim + betweenMainDim + getDimWithMargin(child, mainAxis);
-          // The cross dimension is the max of the elements dimension since there
-          // can only be one element in that cross dimension.
-          crossDim = Math.max(crossDim, boundAxis(child, crossAxis, getDimWithMargin(child, crossAxis)));
-        }
-      }
-  
-      float containerCrossAxis = getLayoutDimension(node, getDim(crossAxis));
-      if (CSSConstants.isUndefined(getLayoutDimension(node, getDim(crossAxis)))) {
-        containerCrossAxis = Math.max(
-          // For the cross dim, we add both sides at the end because the value
-          // is aggregate via a max function. Intermediate negative values
-          // can mess this computation otherwise
-          boundAxis(node, crossAxis, crossDim + getPaddingAndBorderAxis(node, crossAxis)),
-          getPaddingAndBorderAxis(node, crossAxis)
-        );
-      }
-  
-      // <Loop D> Position elements in the cross axis
-      for (i = startLine; i < endLine; ++i) {
-        child = node.getChildAt(i);
-  
-        if (getPositionType(child) == CSSPositionType.ABSOLUTE &&
-            isPosDefined(child, getLeading(crossAxis))) {
-          // In case the child is absolutely positionned and has a
-          // top/left/bottom/right being set, we override all the previously
-          // computed positions to set it correctly.
-          setLayoutPosition(child, getPos(crossAxis), getPosition(child, getLeading(crossAxis)) +
-            getLeadingBorder(node, crossAxis) +
-            getLeadingMargin(child, crossAxis));
-  
         } else {
-          float leadingCrossDim = getLeadingPaddingAndBorder(node, crossAxis);
-  
-          // For a relative children, we're either using alignItems (parent) or
-          // alignSelf (child) in order to determine the position in the cross axis
-          if (getPositionType(child) == CSSPositionType.RELATIVE) {
-            CSSAlign alignItem = getAlignItem(node, child);
-            if (alignItem == CSSAlign.STRETCH) {
-              // You can only stretch if the dimension has not already been set
-              // previously.
-              if (!isDimDefined(child, crossAxis)) {
-                setLayoutDimension(child, getDim(crossAxis), Math.max(
-                  boundAxis(child, crossAxis, containerCrossAxis -
-                    getPaddingAndBorderAxis(node, crossAxis) -
-                    getMarginAxis(child, crossAxis)),
-                  // You never want to go smaller than padding
-                  getPaddingAndBorderAxis(child, crossAxis)
-                ));
-              }
-            } else if (alignItem != CSSAlign.FLEX_START) {
-              // The remaining space between the parent dimensions+padding and child
-              // dimensions+margin.
-              float remainingCrossDim = containerCrossAxis -
-                getPaddingAndBorderAxis(node, crossAxis) -
-                getDimWithMargin(child, crossAxis);
-  
-              if (alignItem == CSSAlign.CENTER) {
-                leadingCrossDim = leadingCrossDim + remainingCrossDim / 2;
-              } else { // CSSAlign.FLEX_END
-                leadingCrossDim = leadingCrossDim + remainingCrossDim;
-              }
+          if (performLayout) {
+            // If the child is position absolute (without top/left) or relative,
+            // we put it at the current accumulated offset.
+            child.layout.position[pos[mainAxis]] += mainDim;
+          }
+
+          // Now that we placed the element, we need to update the variables.
+          // We need to do that only for relative elements. Absolute elements
+          // do not take part in that phase.
+          if (child.style.positionType == CSSPositionType.RELATIVE) {
+            if (canSkipFlex) {
+              // If we skipped the flex step, then we can't rely on the measuredDims because
+              // they weren't computed. This means we can't call getDimWithMargin.
+              mainDim += betweenMainDim + (child.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.margin.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])) + child.layout.computedFlexBasis;
+              crossDim = availableInnerCrossDim;
+            } else {
+              // The main dimension is the sum of all the elements dimension plus
+              // the spacing.
+              mainDim += betweenMainDim + (child.layout.measuredDimensions[dim[mainAxis]] + child.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) + child.style.margin.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]));
+
+              // The cross dimension is the max of the elements dimension since there
+              // can only be one element in that cross dimension.
+              crossDim = Math.max(crossDim, (child.layout.measuredDimensions[dim[crossAxis]] + child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) + child.style.margin.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])));
             }
           }
-  
-          // And we apply the position
-          setLayoutPosition(child, getPos(crossAxis), getLayoutPosition(child, getPos(crossAxis)) + linesCrossDim + leadingCrossDim);
-  
-          // Define the trailing position accordingly.
-          if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(crossAxis)))) {
-            setTrailingPosition(node, child, crossAxis);
+        }
+      }
+
+      mainDim += trailingPaddingAndBorderMain;
+
+      float containerCrossAxis = availableInnerCrossDim;
+      if (measureModeCrossDim == CSSMeasureMode.UNDEFINED || measureModeCrossDim == CSSMeasureMode.AT_MOST) {
+        // Compute the cross axis from the max cross dimension of the children.
+        containerCrossAxis = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross) - paddingAndBorderAxisCross;
+
+        if (measureModeCrossDim == CSSMeasureMode.AT_MOST) {
+          containerCrossAxis = Math.min(containerCrossAxis, availableInnerCrossDim);
+        }
+      }
+
+      // If there's no flex wrap, the cross dimension is defined by the container.
+      if (!isNodeFlexWrap && measureModeCrossDim == CSSMeasureMode.EXACTLY) {
+        crossDim = availableInnerCrossDim;
+      }
+
+      // Clamp to the min/max size specified on the container.
+      crossDim = boundAxis(node, crossAxis, crossDim + paddingAndBorderAxisCross) - paddingAndBorderAxisCross;
+
+      // STEP 7: CROSS-AXIS ALIGNMENT
+      // We can skip child alignment if we're just measuring the container.
+      if (performLayout) {
+        for (i = startOfLineIndex; i < endOfLineIndex; ++i) {
+          child = node.getChildAt(i);
+
+          if (child.style.positionType == CSSPositionType.ABSOLUTE) {
+            // If the child is absolutely positioned and has a top/left/bottom/right
+            // set, override all the previously computed positions to set it correctly.
+            if (!Float.isNaN(child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]))) {
+              child.layout.position[pos[crossAxis]] =
+                (Float.isNaN(child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis])) ?
+                0 :
+                child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis])) +
+                node.style.border.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) +
+                child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]);
+            } else {
+              child.layout.position[pos[crossAxis]] = leadingPaddingAndBorderCross +
+                child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]);
+            }
+          } else {
+            float leadingCrossDim = leadingPaddingAndBorderCross;
+
+            // For a relative children, we're either using alignItems (parent) or
+            // alignSelf (child) in order to determine the position in the cross axis
+            CSSAlign alignItem = getAlignItem(node, child);
+
+            // If the child uses align stretch, we need to lay it out one more time, this time
+            // forcing the cross-axis size to be the computed cross size for the current line.
+            if (alignItem == CSSAlign.STRETCH) {
+              childWidth = child.layout.measuredDimensions[DIMENSION_WIDTH] + (child.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + child.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+              childHeight = child.layout.measuredDimensions[DIMENSION_HEIGHT] + (child.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + child.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+              boolean isCrossSizeDefinite = false;
+
+              if (isMainAxisRow) {
+                isCrossSizeDefinite = (child.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0);
+                childHeight = crossDim;
+              } else {
+                isCrossSizeDefinite = (child.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0);
+                childWidth = crossDim;
+              }
+
+              // If the child defines a definite size for its cross axis, there's no need to stretch.
+              if (!isCrossSizeDefinite) {
+                childWidthMeasureMode = Float.isNaN(childWidth) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
+                childHeightMeasureMode = Float.isNaN(childHeight) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
+                layoutNodeInternal(layoutContext, child, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, true, "stretch");
+              }
+            } else if (alignItem != CSSAlign.FLEX_START) {
+              float remainingCrossDim = containerCrossAxis - (child.layout.measuredDimensions[dim[crossAxis]] + child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) + child.style.margin.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]));
+
+              if (alignItem == CSSAlign.CENTER) {
+                leadingCrossDim += remainingCrossDim / 2;
+              } else { // CSSAlign.FLEX_END
+                leadingCrossDim += remainingCrossDim;
+              }
+            }
+
+            // And we apply the position
+            child.layout.position[pos[crossAxis]] += totalLineCrossDim + leadingCrossDim;
           }
         }
       }
-  
-      linesCrossDim = linesCrossDim + crossDim;
-      linesMainDim = Math.max(linesMainDim, mainDim);
-      linesCount = linesCount + 1;
-      startLine = endLine;
+
+      totalLineCrossDim += crossDim;
+      maxLineMainDim = Math.max(maxLineMainDim, mainDim);
+
+      // Reset variables for new line.
+      lineCount++;
+      startOfLineIndex = endOfLineIndex;
+      endOfLineIndex = startOfLineIndex;
     }
-  
-    // <Loop E>
-    //
-    // Note(prenaux): More than one line, we need to layout the crossAxis
-    // according to alignContent.
-    //
-    // Note that we could probably remove <Loop D> and handle the one line case
-    // here too, but for the moment this is safer since it won't interfere with
-    // previously working code.
-    //
-    // See specs:
-    // http://www.w3.org/TR/2012/CR-css3-flexbox-20120918/#layout-algorithm
-    // section 9.4
-    //
-    if (linesCount > 1 &&
-        !CSSConstants.isUndefined(getLayoutDimension(node, getDim(crossAxis)))) {
-      float nodeCrossAxisInnerSize = getLayoutDimension(node, getDim(crossAxis)) -
-          getPaddingAndBorderAxis(node, crossAxis);
-      float remainingAlignContentDim = nodeCrossAxisInnerSize - linesCrossDim;
-  
+
+    // STEP 8: MULTI-LINE CONTENT ALIGNMENT
+    if (lineCount > 1 && performLayout && !Float.isNaN(availableInnerCrossDim)) {
+      float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
+
       float crossDimLead = 0;
-      float currentLead = getLeadingPaddingAndBorder(node, crossAxis);
-  
-      CSSAlign alignContent = getAlignContent(node);
+      float currentLead = leadingPaddingAndBorderCross;
+
+      CSSAlign alignContent = node.style.alignContent;
       if (alignContent == CSSAlign.FLEX_END) {
-        currentLead = currentLead + remainingAlignContentDim;
+        currentLead += remainingAlignContentDim;
       } else if (alignContent == CSSAlign.CENTER) {
-        currentLead = currentLead + remainingAlignContentDim / 2;
+        currentLead += remainingAlignContentDim / 2;
       } else if (alignContent == CSSAlign.STRETCH) {
-        if (nodeCrossAxisInnerSize > linesCrossDim) {
-          crossDimLead = (remainingAlignContentDim / linesCount);
+        if (availableInnerCrossDim > totalLineCrossDim) {
+          crossDimLead = (remainingAlignContentDim / lineCount);
         }
       }
-  
+
       int endIndex = 0;
-      for (i = 0; i < linesCount; ++i) {
+      for (i = 0; i < lineCount; ++i) {
         int startIndex = endIndex;
-  
+        int j;
+
         // compute the line's height and find the endIndex
         float lineHeight = 0;
-        for (ii = startIndex; ii < node.getChildCount(); ++ii) {
-          child = node.getChildAt(ii);
-          if (getPositionType(child) != CSSPositionType.RELATIVE) {
+        for (j = startIndex; j < childCount; ++j) {
+          child = node.getChildAt(j);
+          if (child.style.positionType != CSSPositionType.RELATIVE) {
             continue;
           }
           if (child.lineIndex != i) {
             break;
           }
-          if (!CSSConstants.isUndefined(getLayoutDimension(child, getDim(crossAxis)))) {
-            lineHeight = Math.max(
-              lineHeight,
-              getLayoutDimension(child, getDim(crossAxis)) + getMarginAxis(child, crossAxis)
-            );
+          if ((child.layout.measuredDimensions[dim[crossAxis]] >= 0.0)) {
+            lineHeight = Math.max(lineHeight,
+              child.layout.measuredDimensions[dim[crossAxis]] + (child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) + child.style.margin.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])));
           }
         }
-        endIndex = ii;
-        lineHeight = lineHeight + crossDimLead;
-  
-        for (ii = startIndex; ii < endIndex; ++ii) {
-          child = node.getChildAt(ii);
-          if (getPositionType(child) != CSSPositionType.RELATIVE) {
-            continue;
-          }
-  
-          CSSAlign alignContentAlignItem = getAlignItem(node, child);
-          if (alignContentAlignItem == CSSAlign.FLEX_START) {
-            setLayoutPosition(child, getPos(crossAxis), currentLead + getLeadingMargin(child, crossAxis));
-          } else if (alignContentAlignItem == CSSAlign.FLEX_END) {
-            setLayoutPosition(child, getPos(crossAxis), currentLead + lineHeight - getTrailingMargin(child, crossAxis) - getLayoutDimension(child, getDim(crossAxis)));
-          } else if (alignContentAlignItem == CSSAlign.CENTER) {
-            float childHeight = getLayoutDimension(child, getDim(crossAxis));
-            setLayoutPosition(child, getPos(crossAxis), currentLead + (lineHeight - childHeight) / 2);
-          } else if (alignContentAlignItem == CSSAlign.STRETCH) {
-            setLayoutPosition(child, getPos(crossAxis), currentLead + getLeadingMargin(child, crossAxis));
-            // TODO(prenaux): Correctly set the height of items with undefined
-            //                (auto) crossAxis dimension.
+        endIndex = j;
+        lineHeight += crossDimLead;
+
+        if (performLayout) {
+          for (j = startIndex; j < endIndex; ++j) {
+            child = node.getChildAt(j);
+            if (child.style.positionType != CSSPositionType.RELATIVE) {
+              continue;
+            }
+
+            CSSAlign alignContentAlignItem = getAlignItem(node, child);
+            if (alignContentAlignItem == CSSAlign.FLEX_START) {
+              child.layout.position[pos[crossAxis]] = currentLead + child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]);
+            } else if (alignContentAlignItem == CSSAlign.FLEX_END) {
+              child.layout.position[pos[crossAxis]] = currentLead + lineHeight - child.style.margin.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]) - child.layout.measuredDimensions[dim[crossAxis]];
+            } else if (alignContentAlignItem == CSSAlign.CENTER) {
+              childHeight = child.layout.measuredDimensions[dim[crossAxis]];
+              child.layout.position[pos[crossAxis]] = currentLead + (lineHeight - childHeight) / 2;
+            } else if (alignContentAlignItem == CSSAlign.STRETCH) {
+              child.layout.position[pos[crossAxis]] = currentLead + child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]);
+              // TODO(prenaux): Correctly set the height of items with indefinite
+              //                (auto) crossAxis dimension.
+            }
           }
         }
-  
-        currentLead = currentLead + lineHeight;
+
+        currentLead += lineHeight;
       }
     }
-  
-    boolean needsMainTrailingPos = false;
-    boolean needsCrossTrailingPos = false;
-  
-    // If the user didn't specify a width or height, and it has not been set
-    // by the container, then we set it via the children.
-    if (CSSConstants.isUndefined(getLayoutDimension(node, getDim(mainAxis)))) {
-      setLayoutDimension(node, getDim(mainAxis), Math.max(
-        // We're missing the last padding at this point to get the final
-        // dimension
-        boundAxis(node, mainAxis, linesMainDim + getTrailingPaddingAndBorder(node, mainAxis)),
-        // We can never assign a width smaller than the padding and borders
-        getPaddingAndBorderAxis(node, mainAxis)
-      ));
-  
-      needsMainTrailingPos = true;
+
+    // STEP 9: COMPUTING FINAL DIMENSIONS
+    node.layout.measuredDimensions[DIMENSION_WIDTH] = boundAxis(node, CSS_FLEX_DIRECTION_ROW, availableWidth - marginAxisRow);
+    node.layout.measuredDimensions[DIMENSION_HEIGHT] = boundAxis(node, CSS_FLEX_DIRECTION_COLUMN, availableHeight - marginAxisColumn);
+
+    // If the user didn't specify a width or height for the node, set the
+    // dimensions based on the children.
+    if (measureModeMainDim == CSSMeasureMode.UNDEFINED) {
+      // Clamp the size to the min/max size, if specified, and make sure it
+      // doesn't go below the padding and border amount.
+      node.layout.measuredDimensions[dim[mainAxis]] = boundAxis(node, mainAxis, maxLineMainDim);
+    } else if (measureModeMainDim == CSSMeasureMode.AT_MOST) {
+      node.layout.measuredDimensions[dim[mainAxis]] = Math.max(
+        Math.min(availableInnerMainDim + paddingAndBorderAxisMain,
+          boundAxisWithinMinAndMax(node, mainAxis, maxLineMainDim)),
+        paddingAndBorderAxisMain);
     }
-  
-    if (CSSConstants.isUndefined(getLayoutDimension(node, getDim(crossAxis)))) {
-      setLayoutDimension(node, getDim(crossAxis), Math.max(
-        // For the cross dim, we add both sides at the end because the value
-        // is aggregate via a max function. Intermediate negative values
-        // can mess this computation otherwise
-        boundAxis(node, crossAxis, linesCrossDim + getPaddingAndBorderAxis(node, crossAxis)),
-        getPaddingAndBorderAxis(node, crossAxis)
-      ));
-  
-      needsCrossTrailingPos = true;
+
+    if (measureModeCrossDim == CSSMeasureMode.UNDEFINED) {
+      // Clamp the size to the min/max size, if specified, and make sure it
+      // doesn't go below the padding and border amount.
+      node.layout.measuredDimensions[dim[crossAxis]] = boundAxis(node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross);
+    } else if (measureModeCrossDim == CSSMeasureMode.AT_MOST) {
+      node.layout.measuredDimensions[dim[crossAxis]] = Math.max(
+        Math.min(availableInnerCrossDim + paddingAndBorderAxisCross,
+          boundAxisWithinMinAndMax(node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross)),
+        paddingAndBorderAxisCross);
     }
-  
-    // <Loop F> Set trailing position if necessary
-    if (needsMainTrailingPos || needsCrossTrailingPos) {
-      for (i = 0; i < node.getChildCount(); ++i) {
-        child = node.getChildAt(i);
-  
-        if (needsMainTrailingPos) {
-          setTrailingPosition(node, child, mainAxis);
-        }
-  
-        if (needsCrossTrailingPos) {
-          setTrailingPosition(node, child, crossAxis);
-        }
-      }
-    }
-  
-    // <Loop G> Calculate dimensions for absolutely positioned elements
-    for (i = 0; i < node.getChildCount(); ++i) {
-      child = node.getChildAt(i);
-      if (getPositionType(child) == CSSPositionType.ABSOLUTE) {
-        // Pre-fill dimensions when using absolute position and both offsets for the axis are defined (either both
-        // left and right or top and bottom).
-        for (ii = 0; ii < 2; ii++) {
-          axis = (ii != 0) ? CSSFlexDirection.ROW : CSSFlexDirection.COLUMN;
-          if (!CSSConstants.isUndefined(getLayoutDimension(node, getDim(axis))) &&
-              !isDimDefined(child, axis) &&
-              isPosDefined(child, getLeading(axis)) &&
-              isPosDefined(child, getTrailing(axis))) {
-            setLayoutDimension(child, getDim(axis), Math.max(
-              boundAxis(child, axis, getLayoutDimension(node, getDim(axis)) -
-                getBorderAxis(node, axis) -
-                getMarginAxis(child, axis) -
-                getPosition(child, getLeading(axis)) -
-                getPosition(child, getTrailing(axis))
-              ),
-              // You never want to go smaller than padding
-              getPaddingAndBorderAxis(child, axis)
-            ));
+
+    // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
+    currentAbsoluteChild = firstAbsoluteChild;
+    while (currentAbsoluteChild != null) {
+      // Now that we know the bounds of the container, perform layout again on the
+      // absolutely-positioned children.
+      if (performLayout) {
+
+        childWidth = CSSConstants.UNDEFINED;
+        childHeight = CSSConstants.UNDEFINED;
+
+        if ((currentAbsoluteChild.style.dimensions[dim[CSS_FLEX_DIRECTION_ROW]] >= 0.0)) {
+          childWidth = currentAbsoluteChild.style.dimensions[DIMENSION_WIDTH] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+        } else {
+          // If the child doesn't have a specified width, compute the width based on the left/right offsets if they're defined.
+          if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) &&
+              !Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]))) {
+            childWidth = node.layout.measuredDimensions[DIMENSION_WIDTH] -
+              (node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])) -
+              ((Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) +
+              (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])));
+            childWidth = boundAxis(currentAbsoluteChild, CSS_FLEX_DIRECTION_ROW, childWidth);
           }
         }
-        for (ii = 0; ii < 2; ii++) {
-          axis = (ii != 0) ? CSSFlexDirection.ROW : CSSFlexDirection.COLUMN;
-          if (isPosDefined(child, getTrailing(axis)) &&
-              !isPosDefined(child, getLeading(axis))) {
-            setLayoutPosition(child, getLeading(axis), getLayoutDimension(node, getDim(axis)) -
-              getLayoutDimension(child, getDim(axis)) -
-              getPosition(child, getTrailing(axis)));
+
+        if ((currentAbsoluteChild.style.dimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] >= 0.0)) {
+          childHeight = currentAbsoluteChild.style.dimensions[DIMENSION_HEIGHT] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+        } else {
+          // If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined.
+          if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) &&
+              !Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]))) {
+            childHeight = node.layout.measuredDimensions[DIMENSION_HEIGHT] -
+              (node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])) -
+              ((Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) +
+              (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])));
+            childHeight = boundAxis(currentAbsoluteChild, CSS_FLEX_DIRECTION_COLUMN, childHeight);
+          }
+        }
+
+        // If we're still missing one or the other dimension, measure the content.
+        if (Float.isNaN(childWidth) || Float.isNaN(childHeight)) {
+          childWidthMeasureMode = Float.isNaN(childWidth) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
+          childHeightMeasureMode = Float.isNaN(childHeight) ? CSSMeasureMode.UNDEFINED : CSSMeasureMode.EXACTLY;
+
+          // According to the spec, if the main size is not definite and the
+          // child's inline axis is parallel to the main axis (i.e. it's
+          // horizontal), the child should be sized using "UNDEFINED" in
+          // the main size. Otherwise use "AT_MOST" in the cross axis.
+          if (!isMainAxisRow && Float.isNaN(childWidth) && !Float.isNaN(availableInnerWidth)) {
+            childWidth = availableInnerWidth;
+            childWidthMeasureMode = CSSMeasureMode.AT_MOST;
+          }
+
+          layoutNodeInternal(layoutContext, currentAbsoluteChild, childWidth, childHeight, direction, childWidthMeasureMode, childHeightMeasureMode, false, "abs-measure");
+          childWidth = currentAbsoluteChild.layout.measuredDimensions[DIMENSION_WIDTH] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
+          childHeight = currentAbsoluteChild.layout.measuredDimensions[DIMENSION_HEIGHT] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
+        }
+
+        layoutNodeInternal(layoutContext, currentAbsoluteChild, childWidth, childHeight, direction, CSSMeasureMode.EXACTLY, CSSMeasureMode.EXACTLY, true, "abs-layout");
+
+        if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])) &&
+            Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]))) {
+          currentAbsoluteChild.layout.position[leading[mainAxis]] =
+            node.layout.measuredDimensions[dim[mainAxis]] -
+            currentAbsoluteChild.layout.measuredDimensions[dim[mainAxis]] -
+            (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])) ?  0 : currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]));
+        }
+
+        if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])) &&
+            Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]))) {
+          currentAbsoluteChild.layout.position[leading[crossAxis]] =
+            node.layout.measuredDimensions[dim[crossAxis]] -
+            currentAbsoluteChild.layout.measuredDimensions[dim[crossAxis]] -
+            (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])) ?  0 : currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]));
+        }
+      }
+
+      currentAbsoluteChild = currentAbsoluteChild.nextChild;
+    }
+
+    // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
+    if (performLayout) {
+      boolean needsMainTrailingPos = false;
+      boolean needsCrossTrailingPos = false;
+
+      if (mainAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
+          mainAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
+        needsMainTrailingPos = true;
+      }
+
+      if (crossAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
+          crossAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
+        needsCrossTrailingPos = true;
+      }
+
+      // Set trailing position if necessary.
+      if (needsMainTrailingPos || needsCrossTrailingPos) {
+        for (i = 0; i < childCount; ++i) {
+          child = node.getChildAt(i);
+
+          if (needsMainTrailingPos) {
+            child.layout.position[trailing[mainAxis]] =
+              node.layout.measuredDimensions[dim[mainAxis]] -
+              child.layout.measuredDimensions[dim[mainAxis]] -
+              child.layout.position[pos[mainAxis]];
+          }
+
+          if (needsCrossTrailingPos) {
+            child.layout.position[trailing[crossAxis]] =
+              node.layout.measuredDimensions[dim[crossAxis]] -
+              child.layout.measuredDimensions[dim[crossAxis]] -
+              child.layout.position[pos[crossAxis]];
           }
         }
       }
     }
   }
-  /** END_GENERATED **/
 }

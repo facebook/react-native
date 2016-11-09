@@ -10,56 +10,118 @@
  */
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
+const externalHelpersPlugin = require('babel-plugin-external-helpers');
+const fs = require('fs');
+const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
+const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
+const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
+const json5 = require('json5');
+const path = require('path');
 
-function transform(srcTxt, filename, options) {
-  var plugins = [];
+/**
+ * Return a memoized function that checks for the existence of a
+ * project level .babelrc file, and if it doesn't exist, reads the
+ * default RN babelrc file and uses that.
+ */
+const getBabelRC = (function() {
+  let babelRC = null;
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
+  return function _getBabelRC(projectRoots) {
+    if (babelRC !== null) {
+      return babelRC;
+    }
+
+    babelRC = { plugins: [] }; // empty babelrc
+
+    // Let's look for the .babelrc in the first project root.
+    // In the future let's look into adding a command line option to specify
+    // this location.
+    //
+    // NOTE: we're not reading the project's .babelrc here. We leave it up to
+    // Babel to do that automatically and apply the transforms accordingly
+    // (which works because we pass in `filename` and `sourceFilename` to
+    // Babel when we transform).
+    let projectBabelRCPath;
+    if (projectRoots && projectRoots.length > 0) {
+      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    }
+
+    // If a .babelrc file doesn't exist in the project,
+    // use the Babel config provided with react-native.
+    if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
+      babelRC = json5.parse(
+        fs.readFileSync(
+          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+        );
+
+      // Require the babel-preset's listed in the default babel config
+      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.plugins = resolvePlugins(babelRC.plugins);
+    }
+
+    return babelRC;
+  };
+})();
+
+/**
+ * Given a filename and options, build a Babel
+ * config object with the appropriate plugins.
+ */
+function buildBabelConfig(filename, options) {
+  const babelRC = getBabelRC(options.projectRoots);
+
+  const extraConfig = {
+    filename,
+    sourceFileName: filename,
+  };
+
+  let config = Object.assign({}, babelRC, extraConfig);
+
+  // Add extra plugins
+  const extraPlugins = [externalHelpersPlugin];
+
+  var inlineRequires = options.inlineRequires;
+  var blacklist = inlineRequires && inlineRequires.blacklist;
+  if (inlineRequires && !(blacklist && filename in blacklist)) {
+    extraPlugins.push(inlineRequiresPlugin);
   }
 
-  var result = babel.transform(srcTxt, {
-    retainLines: true,
-    compact: true,
-    comments: false,
-    filename: filename,
-    whitelist: [
-      'es6.arrowFunctions',
-      'es6.blockScoping',
-      'es6.classes',
-      'es6.destructuring',
-      'es6.parameters',
-      'es6.properties.computed',
-      'es6.properties.shorthand',
-      'es6.spread',
-      'es6.templateLiterals',
-      'es7.asyncFunctions',
-      'es7.trailingFunctionCommas',
-      'es7.objectRestSpread',
-      'flow',
-      'react',
-      'react.displayName',
-      'regenerator',
-    ],
-    plugins: plugins,
-    sourceFileName: filename,
-    sourceMaps: false,
-    extra: options || {},
-  });
+  config.plugins = extraPlugins.concat(config.plugins);
 
-  return {
-    code: result.code,
-  };
+  if (options.hot) {
+    const hmrConfig = makeHMRConfig(options, filename);
+    config = Object.assign({}, config, hmrConfig);
+  }
+
+  return Object.assign({}, babelRC, config);
+}
+
+function transform(src, filename, options) {
+  options = options || {};
+
+  const OLD_BABEL_ENV = process.env.BABEL_ENV;
+  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
+
+  try {
+    const babelConfig = buildBabelConfig(filename, options);
+    const result = babel.transform(src, babelConfig);
+
+    return {
+      ast: result.ast,
+      code: result.code,
+      map: result.map,
+      filename: filename,
+    };
+  } finally {
+    process.env.BABEL_ENV = OLD_BABEL_ENV;
+  }
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename, data.options);
   } catch (e) {
     callback(e);
     return;

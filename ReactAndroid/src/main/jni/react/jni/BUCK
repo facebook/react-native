@@ -1,0 +1,25 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+# TODO(cjhopman): Remove this target (or move the xreact target to this directory).
+cxx_library(
+  name='jni',
+  soname = 'libreactnativejni.$(ext)',
+  header_namespace = 'react/jni',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  srcs = [
+    'Dummy.cpp',
+  ],
+  deps = [
+    react_native_target('jni/xreact/jni:jni'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':jni',
+)

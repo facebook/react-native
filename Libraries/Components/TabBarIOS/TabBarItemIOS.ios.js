@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TabBarItemIOS
+ * @noflow
  */
 'use strict';
 
@@ -18,8 +19,9 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var TabBarItemIOS = React.createClass({
-  propTypes: {
+class TabBarItemIOS extends React.Component {
+  static propTypes = {
+    ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */
@@ -29,7 +31,7 @@ var TabBarItemIOS = React.createClass({
     ]),
     /**
      * Items comes with a few predefined system icons. Note that if you are
-     * using them, the title and selectedIcon will be overriden with the
+     * using them, the title and selectedIcon will be overridden with the
      * system ones.
      */
     systemIcon: React.PropTypes.oneOf([
@@ -61,6 +63,11 @@ var TabBarItemIOS = React.createClass({
      */
     onPress: React.PropTypes.func,
     /**
+     * If set to true it renders the image as original,
+     * it defaults to being displayed as a template
+     */
+    renderAsOriginal: React.PropTypes.bool,
+    /**
      * It specifies whether the children are visible or not. If you see a
      * blank content, you probably forgot to add a selected one.
      */
@@ -74,54 +81,47 @@ var TabBarItemIOS = React.createClass({
      * is defined.
      */
     title: React.PropTypes.string,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      hasBeenSelected: false,
-    };
-  },
+  state = {
+    hasBeenSelected: false,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps: { selected?: boolean }) {
+  componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  render: function() {
-    var tabContents = null;
+  render() {
+    var {style, children, ...props} = this.props;
+
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
     if (this.state.hasBeenSelected) {
-      tabContents =
+      var tabContents =
         <StaticContainer shouldUpdate={this.props.selected}>
-          {this.props.children}
+          {children}
         </StaticContainer>;
     } else {
-      tabContents = <View />;
+      var tabContents = <View />;
     }
-
-    var badge = typeof this.props.badge === 'number' ?
-      '' + this.props.badge :
-      this.props.badge;
 
     return (
       <RCTTabBarItem
-        {...this.props}
-        icon={this.props.systemIcon || this.props.icon}
-        badge={badge}
-        style={[styles.tab, this.props.style]}>
+        {...props}
+        style={[styles.tab, style]}>
         {tabContents}
       </RCTTabBarItem>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tab: {

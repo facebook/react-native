@@ -9,7 +9,12 @@
 
 package com.facebook.react.uimanager.events;
 
+import javax.annotation.Nullable;
+
+import android.support.v4.util.Pools;
 import android.view.MotionEvent;
+
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single
@@ -21,43 +26,92 @@ import android.view.MotionEvent;
  */
 public class TouchEvent extends Event<TouchEvent> {
 
-  private final MotionEvent mMotionEvent;
-  private final TouchEventType mTouchEventType;
-  private final short mCoalescingKey;
+  private static final int TOUCH_EVENTS_POOL_SIZE = 3;
 
-  public TouchEvent(int viewTag, TouchEventType touchEventType, MotionEvent motionEventToCopy) {
-    super(viewTag, motionEventToCopy.getEventTime());
-    mTouchEventType = touchEventType;
-    mMotionEvent = MotionEvent.obtain(motionEventToCopy);
+  private static final Pools.SynchronizedPool<TouchEvent> EVENTS_POOL =
+      new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
+
+  public static TouchEvent obtain(
+      int viewTag,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy,
+      float viewX,
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
+    TouchEvent event = EVENTS_POOL.acquire();
+    if (event == null) {
+      event = new TouchEvent();
+    }
+    event.init(
+      viewTag,
+      touchEventType,
+      motionEventToCopy,
+      viewX,
+      viewY,
+      touchEventCoalescingKeyHelper);
+    return event;
+  }
+
+  private @Nullable MotionEvent mMotionEvent;
+  private @Nullable TouchEventType mTouchEventType;
+  private short mCoalescingKey;
+
+  // Coordinates in the ViewTag coordinate space
+  private float mViewX;
+  private float mViewY;
+
+  private TouchEvent() {
+  }
+
+  private void init(
+      int viewTag,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy,
+      float viewX,
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
+    super.init(viewTag);
 
     short coalescingKey = 0;
-    int action = (mMotionEvent.getAction() & MotionEvent.ACTION_MASK);
+    int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        TouchEventCoalescingKeyHelper.addCoalescingKey(mMotionEvent.getDownTime());
+        touchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_UP:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(mMotionEvent.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
       case MotionEvent.ACTION_POINTER_UP:
-        TouchEventCoalescingKeyHelper.incrementCoalescingKey(mMotionEvent.getDownTime());
+        touchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_MOVE:
-        coalescingKey = TouchEventCoalescingKeyHelper.getCoalescingKey(mMotionEvent.getDownTime());
+        coalescingKey =
+          touchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
         break;
       case MotionEvent.ACTION_CANCEL:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(mMotionEvent.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
         break;
       default:
         throw new RuntimeException("Unhandled MotionEvent action: " + action);
     }
+    mTouchEventType = touchEventType;
+    mMotionEvent = MotionEvent.obtain(motionEventToCopy);
     mCoalescingKey = coalescingKey;
+    mViewX = viewX;
+    mViewY = viewY;
+  }
+
+  @Override
+  public void onDispose() {
+    Assertions.assertNotNull(mMotionEvent).recycle();
+    mMotionEvent = null;
+    EVENTS_POOL.release(this);
   }
 
   @Override
   public String getEventName() {
-    return mTouchEventType.getJSEventName();
+    return Assertions.assertNotNull(mTouchEventType).getJSEventName();
   }
 
   @Override
@@ -65,7 +119,7 @@ public class TouchEvent extends Event<TouchEvent> {
     // We can coalesce move events but not start/end events. Coalescing move events should probably
     // append historical move data like MotionEvent batching does. This is left as an exercise for
     // the reader.
-    switch (mTouchEventType) {
+    switch (Assertions.assertNotNull(mTouchEventType)) {
       case START:
       case END:
       case CANCEL:
@@ -86,13 +140,21 @@ public class TouchEvent extends Event<TouchEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     TouchesHelper.sendTouchEvent(
         rctEventEmitter,
-        mTouchEventType,
+        Assertions.assertNotNull(mTouchEventType),
         getViewTag(),
-        mMotionEvent);
+        this);
   }
 
-  @Override
-  public void dispose() {
-    mMotionEvent.recycle();
+  public MotionEvent getMotionEvent() {
+    Assertions.assertNotNull(mMotionEvent);
+    return mMotionEvent;
+  }
+
+  public float getViewX() {
+    return mViewX;
+  }
+
+  public float getViewY() {
+    return mViewY;
   }
 }

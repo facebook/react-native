@@ -11,9 +11,7 @@ package com.facebook.react.views.text;
 
 import javax.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
@@ -21,33 +19,43 @@ import android.text.style.MetricAffectingSpan;
 
 public class CustomStyleSpan extends MetricAffectingSpan {
 
-  // Typeface caching is a bit weird: once a Typeface is created, it cannot be changed, so we need
-  // to cache each font family and each style that they have. Typeface does cache this already in
-  // Typeface.create(Typeface, style) post API 16, but for that you already need a Typeface.
-  // Therefore, here we cache one style for each font family, and let Typeface cache all styles for
-  // that font family. Of course this is not ideal, and especially after adding Typeface loading
-  // from assets, we will need to have our own caching mechanism for all Typeface creation types.
-  // TODO: t6866343 add better Typeface caching
-  private static final Map<String, Typeface> sTypefaceCache = new HashMap<String, Typeface>();
+  /**
+   * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
+   * CustomStyleSpan will try to load the fontFamily with the right style and weight from the
+   * assets. The custom fonts will have to be located in the res/assets folder of the application.
+   * The supported custom fonts extensions are .ttf and .otf. For each font family the bold,
+   * italic and bold_italic variants are supported. Given a "family" font family the files in the
+   * assets/fonts folder need to be family.ttf(.otf) family_bold.ttf(.otf) family_italic.ttf(.otf)
+   * and family_bold_italic.ttf(.otf). If the right font is not found in the assets folder
+   * CustomStyleSpan will fallback on the most appropriate default typeface depending on the style.
+   * Fonts are retrieved and cached using the {@link ReactFontManager}
+   */
+
+  private final AssetManager mAssetManager;
 
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
 
-  public CustomStyleSpan(int fontStyle, int fontWeight, @Nullable String fontFamily) {
+  public CustomStyleSpan(
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFamily,
+      AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
+    mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily);
+    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily);
+    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   /**
@@ -61,7 +69,7 @@ public class CustomStyleSpan extends MetricAffectingSpan {
    * Returns {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
    */
   public int getWeight() {
-    return (mWeight  == ReactTextShadowNode.UNSET ? 0 : mWeight);
+    return (mWeight == ReactTextShadowNode.UNSET ? 0 : mWeight);
   }
 
   /**
@@ -71,7 +79,12 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     return mFontFamily;
   }
 
-  private static void apply(Paint paint, int style, int weight, @Nullable String family) {
+  private static void apply(
+      Paint paint,
+      int style,
+      int weight,
+      @Nullable String family,
+      AssetManager assetManager) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
     if (typeface == null) {
@@ -92,23 +105,17 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     }
 
     if (family != null) {
-      typeface = getOrCreateTypeface(family, want);
+      typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
+    } else if (typeface != null) {
+      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
+      typeface = Typeface.create(typeface, want);
     }
 
     if (typeface != null) {
-      paint.setTypeface(Typeface.create(typeface, want));
+      paint.setTypeface(typeface);
     } else {
       paint.setTypeface(Typeface.defaultFromStyle(want));
     }
   }
 
-  private static Typeface getOrCreateTypeface(String family, int style) {
-    if (sTypefaceCache.get(family) != null) {
-      return sTypefaceCache.get(family);
-    }
-
-    Typeface typeface = Typeface.create(family, style);
-    sTypefaceCache.put(family, typeface);
-    return typeface;
-  }
 }

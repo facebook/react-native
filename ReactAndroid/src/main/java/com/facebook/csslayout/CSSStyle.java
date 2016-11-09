@@ -1,46 +1,76 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<ec76950a22dda1c6e98eafc15ccf7cd3>>
-
 package com.facebook.csslayout;
 
+import java.util.Arrays;
+
 /**
- * The CSS style definition for a {@link CSSNode}.
+ * The CSS style definition for a {@link CSSNodeDEPRECATED}.
  */
 public class CSSStyle {
 
-  public CSSDirection direction = CSSDirection.INHERIT;
-  public CSSFlexDirection flexDirection = CSSFlexDirection.COLUMN;
-  public CSSJustify justifyContent = CSSJustify.FLEX_START;
-  public CSSAlign alignContent = CSSAlign.FLEX_START;
-  public CSSAlign alignItems = CSSAlign.STRETCH;
-  public CSSAlign alignSelf = CSSAlign.AUTO;
-  public CSSPositionType positionType = CSSPositionType.RELATIVE;
-  public CSSWrap flexWrap = CSSWrap.NOWRAP;
-  public float flex;
+  public CSSDirection direction;
+  public CSSFlexDirection flexDirection;
+  public CSSJustify justifyContent;
+  public CSSAlign alignContent;
+  public CSSAlign alignItems;
+  public CSSAlign alignSelf;
+  public CSSPositionType positionType;
+  public CSSWrap flexWrap;
+  public CSSOverflow overflow;
+  public float flexGrow;
+  public float flexShrink;
+  public float flexBasis;
 
   public Spacing margin = new Spacing();
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
+  public Spacing position = new Spacing(CSSConstants.UNDEFINED);
 
-  public float positionTop = CSSConstants.UNDEFINED;
-  public float positionBottom = CSSConstants.UNDEFINED;
-  public float positionLeft = CSSConstants.UNDEFINED;
-  public float positionRight = CSSConstants.UNDEFINED;
-
-  public float width = CSSConstants.UNDEFINED;
-  public float height = CSSConstants.UNDEFINED;
+  public float[] dimensions = new float[2];
 
   public float minWidth = CSSConstants.UNDEFINED;
   public float minHeight = CSSConstants.UNDEFINED;
 
   public float maxWidth = CSSConstants.UNDEFINED;
   public float maxHeight = CSSConstants.UNDEFINED;
+
+  CSSStyle() {
+    reset();
+  }
+
+  void reset() {
+    direction = CSSDirection.INHERIT;
+    flexDirection = CSSFlexDirection.COLUMN;
+    justifyContent = CSSJustify.FLEX_START;
+    alignContent = CSSAlign.FLEX_START;
+    alignItems = CSSAlign.STRETCH;
+    alignSelf = CSSAlign.AUTO;
+    positionType = CSSPositionType.RELATIVE;
+    flexWrap = CSSWrap.NOWRAP;
+    overflow = CSSOverflow.VISIBLE;
+    flexGrow = 0;
+    flexShrink = 0;
+    flexBasis = CSSConstants.UNDEFINED;
+
+    margin.reset();
+    padding.reset();
+    border.reset();
+    position.reset();
+
+    Arrays.fill(dimensions, CSSConstants.UNDEFINED);
+
+    minWidth = CSSConstants.UNDEFINED;
+    minHeight = CSSConstants.UNDEFINED;
+
+    maxWidth = CSSConstants.UNDEFINED;
+    maxHeight = CSSConstants.UNDEFINED;
+  }
 }

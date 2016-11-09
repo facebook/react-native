@@ -9,26 +9,45 @@
  * @providesModule DocsLayout
  */
 
+var DocsSidebar = require('DocsSidebar');
+var Header = require('Header');
+var Footer = require('Footer');
+var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
-var Marked = require('Marked');
-var DocsSidebar = require('DocsSidebar');
+var Metadata = require('Metadata');
+
 var DocsLayout = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string,
+    version: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {
+      permalink: this.props.metadata.permalink,
+      version: Metadata.config.RN_VERSION || 'next'
+    };
+  },
+
   render: function() {
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
-      <Site section="docs" title={metadata.title}>
+      <Site
+        section="docs"
+        title={metadata.title} >
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <h1>{metadata.title}</h1>
+            <Header level={1}>{metadata.title}</Header>
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
+              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
+              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
+            <Footer path={'docs/' + metadata.filename} />
           </div>
         </section>
       </Site>

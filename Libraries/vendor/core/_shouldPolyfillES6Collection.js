@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6c1a82d2f5918f03f3f0e5825e1f32f3>>
+ * @generated SignedSource<<bf0749e529897a7c9687fff37310d4d2>>
  *
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * !! This file is a check-in of a static_upstream project!      !!
@@ -12,67 +12,42 @@
  * !!    static_upstream.                                        !!
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *
- * Copyright 2013-2014 Facebook, Inc.
+ * Copyright 2004-present Facebook. All Rights Reserved.
+ *
  * @providesModule _shouldPolyfillES6Collection
  * @preventMunge
- * @typechecks
+ * @flow
  */
 
 /**
- * Given a collection class name (Map or Set) return whether it's safe to use
- * the native polyfill.
- *
- * @param {string} collectionName
+ * Checks whether a collection name (e.g. "Map" or "Set") has a native polyfill
+ * that is safe to be used.
  */
-function shouldPolyfillES6Collection(collectionName) {
+function shouldPolyfillES6Collection(collectionName: string): boolean {
   var Collection = global[collectionName];
   if (Collection == null) {
     return true;
   }
 
+  // The iterator protocol depends on `Symbol.iterator`. If a collection is
+  // implemented, but `Symbol` is not, it's going to break iteration because
+  // we'll be using custom "@@iterator" instead, which is not implemented on
+  // native collections.
+  if (typeof global.Symbol !== 'function') {
+    return true;
+  }
+
   var proto = Collection.prototype;
 
-  // These checks are adapted from es6-shim https://fburl.com/34437854
+  // These checks are adapted from es6-shim: https://fburl.com/34437854
+  // NOTE: `isCallableWithoutNew` and `!supportsSubclassing` are not checked
+  // because they make debugging with "break on exceptions" difficult.
   return Collection == null ||
     typeof Collection !== 'function' ||
     typeof proto.clear !== 'function' ||
     new Collection().size !== 0 ||
     typeof proto.keys !== 'function' ||
-    typeof proto.forEach !== 'function' ||
-    isCallableWithoutNew(Collection) ||
-    !supportsSubclassing(Collection);
-}
-
-/**
- * Given a class can we subclass it?
- *
- * @param {function} Collection
- */
-function supportsSubclassing(Collection) {
-  class SubCollection extends Collection {}
-  try {
-    var s = (new SubCollection([]));
-    // Firefox 32 will throw a type error when any operation is called on a
-    // subclass.
-    s.size;
-    return s instanceof Collection;
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * Given a constructor can we call it without `new`?
- *
- * @param {function} Collection
- */
-function isCallableWithoutNew(Collection) {
-  try {
-    Collection();
-  } catch (e) {
-    return false;
-  }
-  return true;
+    typeof proto.forEach !== 'function';
 }
 
 module.exports = shouldPolyfillES6Collection;

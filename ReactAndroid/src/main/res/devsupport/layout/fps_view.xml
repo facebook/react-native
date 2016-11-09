@@ -7,12 +7,12 @@
       android:id="@+id/fps_text"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_margin="5dp"
-      android:background="#aa141823"
+      android:layout_margin="3dp"
+      android:background="#a4141823"
       android:gravity="right"
       android:layout_gravity="top|right"
-      android:padding="5dp"
+      android:padding="3dp"
       android:textColor="@android:color/white"
-      android:textSize="16sp"
+      android:textSize="11sp"
       />
 </merge>

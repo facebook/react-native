@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
     defaultConfig {
@@ -24,12 +24,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
 
-    // Depend on pre-built React Native
-    compile 'com.facebook.react:react-native:0.11.+'
-    
-    // Depend on React Native source.
-    // This is useful for testing your changes when working on React Native.
-    // compile project(':ReactAndroid')
+    // Build React Native from source
+    compile project(':ReactAndroid')
 }

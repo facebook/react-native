@@ -19,17 +19,15 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public abstract class NativeArray {
   static {
-    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
-  public NativeArray() {
-    mHybridData = initHybrid();
+  protected NativeArray(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
   @Override
   public native String toString();
-
-  private native HybridData initHybrid();
 
   @DoNotStrip
   private HybridData mHybridData;

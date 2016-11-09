@@ -11,23 +11,22 @@
  */
 'use strict';
 
-var ErrorUtils = require('ErrorUtils');
-var EventEmitter = require('EventEmitter');
-var Set = require('Set');
+const BatchedBridge = require('BatchedBridge');
+const EventEmitter = require('EventEmitter');
+const Set = require('Set');
+const TaskQueue = require('TaskQueue');
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
-var setImmediate = require('setImmediate');
+const infoLog = require('infoLog');
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
 
 type Handle = number;
+import type {Task} from 'TaskQueue';
 
-var _emitter = new EventEmitter();
-var _interactionSet = new Set();
-var _addInteractionSet = new Set();
-var _deleteInteractionSet = new Set();
-var _nextUpdateHandle = null;
-var _queue = [];
-var _inc = 0;
+const _emitter = new EventEmitter();
+
+const DEBUG_DELAY = 0;
+const DEBUG = false;
 
 /**
  * InteractionManager allows long-running work to be scheduled after any
@@ -63,6 +62,20 @@ var _inc = 0;
  * InteractionManager.clearInteractionHandle(handle);
  * // queued tasks run if all handles were cleared
  * ```
+ *
+ * `runAfterInteractions` takes either a plain callback function, or a
+ * `PromiseTask` object with a `gen` method that returns a `Promise`.  If a
+ * `PromiseTask` is supplied, then it is fully resolved (including asynchronous
+ * dependencies that also schedule more tasks via `runAfterInteractions`) before
+ * starting on the next task that might have been queued up synchronously
+ * earlier.
+ *
+ * By default, queued tasks are executed together in a loop in one
+ * `setImmediate` batch. If `setDeadline` is called with a positive number, then
+ * tasks will only be executed until the deadline (in terms of js event loop run
+ * time) approaches, at which point execution will yield via setTimeout,
+ * allowing events such as touches to start interactions and block queued tasks
+ * from executing, making apps more responsive.
  */
 var InteractionManager = {
   Events: keyMirror({
@@ -71,22 +84,40 @@ var InteractionManager = {
   }),
 
   /**
-   * Schedule a function to run after all interactions have completed.
+   * Schedule a function to run after all interactions have completed. Returns a cancellable
+   * "promise".
    */
-  runAfterInteractions(callback: Function) {
-    invariant(
-      typeof callback === 'function',
-      'Must specify a function to schedule.'
-    );
-    scheduleUpdate();
-    _queue.push(callback);
+  runAfterInteractions(task: ?Task): {then: Function, done: Function, cancel: Function} {
+    const tasks = [];
+    const promise = new Promise(resolve => {
+      _scheduleUpdate();
+      if (task) {
+        tasks.push(task);
+      }
+      tasks.push({run: resolve, name: 'resolve ' + (task && task.name || '?')});
+      _taskQueue.enqueueTasks(tasks);
+    });
+    return {
+      then: promise.then.bind(promise),
+      done: (...args) => {
+        if (promise.done) {
+          return promise.done(...args);
+        } else {
+          console.warn('Tried to call done when not supported by current Promise implementation.');
+        }
+      },
+      cancel: function() {
+        _taskQueue.cancelTasks(tasks);
+      },
+    };
   },
 
   /**
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
-    scheduleUpdate();
+    DEBUG && infoLog('create interaction handle');
+    _scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
     return handle;
@@ -96,32 +127,56 @@ var InteractionManager = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
+    DEBUG && infoLog('clear interaction handle');
     invariant(
       !!handle,
       'Must provide a handle to clear.'
     );
-    scheduleUpdate();
+    _scheduleUpdate();
     _addInteractionSet.delete(handle);
     _deleteInteractionSet.add(handle);
   },
 
   addListener: _emitter.addListener.bind(_emitter),
+
+  /**
+   * A positive number will use setTimeout to schedule any tasks after the
+   * eventLoopRunningTime hits the deadline value, otherwise all tasks will be
+   * executed in one setImmediate batch (default).
+   */
+  setDeadline(deadline: number) {
+    _deadline = deadline;
+  },
 };
+
+const _interactionSet = new Set();
+const _addInteractionSet = new Set();
+const _deleteInteractionSet = new Set();
+const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
+let _nextUpdateHandle = 0;
+let _inc = 0;
+let _deadline = -1;
+
+declare function setImmediate(callback: any, ...args: Array<any>): number;
 
 /**
  * Schedule an asynchronous update to the interaction state.
  */
-function scheduleUpdate() {
+function _scheduleUpdate() {
   if (!_nextUpdateHandle) {
-    _nextUpdateHandle = setImmediate(processUpdate);
+    if (_deadline > 0) {
+      _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
+    } else {
+      _nextUpdateHandle = setImmediate(_processUpdate);
+    }
   }
 }
 
 /**
  * Notify listeners, process queue, etc
  */
-function processUpdate() {
-  _nextUpdateHandle = null;
+function _processUpdate() {
+  _nextUpdateHandle = 0;
 
   var interactionCount = _interactionSet.size;
   _addInteractionSet.forEach(handle =>
@@ -142,13 +197,16 @@ function processUpdate() {
 
   // process the queue regardless of a transition
   if (nextInteractionCount === 0) {
-    var queue = _queue;
-    _queue = [];
-    queue.forEach(callback => {
-      ErrorUtils.applyWithGuard(callback);
-    });
+    while (_taskQueue.hasTasksToProcess()) {
+      _taskQueue.processNext();
+      if (_deadline > 0 &&
+          BatchedBridge.getEventLoopRunningTime() >= _deadline) {
+        // Hit deadline before processing all tasks, so process more later.
+        _scheduleUpdate();
+        break;
+      }
+    }
   }
-
   _addInteractionSet.clear();
   _deleteInteractionSet.clear();
 }

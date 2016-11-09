@@ -2,11 +2,12 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule MatrixMath
+ * @noflow
  */
 /* eslint-disable space-infix-ops */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 /**
  * Memory conservative (mutative) matrix math utilities. Uses "command"
@@ -66,8 +67,14 @@ var MatrixMath = {
     ];
   },
 
+  /**
+   * This create a perspective projection towards negative z
+   * Clipping the z range of [-near, -far]
+   *
+   * @param fovInRadians - field of view in randians
+   */
   createPerspective: function(fovInRadians, aspect, near, far) {
-    var h = 1 / Math.tan(fovInRadians);
+    var h = 1 / Math.tan(fovInRadians / 2);
     var r_depth  = 1 / (near - far);
     var C = (far + near) * r_depth;
     var D = 2 * (far * near * r_depth);
@@ -155,6 +162,16 @@ var MatrixMath = {
     var mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateZCommand(mat, radians);
     return mat;
+  },
+
+  reuseSkewXCommand: function(matrixCommand, radians) {
+    matrixCommand[4] = Math.sin(radians);
+    matrixCommand[5] = Math.cos(radians);
+  },
+
+  reuseSkewYCommand: function(matrixCommand, radians) {
+    matrixCommand[0] = Math.cos(radians);
+    matrixCommand[1] = Math.sin(radians);
   },
 
   multiplyInto: function(out, a, b) {
@@ -454,10 +471,10 @@ var MatrixMath = {
 
       // Solve the equation by inverting perspectiveMatrix and multiplying
       // rightHandSide by the inverse.
-      var inversePerspectiveMatrix = MatrixMath.inverse3x3(
+      var inversePerspectiveMatrix = MatrixMath.inverse(
         perspectiveMatrix
       );
-      var transposedInversePerspectiveMatrix = MatrixMath.transpose4x4(
+      var transposedInversePerspectiveMatrix = MatrixMath.transpose(
         inversePerspectiveMatrix
       );
       var perspective = MatrixMath.multiplyVectorByMatrix(
@@ -572,6 +589,8 @@ var MatrixMath = {
       translation,
 
       rotate: rotationDegrees[2],
+      rotateX: rotationDegrees[0],
+      rotateY: rotationDegrees[1],
       scaleX: scale[0],
       scaleY: scale[1],
       translateX: translation[0],

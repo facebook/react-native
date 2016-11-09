@@ -12,11 +12,12 @@
 'use strict';
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ReactPropTypeLocations = require('ReactPropTypeLocations');
+var ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
+var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 class StyleSheetValidation {
   static validateStyleProp(prop, style, caller) {
@@ -33,7 +34,9 @@ class StyleSheetValidation {
       style,
       prop,
       caller,
-      ReactPropTypeLocations.prop
+      ReactPropTypeLocations.prop,
+      null,
+      ReactPropTypesSecret
     );
     if (error) {
       styleError(error.message, style, caller);

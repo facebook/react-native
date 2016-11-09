@@ -8,17 +8,30 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const fs = require('fs');
-const getAssetDataFromName = require('../lib/getAssetDataFromName');
+const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
 
-const stat = Promise.denodeify(fs.stat);
-const readDir = Promise.denodeify(fs.readdir);
-const readFile = Promise.denodeify(fs.readFile);
+const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
+  setTimeout(reject, timeout, 'fs operation timeout');
+});
+function timeoutableDenodeify(fsFunc, timeout) {
+  return function raceWrapper(...args) {
+    return Promise.race([
+      createTimeoutPromise(timeout),
+      denodeify(fsFunc).apply(this, args)
+    ]);
+  };
+}
+
+const FS_OP_TIMEOUT = parseInt(process.env.REACT_NATIVE_FSOP_TIMEOUT, 10) || 15000;
+
+const stat = timeoutableDenodeify(fs.stat, FS_OP_TIMEOUT);
+const readDir = timeoutableDenodeify(fs.readdir, FS_OP_TIMEOUT);
+const readFile = timeoutableDenodeify(fs.readFile, FS_OP_TIMEOUT);
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -29,6 +42,10 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  fileWatcher: {
+    type: 'object',
+    required: true,
+  }
 });
 
 class AssetServer {
@@ -36,10 +53,15 @@ class AssetServer {
     const opts = validateOpts(options);
     this._roots = opts.projectRoots;
     this._assetExts = opts.assetExts;
+    this._hashes = new Map();
+    this._files = new Map();
+
+    opts.fileWatcher
+      .on('all', (type, root, file) => this._onFileChange(type, root, file));
   }
 
   get(assetPath, platform = null) {
-    const assetData = getAssetDataFromName(assetPath);
+    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
     return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
@@ -52,7 +74,7 @@ class AssetServer {
   }
 
   getAssetData(assetPath, platform = null) {
-    const nameData = getAssetDataFromName(assetPath);
+    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
     const data = {
       name: nameData.name,
       type: nameData.type,
@@ -60,20 +82,33 @@ class AssetServer {
 
     return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
+      data.files = record.files;
 
-      return Promise.all(
-        record.files.map(file => stat(file))
-      );
-    }).then(stats => {
-      const hash = crypto.createHash('md5');
 
-      stats.forEach(fstat =>
-        hash.update(fstat.mtime.getTime().toString())
-      );
+      if (this._hashes.has(assetPath)) {
+        data.hash = this._hashes.get(assetPath);
+        return data;
+      }
 
-      data.hash = hash.digest('hex');
-      return data;
+      return new Promise((resolve, reject) => {
+        const hash = crypto.createHash('md5');
+        hashFiles(data.files.slice(), hash, error => {
+          if (error) {
+            reject(error);
+          } else {
+            data.hash = hash.digest('hex');
+            this._hashes.set(assetPath, data.hash);
+            data.files.forEach(f => this._files.set(f, assetPath));
+            resolve(data);
+          }
+        });
+      });
     });
+  }
+
+  _onFileChange(type, root, file) {
+    const asset = this._files.get(path.join(root, file));
+    this._hashes.delete(asset);
   }
 
   /**
@@ -93,7 +128,8 @@ class AssetServer {
     return (
       this._findRoot(
         this._roots,
-        path.dirname(assetPath)
+        path.dirname(assetPath),
+        assetPath,
       )
       .then(dir => Promise.all([
         dir,
@@ -102,7 +138,7 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename);
+        const assetData = getAssetDataFromName(filename, new Set([platform]));
 
         const map = this._buildAssetMap(dir, files, platform);
 
@@ -125,28 +161,38 @@ class AssetServer {
     );
   }
 
-  _findRoot(roots, dir) {
+  _findRoot(roots, dir, debugInfoFile) {
     return Promise.all(
       roots.map(root => {
-        const absPath = path.join(root, dir);
+        const absRoot = path.resolve(root);
+        // important: we want to resolve root + dir
+        // to ensure the requested path doesn't traverse beyond root
+        const absPath = path.resolve(root, dir);
         return stat(absPath).then(fstat => {
-          return {path: absPath, isDirectory: fstat.isDirectory()};
-        }, err => {
-          return {path: absPath, isDirectory: false};
+          // keep asset requests from traversing files
+          // up from the root (e.g. ../../../etc/hosts)
+          if (!absPath.startsWith(absRoot)) {
+            return {path: absPath, isValid: false};
+          }
+          return {path: absPath, isValid: fstat.isDirectory()};
+        }, _ => {
+          return {path: absPath, isValid: false};
         });
       })
     ).then(stats => {
       for (let i = 0; i < stats.length; i++) {
-        if (stats[i].isDirectory) {
+        if (stats[i].isValid) {
           return stats[i].path;
         }
       }
-      throw new Error('Could not find any directories');
+
+      const rootsString = roots.map(s => `'${s}'`).join(', ');
+      throw new Error(`'${debugInfoFile}' could not be found, because '${dir}' is not a subdirectory of any of the roots  (${rootsString})`);
     });
   }
 
-  _buildAssetMap(dir, files) {
-    const assets = files.map(getAssetDataFromName);
+  _buildAssetMap(dir, files, platform) {
+    const assets = files.map(this._getAssetDataFromName.bind(this, new Set([platform])));
     const map = Object.create(null);
     assets.forEach(function(asset, i) {
       const file = files[i];
@@ -173,6 +219,10 @@ class AssetServer {
 
     return map;
   }
+
+  _getAssetDataFromName(platform, file) {
+    return getAssetDataFromName(file, platform);
+  }
 }
 
 function getAssetKey(assetName, platform) {
@@ -181,6 +231,18 @@ function getAssetKey(assetName, platform) {
   } else {
     return assetName;
   }
+}
+
+function hashFiles(files, hash, callback) {
+  if (!files.length) {
+    callback(null);
+    return;
+  }
+
+  fs.createReadStream(files.shift())
+    .on('data', data => hash.update(data))
+    .once('end', () => hashFiles(files, hash, callback))
+    .once('error', error => callback(error));
 }
 
 module.exports = AssetServer;

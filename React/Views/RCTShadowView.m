@@ -11,14 +11,14 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "UIView+Private.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
-const NSString *const RCTBackgroundColorProp = @"backgroundColor";
+static NSString *const RCTBackgroundColorProp = @"backgroundColor";
 
 typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_LEFT,
@@ -36,10 +36,11 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   RCTUpdateLifecycle _propagationLifecycle;
   RCTUpdateLifecycle _textLifecycle;
   NSDictionary *_lastParentProperties;
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<RCTShadowView *> *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
+  BOOL _didUpdateSubviews;
   float _paddingMetaProps[META_PROP_COUNT];
   float _marginMetaProps[META_PROP_COUNT];
   float _borderMetaProps[META_PROP_COUNT];
@@ -47,51 +48,61 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 @synthesize reactTag = _reactTag;
 
-// css_node api
+// cssNode api
 
-static void RCTPrint(void *context)
+static void RCTPrint(CSSNodeRef node)
 {
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)CSSNodeGetContext(node);
   printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
-static css_node_t *RCTGetChild(void *context, int i)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
-  RCTShadowView *child = [shadowView reactSubviews][i];
-  return child->_cssNode;
-}
-
-static bool RCTIsDirty(void *context)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
-  return [shadowView isLayoutDirty];
-}
-
 // Enforces precedence rules, e.g. marginLeft > marginHorizontal > margin.
-static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float style[CSS_POSITION_COUNT]) {
-  style[CSS_LEFT] = !isUndefined(metaProps[META_PROP_LEFT]) ? metaProps[META_PROP_LEFT]
-  : !isUndefined(metaProps[META_PROP_HORIZONTAL]) ? metaProps[META_PROP_HORIZONTAL]
-  : !isUndefined(metaProps[META_PROP_ALL]) ? metaProps[META_PROP_ALL]
-  : 0;
-  style[CSS_RIGHT] = !isUndefined(metaProps[META_PROP_RIGHT]) ? metaProps[META_PROP_RIGHT]
-  : !isUndefined(metaProps[META_PROP_HORIZONTAL]) ? metaProps[META_PROP_HORIZONTAL]
-  : !isUndefined(metaProps[META_PROP_ALL]) ? metaProps[META_PROP_ALL]
-  : 0;
-  style[CSS_TOP] = !isUndefined(metaProps[META_PROP_TOP]) ? metaProps[META_PROP_TOP]
-  : !isUndefined(metaProps[META_PROP_VERTICAL]) ? metaProps[META_PROP_VERTICAL]
-  : !isUndefined(metaProps[META_PROP_ALL]) ? metaProps[META_PROP_ALL]
-  : 0;
-  style[CSS_BOTTOM] = !isUndefined(metaProps[META_PROP_BOTTOM]) ? metaProps[META_PROP_BOTTOM]
-  : !isUndefined(metaProps[META_PROP_VERTICAL]) ? metaProps[META_PROP_VERTICAL]
-  : !isUndefined(metaProps[META_PROP_ALL]) ? metaProps[META_PROP_ALL]
-  : 0;
+#define DEFINE_PROCESS_META_PROPS(type)                                                            \
+static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], CSSNodeRef node) {   \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_LEFT])) {                                           \
+    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_LEFT]);                          \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_HORIZONTAL]);                    \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_ALL]);                           \
+  } else {                                                                                         \
+    CSSNodeStyleSet##type(node, CSSEdgeStart, 0);                                                  \
+  }                                                                                                \
+                                                                                                   \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_RIGHT])) {                                          \
+    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_RIGHT]);                           \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_HORIZONTAL]);                      \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_ALL]);                             \
+  } else {                                                                                         \
+    CSSNodeStyleSet##type(node, CSSEdgeEnd, 0);                                                    \
+  }                                                                                                \
+                                                                                                   \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_TOP])) {                                            \
+    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_TOP]);                             \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
+    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_VERTICAL]);                        \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_ALL]);                             \
+  } else {                                                                                         \
+    CSSNodeStyleSet##type(node, CSSEdgeTop, 0);                                                    \
+  }                                                                                                \
+                                                                                                   \
+  if (!CSSValueIsUndefined(metaProps[META_PROP_BOTTOM])) {                                         \
+    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_BOTTOM]);                       \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
+    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_VERTICAL]);                     \
+  } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_ALL]);                          \
+  } else {                                                                                         \
+    CSSNodeStyleSet##type(node, CSSEdgeBottom, 0);                                                 \
+  }                                                                                                \
 }
 
-- (void)fillCSSNode:(css_node_t *)node
-{
-  node->children_count = (int)_reactSubviews.count;
-}
+DEFINE_PROCESS_META_PROPS(Padding);
+DEFINE_PROCESS_META_PROPS(Margin);
+DEFINE_PROCESS_META_PROPS(Border);
 
 // The absolute stuff is so that we can take into account our absolute position when rounding in order to
 // snap to the pixel grid. For example, say you have the following structure:
@@ -118,36 +129,45 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 //
 // After passing in the absolutePosition of {106.667, y}, we do the following calculations:
 // absoluteLeft = round(absolutePosition.x + viewPosition.left) = round(106.667 + 0) = 106.5
-// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.left) + round(106.667 + 0 + 106.667) = 213.5
+// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.width) + round(106.667 + 0 + 106.667) = 213.5
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
-- (void)applyLayoutNode:(css_node_t *)node
-      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+- (void)applyLayoutNode:(CSSNodeRef)node
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
-  if (!node->layout.should_update) {
+  if (!CSSNodeGetHasNewLayout(node)) {
     return;
   }
-  node->layout.should_update = false;
-  _layoutLifecycle = RCTUpdateLifecycleComputed;
+  CSSNodeSetHasNewLayout(node, false);
 
-  CGPoint absoluteTopLeft = {
-    absolutePosition.x + node->layout.position[CSS_LEFT],
-    absolutePosition.y + node->layout.position[CSS_TOP]
+#if RCT_DEBUG
+  // This works around a breaking change in css-layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
+  // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
+  if ((!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(node)) && CSSNodeStyleGetFlexBasis(node) == 0) &&
+      ((!CSSValueIsUndefined(CSSNodeStyleGetWidth(node)) && CSSNodeStyleGetWidth(node) > 0 && CSSNodeLayoutGetWidth(node) == 0) ||
+       (!CSSValueIsUndefined(CSSNodeStyleGetHeight(node)) && CSSNodeStyleGetHeight(node) > 0 && CSSNodeLayoutGetHeight(node) == 0))) {
+    RCTLogError(@"View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:) View: %@", self);
+  }
+#endif
+
+  const CGPoint absoluteTopLeft = {
+    absolutePosition.x + CSSNodeLayoutGetLeft(node),
+    absolutePosition.y + CSSNodeLayoutGetTop(node)
   };
 
-  CGPoint absoluteBottomRight = {
-    absolutePosition.x + node->layout.position[CSS_LEFT] + node->layout.dimensions[CSS_WIDTH],
-    absolutePosition.y + node->layout.position[CSS_TOP] + node->layout.dimensions[CSS_HEIGHT]
+  const CGPoint absoluteBottomRight = {
+    absoluteTopLeft.x + CSSNodeLayoutGetWidth(node),
+    absoluteTopLeft.y + CSSNodeLayoutGetHeight(node)
   };
 
-  CGRect frame = {{
-    RCTRoundPixelValue(node->layout.position[CSS_LEFT]),
-    RCTRoundPixelValue(node->layout.position[CSS_TOP]),
+  const CGRect frame = {{
+    RCTRoundPixelValue(CSSNodeLayoutGetLeft(node)),
+    RCTRoundPixelValue(CSSNodeLayoutGetTop(node)),
   }, {
-    RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
-    RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
+    RCTRoundPixelValue(absoluteBottomRight.x) - RCTRoundPixelValue(absoluteTopLeft.x),
+    RCTRoundPixelValue(absoluteBottomRight.y) - RCTRoundPixelValue(absoluteTopLeft.y),
   }};
 
   if (!CGRectEqualToRect(frame, _frame)) {
@@ -155,40 +175,52 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
     [viewsWithNewFrame addObject:self];
   }
 
-  absolutePosition.x += node->layout.position[CSS_LEFT];
-  absolutePosition.y += node->layout.position[CSS_TOP];
+  absolutePosition.x += CSSNodeLayoutGetLeft(node);
+  absolutePosition.y += CSSNodeLayoutGetTop(node);
 
-  node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-  node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-  node->layout.position[CSS_LEFT] = 0;
-  node->layout.position[CSS_TOP] = 0;
+  [self applyLayoutToChildren:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
+}
 
-  for (int i = 0; i < node->children_count; ++i) {
+- (void)applyLayoutToChildren:(CSSNodeRef)node
+            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+             absolutePosition:(CGPoint)absolutePosition
+{
+  for (unsigned int i = 0; i < CSSNodeChildCount(node); ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
-    [child applyLayoutNode:node->get_child(node->context, i)
+    [child applyLayoutNode:CSSNodeGetChild(node, i)
          viewsWithNewFrame:viewsWithNewFrame
           absolutePosition:absolutePosition];
   }
 }
 
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
-                          parentProperties:(NSDictionary *)parentProperties
+- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
   // TODO: we always refresh all propagated properties when propagation is
   // dirtied, but really we should track which properties have changed and
   // only update those.
 
+  if (_didUpdateSubviews) {
+    _didUpdateSubviews = NO;
+    [self didUpdateReactSubviews];
+    [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      UIView *view = viewRegistry[self->_reactTag];
+      [view clearSortedSubviews];
+      [view didUpdateReactSubviews];
+    }];
+  }
+
   if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
-      [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
+      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[self->_reactTag];
         [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
   } else {
     // Update parent properties for children
-    NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
+    NSMutableDictionary<NSString *, id> *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
     if (alpha < 1.0) {
       // If bg is non-opaque, don't propagate further
@@ -201,26 +233,43 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return parentProperties;
 }
 
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
-                parentProperties:(NSDictionary *)parentProperties
+- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
   if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
     return;
   }
   _propagationLifecycle = RCTUpdateLifecycleComputed;
   _lastParentProperties = parentProperties;
-  NSDictionary *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
+  NSDictionary<NSString *, id> *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
   for (RCTShadowView *child in _reactSubviews) {
     [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
-                parentConstraint:(__unused CGSize)parentConstraint
+- (void)collectUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+                   withFrame:(CGRect)frame
+                      hidden:(BOOL)hidden
+            absolutePosition:(CGPoint)absolutePosition
 {
-  [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED);
-  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  if (_hidden != hidden) {
+    // The hidden state has changed. Even if the frame hasn't changed, add
+    // this ShadowView to viewsWithNewFrame so the UIManager will process
+    // this ShadowView's UIView and update its hidden state.
+    _hidden = hidden;
+    [viewsWithNewFrame addObject:self];
+  }
+
+  if (!CGRectEqualToRect(frame, _frame)) {
+    CSSNodeStyleSetPositionType(_cssNode, CSSPositionTypeAbsolute);
+    CSSNodeStyleSetWidth(_cssNode, frame.size.width);
+    CSSNodeStyleSetHeight(_cssNode, frame.size.height);
+    CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, frame.origin.x);
+    CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, frame.origin.y);
+  }
+
+  CSSNodeCalculateLayout(_cssNode, frame.size.width, frame.size.height, CSSDirectionInherit);
+  [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
@@ -240,31 +289,38 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return (CGRect){offset, self.frame.size};
 }
 
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
+{
+  NSInteger depth = 30; // max depth to search
+  RCTShadowView *shadowView = self;
+  while (depth && shadowView && shadowView != ancestor) {
+    shadowView = shadowView->_superview;
+    depth--;
+  }
+  return ancestor == shadowView;
+}
+
 - (instancetype)init
 {
   if ((self = [super init])) {
 
-    _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
+    _frame = CGRectMake(0, 0, CSSUndefined, CSSUndefined);
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
-      _paddingMetaProps[ii] = CSS_UNDEFINED;
-      _marginMetaProps[ii] = CSS_UNDEFINED;
-      _borderMetaProps[ii] = CSS_UNDEFINED;
+      _paddingMetaProps[ii] = CSSUndefined;
+      _marginMetaProps[ii] = CSSUndefined;
+      _borderMetaProps[ii] = CSSUndefined;
     }
 
     _newView = YES;
-    _layoutLifecycle = RCTUpdateLifecycleUninitialized;
     _propagationLifecycle = RCTUpdateLifecycleUninitialized;
     _textLifecycle = RCTUpdateLifecycleUninitialized;
 
     _reactSubviews = [NSMutableArray array];
 
-    _cssNode = new_css_node();
-    _cssNode->context = (__bridge void *)self;
-    _cssNode->print = RCTPrint;
-    _cssNode->get_child = RCTGetChild;
-    _cssNode->is_dirty = RCTIsDirty;
-    [self fillCSSNode:_cssNode];
+    _cssNode = CSSNodeNew();
+    CSSNodeSetContext(_cssNode, (__bridge void *)self);
+    CSSNodeSetPrintFunc(_cssNode, RCTPrint);
   }
   return self;
 }
@@ -276,20 +332,12 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
 - (void)dealloc
 {
-  free_css_node(_cssNode);
+  CSSNodeFree(_cssNode);
 }
 
-- (void)dirtyLayout
+- (BOOL)isCSSLeafNode
 {
-  if (_layoutLifecycle != RCTUpdateLifecycleDirtied) {
-    _layoutLifecycle = RCTUpdateLifecycleDirtied;
-    [_superview dirtyLayout];
-  }
-}
-
-- (BOOL)isLayoutDirty
-{
-  return _layoutLifecycle != RCTUpdateLifecycleComputed;
+  return NO;
 }
 
 - (void)dirtyPropagation
@@ -326,24 +374,28 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 - (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  if (![self isCSSLeafNode]) {
+    CSSNodeInsertChild(_cssNode, subview.cssNode, (uint32_t)atIndex);
+  }
   subview->_superview = self;
+  _didUpdateSubviews = YES;
   [self dirtyText];
-  [self dirtyLayout];
   [self dirtyPropagation];
 }
 
 - (void)removeReactSubview:(RCTShadowView *)subview
 {
   [subview dirtyText];
-  [subview dirtyLayout];
   [subview dirtyPropagation];
+  _didUpdateSubviews = YES;
   subview->_superview = nil;
   [_reactSubviews removeObject:subview];
-  _cssNode->children_count = (int)_reactSubviews.count;
+  if (![self isCSSLeafNode]) {
+    CSSNodeRemoveChild(_cssNode, subview.cssNode);
+  }
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTShadowView *> *)reactSubviews
 {
   return _reactSubviews;
 }
@@ -398,12 +450,12 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 // Margin
 
 #define RCT_MARGIN_PROPERTY(prop, metaProp)       \
-- (void)setMargin##prop:(CGFloat)value            \
+- (void)setMargin##prop:(float)value              \
 {                                                 \
   _marginMetaProps[META_PROP_##metaProp] = value; \
   _recomputeMargin = YES;                         \
 }                                                 \
-- (CGFloat)margin##prop                           \
+- (float)margin##prop                             \
 {                                                 \
   return _marginMetaProps[META_PROP_##metaProp];  \
 }
@@ -419,12 +471,12 @@ RCT_MARGIN_PROPERTY(Right, RIGHT)
 // Padding
 
 #define RCT_PADDING_PROPERTY(prop, metaProp)       \
-- (void)setPadding##prop:(CGFloat)value            \
+- (void)setPadding##prop:(float)value              \
 {                                                  \
   _paddingMetaProps[META_PROP_##metaProp] = value; \
   _recomputePadding = YES;                         \
 }                                                  \
-- (CGFloat)padding##prop                           \
+- (float)padding##prop                             \
 {                                                  \
   return _paddingMetaProps[META_PROP_##metaProp];  \
 }
@@ -439,23 +491,40 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 
 - (UIEdgeInsets)paddingAsInsets
 {
-  return (UIEdgeInsets){
-    _cssNode->style.padding[CSS_TOP],
-    _cssNode->style.padding[CSS_LEFT],
-    _cssNode->style.padding[CSS_BOTTOM],
-    _cssNode->style.padding[CSS_RIGHT]
-  };
+  if (CSSNodeLayoutGetDirection(_cssNode) == CSSDirectionRTL) {
+    return (UIEdgeInsets){
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeTop),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd)) ?
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd) :
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeLeft),
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeBottom),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart)) ?
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart) :
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeRight)
+    };
+  } else {
+    return (UIEdgeInsets){
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeTop),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart)) ?
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart) :
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeLeft),
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeBottom),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd)) ?
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd) :
+      CSSNodeStyleGetPadding(_cssNode, CSSEdgeRight)
+    };
+  }
 }
 
 // Border
 
 #define RCT_BORDER_PROPERTY(prop, metaProp)            \
-- (void)setBorder##prop##Width:(CGFloat)value          \
+- (void)setBorder##prop##Width:(float)value            \
 {                                                      \
   _borderMetaProps[META_PROP_##metaProp] = value;      \
   _recomputeBorder = YES;                              \
 }                                                      \
-- (CGFloat)border##prop##Width                         \
+- (float)border##prop##Width                           \
 {                                                      \
   return _borderMetaProps[META_PROP_##metaProp];       \
 }
@@ -468,81 +537,119 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
 
-#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                        \
-{                                                          \
-  _cssNode->style.dimensions[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                      \
-}                                                          \
-- (CGFloat)getProp                                         \
-{                                                          \
-  return _cssNode->style.dimensions[CSS_##cssProp];        \
+
+#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \
+- (void)set##setProp:(float)value                                   \
+{                                                                   \
+  CSSNodeStyleSet##cssProp(_cssNode, value);                        \
+  [self dirtyText];                                                 \
+}                                                                   \
+- (float)getProp                                                    \
+{                                                                   \
+  return CSSNodeStyleGet##cssProp(_cssNode);                        \
 }
 
-RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH)
-RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT)
+RCT_DIMENSION_PROPERTY(Width, width, Width)
+RCT_DIMENSION_PROPERTY(Height, height, Height)
+RCT_DIMENSION_PROPERTY(MinWidth, minWidth, MinWidth)
+RCT_DIMENSION_PROPERTY(MinHeight, minHeight, MinHeight)
+RCT_DIMENSION_PROPERTY(MaxWidth, maxWidth, MaxWidth)
+RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 
 // Position
 
-#define RCT_POSITION_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                      \
-{                                                        \
-  _cssNode->style.position[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                    \
-}                                                        \
-- (CGFloat)getProp                                       \
-{                                                        \
-  return _cssNode->style.position[CSS_##cssProp];        \
+#define RCT_POSITION_PROPERTY(setProp, getProp, edge)               \
+- (void)set##setProp:(float)value                                   \
+{                                                                   \
+  CSSNodeStyleSetPosition(_cssNode, edge, value);                   \
+  [self dirtyText];                                                 \
+}                                                                   \
+- (float)getProp                                                    \
+{                                                                   \
+  return CSSNodeStyleGetPosition(_cssNode, edge);                   \
 }
 
-RCT_POSITION_PROPERTY(Top, top, TOP)
-RCT_POSITION_PROPERTY(Right, right, RIGHT)
-RCT_POSITION_PROPERTY(Bottom, bottom, BOTTOM)
-RCT_POSITION_PROPERTY(Left, left, LEFT)
+RCT_POSITION_PROPERTY(Top, top, CSSEdgeTop)
+RCT_POSITION_PROPERTY(Right, right, CSSEdgeEnd)
+RCT_POSITION_PROPERTY(Bottom, bottom, CSSEdgeBottom)
+RCT_POSITION_PROPERTY(Left, left, CSSEdgeStart)
 
 - (void)setFrame:(CGRect)frame
 {
-  _cssNode->style.position[CSS_LEFT] = CGRectGetMinX(frame);
-  _cssNode->style.position[CSS_TOP] = CGRectGetMinY(frame);
-  _cssNode->style.dimensions[CSS_WIDTH] = CGRectGetWidth(frame);
-  _cssNode->style.dimensions[CSS_HEIGHT] = CGRectGetHeight(frame);
-  [self dirtyLayout];
+  if (!CGRectEqualToRect(frame, _frame)) {
+    _frame = frame;
+    CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, CGRectGetMinX(frame));
+    CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, CGRectGetMinY(frame));
+    CSSNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
+    CSSNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
+  }
+}
+
+static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension dimension, CGFloat amount)
+{
+  if (amount != UIViewNoIntrinsicMetric) {
+    switch (dimension) {
+      case CSSDimensionWidth:
+        if (isnan(CSSNodeStyleGetWidth(cssNode))) {
+          CSSNodeStyleSetWidth(cssNode, amount);
+        }
+        break;
+      case CSSDimensionHeight:
+        if (isnan(CSSNodeStyleGetHeight(cssNode))) {
+          CSSNodeStyleSetHeight(cssNode, amount);
+        }
+        break;
+    }
+  }
+}
+
+- (void)setIntrinsicContentSize:(CGSize)size
+{
+  if (CSSNodeStyleGetFlexGrow(_cssNode) == 0 && CSSNodeStyleGetFlexShrink(_cssNode) == 0) {
+    RCTAssignSuggestedDimension(_cssNode, CSSDimensionHeight, size.height);
+    RCTAssignSuggestedDimension(_cssNode, CSSDimensionWidth, size.width);
+  }
 }
 
 - (void)setTopLeft:(CGPoint)topLeft
 {
-  _cssNode->style.position[CSS_LEFT] = topLeft.x;
-  _cssNode->style.position[CSS_TOP] = topLeft.y;
-  [self dirtyLayout];
+  CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, topLeft.x);
+  CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, topLeft.y);
 }
 
 - (void)setSize:(CGSize)size
 {
-  _cssNode->style.dimensions[CSS_WIDTH] = size.width;
-  _cssNode->style.dimensions[CSS_HEIGHT] = size.height;
-  [self dirtyLayout];
+  CSSNodeStyleSetWidth(_cssNode, size.width);
+  CSSNodeStyleSetHeight(_cssNode, size.height);
 }
 
 // Flex
 
+- (void)setFlex:(float)value
+{
+  CSSNodeStyleSetFlex(_cssNode, value);
+}
+
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
 - (void)set##setProp:(type)value                            \
 {                                                           \
-  _cssNode->style.cssProp = value;                          \
-  [self dirtyLayout];                                       \
+  CSSNodeStyleSet##cssProp(_cssNode, value);                \
 }                                                           \
 - (type)getProp                                             \
 {                                                           \
-  return _cssNode->style.cssProp;                           \
+  return CSSNodeStyleGet##cssProp(_cssNode);                \
 }
 
-RCT_STYLE_PROPERTY(Flex, flex, flex, CGFloat)
-RCT_STYLE_PROPERTY(FlexDirection, flexDirection, flex_direction, css_flex_direction_t)
-RCT_STYLE_PROPERTY(JustifyContent, justifyContent, justify_content, css_justify_t)
-RCT_STYLE_PROPERTY(AlignSelf, alignSelf, align_self, css_align_t)
-RCT_STYLE_PROPERTY(AlignItems, alignItems, align_items, css_align_t)
-RCT_STYLE_PROPERTY(Position, position, position_type, css_position_type_t)
-RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
+RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
+RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
+RCT_STYLE_PROPERTY(FlexBasis, flexBasis, FlexBasis, float)
+RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, CSSFlexDirection)
+RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
+RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
+RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
+RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
+RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
 
 - (void)setBackgroundColor:(UIColor *)color
 {
@@ -550,21 +657,32 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   [self dirtyPropagation];
 }
 
-- (void)updateLayout
+- (void)setZIndex:(NSInteger)zIndex
+{
+  _zIndex = zIndex;
+  if (_superview) {
+    // Changing zIndex means the subview order of the parent needs updating
+    _superview->_didUpdateSubviews = YES;
+    [_superview dirtyPropagation];
+  }
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Does nothing by default
+}
+
+- (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
 {
   if (_recomputePadding) {
-    RCTProcessMetaProps(_paddingMetaProps, _cssNode->style.padding);
+    RCTProcessMetaPropsPadding(_paddingMetaProps, _cssNode);
   }
   if (_recomputeMargin) {
-    RCTProcessMetaProps(_marginMetaProps, _cssNode->style.margin);
+    RCTProcessMetaPropsMargin(_marginMetaProps, _cssNode);
   }
   if (_recomputeBorder) {
-    RCTProcessMetaProps(_borderMetaProps, _cssNode->style.border);
+    RCTProcessMetaPropsBorder(_borderMetaProps, _cssNode);
   }
-  if (_recomputePadding || _recomputeMargin || _recomputeBorder) {
-    [self dirtyLayout];
-  }
-  [self fillCSSNode:_cssNode];
   _recomputeMargin = NO;
   _recomputePadding = NO;
   _recomputeBorder = NO;

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -93,62 +92,99 @@ public class EventDispatcher implements LifecycleEventListener {
   private final Map<String, Short> mEventNameToEventId = MapBuilder.newHashMap();
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
+  private final ArrayList<EventDispatcherListener> mListeners = new ArrayList<>();
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private @Nullable RCTEventEmitter mRCTEventEmitter;
-  private volatile @Nullable ScheduleDispatchFrameCallback mCurrentFrameCallback;
+  private volatile @Nullable RCTEventEmitter mRCTEventEmitter;
+  private final ScheduleDispatchFrameCallback mCurrentFrameCallback;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
+  private volatile int mHasDispatchScheduledCount = 0;
 
   public EventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
+    mCurrentFrameCallback = new ScheduleDispatchFrameCallback();
   }
 
   /**
    * Sends the given Event to JS, coalescing eligible events if JS is backed up.
    */
   public void dispatchEvent(Event event) {
+    Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
+
+    boolean eventHandled = false;
+    for (EventDispatcherListener listener : mListeners) {
+      if (listener.onEventDispatch(event)) {
+        eventHandled = true;
+      }
+    }
+
+    // If the event was handled by one of the event listener don't send it to JS.
+    if (eventHandled) {
+      return;
+    }
+
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
+      Systrace.startAsyncFlow(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          event.getEventName(),
+          event.getUniqueID());
     }
+    if (mRCTEventEmitter != null) {
+      // If the host activity is paused, the frame callback may not be currently
+      // posted. Ensure that it is so that this event gets delivered promptly.
+      mCurrentFrameCallback.maybePostFromNonUI();
+    } else {
+      // No JS application has started yet, or resumed. This can happen when a ReactRootView is
+      // added to view hierarchy, but ReactContext creation has not completed yet. In this case, any
+      // touch event dispatch will hit this codepath, and we simply queue them so that they
+      // are dispatched once ReactContext creation completes and JS app is running.
+    }
+  }
+
+  /**
+   * Add a listener to this EventDispatcher.
+   */
+  public void addListener(EventDispatcherListener listener) {
+    mListeners.add(listener);
+  }
+
+  /**
+   * Remove a listener from this EventDispatcher.
+   */
+  public void removeListener(EventDispatcherListener listener) {
+    mListeners.remove(listener);
   }
 
   @Override
   public void onHostResume() {
     UiThreadUtil.assertOnUiThread();
-    Assertions.assumeCondition(mCurrentFrameCallback == null);
-
     if (mRCTEventEmitter == null) {
       mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
     }
-
-    mCurrentFrameCallback = new ScheduleDispatchFrameCallback();
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
+    mCurrentFrameCallback.maybePost();
   }
 
   @Override
   public void onHostPause() {
-    clearFrameCallback();
+    stopFrameCallback();
   }
 
   @Override
   public void onHostDestroy() {
-    clearFrameCallback();
+    stopFrameCallback();
   }
 
   public void onCatalystInstanceDestroyed() {
-    clearFrameCallback();
+    stopFrameCallback();
   }
 
-  private void clearFrameCallback() {
+  private void stopFrameCallback() {
     UiThreadUtil.assertOnUiThread();
-    if (mCurrentFrameCallback != null) {
-      mCurrentFrameCallback.stop();
-      mCurrentFrameCallback = null;
-    }
+    mCurrentFrameCallback.stop();
   }
 
   /**
@@ -224,7 +260,7 @@ public class EventDispatcher implements LifecycleEventListener {
   }
 
   private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
-
+    private volatile boolean mIsPosted = false;
     private boolean mShouldStop = false;
 
     @Override
@@ -232,20 +268,23 @@ public class EventDispatcher implements LifecycleEventListener {
       UiThreadUtil.assertOnUiThread();
 
       if (mShouldStop) {
-        return;
+        mIsPosted = false;
+      } else {
+        post();
       }
 
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ScheduleDispatchFrameCallback");
       try {
         moveStagedEventsToDispatchQueue();
 
-        if (!mHasDispatchScheduled) {
+        if (mEventsToDispatchSize > 0 && !mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
+          Systrace.startAsyncFlow(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+              "ScheduleDispatchFrameCallback",
+              mHasDispatchScheduledCount);
           mReactContext.runOnJSQueueThread(mDispatchEventsRunnable);
         }
-
-        ReactChoreographer.getInstance()
-            .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
@@ -253,6 +292,36 @@ public class EventDispatcher implements LifecycleEventListener {
 
     public void stop() {
       mShouldStop = true;
+    }
+
+    public void maybePost() {
+      if (!mIsPosted) {
+        mIsPosted = true;
+        post();
+      }
+    }
+
+    private void post() {
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
+    }
+
+    public void maybePostFromNonUI() {
+      if (mIsPosted) {
+        return;
+      }
+
+      // We should only hit this slow path when we receive events while the host activity is paused.
+      if (mReactContext.isOnUiQueueThread()) {
+        maybePost();
+      } else {
+        mReactContext.runOnUiQueueThread(new Runnable() {
+          @Override
+          public void run() {
+            maybePost();
+          }
+        });
+      }
     }
   }
 
@@ -262,7 +331,12 @@ public class EventDispatcher implements LifecycleEventListener {
     public void run() {
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchEventsRunnable");
       try {
+        Systrace.endAsyncFlow(
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+            "ScheduleDispatchFrameCallback",
+            mHasDispatchScheduledCount);
         mHasDispatchScheduled = false;
+        mHasDispatchScheduledCount++;
         Assertions.assertNotNull(mRCTEventEmitter);
         synchronized (mEventsToDispatchLock) {
           // We avoid allocating an array and iterator, and "sorting" if we don't need to.
@@ -276,6 +350,10 @@ public class EventDispatcher implements LifecycleEventListener {
             if (event == null) {
               continue;
             }
+            Systrace.endAsyncFlow(
+                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                event.getEventName(),
+                event.getUniqueID());
             event.dispatch(mRCTEventEmitter);
             event.dispose();
           }

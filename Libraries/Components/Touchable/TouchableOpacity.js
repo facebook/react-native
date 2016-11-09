@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableOpacity
+ * @noflow
  */
 'use strict';
 
@@ -21,9 +22,10 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
-var keyOf = require('keyOf');
 
 type Event = Object;
+
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -39,17 +41,13 @@ type Event = Object;
  *     <TouchableOpacity onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableOpacity>
  *   );
  * },
  * ```
- * > **NOTE**: TouchableOpacity supports only one child
- * >
- * > If you wish to have to have several child components, wrap them in a View.
  */
-
 var TouchableOpacity = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
@@ -57,7 +55,7 @@ var TouchableOpacity = React.createClass({
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
-     * active.
+     * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
   },
@@ -83,10 +81,13 @@ var TouchableOpacity = React.createClass({
     ensurePositiveDelayProps(nextProps);
   },
 
-  setOpacityTo: function(value) {
+  /**
+   * Animate the touchable to a new opacity.
+   */
+  setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {toValue: value, duration: 150, useNativeDriver: true}
     ).start();
   },
 
@@ -123,7 +124,11 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableGetPressRectOffset: function() {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
+  },
+
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
   },
 
   touchableGetHighlightDelayMS: function() {
@@ -155,12 +160,14 @@ var TouchableOpacity = React.createClass({
   render: function() {
     return (
       <Animated.View
-        accessible={true}
+        accessible={this.props.accessible !== false}
+        accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
@@ -168,18 +175,10 @@ var TouchableOpacity = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
+        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );
   },
 });
-
-/**
- * When the scroll view is disabled, this defines how far your touch may move
- * off of the button, before deactivating the button. Once deactivated, try
- * moving it back and you'll see that the button is once again reactivated!
- * Move it back and forth several times while the scroll view is disabled.
- */
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
-
 
 module.exports = TouchableOpacity;

@@ -1,8 +1,0 @@
-// Offline JS
-// To re-generate the offline bundle, run this from the root of your project:
-//
-// $ react-native bundle --minify
-//
-// See http://facebook.github.io/react-native/docs/runningondevice.html for more details.
-
-throw new Error('Offline JS file is empty. See iOS/main.jsbundle for instructions');

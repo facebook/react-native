@@ -12,22 +12,24 @@ package com.facebook.react.uimanager;
 import android.view.View;
 
 /**
- * A partial implementation of {@link ViewManager} that applies common properties such as background
- * color, opacity and CSS layout. Implementations should make sure to call
- * {@code super.updateView()} in order for these properties to be applied.
+ * Common base class for most of the {@link ViewManager}s. It provides support for most common
+ * properties through extending {@link BaseViewManager}. It also reduces boilerplate by specifying
+ * the type of shadow node to be {@link ReactShadowNode} and providing default, empty implementation
+ * for some of the methods of {@link ViewManager} interface.
  *
  * @param <T> the view handled by this manager
  */
-public abstract class SimpleViewManager<T extends View> extends ViewManager<T, ReactShadowNode> {
+public abstract class SimpleViewManager<T extends View> extends
+    BaseViewManager<T, LayoutShadowNode> {
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
-    return new ReactShadowNode();
+  public LayoutShadowNode createShadowNodeInstance() {
+    return new LayoutShadowNode();
   }
 
   @Override
-  public void updateView(T root, CatalystStylesDiffMap props) {
-    BaseViewPropertyApplicator.applyCommonViewProperties(root, props);
+  public Class<LayoutShadowNode> getShadowNodeClass() {
+    return LayoutShadowNode.class;
   }
 
   @Override

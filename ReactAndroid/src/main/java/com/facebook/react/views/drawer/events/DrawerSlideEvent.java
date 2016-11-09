@@ -23,8 +23,8 @@ public class DrawerSlideEvent extends Event<DrawerSlideEvent> {
 
   private final float mOffset;
 
-  public DrawerSlideEvent(int viewId, long timestampMs, float offset) {
-    super(viewId, timestampMs);
+  public DrawerSlideEvent(int viewId, float offset) {
+    super(viewId);
     mOffset = offset;
   }
 

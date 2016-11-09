@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (ARTRenderable *)node
 {
-  return [[ARTText alloc] init];
+  return [ARTText new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alignment, CTTextAlignment)

@@ -11,12 +11,15 @@
 
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
+#if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
   @"default": @(UIStatusBarStyleDefault),
   @"light-content": @(UIStatusBarStyleLightContent),
+  @"dark-content": @(UIStatusBarStyleDefault),
 }), UIStatusBarStyleDefault, integerValue);
 
 RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
@@ -26,6 +29,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 }), UIStatusBarAnimationNone, integerValue);
 
 @end
+#endif
 
 @implementation RCTStatusBarManager
 
@@ -43,20 +47,22 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (instancetype)init
+- (NSArray<NSString *> *)supportedEvents
 {
-  if ((self = [super init])) {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-    [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
-
-  }
-  return self;
+  return @[@"statusBarFrameDidChange",
+           @"statusBarFrameWillChange"];
 }
 
-- (void)dealloc
+#if !TARGET_OS_TV
+
+- (void)startObserving
+{
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+  [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+}
+
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -71,13 +77,13 @@ RCT_EXPORT_MODULE()
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
   NSDictionary *event = @{
     @"frame": @{
-        @"x": @(frame.origin.x),
-        @"y": @(frame.origin.y),
-        @"width": @(frame.size.width),
-        @"height": @(frame.size.height),
+      @"x": @(frame.origin.x),
+      @"y": @(frame.origin.y),
+      @"width": @(frame.size.width),
+      @"height": @(frame.size.height),
     },
   };
-  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+  [self sendEventWithName:eventName body:event];
 }
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
@@ -90,6 +96,13 @@ RCT_EXPORT_MODULE()
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
+RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@{
+    @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
+  }]);
+}
+
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {
@@ -97,8 +110,8 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle
-                                                animated:animated];
+    [RCTSharedApplication() setStatusBarStyle:statusBarStyle
+                                     animated:animated];
   }
 }
 
@@ -109,14 +122,16 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    [[UIApplication sharedApplication] setStatusBarHidden:hidden
-                                            withAnimation:animation];
+    [RCTSharedApplication() setStatusBarHidden:hidden
+                                 withAnimation:animation];
   }
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
-  [UIApplication sharedApplication].networkActivityIndicatorVisible = visible;
+  RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
+
+#endif //TARGET_OS_TV
 
 @end

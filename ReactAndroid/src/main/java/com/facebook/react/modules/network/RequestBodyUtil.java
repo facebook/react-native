@@ -23,10 +23,11 @@ import android.net.Uri;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.internal.Util;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.internal.Util;
 import okio.BufferedSink;
+import okio.ByteString;
 import okio.Okio;
 import okio.Source;
 
@@ -111,5 +112,25 @@ import okio.Source;
         }
       }
     };
+  }
+
+  /**
+   * Creates a ProgressRequestBody that can be used for showing uploading progress
+   */
+  public static ProgressRequestBody createProgressRequest(
+      RequestBody requestBody,
+      ProgressListener listener) {
+    return new ProgressRequestBody(requestBody, listener);
+  }
+
+  /**
+   * Creates a empty RequestBody if required by the http method spec, otherwise use null
+   */
+  public static RequestBody getEmptyBody(String method) {
+    if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
+      return RequestBody.create(null, ByteString.EMPTY);
+    } else {
+      return null;
+    }
   }
 }

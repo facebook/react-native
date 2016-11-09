@@ -11,7 +11,10 @@
 
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTMapAnnotation.h"
+#import "RCTMapOverlay.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
 const NSTimeInterval RCTMapRegionChangeObserveInterval = 0.1;
@@ -47,9 +50,9 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)reactSetFrame:(CGRect)frame
+- (void)didUpdateReactSubviews
 {
-  self.frame = frame;
+  // Do nothing, as annotation views are managed by `setAnnotations:` method
 }
 
 - (void)layoutSubviews
@@ -58,18 +61,18 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
   if (_legalLabel) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      CGRect frame = _legalLabel.frame;
-      if (_legalLabelInsets.left) {
-        frame.origin.x = _legalLabelInsets.left;
-      } else if (_legalLabelInsets.right) {
-        frame.origin.x = self.frame.size.width - _legalLabelInsets.right - frame.size.width;
+      CGRect frame = self->_legalLabel.frame;
+      if (self->_legalLabelInsets.left) {
+        frame.origin.x = self->_legalLabelInsets.left;
+      } else if (self->_legalLabelInsets.right) {
+        frame.origin.x = self.frame.size.width - self->_legalLabelInsets.right - frame.size.width;
       }
-      if (_legalLabelInsets.top) {
-        frame.origin.y = _legalLabelInsets.top;
-      } else if (_legalLabelInsets.bottom) {
-        frame.origin.y = self.frame.size.height - _legalLabelInsets.bottom - frame.size.height;
+      if (self->_legalLabelInsets.top) {
+        frame.origin.y = self->_legalLabelInsets.top;
+      } else if (self->_legalLabelInsets.bottom) {
+        frame.origin.y = self.frame.size.height - self->_legalLabelInsets.bottom - frame.size.height;
       }
-      _legalLabel.frame = frame;
+      self->_legalLabel.frame = frame;
     });
   }
 }
@@ -86,10 +89,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       }
     }
     super.showsUserLocation = showsUserLocation;
-
-    // If it needs to show user location, force map view centered
-    // on user's current location on user location updates
-    _followUserLocation = showsUserLocation;
   }
 }
 
@@ -112,52 +111,104 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:animated];
 }
 
-- (void)setAnnotations:(RCTPointAnnotationArray *)annotations
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setAnnotations:(NSArray<RCTMapAnnotation *> *)annotations
 {
-  NSMutableArray *newAnnotationIds = [NSMutableArray new];
-  NSMutableArray *annotationsToDelete = [NSMutableArray new];
-  NSMutableArray *annotationsToAdd = [NSMutableArray new];
+  NSMutableArray<NSString *> *newAnnotationIDs = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToAdd = [NSMutableArray new];
 
-  for (RCTPointAnnotation *annotation in annotations) {
-    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  for (RCTMapAnnotation *annotation in annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
       continue;
     }
 
-    [newAnnotationIds addObject:annotation.identifier];
+    [newAnnotationIDs addObject:annotation.identifier];
 
-    // If the current set does not contain the new annotation, mark it as add
-    if (![self.annotationIds containsObject:annotation.identifier]) {
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:annotation.identifier]) {
       [annotationsToAdd addObject:annotation];
     }
   }
 
-  for (RCTPointAnnotation *annotation in self.annotations) {
-    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  for (RCTMapAnnotation *annotation in self.annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
       continue;
     }
 
-    // If the new set does not contain an existing annotation, mark it as delete
-    if (![newAnnotationIds containsObject:annotation.identifier]) {
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newAnnotationIDs containsObject:annotation.identifier]) {
       [annotationsToDelete addObject:annotation];
     }
   }
 
   if (annotationsToDelete.count) {
-    [self removeAnnotations:annotationsToDelete];
+    [self removeAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToDelete];
   }
 
   if (annotationsToAdd.count) {
-    [self addAnnotations:annotationsToAdd];
+    [self addAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToAdd];
   }
 
-  NSMutableArray *newIds = [NSMutableArray new];
-  for (RCTPointAnnotation *anno in self.annotations) {
-    if ([anno isKindOfClass:[MKUserLocation class]]) {
+  self.annotationIDs = newAnnotationIDs;
+}
+
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays
+{
+  NSMutableArray *newOverlayIDs = [NSMutableArray new];
+  NSMutableArray *overlaysToDelete = [NSMutableArray new];
+  NSMutableArray *overlaysToAdd = [NSMutableArray new];
+
+  for (RCTMapOverlay *overlay in overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
       continue;
     }
-    [newIds addObject:anno.identifier];
+
+    [newOverlayIDs addObject:overlay.identifier];
+
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:overlay.identifier]) {
+      [overlaysToAdd addObject:overlay];
+    }
   }
-  self.annotationIds = newIds;
+
+  for (RCTMapOverlay *overlay in self.overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newOverlayIDs containsObject:overlay.identifier]) {
+      [overlaysToDelete addObject:overlay];
+    }
+  }
+
+  if (overlaysToDelete.count) {
+    [self removeOverlays:(NSArray<id<MKOverlay>> *)overlaysToDelete];
+  }
+
+  if (overlaysToAdd.count) {
+    [self addOverlays:(NSArray<id<MKOverlay>> *)overlaysToAdd
+                level:MKOverlayLevelAboveRoads];
+  }
+
+  self.overlayIDs = newOverlayIDs;
+}
+
+- (BOOL)showsCompass {
+  if ([MKMapView instancesRespondToSelector:@selector(showsCompass)]) {
+    return super. showsCompass;
+  }
+  return NO;
+}
+
+- (void)setShowsCompass:(BOOL)showsCompass {
+  if ([MKMapView instancesRespondToSelector:@selector(setShowsCompass:)]) {
+    super.showsCompass = showsCompass;
+  }
 }
 
 @end

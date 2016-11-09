@@ -54,8 +54,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     setDrawerProperties();
   }
 
-  /* package */ void setDrawerWidth(int drawerWidth) {
-    mDrawerWidth = (int) PixelUtil.toPixelFromDIP((float) drawerWidth);
+  /* package */ void setDrawerWidth(int drawerWidthInPx) {
+    mDrawerWidth = drawerWidthInPx;
     setDrawerProperties();
   }
 

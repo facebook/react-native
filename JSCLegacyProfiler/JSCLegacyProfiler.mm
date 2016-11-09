@@ -211,7 +211,11 @@ static json_gen_status append_node_json(json_gen gen, const JSC::ProfileNode *no
 static json_gen_status append_root_json(json_gen gen, const JSC::Profile *profile) {
   GEN_AND_CHECK(json_gen_map_open(gen, json_entry_key));
   GEN_AND_CHECK(json_gen_key_cstring(gen, "rootNodes"));
+#if IOS8
   GEN_AND_CHECK(append_children_array_json(gen, profile->head()));
+#else
+  GEN_AND_CHECK(append_children_array_json(gen, profile->rootNode()));
+#endif
   GEN_AND_CHECK(json_gen_map_close(gen));
 
   return json_gen_status_ok;
@@ -246,7 +250,11 @@ static json_gen_status append_node_json(json_gen gen, const JSC::ProfileNode *no
   for (const JSC::ProfileNode::Call &call : node->calls()) {
     GEN_AND_CHECK(json_gen_map_open(gen, json_entry_key));
     GEN_AND_CHECK(json_gen_keyvalue_double(gen, "startTime", call.startTime()));
+#if IOS8
     GEN_AND_CHECK(json_gen_keyvalue_double(gen, "totalTime", call.totalTime()));
+#else
+    GEN_AND_CHECK(json_gen_keyvalue_double(gen, "totalTime", call.elapsedTime()));
+#endif
     GEN_AND_CHECK(json_gen_map_close(gen));
   }
   GEN_AND_CHECK(json_gen_array_close(gen));

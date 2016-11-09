@@ -9,80 +9,81 @@
 'use strict';
 
 jest
-  .dontMock('worker-farm')
-  .dontMock('../../lib/ModuleTransport')
-  .dontMock('../index');
+  .unmock('imurmurhash')
+  .unmock('../../lib/ModuleTransport')
+  .unmock('../');
 
-jest.mock('fs');
+const fs = {writeFileSync: jest.fn()};
+const temp = {path: () => '/arbitrary/path'};
+const workerFarm = jest.fn();
+jest.setMock('fs', fs);
+jest.setMock('temp', temp);
+jest.setMock('worker-farm', workerFarm);
 
-var Cache = require('../../Cache');
+var Transformer = require('../');
 
-var OPTIONS = {
-  transformModulePath: '/foo/bar',
-  cache: new Cache({}),
-};
+const {any} = jasmine;
 
 describe('Transformer', function() {
-  var Transformer;
-  var workers;
+  let options, workers, Cache;
+  const fileName = '/an/arbitrary/file.js';
+  const transformCacheKey = 'abcdef';
+  const transformModulePath = __filename;
 
   beforeEach(function() {
-    workers = jest.genMockFn();
-    jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
-      return workers;
-    }));
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
+    Cache = jest.fn();
+    Cache.prototype.get = jest.fn((a, b, c) => c());
+
+    fs.writeFileSync.mockClear();
+    options = {transformModulePath};
+    workerFarm.mockClear();
+    workerFarm.mockImpl((opts, path, methods) => {
+      const api = workers = {};
+      methods.forEach(method => api[method] = jest.fn());
+      return api;
     });
-    Transformer = require('../');
   });
 
-  pit('should loadFileAndTransform', function() {
-    workers.mockImpl(function(data, callback) {
-      callback(null, { code: 'transformed', map: 'sourceMap' });
-    });
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
-    });
-
-    return new Transformer(OPTIONS).loadFileAndTransform('file')
-      .then(function(data) {
-        expect(data).toEqual({
-          code: 'transformed',
-          map: 'sourceMap',
-          sourcePath: 'file',
-          sourceCode: 'content'
-        });
-      });
+  it('passes transform module path, file path, source code, and options to the worker farm when transforming', () => {
+    const transformOptions = {arbitrary: 'options'};
+    const code = 'arbitrary(code)';
+    new Transformer(options).transformFile(fileName, code, transformOptions, transformCacheKey);
+    expect(workers.transformAndExtractDependencies).toBeCalledWith(
+      transformModulePath,
+      fileName,
+      code,
+      transformOptions,
+      transformCacheKey,
+      any(Function),
+    );
   });
 
   pit('should add file info to parse errors', function() {
+    const transformer = new Transformer(options);
     var message = 'message';
     var snippet = 'snippet';
 
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'var x;\nvar answer = 1 = x;');
-    });
+    workers.transformAndExtractDependencies.mockImpl(
+      function(transformPath, filename, code, options, transformCacheKey, callback) {
+        var babelError = new SyntaxError(message);
+        babelError.type = 'SyntaxError';
+        babelError.description = message;
+        babelError.loc = {
+          line: 2,
+          column: 15,
+        };
+        babelError.codeFrame = snippet;
+        callback(babelError);
+      },
+    );
 
-    workers.mockImpl(function(data, callback) {
-      var babelError = new SyntaxError(message);
-      babelError.type = 'SyntaxError';
-      babelError.description = message;
-      babelError.loc = {
-        line: 2,
-        column: 15,
-      };
-      babelError.codeFrame = snippet;
-      callback(babelError);
-    });
-
-    return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
+    return transformer.transformFile(fileName, '', {}, transformCacheKey)
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.message).toBe('SyntaxError ' + message);
         expect(error.lineNumber).toBe(2);
         expect(error.column).toBe(15);
-        expect(error.filename).toBe('foo-file.js');
+        expect(error.filename).toBe(fileName);
         expect(error.description).toBe(message);
         expect(error.snippet).toBe(snippet);
       });

@@ -9,6 +9,9 @@
 
 #import "RCTAccessibilityManager.h"
 
+#import "RCTBridge.h"
+#import "RCTConvert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 
 NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAccessibilityManagerDidUpdateMultiplierNotification";
@@ -27,7 +30,7 @@ NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification = @"RCTAc
 
 RCT_EXPORT_MODULE()
 
-+ (NSDictionary *)JSToUIKitMap
++ (NSDictionary<NSString *, NSString *> *)JSToUIKitMap
 {
   static NSDictionary *map = nil;
   static dispatch_once_t onceToken;
@@ -50,18 +53,26 @@ RCT_EXPORT_MODULE()
 
 + (NSString *)UIKitCategoryFromJSCategory:(NSString *)JSCategory
 {
-  return self.JSToUIKitMap[JSCategory];
+  return [self JSToUIKitMap][JSCategory];
 }
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
+
+    // TODO: can this be moved out of the startup path?
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeCategory:)
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:[UIApplication sharedApplication]];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveNewVoiceOverStatus:)
+                                                 name:UIAccessibilityVoiceOverStatusChanged
+                                               object:nil];
+
     self.contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+    _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
 }
@@ -74,6 +85,19 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeCategory:(NSNotification *)note
 {
   self.contentSizeCategory = note.userInfo[UIContentSizeCategoryNewValueKey];
+}
+
+- (void)didReceiveNewVoiceOverStatus:(__unused NSNotification *)notification
+{
+  BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
+  if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
+    _isVoiceOverEnabled = newIsVoiceOverEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"voiceOverDidChange"
+                                                body:@(_isVoiceOverEnabled)];
+#pragma clang diagnostic pop
+  }
 }
 
 - (void)setContentSizeCategory:(NSString *)contentSizeCategory
@@ -100,7 +124,7 @@ RCT_EXPORT_MODULE()
   return m.doubleValue;
 }
 
-- (void)setMultipliers:(NSDictionary *)multipliers
+- (void)setMultipliers:(NSDictionary<NSString *, NSNumber *> *)multipliers
 {
   if (_multipliers != multipliers) {
     _multipliers = [multipliers copy];
@@ -108,7 +132,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (NSDictionary *)multipliers
+- (NSDictionary<NSString *, NSNumber *> *)multipliers
 {
   if (_multipliers == nil) {
     _multipliers = @{UIContentSizeCategoryExtraSmall: @0.823,
@@ -129,10 +153,10 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMultipliers)
 {
-  NSMutableDictionary *multipliers = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];
   for (NSString *__nonnull JSCategory in JSMultipliers) {
-    NSNumber *m = JSMultipliers[JSCategory];
-    NSString *UIKitCategory = [self.class UIKitCategoryFromJSCategory:JSCategory];
+    NSNumber *m = [RCTConvert NSNumber:JSMultipliers[JSCategory]];
+    NSString *UIKitCategory = [[self class] UIKitCategoryFromJSCategory:JSCategory];
     multipliers[UIKitCategory] = m;
   }
   self.multipliers = multipliers;
@@ -145,13 +169,19 @@ RCT_EXPORT_METHOD(getMultiplier:(RCTResponseSenderBlock)callback)
   }
 }
 
+RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
+                  error:(__unused RCTResponseSenderBlock)error)
+{
+  callback(@[@(_isVoiceOverEnabled)]);
+}
+
 @end
 
 @implementation RCTBridge (RCTAccessibilityManager)
 
 - (RCTAccessibilityManager *)accessibilityManager
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTAccessibilityManager class])];
+  return [self moduleForClass:[RCTAccessibilityManager class]];
 }
 
 @end

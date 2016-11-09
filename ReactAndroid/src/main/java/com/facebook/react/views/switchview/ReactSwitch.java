@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
 import android.content.Context;
 import android.support.v7.widget.SwitchCompat;

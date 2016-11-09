@@ -31,15 +31,13 @@
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  [self dirtyLayout];
   [self dirtyText];
 }
 
 - (void)setText:(NSString *)text
 {
-  if (_text != text) {
+  if (_text != text && ![_text isEqualToString:text]) {
     _text = [text copy];
-    [self dirtyLayout];
     [self dirtyText];
   }
 }

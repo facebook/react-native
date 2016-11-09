@@ -1,51 +1,58 @@
 [ignore]
 
 # We fork some components by platform.
-.*/*.web.js
-.*/*.android.js
+.*/*[.]android.js
 
-# Some modules have their own node_modules with overlap
-.*/node_modules/node-haste/.*
+# Ignore templates with `@flow` in header
+.*/local-cli/generator.*
 
-# Ignore react-tools where there are overlaps, but don't ignore anything that
-# react-native relies on
-.*/node_modules/react-tools/src/React.js
-.*/node_modules/react-tools/src/renderers/shared/event/EventPropagators.js
-.*/node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js
-.*/node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js
+# Ignore malformed json
+.*/node_modules/y18n/test/.*\.json
 
-# Ignore commoner tests
-.*/node_modules/commoner/test/.*
+# Ignore the website subdir
+<PROJECT_ROOT>/website/.*
 
-# See https://github.com/facebook/flow/issues/442
-.*/react-tools/node_modules/commoner/lib/reader.js
+# Ignore BUCK generated dirs
+<PROJECT_ROOT>/\.buckd/
 
-# Ignore jest
-.*/node_modules/jest-cli/.*
+# Ignore unexpected extra @providesModule
+.*/node_modules/commoner/test/source/widget/share.js
+.*/node_modules/.*/node_modules/fbjs/.*
 
-# Ignore Website
-.*/website/.*
+# Ignore duplicate module providers
+# For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root
+.*/Libraries/react-native/React.js
+.*/Libraries/react-native/ReactNative.js
+.*/node_modules/jest-runtime/build/__tests__/.*
 
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
+flow/
 
 [options]
 module.system=haste
 
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+
+experimental.strict_type_args=true
+
 munge_underscores=true
 
 module.name_mapper='^image![a-zA-Z0-9$_-]+$' -> 'GlobalImageStub'
-module.name_mapper='^[./a-zA-Z0-9$_-]+\.png$' -> 'RelativeImageStub'
+module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(1[0-5]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(1[0-5]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(3[0-4]\\|[1-2][0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(3[0-4]\\|1[0-9]\\|[1-2][0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
+unsafe.enable_getters_and_setters=true
+
 [version]
-0.15.0
+^0.34.0

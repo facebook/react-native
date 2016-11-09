@@ -13,7 +13,10 @@
 
 - (void)renderLayerTo:(CGContextRef)context
 {
-// TO-DO: Clipping rectangle
+
+  if (!CGRectIsEmpty(self.clipping)) {
+    CGContextClipToRect(context, self.clipping);
+  }
 
   for (ARTNode *node in self.subviews) {
     [node renderTo:context];

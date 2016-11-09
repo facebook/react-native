@@ -17,4 +17,8 @@ public class JSApplicationIllegalArgumentException extends JSApplicationCausedNa
   public JSApplicationIllegalArgumentException(String detailMessage) {
     super(detailMessage);
   }
+
+  public JSApplicationIllegalArgumentException(String detailMessage, Throwable t) {
+    super(detailMessage, t);
+  }
 }
