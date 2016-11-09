@@ -1,0 +1,23 @@
+{
+	"name": "HelloWorld",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node node_modules/react-native/local-cli/cli.js start",
+		"test": "jest"
+	},
+	"dependencies": {
+		"react": "~15.4.0-rc.4",
+		"react-native": "1000.0.0"
+	},
+	"devDependencies": {
+		"babel-jest": "17.0.0",
+		"babel-preset-react-native": "1.9.0",
+		"jest": "17.0.0",
+		"jest-react-native": "17.0.0",
+		"react-test-renderer": "~15.4.0-rc.4"
+	},
+	"jest": {
+		"preset": "react-native"
+	}
+}
