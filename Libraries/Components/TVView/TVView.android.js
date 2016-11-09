@@ -10,7 +10,6 @@
  */
 'use strict';
 
-const React = require('React');
 const View = require('View');
 
 module.exports = View;
