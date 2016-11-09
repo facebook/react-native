@@ -11,6 +11,7 @@
 'use strict';
 
 const copyAndReplace = require('../util/copyAndReplace');
+const fs = require('fs');
 const path = require('path');
 const walk = require('../util/walk');
 
@@ -22,25 +23,52 @@ const walk = require('../util/walk');
  * @param destPath e.g. '/Users/martin/AwesomeApp'
  * @param newProjectName e.g. 'AwesomeApp'
  */
-function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName) {
+function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, options) {
   if (!srcPath) throw new Error('Need a path to copy from');
   if (!destPath) throw new Error('Need a path to copy to');
   if (!newProjectName) throw new Error('Need a project name');
 
-  walk(srcPath).forEach(absoluteFilePath => {
-    const relativeFilePath = path.relative(srcPath, absoluteFilePath);
+  walk(srcPath).forEach(absoluteSrcFilePath => {
+
+    // 'react-native upgrade'
+    if (options.upgrade) {
+      // Don't upgrade these files
+      const fileName = path.basename(absoluteSrcFilePath);
+      // TODO __tests__/index.ios.js
+      // TODO __tests__/index.android.js
+      if (fileName === 'index.ios.js') return;
+      if (fileName === 'index.android.js') return;
+    }
+
+    const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);
     const relativeRenamedPath = relativeFilePath
       .replace(/HelloWorld/g, newProjectName)
       .replace(/helloworld/g, newProjectName.toLowerCase());
+    
     copyAndReplace(
-      absoluteFilePath,
+      absoluteSrcFilePath,
       path.resolve(destPath, relativeRenamedPath),
       {
         'HelloWorld': newProjectName,
         'helloworld': newProjectName.toLowerCase(),
-      }
+      },
+      options.upgrade ? upgradeFileContentChangedCallback : null
     );
   });
+}
+
+function upgradeFileContentChangedCallback(path, contentChanged) {
+  if (contentChanged === 'new') {
+    console.log('[new] ' + path);
+    return 'overwrite';
+  } else if (contentChanged === 'changed') {
+    console.log('[changed] ' + path);
+    // TODO ask the user
+    return 'overwrite';
+  } else if (contentChanged === 'identical') {
+    console.log('[identical] ' + path);
+    return 'keep';
+  }
 }
 
 module.exports = copyProjectTemplateAndReplace;

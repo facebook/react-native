@@ -20,37 +20,67 @@ const binaryExtensions = ['.png', '.jar'];
  * @param destPath Destination path.
  * @param replacements: e.g. {'TextToBeReplaced': 'Replacement'}
  */
-function copyAndReplace(srcPath, destPath, replacements) {
+function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback) {
   if (fs.lstatSync(srcPath).isDirectory()) {
     if (!fs.existsSync(destPath)) {
       fs.mkdirSync(destPath);
     }
-  } else {
-    const extension = path.extname(srcPath);
-    if (binaryExtensions.indexOf(extension) !== -1) {
-      // Binary file
-      copyFile(srcPath, destPath, (err) => {
-        if (err) throw err;
-      });
-    } else {
-      // Text file
-      const srcPermissions = fs.statSync(srcPath).mode;
-      let content = fs.readFileSync(srcPath, 'utf8');
-      Object.keys(replacements).forEach(regex =>
-        content = content.replace(new RegExp(regex, 'g'), replacements[regex])
-      );
-      fs.writeFileSync(destPath, content, {
-        encoding: 'utf8',
-        mode: srcPermissions,
-      });
+    // Not recursive
+    return;
+  }
+
+  const extension = path.extname(srcPath);
+  if (binaryExtensions.indexOf(extension) !== -1) {
+    copyBinaryFile(srcPath, destPath, (err) => {
+      if (err) throw err;
+    });
+    return;
+  }
+  
+  // Text file
+  const srcPermissions = fs.statSync(srcPath).mode;
+  let content = fs.readFileSync(srcPath, 'utf8');
+  Object.keys(replacements).forEach(regex =>
+    content = content.replace(new RegExp(regex, 'g'), replacements[regex])
+  );
+
+  if (!contentChangedCallback) {
+    fs.writeFileSync(destPath, content, {
+      encoding: 'utf8',
+      mode: srcPermissions,
+    });
+    // Overwrite and we're done
+    return;
+  }
+
+  // Check if contents changed and ask to overwrite
+  let contentChanged = 'identical';
+  try {
+    const origContent = fs.readFileSync(destPath, 'utf8');
+    if (content !== origContent) {
+      //console.log('Content changed: ' + destPath);
+      contentChanged = 'changed';
     }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      contentChanged = 'new';
+    } else {
+      throw err;
+    }
+  }
+  const shouldOverwrite = contentChangedCallback(destPath, contentChanged);
+  if (shouldOverwrite === 'overwrite') {
+    fs.writeFileSync(destPath, content, {
+      encoding: 'utf8',
+      mode: srcPermissions,
+    });
   }
 }
 
 /**
  * Same as 'cp' on Unix. Don't do any replacements.
  */
-function copyFile(srcPath, destPath, cb) {
+function copyBinaryFile(srcPath, destPath, cb) {
   let cbCalled = false;
   const srcPermissions = fs.statSync(srcPath).mode;
   const readStream = fs.createReadStream(srcPath);

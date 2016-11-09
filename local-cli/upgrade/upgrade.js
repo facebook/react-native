@@ -18,11 +18,20 @@ const semver = require('semver');
 const yarn = require('../util/yarn');
 
 /**
- * Migrate application code to a new version of React Native.
+ * Migrate application to a new version of React Native.
  * See http://facebook.github.io/react-native/docs/upgrading.html
+ *
+ * IMPORTANT: Assumes the cwd() is the project directory.
+ * The code here must only be invoked via the CLI:
+ * $ cd MyAwesomeApp
+ * $ react-native upgrade
  */
 function validateAndUpgrade() {
-  const packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  const projectDir = process.cwd();
+
+  const packageJSON = JSON.parse(
+      fs.readFileSync(path.resolve(projectDir, 'package.json'), 'utf8')
+  );
 
   const projectName = packageJSON.name;
   if (!projectName) {
@@ -53,7 +62,7 @@ function validateAndUpgrade() {
 
   const installed = JSON.parse(
     fs.readFileSync(
-      'node_modules/react-native/package.json',
+      path.resolve(projectDir, 'node_modules/react-native/package.json'),
       'utf8'
     )
   );
@@ -103,11 +112,11 @@ function validateAndUpgrade() {
   }
 
   upgradeReactDependency(installed);
-  upgradeProjectFiles(projectName);
+  upgradeProjectFiles(projectDir, projectName);
   console.log(
-    'Successfully upraded this project to react-native v' + installed.version
+    'Successfully upgraded this project to react-native v' + installed.version
   );
-  printRunInstructions('.', projectName);
+  printRunInstructions(projectDir, projectName);
   return new Promise((resolve) => {
     // TODO move logic here
     resolve();
@@ -117,12 +126,13 @@ function validateAndUpgrade() {
 /**
  * Once all checks passed, upgrade the project files.
  */
-function upgradeProjectFiles(projectName) {
+function upgradeProjectFiles(projectDir, projectName) {
   // Just owerwrite
   copyProjectTemplateAndReplace(
     path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
-    '.',
-    projectName
+    projectDir,
+    projectName,
+    {upgrade: true}
   );
 }
 
