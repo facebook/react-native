@@ -11,12 +11,11 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -30,6 +29,7 @@ var resolveAssetSource = require('resolveAssetSource');
 var Set = require('Set');
 var filterObject = require('fbjs/lib/filterObject');
 
+var PropTypes = React.PropTypes;
 var {
   ImageLoader,
 } = NativeModules;

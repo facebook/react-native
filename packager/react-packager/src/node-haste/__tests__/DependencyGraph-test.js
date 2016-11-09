@@ -10,11 +10,112 @@
 
 jest.autoMockOff();
 jest.useRealTimers();
-jest.mock('fs');
+jest
+  .mock('fs')
+  .mock('../../Logger')
+  .mock('../../lib/TransformCache');
+
+// This is an ugly hack:
+// * jest-haste-map uses `find` for fast file system crawling which won't work
+//   when we mock the file system in node. This mock copies the node crawler's
+//   implementation and always falls back to the node crawling mechanism.
+//   Ideally we'll make this an option in jest-haste-map to force it to use
+//   the node crawler.
+jest.mock('jest-haste-map/build/crawlers/node', () => {
+  const H = require('jest-haste-map/build/constants');
+
+  const fs = require('fs');
+  const path = require('path');
+
+  function find(
+  roots,
+  extensions,
+  ignore,
+  callback)
+  {
+    const result = [];
+    let activeCalls = 0;
+
+    function search(directory) {
+      activeCalls++;
+      fs.readdir(directory, (err, names) => {
+        activeCalls--;
+
+        names.forEach(file => {
+          file = path.join(directory, file);
+          if (ignore(file)) {
+            return;
+          }
+          activeCalls++;
+
+          fs.lstat(file, (err, stat) => {
+            activeCalls--;
+
+            if (!err && stat && !stat.isSymbolicLink()) {
+              if (stat.isDirectory()) {
+                search(file);
+              } else {
+                const ext = path.extname(file).substr(1);
+                if (extensions.indexOf(ext) !== -1) {
+                  result.push([file, stat.mtime.getTime()]);
+                }
+              }
+            }
+            if (activeCalls === 0) {
+              callback(result);
+            }
+          });
+        });
+
+        if (activeCalls === 0) {
+          callback(result);
+        }
+      });
+    }
+
+    roots.forEach(search);
+  }
+
+  return function nodeCrawl(
+  roots,
+  extensions,
+  ignore,
+  data)
+  {
+    return new Promise(resolve => {
+      const callback = list => {
+        const files = Object.create(null);
+        list.forEach(fileData => {
+          const name = fileData[0];
+          const mtime = fileData[1];
+          const existingFile = data.files[name];
+          if (existingFile && existingFile[H.MTIME] === mtime) {
+            files[name] = existingFile;
+          } else {
+            // See ../constants.js
+            files[name] = ['', mtime, 0, []];
+          }
+        });
+        data.files = files;
+        resolve(data);
+      };
+
+      find(roots, extensions, ignore, callback);
+    });
+  };
+
+});
 
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
+const path = require('path');
+beforeEach(() => {
+  jest.resetModules();
+
+  jest.mock('path', () => path);
+});
 
 describe('DependencyGraph', function() {
   let Module;
@@ -103,11 +204,16 @@ describe('DependencyGraph', function() {
       ],
       platforms: ['ios', 'android'],
       shouldThrowOnUnresolvedErrors: () => false,
+      useWatchman: false,
+      maxWorkers: 1,
+      resetCache: true,
+      transformCacheKey: 'abcdef',
     };
   });
 
   describe('get sync dependencies (posix)', function() {
     let DependencyGraph;
+    const consoleWarn = console.warn;
     const realPlatform = process.platform;
     beforeEach(function() {
       process.platform = 'linux';
@@ -115,10 +221,11 @@ describe('DependencyGraph', function() {
     });
 
     afterEach(function() {
+      console.warn = consoleWarn;
       process.platform = realPlatform;
     });
 
-    pit('should get dependencies', function() {
+    it('should get dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -186,7 +293,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve relative entry path', function() {
+    it('should resolve relative entry path', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -219,7 +326,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get shallow dependencies', function() {
+    it('should get shallow dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -274,7 +381,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with the correct extensions', function() {
+    it('should get dependencies with the correct extensions', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -328,7 +435,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get json dependencies', function() {
+    it('should get json dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -388,7 +495,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get package json as a dep', () => {
+    it('should get package json as a dep', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -435,7 +542,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with deprecated assets', function() {
+    it('should get dependencies with deprecated assets', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -483,7 +590,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with relative assets', function() {
+    it('should get dependencies with relative assets', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -533,7 +640,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with assets and resolution', function() {
+    it('should get dependencies with assets and resolution', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -612,7 +719,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should respect platform extension in assets', function() {
+    it('should respect platform extension in assets', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -692,7 +799,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('Deprecated and relative assets can live together', function() {
+    it('Deprecated and relative assets can live together', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -754,7 +861,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get recursive dependencies', function() {
+    it('should get recursive dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -804,7 +911,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages', function() {
+    it('should work with packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -855,7 +962,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages', function() {
+    it('should work with packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -906,7 +1013,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with a dot in the name', function() {
+    it('should work with packages with a dot in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -975,7 +1082,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should default main package to index.js', function() {
+    it('should default main package to index.js', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1020,7 +1127,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve using alternative ids', () => {
+    it('should resolve using alternative ids', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1069,7 +1176,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should default use index.js if main is a dir', function() {
+    it('should default use index.js if main is a dir', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1117,7 +1224,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve require to index if it is a dir', function() {
+    it('should resolve require to index if it is a dir', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1162,7 +1269,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve require to main if it is a dir w/ a package.json', function() {
+    it('should resolve require to main if it is a dir w/ a package.json', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1211,7 +1318,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should ignore malformed packages', function() {
+    it('should ignore malformed packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1248,8 +1355,9 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should fatal on multiple modules with the same name', function() {
-      var root = '/root';
+    it('should fatal on multiple modules with the same name', function() {
+      const root = '/root';
+      console.warn = jest.fn();
       setMockFileSystem({
         'root': {
           'index.js': [
@@ -1279,10 +1387,11 @@ describe('DependencyGraph', function() {
           'with the same name across two different files.'
         );
         expect(err.type).toEqual('DependencyGraphError');
+        expect(console.warn).toBeCalled();
       });
     });
 
-    pit('should be forgiving with missing requires', function() {
+    it('should be forgiving with missing requires', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1317,7 +1426,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with subdirs', function() {
+    it('should work with packages with subdirs', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1373,7 +1482,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with symlinked subdirs', function() {
+    it('should work with packages with symlinked subdirs', function() {
       var root = '/root';
       setMockFileSystem({
         'symlinkedPackage': {
@@ -1430,7 +1539,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with relative modules in packages', function() {
+    it('should work with relative modules in packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1522,7 +1631,7 @@ describe('DependencyGraph', function() {
     }
 
     function testBrowserField(fieldName) {
-      pit('should support simple browser field in packages ("' + fieldName + '")', function() {
+      it('should support simple browser field in packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1577,7 +1686,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser field in packages w/o .js ext ("' + fieldName + '")', function() {
+      it('should support browser field in packages w/o .js ext ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1630,7 +1739,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support mapping main in browser field json ("' + fieldName + '")', function() {
+      it('should support mapping main in browser field json ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1686,7 +1795,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should work do correct browser mapping w/o js ext ("' + fieldName + '")', function() {
+      it('should work do correct browser mapping w/o js ext ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1744,7 +1853,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping of files ("' + fieldName + '")', function() {
+      it('should support browser mapping of files ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1848,7 +1957,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping for packages ("' + fieldName + '")', function() {
+      it('should support browser mapping for packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1920,7 +2029,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping of a package to a file ("' + fieldName + '")', () => {
+      it('should support browser mapping of a package to a file ("' + fieldName + '")', () => {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1999,7 +2108,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping for packages ("' + fieldName + '")', function() {
+      it('should support browser mapping for packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2071,7 +2180,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser exclude of a package ("' + fieldName + '")', function() {
+      it('should support browser exclude of a package ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2128,7 +2237,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser exclude of a file ("' + fieldName + '")', function() {
+      it('should support browser exclude of a file ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2181,7 +2290,7 @@ describe('DependencyGraph', function() {
       });
     }
 
-    pit('should fall back to browser mapping from react-native mapping', function() {
+    it('should fall back to browser mapping from react-native mapping', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2273,7 +2382,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with absolute paths', () => {
+    it('should work with absolute paths', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2313,7 +2422,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should merge browser mapping with react-native mapping', function() {
+    it('should merge browser mapping with react-native mapping', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2451,7 +2560,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should fall back to `extraNodeModules`', () => {
+    it('should fall back to `extraNodeModules`', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2513,7 +2622,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit(
+    it(
       'should only use `extraNodeModules` after checking all possible filesystem locations',
       () => {
         const root = '/root';
@@ -2561,7 +2670,7 @@ describe('DependencyGraph', function() {
       }
     );
 
-    pit('should be able to resolve paths within `extraNodeModules`', () => {
+    it('should be able to resolve paths within `extraNodeModules`', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2615,8 +2724,9 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'win32';
 
-      // force reload with fastpath
+      // reload path module
       jest.resetModules();
+      jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
     });
 
@@ -2692,7 +2802,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with absolute paths', () => {
+    it('should work with absolute paths', () => {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
@@ -2745,7 +2855,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('should work with nested node_modules', function() {
+    it('should work with nested node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2835,7 +2945,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('platform should work with node_modules', function() {
+    it('platform should work with node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2905,7 +3015,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with specific paths', function() {
+    it('nested node_modules with specific paths', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2996,7 +3106,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with browser field', function() {
+    it('nested node_modules with browser field', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3091,7 +3201,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('node_modules should support multi level', function() {
+    it('node_modules should support multi level', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3165,7 +3275,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should selectively ignore providesModule in node_modules', function() {
+    it('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
       var otherRoot = '/anotherRoot';
       setMockFileSystem({
@@ -3339,7 +3449,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not be confused by prev occuring whitelisted names', function() {
+    it('should not be confused by prev occuring whitelisted names', function() {
       var root = '/react-haste';
       setMockFileSystem({
         'react-haste': {
@@ -3397,7 +3507,7 @@ describe('DependencyGraph', function() {
     });
 
 
-    pit('should ignore modules it cant find (assumes own require system)', function() {
+    it('should ignore modules it cant find (assumes own require system)', function() {
       // For example SourceMap.js implements it's own require system.
       var root = '/root';
       setMockFileSystem({
@@ -3441,7 +3551,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with node packages with a .js in the name', function() {
+    it('should work with node packages with a .js in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3494,7 +3604,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (haste)', function() {
+    it('should work with multiple platforms (haste)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3553,7 +3663,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should pick the generic file', function() {
+    it('should pick the generic file', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3613,7 +3723,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (node)', function() {
+    it('should work with multiple platforms (node)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3660,7 +3770,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should require package.json', () => {
+    it('should require package.json', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3741,7 +3851,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with one-character node_modules', () => {
+    it('should work with one-character node_modules', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -3796,7 +3906,7 @@ describe('DependencyGraph', function() {
 
     const DependencyGraph = require('../index');
 
-    pit('should work with nested node_modules', function() {
+    it('should work with nested node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3886,7 +3996,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('platform should work with node_modules', function() {
+    it('platform should work with node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3956,7 +4066,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with specific paths', function() {
+    it('nested node_modules with specific paths', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4047,7 +4157,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with browser field', function() {
+    it('nested node_modules with browser field', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4142,7 +4252,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('node_modules should support multi level', function() {
+    it('node_modules should support multi level', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4216,7 +4326,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should selectively ignore providesModule in node_modules', function() {
+    it('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
       var otherRoot = '/anotherRoot';
       setMockFileSystem({
@@ -4390,7 +4500,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not be confused by prev occuring whitelisted names', function() {
+    it('should not be confused by prev occuring whitelisted names', function() {
       var root = '/react-haste';
       setMockFileSystem({
         'react-haste': {
@@ -4447,7 +4557,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should ignore modules it cant find (assumes own require system)', function() {
+    it('should ignore modules it cant find (assumes own require system)', function() {
       // For example SourceMap.js implements it's own require system.
       var root = '/root';
       setMockFileSystem({
@@ -4491,7 +4601,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with node packages with a .js in the name', function() {
+    it('should work with node packages with a .js in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4544,7 +4654,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (haste)', function() {
+    it('should work with multiple platforms (haste)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4603,7 +4713,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should pick the generic file', function() {
+    it('should pick the generic file', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4662,7 +4772,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (node)', function() {
+    it('should work with multiple platforms (node)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4709,7 +4819,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should require package.json', () => {
+    it('should require package.json', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4824,7 +4934,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('updates module dependencies', function() {
+    it('updates module dependencies', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -4887,7 +4997,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file change', function() {
+    it('updates module dependencies on file change', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -4950,7 +5060,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file delete', function() {
+    it('updates module dependencies on file delete', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5012,7 +5122,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file add', function() {
+    it('updates module dependencies on file add', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5105,7 +5215,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on deprecated asset add', function() {
+    it('updates module dependencies on deprecated asset add', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5174,7 +5284,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on relative asset add', function() {
+    it('updates module dependencies on relative asset add', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5244,7 +5354,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('runs changes through ignore filter', function() {
+    it('runs changes through ignore filter', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5334,7 +5444,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should ignore directory updates', function() {
+    it('should ignore directory updates', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5409,7 +5519,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('changes to browser field', function() {
+    it('changes to browser field', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5472,7 +5582,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('removes old package from cache', function() {
+    it('removes old package from cache', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5523,7 +5633,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should update node package changes', function() {
+    it('should update node package changes', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5629,7 +5739,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should update node package main changes', function() {
+    it('should update node package main changes', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5694,7 +5804,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not error when the watcher reports a known file as added', function() {
+    it('should not error when the watcher reports a known file as added', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5737,7 +5847,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('supports custom file extensions', () => {
+    it('supports custom file extensions', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5808,7 +5918,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('resolves to null if mocksPattern is not specified', () => {
+    it('resolves to null if mocksPattern is not specified', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5830,7 +5940,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('retrieves a list of all required mocks', () => {
+    it('retrieves a list of all required mocks', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5863,7 +5973,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('adds mocks as a dependency of their actual module', () => {
+    it('adds mocks as a dependency of their actual module', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5936,7 +6046,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('resolves mocks that do not have a real module associated with them', () => {
+    it('resolves mocks that do not have a real module associated with them', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -6035,20 +6145,20 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('calls back for each finished module', () => {
+    it('calls back for each finished module', () => {
       return getDependencies().then(() =>
         expect(onProgress.mock.calls.length).toBe(8)
       );
     });
 
-    pit('increases the number of finished modules in steps of one', () => {
+    it('increases the number of finished modules in steps of one', () => {
       return getDependencies().then(() => {
         const increments = onProgress.mock.calls.map(([finished]) => finished);
         expect(increments).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
       });
     });
 
-    pit('adds the number of discovered modules to the number of total modules', () => {
+    it('adds the number of discovered modules to the number of total modules', () => {
       return getDependencies().then(() => {
         const increments = onProgress.mock.calls.map(([, total]) => total);
         expect(increments).toEqual([3, 5, 6, 6, 7, 7, 8, 8]);
@@ -6062,7 +6172,7 @@ describe('DependencyGraph', function() {
       DependencyGraph = require('../index');
     });
 
-    pit('allows setting dependencies for asset modules', () => {
+    it('allows setting dependencies for asset modules', () => {
       const assetDependencies = ['arbitrary', 'dependencies'];
 
       setMockFileSystem({
@@ -6121,7 +6231,7 @@ describe('DependencyGraph', function() {
         roots: ['/root'],
       });
       moduleReadDeferreds = {};
-      callDeferreds = [defer()/* a.js */, defer()/* b.js */];
+      callDeferreds = [defer(), defer()]; // [a.js, b.js]
 
       Module.prototype.read = jest.genMockFn().mockImplementation(function() {
         const returnValue = moduleRead.apply(this, arguments);
@@ -6143,7 +6253,7 @@ describe('DependencyGraph', function() {
       Module.prototype.read = moduleRead;
     });
 
-    pit('produces a deterministic tree if the "a" module resolves first', () => {
+    it('produces a deterministic tree if the "a" module resolves first', () => {
       const dependenciesPromise = getOrderedDependenciesAsJSON(dependencyGraph, 'index.js');
 
       return Promise.all(callDeferreds.map(deferred => deferred.promise))
@@ -6168,7 +6278,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('produces a deterministic tree if the "b" module resolves first', () => {
+    it('produces a deterministic tree if the "b" module resolves first', () => {
       const dependenciesPromise = getOrderedDependenciesAsJSON(dependencyGraph, 'index.js');
 
       return Promise.all(callDeferreds.map(deferred => deferred.promise))

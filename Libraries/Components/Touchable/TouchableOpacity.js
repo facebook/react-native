@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -87,7 +87,7 @@ var TouchableOpacity = React.createClass({
   setOpacityTo: function(value: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {toValue: value, duration: 150, useNativeDriver: true}
     ).start();
   },
 

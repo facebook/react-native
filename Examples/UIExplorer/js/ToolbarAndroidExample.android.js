@@ -32,7 +32,7 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var SwitchAndroid = require('SwitchAndroid');
+var Switch = require('Switch');
 var ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component {
@@ -67,7 +67,7 @@ class ToolbarAndroidExample extends React.Component {
             logo={require('image!launcher_icon')}
             style={styles.toolbar}>
             <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
-              <SwitchAndroid
+              <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={(value) => this.setState({'toolbarSwitch': value})} />
               <Text>{'\'Tis but a switch'}</Text>

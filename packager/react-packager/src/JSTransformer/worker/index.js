@@ -8,6 +8,12 @@
  */
 'use strict';
 
+require('../../../../babelRegisterOnly')([
+  /packager\/react-packager\/src\/lib\/TransformCache/,
+]);
+
+const TransformCache = require('../../lib/TransformCache');
+
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
@@ -20,9 +26,17 @@ function makeTransformParams(filename, sourceCode, options) {
   return {filename, sourceCode, options};
 }
 
-function transformCode(transform, filename, sourceCode, options, callback) {
+function transformCode(transform, filename, sourceCode, options, transformCacheKey, callback) {
   const params = makeTransformParams(filename, sourceCode, options.transform);
   const isJson = filename.endsWith('.json');
+
+  const transformFileStartLogEntry = {
+    action_name: 'Transforming file',
+    action_phase: 'start',
+    file_name: filename,
+    log_entry_label: 'Transforming file',
+    start_timestamp: process.hrtime(),
+  };
 
   transform(params, (error, transformed) => {
     if (error) {
@@ -52,10 +66,30 @@ function transformCode(transform, filename, sourceCode, options, callback) {
       ? {dependencies: [], dependencyOffsets: []}
       : extractDependencies(code);
 
+    const timeDelta = process.hrtime(transformFileStartLogEntry.start_timestamp);
+    const duration_ms = Math.round((timeDelta[0] * 1e9 + timeDelta[1]) / 1e6);
+    const transformFileEndLogEntry = {
+      action_name: 'Transforming file',
+      action_phase: 'end',
+      file_name: filename,
+      duration_ms: duration_ms,
+      log_entry_label: 'Transforming file',
+    };
+
     result.code = code;
     result.map = map;
 
-    callback(null, result);
+    TransformCache.writeSync({
+      filePath: filename,
+      sourceCode,
+      transformCacheKey,
+      transformOptions: options,
+      result,
+    });
+    return callback(null, {
+      transformFileStartLogEntry,
+      transformFileEndLogEntry,
+    });
   });
 }
 
@@ -64,9 +98,10 @@ exports.transformAndExtractDependencies = (
   filename,
   sourceCode,
   options,
+  transformCacheKey,
   callback
 ) => {
-  transformCode(require(transform), filename, sourceCode, options || {}, callback);
+  transformCode(require(transform), filename, sourceCode, options || {}, transformCacheKey, callback);
 };
 
 exports.minify = (filename, code, sourceMap, callback) => {

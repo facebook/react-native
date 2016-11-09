@@ -60,17 +60,17 @@ task prepareDoubleConversion(dependsOn: downloadDoubleConversion, type: Copy) {
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/deprecate-dynamic-initializer.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2016.09.26.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-deprecate-dynamic-initializer.tar.gz');
+    dest new File(downloadsDir, 'folly-2016.09.26.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: downloadFolly, type: Copy) {
     from tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-deprecate-dynamic-initializer/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-deprecate-dynamic-initializer/")}
+    include 'folly-2016.09.26.00/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-2016.09.26.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
@@ -214,8 +214,8 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
-  from "$buildDir/react-ndk/exported"
-  into "src/main/jni/prebuilt/lib"
+    from "$buildDir/react-ndk/exported"
+    into "src/main/jni/prebuilt/lib"
 }
 
 android {
@@ -243,9 +243,9 @@ android {
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
         java {
-          srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
-          exclude 'com/facebook/react/processing'
-          exclude 'com/facebook/react/module/processing'
+            srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
+            exclude 'com/facebook/react/processing'
+            exclude 'com/facebook/react/module/processing'
         }
     }
 

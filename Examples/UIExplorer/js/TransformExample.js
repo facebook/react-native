@@ -213,7 +213,7 @@ exports.examples = [
   {
     title: 'Perspective',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
-    render(): ReactElement<any> { return <Flip />; }
+    render(): React.Element<any> { return <Flip />; }
   },
   {
     title: 'Translate, Rotate, Scale',
