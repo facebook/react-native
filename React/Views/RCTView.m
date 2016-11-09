@@ -117,8 +117,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _hitTestEdgeInsets = UIEdgeInsetsZero;
 
     _backgroundColor = super.backgroundColor;
-    
   }
+
   return self;
 }
 
