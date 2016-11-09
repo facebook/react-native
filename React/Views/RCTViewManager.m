@@ -184,12 +184,6 @@ RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
     view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(tvFocusedBorderColor, CGColor, RCTView)
-{
-  if ([view respondsToSelector:@selector(setTvFocusedBorderColor:)]) {
-    view.tvFocusedBorderColor = json ? [UIColor colorWithCGColor:[RCTConvert CGColor:json]] : nil;
-  }
-}
 RCT_CUSTOM_VIEW_PROPERTY(borderWidth, float, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderWidth:)]) {

@@ -83,8 +83,6 @@
 @property (nonatomic, assign) CGColorRef borderLeftColor;
 @property (nonatomic, assign) CGColorRef borderColor;
 
-@property (nonatomic, strong) UIColor *tvFocusedBorderColor;
-
 /**
  * Border widths.
  */

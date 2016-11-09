@@ -31,7 +31,6 @@ var ViewStylePropTypes = {
   borderRightColor: ColorPropType,
   borderBottomColor: ColorPropType,
   borderLeftColor: ColorPropType,
-  tvFocusedBorderColor: ColorPropType,
   borderRadius: ReactPropTypes.number,
   borderTopLeftRadius: ReactPropTypes.number,
   borderTopRightRadius: ReactPropTypes.number,

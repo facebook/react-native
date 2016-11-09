@@ -16,9 +16,6 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-
 @implementation UIView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
@@ -122,7 +119,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _backgroundColor = super.backgroundColor;
     
   }
-
   return self;
 }
 
@@ -226,7 +222,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
   return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
-
 
 #pragma mark - Statics for dealing with layoutGuides
 
