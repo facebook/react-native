@@ -104,16 +104,43 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node);
 
 #ifdef ANDROID
 #include <android/log.h>
-static int _csslayoutAndroidLog(const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  const int result = __android_log_vprint(ANDROID_LOG_DEBUG, "css-layout", format, args);
-  va_end(args);
+static int _csslayoutAndroidLog(CSSLogLevel level, const char *format, va_list args) {
+  int androidLevel = CSSLogLevelDebug;
+  switch (level) {
+    case CSSLogLevelError: 
+      androidLevel = ANDROID_LOG_ERROR;
+      break;
+    case CSSLogLevelWarn:
+      androidLevel = ANDROID_LOG_WARN;
+      break;
+    case CSSLogLevelInfo:
+      androidLevel = ANDROID_LOG_INFO;
+      break;
+    case CSSLogLevelDebug: 
+      androidLevel = ANDROID_LOG_DEBUG;
+      break;
+    case CSSLogLevelVerbose:
+      androidLevel = ANDROID_LOG_VERBOSE;
+      break;
+  }
+  const int result = __android_log_vprint(androidLevel, "css-layout", format, args);
   return result;
 }
 static CSSLogger gLogger = &_csslayoutAndroidLog;
 #else
-static CSSLogger gLogger = &printf;
+static int _csslayoutDefaultLog(CSSLogLevel level, const char *format, va_list args) {
+  switch (level) {
+    case CSSLogLevelError: 
+      return vfprintf(stderr, format, args);
+    case CSSLogLevelWarn:
+    case CSSLogLevelInfo:
+    case CSSLogLevelDebug: 
+    case CSSLogLevelVerbose:
+    default:
+      return vprintf(format, args);
+  }
+}
+static CSSLogger gLogger = &_csslayoutDefaultLog;
 #endif
 
 static inline float computedEdgeValue(const float edges[CSSEdgeCount],
@@ -446,19 +473,19 @@ static inline bool eq(const float a, const float b) {
 
 static void indent(const uint32_t n) {
   for (uint32_t i = 0; i < n; i++) {
-    gLogger("  ");
+    CSSLog(CSSLogLevelDebug, "  ");
   }
 }
 
 static void printNumberIfNotZero(const char *str, const float number) {
   if (!eq(number, 0)) {
-    gLogger("%s: %g, ", str, number);
+    CSSLog(CSSLogLevelDebug, "%s: %g, ", str, number);
   }
 }
 
 static void printNumberIfNotUndefined(const char *str, const float number) {
   if (!CSSValueIsUndefined(number)) {
-    gLogger("%s: %g, ", str, number);
+    CSSLog(CSSLogLevelDebug, "%s: %g, ", str, number);
   }
 }
 
@@ -470,66 +497,66 @@ static void _CSSNodePrint(const CSSNodeRef node,
                           const CSSPrintOptions options,
                           const uint32_t level) {
   indent(level);
-  gLogger("{");
+  CSSLog(CSSLogLevelDebug, "{");
 
   if (node->print) {
     node->print(node);
   }
 
   if (options & CSSPrintOptionsLayout) {
-    gLogger("layout: {");
-    gLogger("width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
-    gLogger("height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
-    gLogger("top: %g, ", node->layout.position[CSSEdgeTop]);
-    gLogger("left: %g", node->layout.position[CSSEdgeLeft]);
-    gLogger("}, ");
+    CSSLog(CSSLogLevelDebug, "layout: {");
+    CSSLog(CSSLogLevelDebug, "width: %g, ", node->layout.dimensions[CSSDimensionWidth]);
+    CSSLog(CSSLogLevelDebug, "height: %g, ", node->layout.dimensions[CSSDimensionHeight]);
+    CSSLog(CSSLogLevelDebug, "top: %g, ", node->layout.position[CSSEdgeTop]);
+    CSSLog(CSSLogLevelDebug, "left: %g", node->layout.position[CSSEdgeLeft]);
+    CSSLog(CSSLogLevelDebug, "}, ");
   }
 
   if (options & CSSPrintOptionsStyle) {
     if (node->style.flexDirection == CSSFlexDirectionColumn) {
-      gLogger("flexDirection: 'column', ");
+      CSSLog(CSSLogLevelDebug, "flexDirection: 'column', ");
     } else if (node->style.flexDirection == CSSFlexDirectionColumnReverse) {
-      gLogger("flexDirection: 'column-reverse', ");
+      CSSLog(CSSLogLevelDebug, "flexDirection: 'column-reverse', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRow) {
-      gLogger("flexDirection: 'row', ");
+      CSSLog(CSSLogLevelDebug, "flexDirection: 'row', ");
     } else if (node->style.flexDirection == CSSFlexDirectionRowReverse) {
-      gLogger("flexDirection: 'row-reverse', ");
+      CSSLog(CSSLogLevelDebug, "flexDirection: 'row-reverse', ");
     }
 
     if (node->style.justifyContent == CSSJustifyCenter) {
-      gLogger("justifyContent: 'center', ");
+      CSSLog(CSSLogLevelDebug, "justifyContent: 'center', ");
     } else if (node->style.justifyContent == CSSJustifyFlexEnd) {
-      gLogger("justifyContent: 'flex-end', ");
+      CSSLog(CSSLogLevelDebug, "justifyContent: 'flex-end', ");
     } else if (node->style.justifyContent == CSSJustifySpaceAround) {
-      gLogger("justifyContent: 'space-around', ");
+      CSSLog(CSSLogLevelDebug, "justifyContent: 'space-around', ");
     } else if (node->style.justifyContent == CSSJustifySpaceBetween) {
-      gLogger("justifyContent: 'space-between', ");
+      CSSLog(CSSLogLevelDebug, "justifyContent: 'space-between', ");
     }
 
     if (node->style.alignItems == CSSAlignCenter) {
-      gLogger("alignItems: 'center', ");
+      CSSLog(CSSLogLevelDebug, "alignItems: 'center', ");
     } else if (node->style.alignItems == CSSAlignFlexEnd) {
-      gLogger("alignItems: 'flex-end', ");
+      CSSLog(CSSLogLevelDebug, "alignItems: 'flex-end', ");
     } else if (node->style.alignItems == CSSAlignStretch) {
-      gLogger("alignItems: 'stretch', ");
+      CSSLog(CSSLogLevelDebug, "alignItems: 'stretch', ");
     }
 
     if (node->style.alignContent == CSSAlignCenter) {
-      gLogger("alignContent: 'center', ");
+      CSSLog(CSSLogLevelDebug, "alignContent: 'center', ");
     } else if (node->style.alignContent == CSSAlignFlexEnd) {
-      gLogger("alignContent: 'flex-end', ");
+      CSSLog(CSSLogLevelDebug, "alignContent: 'flex-end', ");
     } else if (node->style.alignContent == CSSAlignStretch) {
-      gLogger("alignContent: 'stretch', ");
+      CSSLog(CSSLogLevelDebug, "alignContent: 'stretch', ");
     }
 
     if (node->style.alignSelf == CSSAlignFlexStart) {
-      gLogger("alignSelf: 'flex-start', ");
+      CSSLog(CSSLogLevelDebug, "alignSelf: 'flex-start', ");
     } else if (node->style.alignSelf == CSSAlignCenter) {
-      gLogger("alignSelf: 'center', ");
+      CSSLog(CSSLogLevelDebug, "alignSelf: 'center', ");
     } else if (node->style.alignSelf == CSSAlignFlexEnd) {
-      gLogger("alignSelf: 'flex-end', ");
+      CSSLog(CSSLogLevelDebug, "alignSelf: 'flex-end', ");
     } else if (node->style.alignSelf == CSSAlignStretch) {
-      gLogger("alignSelf: 'stretch', ");
+      CSSLog(CSSLogLevelDebug, "alignSelf: 'stretch', ");
     }
 
     printNumberIfNotUndefined("flexGrow", CSSNodeStyleGetFlexGrow(node));
@@ -537,11 +564,11 @@ static void _CSSNodePrint(const CSSNodeRef node,
     printNumberIfNotUndefined("flexBasis", CSSNodeStyleGetFlexBasis(node));
 
     if (node->style.overflow == CSSOverflowHidden) {
-      gLogger("overflow: 'hidden', ");
+      CSSLog(CSSLogLevelDebug, "overflow: 'hidden', ");
     } else if (node->style.overflow == CSSOverflowVisible) {
-      gLogger("overflow: 'visible', ");
+      CSSLog(CSSLogLevelDebug, "overflow: 'visible', ");
     } else if (node->style.overflow == CSSOverflowScroll) {
-      gLogger("overflow: 'scroll', ");
+      CSSLog(CSSLogLevelDebug, "overflow: 'scroll', ");
     }
 
     if (eqFour(node->style.margin)) {
@@ -590,7 +617,7 @@ static void _CSSNodePrint(const CSSNodeRef node,
     printNumberIfNotUndefined("minHeight", node->style.minDimensions[CSSDimensionHeight]);
 
     if (node->style.positionType == CSSPositionTypeAbsolute) {
-      gLogger("position: 'absolute', ");
+      CSSLog(CSSLogLevelDebug, "position: 'absolute', ");
     }
 
     printNumberIfNotUndefined("left",
@@ -605,14 +632,14 @@ static void _CSSNodePrint(const CSSNodeRef node,
 
   const uint32_t childCount = CSSNodeListCount(node->children);
   if (options & CSSPrintOptionsChildren && childCount > 0) {
-    gLogger("children: [\n");
+    CSSLog(CSSLogLevelDebug, "children: [\n");
     for (uint32_t i = 0; i < childCount; i++) {
       _CSSNodePrint(CSSNodeGetChild(node, i), options, level + 1);
     }
     indent(level);
-    gLogger("]},\n");
+    CSSLog(CSSLogLevelDebug, "]},\n");
   } else {
-    gLogger("},\n");
+    CSSLog(CSSLogLevelDebug, "},\n");
   }
 }
 
@@ -2439,6 +2466,13 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
 
 void CSSLayoutSetLogger(CSSLogger logger) {
   gLogger = logger;
+}
+
+void CSSLog(CSSLogLevel level, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  gLogger(level, format, args);
+  va_end(args);
 }
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
