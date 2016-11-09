@@ -45,14 +45,13 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
+// Apple TV shows warning dialogs for these tests that aren't repeatable, so disabling these for now
+#if !TARGET_OS_TV
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
-#if !TARGET_OS_TV  // TextExample uses fonts that don't exist on Apple TV
 RCT_TEST(TextExample)
-#endif
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
-#if !TARGET_OS_TV  // Fails randomly on Apple TV, needs investigation
 RCT_TEST(TabBarExample)
 #endif
 
