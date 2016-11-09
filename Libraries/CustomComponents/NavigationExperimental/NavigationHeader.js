@@ -148,7 +148,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       : APPBAR_HEIGHT + this.props.statusBarHeight;
 
     return (
-      <Animated.View style={[
+      <Animated.TVView style={[
           styles.appbar,
           { height: barHeight },
           style
@@ -159,7 +159,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
         {scenesProps.map(this._renderLeft, this)}
         {scenesProps.map(this._renderTitle, this)}
         {scenesProps.map(this._renderRight, this)}
-      </Animated.View>
+      </Animated.TVView>
     );
   }
 

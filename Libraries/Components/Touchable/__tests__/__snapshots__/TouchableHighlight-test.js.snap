@@ -1,5 +1,5 @@
 exports[`TouchableHighlight renders correctly 1`] = `
-<View
+<RCTTVView
   accessibilityComponentType={undefined}
   accessibilityLabel={undefined}
   accessibilityTraits={undefined}
@@ -36,5 +36,5 @@ exports[`TouchableHighlight renders correctly 1`] = `
     ellipsizeMode="tail">
     Touchable
   </Text>
-</View>
+</RCTTVView>
 `;

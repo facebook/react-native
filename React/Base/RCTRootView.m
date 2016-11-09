@@ -52,6 +52,18 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 @end
 
+@interface RCTRootView()
+
+/**
+ * TV remote gesture recognizers
+ */
+#if TARGET_OS_TV
+@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
+@property (nonatomic, strong) UIView *reactPreferredFocusedView;
+#endif
+
+@end
+
 @implementation RCTRootView
 {
   RCTBridge *_bridge;

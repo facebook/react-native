@@ -22,6 +22,7 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
+var TVView = require('TVView');
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -274,7 +275,7 @@ var TouchableHighlight = React.createClass({
 
   render: function() {
     return (
-      <View
+      <TVView
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
@@ -306,7 +307,7 @@ var TouchableHighlight = React.createClass({
           }
         )}
         {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
-      </View>
+      </TVView>
     );
   }
 });

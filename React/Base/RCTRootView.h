@@ -114,14 +114,6 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, strong, readonly) UIView *contentView;
 
 /**
- * TV remote gesture recognizers
- */
-#if TARGET_OS_TV
-@property (nonatomic, strong, readwrite) RCTTVRemoteHandler *tvRemoteHandler;
-@property (nonatomic, strong, readwrite) UIView *reactPreferredFocusedView;
-#endif
-
-/**
  * A view to display while the JavaScript is loading, so users aren't presented
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.

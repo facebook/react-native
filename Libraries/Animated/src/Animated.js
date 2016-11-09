@@ -15,12 +15,14 @@
 var AnimatedImplementation = require('AnimatedImplementation');
 var Image = require('Image');
 var Text = require('Text');
+var TVView = require('TVView');
 var View = require('View');
 var ScrollView = require('ScrollView');
 
 module.exports = {
   ...AnimatedImplementation,
   View: AnimatedImplementation.createAnimatedComponent(View),
+  TVView: AnimatedImplementation.createAnimatedComponent(TVView),
   Text: AnimatedImplementation.createAnimatedComponent(Text),
   Image: AnimatedImplementation.createAnimatedComponent(Image),
   ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),

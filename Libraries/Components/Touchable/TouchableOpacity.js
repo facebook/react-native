@@ -178,7 +178,7 @@ var TouchableOpacity = React.createClass({
 
   render: function() {
     return (
-      <Animated.View
+      <Animated.TVView
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
@@ -203,7 +203,7 @@ var TouchableOpacity = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
         {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
-      </Animated.View>
+      </Animated.TVView>
     );
   },
 });

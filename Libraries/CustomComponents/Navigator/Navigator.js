@@ -44,6 +44,7 @@ var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
+var TVView = require('TVView');
 var View = require('View');
 
 var clamp = require('clamp');
@@ -1322,7 +1323,7 @@ var Navigator = React.createClass({
     });
     this._renderedSceneMap = newRenderedSceneMap;
     return (
-      <View style={[styles.container, this.props.style]} onTVNavEvent={(evt) => this._handleTVEvent(evt)}>
+      <TVView style={[styles.container, this.props.style]} onTVNavEvent={(evt) => this._handleTVEvent(evt)}>
         <View
           style={styles.transitioner}
           {...this.panGesture.panHandlers}
@@ -1333,7 +1334,7 @@ var Navigator = React.createClass({
           {scenes}
         </View>
         {this._renderNavigationBar()}
-      </View>
+      </TVView>
     );
   },
 
