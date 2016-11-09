@@ -12,7 +12,7 @@ package com.facebook.react.flat;
 import android.graphics.Canvas;
 import android.text.Layout;
 
-import com.facebook.fbui.widget.text.LayoutMeasureUtil;
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 
 /**
  * DrawTextLayout is a DrawCommand that draw {@link Layout}.
