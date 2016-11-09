@@ -39,12 +39,13 @@ describe('Transformer', function() {
     workerFarm.mockClear();
     workerFarm.mockImpl((opts, path, methods) => {
       const api = workers = {};
-      methods.forEach(method => api[method] = jest.fn());
+      methods.forEach(method => {api[method] = jest.fn();});
       return api;
     });
   });
 
-  it('passes transform module path, file path, source code, and options to the worker farm when transforming', () => {
+  it('passes transform module path, file path, source code,' +
+    ' and options to the worker farm when transforming', () => {
     const transformOptions = {arbitrary: 'options'};
     const code = 'arbitrary(code)';
     new Transformer(options).transformFile(fileName, code, transformOptions, transformCacheKey);
@@ -64,7 +65,7 @@ describe('Transformer', function() {
     var snippet = 'snippet';
 
     workers.transformAndExtractDependencies.mockImpl(
-      function(transformPath, filename, code, options, transformCacheKey, callback) {
+      function(transformPath, filename, code, opts, transfCacheKey, callback) {
         var babelError = new SyntaxError(message);
         babelError.type = 'SyntaxError';
         babelError.description = message;
