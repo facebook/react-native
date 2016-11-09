@@ -10,9 +10,11 @@
  */
 'use strict';
 
+const chalk = require('chalk');
 const copyAndReplace = require('../util/copyAndReplace');
 const fs = require('fs');
 const path = require('path');
+const prompt = require('./promptSync')();
 const walk = require('../util/walk');
 
 /**
@@ -31,7 +33,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
   walk(srcPath).forEach(absoluteSrcFilePath => {
 
     // 'react-native upgrade'
-    if (options.upgrade) {
+    if (options && options.upgrade) {
       // Don't upgrade these files
       const fileName = path.basename(absoluteSrcFilePath);
       // TODO __tests__/index.ios.js
@@ -52,23 +54,38 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
         'HelloWorld': newProjectName,
         'helloworld': newProjectName.toLowerCase(),
       },
-      options.upgrade ? (_, contentChanged) => {
-        return upgradeFileContentChangedCallback(relativeRenamedPath, contentChanged)
+      options && options.upgrade ? (_, contentChanged) => {
+        return upgradeFileContentChangedCallback(absoluteSrcFilePath, relativeRenamedPath, contentChanged)
       } : null
     );
   });
 }
 
-function upgradeFileContentChangedCallback(relativeDestPath, contentChanged) {
+function upgradeFileContentChangedCallback(
+  absoluteSrcFilePath,
+  relativeDestPath,
+  contentChanged
+) {
   if (contentChanged === 'new') {
-    console.log('new ' + relativeDestPath);
+    console.log(chalk.bold('new') + ' ' + relativeDestPath);
     return 'overwrite';
   } else if (contentChanged === 'changed') {
-    console.log('changed ' + relativeDestPath);
-    // TODO ask the user
-    return 'overwrite';
+    console.log(chalk.bold(relativeDestPath) + ' ' +
+      'has changed in the new version.\nDo you want to keep your ' + 
+      relativeDestPath + ' or replace it with the ' +
+      'latest version?\nIf you ever made any changes ' +
+      'to this file, you\'ll probably want to keep it.\n' +
+      'You can see the new version here: ' + absoluteSrcFilePath + '\n' +
+      'Please answer "keep" / "replace" for ' + relativeDestPath + ':');
+    const answer = prompt();
+    if (answer == 'replace') {
+      console.log('Replacing ' + relativeDestPath);
+      return 'overwrite';
+    } else {
+      console.log('Keeping your ' + relativeDestPath);
+      return 'keep';
+    }
   } else if (contentChanged === 'identical') {
-    console.log('identical ' + relativeDestPath);
     return 'keep';
   } else {
     throw new Error(`Unkown file changed state: {relativeDestPath}, {contentChanged}`);

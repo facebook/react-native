@@ -31,12 +31,13 @@ function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback)
 
   const extension = path.extname(srcPath);
   if (binaryExtensions.indexOf(extension) !== -1) {
+    // Binary file
     let shouldOverwrite = 'overwrite';
     if (contentChangedCallback) {
       const newContentBuffer = fs.readFileSync(srcPath);
       let contentChanged = 'identical';
       try {
-        const origContentBuffer = fs.readFileSync(destPath);      
+        const origContentBuffer = fs.readFileSync(destPath);
         if (Buffer.compare(origContentBuffer, newContentBuffer) !== 0) {
           contentChanged = 'changed';
         }
@@ -54,40 +55,39 @@ function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback)
         if (err) throw err;
       });
     }
-    return;
-  }
-  
-  // Text file
-  const srcPermissions = fs.statSync(srcPath).mode;
-  let content = fs.readFileSync(srcPath, 'utf8');
-  Object.keys(replacements).forEach(regex =>
-    content = content.replace(new RegExp(regex, 'g'), replacements[regex])
-  );
+  } else {
+    // Text file
+    const srcPermissions = fs.statSync(srcPath).mode;
+    let content = fs.readFileSync(srcPath, 'utf8');
+    Object.keys(replacements).forEach(regex =>
+      content = content.replace(new RegExp(regex, 'g'), replacements[regex])
+    );
 
-  let shouldOverwrite = 'overwrite';
-  if (contentChangedCallback) {
-    // Check if contents changed and ask to overwrite
-    let contentChanged = 'identical';
-    try {
-      const origContent = fs.readFileSync(destPath, 'utf8');
-      if (content !== origContent) {
-        //console.log('Content changed: ' + destPath);
-        contentChanged = 'changed';
+    let shouldOverwrite = 'overwrite';
+    if (contentChangedCallback) {
+      // Check if contents changed and ask to overwrite
+      let contentChanged = 'identical';
+      try {
+        const origContent = fs.readFileSync(destPath, 'utf8');
+        if (content !== origContent) {
+          //console.log('Content changed: ' + destPath);
+          contentChanged = 'changed';
+        }
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          contentChanged = 'new';
+        } else {
+          throw err;
+        }
       }
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        contentChanged = 'new';
-      } else {
-        throw err;
-      }
+      shouldOverwrite = contentChangedCallback(destPath, contentChanged);
     }
-    shouldOverwrite = contentChangedCallback(destPath, contentChanged);
-  }
-  if (shouldOverwrite === 'overwrite') {
-    fs.writeFileSync(destPath, content, {
-      encoding: 'utf8',
-      mode: srcPermissions,
-    });
+    if (shouldOverwrite === 'overwrite') {
+      fs.writeFileSync(destPath, content, {
+        encoding: 'utf8',
+        mode: srcPermissions,
+      });
+    }
   }
 }
 

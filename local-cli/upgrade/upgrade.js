@@ -87,7 +87,7 @@ function validateAndUpgrade() {
 
   console.log(
     'Upgrading project to react-native v' + installed.version + '\n' +
-    'Check out the release notes and breaking changes:\n' +
+    'Check out the release notes and breaking changes: ' +
     'https://github.com/facebook/react-native/releases/tag/v' + semver.major(v) + '.' + semver.minor(v) + '.0'
   );
 
@@ -116,7 +116,7 @@ function validateAndUpgrade() {
   console.log(
     'Successfully upgraded this project to react-native v' + installed.version
   );
-  printRunInstructions(projectDir, projectName);
+  //printRunInstructions(projectDir, projectName);
   return new Promise((resolve) => {
     // TODO move logic here
     resolve();
