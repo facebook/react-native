@@ -286,7 +286,6 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
-  // You can always NULLify the measure function of a node.
   if (measureFunc == NULL) {
     node->measure = NULL;
   } else {
@@ -301,7 +300,8 @@ CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node) {
 
 void CSSNodeInsertChild(const CSSNodeRef node, const CSSNodeRef child, const uint32_t index) {
   CSS_ASSERT(child->parent == NULL, "Child already has a parent, it must be removed first.");
-  CSS_ASSERT(node->measure == NULL, "Cannot add child: Nodes with measure functions cannot have children.");
+  CSS_ASSERT(node->measure == NULL,
+             "Cannot add child: Nodes with measure functions cannot have children.");
   CSSNodeListInsert(&node->children, child, index);
   child->parent = node;
   _CSSNodeMarkDirty(node);
@@ -1399,6 +1399,26 @@ static void layoutNodeImpl(const CSSNodeRef node,
   const float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
   const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
+  // If there is only one child with flexGrow + flexShrink it means we can set the
+  // computedFlexBasis to 0 instead of measuring and shrinking / flexing the child to exactly
+  // match the remaining space
+  CSSNodeRef singleFlexChild = NULL;
+  if ((isMainAxisRow && widthMeasureMode == CSSMeasureModeExactly) ||
+      (!isMainAxisRow && heightMeasureMode == CSSMeasureModeExactly)) {
+    for (uint32_t i = 0; i < childCount; i++) {
+      const CSSNodeRef child = CSSNodeGetChild(node, i);
+      if (singleFlexChild) {
+        if (isFlex(child)) {
+          // There is already a flexible child, abort.
+          singleFlexChild = NULL;
+          break;
+        }
+      } else if (CSSNodeStyleGetFlexGrow(child) > 0 && CSSNodeStyleGetFlexShrink(child) > 0) {
+        singleFlexChild = child;
+      }
+    }
+  }
+
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   for (uint32_t i = 0; i < childCount; i++) {
     const CSSNodeRef child = CSSNodeListGet(node->children, i);
@@ -1423,13 +1443,17 @@ static void layoutNodeImpl(const CSSNodeRef node,
       currentAbsoluteChild = child;
       child->nextChild = NULL;
     } else {
-      computeChildFlexBasis(node,
-                            child,
-                            availableInnerWidth,
-                            widthMeasureMode,
-                            availableInnerHeight,
-                            heightMeasureMode,
-                            direction);
+      if (child == singleFlexChild) {
+        child->layout.computedFlexBasis = 0;
+      } else {
+        computeChildFlexBasis(node,
+                              child,
+                              availableInnerWidth,
+                              widthMeasureMode,
+                              availableInnerHeight,
+                              heightMeasureMode,
+                              direction);
+      }
     }
   }
 
@@ -2165,17 +2189,17 @@ static inline bool newMeasureSizeIsStricterAndStillValid(CSSMeasureMode sizeMode
 }
 
 bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
-                                           const float width,
-                                           const CSSMeasureMode heightMode,
-                                           const float height,
-                                           const CSSMeasureMode lastWidthMode,
-                                           const float lastWidth,
-                                           const CSSMeasureMode lastHeightMode,
-                                           const float lastHeight,
-                                           const float lastComputedWidth,
-                                           const float lastComputedHeight,
-                                           const float marginRow,
-                                           const float marginColumn) {
+                                    const float width,
+                                    const CSSMeasureMode heightMode,
+                                    const float height,
+                                    const CSSMeasureMode lastWidthMode,
+                                    const float lastWidth,
+                                    const CSSMeasureMode lastHeightMode,
+                                    const float lastHeight,
+                                    const float lastComputedWidth,
+                                    const float lastComputedHeight,
+                                    const float marginRow,
+                                    const float marginColumn) {
   if (lastComputedHeight < 0 || lastComputedWidth < 0) {
     return false;
   }
@@ -2193,19 +2217,16 @@ bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
       newMeasureSizeIsStricterAndStillValid(
           widthMode, width - marginRow, lastWidthMode, lastWidth, lastComputedWidth);
 
-  const bool heightIsCompatible = hasSameHeightSpec ||
-                                  newSizeIsExactAndMatchesOldMeasuredSize(heightMode,
-                                                                          height - marginColumn,
-                                                                          lastComputedHeight) ||
-                                  oldSizeIsUnspecifiedAndStillFits(heightMode,
+  const bool heightIsCompatible =
+      hasSameHeightSpec || newSizeIsExactAndMatchesOldMeasuredSize(heightMode,
                                                                    height - marginColumn,
-                                                                   lastHeightMode,
                                                                    lastComputedHeight) ||
-                                  newMeasureSizeIsStricterAndStillValid(heightMode,
-                                                                        height - marginColumn,
-                                                                        lastHeightMode,
-                                                                        lastHeight,
-                                                                        lastComputedHeight);
+      oldSizeIsUnspecifiedAndStillFits(heightMode,
+                                       height - marginColumn,
+                                       lastHeightMode,
+                                       lastComputedHeight) ||
+      newMeasureSizeIsStricterAndStillValid(
+          heightMode, height - marginColumn, lastHeightMode, lastHeight, lastComputedHeight);
 
   return widthIsCompatible && heightIsCompatible;
 }
