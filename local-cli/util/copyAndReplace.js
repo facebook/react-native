@@ -31,9 +31,29 @@ function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback)
 
   const extension = path.extname(srcPath);
   if (binaryExtensions.indexOf(extension) !== -1) {
-    copyBinaryFile(srcPath, destPath, (err) => {
-      if (err) throw err;
-    });
+    let shouldOverwrite = 'overwrite';
+    if (contentChangedCallback) {
+      const newContentBuffer = fs.readFileSync(srcPath);
+      let contentChanged = 'identical';
+      try {
+        const origContentBuffer = fs.readFileSync(destPath);      
+        if (Buffer.compare(origContentBuffer, newContentBuffer) !== 0) {
+          contentChanged = 'changed';
+        }
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          contentChanged = 'new';
+        } else {
+          throw err;
+        }
+      }
+      shouldOverwrite = contentChangedCallback(destPath, contentChanged);
+    }
+    if (shouldOverwrite === 'overwrite') {
+      copyBinaryFile(srcPath, destPath, (err) => {
+        if (err) throw err;
+      });
+    }
     return;
   }
   
@@ -44,31 +64,25 @@ function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback)
     content = content.replace(new RegExp(regex, 'g'), replacements[regex])
   );
 
-  if (!contentChangedCallback) {
-    fs.writeFileSync(destPath, content, {
-      encoding: 'utf8',
-      mode: srcPermissions,
-    });
-    // Overwrite and we're done
-    return;
-  }
-
-  // Check if contents changed and ask to overwrite
-  let contentChanged = 'identical';
-  try {
-    const origContent = fs.readFileSync(destPath, 'utf8');
-    if (content !== origContent) {
-      //console.log('Content changed: ' + destPath);
-      contentChanged = 'changed';
+  let shouldOverwrite = 'overwrite';
+  if (contentChangedCallback) {
+    // Check if contents changed and ask to overwrite
+    let contentChanged = 'identical';
+    try {
+      const origContent = fs.readFileSync(destPath, 'utf8');
+      if (content !== origContent) {
+        //console.log('Content changed: ' + destPath);
+        contentChanged = 'changed';
+      }
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        contentChanged = 'new';
+      } else {
+        throw err;
+      }
     }
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      contentChanged = 'new';
-    } else {
-      throw err;
-    }
+    shouldOverwrite = contentChangedCallback(destPath, contentChanged);
   }
-  const shouldOverwrite = contentChangedCallback(destPath, contentChanged);
   if (shouldOverwrite === 'overwrite') {
     fs.writeFileSync(destPath, content, {
       encoding: 'utf8',

@@ -52,22 +52,26 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
         'HelloWorld': newProjectName,
         'helloworld': newProjectName.toLowerCase(),
       },
-      options.upgrade ? upgradeFileContentChangedCallback : null
+      options.upgrade ? (_, contentChanged) => {
+        return upgradeFileContentChangedCallback(relativeRenamedPath, contentChanged)
+      } : null
     );
   });
 }
 
-function upgradeFileContentChangedCallback(path, contentChanged) {
+function upgradeFileContentChangedCallback(relativeDestPath, contentChanged) {
   if (contentChanged === 'new') {
-    console.log('[new] ' + path);
+    console.log('new ' + relativeDestPath);
     return 'overwrite';
   } else if (contentChanged === 'changed') {
-    console.log('[changed] ' + path);
+    console.log('changed ' + relativeDestPath);
     // TODO ask the user
     return 'overwrite';
   } else if (contentChanged === 'identical') {
-    console.log('[identical] ' + path);
+    console.log('identical ' + relativeDestPath);
     return 'keep';
+  } else {
+    throw new Error(`Unkown file changed state: {relativeDestPath}, {contentChanged}`);
   }
 }
 

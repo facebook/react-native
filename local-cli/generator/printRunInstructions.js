@@ -11,16 +11,16 @@
 var chalk = require('chalk');
 var path = require('path');
 
-function printRunInstructions(appRoot, newProjectName) {
-  const absoluteAppRoot = path.resolve(appRoot);
-  const relativeAppRoot = path.relative(process.cwd(), absoluteAppRoot);
+function printRunInstructions(projectDir, projectName) {
+  const absoluteProjectDir = path.resolve(projectDir);
+  const relativeProjectDir = path.relative(process.cwd(), absoluteProjectDir);
   // If we're in the project directory already, no need to 'cd' into it
-  const needToCd = !!relativeAppRoot;
+  const needToCd = !!relativeProjectDir;
   // iOS
-  const xcodeProjectPath = path.resolve(appRoot, 'ios', newProjectName) + '.xcodeproj';
+  const xcodeProjectPath = path.resolve(projectDir, 'ios', projectName) + '.xcodeproj';
   const relativeXcodeProjectPath = path.relative(process.cwd(), xcodeProjectPath);
   console.log(chalk.white.bold('To run your app on iOS:'));
-  if (needToCd) { console.log('   cd ' + relativeAppRoot); }
+  if (needToCd) { console.log('   cd ' + relativeProjectDir); }
   console.log('   react-native run-ios');
   console.log('   - or -');
   console.log('   Open ' + relativeXcodeProjectPath + ' in Xcode');
@@ -28,7 +28,7 @@ function printRunInstructions(appRoot, newProjectName) {
   // Android
   console.log(chalk.white.bold('To run your app on Android:'));
   console.log('   Have an Android emulator running (quickest way to get started), or a device connected');
-  if (needToCd) { console.log('   cd ' + relativeAppRoot); }
+  if (needToCd) { console.log('   cd ' + relativeProjectDir); }
   console.log('   react-native run-android');
 }
 
