@@ -166,14 +166,14 @@ var Site = React.createClass({
               </section>
               <section className="newsletter">
                 <div id="mc_embed_signup">
-                  <form action="//github.us14.list-manage.com/subscribe/post?u=bb5453b13c3abce440d274dc7&amp;id=60de5624cd" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" className="validate" target="_blank" noValidate>
+                  <form action="//reactnative.us10.list-manage.com/subscribe/post?u=db0dd948e2b729ee62625b1a8&amp;id=47cd41008f" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" className="validate" target="_blank" noValidate>
                     <div id="mc_embed_signup_scroll">
                     	<label for="mce-EMAIL">
                         <h5>Get the React Native Newsletter</h5>
                       </label>
                     	<input type="email" value="" name="EMAIL" className="email" id="mce-EMAIL" placeholder="email address" required />
                       <div style={{ position: "absolute", left: "-5000px"}} aria-hidden="true">
-                        <input type="text" name="b_bb5453b13c3abce440d274dc7_60de5624cd" tabIndex="-1" value="" />
+                        <input type="text" name="b_db0dd948e2b729ee62625b1a8_47cd41008f" tabIndex="-1" value="" />
                       </div>
                       <div className="clear">
                         <input type="submit" value="Sign up" name="subscribe" id="mc-embedded-subscribe" className="button" />
