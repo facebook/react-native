@@ -198,13 +198,7 @@ class ControlledWebView extends React.Component {
     showCustomLogin: false,
   }
 
-  constructor(props) {
-    super(props);
-
-    this.onNavigationBlocked = this.onNavigationBlocked.bind(this);
-  }
-
-  onNavigationBlocked({ nativeEvent }) {
+  onNavigationBlocked = ({ nativeEvent }) => {
     const { url } = nativeEvent;
 
     // url within the github.com domain, matched by first policy (login)
