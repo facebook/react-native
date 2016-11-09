@@ -1115,12 +1115,14 @@ static void absoluteLayoutChild(const CSSNodeRef node,
   if (isTrailingPosDefined(child, mainAxis) && !isLeadingPosDefined(child, mainAxis)) {
     child->layout.position[leading[mainAxis]] = node->layout.measuredDimensions[dim[mainAxis]] -
                                                 child->layout.measuredDimensions[dim[mainAxis]] -
+                                                getTrailingBorder(node, mainAxis) -
                                                 getTrailingPosition(child, mainAxis);
   }
 
   if (isTrailingPosDefined(child, crossAxis) && !isLeadingPosDefined(child, crossAxis)) {
     child->layout.position[leading[crossAxis]] = node->layout.measuredDimensions[dim[crossAxis]] -
                                                  child->layout.measuredDimensions[dim[crossAxis]] -
+                                                 getTrailingBorder(node, crossAxis) - 
                                                  getTrailingPosition(child, crossAxis);
   }
 }
@@ -1830,16 +1832,14 @@ static void layoutNodeImpl(const CSSNodeRef node,
                                                   getLeadingMargin(child, mainAxis);
         }
       } else {
-        if (performLayout) {
-          // If the child is position absolute (without top/left) or relative,
-          // we put it at the current accumulated offset.
-          child->layout.position[pos[mainAxis]] += mainDim;
-        }
-
         // Now that we placed the element, we need to update the variables.
         // We need to do that only for relative elements. Absolute elements
         // do not take part in that phase.
         if (child->style.positionType == CSSPositionTypeRelative) {
+          if (performLayout) {
+            child->layout.position[pos[mainAxis]] += mainDim;
+          }
+
           if (canSkipFlex) {
             // If we skipped the flex step, then we can't rely on the
             // measuredDims because
@@ -1857,6 +1857,8 @@ static void layoutNodeImpl(const CSSNodeRef node,
             // can only be one element in that cross dimension.
             crossDim = fmaxf(crossDim, getDimWithMargin(child, crossAxis));
           }
+        } else if (performLayout) {
+          child->layout.position[pos[mainAxis]] += getLeadingBorder(node, mainAxis) + leadingMainDim;
         }
       }
     }
@@ -1901,7 +1903,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
                                                      getLeadingMargin(child, crossAxis);
           } else {
             child->layout.position[pos[crossAxis]] =
-                leadingPaddingAndBorderCross + getLeadingMargin(child, crossAxis);
+                getLeadingBorder(node, crossAxis) + getLeadingMargin(child, crossAxis);
           }
         } else {
           float leadingCrossDim = leadingPaddingAndBorderCross;
