@@ -244,6 +244,7 @@ class ControlledWebView extends React.Component {
         <Text>Navigation to login url blocked</Text>
         <View style={styles.buttons}>
           <Button
+            enabled
             text="Click to go back"
             onPress={() => this.setState({
               showCustomLogin: false
