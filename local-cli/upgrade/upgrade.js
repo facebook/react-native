@@ -111,14 +111,12 @@ function validateAndUpgrade() {
     );
   }
 
-  upgradeReactDependency(installed);
-  upgradeProjectFiles(projectDir, projectName);
-  console.log(
-    'Successfully upgraded this project to react-native v' + installed.version
-  );
-  //printRunInstructions(projectDir, projectName);
   return new Promise((resolve) => {
-    // TODO move logic here
+    upgradeReactDependency(installed);
+    upgradeProjectFiles(projectDir, projectName);
+    console.log(
+      'Successfully upgraded this project to react-native v' + installed.version
+    );
     resolve();
   });
 }

@@ -19,6 +19,11 @@ const binaryExtensions = ['.png', '.jar'];
  * @param srcPath Path to a file to be copied.
  * @param destPath Destination path.
  * @param replacements: e.g. {'TextToBeReplaced': 'Replacement'}
+ * @param contentChangedCallback
+ *        Used when upgrading projects. Based on if file contents would change
+ *        when being replaced, allows the caller to specify whether the file
+ *        should be replaced or not.
+ *        Function(path, 'identical' | 'changed' | 'new') => 'keep' | 'overwrite'
  */
 function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback) {
   if (fs.lstatSync(srcPath).isDirectory()) {

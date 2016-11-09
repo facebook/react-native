@@ -73,19 +73,21 @@ function generateProject(destinationRoot, newProjectName, options) {
     newProjectName
   );
 
-  console.log('Installing React...');
   if (yarnVersion) {
+    console.log('Adding React...');
     execSync(`yarn add react@${reactVersion}`);
   } else {
+    console.log('Installing React...');
     execSync(`npm install react@${reactVersion} --save --save-exact`);
   }
   if (!options['skip-jest']) {
-    console.log('Installing Jest...');
     const jestDeps = `jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion}`;
     if (yarnVersion) {
-      execSync(`yarn add {jestDeps} --dev --exact`);
+      console.log('Adding Jest...');
+      execSync(`yarn add ${jestDeps} --dev --exact`);
     } else {
-      execSync(`npm install {jestDeps} --save-dev --save-exact`);
+      console.log('Installing Jest...');
+      execSync(`npm install ${jestDeps} --save-dev --save-exact`);
     }
     addJestToPackageJson(destinationRoot);
   }
