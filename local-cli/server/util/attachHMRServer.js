@@ -319,7 +319,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
         client.ws.on('close', () => disconnect());
       })
-    .done();
+    .catch(err => {
+      throw err;
+    });
   });
 }
 

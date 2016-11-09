@@ -76,7 +76,7 @@ try {
   if (tryExecNTimes(
     () => {
       exec('sleep 10s');
-      return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
+      return exec(`react-native init EndToEndTest --version ${PACKAGE} --npm`).code;
     },
     numberOfRetries,
     () => rm('-rf', 'EndToEndTest'))) {
