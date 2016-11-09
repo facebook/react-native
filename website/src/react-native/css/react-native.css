@@ -745,11 +745,11 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .docs-prev {
-  float: right;
+  float: left;
 }
 
 .docs-next {
-  float: left;
+  float: right;
 }
 
 section.black content {

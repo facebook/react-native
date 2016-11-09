@@ -70,7 +70,7 @@ function transformJSON(infile, options, outfile, callback) {
 }
 
 function transformModule(infile, options, outfile, callback) {
-  const filename = options.filename || infile;
+  const filename = infile;
   if (filename.endsWith('.json')) {
     return transformJSON(infile, options, outfile, callback);
   }

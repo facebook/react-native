@@ -764,6 +764,18 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 
   /**
+   * Sets the offset value to the base value, and resets the base value to zero.
+   * The final output of the value is unchanged.
+   */
+  extractOffset(): void {
+    this._offset += this._value;
+    this._value = 0;
+    if (this.__isNative) {
+      NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
+    }
+  }
+
+  /**
    * Adds an asynchronous listener to the value so you can observe updates from
    * animations.  This is useful because there is no way to
    * synchronously read the value because it might be driven natively.

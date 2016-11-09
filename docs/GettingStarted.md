@@ -17,40 +17,40 @@ want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.
 
 <div class="toggler">
-<style>
-.toggler a {
-  display: inline-block;
-  padding: 10px 5px;
-  margin: 2px;
-  border: 1px solid #05A5D1;
-  border-radius: 3px;
-  text-decoration: none !important;
-}
-.display-os-mac .toggler .button-mac,
-.display-os-linux .toggler .button-linux,
-.display-os-windows .toggler .button-windows,
-.display-platform-ios .toggler .button-ios,
-.display-platform-android .toggler .button-android {
-  background-color: #05A5D1;
-  color: white;
-}
-block { display: none; }
-.display-platform-ios.display-os-mac .ios.mac,
-.display-platform-ios.display-os-linux .ios.linux,
-.display-platform-ios.display-os-windows .ios.windows,
-.display-platform-android.display-os-mac .android.mac,
-.display-platform-android.display-os-linux .android.linux,
-.display-platform-android.display-os-windows .android.windows {
-  display: block;
-}
-</style>
-<span>Mobile OS:</span>
-<a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-<a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
-<span>Development OS:</span>
-<a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
-<a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
-<a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
+  <style>
+    .toggler a {
+      display: inline-block;
+      padding: 10px 5px;
+      margin: 2px;
+      border: 1px solid #05A5D1;
+      border-radius: 3px;
+      text-decoration: none !important;
+    }
+    .display-os-mac .toggler .button-mac,
+    .display-os-linux .toggler .button-linux,
+    .display-os-windows .toggler .button-windows,
+    .display-platform-ios .toggler .button-ios,
+    .display-platform-android .toggler .button-android {
+      background-color: #05A5D1;
+      color: white;
+    }
+    block { display: none; }
+    .display-platform-ios.display-os-mac .ios.mac,
+    .display-platform-ios.display-os-linux .ios.linux,
+    .display-platform-ios.display-os-windows .ios.windows,
+    .display-platform-android.display-os-mac .android.mac,
+    .display-platform-android.display-os-linux .android.linux,
+    .display-platform-android.display-os-windows .android.windows {
+      display: block;
+    }
+  </style>
+  <span>Mobile OS:</span>
+  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+  <span>Development OS:</span>
+  <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
+  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
+  <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
 <block class="linux windows ios" />
@@ -326,7 +326,25 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-<block class="windows linux android" />
+<block class="windows android" />
+
+## Testing your React Native Installation
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native start` inside the newly created folder to start the packager.
+
+```
+react-native init AwesomeProject
+cd AwesomeProject
+react-native start
+```
+
+Open a new command prompt and run `react-native run-android` inside the same folder to launch the app on your AVD.
+
+```
+react-native run-android
+```
+
+<block class="linux android" />
 
 ## Testing your React Native Installation
 
@@ -338,14 +356,13 @@ cd AwesomeProject
 react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in your Android emulator shortly.
+<block class="windows linux android" />
 
-> A common issue is that the packager is not started automatically when you run
-`react-native run-android`. You can start it manually using `react-native start`.
+If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
 <block class="windows android" />
 
-> If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
+> If you hit a `ERROR  Watcher took too long to load`, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
 
 <block class="windows linux android" />
 

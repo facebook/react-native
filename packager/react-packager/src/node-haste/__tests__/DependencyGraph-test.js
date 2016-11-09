@@ -12,7 +12,8 @@ jest.autoMockOff();
 jest.useRealTimers();
 jest
   .mock('fs')
-  .mock('../../Logger');
+  .mock('../../Logger')
+  .mock('../../lib/TransformCache');
 
 // This is an ugly hack:
 // * jest-haste-map uses `find` for fast file system crawling which won't work
@@ -206,6 +207,7 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       maxWorkers: 1,
       resetCache: true,
+      transformCacheKey: 'abcdef',
     };
   });
 

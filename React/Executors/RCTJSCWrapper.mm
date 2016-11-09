@@ -27,6 +27,10 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
 
 #undef UNIMPLEMENTED_SYSTEM_JSC_FUNCTION
 
+// A no-op function, to replace void functions that do no exist in the system JSC
+//  with a function that does nothing.
+static void noOpSystemJSCFunc(void *args...){ }
+
 void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
   return;
 }
@@ -70,8 +74,9 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
     .JSValueIsUndefined = JSValueIsUndefined,
     .JSValueIsNull = JSValueIsNull,
     .JSEvaluateScript = JSEvaluateScript,
-    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
+    .configureJSCForIOS = (voidWithNoParamsFuncType)noOpSystemJSCFunc,
+    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };
@@ -100,6 +105,7 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
     .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
     .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
+    .configureJSCForIOS = (voidWithNoParamsFuncType)dlsym(libraryHandle, "configureJSCForIOS"),
     .JSBytecodeFileFormatVersion = *(const int32_t *)dlsym(libraryHandle, "JSBytecodeFileFormatVersion"),
     .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
     .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),

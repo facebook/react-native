@@ -21,7 +21,8 @@ function setupDevtools() {
   if (Platform.OS === 'android' && NativeModules.AndroidConstants) {
     hostname = NativeModules.AndroidConstants.ServerHost.split(':')[0];
   }
-  var ws = new window.WebSocket('ws://' + hostname + ':8097/devtools');
+  var port = window.__REACT_DEVTOOLS_PORT__ || 8097;
+  var ws = new window.WebSocket('ws://' + hostname + ':' +  port + '/devtools');
   // this is accessed by the eval'd backend code
   var FOR_BACKEND = { // eslint-disable-line no-unused-vars
     resolveRNStyle: require('flattenStyle'),

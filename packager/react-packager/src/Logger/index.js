@@ -11,16 +11,16 @@
  */
 'use strict';
 
+const chalk = require('chalk');
+const os = require('os');
+
+const {EventEmitter} = require('events');
+
 import type {
   ActionLogEntryData,
   ActionStartLogEntry,
   LogEntry,
 } from './Types';
-
-const {EventEmitter} = require('events');
-
-const chalk = require('chalk');
-const os = require('os');
 
 let PRINT_LOG_ENTRIES = true;
 const log_session = `${os.hostname()}-${Date.now()}`;

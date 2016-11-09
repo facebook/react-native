@@ -129,7 +129,7 @@ DEFINE_PROCESS_META_PROPS(Border);
 //
 // After passing in the absolutePosition of {106.667, y}, we do the following calculations:
 // absoluteLeft = round(absolutePosition.x + viewPosition.left) = round(106.667 + 0) = 106.5
-// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.left) + round(106.667 + 0 + 106.667) = 213.5
+// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.width) + round(106.667 + 0 + 106.667) = 213.5
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
@@ -152,22 +152,22 @@ DEFINE_PROCESS_META_PROPS(Border);
   }
 #endif
 
-  CGPoint absoluteTopLeft = {
+  const CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),
     absolutePosition.y + CSSNodeLayoutGetTop(node)
   };
 
-  CGPoint absoluteBottomRight = {
-    absolutePosition.x + CSSNodeLayoutGetLeft(node) + CSSNodeLayoutGetWidth(node),
-    absolutePosition.y + CSSNodeLayoutGetTop(node) + CSSNodeLayoutGetHeight(node)
+  const CGPoint absoluteBottomRight = {
+    absoluteTopLeft.x + CSSNodeLayoutGetWidth(node),
+    absoluteTopLeft.y + CSSNodeLayoutGetHeight(node)
   };
 
-  CGRect frame = {{
+  const CGRect frame = {{
     RCTRoundPixelValue(CSSNodeLayoutGetLeft(node)),
     RCTRoundPixelValue(CSSNodeLayoutGetTop(node)),
   }, {
-    RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
-    RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
+    RCTRoundPixelValue(absoluteBottomRight.x) - RCTRoundPixelValue(absoluteTopLeft.x),
+    RCTRoundPixelValue(absoluteBottomRight.y) - RCTRoundPixelValue(absoluteTopLeft.y),
   }};
 
   if (!CGRectEqualToRect(frame, _frame)) {

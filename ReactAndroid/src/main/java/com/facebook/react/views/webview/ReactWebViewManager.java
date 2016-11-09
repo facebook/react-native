@@ -375,6 +375,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
   }
 
+  @ReactProp(name = "allowUniversalAccessFromFileURLs")
+  public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
+    view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+  }
+
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
