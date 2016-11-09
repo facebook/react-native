@@ -115,6 +115,14 @@ typedef struct CSSSize {
   float height;
 } CSSSize;
 
+typedef enum CSSLogLevel {
+  CSSLogLevelError,
+  CSSLogLevelWarn,
+  CSSLogLevelInfo,
+  CSSLogLevelDebug,
+  CSSLogLevelVerbose,
+} CSSLogLevel;
+
 typedef struct CSSNode *CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float width,
@@ -122,7 +130,7 @@ typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float height,
                                   CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(CSSNodeRef node);
-typedef int (*CSSLogger)(const char *format, ...);
+typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
 typedef void (*CSSAssertFailFunc)(const char *message);
@@ -232,6 +240,7 @@ CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
+WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
 
 #ifdef CSS_ASSERT_FAIL_ENABLED
 // Assert

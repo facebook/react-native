@@ -24,7 +24,8 @@ declare export function transformModule(
 declare export function optimizeModule(
   infile: string,
   outfile: string,
-  options: {
+  isPolyfill?: boolean,
+  inliningOptions: {
     dev?: boolean,
     platform?: string,
   },

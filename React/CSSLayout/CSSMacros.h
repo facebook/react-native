@@ -36,7 +36,7 @@
 #if CSS_ASSERT_FAIL_ENABLED
 #define CSS_ERROR_FUNC(message) CSSAssertFail(message)
 #else
-#define CSS_ERROR_FUNC(message) fprintf(stderr, "%s", message)
+#define CSS_ERROR_FUNC(message) CSSLog(CSSLogLevelError, "%s", message)
 #endif
 
 #ifndef CSS_ASSERT
