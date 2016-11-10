@@ -160,6 +160,20 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
+     * Rules that will be used to block the webview navigation
+     */
+    navigationBlockingPolicies: PropTypes.arrayOf(PropTypes.shape({
+      currentURL: PropTypes.string,
+      url: PropTypes.string,
+    })),
+
+    /**
+     * Function that is invoked when the `WebView` navigation is blocked by the
+     * `navigationBlockingPolicies`.
+     */
+    onNavigationBlocked: PropTypes.func,
   };
 
   static defaultProps = {
@@ -236,6 +250,7 @@ class WebView extends React.Component {
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
+        navigationBlockingPolicies={this.props.navigationBlockingPolicies}
       />;
 
     return (
@@ -333,6 +348,11 @@ class WebView extends React.Component {
     var {onMessage} = this.props;
     onMessage && onMessage(event);
   }
+
+  onNavigationBlocked = (event) => {
+    var {onNavigationBlocked} = this.props;
+    onNavigationBlocked && onNavigationBlocked(event);
+  };
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
