@@ -33,16 +33,10 @@
 #define CSS_ABORT()
 #endif
 
-#if CSS_ASSERT_FAIL_ENABLED
-#define CSS_ERROR_FUNC(message) CSSAssertFail(message)
-#else
-#define CSS_ERROR_FUNC(message) CSSLog(CSSLogLevelError, "%s", message)
-#endif
-
 #ifndef CSS_ASSERT
-#define CSS_ASSERT(X, message) \
-  if (!(X)) {                  \
-    CSS_ERROR_FUNC(message);   \
-    CSS_ABORT();               \
+#define CSS_ASSERT(X, message)               \
+  if (!(X)) {                                \
+    CSSLog(CSSLogLevelError, "%s", message); \
+    CSS_ABORT();                             \
   }
 #endif

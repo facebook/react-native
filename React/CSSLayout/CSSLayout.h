@@ -132,10 +132,6 @@ typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
 typedef void (*CSSPrintFunc)(CSSNodeRef node);
 typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
 
-#ifdef CSS_ASSERT_FAIL_ENABLED
-typedef void (*CSSAssertFailFunc)(const char *message);
-#endif
-
 // CSSNode
 WIN_EXPORT CSSNodeRef CSSNodeNew(void);
 WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
@@ -241,11 +237,5 @@ CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
-
-#ifdef CSS_ASSERT_FAIL_ENABLED
-// Assert
-WIN_EXPORT void CSSAssertSetFailFunc(CSSAssertFailFunc func);
-WIN_EXPORT void CSSAssertFail(const char *message);
-#endif
 
 CSS_EXTERN_C_END

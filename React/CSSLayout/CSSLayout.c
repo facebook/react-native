@@ -2497,17 +2497,3 @@ void CSSLog(CSSLogLevel level, const char *format, ...) {
   gLogger(level, format, args);
   va_end(args);
 }
-
-#ifdef CSS_ASSERT_FAIL_ENABLED
-static CSSAssertFailFunc gAssertFailFunc;
-
-void CSSAssertSetFailFunc(CSSAssertFailFunc func) {
-  gAssertFailFunc = func;
-}
-
-void CSSAssertFail(const char *message) {
-  if (gAssertFailFunc) {
-    (*gAssertFailFunc)(message);
-  }
-}
-#endif
