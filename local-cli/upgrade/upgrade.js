@@ -112,7 +112,6 @@ function validateAndUpgrade() {
   }
 
   return new Promise((resolve) => {
-    upgradeReactDependency(installed);
     upgradeProjectFiles(projectDir, projectName);
     console.log(
       'Successfully upgraded this project to react-native v' + installed.version
