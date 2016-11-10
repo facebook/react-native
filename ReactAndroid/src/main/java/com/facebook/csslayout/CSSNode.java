@@ -40,14 +40,28 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private long mNativePointer;
   private Object mData;
 
+  private boolean mHasSetPadding = false;
+  private boolean mHasSetMargin = false;
+  private boolean mHasSetBorder = false;
+  private boolean mHasSetPosition = false;
+
+  @DoNotStrip
+  private float mWidth = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mHeight = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mTop = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private float mLeft = CSSConstants.UNDEFINED;
+  @DoNotStrip
+  private int mLayoutDirection = 0;
+
   private native long jni_CSSNodeNew();
   public CSSNode() {
     mNativePointer = jni_CSSNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
-
-    mChildren = new ArrayList<>(4);
   }
 
   private native void jni_CSSNodeFree(long nativePointer);
@@ -63,12 +77,26 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeReset(long nativePointer);
   @Override
   public void reset() {
+    mHasSetPadding = false;
+    mHasSetMargin = false;
+    mHasSetBorder = false;
+    mHasSetPosition = false;
+
+    mWidth = CSSConstants.UNDEFINED;
+    mHeight = CSSConstants.UNDEFINED;
+    mTop = CSSConstants.UNDEFINED;
+    mLeft = CSSConstants.UNDEFINED;
+    mLayoutDirection = 0;
+
+    mMeasureFunction = null;
+    mData = null;
+
     jni_CSSNodeReset(mNativePointer);
   }
 
   @Override
   public int getChildCount() {
-    return mChildren.size();
+    return mChildren == null ? 0 : mChildren.size();
   }
 
   @Override
@@ -83,6 +111,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
     mChildren.add(i, child);
     child.mParent = this;
     jni_CSSNodeInsertChild(mNativePointer, child.mNativePointer, i);
@@ -106,19 +137,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int indexOf(CSSNode child) {
-    return mChildren.indexOf(child);
-  }
-
-  private native void jni_CSSNodeSetIsTextNode(long nativePointer, boolean isTextNode);
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    jni_CSSNodeSetIsTextNode(mNativePointer, isTextNode);
-  }
-
-  private native boolean jni_CSSNodeGetIsTextNode(long nativePointer);
-  @Override
-  public boolean isTextNode() {
-    return jni_CSSNodeGetIsTextNode(mNativePointer);
+    return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
   private native void jni_CSSNodeCalculateLayout(long nativePointer);
@@ -161,12 +180,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public void setDirection(CSSDirection direction) {
     jni_CSSNodeStyleSetDirection(mNativePointer, direction.ordinal());
-  }
-
-  private native int jni_CSSNodeLayoutGetDirection(long nativePointer);
-  @Override
-  public CSSDirection getLayoutDirection() {
-    return CSSDirection.values()[jni_CSSNodeLayoutGetDirection(mNativePointer)];
   }
 
   private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
@@ -304,48 +317,64 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
   @Override
   public float getMargin(int spacingType) {
+    if (!mHasSetMargin) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+    }
     return jni_CSSNodeStyleGetMargin(mNativePointer, spacingType);
   }
 
   private native void jni_CSSNodeStyleSetMargin(long nativePointer, int edge, float margin);
   @Override
   public void setMargin(int spacingType, float margin) {
+    mHasSetMargin = true;
     jni_CSSNodeStyleSetMargin(mNativePointer, spacingType, margin);
   }
 
   private native float jni_CSSNodeStyleGetPadding(long nativePointer, int edge);
   @Override
   public float getPadding(int spacingType) {
+    if (!mHasSetPadding) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+    }
     return jni_CSSNodeStyleGetPadding(mNativePointer, spacingType);
   }
 
   private native void jni_CSSNodeStyleSetPadding(long nativePointer, int edge, float padding);
   @Override
   public void setPadding(int spacingType, float padding) {
+    mHasSetPadding = true;
     jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
   }
 
   private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
   @Override
   public float getBorder(int spacingType) {
+    if (!mHasSetBorder) {
+      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+    }
     return jni_CSSNodeStyleGetBorder(mNativePointer, spacingType);
   }
 
   private native void jni_CSSNodeStyleSetBorder(long nativePointer, int edge, float border);
   @Override
   public void setBorder(int spacingType, float border) {
+    mHasSetBorder = true;
     jni_CSSNodeStyleSetBorder(mNativePointer, spacingType, border);
   }
 
   private native float jni_CSSNodeStyleGetPosition(long nativePointer, int edge);
   @Override
   public float getPosition(int spacingType) {
+    if (!mHasSetPosition) {
+      return CSSConstants.UNDEFINED;
+    }
     return jni_CSSNodeStyleGetPosition(mNativePointer, spacingType);
   }
 
   private native void jni_CSSNodeStyleSetPosition(long nativePointer, int edge, float position);
   @Override
   public void setPosition(int spacingType, float position) {
+    mHasSetPosition = true;
     jni_CSSNodeStyleSetPosition(mNativePointer, spacingType, position);
   }
 
@@ -421,28 +450,29 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
   }
 
-  private native float jni_CSSNodeLayoutGetLeft(long nativePointer);
   @Override
   public float getLayoutX() {
-    return jni_CSSNodeLayoutGetLeft(mNativePointer);
+    return mLeft;
   }
 
-  private native float jni_CSSNodeLayoutGetTop(long nativePointer);
   @Override
   public float getLayoutY() {
-    return jni_CSSNodeLayoutGetTop(mNativePointer);
+    return mTop;
   }
 
-  private native float jni_CSSNodeLayoutGetWidth(long nativePointer);
   @Override
   public float getLayoutWidth() {
-    return jni_CSSNodeLayoutGetWidth(mNativePointer);
+    return mWidth;
   }
 
-  private native float jni_CSSNodeLayoutGetHeight(long nativePointer);
   @Override
   public float getLayoutHeight() {
-    return jni_CSSNodeLayoutGetHeight(mNativePointer);
+    return mHeight;
+  }
+
+  @Override
+  public CSSDirection getLayoutDirection() {
+    return CSSDirection.values()[mLayoutDirection];
   }
 
   private native void jni_CSSNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
@@ -452,21 +482,23 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
+  // Implementation Note: Why this method needs to stay final
+  //
+  // We cache the jmethodid for this method in CSSLayout code. This means that even if a subclass
+  // were to override measure, we'd still call this implementation from layout code since the
+  // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip
-  public long measure(float width, int widthMode, float height, int heightMode) {
+  public final long measure(float width, int widthMode, float height, int heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }
 
-    MeasureOutput output = new MeasureOutput();
-    mMeasureFunction.measure(
+    return mMeasureFunction.measure(
           this,
           width,
           CSSMeasureMode.values()[widthMode],
           height,
-          CSSMeasureMode.values()[heightMode],
-          output);
-    return ((long) output.width) << 32 | ((long) output.height);
+          CSSMeasureMode.values()[heightMode]);
   }
 
   @Override

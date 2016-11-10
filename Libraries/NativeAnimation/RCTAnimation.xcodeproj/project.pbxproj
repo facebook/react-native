@@ -19,6 +19,8 @@
 		13E501EF1D07A6C9005F35D8 /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */; };
 		13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */; };
 		193F64F41D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */; };
+		19F00F221DC8847500113FEE /* RCTEventAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F00F211DC8847500113FEE /* RCTEventAnimation.m */; };
+		19F00F231DC8848E00113FEE /* RCTEventAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F00F211DC8847500113FEE /* RCTEventAnimation.m */; };
 		2D3B5EF21D9B0B3100451313 /* RCTAnimationUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501B81D07A644005F35D8 /* RCTAnimationUtils.m */; };
 		2D3B5EF31D9B0B3400451313 /* RCTViewPropertyMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501C81D07A644005F35D8 /* RCTViewPropertyMapper.m */; };
 		2D3B5EF41D9B0B3700451313 /* RCTNativeAnimatedModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501BE1D07A644005F35D8 /* RCTNativeAnimatedModule.m */; };
@@ -88,6 +90,8 @@
 		13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTValueAnimatedNode.m; sourceTree = "<group>"; };
 		193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; };
 		193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDiffClampAnimatedNode.m; sourceTree = "<group>"; };
+		19F00F201DC8847500113FEE /* RCTEventAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTEventAnimation.h; sourceTree = "<group>"; };
+		19F00F211DC8847500113FEE /* RCTEventAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventAnimation.m; sourceTree = "<group>"; };
 		2D2A28201D9B03D100D4039D /* libRCTAnimation-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTAnimation-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDivisionAnimatedNode.h; sourceTree = "<group>"; };
 		5C9894941D999639008027DB /* RCTDivisionAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDivisionAnimatedNode.m; sourceTree = "<group>"; };
@@ -175,6 +179,8 @@
 			isa = PBXGroup;
 			children = (
 				94C1294A1D4069170025F25C /* RCTAnimationDriver.h */,
+				19F00F201DC8847500113FEE /* RCTEventAnimation.h */,
+				19F00F211DC8847500113FEE /* RCTEventAnimation.m */,
 				94C1294C1D4069170025F25C /* RCTFrameAnimation.h */,
 				94C1294D1D4069170025F25C /* RCTFrameAnimation.m */,
 				94C1294E1D4069170025F25C /* RCTSpringAnimation.h */,
@@ -266,6 +272,7 @@
 				2D3B5EF21D9B0B3100451313 /* RCTAnimationUtils.m in Sources */,
 				2D3B5EF51D9B0B4800451313 /* RCTDivisionAnimatedNode.m in Sources */,
 				2D3B5EF71D9B0B4800451313 /* RCTAdditionAnimatedNode.m in Sources */,
+				19F00F231DC8848E00113FEE /* RCTEventAnimation.m in Sources */,
 				2D3B5EF41D9B0B3700451313 /* RCTNativeAnimatedModule.m in Sources */,
 				2D3B5EF61D9B0B4800451313 /* RCTDiffClampAnimatedNode.m in Sources */,
 				2D3B5EF81D9B0B4800451313 /* RCTAnimatedNode.m in Sources */,
@@ -289,6 +296,7 @@
 				13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */,
 				94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */,
 				193F64F41D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m in Sources */,
+				19F00F221DC8847500113FEE /* RCTEventAnimation.m in Sources */,
 				13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */,
 				13E501CC1D07A644005F35D8 /* RCTAnimationUtils.m in Sources */,
 				13E501CF1D07A644005F35D8 /* RCTNativeAnimatedModule.m in Sources */,

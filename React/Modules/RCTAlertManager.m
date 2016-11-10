@@ -31,9 +31,7 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 
 @implementation RCTAlertManager
 {
-  NSMutableArray<UIAlertController *> *_alertControllers;
-  NSMutableArray<RCTResponseSenderBlock> *_alertCallbacks;
-  NSMutableArray<NSArray<NSString *> *> *_alertButtonKeys;
+  NSHashTable *_alertControllers;
 }
 
 RCT_EXPORT_MODULE()
@@ -148,18 +146,19 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
       buttonStyle = UIAlertActionStyleDestructive;
     }
+    __weak UIAlertController *weakAlertController = alertController;
     [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                         style:buttonStyle
                                                       handler:^(__unused UIAlertAction *action) {
       switch (type) {
         case RCTAlertViewStylePlainTextInput:
         case RCTAlertViewStyleSecureTextInput:
-          callback(@[buttonKey, [alertController.textFields.firstObject text]]);
+          callback(@[buttonKey, [weakAlertController.textFields.firstObject text]]);
           break;
         case RCTAlertViewStyleLoginAndPasswordInput: {
           NSDictionary<NSString *, NSString *> *loginCredentials = @{
-            @"login": [alertController.textFields.firstObject text],
-            @"password": [alertController.textFields.lastObject text]
+            @"login": [weakAlertController.textFields.firstObject text],
+            @"password": [weakAlertController.textFields.lastObject text]
           };
           callback(@[buttonKey, loginCredentials]);
           break;
@@ -172,7 +171,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
   if (!_alertControllers) {
-    _alertControllers = [NSMutableArray new];
+    _alertControllers = [NSHashTable weakObjectsHashTable];
   }
   [_alertControllers addObject:alertController];
 

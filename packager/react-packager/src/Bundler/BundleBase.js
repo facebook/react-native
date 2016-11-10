@@ -27,7 +27,7 @@ class BundleBase {
 
   _assets: Array<mixed>;
   _finalized: boolean;
-  _mainModuleId: string | void;
+  _mainModuleId: number | void;
   _modules: Array<ModuleTransport>;
   _source: ?string;
 
@@ -46,7 +46,7 @@ class BundleBase {
     return this._mainModuleId;
   }
 
-  setMainModuleId(moduleId: string) {
+  setMainModuleId(moduleId: number) {
     this._mainModuleId = moduleId;
   }
 

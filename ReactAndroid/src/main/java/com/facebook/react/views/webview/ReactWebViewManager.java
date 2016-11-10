@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.Intent;
@@ -374,6 +375,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
   }
 
+  @ReactProp(name = "allowUniversalAccessFromFileURLs")
+  public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
+    view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+  }
+
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
@@ -428,7 +434,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           ReadableMapKeySetIterator iter = headers.keySetIterator();
           while (iter.hasNextKey()) {
             String key = iter.nextKey();
-            headerMap.put(key, headers.getString(key));
+            if ("user-agent".equals(key.toLowerCase(Locale.ENGLISH))) {
+              if (view.getSettings() != null) {
+                view.getSettings().setUserAgentString(headers.getString(key));
+              }
+            } else {
+              headerMap.put(key, headers.getString(key));
+            }
           }
         }
         view.loadUrl(url, headerMap);

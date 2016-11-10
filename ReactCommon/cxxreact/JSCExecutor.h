@@ -11,10 +11,11 @@
 #include <folly/json.h>
 #include <folly/Optional.h>
 
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
 #include "Executor.h"
 #include "ExecutorToken.h"
-#include "JSCHelpers.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 
 namespace facebook {
@@ -22,7 +23,9 @@ namespace react {
 
 class MessageQueueThread;
 
-class JSCExecutorFactory : public JSExecutorFactory {
+#define RN_JSC_EXECUTOR_EXPORT __attribute__((visibility("default")))
+
+class RN_JSC_EXECUTOR_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
   JSCExecutorFactory(const std::string& cacheDir, const folly::dynamic& jscConfig) :
   m_cacheDir(cacheDir),
@@ -46,7 +49,7 @@ public:
   Object jsObj;
 };
 
-class JSCExecutor : public JSExecutor {
+class RN_JSC_EXECUTOR_EXPORT JSCExecutor : public JSExecutor {
 public:
   /**
    * Must be invoked from thread this Executor will run on.

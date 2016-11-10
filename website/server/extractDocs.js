@@ -544,7 +544,7 @@ const apis = [
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
-  '../node_modules/react/lib/NativeMethodsMixin.js',
+  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',

@@ -21,7 +21,8 @@ function setupDevtools() {
   if (Platform.OS === 'android' && NativeModules.AndroidConstants) {
     hostname = NativeModules.AndroidConstants.ServerHost.split(':')[0];
   }
-  var ws = new window.WebSocket('ws://' + hostname + ':8097/devtools');
+  var port = window.__REACT_DEVTOOLS_PORT__ || 8097;
+  var ws = new window.WebSocket('ws://' + hostname + ':' +  port + '/devtools');
   // this is accessed by the eval'd backend code
   var FOR_BACKEND = { // eslint-disable-line no-unused-vars
     resolveRNStyle: require('flattenStyle'),
@@ -72,7 +73,7 @@ function setupDevtools() {
       return;
     }
     // This is breaking encapsulation of the React package. Move plz.
-    var ReactNativeComponentTree = require('react/lib/ReactNativeComponentTree');
+    var ReactNativeComponentTree = require('ReactNativeComponentTree');
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
       ComponentTree: {
         getClosestInstanceFromNode: function (node) {
@@ -90,8 +91,8 @@ function setupDevtools() {
           }
         }
       },
-      Mount: require('react/lib/ReactNativeMount'),
-      Reconciler: require('react/lib/ReactReconciler')
+      Mount: require('ReactNativeMount'),
+      Reconciler: require('ReactReconciler')
     });
     ws.onmessage = handleMessage;
   }

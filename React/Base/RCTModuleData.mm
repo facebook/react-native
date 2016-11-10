@@ -51,7 +51,7 @@
 
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
-  _hasConstantsToExport = RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport));
+  _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass

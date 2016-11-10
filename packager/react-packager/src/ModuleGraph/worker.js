@@ -27,16 +27,11 @@ const basename = path.basename;
 const dirname = path.dirname;
 const defaultVariants = {default: {}};
 const moduleFactoryParameters = ['require', 'module', 'global', 'exports'];
+const polyfillFactoryParameters = ['global'];
 
 function transformJSON(infile, options, outfile, callback) {
-  let json, value;
-  try {
-    json = fs.readFileSync(infile, 'utf8');
-    value = JSON.parse(json);
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
+  const json = fs.readFileSync(infile, 'utf8');
+  const value = JSON.parse(json);
 
   const filename = options.filename || infile;
   const code =
@@ -71,30 +66,18 @@ function transformJSON(infile, options, outfile, callback) {
     };
   }
 
-  try {
-    writeResult(outfile, result);
-  } catch (writeError) {
-    callback(writeError);
-    return;
-  }
-
+  writeResult(outfile, result);
   callback(null);
 }
 
 function transformModule(infile, options, outfile, callback) {
-  const filename = options.filename || infile;
+  const filename = infile;
   if (filename.endsWith('.json')) {
     return transformJSON(infile, options, outfile, callback);
   }
 
-  let code, transform;
-  try {
-    transform = require(options.transform);
-    code = fs.readFileSync(infile, 'utf8');
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
+  const transform = require(options.transform);
+  const code = fs.readFileSync(infile, 'utf8');
 
   const variants = options.variants || defaultVariants;
   const tasks = {};
@@ -113,7 +96,8 @@ function transformModule(infile, options, outfile, callback) {
     }
 
     Object.keys(transformed).forEach(key => {
-      transformed[key] = makeResult(transformed[key].ast, filename, code);
+      transformed[key] =
+        makeResult(transformed[key].ast, filename, code, options.polyfill);
     });
 
     const annotations = docblock.parseAsObject(docblock.extract(code));
@@ -135,61 +119,71 @@ function transformModule(infile, options, outfile, callback) {
   });
 }
 
-function optimizeModule(infile, outfile, options, callback) {
-  let data;
-  try {
-    data = JSON.parse(fs.readFileSync(infile, 'utf8'));
-  } catch (readError) {
-    callback(readError);
-    return;
-  }
-
+function optimizeModule(
+  infile,
+  outfile,
+  isPolyfill,
+  inliningOptions,
+  callback,
+) {
+  const data = JSON.parse(fs.readFileSync(infile, 'utf8'));
   const transformed = data.transformed;
   const result = Object.assign({}, data);
   result.transformed = {};
 
   const file = data.file;
   const code = data.code;
-  try {
-    Object.keys(transformed).forEach(key => {
-      result.transformed[key] = optimize(transformed[key], file, code, options);
-    });
 
-    writeResult(outfile, result);
-  } catch (error) {
-    callback(error);
-    return;
-  }
+  Object.keys(transformed).forEach(key => {
+    result.transformed[key] =
+      optimize(transformed[key], file, code, isPolyfill, inliningOptions);
+  });
+  writeResult(outfile, result);
 
   callback(null);
 }
 
-function makeResult(ast, filename, sourceCode) {
-  const dependencies = collectDependencies(ast);
-  const file = wrapModule(ast);
+function makeResult(ast, filename, sourceCode, isPolyfill = false) {
+  const dependencies = isPolyfill ? [] : collectDependencies(ast);
+  const file = isPolyfill ? wrapPolyfill(ast) : wrapModule(ast);
 
   const gen = generate(file, filename, sourceCode);
   return {code: gen.code, map: gen.map, dependencies};
 }
 
 function wrapModule(file) {
-  const p = file.program;
   const t = babel.types;
-  const factory = t.functionExpression(
-    t.identifier(''),
-    moduleFactoryParameters.map(makeIdentifier),
-    t.blockStatement(p.body, p.directives),
-  );
+  const factory = functionFromProgram(file.program, moduleFactoryParameters);
   const def = t.callExpression(t.identifier('__d'), [factory]);
   return t.file(t.program([t.expressionStatement(def)]));
 }
 
-function optimize(transformed, file, originalCode, options) {
+function wrapPolyfill(file) {
+  const t = babel.types;
+  const factory = functionFromProgram(file.program, polyfillFactoryParameters);
+  const iife = t.callExpression(factory, [t.identifier('this')]);
+  return t.file(t.program([t.expressionStatement(iife)]));
+}
+
+function functionFromProgram(program, parameters) {
+  const t = babel.types;
+  return t.functionExpression(
+    t.identifier(''),
+    parameters.map(makeIdentifier),
+    t.blockStatement(program.body, program.directives),
+  );
+}
+
+function optimize(transformed, file, originalCode, isPolyfill, options) {
   const optimized =
     optimizeCode(transformed.code, transformed.map, file, options);
 
-  const dependencies = collectDependencies.forOptimization(
-    optimized.ast, transformed.dependencies);
+  const dependencies = isPolyfill
+    ? []
+    : collectDependencies.forOptimization(
+        optimized.ast,
+        transformed.dependencies,
+      );
 
   const inputMap = transformed.map;
   const gen = generate(optimized.ast, file, originalCode);

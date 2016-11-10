@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device-ios.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -72,7 +72,7 @@ The keys to integrating React Native components into your Android application ar
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device-android.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -107,11 +107,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="objc swift" />
 
@@ -425,7 +425,7 @@ import React
 ```
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
-  let jsCodeLocation = NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
   let mockData:NSDictionary = ["scores":
       [
           ["name":"Alex", "value":"42"],
@@ -441,7 +441,7 @@ import React
   )
   let vc = UIViewController()
   vc.view = rootView
-  self.presentViewController(vc, animated: true, completion: nil)
+  self.present(vc, animated: true, completion: nil)
 }
 ```
 
@@ -612,7 +612,7 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      
+
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code

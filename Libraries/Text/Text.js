@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -19,8 +19,7 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const createReactNativeComponentClass =
-  require('react/lib/createReactNativeComponentClass');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);

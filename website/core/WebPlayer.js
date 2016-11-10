@@ -12,7 +12,7 @@
 var React = require('React');
 var Prism = require('Prism');
 
-var WEB_PLAYER_VERSION = '1.2.4';
+var WEB_PLAYER_VERSION = '1.2.6';
 
 /**
  * Use the WebPlayer by including a ```ReactNativeWebPlayer``` block in markdown.

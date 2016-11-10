@@ -8,7 +8,7 @@
  */
 'use strict';
 /*eslint no-console-disallow: "off"*/
-/*global React ReactDOM Table stringInterner stackRegistry aggrow preLoadedCapture:true*/
+/*global React ReactDOM Table StringInterner StackRegistry AggrowData Aggrow preLoadedCapture:true*/
 
 function RefVisitor(refs, id) {
   this.refs = refs;
@@ -292,189 +292,88 @@ function registerPathToRoot(refs, registry, strings) {
   }
 }
 
-function captureRegistry() {
-  const strings = stringInterner();
-  const stacks = stackRegistry(strings);
-  const data = new Int32Array(0);
-
-  const idField = 0;
-  const typeField = 1;
-  const sizeField = 2;
-  const traceField = 3;
-  const pathField = 4;
-  const reactField = 5;
-  const valueField = 6;
-  const moduleField = 7;
-  const numFields = 8;
-
-  return {
-    strings: strings,
-    stacks: stacks,
-    data: data,
-    register: function registerCapture(captureId, capture) {
-      // NB: capture.refs is potentially VERY large, so we try to avoid making
-      // copies, even of iteration is a bit more annoying.
-      let rowCount = 0;
-      for (const id in capture.refs) { // eslint-disable-line no-unused-vars
-        rowCount++;
-      }
-      for (const id in capture.markedBlocks) { // eslint-disable-line no-unused-vars
-        rowCount++;
-      }
-      console.log(
-        'increasing row data from ' + (this.data.length * 4).toString() + 'B to ' +
-        (this.data.length * 4 + rowCount * numFields * 4).toString() + 'B'
-      );
-      const newData = new Int32Array(this.data.length + rowCount * numFields);
-      newData.set(data);
-      let dataOffset = this.data.length;
-      this.data = null;
-
-      registerPathToRoot(capture.refs, this.stacks, this.strings);
-      const internedCaptureId = this.strings.intern(captureId);
-      const noneString = this.strings.intern('#none');
-      const noneStack = this.stacks.insert(this.stacks.root, noneString);
-      forEachRef(capture.refs, (visitor) => {
-        const ref = visitor.getRef();
-        const id = visitor.id;
-        newData[dataOffset + idField] = parseInt(id, 16);
-        newData[dataOffset + typeField] = this.strings.intern(ref.type);
-        newData[dataOffset + sizeField] = ref.size;
-        newData[dataOffset + traceField] = internedCaptureId;
-        if (ref.rootPath === undefined) {
-          newData[dataOffset + pathField] = noneStack.id;
-        } else {
-          newData[dataOffset + pathField] = ref.rootPath.id;
-        }
-        if (ref.reactTree === undefined) {
-          newData[dataOffset + reactField] = noneStack.id;
-        } else {
-          newData[dataOffset + reactField] = ref.reactTree.id;
-        }
-        newData[dataOffset + valueField] = this.strings.intern(visitor.getValue());
-        if (ref.module) {
-          newData[dataOffset + moduleField] = this.strings.intern(ref.module);
-        } else {
-          newData[dataOffset + moduleField] = noneString;
-        }
-        dataOffset += numFields;
-      });
-      for (const id in capture.markedBlocks) {
-        const block = capture.markedBlocks[id];
-        newData[dataOffset + idField] = parseInt(id, 16);
-        newData[dataOffset + typeField] = this.strings.intern('Marked Block Overhead');
-        newData[dataOffset + sizeField] = block.capacity - block.size;
-        newData[dataOffset + traceField] = internedCaptureId;
-        newData[dataOffset + pathField] = noneStack.id;
-        newData[dataOffset + reactField] = noneStack.id;
-        newData[dataOffset + valueField] = this.strings.intern(
-          'capacity: ' + block.capacity +
-          ', size: ' + block.size +
-          ', granularity: ' + block.cellSize
-        );
-        newData[dataOffset + moduleField] = noneString;
-        dataOffset += numFields;
-      }
-      this.data = newData;
-    },
-    getAggrow: function getAggrow() {
-      const agStrings = this.strings;
-      const agStacks = this.stacks.flatten();
-      const agData = this.data;
-      const agNumRows = agData.length / numFields;
-      const ag = new aggrow(agNumRows);
-
-      ag.addFieldExpander('Id',
-        function getId(row) {
-          let id = agData[row * numFields + idField];
-          if (id < 0) {
-            id += 0x100000000; // data is int32, id is uint32
-          }
-          return '0x' + id.toString(16);
-        },
-        function compareAddress(rowA, rowB) {
-          return agData[rowA * numFields + idField] - agData[rowB * numFields + idField];
-        });
-
-      const typeExpander = ag.addFieldExpander('Type',
-        function getType(row) { return agStrings.get(agData[row * numFields + typeField]); },
-        function compareType(rowA, rowB) {
-          return agData[rowA * numFields + typeField] - agData[rowB * numFields + typeField];
-        });
-
-      ag.addFieldExpander('Size',
-        function getSize(row) { return agData[row * numFields + sizeField].toString(); },
-        function compareSize(rowA, rowB) {
-          return agData[rowA * numFields + sizeField] - agData[rowB * numFields + sizeField];
-        });
-
-      ag.addFieldExpander('Trace',
-        function getSize(row) { return agStrings.get(agData[row * numFields + traceField]); },
-        function compareSize(rowA, rowB) {
-          return agData[rowA * numFields + traceField] - agData[rowB * numFields + traceField];
-        });
-
-      const pathExpander = ag.addCalleeStackExpander(
-        'Path',
-        agStacks.maxDepth,
-        function getStack(row) { return agStacks.get(agData[row * numFields + pathField]); },
-        function getFrame(id) { return agStrings.get(id); },
-      );
-
-      const reactExpander = ag.addCalleeStackExpander(
-        'React Tree',
-        agStacks.maxDepth,
-        function getStack(row) { return agStacks.get(agData[row * numFields + reactField]); },
-        function getFrame(id) { return agStrings.get(id); },
-      );
-
-      const valueExpander = ag.addFieldExpander('Value',
-        function getValue(row) { return agStrings.get(agData[row * numFields + valueField]); },
-        function compareValue(rowA, rowB) {
-          return agData[rowA * numFields + valueField] - agData[rowB * numFields + valueField];
-        });
-
-      const moduleExpander = ag.addFieldExpander('Module',
-        function getModule(row) { return agStrings.get(agData[row * numFields + moduleField]); },
-        function compareModule(rowA, rowB) {
-          return agData[rowA * numFields + moduleField] - agData[rowB * numFields + moduleField];
-        });
-
-      const sizeAggregator = ag.addAggregator('Size',
-        function aggregateSize(indices) {
-          let size = 0;
-          for (let i = 0; i < indices.length; i++) {
-            const row = indices[i];
-            size += agData[row * numFields + sizeField];
-          }
-          return size;
-        },
-        function formatSize(value) { return value.toString(); },
-        function sortSize(a, b) { return b - a; } );
-
-      const countAggregator = ag.addAggregator('Count',
-        function aggregateCount(indices) {
-          return indices.length;
-        },
-        function formatCount(value) { return value.toString(); },
-        function sortCount(a, b) { return b - a; } );
-
-      ag.setActiveExpanders([
-        pathExpander,
-        reactExpander,
-        moduleExpander,
-        typeExpander,
-        valueExpander,
-      ]);
-      ag.setActiveAggregators([sizeAggregator, countAggregator]);
-      return ag;
-    },
-  };
+function registerCapture(data, captureId, capture, stacks, strings) {
+  // NB: capture.refs is potentially VERY large, so we try to avoid making
+  // copies, even if iteration is a bit more annoying.
+  let rowCount = 0;
+  for (const id in capture.refs) { // eslint-disable-line no-unused-vars
+    rowCount++;
+  }
+  for (const id in capture.markedBlocks) { // eslint-disable-line no-unused-vars
+    rowCount++;
+  }
+  const inserter = data.rowInserter(rowCount);
+  registerPathToRoot(capture.refs, stacks, strings);
+  const noneString = strings.intern('#none');
+  const noneStack = stacks.insert(stacks.root, noneString);
+  forEachRef(capture.refs, (visitor) => {
+    // want to data.append(value, value, value), not IDs
+    const ref = visitor.getRef();
+    const id = visitor.id;
+    inserter.insertRow(
+      parseInt(id, 16),
+      ref.type,
+      ref.size,
+      captureId,
+      ref.rootPath === undefined ? noneStack : ref.rootPath,
+      ref.reactTree === undefined ? noneStack : ref.reactTree,
+      visitor.getValue(),
+      ref.module === undefined ? '#none' : ref.module,
+    );
+  });
+  for (const id in capture.markedBlocks) {
+    const block = capture.markedBlocks[id];
+    inserter.insertRow(
+      parseInt(id, 16),
+      'Marked Block Overhead',
+      block.capacity - block.size,
+      captureId,
+      noneStack,
+      noneStack,
+      'capacity: ' + block.capacity + ', size: ' + block.size + ', granularity: ' + block.cellSize,
+      '#none',
+    );
+  }
+  inserter.done();
 }
 
 if (preLoadedCapture) {
-  const r = new captureRegistry();
-  r.register('trace', preLoadedCapture);
+  const strings = StringInterner();
+  const stacks =  new StackRegistry();
+  const columns = [
+    { name: 'id', type: 'int' },
+    { name: 'type', type: 'string', strings: strings },
+    { name: 'size', type: 'int' },
+    { name: 'trace', type: 'string', strings: strings },
+    { name: 'path', type: 'stack', stacks: stacks },
+    { name: 'react', type: 'stack', stacks: stacks },
+    { name: 'value', type: 'string', strings: strings },
+    { name: 'module', type: 'string', strings: strings },
+  ];
+  const data = new AggrowData(columns);
+  registerCapture(data, 'trace', preLoadedCapture, stacks, strings);
   preLoadedCapture = undefined; // let GG clean up the capture
-  ReactDOM.render(<Table aggrow={r.getAggrow()} />, document.body);
+  const aggrow = new Aggrow(data);
+  aggrow.addPointerExpander('Id', 'id');
+  const typeExpander = aggrow.addStringExpander('Type', 'type');
+  aggrow.addNumberExpander('Size', 'size');
+  aggrow.addStringExpander('Trace', 'trace');
+  const pathExpander = aggrow.addStackExpander('Path', 'path', strings.get);
+  const reactExpander = aggrow.addStackExpander('React Tree', 'react', strings.get);
+  const valueExpander = aggrow.addStringExpander('Value', 'value');
+  const moduleExpander = aggrow.addStringExpander('Module', 'module');
+  aggrow.expander.setActiveExpanders([
+    pathExpander,
+    reactExpander,
+    moduleExpander,
+    typeExpander,
+    valueExpander,
+  ]);
+  const sizeAggregator = aggrow.addSumAggregator('Size', 'size');
+  const countAggregator = aggrow.addCountAggregator('Count');
+  aggrow.expander.setActiveAggregators([
+    sizeAggregator,
+    countAggregator,
+  ]);
+  ReactDOM.render(<Table aggrow={aggrow.expander} />, document.body);
 }

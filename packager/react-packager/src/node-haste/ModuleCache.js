@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
@@ -16,23 +18,56 @@ const Polyfill = require('./Polyfill');
 
 const path = require('path');
 
+import type Cache from './Cache';
+import type {
+  DepGraphHelpers,
+  Extractor,
+  TransformCode,
+  Options as ModuleOptions,
+} from './Module';
+import type FastFs from './fastfs';
+
 class ModuleCache {
+
+  _moduleCache: {[filePath: string]: Module};
+  _packageCache: {[filePath: string]: Package};
+  _fastfs: FastFs;
+  _cache: Cache;
+  _extractRequires: Extractor;
+  _transformCode: TransformCode;
+  _transformCacheKey: string;
+  _depGraphHelpers: DepGraphHelpers;
+  _platforms: mixed;
+  _assetDependencies: mixed;
+  _moduleOptions: ModuleOptions;
+  _packageModuleMap: WeakMap<Module, string>;
 
   constructor({
     fastfs,
     cache,
     extractRequires,
     transformCode,
+    transformCacheKey,
     depGraphHelpers,
     assetDependencies,
     moduleOptions,
-  }, platforms) {
+  }: {
+    fastfs: FastFs,
+    cache: Cache,
+    extractRequires: Extractor,
+    transformCode: TransformCode,
+    transformCacheKey: string,
+    depGraphHelpers: DepGraphHelpers,
+    assetDependencies: mixed,
+    moduleOptions: ModuleOptions,
+  }, platforms: mixed) {
     this._moduleCache = Object.create(null);
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
     this._cache = cache;
     this._extractRequires = extractRequires;
     this._transformCode = transformCode;
+    this._transformCacheKey = transformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
     this._platforms = platforms;
     this._assetDependencies = assetDependencies;
@@ -42,7 +77,7 @@ class ModuleCache {
     fastfs.on('change', this._processFileChange.bind(this));
   }
 
-  getModule(filePath) {
+  getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
@@ -51,6 +86,7 @@ class ModuleCache {
         cache: this._cache,
         extractor: this._extractRequires,
         transformCode: this._transformCode,
+        transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
       });
@@ -62,7 +98,7 @@ class ModuleCache {
     return this._moduleCache;
   }
 
-  getAssetModule(filePath) {
+  getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
@@ -75,7 +111,7 @@ class ModuleCache {
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath) {
+  getPackage(filePath: string) {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
@@ -86,7 +122,7 @@ class ModuleCache {
     return this._packageCache[filePath];
   }
 
-  getPackageForModule(module) {
+  getPackageForModule(module: Module): ?Package {
     if (this._packageModuleMap.has(module)) {
       const packagePath = this._packageModuleMap.get(module);
       if (this._packageCache[packagePath]) {
@@ -105,7 +141,8 @@ class ModuleCache {
     return this.getPackage(packagePath);
   }
 
-  createPolyfill({file}) {
+  createPolyfill({file}: {file: string}) {
+    /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
       file,
       cache: this._cache,
@@ -113,6 +150,7 @@ class ModuleCache {
       fastfs: this._fastfs,
       moduleCache: this,
       transformCode: this._transformCode,
+      transformCacheKey: this._transformCacheKey,
     });
   }
 
