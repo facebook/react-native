@@ -69,6 +69,9 @@ describe('Module', () => {
       options: {
         cacheTransformResults: true,
       },
+      transformCode: (module, sourceCode, transformOptions) => {
+        return Promise.resolve({code: sourceCode});
+      },
       ...options,
       cache,
       fastfs,

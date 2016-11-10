@@ -27,8 +27,8 @@ import type FastFs from './fastfs';
 
 type TransformedCode = {
   code: string,
-  dependencies?: ?Array<string>,
-  dependencyOffsets?: ?Array<number>,
+  dependencies: Array<string>,
+  dependencyOffsets: Array<number>,
   map?: ?{},
 };
 
@@ -225,18 +225,13 @@ class Module {
     transformOptions: mixed,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
-    const transformCode = this._transformCode;
+    const {_transformCode} = this;
     // AssetModule_DEPRECATED doesn't provide transformCode, but these should
     // never be transformed anyway.
-    invariant(transformCode != null, 'missing code transform funtion');
+    invariant(_transformCode != null, 'missing code transform funtion');
     this._readSourceCode().then(sourceCode => {
-      if (!transformCode) {
-        return callback(null, {code: sourceCode});
-      }
-      const codePromise = transformCode(this, sourceCode, transformOptions);
-      return codePromise.then(freshResult => {
-        callback(undefined, freshResult);
-      });
+      return _transformCode(this, sourceCode, transformOptions)
+        .then(freshResult => callback(undefined, freshResult));
     }, callback);
   }
 
