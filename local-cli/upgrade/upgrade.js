@@ -134,25 +134,6 @@ function upgradeProjectFiles(projectDir, projectName) {
   );
 }
 
-/**
- * The React Native we're upgrading to may depend on a later version
- * of React. Upgrade React to the correct version.
- */
-function upgradeReactDependency(installedPackageJson) {
-  if (
-    installedPackageJson &&
-    installedPackageJson.peerDependencies &&
-    installedPackageJson.peerDependencies.react
-  ) {
-    // TODO npm install (or yarn add) correct React version
-  } else {
-    warn(
-      'React Native installed in node_modules is missing ' +
-      'the React peer dependency.'
-    );
-  }
-}
-
 function warn(message) {
   console.warn(chalk.yellow(message));
 }
