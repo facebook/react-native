@@ -24,7 +24,6 @@ const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
-const extractRequires = require('./lib/extractRequires');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
@@ -37,7 +36,6 @@ const util = require('util');
 import type {
   TransformCode,
   Options as ModuleOptions,
-  Extractor,
 } from './Module';
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
@@ -63,7 +61,6 @@ class DependencyGraph {
     preferNativePlatform: boolean,
     extensions: Array<string>,
     mocksPattern: mixed,
-    extractRequires: Extractor,
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
@@ -98,7 +95,6 @@ class DependencyGraph {
     cache,
     extensions,
     mocksPattern,
-    extractRequires,
     transformCode,
     transformCacheKey,
     shouldThrowOnUnresolvedErrors = () => true,
@@ -123,7 +119,6 @@ class DependencyGraph {
     cache: Cache,
     extensions: Array<string>,
     mocksPattern: mixed,
-    extractRequires: Extractor,
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
@@ -147,7 +142,6 @@ class DependencyGraph {
       preferNativePlatform: preferNativePlatform || false,
       extensions: extensions || ['js', 'json'],
       mocksPattern,
-      extractRequires,
       transformCode,
       transformCacheKey,
       shouldThrowOnUnresolvedErrors,
@@ -209,7 +203,6 @@ class DependencyGraph {
       this._moduleCache = new ModuleCache({
         fastfs: this._fastfs,
         cache: this._cache,
-        extractRequires: this._opts.extractRequires,
         transformCode: this._opts.transformCode,
         transformCacheKey: this._opts.transformCacheKey,
         depGraphHelpers: this._helpers,
@@ -421,7 +414,6 @@ class DependencyGraph {
   static FileWatcher;
   static Module;
   static Polyfill;
-  static extractRequires;
   static getAssetDataFromName;
   static getPlatformExtension;
   static replacePatterns;
@@ -435,7 +427,6 @@ Object.assign(DependencyGraph, {
   FileWatcher,
   Module,
   Polyfill,
-  extractRequires,
   getAssetDataFromName,
   getPlatformExtension,
   replacePatterns,

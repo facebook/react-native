@@ -28,6 +28,7 @@ beforeEach(() => {
 
 describe('DependencyGraph', function() {
   let Module;
+  let extractDependencies;
   let defaults;
 
   function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
@@ -97,6 +98,9 @@ describe('DependencyGraph', function() {
       });
     Cache.prototype.end = jest.genMockFn();
 
+    const transformCacheKey = 'abcdef';
+    extractDependencies =
+      require('../../JSTransformer/worker/extract-dependencies');
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
@@ -117,7 +121,16 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       maxWorkers: 1,
       resetCache: true,
-      transformCacheKey: 'abcdef',
+      transformCode: (module, sourceCode, transformOptions) => {
+        return new Promise(resolve => {
+          let deps = {dependencies: [], dependencyOffsets: []};
+          if (!module.path.endsWith('.json')) {
+            deps = extractDependencies(sourceCode);
+          }
+          resolve({...deps, code: sourceCode});
+        });
+      },
+      transformCacheKey,
     };
   });
 
@@ -1468,7 +1481,7 @@ describe('DependencyGraph', function() {
             'subdir': {
               'lolynot.js': 'require("../other")',
             },
-            'other.js': 'some code',
+            'other.js': '/* some code */',
           },
         },
       });
@@ -1558,7 +1571,7 @@ describe('DependencyGraph', function() {
                 browser: 'client.js',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1613,7 +1626,7 @@ describe('DependencyGraph', function() {
                 browser: 'client',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1668,7 +1681,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1724,7 +1737,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1785,17 +1798,17 @@ describe('DependencyGraph', function() {
                   './hello.js': './bye.js',
                 },
               }, fieldName)),
-              'main.js': 'some other code',
+              'main.js': '/* some other code */',
               'client.js': 'require("./node")\nrequire("./dir/server.js")',
               'not-node.js': 'require("./not-browser")',
               'not-browser.js': 'require("./dir/server")',
-              'browser.js': 'some browser code',
+              'browser.js': '/* some browser code */',
               'dir': {
-                'server.js': 'some node code',
+                'server.js': '/* some node code */',
                 'client.js': 'require("../hello")',
               },
-              'hello.js': 'hello',
-              'bye.js': 'bye',
+              'hello.js': '/* hello */',
+              'bye.js': '/* bye */',
             },
           },
         });
@@ -1889,13 +1902,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -1959,13 +1972,13 @@ describe('DependencyGraph', function() {
               'index.js': 'require("./dir/ooga")',
               'dir': {
                 'ooga.js': 'require("node-package")',
-                'browser.js': 'some browser code',
+                'browser.js': '/* some browser code */',
               },
               'node-package': {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -2040,13 +2053,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -2112,7 +2125,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'booga',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -2165,7 +2178,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'index.js': 'require("./booga")',
-              'booga.js': 'some node code',
+              'booga.js': '/* some node code */',
             },
           },
         });
@@ -2223,7 +2236,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package': {
                 'package.json': JSON.stringify({
@@ -2238,7 +2251,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'nested-browser-package',
                 }),
-                'index.js': 'some code',
+                'index.js': '/* some code */',
               },
             },
           },
@@ -2365,49 +2378,49 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package-a',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-b',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-c',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-d',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package-a': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-a',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-b',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-c',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-d',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
             },
           },
@@ -2638,6 +2651,7 @@ describe('DependencyGraph', function() {
       jest.resetModules();
       jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
+      extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
     });
 
     afterEach(function() {
@@ -2716,7 +2730,7 @@ describe('DependencyGraph', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("C:\\root\\arbitrary.js");',
+          'index.js': 'require("C:\\\\root\\\\arbitrary.js");',
           'arbitrary.js': '',
         },
       });
@@ -2782,14 +2796,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -2798,7 +2812,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -2942,14 +2956,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -2959,7 +2973,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -3033,7 +3047,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -3043,7 +3057,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -3054,7 +3068,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -3434,7 +3448,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -3833,14 +3847,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -3849,7 +3863,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -3993,14 +4007,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -4010,7 +4024,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -4084,7 +4098,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -4094,7 +4108,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -4105,7 +4119,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -4484,7 +4498,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -5559,14 +5573,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -5665,8 +5679,8 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
-              'browser.js': 'foo module',
+              'main.js': '/* foo module */',
+              'browser.js': '/* foo module */',
             },
           },
         },
