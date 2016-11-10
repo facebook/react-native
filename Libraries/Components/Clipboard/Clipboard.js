@@ -14,8 +14,9 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const RCTClipboard = require('NativeModules').Clipboard;
 
 /**
- * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android.
- * You can subscribe to `clipboardChanged`, and `Clipboard` will tell you when the content has changed.
+ * `Clipboard` gives you an interface for setting and getting content from 
+ * Clipboard on both iOS and Android. You can subscribe to `clipboardChanged`, 
+ * and `Clipboard` will tell you when the content has changed.
  * ```javascript
  * componentDidMount(){
  *   Clipboard.addListener('clipboardChanged', this._clipboardChanged.bind(this));
@@ -36,7 +37,8 @@ class Clipboard extends NativeEventEmitter {
   }
 
   /**
-   * Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
+   * Get content of string type, this method returns a `Promise`, so you can 
+   * use following code to get clipboard content:
    * ```javascript
    * async _getContent() {
    *   var content = await Clipboard.getString();
