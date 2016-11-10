@@ -103,10 +103,11 @@ function transformModule(infile, options, outfile, callback) {
     const annotations = docblock.parseAsObject(docblock.extract(code));
 
     const result = {
-      file: filename,
       code,
-      transformed,
+      file: filename,
+      isPolyfill: !!options.polyfill,
       hasteID: annotations.providesModule || annotations.provide || null,
+      transformed,
     };
 
     try {
@@ -122,8 +123,7 @@ function transformModule(infile, options, outfile, callback) {
 function optimizeModule(
   infile,
   outfile,
-  isPolyfill,
-  inliningOptions,
+  optimizationOptions,
   callback,
 ) {
   const data = JSON.parse(fs.readFileSync(infile, 'utf8'));
@@ -136,7 +136,7 @@ function optimizeModule(
 
   Object.keys(transformed).forEach(key => {
     result.transformed[key] =
-      optimize(transformed[key], file, code, isPolyfill, inliningOptions);
+      optimize(transformed[key], file, code, optimizationOptions);
   });
   writeResult(outfile, result);
 
@@ -174,11 +174,11 @@ function functionFromProgram(program, parameters) {
   );
 }
 
-function optimize(transformed, file, originalCode, isPolyfill, options) {
+function optimize(transformed, file, originalCode, options) {
   const optimized =
     optimizeCode(transformed.code, transformed.map, file, options);
 
-  const dependencies = isPolyfill
+  const dependencies = options.isPolyfill
     ? []
     : collectDependencies.forOptimization(
         optimized.ast,
@@ -196,10 +196,12 @@ function optimize(transformed, file, originalCode, isPolyfill, options) {
   return {code: min.code, map: inputMap && min.map, dependencies};
 }
 
-function optimizeCode(code, map, filename, options) {
-  const inlineOptions = Object.assign({isWrapped: true}, options);
+function optimizeCode(code, map, filename, inliningOptions) {
   return babel.transform(code, {
-    plugins: [[constantFolding], [inline, inlineOptions]],
+    plugins: [
+      [constantFolding],
+      [inline, Object.assign({isWrapped: true}, inliningOptions)],
+    ],
     babelrc: false,
     code: false,
     filename,
