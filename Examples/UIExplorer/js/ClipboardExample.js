@@ -43,7 +43,7 @@ class ClipboardExample extends React.Component {
     Clipboard.removeListener('clipboardChanged', this._clipboardChanged);
   }
 
-   async _clipboardChanged (){
+  async _clipboardChanged(){
     try {
       var content = await Clipboard.getString();
       this.setState({content});
