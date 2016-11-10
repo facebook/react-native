@@ -242,27 +242,9 @@ class Module {
         return callback(null, {code: sourceCode});
       }
       const codePromise = transformCode(this, sourceCode, transformOptions);
-      return codePromise.then(() => {
-        const transformCacheKey = this._transformCacheKey;
-        invariant(transformCacheKey != null, 'missing transform cache key');
-        const freshResult =
-          TransformCache.readSync({
-            filePath: this.path,
-            sourceCode,
-            transformCacheKey,
-            transformOptions,
-            cacheOptions: this._options,
-          });
-        if (freshResult == null) {
-          callback(new Error(
-            'Could not read fresh result from transform cache. This ' +
-              'means there is probably a bug in the worker code ' +
-              'that prevents it from writing to the cache correctly.',
-          ));
-          return;
-        }
+      return codePromise.then(freshResult => {
         callback(undefined, freshResult);
-      }, callback);
+      });
     }, callback);
   }
 

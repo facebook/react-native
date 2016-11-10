@@ -115,10 +115,11 @@ class Transformer {
     debug('transforming file', fileName);
     return this
       ._transform(this._transformModulePath, fileName, code, options, transformCacheKey)
-      .then(stats => {
-        Logger.log(stats.transformFileStartLogEntry);
-        Logger.log(stats.transformFileEndLogEntry);
+      .then(data => {
+        Logger.log(data.transformFileStartLogEntry);
+        Logger.log(data.transformFileEndLogEntry);
         debug('done transforming file', fileName);
+        return data.result;
       })
       .catch(error => {
         if (error.type === 'TimeoutError') {

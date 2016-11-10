@@ -87,6 +87,7 @@ function transformCode(transform, filename, sourceCode, options, transformCacheK
       result,
     });
     return callback(null, {
+      result,
       transformFileStartLogEntry,
       transformFileEndLogEntry,
     });

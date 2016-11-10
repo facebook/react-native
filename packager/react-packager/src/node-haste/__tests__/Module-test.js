@@ -285,7 +285,7 @@ describe('Module', () => {
             transformCacheKey,
             result: transformResult,
           });
-          return Promise.resolve();
+          return Promise.resolve(transformResult);
         });
       mockIndexFile(fileContents);
     });
