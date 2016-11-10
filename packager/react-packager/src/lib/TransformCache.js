@@ -58,8 +58,8 @@ function getCacheFilePaths(props: {
 
 type CachedResult = {
   code: string,
-  dependencies?: ?Array<string>,
-  dependencyOffsets?: ?Array<number>,
+  dependencies: Array<string>,
+  dependencyOffsets: Array<number>,
   map?: ?{},
 };
 
@@ -205,8 +205,8 @@ function readMetadataFileSync(
 ): ?{
   cachedResultHash: number,
   cachedSourceHash: number,
-  dependencies: ?Array<string>,
-  dependencyOffsets: ?Array<number>,
+  dependencies: Array<string>,
+  dependencyOffsets: Array<number>,
   sourceMap: ?{},
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
@@ -232,8 +232,8 @@ function readMetadataFileSync(
   if (
     typeof cachedResultHash !== 'number' ||
     typeof cachedSourceHash !== 'number' ||
-    !(dependencies == null || (Array.isArray(dependencies) && dependencies.every(dep => typeof dep === 'string'))) ||
-    !(dependencyOffsets == null || (Array.isArray(dependencyOffsets) && dependencyOffsets.every(offset => typeof offset === 'number'))) ||
+    !(Array.isArray(dependencies) && dependencies.every(dep => typeof dep === 'string')) ||
+    !(Array.isArray(dependencyOffsets) && dependencyOffsets.every(offset => typeof offset === 'number')) ||
     !(sourceMap == null || typeof sourceMap === 'object')
   ) {
     return null;

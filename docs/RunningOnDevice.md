@@ -206,6 +206,10 @@ Building an app for distribution in the App Store requires using the `Release` s
 
 Apps built for `Release` will automatically disable the in-app Developer menu, which will prevent your users from inadvertently accessing the menu in production. It will also load the JavaScript locally, so you can put the app on a device and test whilst not connected to the computer.
 
+> Hint
+>
+> You can also use the `React Native CLI` to perform this operation using the option `--configuration` with the value `Release` (e.g. `react-native run-ios --configuration Release`).
+
 Once built for release, you'll be able to distribute the app to beta testers and submit the app to the App Store.
 
 ### App Transport Security

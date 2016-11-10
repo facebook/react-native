@@ -24,7 +24,6 @@ const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
-const extractRequires = require('./lib/extractRequires');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
@@ -37,7 +36,6 @@ const util = require('util');
 import type {
   TransformCode,
   Options as ModuleOptions,
-  Extractor,
 } from './Module';
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
@@ -55,6 +53,7 @@ class DependencyGraph {
     roots: Array<string>,
     ignoreFilePath: (filePath: string) => boolean,
     fileWatcher: FileWatcher,
+    forceNodeFilesystemAPI: boolean,
     assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
     providesModuleNodeModules: mixed,
@@ -62,7 +61,6 @@ class DependencyGraph {
     preferNativePlatform: boolean,
     extensions: Array<string>,
     mocksPattern: mixed,
-    extractRequires: Extractor,
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
@@ -88,6 +86,7 @@ class DependencyGraph {
     roots,
     ignoreFilePath,
     fileWatcher,
+    forceNodeFilesystemAPI,
     assetRoots_DEPRECATED,
     assetExts,
     providesModuleNodeModules,
@@ -96,7 +95,6 @@ class DependencyGraph {
     cache,
     extensions,
     mocksPattern,
-    extractRequires,
     transformCode,
     transformCacheKey,
     shouldThrowOnUnresolvedErrors = () => true,
@@ -112,6 +110,7 @@ class DependencyGraph {
     roots: Array<string>,
     ignoreFilePath: (filePath: string) => boolean,
     fileWatcher: FileWatcher,
+    forceNodeFilesystemAPI?: boolean,
     assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
     providesModuleNodeModules: mixed,
@@ -120,7 +119,6 @@ class DependencyGraph {
     cache: Cache,
     extensions: Array<string>,
     mocksPattern: mixed,
-    extractRequires: Extractor,
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
@@ -136,6 +134,7 @@ class DependencyGraph {
       roots,
       ignoreFilePath: ignoreFilePath || (() => {}),
       fileWatcher,
+      forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
       assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
       assetExts: assetExts || [],
       providesModuleNodeModules,
@@ -143,7 +142,6 @@ class DependencyGraph {
       preferNativePlatform: preferNativePlatform || false,
       extensions: extensions || ['js', 'json'],
       mocksPattern,
-      extractRequires,
       transformCode,
       transformCacheKey,
       shouldThrowOnUnresolvedErrors,
@@ -171,6 +169,7 @@ class DependencyGraph {
     const mw = this._opts.maxWorkers;
     const haste = new JestHasteMap({
       extensions: this._opts.extensions.concat(this._opts.assetExts),
+      forceNodeFilesystemAPI: this._opts.forceNodeFilesystemAPI,
       ignorePattern: {test: this._opts.ignoreFilePath},
       maxWorkers: typeof mw === 'number' && mw >= 1 ? mw : getMaxWorkers(),
       mocksPattern: '',
@@ -204,7 +203,6 @@ class DependencyGraph {
       this._moduleCache = new ModuleCache({
         fastfs: this._fastfs,
         cache: this._cache,
-        extractRequires: this._opts.extractRequires,
         transformCode: this._opts.transformCode,
         transformCacheKey: this._opts.transformCacheKey,
         depGraphHelpers: this._helpers,
@@ -416,7 +414,6 @@ class DependencyGraph {
   static FileWatcher;
   static Module;
   static Polyfill;
-  static extractRequires;
   static getAssetDataFromName;
   static getPlatformExtension;
   static replacePatterns;
@@ -430,7 +427,6 @@ Object.assign(DependencyGraph, {
   FileWatcher,
   Module,
   Polyfill,
-  extractRequires,
   getAssetDataFromName,
   getPlatformExtension,
   replacePatterns,
