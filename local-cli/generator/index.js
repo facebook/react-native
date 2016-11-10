@@ -112,6 +112,10 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.destinationPath('.gitignore')
     );
     this.fs.copy(
+      this.templatePath('_gitattributes'),
+      this.destinationPath('.gitattributes')
+    );
+    this.fs.copy(
       this.templatePath('_watchmanconfig'),
       this.destinationPath('.watchmanconfig')
     );
