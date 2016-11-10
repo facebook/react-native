@@ -29,6 +29,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -54,7 +55,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
 
   private ReactContext mReactContext;
-  private static @Nullable OkHttpClient okHttpClient;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
@@ -78,15 +78,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     @Nullable final ReadableArray protocols,
     @Nullable final ReadableMap headers,
     final int id) {
-
-    if (okHttpClient == null) {
-      okHttpClient = new OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-        .build();
-    }
-
     Request.Builder builder = new Request.Builder()
         .tag(id)
         .url(url);
@@ -127,6 +118,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
     }
 
+    OkHttpClient okHttpClient = OkHttpClientProvider.getOkHttpClientForWebSocket();
     WebSocketCall.create(okHttpClient, builder.build()).enqueue(new WebSocketListener() {
 
       @Override
