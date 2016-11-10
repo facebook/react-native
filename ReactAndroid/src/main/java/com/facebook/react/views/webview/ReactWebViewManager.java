@@ -138,13 +138,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             url.startsWith("file://")) {
               boolean shouldBlock = false;
 
-              ReadableMap[] policies = view.getNavigationBlockingPolicies();
+              ReadableMap[] policies = ((ReactWebView) view).getNavigationBlockingPolicies();
               ReadableMap policy;
               boolean policyFulfilled = false;
 
               if (policies != null) {
-                  WritableMap currentValues = createWebViewEvent(webView, url);
-                  currentValues.putString("currentURL", webView.getUrl());
+                  WritableMap currentValues = createWebViewEvent(view, url);
+                  currentValues.putString("currentURL", view.getUrl());
 
                   for (int i = 0; i < policies.length; i++) {
                       policy = policies[i];
@@ -178,10 +178,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
               if (shouldBlock) {
                   dispatchEvent(
-                          webView,
+                          view,
                           new TopNavigationBlockedEvent(
-                                  webView.getId(),
-                                  createWebViewEvent(webView, url)));
+                                  view.getId(),
+                                  createWebViewEvent(view, url)));
               }
 
               return shouldBlock;
@@ -534,7 +534,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "navigationBlockingPolicies")
   public void setNavigationBlockingPolicies(WebView view, @Nullable ReadableArray policies) {
-      view.setNavigationBlockingPolicies(policies);
+      ((ReactWebView) view).setNavigationBlockingPolicies(policies);
   }
 
   @Override
