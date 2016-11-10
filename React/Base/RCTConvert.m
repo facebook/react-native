@@ -118,6 +118,14 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 }
 
+RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
+                                               @"default": @(NSURLRequestUseProtocolCachePolicy),
+                                               @"reload": @(NSURLRequestReloadIgnoringLocalCacheData),
+                                               @"force-cache": @(NSURLRequestReturnCacheDataElseLoad),
+                                               @"only-if-cached": @(NSURLRequestReturnCacheDataDontLoad),
+                                               }), NSURLRequestUseProtocolCachePolicy, integerValue)
+
+
 + (NSURLRequest *)NSURLRequest:(id)json
 {
   if ([json isKindOfClass:[NSString class]]) {
@@ -140,8 +148,9 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
     NSData *body = [self NSData:json[@"body"]];
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
+    NSURLRequestCachePolicy cachePolicy = [self NSURLRequestCachePolicy:json[@"cache"]];
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];
-    if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
+    if ([method isEqualToString:@"GET"] && headers == nil && body == nil && cachePolicy == NSURLRequestUseProtocolCachePolicy) {
       return [NSURLRequest requestWithURL:URL];
     }
 
@@ -164,6 +173,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPBody = body;
     request.HTTPMethod = method;
+    request.cachePolicy = cachePolicy;
     request.allHTTPHeaderFields = headers;
     return [request copy];
   }
