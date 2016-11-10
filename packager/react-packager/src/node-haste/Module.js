@@ -225,13 +225,23 @@ class Module {
     transformOptions: mixed,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
-    const {_transformCode} = this;
+    const {_transformCode, _transformCacheKey} = this;
     // AssetModule_DEPRECATED doesn't provide transformCode, but these should
     // never be transformed anyway.
     invariant(_transformCode != null, 'missing code transform funtion');
+    invariant(_transformCacheKey != null, 'missing cache key');
     this._readSourceCode().then(sourceCode => {
       return _transformCode(this, sourceCode, transformOptions)
-        .then(freshResult => callback(undefined, freshResult));
+        .then(freshResult => {
+          TransformCache.writeSync({
+            filePath: this.path,
+            sourceCode,
+            transformCacheKey: _transformCacheKey,
+            transformOptions,
+            result: freshResult,
+          });
+          callback(undefined, freshResult);
+        });
     }, callback);
   }
 

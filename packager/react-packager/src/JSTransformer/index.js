@@ -108,13 +108,13 @@ class Transformer {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName, code, options, transformCacheKey) {
+  transformFile(fileName, code, options) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
-      ._transform(this._transformModulePath, fileName, code, options, transformCacheKey)
+      ._transform(this._transformModulePath, fileName, code, options)
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
         Logger.log(data.transformFileEndLogEntry);

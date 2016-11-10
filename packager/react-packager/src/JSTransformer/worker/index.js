@@ -8,12 +8,6 @@
  */
 'use strict';
 
-require('../../../../babelRegisterOnly')([
-  /packager\/react-packager\/src\/lib\/TransformCache/,
-]);
-
-const TransformCache = require('../../lib/TransformCache');
-
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
@@ -26,7 +20,7 @@ function makeTransformParams(filename, sourceCode, options) {
   return {filename, sourceCode, options};
 }
 
-function transformCode(transform, filename, sourceCode, options, transformCacheKey, callback) {
+function transformCode(transform, filename, sourceCode, options, callback) {
   const params = makeTransformParams(filename, sourceCode, options.transform);
   const isJson = filename.endsWith('.json');
 
@@ -79,13 +73,6 @@ function transformCode(transform, filename, sourceCode, options, transformCacheK
     result.code = code;
     result.map = map;
 
-    TransformCache.writeSync({
-      filePath: filename,
-      sourceCode,
-      transformCacheKey,
-      transformOptions: options,
-      result,
-    });
     return callback(null, {
       result,
       transformFileStartLogEntry,
@@ -99,10 +86,9 @@ exports.transformAndExtractDependencies = (
   filename,
   sourceCode,
   options,
-  transformCacheKey,
   callback
 ) => {
-  transformCode(require(transform), filename, sourceCode, options || {}, transformCacheKey, callback);
+  transformCode(require(transform), filename, sourceCode, options || {}, callback);
 };
 
 exports.minify = (filename, code, sourceMap, callback) => {

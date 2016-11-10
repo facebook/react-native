@@ -202,7 +202,6 @@ class Bundler {
           module.path,
           code,
           transformCodeOptions,
-          transformCacheKey,
         ),
       transformCacheKey,
     });

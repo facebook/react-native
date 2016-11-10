@@ -13,13 +13,11 @@ jest.mock('../constant-folding');
 jest.mock('../extract-dependencies');
 jest.mock('../inline');
 jest.mock('../minify');
-jest.mock('../../../lib/TransformCache');
 
 const {any, objectContaining} = jasmine;
 
 describe('code transformation worker:', () => {
   let transformCode;
-  let TransformCache;
 
   let extractDependencies, transform;
   beforeEach(() => {
@@ -28,14 +26,13 @@ describe('code transformation worker:', () => {
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
     transform = jest.fn();
-    TransformCache = require('../../../lib/TransformCache');
   });
 
   it('calls the transform with file name, source code, and transform options', function() {
     const filename = 'arbitrary/file.js';
     const sourceCode = 'arbitrary(code)';
     const transformOptions = {arbitrary: 'options'};
-    transformCode(transform, filename, sourceCode, {transform: transformOptions}, '');
+    transformCode(transform, filename, sourceCode, {transform: transformOptions});
     expect(transform).toBeCalledWith(
       {filename, sourceCode, options: transformOptions}, any(Function));
   });
@@ -43,7 +40,7 @@ describe('code transformation worker:', () => {
   it('prefixes JSON files with an assignment to module.exports to make the code valid', function() {
     const filename = 'arbitrary/file.json';
     const sourceCode = '{"arbitrary":"property"}';
-    transformCode(transform, filename, sourceCode, {}, '');
+    transformCode(transform, filename, sourceCode, {});
     expect(transform).toBeCalledWith(
       {filename, sourceCode: `module.exports=${sourceCode}`}, any(Function));
   });
@@ -56,10 +53,9 @@ describe('code transformation worker:', () => {
     transform.mockImplementation((_, callback) =>
       callback(null, result));
 
-    transformCode(transform, 'filename', 'code', {}, '', error => {
+    transformCode(transform, 'filename', 'code', {}, (error, data) => {
       expect(error).toBeNull();
-      expect(TransformCache.mock.lastWrite.result)
-        .toEqual(objectContaining(result));
+      expect(data.result).toEqual(objectContaining(result));
       done();
     });
   });
@@ -71,14 +67,14 @@ describe('code transformation worker:', () => {
       const result = {
         code: 'p.exports={a:1,b:2}',
       };
-      transform.mockImplementation((_, callback) =>
-        callback(null, result));
-
-      transformCode(transform, 'arbitrary/file.json', 'b', {}, '', error => {
-        expect(error).toBeNull();
-        expect(TransformCache.mock.lastWrite.result.code).toEqual('{a:1,b:2}');
-        done();
-      });
+      transform.mockImplementation((_, callback) => callback(null, result));
+      const filePath = 'arbitrary/file.json';
+      transformCode(transform, filePath, 'b', {}, (error, data) => {
+          expect(error).toBeNull();
+          expect(data.result.code).toEqual('{a:1,b:2}');
+          done();
+        },
+      );
     }
   );
 
@@ -88,9 +84,10 @@ describe('code transformation worker:', () => {
       code: `${shebang} \n arbitrary(code)`,
     };
     transform.mockImplementation((_, callback) => callback(null, result));
-    transformCode(transform, 'arbitrary/file.js', 'b', {}, '', error => {
+    const filePath = 'arbitrary/file.js';
+    transformCode(transform, filePath, 'b', {}, (error, data) => {
       expect(error).toBeNull();
-      const code = TransformCache.mock.lastWrite.result.code;
+      const {code} = data.result;
       expect(code).not.toContain(shebang);
       expect(code.split('\n').length).toEqual(result.code.split('\n').length);
       done();
@@ -100,7 +97,7 @@ describe('code transformation worker:', () => {
   it('calls back with any error yielded by the transform', done => {
     const error = Error('arbitrary error');
     transform.mockImplementation((_, callback) => callback(error));
-    transformCode(transform, 'filename', 'code', {}, '', e => {
+    transformCode(transform, 'filename', 'code', {}, e => {
       expect(e).toBe(error);
       done();
     });
@@ -117,7 +114,7 @@ describe('code transformation worker:', () => {
     it('passes the transformed code the `extractDependencies`', done => {
       code = 'arbitrary(code)';
 
-      transformCode(transform, 'filename', 'code', {}, '', (error) => {
+      transformCode(transform, 'filename', 'code', {}, (error) => {
         expect(error).toBeNull();
         expect(extractDependencies).toBeCalledWith(code);
         done();
@@ -134,45 +131,31 @@ describe('code transformation worker:', () => {
         };
         extractDependencies.mockReturnValue(dependencyData);
 
-        transformCode(transform, 'filename', 'code', {}, '', error => {
+        transformCode(transform, 'filename', 'code', {}, (error, data) => {
           expect(error).toBeNull();
-          const data = TransformCache.mock.lastWrite.result;
-          expect(data).toEqual(objectContaining(dependencyData));
+          expect(data.result).toEqual(objectContaining(dependencyData));
           done();
         });
       }
     );
 
     it('does not extract requires if files are marked as "extern"', done => {
-      transformCode(
-        transform,
-        'filename',
-        'code',
-        {extern: true},
-        '',
-        error => {
+      const opts = {extern: true};
+      transformCode(transform, 'filename', 'code', opts, (error, data) => {
           expect(error).toBeNull();
-          const {dependencies, dependencyOffsets} =
-            TransformCache.mock.lastWrite.result;
+          const {dependencies, dependencyOffsets} = data.result;
           expect(extractDependencies).not.toBeCalled();
           expect(dependencies).toEqual([]);
           expect(dependencyOffsets).toEqual([]);
           done();
-        }
-      );
+      });
     });
 
     it('does not extract requires of JSON files', done => {
-      transformCode(
-        transform,
-        'arbitrary.json',
-        '{"arbitrary":"json"}',
-        {},
-        '',
-        error => {
+      const jsonStr = '{"arbitrary":"json"}';
+      transformCode(transform, 'arbitrary.json', jsonStr, {}, (error, data) => {
           expect(error).toBeNull();
-          const {dependencies, dependencyOffsets} =
-            TransformCache.mock.lastWrite.result;
+          const {dependencies, dependencyOffsets} = data.result;
           expect(extractDependencies).not.toBeCalled();
           expect(dependencies).toEqual([]);
           expect(dependencyOffsets).toEqual([]);
@@ -210,7 +193,7 @@ describe('code transformation worker:', () => {
 
     it('passes the transform result to `inline` for constant inlining', done => {
       transformResult = {map: {version: 3}, code: 'arbitrary(code)'};
-      transformCode(transform, filename, 'code', options, '', () => {
+      transformCode(transform, filename, 'code', options, () => {
         expect(inline).toBeCalledWith(filename, transformResult, options);
         done();
       });
@@ -219,30 +202,30 @@ describe('code transformation worker:', () => {
     it('passes the result obtained from `inline` on to `constant-folding`', done => {
       const inlineResult = {map: {version: 3, sources: []}, ast: {}};
       inline.mockReturnValue(inlineResult);
-      transformCode(transform, filename, 'code', options, '', () => {
+      transformCode(transform, filename, 'code', options, () => {
         expect(constantFolding).toBeCalledWith(filename, inlineResult);
         done();
       });
     });
 
     it('Uses the code obtained from `constant-folding` to extract dependencies', done => {
-      transformCode(transform, filename, 'code', options, '', () => {
+      transformCode(transform, filename, 'code', options, () => {
         expect(extractDependencies).toBeCalledWith(foldedCode);
         done();
       });
     });
 
     it('uses the dependencies obtained from the optimized result', done => {
-      transformCode(transform, filename, 'code', options, '', () => {
-        const result = TransformCache.mock.lastWrite.result;
+      transformCode(transform, filename, 'code', options, (_, data) => {
+        const result = data.result;
         expect(result.dependencies).toEqual(dependencyData.dependencies);
         done();
       });
     });
 
     it('uses data produced by `constant-folding` for the result', done => {
-      transformCode(transform, 'filename', 'code', options, '', () => {
-        expect(TransformCache.mock.lastWrite.result)
+      transformCode(transform, 'filename', 'code', options, (_, data) => {
+        expect(data.result)
           .toEqual(objectContaining({code: foldedCode, map: foldedMap}));
         done();
       });
