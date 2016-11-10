@@ -206,7 +206,7 @@ var ListView = React.createClass({
      * A function that returns the scrollable component in which the list rows
      * are rendered. Defaults to returning a ScrollView with the given props.
      */
-    renderScrollComponent: React.PropTypes.func.isRequired,
+    renderScrollComponent: React.PropTypes.func,
     /**
      * How early to start rendering rows before they come on screen, in
      * pixels.
