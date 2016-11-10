@@ -1939,12 +1939,10 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
             if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionWidth])) {
               childWidth = child->style.maxDimensions[CSSDimensionWidth];
-              childWidthMeasureMode = CSSMeasureModeAtMost;
             }
 
             if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionHeight])) {
               childHeight = child->style.maxDimensions[CSSDimensionHeight];
-              childHeightMeasureMode = CSSMeasureModeAtMost;
             }
 
             // If the child defines a definite size for its cross axis, there's
