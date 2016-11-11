@@ -191,13 +191,14 @@ var ListView = React.createClass({
     /**
      * (sectionData, sectionID) => renderable
      *
-     * If provided, a sticky header is rendered for this section.  The sticky
-     * behavior means that it will scroll with the content at the top of the
-     * section until it reaches the top of the screen, at which point it will
-     * stick to the top until it is pushed off the screen by the next section
-     * header.
+     * If provided, a sticky header / footer is rendered for this section.
+     * The sticky behavior means that it will scroll with the content at the
+     * top or bottom of the section until it reaches the edge of the screen, at
+     * which point it will stick to the top / bottom until it is pushed off
+     * the screen by the next section header / footer.
      */
     renderSectionHeader: PropTypes.func,
+    renderSectionFooter: PropTypes.func,
     /**
      * (props) => renderable
      *
@@ -235,6 +236,15 @@ var ListView = React.createClass({
      * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
+    /**
+     * An array of child indices determining which children get docked to the
+     * bottom of the screen when scrolling. For example, passing
+     * `stickyFooterIndices={[0]}` will cause the first child to be fixed to the
+     * bottom of the scroll view. This property is not supported in conjunction
+     * with `horizontal={true}`.
+     * @platform ios
+     */
+    stickyFooterIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
     /**
      * Flag indicating whether empty section headers should be rendered. In the future release
      * empty section headers will be rendered by default, and the flag will be deprecated.
@@ -295,6 +305,7 @@ var ListView = React.createClass({
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
       stickyHeaderIndices: [],
+      stickyFooterIndices: [],
     };
   },
 
@@ -365,6 +376,7 @@ var ListView = React.createClass({
     var allRowIDs = dataSource.rowIdentities;
     var rowCount = 0;
     var sectionHeaderIndices = [];
+    var sectionFooterIndices = [];
 
     var header = this.props.renderHeader && this.props.renderHeader();
     var footer = this.props.renderFooter && this.props.renderFooter();
@@ -373,6 +385,8 @@ var ListView = React.createClass({
     for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
       var sectionID = dataSource.sectionIdentities[sectionIdx];
       var rowIDs = allRowIDs[sectionIdx];
+      var rowCountChanged = rowCount >= this._prevRenderedRowsCount;
+
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
           var warning = require('fbjs/lib/warning');
@@ -390,7 +404,7 @@ var ListView = React.createClass({
       }
 
       if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this._prevRenderedRowsCount &&
+        var shouldUpdateHeader = rowCountChanged &&
           dataSource.sectionHeaderShouldUpdate(sectionIdx);
         bodyComponents.push(
           <StaticRenderer
@@ -447,6 +461,24 @@ var ListView = React.createClass({
           break;
         }
       }
+
+      if (this.props.renderSectionFooter) {
+        var shouldUpdateFooter = rowCountChanged &&
+        dataSource.sectionHeaderShouldUpdate(sectionIdx);
+        bodyComponents.push(
+          <StaticRenderer
+            key={'f_' + sectionID}
+            shouldUpdate={!!shouldUpdateFooter}
+            render={this.props.renderSectionFooter.bind(
+              null,
+              dataSource.getSectionHeaderData(sectionIdx),
+              sectionID
+            )}
+          />
+        );
+        sectionFooterIndices.push(totalIndex++);
+      }
+
       if (rowCount >= this.state.curRenderedRowsCount) {
         break;
       }
@@ -465,6 +497,7 @@ var ListView = React.createClass({
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: this.props.stickyHeaderIndices.concat(sectionHeaderIndices),
+      stickyFooterIndices: this.props.stickyFooterIndices.concat(sectionFooterIndices),
 
       // Do not pass these events downstream to ScrollView since they will be
       // registered in ListView's own ScrollResponder.Mixin

@@ -268,6 +268,7 @@ const ScrollView = React.createClass({
      * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
+    stickyFooterIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
     /**
      * When set, causes the scroll view to stop at multiples of the value of
