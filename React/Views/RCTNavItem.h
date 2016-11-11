@@ -38,4 +38,6 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onLeftButtonPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onRightButtonPress;
 
+@property (nonatomic, strong, readonly) id propertiesChanged;
+
 @end
