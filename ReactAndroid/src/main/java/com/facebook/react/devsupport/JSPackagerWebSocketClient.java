@@ -40,6 +40,7 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
 
   private final String mUrl;
   private final Handler mHandler;
+  private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
 
   public interface JSPackagerCallback {
@@ -57,6 +58,9 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
   }
 
   public void connect() {
+    if (mClosed) {
+      throw new IllegalStateException("Can't connect closed client");
+    }
     OkHttpClient  httpClient = new OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
@@ -69,6 +73,9 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
   }
 
   private void reconnect() {
+    if (mClosed) {
+      throw new IllegalStateException("Can't reconnect closed client");
+    }
     if (!mSuppressConnectionErrors) {
       FLog.w(TAG, "Couldn't connect to packager, will silently retry");
       mSuppressConnectionErrors = true;
@@ -77,12 +84,21 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
       new Runnable() {
         @Override
         public void run() {
-          connect();
+          // check that we haven't been closed in the meantime
+          if (!mClosed) {
+            connect();
+          }
         }
-      }, RECONNECT_DELAY_MS);
+      },
+      RECONNECT_DELAY_MS);
   }
 
   public void closeQuietly() {
+    mClosed = true;
+    closeWebSocketQuietly();
+  }
+
+  private void closeWebSocketQuietly() {
     if (mWebSocket != null) {
       try {
         mWebSocket.close(1000, "End of session");
@@ -151,7 +167,9 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
     if (mWebSocket != null) {
       abort("Websocket exception", e);
     }
-    reconnect();
+    if (!mClosed) {
+      reconnect();
+    }
   }
 
   @Override
@@ -163,7 +181,9 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
   @Override
   public void onClose(int code, String reason) {
     mWebSocket = null;
-    reconnect();
+    if (!mClosed) {
+      reconnect();
+    }
   }
 
   @Override
@@ -173,6 +193,6 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
 
   private void abort(String message, Throwable cause) {
     FLog.e(TAG, "Error occurred, shutting down websocket connection: " + message, cause);
-    closeQuietly();
+    closeWebSocketQuietly();
   }
 }

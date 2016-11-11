@@ -42,6 +42,8 @@ const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
 const View = require('View');
 
+import type {UIExplorerNavigationState} from './UIExplorerNavigationReducer';
+
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
@@ -50,8 +52,8 @@ type Props = {
   exampleFromAppetizeParams: string,
 };
 
-type State = {
-  initialExampleUri: ?string,
+type State = UIExplorerNavigationState & {
+  externalExample: ?string,
 };
 
 class UIExplorerApp extends React.Component {
@@ -185,8 +187,10 @@ class UIExplorerApp extends React.Component {
     this.drawer && this.drawer.closeDrawer();
     const newState = UIExplorerNavigationReducer(this.state, action);
     if (this.state !== newState) {
-      this.setState(newState);
-      AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state));
+      this.setState(
+        newState,
+        () => AsyncStorage.setItem('UIExplorerAppState', JSON.stringify(this.state))
+      );
       return true;
     }
     return false;

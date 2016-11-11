@@ -14,8 +14,6 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
-var ReactChildren = require('react/lib/ReactChildren');
-var ReactPropTypes = require('react/lib/ReactPropTypes');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
@@ -24,8 +22,9 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
+var ReactPropTypes = React.PropTypes;
+
 var REF_PICKER = 'picker';
-var MODE_DIALOG = 'dialog';
 var MODE_DROPDOWN = 'dropdown';
 
 var pickerStyleType = StyleSheetPropType({
@@ -79,7 +78,7 @@ class PickerAndroid extends React.Component {
   // Translate prop and children into stuff that the native picker understands.
   _stateFromProps = (props) => {
     var selectedIndex = 0;
-    const items = ReactChildren.map(props.children, (child, index) => {
+    const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -107,6 +106,7 @@ class PickerAndroid extends React.Component {
       selected: this.state.initialSelectedIndex,
       testID: this.props.testID,
       style: [styles.pickerAndroid, this.props.style],
+      accessibilityLabel: this.props.accessibilityLabel,
     };
 
     return <Picker ref={REF_PICKER} {...nativeProps} />;

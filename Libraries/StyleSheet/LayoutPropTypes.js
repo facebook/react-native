@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+var ReactPropTypes = require('React').PropTypes;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -83,7 +83,7 @@ var LayoutPropTypes = {
    *  use logical pixel units, rather than percents, ems, or any of that.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom
-   *  for more details of how `top` affects layout.
+   *  for more details of how `bottom` affects layout.
    */
   bottom: ReactPropTypes.number,
 
@@ -326,6 +326,19 @@ var LayoutPropTypes = {
     'flex-end',
     'center',
     'stretch'
+  ]),
+
+  /** `overflow` controls how a children are measured and displayed.
+   *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
+   *  causes views to be measured independently of their parents main axis.`
+   *  It works like `overflow` in CSS (default: visible).
+   *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
+   *  for more details.
+   */
+  overflow: ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+    'scroll',
   ]),
 
   /** In React Native `flex` does not work the same way that it does in CSS.

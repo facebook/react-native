@@ -23,7 +23,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule ListViewDataSource
- * @typechecks
  * @flow
  */
 'use strict';

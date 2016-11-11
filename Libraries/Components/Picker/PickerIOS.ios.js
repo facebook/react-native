@@ -12,9 +12,8 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var ReactChildren = require('react/lib/ReactChildren');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
@@ -45,7 +44,7 @@ var PickerIOS = React.createClass({
   _stateFromProps: function(props) {
     var selectedIndex = 0;
     var items = [];
-    ReactChildren.forEach(props.children, function (child, index) {
+    React.Children.toArray(props.children).forEach(function (child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -63,6 +62,8 @@ var PickerIOS = React.createClass({
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );

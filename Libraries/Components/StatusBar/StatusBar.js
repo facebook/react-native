@@ -24,13 +24,17 @@ const StatusBarManager = require('NativeModules').StatusBarManager;
  */
 export type StatusBarStyle = $Enum<{
   /**
-   * Default status bar style
+   * Default status bar style (dark for iOS, light for Android)
    */
   'default': string,
   /**
-   * Dark background style
+   * Dark background, white texts and icons
    */
   'light-content': string,
+  /**
+   * Light background, dark texts and icons
+   */
+  'dark-content': string,
 }>;
 
 /**
@@ -127,6 +131,10 @@ function createStackEntry(props: any): any {
  * to use the static API and the component for the same prop because any value
  * set by the static API will get overriden by the one set by the component in
  * the next render.
+ *
+ * ### Constants
+ *
+ * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component {
   props: {
@@ -134,7 +142,7 @@ class StatusBar extends React.Component {
     animated?: boolean,
     backgroundColor?: $FlowFixMe,
     translucent?: boolean,
-    barStyle?: 'default' | 'light-content',
+    barStyle?: 'default' | 'light-content' | 'dark-content',
     networkActivityIndicatorVisible?: boolean,
     showHideTransition?: 'fade' | 'slide',
   };
@@ -171,7 +179,7 @@ class StatusBar extends React.Component {
 
   /**
    * Show or hide the status bar
-   * @param hidden The dialog's title.
+   * @param hidden Hide the status bar.
    * @param animation Optional animation when
    *    changing the status bar hidden property.
    */
@@ -191,13 +199,13 @@ class StatusBar extends React.Component {
    * @param animated Animate the style change.
    */
   static setBarStyle(style: StatusBarStyle, animated?: boolean) {
-    if (Platform.OS !== 'ios') {
-      console.warn('`setBarStyle` is only available on iOS');
-      return;
-    }
     animated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
-    StatusBarManager.setStyle(style, animated);
+    if (Platform.OS === 'ios') {
+      StatusBarManager.setStyle(style, animated);
+    } else if (Platform.OS === 'android') {
+      StatusBarManager.setStyle(style);
+    }
   }
 
   /**
@@ -272,6 +280,7 @@ class StatusBar extends React.Component {
     barStyle: React.PropTypes.oneOf([
       'default',
       'light-content',
+      'dark-content',
     ]),
     /**
      * If the network activity indicator should be visible.
@@ -360,6 +369,9 @@ class StatusBar extends React.Component {
           );
         }
       } else if (Platform.OS === 'android') {
+        if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
+          StatusBarManager.setStyle(mergedProps.barStyle.value);
+        }
         if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
@@ -378,7 +390,7 @@ class StatusBar extends React.Component {
     });
   };
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     return null;
   }
 }

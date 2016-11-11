@@ -53,7 +53,12 @@ RCT_EXPORT_MODULE()
 {
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
+
+    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"];
+    if (!port) {
+      port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    }
+
     NSString *host = [[_bridge bundleURL] host];
     if (!host) {
       host = @"localhost";
@@ -70,8 +75,11 @@ RCT_EXPORT_MODULE()
   [_socket setDelegateDispatchQueue:_jsQueue];
 
   NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
-  [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[NSURLRequest requestWithURL:startDevToolsURL]
+                                              completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){}];
+  [dataTask resume];
   if (![self connectToProxy]) {
     RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If "
                  "you are running on the device, check if you have the right IP "

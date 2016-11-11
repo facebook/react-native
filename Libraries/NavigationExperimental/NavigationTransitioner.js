@@ -175,7 +175,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View
         onLayout={this._onLayout}
@@ -251,6 +251,7 @@ function buildTransitionProps(
     position,
     progress,
     scenes,
+    // $FlowFixMe(>=0.32.0) - find can return undefined
     scene: scenes.find(isSceneActive),
   };
 }

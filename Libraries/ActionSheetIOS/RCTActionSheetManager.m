@@ -135,7 +135,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
   NSURL *URL = [RCTConvert NSURL:options[@"url"]];
   if (URL) {
-    if (URL.fileURL || [URL.scheme.lowercaseString isEqualToString:@"data"]) {
+    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
       NSError *error;
       NSData *data = [NSData dataWithContentsOfURL:URL
                                            options:(NSDataReadingOptions)0

@@ -17,6 +17,12 @@
 #define CSS_EXTERN_C_END
 #endif
 
+#ifdef _WINDLL
+#define WIN_EXPORT __declspec(dllexport)
+#else
+#define WIN_EXPORT
+#endif
+
 #ifndef FB_ASSERTIONS_ENABLED
 #define FB_ASSERTIONS_ENABLED 1
 #endif
@@ -27,8 +33,10 @@
 #define CSS_ABORT()
 #endif
 
-#define CSS_ASSERT(X, message)        \
-  if (!(X)) {                         \
-    fprintf(stderr, "%s\n", message); \
-    CSS_ABORT();                      \
+#ifndef CSS_ASSERT
+#define CSS_ASSERT(X, message)               \
+  if (!(X)) {                                \
+    CSSLog(CSSLogLevelError, "%s", message); \
+    CSS_ABORT();                             \
   }
+#endif

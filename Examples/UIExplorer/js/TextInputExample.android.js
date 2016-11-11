@@ -455,11 +455,11 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+    render: function(): React.Element { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement { return <TextEventsExample />; },
+    render: function(): React.Element { return <TextEventsExample />; },
   },
   {
     title: 'Colors and text inputs',
@@ -708,7 +708,7 @@ exports.examples = [
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): ReactElement { return <ToggleDefaultPaddingExample />; },
+    render: function(): React.Element { return <ToggleDefaultPaddingExample />; },
   },
   {
     title: 'Text selection & cursor placement',

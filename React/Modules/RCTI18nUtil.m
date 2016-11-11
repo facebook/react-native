@@ -42,12 +42,15 @@
 /**
  * Should be used very early during app start up
  * Before the bridge is initialized
+ * @return whether the app allows RTL layout, default is true
  */
 - (BOOL)isRTLAllowed
 {
-  BOOL rtlStatus = [[NSUserDefaults standardUserDefaults]
-                            boolForKey:@"RCTI18nUtil_allowRTL"];
-  return rtlStatus;
+  NSNumber *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"RCTI18nUtil_allowRTL"];
+  if (value == nil) {
+    return YES;
+  }
+  return [value boolValue];
 }
 
 - (void)allowRTL:(BOOL)rtlStatus

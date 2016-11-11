@@ -32,7 +32,7 @@ public class I18nUtil {
   }
 
   public static I18nUtil getInstance() {
-    if(sharedI18nUtilInstance == null) {
+    if (sharedI18nUtilInstance == null) {
       sharedI18nUtilInstance = new I18nUtil();
     }
     return sharedI18nUtilInstance;
@@ -55,9 +55,10 @@ public class I18nUtil {
   /**
    * Should be used very early during app start up
    * Before the bridge is initialized
+   * @return whether the app allows RTL layout, default is true
    */
   private boolean isRTLAllowed(Context context) {
-    return isPrefSet(context, KEY_FOR_PREFS_ALLOWRTL, false);
+    return isPrefSet(context, KEY_FOR_PREFS_ALLOWRTL, true);
   }
 
   public void allowRTL(Context context, boolean allowRTL) {

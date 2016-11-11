@@ -16,18 +16,31 @@
 
 #include <dlfcn.h>
 
-#if HAS_FBGLOG
-#import <FBGLog/FBGLogSink.h>
+// Crash the app (with a descriptive stack trace) if a function that is not
+//  supported by the system JSC is called.
+#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME) \
+static void Unimplemented##FUNC_NAME(void* args...) { \
+assert(false);\
+}
 
-typedef void (*configureJSCLoggingForIOSFuncType)(int32_t, std::unique_ptr<google::LogSink>, void (*)());
-#endif
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
+
+#undef UNIMPLEMENTED_SYSTEM_JSC_FUNCTION
+
+// A no-op function, to replace void functions that do no exist in the system JSC
+//  with a function that does nothing.
+static void noOpSystemJSCFunc(void *args...){ }
+
+void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
+  return;
+}
 
 static void *RCTCustomLibraryHandler(void)
 {
   static dispatch_once_t token;
   static void *handler;
   dispatch_once(&token, ^{
-    handler = dlopen("@executable_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
+    handler = dlopen("@loader_path/Frameworks/JSC.framework/JSC", RTLD_LAZY | RTLD_LOCAL);
     if (!handler) {
       const char *err = dlerror();
 
@@ -42,86 +55,78 @@ static void *RCTCustomLibraryHandler(void)
   return handler;
 }
 
-static void RCTSetUpSystemLibraryPointers(RCTJSCWrapper *wrapper)
+const int32_t JSNoBytecodeFileFormatVersion = -1;
+
+static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
 {
-  wrapper->JSValueToStringCopy = JSValueToStringCopy;
-  wrapper->JSStringCreateWithCFString = JSStringCreateWithCFString;
-  wrapper->JSStringCopyCFString = JSStringCopyCFString;
-  wrapper->JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString;
-  wrapper->JSStringRelease = JSStringRelease;
-  wrapper->JSGlobalContextSetName = JSGlobalContextSetName;
-  wrapper->JSContextGetGlobalContext = JSContextGetGlobalContext;
-  wrapper->JSObjectSetProperty = JSObjectSetProperty;
-  wrapper->JSContextGetGlobalObject = JSContextGetGlobalObject;
-  wrapper->JSObjectGetProperty = JSObjectGetProperty;
-  wrapper->JSValueMakeFromJSONString = JSValueMakeFromJSONString;
-  wrapper->JSObjectCallAsFunction = JSObjectCallAsFunction;
-  wrapper->JSValueMakeNull = JSValueMakeNull;
-  wrapper->JSValueCreateJSONString = JSValueCreateJSONString;
-  wrapper->JSValueIsUndefined = JSValueIsUndefined;
-  wrapper->JSValueIsNull = JSValueIsNull;
-  wrapper->JSEvaluateScript = JSEvaluateScript;
-  wrapper->JSContext = [JSContext class];
-  wrapper->JSValue = [JSValue class];
-  wrapper->configureJSContextForIOS = NULL;
+  return new RCTJSCWrapper {
+    .JSStringCreateWithCFString = JSStringCreateWithCFString,
+    .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
+    .JSStringRelease = JSStringRelease,
+    .JSGlobalContextSetName = JSGlobalContextSetName,
+    .JSObjectSetProperty = JSObjectSetProperty,
+    .JSContextGetGlobalObject = JSContextGetGlobalObject,
+    .JSObjectGetProperty = JSObjectGetProperty,
+    .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
+    .JSObjectCallAsFunction = JSObjectCallAsFunction,
+    .JSValueMakeNull = JSValueMakeNull,
+    .JSValueCreateJSONString = JSValueCreateJSONString,
+    .JSValueIsUndefined = JSValueIsUndefined,
+    .JSValueIsNull = JSValueIsNull,
+    .JSEvaluateScript = JSEvaluateScript,
+    .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
+    .configureJSCForIOS = (voidWithNoParamsFuncType)noOpSystemJSCFunc,
+    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
+    .JSContext = [JSContext class],
+    .JSValue = [JSValue class],
+  };
 }
 
-static void RCTSetUpCustomLibraryPointers(RCTJSCWrapper *wrapper)
+static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
 {
   void *libraryHandle = RCTCustomLibraryHandler();
   if (!libraryHandle) {
-    RCTSetUpSystemLibraryPointers(wrapper);
-    return;
+    return RCTSetUpSystemLibraryPointers();
   }
 
-  wrapper->JSValueToStringCopy = (JSValueToStringCopyFuncType)dlsym(libraryHandle, "JSValueToStringCopy");
-  wrapper->JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString");
-  wrapper->JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString");
-  wrapper->JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString");
-  wrapper->JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease");
-  wrapper->JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName");
-  wrapper->JSContextGetGlobalContext = (JSContextGetGlobalContextFuncType)dlsym(libraryHandle, "JSContextGetGlobalContext");
-  wrapper->JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty");
-  wrapper->JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject");
-  wrapper->JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty");
-  wrapper->JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString");
-  wrapper->JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction");
-  wrapper->JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull");
-  wrapper->JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString");
-  wrapper->JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined");
-  wrapper->JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull");
-  wrapper->JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript");
-  wrapper->JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext");
-  wrapper->JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue");
-  wrapper->configureJSContextForIOS = (configureJSContextForIOSFuncType)dlsym(libraryHandle, "configureJSContextForIOS");
+  auto wrapper = new RCTJSCWrapper {
+    .JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString"),
+    .JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString"),
+    .JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease"),
+    .JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName"),
+    .JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty"),
+    .JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject"),
+    .JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty"),
+    .JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString"),
+    .JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction"),
+    .JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
+    .JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString"),
+    .JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined"),
+    .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
+    .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
+    .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
+    .configureJSCForIOS = (voidWithNoParamsFuncType)dlsym(libraryHandle, "configureJSCForIOS"),
+    .JSBytecodeFileFormatVersion = *(const int32_t *)dlsym(libraryHandle, "JSBytecodeFileFormatVersion"),
+    .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
+    .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),
+  };
 
-#if HAS_FBGLOG
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    void *handle = dlsym(libraryHandle, "configureJSCLoggingForIOS");
-
-    if (handle) {
-      configureJSCLoggingForIOSFuncType logConfigFunc = (configureJSCLoggingForIOSFuncType)handle;
-      logConfigFunc(google::GLOG_INFO, FBGLogSink(), FBGLogFailureFunction);
-    }
+    RCTCustomJSCInit(libraryHandle);
   });
-#endif
+
+  return wrapper;
 }
 
 RCTJSCWrapper *RCTJSCWrapperCreate(BOOL useCustomJSC)
 {
-  RCTJSCWrapper *wrapper = (RCTJSCWrapper *)malloc(sizeof(RCTJSCWrapper));
-  if (useCustomJSC) {
-    RCTSetUpCustomLibraryPointers(wrapper);
-  } else {
-    RCTSetUpSystemLibraryPointers(wrapper);
-  }
-  return wrapper;
+  return useCustomJSC
+    ? RCTSetUpCustomLibraryPointers()
+    : RCTSetUpSystemLibraryPointers();
 }
 
 void RCTJSCWrapperRelease(RCTJSCWrapper *wrapper)
 {
-  if (wrapper) {
-    free(wrapper);
-  }
+  delete wrapper;
 }

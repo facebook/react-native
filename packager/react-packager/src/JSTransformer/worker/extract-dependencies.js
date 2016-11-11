@@ -13,13 +13,8 @@ const babylon = require('babylon');
 
 /**
  * Extracts dependencies (module IDs imported with the `require` function) from
- * a string containing code.
- * The function is regular expression based for speed reasons.
- *
- * The code is traversed twice:
- *  1. An array of ranges is built, where indexes 0-1, 2-3, 4-5, etc. are code,
- *     and indexes 1-2, 3-4, 5-6, etc. are string literals and comments.
- *  2. require calls are extracted with a regular expression.
+ * a string containing code. This walks the full AST for correctness (versus
+ * using, for example, regular expressions, that would be faster but inexact.)
  *
  * The result of the dependency extraction is an de-duplicated array of
  * dependencies, and an array of offsets to the string literals with module IDs.

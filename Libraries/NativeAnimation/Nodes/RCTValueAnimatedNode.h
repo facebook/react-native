@@ -20,6 +20,10 @@
 
 @interface RCTValueAnimatedNode : RCTAnimatedNode
 
+- (void)setOffset:(CGFloat)offset;
+- (void)flattenOffset;
+- (void)extractOffset;
+
 @property (nonatomic, assign) CGFloat value;
 @property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;
 

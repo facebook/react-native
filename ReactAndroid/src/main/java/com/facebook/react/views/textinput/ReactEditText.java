@@ -14,9 +14,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -29,6 +31,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -38,6 +41,7 @@ import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -68,12 +72,14 @@ public class ReactEditText extends EditText {
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
-  private boolean mTextIsSelectable = true;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private final InternalKeyListener mKeyListener;
+  private boolean mDetectScrollMovement = false;
+
+  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -122,6 +128,31 @@ public class ReactEditText extends EditText {
     if (mContentSizeWatcher != null) {
       mContentSizeWatcher.onLayout();
     }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        mDetectScrollMovement = true;
+        // Disallow parent views to intercept touch events, until we can detect if we should be
+        // capturing these touches or not.
+        this.getParent().requestDisallowInterceptTouchEvent(true);
+        break;
+      case MotionEvent.ACTION_MOVE:
+        if (mDetectScrollMovement) {
+          if (!canScrollVertically(-1) &&
+              !canScrollVertically(1) &&
+              !canScrollHorizontally(-1) &&
+              !canScrollHorizontally(1)) {
+            // We cannot scroll, let parent views take care of these touches.
+            this.getParent().requestDisallowInterceptTouchEvent(false);
+          }
+          mDetectScrollMovement = false;
+        }
+        break;
+    }
+    return super.onTouchEvent(ev);
   }
 
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't
@@ -250,12 +281,6 @@ public class ReactEditText extends EditText {
     // accept all input from it
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
-  }
-
-  @Override
-  public void setTextIsSelectable(boolean selectable) {
-    mTextIsSelectable = selectable;
-    super.setTextIsSelectable(selectable);
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
@@ -456,6 +481,52 @@ public class ReactEditText extends EditText {
         span.onFinishTemporaryDetach();
       }
     }
+  }
+
+  @Override
+  public void setBackgroundColor(int color) {
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
+  public void setBorderWidth(int position, float width) {
+    getOrCreateReactViewBackground().setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mReactBackgroundDrawable == null) {
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      Drawable backgroundDrawable = getBackground();
+      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      // drawable back as a part of LayerDrawable
+      if (backgroundDrawable == null) {
+        super.setBackground(mReactBackgroundDrawable);
+      } else {
+        LayerDrawable layerDrawable =
+            new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
+        super.setBackground(layerDrawable);
+      }
+    }
+    return mReactBackgroundDrawable;
   }
 
   /**

@@ -18,19 +18,12 @@ module.exports = [
     default: 'ios',
   }, {
     command: '--transformer [string]',
-    description: 'Specify a custom transformer to be used (absolute path)',
-    default: require.resolve('../../packager/transformer'),
+    description: 'Specify a custom transformer to be used',
   }, {
     command: '--dev [boolean]',
     description: 'If false, warnings are disabled and the bundle is minified',
     parse: (val) => val === 'false' ? false : true,
     default: true,
-  }, {
-    command: '--prepack',
-    description: 'When passed, the output bundle will use the Prepack format.',
-  }, {
-    command: '--bridge-config [string]',
-    description: 'File name of a a JSON export of __fbBatchedBridgeConfig. Used by Prepack. Ex. ./bridgeconfig.json',
   }, {
     command: '--bundle-output <string>',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
