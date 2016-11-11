@@ -41,7 +41,7 @@ type GeoOptions = {
  *
  * In order to enable geolocation in the background, you need to include the
  * 'NSLocationAlwaysUsageDescription' key in Info.plist and add location as
- * a background mode in the 'Capabilities' tab in XCode.
+ * a background mode in the 'Capabilities' tab in Xcode.
  *
  * ### Android
  * To request access to location, you need to add the following line to your
