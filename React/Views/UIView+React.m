@@ -15,6 +15,13 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 
+@interface RCTWeakObjectContainer : NSObject
+@property (nonatomic, weak) id object;
+@end
+
+@implementation RCTWeakObjectContainer
+@end
+
 @implementation UIView (React)
 
 - (NSNumber *)reactTag
@@ -25,6 +32,18 @@
 - (void)setReactTag:(NSNumber *)reactTag
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIView *)reactSuperview
+{
+  return [(RCTWeakObjectContainer *)objc_getAssociatedObject(self, @selector(reactSuperview)) object];
+}
+
+- (void)setReactSuperview:(UIView *)reactSuperview
+{
+  RCTWeakObjectContainer *wrapper = [RCTWeakObjectContainer new];
+  wrapper.object = reactSuperview;
+  objc_setAssociatedObject(self, @selector(reactSuperview), wrapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #if RCT_DEV
@@ -61,11 +80,6 @@
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (UIView *)reactSuperview
-{
-  return self.superview;
-}
-
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   // We access the associated object directly here in case someone overrides
@@ -76,6 +90,7 @@
     objc_setAssociatedObject(self, @selector(reactSubviews), subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
   [subviews insertObject:subview atIndex:atIndex];
+  [subview setReactSuperview:self];
 }
 
 - (void)removeReactSubview:(UIView *)subview
@@ -85,6 +100,7 @@
   NSMutableArray *subviews = objc_getAssociatedObject(self, @selector(reactSubviews));
   [subviews removeObject:subview];
   [subview removeFromSuperview];
+  [subview setReactSuperview:nil];
 }
 
 - (NSInteger)reactZIndex
