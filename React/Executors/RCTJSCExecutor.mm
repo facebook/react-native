@@ -500,6 +500,11 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 #endif
 }
 
+- (int32_t)bytecodeFileFormatVersion
+{
+  return _jscWrapper->JSBytecodeFileFormatVersion;
+}
+
 - (NSString *)contextName
 {
   return [_context.context name];
@@ -688,9 +693,9 @@ static TaggedScript loadTaggedScript(NSData *script,
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / prepare bundle", nil);
 
-  RCTMagicNumber magicNumber = {.allBytes = 0};
-  [script getBytes:&magicNumber length:sizeof(magicNumber)];
-  RCTScriptTag tag = RCTParseMagicNumber(magicNumber);
+  RCTBundleHeader header = {};
+  [script getBytes:&header length:sizeof(header)];
+  RCTScriptTag tag = RCTParseTypeFromHeader(header);
 
   NSData *loadedScript = NULL;
   switch (tag) {

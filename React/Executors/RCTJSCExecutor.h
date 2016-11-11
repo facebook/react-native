@@ -73,6 +73,11 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
+ * Returns the bytecode file format that the underlying runtime supports.
+ */
+@property (nonatomic, readonly) int32_t bytecodeFileFormatVersion;
+
+/**
  * Specify a name for the JSContext used, which will be visible in debugging tools
  * @default is "RCTJSContext"
  */
