@@ -1,0 +1,57 @@
+EXPORTED_HEADERS = [
+  'JSCHelpers.h',
+  'Value.h',
+  'noncopyable.h',
+  'Unicode.h',
+]
+
+if THIS_IS_FBANDROID:
+  include_defs('//ReactAndroid/DEFS')
+
+  cxx_library(
+    name = 'jschelpers',
+    force_static = True,
+    # We depend on JSC, support the same platforms
+    supported_platforms_regex = '^android-(armv7|x86)$',
+    compiler_flags = [
+      '-Wall',
+      '-fexceptions',
+      '-fvisibility=hidden',
+      '-std=c++1y',
+    ],
+    exported_headers = EXPORTED_HEADERS,
+    headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
+    header_namespace = 'jschelpers',
+    srcs = glob(['*.cpp']),
+    deps = JSC_DEPS + [
+      '//xplat/folly:molly',
+    ],
+    visibility = [
+      'PUBLIC',
+    ],
+  )
+
+elif THIS_IS_FBOBJC:
+   ios_library(
+     name = 'jschelpers',
+     inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+     compiler_flags = [
+       '-Wall',
+       '-fexceptions',
+       '-fvisibility=hidden',
+       '-std=c++1y',
+     ],
+     exported_headers = EXPORTED_HEADERS,
+     headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
+     header_namespace = 'jschelpers',
+     srcs = glob(['*.cpp']),
+     frameworks = [
+       '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+     ],
+     deps = [
+       '//xplat/folly:molly',
+     ],
+     visibility = [
+       'PUBLIC',
+     ],
+   )

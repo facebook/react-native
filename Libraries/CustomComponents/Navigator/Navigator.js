@@ -314,6 +314,7 @@ var Navigator = React.createClass({
      *  - Navigator.SceneConfigs.FloatFromBottom
      *  - Navigator.SceneConfigs.FloatFromBottomAndroid
      *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.SwipeFromLeft
      *  - Navigator.SceneConfigs.HorizontalSwipeJump
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft

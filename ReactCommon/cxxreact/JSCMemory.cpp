@@ -7,9 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
-#include "JSCHelpers.h"
-
-#include "Value.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 static JSValueRef nativeCaptureHeap(
     JSContextRef ctx,
@@ -43,7 +42,7 @@ void addNativeMemoryHooks(JSGlobalContextRef ctx) {
 #ifdef WITH_FB_MEMORY_PROFILING
   installGlobalFunction(ctx, "nativeCaptureHeap", nativeCaptureHeap);
 #endif // WITH_FB_MEMORY_PROFILING
-  
+
 }
 
 } }

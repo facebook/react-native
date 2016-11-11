@@ -5,52 +5,109 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
 
+type DependencyMap = Array<ModuleID>;
+type Exports = any;
+type FactoryFn = (
+  global: Object,
+  require: RequireFn,
+  moduleObject: {exports: {}},
+  exports: {},
+  dependencyMap: ?DependencyMap,
+) => void;
+type HotModuleReloadingAcceptFn = Function;
+type HotModuleReloadingData = {|
+  acceptCallback: ?HotModuleReloadingAcceptFn,
+  accept: (callback: HotModuleReloadingAcceptFn) => void,
+|};
+type Module = {
+  exports: Exports,
+  hot?: HotModuleReloadingData,
+};
+type ModuleID = number;
+type ModuleDefinition = {|
+  dependencyMap: ?DependencyMap,
+  exports: Exports,
+  factory: FactoryFn,
+  hasError: boolean,
+  hot?: HotModuleReloadingData,
+  isInitialized: boolean,
+  verboseName?: string,
+|};
+type ModuleMap =
+  {[key: ModuleID]: (ModuleDefinition)};
+type RequireFn = (id: ModuleID | VerboseModuleNameForDev) => Exports;
+type VerboseModuleNameForDev = string;
+
 global.require = require;
 global.__d = define;
 
-const modules = Object.create(null);
+const modules: ModuleMap = Object.create(null);
 if (__DEV__) {
-  var verboseNamesToModuleIds = Object.create(null);
+  var verboseNamesToModuleIds: {[key: string]: number} = Object.create(null);
 }
 
-function define(moduleId, factory) {
+function define(
+  factory: FactoryFn,
+  moduleId: number,
+  dependencyMap?: DependencyMap,
+) {
   if (moduleId in modules) {
     // prevent repeated calls to `global.nativeRequire` to overwrite modules
     // that are already loaded
     return;
   }
   modules[moduleId] = {
+    dependencyMap,
+    exports: undefined,
     factory,
     hasError: false,
     isInitialized: false,
-    exports: undefined,
   };
   if (__DEV__) {
     // HMR
     modules[moduleId].hot = createHotReloadingObject();
 
     // DEBUGGABLE MODULES NAMES
-    // avoid unnecessary parameter in prod
-    const verboseName = modules[moduleId].verboseName = arguments[2];
-    verboseNamesToModuleIds[verboseName] = moduleId;
+    // we take `verboseName` from `arguments` to avoid an unused named parameter
+    // in `define` in production.
+    const verboseName: string | void = arguments[3];
+    if (verboseName) {
+      modules[moduleId].verboseName = verboseName;
+      verboseNamesToModuleIds[verboseName] = moduleId;
+    }
   }
 }
 
-function require(moduleId) {
-  const module = __DEV__
-    ? modules[moduleId] || modules[verboseNamesToModuleIds[moduleId]]
-    : modules[moduleId];
+function require(moduleId: ModuleID | VerboseModuleNameForDev) {
+  if (__DEV__ && typeof moduleId === 'string') {
+    const verboseName = moduleId;
+    moduleId = verboseNamesToModuleIds[moduleId];
+    if (moduleId == null) {
+      throw new Error(`Unknown named module: '${verboseName}'`);
+    } else {
+      console.warn(
+        `Requiring module '${verboseName}' by name is only supported for ` +
+        'debugging purposes and will BREAK IN PRODUCTION!'
+      );
+    }
+  }
+
+  //$FlowFixMe: at this point we know that moduleId is a number
+  const moduleIdReallyIsNumber: number = moduleId;
+  const module = modules[moduleIdReallyIsNumber];
   return module && module.isInitialized
     ? module.exports
-    : guardedLoadModule(moduleId, module);
+    : guardedLoadModule(moduleIdReallyIsNumber, module);
 }
 
 let inGuard = false;
-function guardedLoadModule(moduleId, module) {
+function guardedLoadModule(moduleId: ModuleID , module) {
   if (!inGuard && global.ErrorUtils) {
     inGuard = true;
     let returnValue;
@@ -71,17 +128,6 @@ function loadModuleImplementation(moduleId, module) {
   if (!module && nativeRequire) {
     nativeRequire(moduleId);
     module = modules[moduleId];
-  }
-
-  if (__DEV__ && !module) {
-    // allow verbose module names to be passed as module ID
-    module = modules[verboseNamesToModuleIds[moduleId]];
-    if (module) {
-      console.warn(
-        `Requiring module '${moduleId}' by name is only supported for ` +
-        'debugging purposes and will break in production'
-      );
-    }
   }
 
   if (!module) {
@@ -106,27 +152,31 @@ function loadModuleImplementation(moduleId, module) {
   // infinite require loop.
   module.isInitialized = true;
   const exports = module.exports = {};
-  const {factory} = module;
+  const {factory, dependencyMap} = module;
   try {
     if (__DEV__) {
+      // $FlowFixMe: we know that __DEV__ is const and `Systrace` exists
       Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
     }
 
-    const moduleObject = {exports};
+    const moduleObject: Module = {exports};
     if (__DEV__ && module.hot) {
       moduleObject.hot = module.hot;
     }
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
-    factory(global, require, moduleObject, exports);
+    // and packager/react-packager/src/ModuleGraph/worker.js
+    factory(global, require, moduleObject, exports, dependencyMap);
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {
+      // $FlowFixMe: This is only sound because we never access `factory` again
       module.factory = undefined;
     }
 
     if (__DEV__) {
+      // $FlowFixMe: we know that __DEV__ is const and `Systrace` exists
       Systrace.endEvent();
     }
     return (module.exports = moduleObject.exports);
@@ -156,14 +206,17 @@ if (__DEV__) {
 
   // HOT MODULE RELOADING
   var createHotReloadingObject = function() {
-    const hot = {
+    const hot: HotModuleReloadingData = {
       acceptCallback: null,
       accept: callback => { hot.acceptCallback = callback; },
     };
     return hot;
   };
 
-  const acceptAll = function(dependentModules, inverseDependencies) {
+  const acceptAll = function(
+    dependentModules,
+    inverseDependencies,
+  ) {
     if (!dependentModules || dependentModules.length === 0) {
       return true;
     }
@@ -178,17 +231,21 @@ if (__DEV__) {
         return false;
       }
 
-      parents.pushAll(inverseDependencies[notAccepted[i]]);
+      parents.push(...inverseDependencies[notAccepted[i]]);
     }
 
     return acceptAll(parents, inverseDependencies);
   };
 
-  const accept = function(id, factory, inverseDependencies) {
+  const accept = function(
+    id: ModuleID,
+    factory?: FactoryFn,
+    inverseDependencies: {[key: ModuleID]: Array<ModuleID>},
+  ) {
     const mod = modules[id];
 
-    if (!mod) {
-      define(id, factory);
+    if (!mod && factory) { // new modules need a factory
+      define(factory, id);
       return true; // new modules don't need to be accepted
     }
 

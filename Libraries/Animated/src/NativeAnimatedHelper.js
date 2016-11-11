@@ -19,11 +19,11 @@ const invariant = require('fbjs/lib/invariant');
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
 
-type EndResult = {finished: bool};
+type EndResult = {finished: boolean};
 type EndCallback = (result: EndResult) => void;
 type EventMapping = {
-  nativeEventPath: Array<string>;
-  animatedValueTag: number;
+  nativeEventPath: Array<string>,
+  animatedValueTag: number,
 };
 
 let nativeEventEmitter;
@@ -72,6 +72,10 @@ const API = {
   flattenAnimatedNodeOffset: function(nodeTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
+  },
+  extractAnimatedNodeOffset: function(nodeTag: number): void {
+    assertNativeAnimatedModule();
+    NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
   },
   connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
@@ -178,6 +182,10 @@ function assertNativeAnimatedModule(): void {
   invariant(NativeAnimatedModule, 'Native animated module is not available');
 }
 
+function isNativeAnimatedAvailable(): boolean {
+  return !!NativeAnimatedModule;
+}
+
 module.exports = {
   API,
   validateProps,
@@ -187,6 +195,7 @@ module.exports = {
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
+  isNativeAnimatedAvailable,
   get nativeEventEmitter() {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);

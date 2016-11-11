@@ -13,8 +13,6 @@ jest.disableAutomock();
 
 jest.mock('fs');
 
-const Promise = require('promise');
-
 const AssetServer = require('../');
 const crypto = require('crypto');
 const {EventEmitter} = require('events');

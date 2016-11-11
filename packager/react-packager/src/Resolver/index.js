@@ -9,7 +9,6 @@
 'use strict';
 
 
-const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
 
 const declareOpts = require('../lib/declareOpts');
@@ -51,6 +50,9 @@ const validateOpts = declareOpts({
   transformCode: {
     type: 'function',
   },
+  transformCacheKey: {
+    type: 'string',
+  },
   extraNodeModules: {
     type: 'object',
     required: false,
@@ -89,7 +91,6 @@ class Resolver {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
-      activity: Activity,
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
@@ -104,10 +105,15 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
+      transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       // for jest-haste-map
       resetCache: options.resetCache,
+      moduleOptions: {
+        cacheTransformResults: true,
+        resetCache: options.resetCache,
+      },
     });
 
     this._minifyCode = opts.minifyCode;
@@ -261,12 +267,12 @@ class Resolver {
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    '__d(',
-    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    'function(global, require, module, exports) {',
+    `__d(/* ${verboseName} */`,
+    'function(global, require, module, exports) {', // module factory
       code,
-    '\n}',
-    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    '\n}, ',
+    `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
+    dev ? `, null, ${JSON.stringify(verboseName)}` : '',
     ');',
   ].join('');
 }

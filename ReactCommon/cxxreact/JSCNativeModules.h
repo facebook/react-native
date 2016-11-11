@@ -7,7 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "Value.h"
+#include <jschelpers/Value.h>
+
 #include "ModuleRegistry.h"
 
 namespace facebook {

@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTAnimation' do |ss|
     ss.dependency       'React/Core'
-    ss.source_files   = "Libraries/NativeAnimation/{Nodes/*,*}.{h,m}"
+    ss.source_files   = "Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h,m}"
   end
 
   s.subspec 'RCTCameraRoll' do |ss|
