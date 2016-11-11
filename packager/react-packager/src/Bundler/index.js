@@ -327,7 +327,7 @@ class Bundler {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
       }
     };
-    const finalizeBundle = ({bundle, transformedModules, response, modulesByName}: {
+    const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: {}}>,
       response: ResolutionResponse,
@@ -335,7 +335,7 @@ class Bundler {
     }) =>
       Promise.all(
         transformedModules.map(({module, transformed}) =>
-          bundle.addModule(this._resolver, response, module, transformed)
+          finalBundle.addModule(this._resolver, response, module, transformed)
         )
       ).then(() => {
         const runBeforeMainModuleIds = Array.isArray(runBeforeMainModule)
@@ -347,12 +347,12 @@ class Bundler {
               .map(response.getModuleId)
           : undefined;
 
-        bundle.finalize({
+        finalBundle.finalize({
           runMainModule,
           runBeforeMainModule: runBeforeMainModuleIds,
           allowUpdates: this._opts.allowBundleUpdates,
         });
-        return bundle;
+        return finalBundle;
       });
 
     return this._buildBundle({
