@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var NativeEventEmitter = require('EventEmitter');
 var Platform = require('Platform');
 var UIManager = require('UIManager');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
@@ -18,10 +19,10 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var invariant = require('fbjs/lib/invariant');
 
 type DimensionsChangedEventName = $Enum<{
-  backPress: string,
+  change: string,
 }>;
 
-var _dimensionsChangedSubscriptions = new Set();
+var eventEmitter = new NativeEventEmitter();
 
 var dimensions = {};
 class Dimensions {
@@ -67,11 +68,8 @@ class Dimensions {
 
     Object.assign(dimensions, dims);
 
-    var subscriptions = [..._dimensionsChangedSubscriptions].reverse();
     var subsubscriptionArgument = Object.assign({}, dimensions);
-    for (var i = 0; i < subscriptions.length; ++i) {
-      subscriptions[i](subsubscriptionArgument);
-    }
+    eventEmitter.emit('change', subsubscriptionArgument);
   }
 
   /**
@@ -128,7 +126,7 @@ class Dimensions {
       eventName === 'change',
       'Trying to subscribe to unknown event: "%s"', eventName
     );
-    _dimensionsChangedSubscriptions.add(handler);
+    eventEmitter.addListener(eventName, handler);
     return {
       remove: () => Dimensions.removeEventListener(eventName, handler),
     };
@@ -142,7 +140,7 @@ class Dimensions {
       eventName === 'change',
       'Trying to unsubscribe to unknown event: "%s"', eventName
     );
-    _dimensionsChangedSubscriptions.delete(handler);
+    eventEmitter.removeListener(eventName, handler);
   }
 }
 

@@ -1536,7 +1536,7 @@ static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
   RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  id mainScreen = [UIScreen mainScreen];
+  UIScreen *mainScreen = [UIScreen mainScreen];
   CGRect screenSize = [mainScreen bounds];
   UIUserInterfaceSizeClass horizontalSizeClass = [[mainScreen traitCollection] horizontalSizeClass];
   UIUserInterfaceSizeClass verticalSizeClass = [[mainScreen traitCollection] verticalSizeClass];
