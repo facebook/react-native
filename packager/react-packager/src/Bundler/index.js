@@ -329,7 +329,7 @@ class Bundler {
     };
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
-      transformedModules: Array<{module: Module, transformed: {}}>,
+      transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
       response: ResolutionResponse,
       modulesByName: {[name: string]: Module},
     }) =>
