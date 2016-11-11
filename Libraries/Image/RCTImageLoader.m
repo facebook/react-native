@@ -474,9 +474,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   // Download image
   __weak __typeof(self) weakSelf = self;
-  __block RCTNetworkTask *task =
-  [networking networkTaskWithRequest:request
-                     completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+  __block RCTNetworkTask *task = [networking networkTaskWithRequest:request
+                                                    completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) 
+  {
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
       return;
