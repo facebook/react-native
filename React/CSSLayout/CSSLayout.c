@@ -107,7 +107,7 @@ static void _CSSNodeMarkDirty(const CSSNodeRef node);
 static int _csslayoutAndroidLog(CSSLogLevel level, const char *format, va_list args) {
   int androidLevel = CSSLogLevelDebug;
   switch (level) {
-    case CSSLogLevelError: 
+    case CSSLogLevelError:
       androidLevel = ANDROID_LOG_ERROR;
       break;
     case CSSLogLevelWarn:
@@ -116,7 +116,7 @@ static int _csslayoutAndroidLog(CSSLogLevel level, const char *format, va_list a
     case CSSLogLevelInfo:
       androidLevel = ANDROID_LOG_INFO;
       break;
-    case CSSLogLevelDebug: 
+    case CSSLogLevelDebug:
       androidLevel = ANDROID_LOG_DEBUG;
       break;
     case CSSLogLevelVerbose:
@@ -130,11 +130,11 @@ static CSSLogger gLogger = &_csslayoutAndroidLog;
 #else
 static int _csslayoutDefaultLog(CSSLogLevel level, const char *format, va_list args) {
   switch (level) {
-    case CSSLogLevelError: 
+    case CSSLogLevelError:
       return vfprintf(stderr, format, args);
     case CSSLogLevelWarn:
     case CSSLogLevelInfo:
-    case CSSLogLevelDebug: 
+    case CSSLogLevelDebug:
     case CSSLogLevelVerbose:
     default:
       return vprintf(format, args);
@@ -289,7 +289,8 @@ void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
   if (measureFunc == NULL) {
     node->measure = NULL;
   } else {
-    CSS_ASSERT(CSSNodeChildCount(node) == 0, "Cannot set measure function: Nodes with measure functions cannot have children.");
+    CSS_ASSERT(CSSNodeChildCount(node) == 0,
+               "Cannot set measure function: Nodes with measure functions cannot have children.");
     node->measure = measureFunc;
   }
 }
@@ -897,6 +898,23 @@ static float getRelativePosition(const CSSNodeRef node, const CSSFlexDirection a
                                          : -getTrailingPosition(node, axis);
 }
 
+static void constrainMaxSizeForMode(const float maxSize, CSSMeasureMode *mode, float *size) {
+  switch (*mode) {
+    case CSSMeasureModeExactly:
+    case CSSMeasureModeAtMost:
+      *size = (CSSValueIsUndefined(maxSize) || *size < maxSize) ? *size : maxSize;
+      break;
+    case CSSMeasureModeUndefined:
+      if (!CSSValueIsUndefined(maxSize)) {
+        *mode = CSSMeasureModeAtMost;
+        *size = maxSize;
+      }
+      break;
+    case CSSMeasureModeCount:
+      break;
+  }
+}
+
 static void setPosition(const CSSNodeRef node, const CSSDirection direction) {
   const CSSFlexDirection mainAxis = resolveAxis(node->style.flexDirection, direction);
   const CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
@@ -996,15 +1014,12 @@ static void computeChildFlexBasis(const CSSNodeRef node,
       childHeightMeasureMode = CSSMeasureModeExactly;
     }
 
-    if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionWidth])) {
-      childWidth = child->style.maxDimensions[CSSDimensionWidth];
-      childWidthMeasureMode = CSSMeasureModeAtMost;
-    }
-
-    if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionHeight])) {
-      childHeight = child->style.maxDimensions[CSSDimensionHeight];
-      childHeightMeasureMode = CSSMeasureModeAtMost;
-    }
+    constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionWidth],
+                            &childWidthMeasureMode,
+                            &childWidth);
+    constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionHeight],
+                            &childHeightMeasureMode,
+                            &childHeight);
 
     // Measure the child
     layoutNodeInternal(child,
@@ -1122,7 +1137,7 @@ static void absoluteLayoutChild(const CSSNodeRef node,
   if (isTrailingPosDefined(child, crossAxis) && !isLeadingPosDefined(child, crossAxis)) {
     child->layout.position[leading[crossAxis]] = node->layout.measuredDimensions[dim[crossAxis]] -
                                                  child->layout.measuredDimensions[dim[crossAxis]] -
-                                                 getTrailingBorder(node, crossAxis) - 
+                                                 getTrailingBorder(node, crossAxis) -
                                                  getTrailingPosition(child, crossAxis);
   }
 }
@@ -1738,15 +1753,12 @@ static void layoutNodeImpl(const CSSNodeRef node,
           }
         }
 
-        if (!CSSValueIsUndefined(currentRelativeChild->style.maxDimensions[CSSDimensionWidth])) {
-          childWidth = currentRelativeChild->style.maxDimensions[CSSDimensionWidth];
-          childWidthMeasureMode = CSSMeasureModeAtMost;
-        }
-
-        if (!CSSValueIsUndefined(currentRelativeChild->style.maxDimensions[CSSDimensionHeight])) {
-          childHeight = currentRelativeChild->style.maxDimensions[CSSDimensionHeight];
-          childHeightMeasureMode = CSSMeasureModeAtMost;
-        }
+        constrainMaxSizeForMode(currentRelativeChild->style.maxDimensions[CSSDimensionWidth],
+                                &childWidthMeasureMode,
+                                &childWidth);
+        constrainMaxSizeForMode(currentRelativeChild->style.maxDimensions[CSSDimensionHeight],
+                                &childHeightMeasureMode,
+                                &childHeight);
 
         const bool requiresStretchLayout =
             !isStyleDimDefined(currentRelativeChild, crossAxis) &&
@@ -1858,7 +1870,8 @@ static void layoutNodeImpl(const CSSNodeRef node,
             crossDim = fmaxf(crossDim, getDimWithMargin(child, crossAxis));
           }
         } else if (performLayout) {
-          child->layout.position[pos[mainAxis]] += getLeadingBorder(node, mainAxis) + leadingMainDim;
+          child->layout.position[pos[mainAxis]] +=
+              getLeadingBorder(node, mainAxis) + leadingMainDim;
         }
       }
     }
@@ -1924,8 +1937,8 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
             float childWidth;
             float childHeight;
-            CSSMeasureMode childWidthMeasureMode;
-            CSSMeasureMode childHeightMeasureMode;
+            CSSMeasureMode childWidthMeasureMode = CSSMeasureModeExactly;
+            CSSMeasureMode childHeightMeasureMode = CSSMeasureModeExactly;
 
             if (isMainAxisRow) {
               childHeight = crossDim;
@@ -1937,13 +1950,12 @@ static void layoutNodeImpl(const CSSNodeRef node,
                             getMarginAxis(child, CSSFlexDirectionColumn);
             }
 
-            if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionWidth])) {
-              childWidth = child->style.maxDimensions[CSSDimensionWidth];
-            }
-
-            if (!CSSValueIsUndefined(child->style.maxDimensions[CSSDimensionHeight])) {
-              childHeight = child->style.maxDimensions[CSSDimensionHeight];
-            }
+            constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionWidth],
+                                    &childWidthMeasureMode,
+                                    &childWidth);
+            constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionHeight],
+                                    &childHeightMeasureMode,
+                                    &childHeight);
 
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
@@ -1952,6 +1964,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
                   CSSValueIsUndefined(childWidth) ? CSSMeasureModeUndefined : CSSMeasureModeExactly;
               childHeightMeasureMode = CSSValueIsUndefined(childHeight) ? CSSMeasureModeUndefined
                                                                         : CSSMeasureModeExactly;
+
               layoutNodeInternal(child,
                                  childWidth,
                                  childHeight,
