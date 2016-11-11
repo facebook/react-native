@@ -354,7 +354,7 @@ If everything is set up correctly, you should see your new app running in your A
 
 > If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
 
-> A common issue if running the application for the first time is that it throws an overlay permission error if it has not been previously granted which can be fixed by toggling on when the permission page shows.
+> A common issue if running the application for the first time if you are targeting to Android API level 23 is that it throws an overlay permission error if it has not been previously granted which can be fixed by toggling on when the permission page shows.
 
 > Another common issue is that it fails the first time with a scary red screen saying `it can’t connect...`, this is not an issue with your network settings, kindly try to run again and it will be fine.
 
