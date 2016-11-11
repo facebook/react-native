@@ -25,9 +25,27 @@ const rimraf = require('rimraf');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 const CACHE_NAME = 'react-native-packager-cache';
-const TMP_DIR = path.join(require('os').tmpdir(), CACHE_NAME);
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
+
+/**
+ * If packager is running for two different directories, we don't want the
+ * caches to conflict with each other. `__dirname` carries that because packager
+ * will be, for example, installed in a different `node_modules/` folder for
+ * different projects.
+ */
+const getCacheDirPath = (function () {
+  let dirPath;
+  return function () {
+    if (dirPath == null) {
+      dirPath = path.join(
+        require('os').tmpdir(),
+        CACHE_NAME + '-' + imurmurhash(__dirname).result().toString(16),
+      );
+    }
+    return dirPath;
+  };
+})();
 
 function hashSourceCode(props: {
   sourceCode: string,
@@ -52,7 +70,7 @@ function getCacheFilePaths(props: {
   hash = Array(8 - hash.length + 1).join('0') + hash;
   const prefix = hash.substr(0, 2);
   const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
-  const base = path.join(TMP_DIR, prefix, fileName);
+  const base = path.join(getCacheDirPath(), prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
@@ -141,10 +159,11 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
   }
 
   _collectSync() {
-    mkdirp.sync(TMP_DIR);
-    const prefixDirs = fs.readdirSync(TMP_DIR);
+    const cacheDirPath = getCacheDirPath();
+    mkdirp.sync(cacheDirPath);
+    const prefixDirs = fs.readdirSync(cacheDirPath);
     for (let i = 0; i < prefixDirs.length; ++i) {
-      const prefixDir = path.join(TMP_DIR, prefixDirs[i]);
+      const prefixDir = path.join(cacheDirPath, prefixDirs[i]);
       const cacheFileNames = fs.readdirSync(prefixDir);
       for (let j = 0; j < cacheFileNames.length; ++j) {
         const cacheFilePath = path.join(prefixDir, cacheFileNames[j]);
@@ -172,13 +191,13 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
       console.error(
         'Error: Cleaning up the cache folder failed. Continuing anyway.',
       );
-      console.error('The cache folder is: %s', TMP_DIR);
+      console.error('The cache folder is: %s', getCacheDirPath());
     }
     this._lastCollected = Date.now();
   }
 
   _resetCache() {
-    rimraf.sync(TMP_DIR);
+    rimraf.sync(getCacheDirPath());
     console.log('Warning: The transform cache was reset.');
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
