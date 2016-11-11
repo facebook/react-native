@@ -93,12 +93,12 @@ public class HeadlessJsTaskContext {
           " while in foreground, but this is not allowed.");
     }
     final int taskId = mLastTaskId.incrementAndGet();
+    mActiveTasks.add(taskId);
     reactContext.getJSModule(AppRegistry.class)
       .startHeadlessTask(taskId, taskConfig.getTaskKey(), taskConfig.getData());
     if (taskConfig.getTimeout() > 0) {
       scheduleTaskTimeout(taskId, taskConfig.getTimeout());
     }
-    mActiveTasks.add(taskId);
     for (HeadlessJsTaskEventListener listener : mHeadlessJsTaskEventListeners) {
       listener.onHeadlessJsTaskStart(taskId);
     }
@@ -107,7 +107,7 @@ public class HeadlessJsTaskContext {
 
   /**
    * Finish a JS task. Doesn't actually stop the task on the JS side, only removes it from the list
-   * of active tasks and notifies listeners.
+   * of active tasks and notifies listeners. A task can only be finished once.
    *
    * @param taskId the unique id returned by {@link #startTask}.
    */
@@ -128,6 +128,14 @@ public class HeadlessJsTaskContext {
         }
       }
     });
+  }
+
+  /**
+   * Check if a given task is currently running. A task is stopped if either {@link #finishTask} is
+   * called or it times out.
+   */
+  public synchronized boolean isTaskRunning(final int taskId) {
+    return mActiveTasks.contains(taskId);
   }
 
   private void scheduleTaskTimeout(final int taskId, long timeout) {

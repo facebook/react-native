@@ -9,7 +9,7 @@
 #include <fbsystrace.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
 
 using std::min;
 

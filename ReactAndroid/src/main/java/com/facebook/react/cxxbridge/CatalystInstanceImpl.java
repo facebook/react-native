@@ -12,6 +12,7 @@ package com.facebook.react.cxxbridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,10 +56,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
     SoLoader.loadLibrary(REACT_NATIVE_LIB);
   }
 
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
-  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
-
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
+
+  private static class PendingJSCall {
+
+    public ExecutorToken mExecutorToken;
+    public String mModule;
+    public String mMethod;
+    public NativeArray mArguments;
+
+    public PendingJSCall(
+        ExecutorToken executorToken,
+        String module,
+        String method,
+        NativeArray arguments) {
+      mExecutorToken = executorToken;
+      mModule = module;
+      mMethod = method;
+      mArguments = arguments;
+    }
+  }
 
   // Access from any thread
   private final ReactQueueConfigurationImpl mReactQueueConfiguration;
@@ -70,6 +87,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
+  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
+  private final Object mJSCallsPendingInitLock = new Object();
   private ExecutorToken mMainExecutorToken;
 
   private final NativeModuleRegistry mJavaRegistry;
@@ -171,10 +190,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSBundleHasLoaded = true;
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
-    // Loading the bundle is queued on the JS thread, but may not have
-    // run yet.  It's save to set this here, though, since any work it
-    // gates will be queued on the JS thread behind the load.
-    mAcceptCalls = true;
+
+    synchronized (mJSCallsPendingInitLock) {
+      // Loading the bundle is queued on the JS thread, but may not have
+      // run yet.  It's save to set this here, though, since any work it
+      // gates will be queued on the JS thread behind the load.
+      mAcceptCalls = true;
+
+      for (PendingJSCall call : mJSCallsPendingInit) {
+        callJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+      }
+      mJSCallsPendingInit.clear();
+    }
+
+
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
   }
@@ -196,7 +225,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
     if (!mAcceptCalls) {
-      throw new RuntimeException("Attempt to call JS function before JS bundle is loaded.");
+      // Most of the time the instance is initialized and we don't need to acquire the lock
+      synchronized (mJSCallsPendingInitLock) {
+        if (!mAcceptCalls) {
+          mJSCallsPendingInit.add(new PendingJSCall(executorToken, module, method, arguments));
+          return;
+        }
+      }
     }
 
     callJSFunction(executorToken, module, method, arguments);

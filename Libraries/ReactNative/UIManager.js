@@ -15,7 +15,7 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
-const findNodeHandle = require('react/lib/findNodeHandle');
+const findNodeHandle = require('findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
 
 import type React from 'react';

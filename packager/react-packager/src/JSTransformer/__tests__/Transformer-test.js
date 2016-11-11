@@ -9,6 +9,7 @@
 'use strict';
 
 jest
+  .unmock('imurmurhash')
   .unmock('../../lib/ModuleTransport')
   .unmock('../');
 
@@ -37,12 +38,13 @@ describe('Transformer', function() {
     workerFarm.mockClear();
     workerFarm.mockImpl((opts, path, methods) => {
       const api = workers = {};
-      methods.forEach(method => api[method] = jest.fn());
+      methods.forEach(method => {api[method] = jest.fn();});
       return api;
     });
   });
 
-  it('passes transform module path, file path, source code, and options to the worker farm when transforming', () => {
+  it('passes transform module path, file path, source code,' +
+    ' and options to the worker farm when transforming', () => {
     const transformOptions = {arbitrary: 'options'};
     const code = 'arbitrary(code)';
     new Transformer(options).transformFile(fileName, code, transformOptions);
@@ -55,33 +57,24 @@ describe('Transformer', function() {
     );
   });
 
-  pit('passes the data produced by the worker back', () => {
-    const transformer = new Transformer(options);
-    const result = { code: 'transformed', map: 'sourceMap' };
-    workers.transformAndExtractDependencies.mockImpl(function(transformPath, filename, code, options, callback) {
-      callback(null, result);
-    });
-
-    return transformer.transformFile(fileName, '', {})
-      .then(data => expect(data).toBe(result));
-  });
-
   pit('should add file info to parse errors', function() {
     const transformer = new Transformer(options);
     var message = 'message';
     var snippet = 'snippet';
 
-    workers.transformAndExtractDependencies.mockImpl(function(transformPath, filename, code, options, callback) {
-      var babelError = new SyntaxError(message);
-      babelError.type = 'SyntaxError';
-      babelError.description = message;
-      babelError.loc = {
-        line: 2,
-        column: 15,
-      };
-      babelError.codeFrame = snippet;
-      callback(babelError);
-    });
+    workers.transformAndExtractDependencies.mockImpl(
+      function(transformPath, filename, code, opts, callback) {
+        var babelError = new SyntaxError(message);
+        babelError.type = 'SyntaxError';
+        babelError.description = message;
+        babelError.loc = {
+          line: 2,
+          column: 15,
+        };
+        babelError.codeFrame = snippet;
+        callback(babelError);
+      },
+    );
 
     return transformer.transformFile(fileName, '', {})
       .catch(function(error) {

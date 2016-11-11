@@ -120,7 +120,9 @@ var TimersTest = React.createClass({
   },
 
   done() {
-    this.setState({done: true}, TestModule.markTestCompleted);
+    this.setState({done: true}, () => {
+      TestModule.markTestCompleted();
+    });
   },
 
   render() {

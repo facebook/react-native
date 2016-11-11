@@ -115,18 +115,22 @@ typedef struct CSSSize {
   float height;
 } CSSSize;
 
+typedef enum CSSLogLevel {
+  CSSLogLevelError,
+  CSSLogLevelWarn,
+  CSSLogLevelInfo,
+  CSSLogLevelDebug,
+  CSSLogLevelVerbose,
+} CSSLogLevel;
+
 typedef struct CSSNode *CSSNodeRef;
-typedef CSSSize (*CSSMeasureFunc)(void *context,
+typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float width,
                                   CSSMeasureMode widthMode,
                                   float height,
                                   CSSMeasureMode heightMode);
-typedef void (*CSSPrintFunc)(void *context);
-typedef int (*CSSLogger)(const char *format, ...);
-
-#ifdef CSS_ASSERT_FAIL_ENABLED
-typedef void (*CSSAssertFailFunc)(const char *message);
-#endif
+typedef void (*CSSPrintFunc)(CSSNodeRef node);
+typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
 
 // CSSNode
 WIN_EXPORT CSSNodeRef CSSNodeNew(void);
@@ -161,6 +165,19 @@ WIN_EXPORT void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions option
 
 WIN_EXPORT bool CSSValueIsUndefined(const float value);
 
+WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
+                                               const float width,
+                                               const CSSMeasureMode heightMode,
+                                               const float height,
+                                               const CSSMeasureMode lastWidthMode,
+                                               const float lastWidth,
+                                               const CSSMeasureMode lastHeightMode,
+                                               const float lastHeight,
+                                               const float lastComputedWidth,
+                                               const float lastComputedHeight,
+                                               const float marginRow,
+                                               const float marginColumn);
+
 #define CSS_NODE_PROPERTY(type, name, paramName)                           \
   WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
   WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);
@@ -181,7 +198,6 @@ WIN_EXPORT bool CSSValueIsUndefined(const float value);
 CSS_NODE_PROPERTY(void *, Context, context);
 CSS_NODE_PROPERTY(CSSMeasureFunc, MeasureFunc, measureFunc);
 CSS_NODE_PROPERTY(CSSPrintFunc, PrintFunc, printFunc);
-CSS_NODE_PROPERTY(bool, IsTextnode, isTextNode);
 CSS_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
 CSS_NODE_STYLE_PROPERTY(CSSDirection, Direction, direction);
@@ -220,11 +236,6 @@ CSS_NODE_LAYOUT_PROPERTY(float, Height);
 CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
-
-#ifdef CSS_ASSERT_FAIL_ENABLED
-// Assert
-WIN_EXPORT void CSSAssertSetFailFunc(CSSAssertFailFunc func);
-WIN_EXPORT void CSSAssertFail(const char *message);
-#endif
+WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
 
 CSS_EXTERN_C_END

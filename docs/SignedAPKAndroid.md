@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
 next: android-ui-performance
-previous: running-on-device-android
+previous: headless-js-android
 ---
 
 Android requires that all apps be digitally signed with a certificate before they can be installed, so to distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describes the topic in detail. This guide covers the process in brief, as well as lists the steps required to packaging the JavaScript bundle.

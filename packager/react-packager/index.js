@@ -10,11 +10,11 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
-var debug = require('debug');
-var Activity = require('./src/Activity');
+const debug = require('debug');
+const Logger = require('./src/Logger');
 
 exports.createServer = createServer;
-exports.Activity = Activity;
+exports.Logger = Logger;
 exports.getOrderedDependencyPaths = function(options, bundleOptions) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(bundleOptions)
@@ -50,7 +50,7 @@ function createServer(options) {
 }
 
 function createNonPersistentServer(options) {
-  Activity.disable();
+  Logger.disablePrinting();
   // Don't start the filewatcher or the cache.
   if (options.nonPersistent == null) {
     options.nonPersistent = true;
