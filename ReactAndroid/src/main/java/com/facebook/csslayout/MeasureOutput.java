@@ -10,10 +10,23 @@
 package com.facebook.csslayout;
 
 /**
- * POJO to hold the output of the measure function.
+ * Helpers for building measure output value.
  */
 public class MeasureOutput {
 
-  public float width;
-  public float height;
+  public static long make(float width, float height) {
+    return make((int) width, (int) height);
+  }
+
+  public static long make(int width, int height) {
+    return ((long) width) << 32 | ((long) height);
+  }
+
+  public static int getWidth(long measureOutput) {
+    return (int) (0xFFFFFFFF & (measureOutput >> 32));
+  }
+
+  public static int getHeight(long measureOutput) {
+    return (int) (0xFFFFFFFF & measureOutput);
+  }
 }

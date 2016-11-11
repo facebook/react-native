@@ -93,6 +93,8 @@ import javax.annotation.Nullable;
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("modulus".equals(type)) {
+      node = new ModulusAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {
       node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
@@ -134,6 +136,34 @@ import javax.annotation.Nullable;
     }
     ((ValueAnimatedNode) node).mValue = value;
     mUpdatedNodes.add(node);
+  }
+
+  public void setAnimatedNodeOffset(int tag, double offset) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).mOffset = offset;
+    mUpdatedNodes.add(node);
+  }
+
+  public void flattenAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).flattenOffset();
+  }
+
+  public void extractAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).extractOffset();
   }
 
   public void startAnimatingNode(

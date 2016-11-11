@@ -153,7 +153,7 @@ const ReactNative = {
         );
         warningDedupe.batchedUpdates = true;
       }
-      return require('react/lib/ReactUpdates').batchedUpdates;
+      return require('ReactUpdates').batchedUpdates;
     },
     get createFragment() {
       if (__DEV__) {

@@ -363,6 +363,15 @@ const LOG_LEVELS = {
   warn: 2,
   error: 3
 };
+const INSPECTOR_LEVELS = [];
+INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
+INSPECTOR_LEVELS[LOG_LEVELS.info] = 'log';
+INSPECTOR_LEVELS[LOG_LEVELS.warn] = 'warning';
+INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
+
+// Strip the inner function in getNativeLogFunction(), if in dev also
+// strip method printing to originalConsole.
+const INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
 
 function setupConsole(global) {
   if (!global.nativeLoggingHook) {
@@ -386,6 +395,13 @@ function setupConsole(global) {
         // but we don't (currently) want these to show a redbox
         // (Note: Logic duplicated in ExceptionsManager.js.)
         logLevel = LOG_LEVELS.warn;
+      }
+      if (global.__inspectorLog) {
+        global.__inspectorLog(
+          INSPECTOR_LEVELS[logLevel],
+          str,
+          [].slice.call(arguments),
+          INSPECTOR_FRAMES_TO_SKIP);
       }
       global.nativeLoggingHook(str, logLevel);
     };

@@ -50,9 +50,9 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 // cssNode api
 
-static void RCTPrint(void *context)
+static void RCTPrint(CSSNodeRef node)
 {
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)context;
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)CSSNodeGetContext(node);
   printf("%s(%zd), ", shadowView.viewName.UTF8String, shadowView.reactTag.integerValue);
 }
 
@@ -141,6 +141,16 @@ DEFINE_PROCESS_META_PROPS(Border);
     return;
   }
   CSSNodeSetHasNewLayout(node, false);
+
+#if RCT_DEBUG
+  // This works around a breaking change in css-layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
+  // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
+  if ((!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(node)) && CSSNodeStyleGetFlexBasis(node) == 0) &&
+      ((!CSSValueIsUndefined(CSSNodeStyleGetWidth(node)) && CSSNodeStyleGetWidth(node) > 0 && CSSNodeLayoutGetWidth(node) == 0) ||
+       (!CSSValueIsUndefined(CSSNodeStyleGetHeight(node)) && CSSNodeStyleGetHeight(node) > 0 && CSSNodeLayoutGetHeight(node) == 0))) {
+    RCTLogError(@"View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:) View: %@", self);
+  }
+#endif
 
   CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),

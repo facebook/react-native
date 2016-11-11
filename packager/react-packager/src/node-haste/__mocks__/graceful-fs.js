@@ -265,12 +265,15 @@ fs.createWriteStream.mockImpl(file => {
       });
       writeStream.__file = file;
       writeStream.__chunks = [];
+      writeStream.end = jest.fn(writeStream.end);
+      fs.createWriteStream.mock.returned.push(writeStream);
       return writeStream;
     } else {
       throw new Error('Cannot open file ' + file);
     }
   }
 });
+fs.createWriteStream.mock.returned = [];
 
 
 fs.__setMockFilesystem = (object) => (filesystem = object);

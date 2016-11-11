@@ -177,7 +177,7 @@ navigator.product = 'ReactNative';
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which would
+// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
 // not exist if it were lazily defined).
 defineProperty(global, 'Map', () => require('Map'), true);
 defineProperty(global, 'Set', () => require('Set'), true);
@@ -193,6 +193,12 @@ if (__DEV__) {
 
   require('RCTDebugComponentOwnership');
   require('react-transform-hmr');
+}
+
+// Set up inspector
+if (__DEV__) {
+  const JSInspector = require('JSInspector');
+  JSInspector.registerAgent(require('NetworkAgent'));
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has

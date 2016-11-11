@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <fb/log.h>
 
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 
 namespace facebook {
 namespace react {

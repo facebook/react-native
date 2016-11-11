@@ -364,6 +364,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [super hitTest:point withEvent:event];
 }
 
+static inline BOOL isRectInvalid(CGRect rect) {
+  return isnan(rect.origin.x) || isinf(rect.origin.x) ||
+    isnan(rect.origin.y) || isinf(rect.origin.y) ||
+    isnan(rect.size.width) || isinf(rect.size.width) ||
+    isnan(rect.size.height) || isinf(rect.size.height);
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+  if (isRectInvalid(bounds)) {
+    RCTLogError(@"Attempted to set an invalid bounds to inner scrollview: %@", NSStringFromCGRect(bounds));
+    return;
+  }
+
+  [super setBounds:bounds];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  if (isRectInvalid(frame)) {
+    RCTLogError(@"Attempted to set an invalid frame to inner scrollview: %@", NSStringFromCGRect(frame));
+    return;
+  }
+
+  [super setFrame:frame];
+}
+
 #if !TARGET_OS_TV
 - (void)setRctRefreshControl:(RCTRefreshControl *)refreshControl
 {

@@ -12,13 +12,15 @@ package com.facebook.csslayout;
 public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
 
   interface MeasureFunction {
-    void measure(
+    /**
+     * Return a value created by MeasureOutput.make(width, height);
+     */
+    long measure(
         CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput);
+        CSSMeasureMode heightMode);
   }
 
   int getChildCount();
@@ -29,8 +31,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   int indexOf(CSSNodeType child);
   void setMeasureFunction(MeasureFunction measureFunction);
   boolean isMeasureDefined();
-  void setIsTextNode(boolean isTextNode);
-  boolean isTextNode();
   void calculateLayout(CSSLayoutContext layoutContext);
   boolean isDirty();
   boolean hasNewLayout();

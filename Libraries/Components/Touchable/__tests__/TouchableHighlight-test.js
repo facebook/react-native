@@ -10,7 +10,7 @@
 jest.disableAutomock();
 
 const React = require('React');
-const ReactTestRenderer = require('react/lib/ReactTestRenderer');
+const ReactTestRenderer = require('react-test-renderer');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 

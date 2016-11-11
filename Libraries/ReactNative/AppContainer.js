@@ -7,62 +7,94 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AppContainer
- * @noflow
+ * @flow
  */
 
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var StyleSheet = require('StyleSheet');
-var Subscribable = require('Subscribable');
-var View = require('View');
+const EmitterSubscription = require('EmitterSubscription');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var Inspector = __DEV__ ? require('Inspector') : null;
-var YellowBox = __DEV__ ? require('YellowBox') : null;
+// TODO (fkg): make rootTag required
+type Context = {
+  rootTag: ?number,
+};
+type Props = {
+  children?: React.Children,
+  rootTag?: number,
+};
+type State = {
+  inspector: ?React.Element<*>,
+  mainKey: number,
+};
 
-var AppContainer = React.createClass({
-  mixins: [Subscribable.Mixin],
+class AppContainer extends React.Component {
+  props: Props;
+  state: State = {
+    inspector: null,
+    mainKey: 1,
+  };
+  _mainRef: ?React.Element<*>;
+  _subscription: ?EmitterSubscription = null;
 
-  getInitialState: function() {
-    return { inspector: null, mainKey: 1 };
-  },
+  static childContextTypes = {
+    rootTag: React.PropTypes.number,
+  };
 
-  toggleElementInspector: function() {
-    var inspector = !__DEV__ || this.state.inspector
-      ? null
-      : <Inspector
-          inspectedViewTag={ReactNative.findNodeHandle(this.refs.main)}
-          onRequestRerenderApp={(updateInspectedViewTag) => {
-            this.setState(
-              (s) => ({mainKey: s.mainKey + 1}),
-              () => updateInspectedViewTag(ReactNative.findNodeHandle(this.refs.main))
-            );
-          }}
-        />;
-    this.setState({inspector});
-  },
+  getChildContext(): Context {
+    return {
+      rootTag: this.props.rootTag,
+    };
+  }
 
-  componentDidMount: function() {
-    this.addListenerOn(
-      RCTDeviceEventEmitter,
-      'toggleElementInspector',
-      this.toggleElementInspector
-    );
-  },
+  componentDidMount(): void {
+    if (__DEV__) {
+      this._subscription = RCTDeviceEventEmitter.addListener(
+        'toggleElementInspector',
+        () => {
+          const Inspector = require('Inspector');
+          const inspector = this.state.inspector
+            ? null
+            : <Inspector
+                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
+                onRequestRerenderApp={(updateInspectedViewTag) => {
+                  this.setState(
+                    (s) => ({mainKey: s.mainKey + 1}),
+                    () => updateInspectedViewTag(
+                      ReactNative.findNodeHandle(this._mainRef)
+                    )
+                  );
+                }}
+              />;
+          this.setState({inspector});
+        },
+      );
+    }
+  }
 
-  render: function() {
+  componentWillUnmount(): void {
+    if (this._subscription) {
+      this._subscription.remove();
+    }
+  }
+
+  render(): React.Element<*> {
     let yellowBox = null;
     if (__DEV__) {
+      const YellowBox = require('YellowBox');
       yellowBox = <YellowBox />;
     }
+
     return (
       <View style={styles.appContainer}>
         <View
           collapsable={!this.state.inspector}
           key={this.state.mainKey}
-          style={styles.appContainer} ref="main">
+          style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
           {this.props.children}
         </View>
         {yellowBox}
@@ -70,9 +102,9 @@ var AppContainer = React.createClass({
       </View>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
   },
