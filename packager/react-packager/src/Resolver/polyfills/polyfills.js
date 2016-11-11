@@ -15,6 +15,7 @@
 
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
+// This is only needed for iOS 8 and current Android JSC. 
 /* eslint strict:0 */
 Object.assign = function(target, sources) {
   if (__DEV__) {
@@ -55,7 +56,8 @@ Object.assign = function(target, sources) {
         if (!hasOwnProperty.call(nextSource, key)) {
           throw new TypeError(
             'One of the sources for assign has an enumerable key on the ' +
-            'prototype chain. This is an edge case that we do not support. ' +
+            'prototype chain. Are you trying to assign a prototype property? ' +
+            'We don\'t allow it, as this is an edge case that we do not support. ' +
             'This error is a performance optimization and not spec compliant.'
           );
         }

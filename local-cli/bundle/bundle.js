@@ -9,7 +9,6 @@
 
 const buildBundle = require('./buildBundle');
 const outputBundle = require('./output/bundle');
-const outputPrepack = require('./output/prepack');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
 
 /**
@@ -17,7 +16,7 @@ const bundleCommandLineArgs = require('./bundleCommandLineArgs');
  */
 function bundleWithOutput(argv, config, args, output, packagerInstance) {
   if (!output) {
-    output = args.prepack ? outputPrepack : outputBundle;
+    output = outputBundle;
   }
   return buildBundle(args, config, output, packagerInstance);
 }

@@ -39,7 +39,7 @@ exports.description = 'Examples of using the Geolocation API.';
 exports.examples = [
   {
     title: 'navigator.geolocation',
-    render: function(): ReactElement<any> {
+    render: function(): React.Element<any> {
       return <GeolocationExample />;
     },
   }

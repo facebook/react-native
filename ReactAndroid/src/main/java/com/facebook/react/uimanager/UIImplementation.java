@@ -321,7 +321,7 @@ public class UIImplementation {
     Arrays.sort(viewsToAdd, ViewAtIndex.COMPARATOR);
     Arrays.sort(indicesToRemove);
 
-    // Apply changes to CSSNode hierarchy
+    // Apply changes to CSSNodeDEPRECATED hierarchy
     int lastIndexRemoved = -1;
     for (int i = indicesToRemove.length - 1; i >= 0; i--) {
       int indexToRemove = indicesToRemove[i];
@@ -789,14 +789,16 @@ public class UIImplementation {
 
     int tag = cssNode.getReactTag();
     if (!mShadowNodeRegistry.isRootNode(tag)) {
-      cssNode.dispatchUpdates(
+      boolean frameDidChange = cssNode.dispatchUpdates(
           absoluteX,
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
 
-      // notify JS about layout event if requested
-      if (cssNode.shouldNotifyOnLayout()) {
+      // Notify JS about layout event if requested
+      // and if the position or dimensions actually changed
+      // (consistent with iOS).
+      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
                 tag,

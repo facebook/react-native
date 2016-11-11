@@ -8,9 +8,10 @@
  */
 'use strict';
 
-const Activity = require('../Activity');
-const Promise = require('promise');
+const Logger = require('../Logger');
+
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
@@ -98,8 +99,8 @@ class Transformer {
         ['minify', 'transformAndExtractDependencies'],
         opts.transformTimeoutInterval,
       );
-      this._transform = Promise.denodeify(this._workers.transformAndExtractDependencies);
-      this.minify = Promise.denodeify(this._workers.minify);
+      this._transform = denodeify(this._workers.transformAndExtractDependencies);
+      this.minify = denodeify(this._workers.minify);
     }
   }
 
@@ -112,20 +113,13 @@ class Transformer {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
-    const transformEventId = Activity.startEvent(
-      'Transforming file',
-      fileName,
-      {
-        telemetric: true,
-        silent: true,
-      },
-    );
     return this
       ._transform(this._transformModulePath, fileName, code, options)
-      .then(result => {
+      .then(data => {
+        Logger.log(data.transformFileStartLogEntry);
+        Logger.log(data.transformFileEndLogEntry);
         debug('done transforming file', fileName);
-        Activity.endEvent(transformEventId);
-        return result;
+        return data.result;
       })
       .catch(error => {
         if (error.type === 'TimeoutError') {

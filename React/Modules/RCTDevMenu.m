@@ -513,17 +513,19 @@ RCT_EXPORT_METHOD(show)
   }
 
   NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", [_bridge class]];
+  // On larger devices we don't have an anchor point for the action sheet
+  UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
   _actionSheet = [UIAlertController alertControllerWithTitle:title
                                                      message:@""
-                                              preferredStyle:UIAlertControllerStyleActionSheet];
+                                              preferredStyle:style];
+
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {
         [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                         // Cancel button tappped.
+                                                       handler:^(__unused UIAlertAction *action) {
                                                          [item callHandler];
                                                        }]];
         break;
@@ -532,11 +534,10 @@ RCT_EXPORT_METHOD(show)
         BOOL selected = [item.value boolValue];
         [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
+                                                       handler:^(__unused UIAlertAction *action) {
                                                          BOOL value = [self->_settings[item.key] boolValue];
                                                          [self updateSetting:item.key value:@(!value)]; // will call handler
                                                        }]];
-
         break;
       }
     }
@@ -544,11 +545,10 @@ RCT_EXPORT_METHOD(show)
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:^(UIAlertAction *action) {
-                                                 }]];
+                                                 handler:nil]];
 
   _presentedItems = items;
-  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:^(void){}];
+  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 }
 
 

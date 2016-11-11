@@ -10,6 +10,7 @@
 var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
+var Hero = require('Hero');
 
 var apps = [
   {
@@ -112,18 +113,11 @@ var index = React.createClass({
   render: function() {
     return (
       <Site>
-        <div className="hero">
-          <div className="wrap">
-            <div className="text"><strong>React Native</strong></div>
-            <div className="minitext">
-              Learn once, write anywhere: Build mobile apps with React
-            </div>
-          </div>
-
+        <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
-        </div>
+        </Hero>
 
         <section className="content wrap">
 
@@ -235,7 +229,7 @@ class SomethingFast extends Component {
               Some of these are hybrid native/React Native apps.
             </p>
             <div className="buttons-unit">
-              <a href="showcase.html" className="button">More React Native apps</a>
+              <a href="/react-native/showcase.html" className="button">More React Native apps</a>
             </div>
           </section>
         </section>

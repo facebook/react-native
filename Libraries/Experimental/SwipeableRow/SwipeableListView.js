@@ -65,7 +65,7 @@ class SwipeableListView extends React.Component {
   props: Props;
   state: State;
 
-  _listViewRef: ?ReactElement<any> = null;
+  _listViewRef: ?React.Element<any> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
 
   static getNewDataSource(): Object {
@@ -118,7 +118,7 @@ class SwipeableListView extends React.Component {
     }
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <ListView
         {...this.props}
@@ -163,7 +163,7 @@ class SwipeableListView extends React.Component {
     }
   }
 
-  _renderRow = (rowData: Object, sectionID: string, rowID: string): ReactElement<any> => {
+  _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe

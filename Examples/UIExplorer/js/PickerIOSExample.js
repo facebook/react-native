@@ -122,8 +122,6 @@ class PickerStyleExample extends React.Component {
   };
 
   render() {
-    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
-    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
     return (
       <PickerIOS
         itemStyle={{fontSize: 25, color: 'red', textAlign: 'left', fontWeight: 'bold'}}
@@ -147,13 +145,13 @@ exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
 {
   title: '<PickerIOS>',
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     return <PickerExample />;
   },
 },
 {
   title: '<PickerIOS> with custom styling',
-  render: function(): ReactElement<any> {
+  render: function(): React.Element<any> {
     return <PickerStyleExample />;
   },
 }];

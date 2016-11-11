@@ -295,7 +295,22 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
     infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
     infoTitle: 'Switching to React Native in Production on iOS and Android',
-  }
+  },
+  {
+    name: 'JD（手机京东）',
+    icon: 'https://lh3.googleusercontent.com/AIIAZsqyEG0KmCFruh1Ec374-2l7n1rfv_LG5RWjdAZOzUBCu-5MRqdLbzJfBnOdSFg=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8',
+    linkPlayStore: 'https://app.jd.com/android.html',
+    infoLink: 'http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile',
+    infoTitle: 'JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.',
+  },
+  {
+    name: 'Chop',
+    icon: 'https://pbs.twimg.com/profile_images/656536498951446529/6zU6BvgB.png',
+    linkAppStore: 'http://apple.co/2dfkYH9',
+    infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
+    infoTitle: 'How we built Chop',
+  }  
 ];
 
 /*
@@ -505,12 +520,12 @@ var showcase = React.createClass({
               <AppList apps={apps} />
             </div>
 
-            <p className="footnote">
-              Some of these are hybrid native/React Native apps.
-            </p>
+            <div className="inner-content">
+              <p>Some of these are hybrid native/React Native apps. If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
+            </div>
 
             <div className="inner-content">
-              <p>If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcaseData.js">guidelines on GitHub</a> to update this page.</p>
+              <p>Also, <a href="https://github.com/ReactNativeNews/React-Native-Apps">a curated list of open source React Native apps</a> is being kept by React Native News.</p>
             </div>
 
           </div>

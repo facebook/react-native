@@ -132,6 +132,10 @@ void Instance::setGlobalVariable(std::string propName,
   nativeToJsBridge_->setGlobalVariable(std::move(propName), std::move(jsonValue));
 }
 
+void *Instance::getJavaScriptContext() {
+  return nativeToJsBridge_->getJavaScriptContext();
+}
+
 void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
                               folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();

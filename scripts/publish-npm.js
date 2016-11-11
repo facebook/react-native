@@ -50,7 +50,6 @@
 require(`shelljs/global`);
 
 const buildBranch = process.env.CIRCLE_BRANCH;
-const requiredJavaVersion = `1.7`;
 
 let branchVersion;
 if (buildBranch.indexOf(`-stable`) !== -1) {
@@ -88,19 +87,6 @@ if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
 }
 
 // -------- Generating Android Artifacts with JavaDoc
-// Java -version outputs to stderr 0_o
-const javaVersion = exec(`java -version`).stderr;
-if (javaVersion.indexOf(requiredJavaVersion) === -1) {
-  echo(`Java version must be 1.7.x in order to generate Javadoc. Check: java -version`);
-  exit(1);
-}
-
-// Uncomment Javadoc generation
-if (sed(`-i`, `// archives androidJavadocJar`, `archives androidJavadocJar`, `ReactAndroid/release.gradle`).code) {
-  echo(`Couldn't enable Javadoc generation`);
-  exit(1);
-}
-
 if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
   echo(`Couldn't generate artifacts`);
   exit(1);

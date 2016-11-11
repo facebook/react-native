@@ -11,6 +11,8 @@
 
 #include <folly/dynamic.h>
 
+#include "JSModulesUnbundle.h"
+
 namespace facebook {
 namespace react {
 
