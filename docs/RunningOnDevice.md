@@ -148,6 +148,10 @@ $ react-native run-android
 
 > If you get a "bridge configuration isn't available" error, see [Using adb reverse](#using-adb-reverse).
 
+> Hint
+>
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
+
 <block class="mac windows linux android ios" />
 
 ## Connecting to the development server
