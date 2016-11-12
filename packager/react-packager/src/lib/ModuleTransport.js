@@ -42,8 +42,8 @@ class ModuleTransport {
     meta?: ?Metadata,
     polyfill?: ?boolean,
     map?: ?SourceMap,
-    isPolyfill: ?boolean,
-    isRequireCall: ?boolean,
+    isPolyfill?: ?boolean,
+    isRequireCall?: ?boolean,
   }) {
     this.name = data.name;
 

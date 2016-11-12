@@ -147,6 +147,8 @@ class Bundler {
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
   _transformOptionsModule: (path: string, options: {}, bunler: Bundler) => {};
+  _startModuleId: number;
+  _extenalModules: ?Object;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
@@ -169,9 +171,14 @@ class Bundler {
       mtime,
     ];
 
-    const manifest = opts.manifestReferrence || null;
-    this._startModuleId = manifest ? (1 + manifest.lastId) : 0;
-    this._extenalModules = manifest ? manifest.modules : null;
+    const manifest = opts.manifestReferrence;
+    if (manifest) {
+      this._startModuleId = 1 + manifest.lastId;
+      this._extenalModules = manifest.modules;
+    } else {
+      this._startModuleId = 0;
+      this._extenalModules = null;
+    }
 
     this._getModuleId = createModuleIdFactory({
       extenalModules: this._extenalModules,
@@ -335,9 +342,10 @@ class Bundler {
           module.path.endsWith(entryFile)
         );
       } else if (this._extenalModules) {
+        const extenals = this._extenalModules;
         /* If used extenal reference, we don't need polyfills again */ 
         response.dependencies = response.dependencies.filter(module =>
-          module.name && !module.isPolyfill() && !this._extenalModules[module.name]
+          module.name && !module.isPolyfill() && !extenals[module.name]
         );
       } else {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
@@ -828,17 +836,20 @@ function verifyRootExists(root) {
 
 function createModuleIdFactory({extenalModules, startId: nextId = 0}) {
   const fileToIdMap = Object.create(null);
-  return ({path, name}) => {
-    if (extenalModules && name) {
-      if (name in extenalModules) {
-        return extenalModules[name].id;
+  return (module: {
+    path: string,
+    name?: "string"
+  }) => {
+    if (extenalModules && module.name) {
+      if (module.name in extenalModules) {
+        return extenalModules[module.name].id;
       }
     }
-    if (!(path in fileToIdMap)) {
-      fileToIdMap[path] = nextId;
+    if (!(module.path in fileToIdMap)) {
+      fileToIdMap[module.path] = nextId;
       nextId += 1;
     }
-    return fileToIdMap[path];
+    return fileToIdMap[module.path];
   };
 }
 

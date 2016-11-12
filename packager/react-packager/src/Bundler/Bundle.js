@@ -239,9 +239,12 @@ class Bundle extends BundleBase {
 
   getManifest() {
     const modules = this.getModules();
-    const manifest = {
+    const manifest: {
+      modules: Object,
+      lastId: number,
+    } = {
       modules: {},
-      lastId:0
+      lastId:0,
     };
     modules.forEach(module => {
       // Filter out polyfills and requireCalls
@@ -252,8 +255,6 @@ class Bundle extends BundleBase {
       }
       if (typeof module.id === 'number' && typeof manifest.lastId === 'number') {
         manifest.lastId = Math.max(manifest.lastId, module.id);
-      } else {
-        manifest.lastId = module.id;
       }
     });
 
