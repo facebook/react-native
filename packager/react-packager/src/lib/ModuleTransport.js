@@ -5,32 +5,70 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
-function ModuleTransport(data) {
-  this.name = data.name;
+import type {SourceMap} from './SourceMap';
 
-  assertExists(data, 'id');
-  this.id = data.id;
+type Metadata = {
+  dependencyPairs?: Array<[mixed, {path: string}]>,
+  preloaded?: boolean,
+};
 
-  assertExists(data, 'code');
-  this.code = data.code;
+class ModuleTransport {
 
-  assertExists(data, 'sourceCode');
-  this.sourceCode = data.sourceCode;
+  name: string;
+  id: string | number;
+  code: string;
+  sourceCode: string;
+  sourcePath: string;
+  virtual: ?boolean;
+  meta: ?Metadata;
+  polyfill: ?boolean;
+  map: ?SourceMap;
+  isPolyfill: ?boolean;
+  isRequireCall: ?boolean;
 
-  assertExists(data, 'sourcePath');
-  this.sourcePath = data.sourcePath;
+  constructor(data: {
+    name: string,
+    id: string | number,
+    code: string,
+    sourceCode: string,
+    sourcePath: string,
+    virtual?: ?boolean,
+    meta?: ?Metadata,
+    polyfill?: ?boolean,
+    map?: ?SourceMap,
+    isPolyfill: ?boolean,
+    isRequireCall: ?boolean,
+  }) {
+    this.name = data.name;
 
-  this.virtual = data.virtual;
-  this.meta = data.meta;
-  this.polyfill = data.polyfill;
-  this.isPolyfill = data.isPolyfill;
-  this.isRequireCall = data.isRequireCall;
-  this.map = data.map;
+    assertExists(data, 'id');
+    this.id = data.id;
 
-  Object.freeze(this);
+    assertExists(data, 'code');
+    this.code = data.code;
+
+    assertExists(data, 'sourceCode');
+    this.sourceCode = data.sourceCode;
+
+    assertExists(data, 'sourcePath');
+    this.sourcePath = data.sourcePath;
+
+    this.virtual = data.virtual;
+    this.meta = data.meta;
+    this.polyfill = data.polyfill;
+    this.map = data.map;
+    this.isPolyfill = data.isPolyfill;
+    this.isRequireCall = data.isRequireCall;
+
+    Object.freeze(this);
+  }
+
 }
 
 module.exports = ModuleTransport;

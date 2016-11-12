@@ -50,13 +50,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
 
     @Override
-    public void measure(
+    public long measure(
         CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput) {
+        CSSMeasureMode heightMode) {
       if (!mMeasured) {
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         final int spec = View.MeasureSpec.makeMeasureSpec(
@@ -67,8 +66,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         mHeight = reactSlider.getMeasuredHeight();
         mMeasured = true;
       }
-      measureOutput.width = mWidth;
-      measureOutput.height = mHeight;
+
+      return MeasureOutput.make(mWidth, mHeight);
     }
   }
 

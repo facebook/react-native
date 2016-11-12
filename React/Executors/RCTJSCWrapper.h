@@ -11,6 +11,7 @@
 
 #import "RCTDefines.h"
 
+typedef void (*voidWithNoParamsFuncType)();
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
 typedef JSStringRef (*JSStringCreateWithUTF8CStringFuncType)(const char *);
 typedef void (*JSStringReleaseFuncType)(JSStringRef);
@@ -25,6 +26,14 @@ typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef,
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
+typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
+
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
 
 typedef struct RCTJSCWrapper {
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
@@ -41,6 +50,9 @@ typedef struct RCTJSCWrapper {
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
   JSEvaluateScriptFuncType JSEvaluateScript;
+  JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
+  voidWithNoParamsFuncType configureJSCForIOS;
+  const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;
 } RCTJSCWrapper;

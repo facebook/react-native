@@ -58,13 +58,7 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   private @Nullable CSSNodeDEPRECATED mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
-  private boolean mIsTextNode = false;
   private Object mData;
-
-  @Override
-  public void reinit() {
-    free();
-  }
 
   @Override
   public int getChildCount() {
@@ -129,24 +123,11 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
     return mMeasureFunction != null;
   }
 
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    mIsTextNode = isTextNode;
-  }
-
-  @Override
-  public boolean isTextNode() {
-    return mIsTextNode;
-  }
-
-  MeasureOutput measure(MeasureOutput measureOutput, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
+  long measure(float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }
-    measureOutput.height = CSSConstants.UNDEFINED;
-    measureOutput.width = CSSConstants.UNDEFINED;
-    Assertions.assertNotNull(mMeasureFunction).measure(this, width, widthMode, height, heightMode, measureOutput);
-    return measureOutput;
+    return Assertions.assertNotNull(mMeasureFunction).measure(this, width, widthMode, height, heightMode);
   }
 
   /**
@@ -358,20 +339,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
     }
   }
 
-  /**
-   * Get this node's flex, as defined by style.
-   */
-  @Override
-  public float getFlex() {
-    if (style.flexGrow > 0) {
-      return style.flexGrow;
-    } else if (style.flexShrink > 0) {
-      return -style.flexShrink;
-    }
-
-    return 0;
-  }
-
   @Override
   public void setFlex(float flex) {
     if (CSSConstants.isUndefined(flex) || flex == 0) {
@@ -432,8 +399,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's margin, as defined by style + default margin.
    */
   @Override
-  public Spacing getMargin() {
-    return style.margin;
+  public float getMargin(int spacingType) {
+    return style.margin.get(spacingType);
   }
 
   @Override
@@ -447,8 +414,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's padding, as defined by style + default padding.
    */
   @Override
-  public Spacing getPadding() {
-    return style.padding;
+  public float getPadding(int spacingType) {
+    return style.padding.get(spacingType);
   }
 
   @Override
@@ -462,8 +429,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's border, as defined by style.
    */
   @Override
-  public Spacing getBorder() {
-    return style.border;
+  public float getBorder(int spacingType) {
+    return style.border.get(spacingType);
   }
 
   @Override
@@ -477,8 +444,8 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's position, as defined by style.
    */
   @Override
-  public Spacing getPosition() {
-    return style.position;
+  public float getPosition(int spacingType) {
+    return style.position.get(spacingType);
   }
 
   @Override
@@ -640,7 +607,7 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * recycling {@link CSSNodeDEPRECATED} instances.
    */
   @Override
-  public void free() {
+  public void reset() {
     if (mParent != null || (mChildren != null && mChildren.size() > 0)) {
       throw new IllegalStateException("You should not free an attached CSSNodeDEPRECATED");
     }
