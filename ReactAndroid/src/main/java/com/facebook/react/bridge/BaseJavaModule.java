@@ -56,7 +56,7 @@ public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
   private static final String METHOD_TYPE_ASYNC = "async";
   private static final String METHOD_TYPE_PROMISE= "promise";
-  static final public String METHOD_TYPE_SYNC = "sync";
+  public static final String METHOD_TYPE_SYNC = "sync";
 
   public static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -295,7 +295,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     private int calculateJSArgumentsNeeded() {
       int n = 0;
-      for (ArgumentExtractor<?> extractor : mArgumentExtractors) {
+      for (ArgumentExtractor extractor : mArgumentExtractors) {
         n += extractor.getJSArgumentsNeeded();
       }
       return n;
