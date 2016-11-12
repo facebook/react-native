@@ -83,6 +83,7 @@ struct TaggedScript {
 
 struct RCTJSContextData {
   BOOL useCustomJSCLibrary;
+  BOOL tryBytecode;
   NSThread *javaScriptThread;
   JSContext *context;
   RCTJSCWrapper *jscWrapper;
@@ -154,6 +155,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   // Set at init time:
   BOOL _useCustomJSCLibrary;
+  BOOL _tryBytecode;
   NSThread *_javaScriptThread;
 
   // Set at setUp time:
@@ -239,10 +241,18 @@ static NSThread *newJavaScriptThread(void)
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
 {
+  return [self initWithUseCustomJSCLibrary:useCustomJSCLibrary
+                               tryBytecode:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode
+{
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTJSCExecutor init]", nil);
 
   if (self = [super init]) {
     _useCustomJSCLibrary = useCustomJSCLibrary;
+    _tryBytecode = tryBytecode;
     _valid = YES;
     _javaScriptThread = newJavaScriptThread();
   }
@@ -265,6 +275,7 @@ static NSThread *newJavaScriptThread(void)
 {
   if (self = [super init]) {
     _useCustomJSCLibrary = data.useCustomJSCLibrary;
+    _tryBytecode = data.tryBytecode;
     _valid = YES;
     _javaScriptThread = data.javaScriptThread;
     _jscWrapper = data.jscWrapper;
@@ -500,6 +511,13 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 #endif
 }
 
+- (int32_t)bytecodeFileFormatVersion
+{
+  return _tryBytecode
+    ? _jscWrapper->JSBytecodeFileFormatVersion
+    : JSNoBytecodeFileFormatVersion;
+}
+
 - (NSString *)contextName
 {
   return [_context.context name];
@@ -688,9 +706,9 @@ static TaggedScript loadTaggedScript(NSData *script,
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / prepare bundle", nil);
 
-  RCTMagicNumber magicNumber = {.allBytes = 0};
-  [script getBytes:&magicNumber length:sizeof(magicNumber)];
-  RCTScriptTag tag = RCTParseMagicNumber(magicNumber);
+  RCTBundleHeader header = {};
+  [script getBytes:&header length:sizeof(header)];
+  RCTScriptTag tag = RCTParseTypeFromHeader(header);
 
   NSData *loadedScript = NULL;
   switch (tag) {
@@ -973,10 +991,12 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 }
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode
 {
   if (self = [super init]) {
     _semaphore = dispatch_semaphore_create(0);
     _useCustomJSCLibrary = useCustomJSCLibrary;
+    _tryBytecode = tryBytecode;
     _javaScriptThread = newJavaScriptThread();
     [self performSelector:@selector(_createContext) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
   }
@@ -998,6 +1018,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
   return {
     .useCustomJSCLibrary = _useCustomJSCLibrary,
+    .tryBytecode = _tryBytecode,
     .javaScriptThread = _javaScriptThread,
     .context = _context,
     .jscWrapper = _jscWrapper,

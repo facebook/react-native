@@ -60,6 +60,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   _onTransitionEnd: () => void;
   _prevTransitionProps: ?NavigationTransitionProps;
   _transitionProps: NavigationTransitionProps;
+  _isMounted: boolean;
 
   props: Props;
   state: State;
@@ -94,11 +95,20 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     this._prevTransitionProps = null;
     this._transitionProps = buildTransitionProps(props, this.state);
+    this._isMounted = false;
   }
 
   componentWillMount(): void {
     this._onLayout = this._onLayout.bind(this);
     this._onTransitionEnd = this._onTransitionEnd.bind(this);
+  }
+
+  componentDidMount(): void {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount(): void {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps: Props): void {
@@ -211,6 +221,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   }
 
   _onTransitionEnd(): void {
+    if (!this._isMounted) {
+      return;
+    }
+
     const prevTransitionProps = this._prevTransitionProps;
     this._prevTransitionProps = null;
 

@@ -24,25 +24,33 @@ typedef NS_ENUM(NSInteger) {
 } RCTScriptTag;
 
 /**
- * RCTMagicNumber
+ * RCTBundleHeader
  *
- * RAM bundles and BC bundles begin with magic numbers. For RAM bundles this is
- * 4 bytes, for BC bundles this is 8 bytes. This structure holds the first 8
+ * RAM bundles and BC bundles begin with headers. For RAM bundles this is
+ * 4 bytes, for BC bundles this is 12 bytes. This structure holds the first 12
  * bytes from a bundle in a way that gives access to that information.
  */
 typedef union {
-  uint64_t allBytes;
-  uint32_t first4;
-  uint64_t first8;
-} RCTMagicNumber;
+  // `allBytes` is the first field so that zero-initializing the union fills
+  // it completely with zeroes. Without it, only the first field of the union
+  // gets zero-initialized.
+  uint32_t allBytes[3];
+
+  uint32_t RAMMagic;
+
+  struct {
+    uint64_t BCMagic;
+    uint32_t BCVersion;
+  };
+} RCTBundleHeader;
 
 /**
- * RCTParseMagicNumber
+ * RCTParseTypeFromHeader
  *
  * Takes the first 8 bytes of a bundle, and returns a tag describing the
  * bundle's format.
  */
-RCT_EXTERN RCTScriptTag RCTParseMagicNumber(RCTMagicNumber magic);
+RCT_EXTERN RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header);
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
@@ -52,6 +60,7 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorFailedReadingFile = 3,
   RCTJavaScriptLoaderErrorFailedStatingFile = 3,
   RCTJavaScriptLoaderErrorURLLoadFailed = 3,
+  RCTJavaScriptLoaderErrorBCVersion = 4,
 
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
@@ -80,6 +89,7 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourc
  * RCTJavaScriptLoaderErrorDomain and the code RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously.
  */
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
+                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error;
 
