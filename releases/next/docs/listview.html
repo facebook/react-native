@@ -62,7 +62,7 @@ are rendered. Defaults to returning a ScrollView with the given props.</p></div>
 behavior means that it will scroll with the content at the top of the
 section until it reaches the top of the screen, at which point it will
 stick to the top until it is pushed off the screen by the next section
-header.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderseparator"></a>renderSeparator <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderseparator">#</a></h4><div><p>(sectionID, rowID, adjacentRowHighlighted) =&gt; renderable</p><p>If provided, a renderable component to be rendered as the separator
+header.</p><p>NOTE: On Android, the header is not sticky.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderseparator"></a>renderSeparator <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderseparator">#</a></h4><div><p>(sectionID, rowID, adjacentRowHighlighted) =&gt; renderable</p><p>If provided, a renderable component to be rendered as the separator
 below each row but not the last row if there is a section header below.
 Take a sectionID and rowID of the row above and whether its adjacent row
 is highlighted.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="scrollrenderaheaddistance"></a>scrollRenderAheadDistance <span class="propType">number</span> <a class="hash-link" href="docs/listview.html#scrollrenderaheaddistance">#</a></h4><div><p>How early to start rendering rows before they come on screen, in
