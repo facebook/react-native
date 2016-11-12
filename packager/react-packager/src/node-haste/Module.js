@@ -15,25 +15,16 @@ const TransformCache = require('../lib/TransformCache');
 
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
-const extractRequires = require('./lib/extractRequires');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
+import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
-
-export type Extractor = (sourceCode: string) => {deps: {sync: Array<string>}};
-
-type TransformedCode = {
-  code: string,
-  dependencies?: ?Array<string>,
-  dependencyOffsets?: ?Array<number>,
-  map?: ?{},
-};
 
 type ReadResult = {
   code?: string,
@@ -60,8 +51,7 @@ export type ConstructorArgs = {
   fastfs: FastFs,
   moduleCache: ModuleCache,
   cache: Cache,
-  extractor: Extractor,
-  transformCode: TransformCode,
+  transformCode: ?TransformCode,
   transformCacheKey: ?string,
   depGraphHelpers: DepGraphHelpers,
   options: Options,
@@ -75,8 +65,7 @@ class Module {
   _fastfs: FastFs;
   _moduleCache: ModuleCache;
   _cache: Cache;
-  _extractor: Extractor;
-  _transformCode: TransformCode;
+  _transformCode: ?TransformCode;
   _transformCacheKey: ?string;
   _depGraphHelpers: DepGraphHelpers;
   _options: Options;
@@ -90,7 +79,6 @@ class Module {
     fastfs,
     moduleCache,
     cache,
-    extractor = extractRequires,
     transformCode,
     transformCacheKey,
     depGraphHelpers,
@@ -106,7 +94,6 @@ class Module {
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
-    this._extractor = extractor;
     this._transformCode = transformCode;
     this._transformCacheKey = transformCacheKey;
     invariant(
@@ -221,48 +208,34 @@ class Module {
     extern: boolean,
     result: TransformedCode,
   ) {
-    const {
-      code,
-      dependencies = extern ? [] : this._extractor(code).deps.sync,
-    } = result;
     if (this._options.cacheTransformResults === false) {
+      const {dependencies} = result;
       return {dependencies};
-    } else {
-      return {...result, dependencies, id, source};
     }
+    return {...result, id, source};
   }
 
   _transformAndCache(
     transformOptions: mixed,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
+    const {_transformCode, _transformCacheKey} = this;
+    // AssetModule_DEPRECATED doesn't provide transformCode, but these should
+    // never be transformed anyway.
+    invariant(_transformCode != null, 'missing code transform funtion');
+    invariant(_transformCacheKey != null, 'missing cache key');
     this._readSourceCode().then(sourceCode => {
-      const transformCode = this._transformCode;
-      if (!transformCode) {
-        return callback(null, {code: sourceCode});
-      }
-      const codePromise = transformCode(this, sourceCode, transformOptions);
-      return codePromise.then(() => {
-        const transformCacheKey = this._transformCacheKey;
-        invariant(transformCacheKey != null, 'missing transform cache key');
-        const freshResult =
-          TransformCache.readSync({
+      return _transformCode(this, sourceCode, transformOptions)
+        .then(freshResult => {
+          TransformCache.writeSync({
             filePath: this.path,
             sourceCode,
-            transformCacheKey,
+            transformCacheKey: _transformCacheKey,
             transformOptions,
-            cacheOptions: this._options,
+            result: freshResult,
           });
-        if (freshResult == null) {
-          callback(new Error(
-            'Could not read fresh result from transform cache. This ' +
-              'means there is probably a bug in the worker code ' +
-              'that prevents it from writing to the cache correctly.',
-          ));
-          return;
-        }
-        callback(undefined, freshResult);
-      }, callback);
+          callback(undefined, freshResult);
+        });
     }, callback);
   }
 

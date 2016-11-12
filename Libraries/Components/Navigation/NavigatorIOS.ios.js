@@ -506,6 +506,7 @@ var NavigatorIOS = React.createClass({
       pop: this.pop,
       popN: this.popN,
       replace: this.replace,
+      replaceAtIndex: this.replaceAtIndex,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
       resetTo: this.resetTo,

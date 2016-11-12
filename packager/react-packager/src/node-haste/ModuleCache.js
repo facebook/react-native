@@ -21,7 +21,6 @@ const path = require('path');
 import type Cache from './Cache';
 import type {
   DepGraphHelpers,
-  Extractor,
   TransformCode,
   Options as ModuleOptions,
 } from './Module';
@@ -33,7 +32,6 @@ class ModuleCache {
   _packageCache: {[filePath: string]: Package};
   _fastfs: FastFs;
   _cache: Cache;
-  _extractRequires: Extractor;
   _transformCode: TransformCode;
   _transformCacheKey: string;
   _depGraphHelpers: DepGraphHelpers;
@@ -54,7 +52,6 @@ class ModuleCache {
   }: {
     fastfs: FastFs,
     cache: Cache,
-    extractRequires: Extractor,
     transformCode: TransformCode,
     transformCacheKey: string,
     depGraphHelpers: DepGraphHelpers,
@@ -65,7 +62,6 @@ class ModuleCache {
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
     this._cache = cache;
-    this._extractRequires = extractRequires;
     this._transformCode = transformCode;
     this._transformCacheKey = transformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
@@ -84,7 +80,6 @@ class ModuleCache {
         fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
-        extractor: this._extractRequires,
         transformCode: this._transformCode,
         transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,

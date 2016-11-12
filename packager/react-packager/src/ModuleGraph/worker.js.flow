@@ -24,10 +24,20 @@ declare export function transformModule(
 declare export function optimizeModule(
   infile: string,
   outfile: string,
-  isPolyfill?: boolean,
-  inliningOptions: {
+  optimizationOptions: {
     dev?: boolean,
+    isPolyfill?: boolean,
     platform?: string,
   },
   callback: (e?: Error) => void,
 ): void
+
+declare function optimizeCode(
+  code: string,
+  map: Object,
+  filename: string,
+  inliningOptions: {|
+    dev?: boolean,
+    platform?: string,
+  |},
+): {code: string, map: Object};

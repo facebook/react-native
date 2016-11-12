@@ -33,7 +33,7 @@ You can do anything in your task as long as it doesn't touch UI: network request
 Yes, this does still require some native code, but it's pretty thin. You need to extend `HeadlessJsTaskService` and override `getTaskConfig`, e.g.:
 
 ```java
-public class MyTaskService extends FbHeadlessJsTaskService {
+public class MyTaskService extends HeadlessJsTaskService {
 
   @Override
   protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {

@@ -13,7 +13,6 @@ jest
   .dontMock('json-stable-stringify')
   .dontMock('imurmurhash')
   .dontMock('../fastfs')
-  .dontMock('../lib/extractRequires')
   .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
@@ -69,6 +68,9 @@ describe('Module', () => {
     new Module({
       options: {
         cacheTransformResults: true,
+      },
+      transformCode: (module, sourceCode, transformOptions) => {
+        return Promise.resolve({code: sourceCode});
       },
       ...options,
       cache,
@@ -214,57 +216,6 @@ describe('Module', () => {
     );
   });
 
-  describe('Extractors', () => {
-
-    pit('uses custom require extractors if specified', () => {
-      mockIndexFile('');
-      const module = createModule({
-        extractor: code => ({deps: {sync: ['foo', 'bar']}}),
-      });
-
-      return module.getDependencies().then(actual =>
-        expect(actual).toEqual(['foo', 'bar']));
-    });
-
-    pit('uses a default extractor to extract dependencies', () => {
-      mockIndexFile(`
-        require('dependency-a');
-        import * as b from "dependency-b";
-        export {something} from 'dependency-c';
-      `);
-
-      const module = createModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies.sort())
-          .toEqual(['dependency-a', 'dependency-b', 'dependency-c'])
-      );
-    });
-
-    pit('does not extract dependencies from files annotated with @extern', () => {
-      mockIndexFile(`
-        /**
-         * @extern
-         */
-        require('dependency-a');
-        import * as b from "dependency-b";
-        export {something} from 'dependency-c';
-      `);
-
-      const module = createModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies).toEqual([])
-      );
-    });
-
-    pit('does not extract dependencies from JSON files', () => {
-      mockPackageFile();
-      const module = createJSONModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies).toEqual([])
-      );
-    });
-  });
-
   describe('Custom Code Transform', () => {
     let transformCode;
     let transformResult;
@@ -285,7 +236,7 @@ describe('Module', () => {
             transformCacheKey,
             result: transformResult,
           });
-          return Promise.resolve();
+          return Promise.resolve(transformResult);
         });
       mockIndexFile(fileContents);
     });
@@ -309,14 +260,14 @@ describe('Module', () => {
 
     pit('passes the module and file contents to the transform if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
-      const fileContents = `
+      const customFileContents = `
         /**
          * @extern
          */
       `;
-      mockIndexFile(fileContents);
+      mockIndexFile(customFileContents);
       return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, fileContents, {extern: true});
+        expect(transformCode).toBeCalledWith(module, customFileContents, {extern: true});
       });
     });
 
@@ -330,17 +281,17 @@ describe('Module', () => {
 
     pit('does not extend the passed options object if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
-      const fileContents = `
+      const customFileContents = `
         /**
          * @extern
          */
       `;
-      mockIndexFile(fileContents);
+      mockIndexFile(customFileContents);
       const options = {arbitrary: 'foo'};
       return module.read(options).then(() => {
         expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
         expect(transformCode)
-          .toBeCalledWith(module, fileContents, {...options, extern: true});
+          .toBeCalledWith(module, customFileContents, {...options, extern: true});
       });
     });
 
@@ -352,15 +303,6 @@ describe('Module', () => {
         expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
         expect(transformCode)
           .toBeCalledWith(module, packageJson, {...options, extern: true});
-      });
-    });
-
-    pit('uses the code that `transformCode` resolves to to extract dependencies', () => {
-      transformResult = {code: exampleCode};
-      const module = createModule({transformCode});
-
-      return module.getDependencies().then(dependencies => {
-        expect(dependencies).toEqual(['a', 'c']);
       });
     });
 

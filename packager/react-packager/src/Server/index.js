@@ -728,7 +728,7 @@ class Server {
     const symbolicatingLogEntry =
       print(log(createActionStartEntry('Symbolicating')));
 
-    new Promise.resolve(req.rawBody).then(body => {
+    Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
       // In case of multiple bundles / HMR, some stack frames can have
