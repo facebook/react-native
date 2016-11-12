@@ -11,8 +11,8 @@
 jest
   .dontMock('absolute-path')
   .dontMock('json-stable-stringify')
+  .dontMock('imurmurhash')
   .dontMock('../fastfs')
-  .dontMock('../lib/extractRequires')
   .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
@@ -24,6 +24,7 @@ const Fastfs = require('../fastfs');
 const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
 const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
+const TransformCache = require('../../lib/TransformCache');
 const fs = require('graceful-fs');
 
 const packageJson =
@@ -62,10 +63,14 @@ describe('Module', () => {
     end: jest.genMockFn(),
   });
 
+  let transformCacheKey;
   const createModule = (options) =>
     new Module({
       options: {
         cacheTransformResults: true,
+      },
+      transformCode: (module, sourceCode, transformOptions) => {
+        return Promise.resolve({code: sourceCode});
       },
       ...options,
       cache,
@@ -73,22 +78,27 @@ describe('Module', () => {
       file: options && options.file || fileName,
       depGraphHelpers: new DependencyGraphHelpers(),
       moduleCache: new ModuleCache({fastfs, cache}),
+      transformCacheKey,
     });
+
+  const createFastFS = () =>
+    new Fastfs(
+      'test',
+      ['/root'],
+      fileWatcher,
+      ['/root/index.js', '/root/package.json'],
+      {ignore: []},
+    );
 
   const createJSONModule =
     (options) => createModule({...options, file: '/root/package.json'});
 
-  beforeEach(function(done) {
+  beforeEach(function() {
     process.platform = 'linux';
     cache = createCache();
-    fastfs = new Fastfs(
-      'test',
-      ['/root'],
-      fileWatcher,
-      {crawling: Promise.resolve([fileName, '/root/package.json']), ignore: []},
-    );
-
-    fastfs.build().then(done);
+    fastfs = createFastFS();
+    transformCacheKey = 'abcdef';
+    TransformCache.mock.reset();
   });
 
   describe('Module ID', () => {
@@ -206,59 +216,9 @@ describe('Module', () => {
     );
   });
 
-  describe('Extractors', () => {
-
-    pit('uses custom require extractors if specified', () => {
-      mockIndexFile('');
-      const module = createModule({
-        extractor: code => ({deps: {sync: ['foo', 'bar']}}),
-      });
-
-      return module.getDependencies().then(actual =>
-        expect(actual).toEqual(['foo', 'bar']));
-    });
-
-    pit('uses a default extractor to extract dependencies', () => {
-      mockIndexFile(`
-        require('dependency-a');
-        import * as b from "dependency-b";
-        export {something} from 'dependency-c';
-      `);
-
-      const module = createModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies.sort())
-          .toEqual(['dependency-a', 'dependency-b', 'dependency-c'])
-      );
-    });
-
-    pit('does not extract dependencies from files annotated with @extern', () => {
-      mockIndexFile(`
-        /**
-         * @extern
-         */
-        require('dependency-a');
-        import * as b from "dependency-b";
-        export {something} from 'dependency-c';
-      `);
-
-      const module = createModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies).toEqual([])
-      );
-    });
-
-    pit('does not extract dependencies from JSON files', () => {
-      mockPackageFile();
-      const module = createJSONModule();
-      return module.getDependencies().then(dependencies =>
-        expect(dependencies).toEqual([])
-      );
-    });
-  });
-
   describe('Custom Code Transform', () => {
     let transformCode;
+    let transformResult;
     const fileContents = 'arbitrary(code);';
     const exampleCode = `
       ${'require'}('a');
@@ -266,9 +226,19 @@ describe('Module', () => {
       ${'require'}('c');`;
 
     beforeEach(function() {
-      transformCode = jest.genMockFn();
+      transformResult = {code: ''};
+      transformCode = jest.genMockFn()
+        .mockImplementation((module, sourceCode, options) => {
+          TransformCache.writeSync({
+            filePath: module.path,
+            sourceCode,
+            transformOptions: options,
+            transformCacheKey,
+            result: transformResult,
+          });
+          return Promise.resolve(transformResult);
+        });
       mockIndexFile(fileContents);
-      transformCode.mockReturnValue(Promise.resolve({code: ''}));
     });
 
     pit('passes the module and file contents to the transform function when reading', () => {
@@ -290,14 +260,14 @@ describe('Module', () => {
 
     pit('passes the module and file contents to the transform if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
-      const fileContents = `
+      const customFileContents = `
         /**
          * @extern
          */
       `;
-      mockIndexFile(fileContents);
+      mockIndexFile(customFileContents);
       return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, fileContents, {extern: true});
+        expect(transformCode).toBeCalledWith(module, customFileContents, {extern: true});
       });
     });
 
@@ -311,17 +281,17 @@ describe('Module', () => {
 
     pit('does not extend the passed options object if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
-      const fileContents = `
+      const customFileContents = `
         /**
          * @extern
          */
       `;
-      mockIndexFile(fileContents);
+      mockIndexFile(customFileContents);
       const options = {arbitrary: 'foo'};
       return module.read(options).then(() => {
         expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
         expect(transformCode)
-          .toBeCalledWith(module, fileContents, {...options, extern: true});
+          .toBeCalledWith(module, customFileContents, {...options, extern: true});
       });
     });
 
@@ -336,21 +306,12 @@ describe('Module', () => {
       });
     });
 
-    pit('uses the code that `transformCode` resolves to to extract dependencies', () => {
-      transformCode.mockReturnValue(Promise.resolve({code: exampleCode}));
-      const module = createModule({transformCode});
-
-      return module.getDependencies().then(dependencies => {
-        expect(dependencies).toEqual(['a', 'c']);
-      });
-    });
-
     pit('uses dependencies that `transformCode` resolves to, instead of extracting them', () => {
       const mockedDependencies = ['foo', 'bar'];
-      transformCode.mockReturnValue(Promise.resolve({
+      transformResult = {
         code: exampleCode,
         dependencies: mockedDependencies,
-      }));
+      };
       const module = createModule({transformCode});
 
       return module.getDependencies().then(dependencies => {
@@ -359,23 +320,22 @@ describe('Module', () => {
     });
 
     pit('forwards all additional properties of the result provided by `transformCode`', () => {
-      const mockedResult = {
+      transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
         dependencyOffsets: [12, 764],
         map: {version: 3},
         subObject: {foo: 'bar'},
       };
-      transformCode.mockReturnValue(Promise.resolve(mockedResult));
       const module = createModule({transformCode});
 
       return module.read().then((result) => {
-        expect(result).toEqual(jasmine.objectContaining(mockedResult));
+        expect(result).toEqual(jasmine.objectContaining(transformResult));
       });
     });
 
     pit('does not store anything but dependencies if the `cacheTransformResults` option is disabled', () => {
-      const mockedResult = {
+      transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
         dependencies: ['foo', 'bar'],
@@ -383,7 +343,6 @@ describe('Module', () => {
         map: {version: 3},
         subObject: {foo: 'bar'},
       };
-      transformCode.mockReturnValue(Promise.resolve(mockedResult));
       const module = createModule({transformCode, options: {
         cacheTransformResults: false,
       }});
@@ -396,7 +355,7 @@ describe('Module', () => {
     });
 
     pit('stores all things if options is undefined', () => {
-      const mockedResult = {
+      transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
         dependencies: ['foo', 'bar'],
@@ -404,16 +363,15 @@ describe('Module', () => {
         map: {version: 3},
         subObject: {foo: 'bar'},
       };
-      transformCode.mockReturnValue(Promise.resolve(mockedResult));
       const module = createModule({transformCode, options: undefined});
 
       return module.read().then((result) => {
-        expect(result).toEqual({ ...mockedResult, source: 'arbitrary(code);'});
+        expect(result).toEqual({ ...transformResult, source: 'arbitrary(code);'});
       });
     });
 
     pit('exposes the transformed code rather than the raw file contents', () => {
-      transformCode.mockReturnValue(Promise.resolve({code: exampleCode}));
+      transformResult = {code: exampleCode};
       const module = createModule({transformCode});
       return Promise.all([module.read(), module.getCode()])
         .then(([data, code]) => {
@@ -430,7 +388,7 @@ describe('Module', () => {
 
     pit('exposes a source map returned by the transform', () => {
       const map = {version: 3};
-      transformCode.mockReturnValue(Promise.resolve({map, code: exampleCode}));
+      transformResult = {map, code: exampleCode};
       const module = createModule({transformCode});
       return Promise.all([module.read(), module.getMap()])
         .then(([data, sourceMap]) => {
@@ -439,64 +397,62 @@ describe('Module', () => {
         });
     });
 
-    describe('Caching based on options', () => {
-      let module;
-      beforeEach(function() {
-        module = createModule({transformCode});
-      });
-
-      const callsEqual = ([path1, key1], [path2, key2]) => {
-        expect(path1).toEqual(path2);
-        expect(key1).toEqual(key2);
-      };
-
-      it('gets dependencies from the cache with the same cache key for the same transform options', () => {
-        const options = {some: 'options'};
-        module.getDependencies(options); // first call
-        module.getDependencies(options); // second call
-
-        const {calls} = cache.get.mock;
-        callsEqual(calls[0], calls[1]);
-      });
-
-      it('gets dependencies from the cache with the same cache key for the equivalent transform options', () => {
-        module.getDependencies({a: 'b', c: 'd'}); // first call
-        module.getDependencies({c: 'd', a: 'b'}); // second call
-
-        const {calls} = cache.get.mock;
-        callsEqual(calls[0], calls[1]);
-      });
-
-      it('gets dependencies from the cache with different cache keys for different transform options', () => {
-        module.getDependencies({some: 'options'});
-        module.getDependencies({other: 'arbitrary options'});
-        const {calls} = cache.get.mock;
-        expect(calls[0][1]).not.toEqual(calls[1][1]);
-      });
-
-      it('gets code from the cache with the same cache key for the same transform options', () => {
-        const options = {some: 'options'};
-        module.getCode(options); // first call
-        module.getCode(options); // second call
-
-        const {calls} = cache.get.mock;
-        callsEqual(calls[0], calls[1]);
-      });
-
-      it('gets code from the cache with the same cache key for the equivalent transform options', () => {
-        module.getCode({a: 'b', c: 'd'}); // first call
-        module.getCode({c: 'd', a: 'b'}); // second call
-
-        const {calls} = cache.get.mock;
-        callsEqual(calls[0], calls[1]);
-      });
-
-      it('gets code from the cache with different cache keys for different transform options', () => {
-        module.getCode({some: 'options'});
-        module.getCode({other: 'arbitrary options'});
-        const {calls} = cache.get.mock;
-        expect(calls[0][1]).not.toEqual(calls[1][1]);
-      });
+    pit('caches the transform result for the same transform options', () => {
+      let module = createModule({transformCode});
+      return module.read()
+        .then(() => {
+          expect(transformCode).toHaveBeenCalledTimes(1);
+          // We want to check transform caching rather than shallow caching of
+          // Promises returned by read().
+          module = createModule({transformCode});
+          return module.read()
+            .then(() => {
+              expect(transformCode).toHaveBeenCalledTimes(1);
+            });
+        });
     });
+
+    pit('triggers a new transform for different transform options', () => {
+      const module = createModule({transformCode});
+      return module.read({foo: 1})
+        .then(() => {
+          expect(transformCode).toHaveBeenCalledTimes(1);
+          return module.read({foo: 2})
+            .then(() => {
+              expect(transformCode).toHaveBeenCalledTimes(2);
+            });
+        });
+    });
+
+    pit('triggers a new transform for different source code', () => {
+      let module = createModule({transformCode});
+      return module.read()
+        .then(() => {
+          expect(transformCode).toHaveBeenCalledTimes(1);
+          cache = createCache();
+          fastfs = createFastFS();
+          mockIndexFile('test');
+          module = createModule({transformCode});
+          return module.read()
+            .then(() => {
+              expect(transformCode).toHaveBeenCalledTimes(2);
+            });
+        });
+    });
+
+    pit('triggers a new transform for different transform cache key', () => {
+      let module = createModule({transformCode});
+      return module.read()
+        .then(() => {
+          expect(transformCode).toHaveBeenCalledTimes(1);
+          transformCacheKey = 'other';
+          module = createModule({transformCode});
+          return module.read()
+            .then(() => {
+              expect(transformCode).toHaveBeenCalledTimes(2);
+            });
+        });
+    });
+
   });
 });

@@ -16,7 +16,7 @@
 // pivot around frames in the middle of a stack by callers / callees
 // graphing?
 
-function stringInterner() { // eslint-disable-line no-unused-vars
+function StringInterner() { // eslint-disable-line no-unused-vars
   const strings = [];
   const ids = {};
   return {
@@ -37,30 +37,31 @@ function stringInterner() { // eslint-disable-line no-unused-vars
   };
 }
 
-function stackData(stackIdMap, maxDepth) { // eslint-disable-line no-unused-vars
-  return {
-    maxDepth: maxDepth,
-    get: function getStack(id) {
-      return stackIdMap[id];
-    },
-  };
-}
-
-function stackRegistry(interner) { // eslint-disable-line no-unused-vars
+function StackRegistry() { // eslint-disable-line no-unused-vars
   return {
     root: { id: 0 },
     nodeCount: 1,
-    insert: function insertNode(parent, label) {
-      const labelId = interner.intern(label);
-      let node = parent[labelId];
+    maxDepth: -1,
+    stackIdMap: null,
+    insert: function insertNode(parent, frameId) {
+      if (this.stackIdMap !== null) {
+        throw 'stacks already flattened';
+      }
+      let node = parent[frameId];
       if (node === undefined) {
         node = { id: this.nodeCount };
         this.nodeCount++;
-        parent[labelId] = node;
+        parent[frameId] = node;
       }
       return node;
     },
+    get: function getStackArray(id) {
+      return this.stackIdMap[id];
+    },
     flatten: function flattenStacks() {
+      if (this.stackIdMap !== null) {
+        return;
+      }
       let stackFrameCount = 0;
       function countStacks(tree, depth) {
         let leaf = true;
@@ -110,13 +111,150 @@ function stackRegistry(interner) { // eslint-disable-line no-unused-vars
         return stackIdMap[id];
       }
       flattenStacksImpl(this.root, []);
-
-      return new stackData(stackIdMap, maxStackDepth);
+      this.root = null;
+      this.stackIdMap = stackIdMap;
+      this.maxDepth = maxStackDepth;
     },
   };
 }
 
-function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-vars
+function AggrowData(columns) { // eslint-disable-line no-unused-vars
+  const columnCount = columns.length;
+  const columnConverter = columns.map(c => {
+    switch (c.type) {
+      case 'int':     // stores raw value
+        return (i) => i;
+      case 'string':  // stores interned id of string
+        return (s) => c.strings.intern(s);
+      case 'stack':   // stores id of stack node
+        return (s) => s.id;
+      default:
+        throw 'unknown AggrowData column type';
+    }
+  });
+  return {
+    data: new Int32Array(0),
+    columns: columns,
+    rowCount: 0,
+    rowInserter: function rowInserter(numRows) {
+      console.log(
+        'increasing row data from ' + (this.data.length * 4).toLocaleString() + ' B to ' +
+        (this.data.length * 4 + numRows * columnCount * 4).toLocaleString() + ' B'
+      );
+      const newData = new Int32Array(this.data.length + numRows * columnCount);
+      newData.set(this.data);
+      let currOffset = this.data.length;
+      const endOffset = newData.length;
+      this.data = newData;
+      this.rowCount = newData.length / columnCount;
+      return {
+        insertRow: function insertRow() {
+          if (currOffset >= endOffset) {
+            throw 'tried to insert data off end of added range';
+          }
+          if (arguments.length !== columnCount) {
+            throw 'expected data for ' + columnCount.toString() + ' columns, got' +
+              arguments.length.toString() + ' columns';
+          }
+          for (let i = 0; i < arguments.length; i++) {
+            newData[currOffset + i] = columnConverter[i](arguments[i]);
+          }
+          currOffset += columnCount;
+        },
+        done: function done() {
+          if (currOffset !== endOffset) {
+            throw 'unfilled rows';
+          }
+        },
+      };
+    },
+  };
+}
+
+function Aggrow(aggrowData) {
+  const columns = aggrowData.columns;
+  const columnCount = columns.length;
+  const data = aggrowData.data;
+  function columnIndex(columnName, columnType) {
+    const index = columns.findIndex(c => c.name === columnName && c.type === columnType);
+    if (index < 0) {
+      throw 'did not find data column ' + columnName + ' with type ' + columnType;
+    }
+    return index;
+  }
+  for (let i = 0; i < columns.length; i++) {
+    if (columns[i].type === 'stack') {
+      columns[i].stacks.flatten();
+    }
+  }
+  return {
+    expander: new AggrowExpander(aggrowData.rowCount),
+    addSumAggregator: function addSumAggregator(aggregatorName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addAggregator(
+        aggregatorName,
+        function aggregateSize(indices) {
+          let size = 0;
+          for (let i = 0; i < indices.length; i++) {
+            const row = indices[i];
+            size += data[row * columnCount + index];
+          }
+          return size;
+        },
+        (value) => value.toLocaleString(),
+        (a, b) => b - a,
+      );
+    },
+    addCountAggregator: function addCountAggregator(aggregatorName) {
+      return this.expander.addAggregator(
+        aggregatorName,
+        function aggregateCount(indices) {
+          return indices.length;
+        },
+        (value) => value.toLocaleString(),
+        (a, b) => b - a,
+      );
+    },
+    addStringExpander: function addStringExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'string');
+      const strings = columns[index].strings;
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => strings.get(data[row * columnCount + index]),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addNumberExpander: function addNumberExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => data[row * columnCount + index].toLocaleString(),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addPointerExpander: function addPointerExpander(expanderName, columnName) {
+      const index = columnIndex(columnName, 'int');
+      return this.expander.addFieldExpander(
+        expanderName,
+        (row) => '0x' + (data[row * columnCount + index] >>> 0).toString(),
+        (rowA, rowB) => data[rowA * columnCount + index] - data[rowB * columnCount + index],
+      );
+    },
+    addStackExpander: function addStackExpander(expanderName, columnName, formatter) {
+      // TODO: options for caller/callee, pivoting
+      const index = columnIndex(columnName, 'stack');
+      const stacks = columns[index].stacks;
+      return this.expander.addCalleeStackExpander(
+        expanderName,
+        stacks.maxDepth,
+        (row) => stacks.get(data[row * columnCount + index]),
+        formatter,
+      );
+    },
+  };
+}
+
+function AggrowExpander(numRows) { // eslint-disable-line no-unused-vars
   // expander ID definitions
   const FIELD_EXPANDER_ID_MIN       = 0x0000;
   const FIELD_EXPANDER_ID_MAX       = 0x7fff;
@@ -142,17 +280,17 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
   const NODE_REPOSITION_BIT         = 0x0008; // children need position
   const NODE_INDENT_SHIFT           = 16;
 
-  function calleeFrameGetter(stack, depth) {
+  function calleeFrameIdGetter(stack, depth) {
     return stack[depth];
   }
 
-  function callerFrameGetter(stack, depth) {
+  function callerFrameIdGetter(stack, depth) {
     return stack[stack.length - depth - 1];
   }
 
-  function createStackComparers(stackGetter, frameGetter) {
-    const comparers = new Array(stacks.maxDepth);
-    for (let depth = 0; depth < stacks.maxDepth; depth++) {
+  function createStackComparers(stackGetter, frameIdGetter, maxStackDepth) {
+    const comparers = new Array(maxStackDepth);
+    for (let depth = 0; depth < maxStackDepth; depth++) {
       const captureDepth = depth; // NB: to capture depth per loop iteration
       comparers[depth] = function calleeStackComparer(rowA, rowB) {
         const a = stackGetter(rowA);
@@ -166,7 +304,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
         } else if (b.length <= captureDepth) {
             return 1;
         }
-        return frameGetter(a, captureDepth) - frameGetter(b, captureDepth);
+        return frameIdGetter(a, captureDepth) - frameIdGetter(b, captureDepth);
       };
     }
     return comparers;
@@ -325,6 +463,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
   function addChildrenWithStackExpander(row, expander, activeIndex, depth, nextActiveIndex) {
     const rowIndices = row.indices;
     const stackGetter = expander.stackGetter;
+    const frameIdGetter = expander.frameIdGetter;
     const frameGetter = expander.frameGetter;
     const comparer = expander.comparers[depth];
     const expandNextFrame = activeIndex | ((depth + 1) << ACTIVE_EXPANDER_FRAME_SHIFT);
@@ -357,10 +496,10 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       let end = begin + 1;
       while (end < rowIndices.length) {
         const endStack = stackGetter(rowIndices[end]);
-        if (frameGetter(beginStack, depth) !== frameGetter(endStack, depth)) {
+        if (frameIdGetter(beginStack, depth) !== frameIdGetter(endStack, depth)) {
           row.children.push(createTreeNode(
             row,
-            columnName + strings.get(frameGetter(beginStack, depth)),
+            columnName + frameGetter(frameIdGetter(beginStack, depth)),
             rowIndices.subarray(begin, end),
             expandNextFrame));
           begin = end;
@@ -370,7 +509,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       }
       row.children.push(createTreeNode(
         row,
-        columnName + strings.get(frameGetter(beginStack, depth)),
+        columnName + frameGetter(frameIdGetter(beginStack, depth)),
         rowIndices.subarray(begin, end),
         expandNextFrame));
     }
@@ -418,27 +557,29 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       });
       return FIELD_EXPANDER_ID_MIN + state.fieldExpanders.length - 1;
     },
-    addCalleeStackExpander: function addCalleeStackExpander(name, stackGetter) {
+    addCalleeStackExpander: function addCalleeStackExpander(name, maxStackDepth, stackGetter, frameGetter) {
       if (STACK_EXPANDER_ID_MIN + state.fieldExpanders.length >= STACK_EXPANDER_ID_MAX) {
         throw 'too many stack expanders!';
       }
       state.stackExpanders.push({
         name: name, // name for column
         stackGetter: stackGetter, // row index -> stack array
-        comparers: createStackComparers(stackGetter, calleeFrameGetter),  // depth -> comparer
-        frameGetter: calleeFrameGetter, // (stack, depth) -> string id
+        comparers: createStackComparers(stackGetter, calleeFrameIdGetter, maxStackDepth),  // depth -> comparer
+        frameIdGetter: calleeFrameIdGetter, // (stack, depth) -> string id
+        frameGetter: frameGetter,
       });
       return STACK_EXPANDER_ID_MIN + state.stackExpanders.length - 1;
     },
-    addCallerStackExpander: function addCallerStackExpander(name, stackGetter) {
+    addCallerStackExpander: function addCallerStackExpander(name, maxStackDepth, stackGetter, frameGetter) {
       if (STACK_EXPANDER_ID_MIN + state.fieldExpanders.length >= STACK_EXPANDER_ID_MAX) {
         throw 'too many stack expanders!';
       }
       state.stackExpanders.push({
         name: name,
         stackGetter: stackGetter,
-        comparers: createStackComparers(stackGetter, callerFrameGetter),
-        frameGetter: callerFrameGetter,
+        comparers: createStackComparers(stackGetter, callerFrameIdGetter, maxStackDepth),
+        frameIdGetter: callerFrameIdGetter,
+        frameGetter: frameGetter,
       });
       return STACK_EXPANDER_ID_MIN + state.stackExpanders.length - 1;
     },

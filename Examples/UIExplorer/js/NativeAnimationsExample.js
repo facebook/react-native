@@ -50,7 +50,6 @@ class Tester extends React.Component {
       toValue: this.current,
     };
 
-    // $FlowIssue #0000000
     Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
@@ -169,6 +168,47 @@ class InternalSettings extends React.Component {
   }
 }
 
+class EventExample extends React.Component {
+  state = {
+    scrollX: new Animated.Value(0),
+  };
+
+  render() {
+    const opacity = this.state.scrollX.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
+    return (
+      <View>
+        <Animated.View
+          style={[
+            styles.block,
+            {
+              opacity,
+            }
+          ]}
+        />
+        <Animated.ScrollView
+          horizontal
+          style={{ height: 100, marginTop: 16 }}
+          scrollEventThrottle={16}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { x: this.state.scrollX } }
+            }], {
+              useNativeDriver: true,
+            })
+          }
+        >
+          <View style={{ width: 600, backgroundColor: '#eee', justifyContent: 'center' }}>
+            <Text>Scroll me!</Text>
+          </View>
+        </Animated.ScrollView>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -281,7 +321,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
@@ -296,8 +336,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
@@ -419,6 +460,14 @@ exports.examples = [
     render: function() {
       return (
         <ValueListenerExample />
+      );
+    },
+  },
+  {
+    title: 'Animated events',
+    render: function() {
+      return (
+        <EventExample />
       );
     },
   },

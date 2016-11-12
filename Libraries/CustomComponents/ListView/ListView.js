@@ -34,7 +34,7 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var ReactNative = require('react/lib/ReactNative');
+var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
@@ -196,6 +196,8 @@ var ListView = React.createClass({
      * section until it reaches the top of the screen, at which point it will
      * stick to the top until it is pushed off the screen by the next section
      * header.
+     *
+     * NOTE: On Android, the header is not sticky.
      */
     renderSectionHeader: PropTypes.func,
     /**
@@ -454,7 +456,7 @@ var ListView = React.createClass({
 
     var {
       renderScrollComponent,
-      ...props,
+      ...props
     } = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;

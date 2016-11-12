@@ -8,7 +8,6 @@
  *
  * @providesModule NavigationPagerPanResponder
  * @flow
- * @typechecks
  */
 'use strict';
 

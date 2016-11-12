@@ -438,7 +438,7 @@ const examples = [{
   render() {
     return (
       <View>
-        <Text>Height: {StatusBar.currentHeight} pts</Text>
+        <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>
       </View>
     );
   },

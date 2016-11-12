@@ -78,7 +78,7 @@ describe('Dependency extraction:', () => {
   });
 
   it('does not extract calls to function with names that start with "require"', () => {
-    const code = `arbitraryrequire('foo');`;
+    const code = 'arbitraryrequire(\'foo\');';
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual([]);
@@ -86,7 +86,7 @@ describe('Dependency extraction:', () => {
   });
 
   it('does not extract calls to require with non-static arguments', () => {
-    const code = `require('foo/' + bar)`;
+    const code = 'require(\'foo/\' + bar)';
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual([]);
@@ -95,7 +95,7 @@ describe('Dependency extraction:', () => {
 
   it('does not get confused by previous states', () => {
     // yes, this was a bug
-    const code = `require("a");/* a comment */ var a = /[a]/.test('a');`;
+    const code = 'require("a");/* a comment */ var a = /[a]/.test(\'a\');';
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual(['a']);
@@ -103,7 +103,7 @@ describe('Dependency extraction:', () => {
   });
 
   it('can handle regular expressions', () => {
-    const code = `require('a'); /["']/.test('foo'); require("b");`;
+    const code = 'require(\'a\'); /["\']/.test(\'foo\'); require("b");';
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual(['a', 'b']);

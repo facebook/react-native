@@ -71,7 +71,8 @@ public class UnpackingJSBundleLoaderTest {
     mBuilder = UnpackingJSBundleLoader.newBuilder()
       .setDestinationPath(mDestinationPath)
       .setSourceURL(URL)
-      .setContext(mContext);
+      .setContext(mContext)
+      .setFinishOnBackgroundThread(false);
 
     mMockUnpackers = new UnpackingJSBundleLoader.Unpacker[MOCK_UNPACKERS_NUM];
     for (int i = 0; i < mMockUnpackers.length; ++i) {
@@ -165,6 +166,7 @@ public class UnpackingJSBundleLoaderTest {
       verify(unpacker).unpack(
         same(mContext),
         any(byte[].class));
+      verify(unpacker).finishUnpacking(same(mContext));
       verifyNoMoreInteractions(unpacker);
     }
   }

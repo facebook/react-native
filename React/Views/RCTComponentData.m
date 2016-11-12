@@ -16,6 +16,7 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
+#import "RCTBridgeModule.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
@@ -58,11 +59,23 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = RCTBridgeModuleNameForClass(_managerClass);
-    RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
-    if ([_name hasSuffix:@"Manager"]) {
-      _name = [_name substringToIndex:_name.length - @"Manager".length];
+    // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
+    // We want to get rid of RCT and RK prefixes, but a lot of JS code still references
+    // view names by prefix. So, while RCTBridgeModuleNameForClass now drops these
+    // prefixes by default, we'll still keep them around here.
+    NSString *name = [managerClass moduleName];
+    if (name.length == 0) {
+      name = NSStringFromClass(managerClass);
     }
+    if ([name hasPrefix:@"RK"]) {
+      name = [name stringByReplacingCharactersInRange:(NSRange){0, @"RK".length} withString:@"RCT"];
+    }
+    if ([name hasSuffix:@"Manager"]) {
+      name = [name substringToIndex:name.length - @"Manager".length];
+    }
+
+    RCTAssert(name.length, @"Invalid moduleName '%@'", name);
+    _name = name;
 
     _implementsUIBlockToAmendWithShadowViewRegistry = NO;
     Class cls = _managerClass;
@@ -91,7 +104,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   UIView *view = [self.manager view];
   view.reactTag = tag;
+#if !TARGET_OS_TV
   view.multipleTouchEnabled = YES;
+#endif
   view.userInteractionEnabled = YES; // required for touch handling
   view.layer.allowsGroupOpacity = YES; // required for touch handling
   return view;
@@ -132,8 +147,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // Check for custom setter
     if ([keyPath isEqualToString:@"__custom__"]) {
 
-      // Get custom setter
-      SEL customSetter = NSSelectorFromString([NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""]);
+      // Get custom setter. There is no default view in the shadow case, so the selector is different.
+      NSString *selectorString;
+      if (!shadowView) {
+        selectorString = [NSString stringWithFormat:@"set_%@:for%@View:withDefaultView:", name, shadowView ? @"Shadow" : @""];
+      } else {
+        selectorString = [NSString stringWithFormat:@"set_%@:forShadowView:", name];
+      }
+      SEL customSetter = NSSelectorFromString(selectorString);
 
       propBlock = ^(id<RCTComponent> view, id json) {
         RCTComponentData *strongSelf = weakSelf;
@@ -141,13 +162,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           return;
         }
         json = RCTNilIfNull(json);
-        if (!json && !strongSelf->_defaultView) {
-          // Only create default view if json is null
-          strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+        if (!shadowView) {
+          if (!json && !strongSelf->_defaultView) {
+            // Only create default view if json is null
+            strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
+          }
+          ((void (*)(id, SEL, id, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
+          );
+        } else {
+          ((void (*)(id, SEL, id, id))objc_msgSend)(
+            strongSelf.manager, customSetter, json, view
+          );
         }
-        ((void (*)(id, SEL, id, id, id))objc_msgSend)(
-          strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
-        );
       };
 
     } else {
@@ -368,88 +395,67 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
-  if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
-    NSArray<NSString *> *events = [self.manager customDirectEventTypes];
-#pragma clang diagnostic pop
-    if (RCT_DEBUG) {
-      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-        @"customDirectEventTypes must return an array, but %@ returned %@",
-        _managerClass, [events class]);
-    }
-    for (NSString *event in events) {
-      [directEvents addObject:RCTNormalizeInputEventName(event)];
-    }
-  }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
-#pragma clang diagnostic pop
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
-    if (RCT_DEBUG) {
-      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-        @"customBubblingEventTypes must return an array, but %@ returned %@",
-        _managerClass, [events class]);
-    }
     for (NSString *event in events) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(event)];
     }
   }
+#pragma clang diagnostic pop
 
   unsigned int count = 0;
   NSMutableDictionary *propTypes = [NSMutableDictionary new];
   Method *methods = class_copyMethodList(object_getClass(_managerClass), &count);
   for (unsigned int i = 0; i < count; i++) {
-    Method method = methods[i];
-    SEL selector = method_getName(method);
-    NSString *methodName = NSStringFromSelector(selector);
-    if ([methodName hasPrefix:@"propConfig"]) {
-      NSRange nameRange = [methodName rangeOfString:@"_"];
-      if (nameRange.length) {
-        NSString *name = [methodName substringFromIndex:nameRange.location + 1];
-        NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
-        if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
-          RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
-                      "to '%@'", name, _name, propTypes[name], type);
-        }
+    SEL selector = method_getName(methods[i]);
+    const char *selectorName = sel_getName(selector);
+    if (strncmp(selectorName, "propConfig", strlen("propConfig")) != 0) {
+      continue;
+    }
 
-        if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
-          [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-          propTypes[name] = @"BOOL";
-        } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
-          [directEvents addObject:RCTNormalizeInputEventName(name)];
-          propTypes[name] = @"BOOL";
-        } else {
-          propTypes[name] = type;
-        }
-      }
+    // We need to handle both propConfig_* and propConfigShadow_* methods
+    const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
+    if (!underscorePos) {
+      continue;
+    }
+
+    NSString *name = @(underscorePos + 1);
+    NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
+    if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
+      RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
+                  "to '%@'", name, _name, propTypes[name], type);
+    }
+
+    if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
+      [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
+      propTypes[name] = @"BOOL";
+    } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
+      [directEvents addObject:RCTNormalizeInputEventName(name)];
+      propTypes[name] = @"BOOL";
+    } else {
+      propTypes[name] = type;
     }
   }
   free(methods);
 
-  if (RCT_DEBUG) {
-    for (NSString *event in directEvents) {
-      if ([bubblingEvents containsObject:event]) {
-        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                    "and a direct event", _name, event);
-      }
-    }
-    for (NSString *event in bubblingEvents) {
-      if ([directEvents containsObject:event]) {
-        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                    "and a direct event", _name, event);
-      }
+#if RCT_DEBUG
+  for (NSString *event in bubblingEvents) {
+    if ([directEvents containsObject:event]) {
+      RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
+                  "and a direct event", _name, event);
     }
   }
+#endif
 
   return @{
-    @"propTypes" : propTypes,
-    @"directEvents" : directEvents,
-    @"bubblingEvents" : bubblingEvents,
+    @"propTypes": propTypes,
+    @"directEvents": directEvents,
+    @"bubblingEvents": bubblingEvents,
   };
 }
 

@@ -9,7 +9,8 @@
 #import "RCTBridgeModule.h"
 #import "RCTValueAnimatedNode.h"
 #import "RCTEventEmitter.h"
+#import "RCTEventDispatcher.h"
 
-@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver>
+@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver>
 
 @end

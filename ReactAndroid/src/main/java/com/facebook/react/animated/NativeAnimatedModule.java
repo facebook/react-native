@@ -25,7 +25,6 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
 import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
@@ -95,11 +94,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     mReactChoreographer = ReactChoreographer.getInstance();
 
     ReactApplicationContext reactCtx = getReactApplicationContext();
-    UIImplementation uiImplementation =
-      reactCtx.getNativeModule(UIManagerModule.class).getUIImplementation();
+    UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
 
-    final NativeAnimatedNodesManager nodesManager =
-      new NativeAnimatedNodesManager(uiImplementation);
+    final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
     mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
@@ -246,6 +243,36 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
+  public void setAnimatedNodeOffset(final int tag, final double value) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.setAnimatedNodeOffset(tag, value);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void flattenAnimatedNodeOffset(final int tag) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.flattenAnimatedNodeOffset(tag);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void extractAnimatedNodeOffset(final int tag) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.extractAnimatedNodeOffset(tag);
+      }
+    });
+  }
+
+  @ReactMethod
   public void startAnimatingNode(
       final int animationId,
       final int animatedNodeTag,
@@ -309,6 +336,26 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
         animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void addAnimatedEventToView(final int viewTag, final String eventName, final ReadableMap eventMapping) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
       }
     });
   }

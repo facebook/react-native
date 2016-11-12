@@ -6,7 +6,6 @@ LOCAL_SRC_FILES:= \
 	folly/Unicode.cpp \
 	folly/Conv.cpp \
 	folly/Demangle.cpp \
-  folly/detail/FunctionalExcept.cpp \
   folly/detail/MallocImpl.cpp \
   folly/StringBase.cpp \
   folly/dynamic.cpp \

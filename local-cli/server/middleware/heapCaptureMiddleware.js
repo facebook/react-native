@@ -32,10 +32,11 @@ function getSourceMapForUrl(url, onFailure, onSuccess) {
   }
 
   const parsedUrl = urlLib.parse(url);
+  const mapPath = parsedUrl.pathname.replace(/\.bundle$/, '.map');
   const options = {
     host: 'localhost',
     port: parsedUrl.port,
-    path: parsedUrl.pathname.replace(/\.bundle$/, '.map') + parsedUrl.search,
+    path: mapPath + parsedUrl.search + '&babelSourcemap=true',
   };
 
   http.get(options, (res) => {
@@ -108,7 +109,7 @@ function symbolicateHeapCaptureFunctions(capture, onFailure, onSuccess) {
           if (original.name) {
             ref.value.name = original.name;
           } else if (!ref.value.name) {
-            ref.value.name = path.posix.basename(original.source) + ':' + original.line;
+            ref.value.name = path.posix.basename(original.source || '') + ':' + original.line;
           }
           ref.value.url = original.source;
           ref.value.line = original.line;

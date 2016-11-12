@@ -199,6 +199,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   }
 
   RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                         reactTag:self.view.reactTag
                                                      reactTouches:reactTouches
                                                    changedIndexes:changedIndexes
                                                     coalescingKey:_coalescingKey];

@@ -85,9 +85,14 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
   NSURL *tempDir = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
   [[NSFileManager defaultManager] createDirectoryAtURL:tempDir withIntermediateDirectories:YES attributes:nil error:NULL];
+  NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+  NSString *fileName = [NSString stringWithFormat:@"rctallocationtests-bundle-%@.js", guid];
 
-  _bundleURL = [tempDir URLByAppendingPathComponent:@"rctallocationtests-bundle.js"];
-  [bundleContents writeToURL:_bundleURL atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+  _bundleURL = [tempDir URLByAppendingPathComponent:fileName];
+  NSError *saveError;
+  if (![bundleContents writeToURL:_bundleURL atomically:YES encoding:NSUTF8StringEncoding error:&saveError]) {
+    XCTFail(@"Failed to save test bundle to %@, error: %@", _bundleURL, saveError);
+  };
 }
 
 - (void)tearDown
@@ -230,6 +235,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   // Wait to complete the test until the new batchedbridge is also deallocated
   @autoreleasepool {
     batchedBridge = bridge.batchedBridge;
+    [bridge invalidate];
     bridge = nil;
   }
 

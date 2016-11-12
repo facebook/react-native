@@ -33,7 +33,7 @@ var {
   TouchableHighlight,
   View,
 } = ReactNative;
-// $FlowFixMe Picker.Item not properly defined for flow.
+
 const Item = Picker.Item;
 
 exports.displayName = (undefined: ?string);
@@ -206,7 +206,7 @@ var styles = StyleSheet.create({
   },
   button: {
     borderRadius: 5,
-    flex: 1,
+    flexGrow: 1,
     height: 44,
     alignSelf: 'stretch',
     justifyContent: 'center',

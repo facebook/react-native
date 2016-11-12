@@ -6,11 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
+const ReactPackager = require('../../packager/react-packager');
+
+const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
-const ReactPackager = require('../../packager/react-packager');
 
 function dependencies(argv, config, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
@@ -26,7 +28,7 @@ function dependencies(argv, config, args, packagerInstance) {
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
-    blacklistRE: config.getBlacklistRE(args.platform),
+    blacklistRE: config.getBlacklistRE(),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
@@ -68,7 +70,7 @@ function dependencies(argv, config, args, packagerInstance) {
         }
       });
       return writeToFile
-        ? Promise.denodeify(outStream.end).bind(outStream)()
+        ? denodeify(outStream.end).bind(outStream)()
         : Promise.resolve();
     }
   ));
@@ -89,7 +91,6 @@ module.exports = {
       description: 'The platform extension used for selecting modules',
     }, {
       command: '--transformer [path]',
-      default: null,
       description: 'Specify a custom transformer to be used'
     }, {
       command: '--verbose',

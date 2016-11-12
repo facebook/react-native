@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactNativePropRegistry = require('react/lib/ReactNativePropRegistry');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var invariant = require('fbjs/lib/invariant');
 
 import type { StyleObj } from 'StyleSheetTypes';
