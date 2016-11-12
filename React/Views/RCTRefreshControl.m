@@ -12,7 +12,6 @@
 #import "RCTUtils.h"
 
 @implementation RCTRefreshControl {
-  BOOL _initialRefreshingState;
   BOOL _isInitialRender;
   BOOL _currentRefreshingState;
 }
@@ -41,7 +40,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
-  if (_currentRefreshingState && _isInitialRender && _initialRefreshingState) {
+  if (_currentRefreshingState && _isInitialRender) {
     [self beginRefreshing];
   }
   _isInitialRender = false;
@@ -52,14 +51,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
-  // Don't animate when the prop is set initialy.
-  if (_isInitialRender) {
-    scrollView.contentOffset = offset;
-    [super beginRefreshing];
-  } else {
-    // `beginRefreshing` must be called after the animation is done. This is why it is impossible
-    // to use `setContentOffset` with `animated:YES`.
-    [UIView animateWithDuration:0.25
+
+  // `beginRefreshing` must be called after the animation is done. This is why it is impossible
+  // to use `setContentOffset` with `animated:YES`.
+  [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^(void) {
@@ -67,7 +62,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      } completion:^(__unused BOOL finished) {
                        [super beginRefreshing];
                      }];
-  }
 }
 
 - (void)endRefreshing
@@ -117,11 +111,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _currentRefreshingState = refreshing;
 
     if (refreshing) {
-      // If it is the initial render, beginRefreshing will get called
-      // in layoutSubviews.
-      if (_isInitialRender) {
-        _initialRefreshingState = refreshing;
-      } else {
+      if (!_isInitialRender) {
         [self beginRefreshing];
       }
     } else {

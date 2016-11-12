@@ -3,7 +3,6 @@
  *
  * @providesModule NavigationTreeNode
  * @flow
- * @typechecks
  */
 
 'use strict';

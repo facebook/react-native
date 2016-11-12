@@ -41,8 +41,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * 2/ {@link String} mapped from JS string
  * 3/ {@link ReadableArray} mapped from JS Array
  * 4/ {@link ReadableMap} mapped from JS Object
- * 5/ Any {@link Type} that can be handled by a {@link ArgumentExtractor.Factory} that was
- * previously registered via this module's constructor.
+ * 5/ Any {@link Type} that can be handled by a {@link CustomArgumentExtractor} that's returned
+ * by {@link BaseJavaModule#getCustomExtractors()}.
  * 6/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
  * case when it express success & error callback pair as two last arguments respecively.
  *
@@ -57,15 +57,6 @@ public abstract class BaseJavaModule implements NativeModule {
   private static final String METHOD_TYPE_ASYNC = "async";
   private static final String METHOD_TYPE_PROMISE= "promise";
   static final public String METHOD_TYPE_SYNC = "sync";
-  private final List<? extends ArgumentExtractor.Factory> mArgumentExtractorFactories;
-
-  public BaseJavaModule() {
-    this(Collections.<ArgumentExtractor.Factory>emptyList());
-  }
-
-  public BaseJavaModule(List<? extends ArgumentExtractor.Factory> argumentExtractorFactories) {
-    mArgumentExtractorFactories = argumentExtractorFactories;
-  }
 
   public static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -74,15 +65,14 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public abstract @Nullable T extractArgument(
         CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
+  }
 
-    /**
-     * Returns an instance of {@link ArgumentExtractor} that is able to handle extracting arguments
-     * to {@link ReactMethod} annotated methods with the given {@code Type}. Return {@code null} if
-     * this factory can't handle the provided type.
-     */
-    public interface Factory {
-      @Nullable ArgumentExtractor<?> get(Class<?> type);
-    }
+  protected List<? extends CustomArgumentExtractor> getCustomExtractors() {
+    return Collections.emptyList();
+  }
+
+  public abstract class CustomArgumentExtractor extends ArgumentExtractor {
+    public abstract boolean supportsType(Class<?> type);
   }
 
   static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
@@ -183,7 +173,7 @@ public abstract class BaseJavaModule implements NativeModule {
   public class JavaMethod implements NativeMethod {
 
     private final Method mMethod;
-    private final ArgumentExtractor<?>[] mArgumentExtractors;
+    private final ArgumentExtractor[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
     private String mType = METHOD_TYPE_ASYNC;
@@ -192,7 +182,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     JavaMethod(Method method) {
       mMethod = method;
-      Class<?>[] parameterTypes = method.getParameterTypes();
+      Class[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
       mSignature = buildSignature(parameterTypes);
       // Since native methods are invoked from a message queue executed on a single thread, it is
@@ -210,11 +200,11 @@ public abstract class BaseJavaModule implements NativeModule {
       return mSignature;
     }
 
-    private String buildSignature(Class<?>[] paramTypes) {
+    private String buildSignature(Class[] paramTypes) {
       StringBuilder builder = new StringBuilder(paramTypes.length);
       builder.append("v.");
       for (int i = 0; i < paramTypes.length; i++) {
-        Class<?> paramClass = paramTypes[i];
+        Class paramClass = paramTypes[i];
         if (paramClass == ExecutorToken.class) {
           if (!BaseJavaModule.this.supportsWebWorkers()) {
             throw new RuntimeException(
@@ -243,7 +233,7 @@ public abstract class BaseJavaModule implements NativeModule {
       return builder.toString();
     }
 
-    private ArgumentExtractor<?>[] buildArgumentExtractors(Class<?>[] paramTypes) {
+    private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {
       // Modules that support web workers are expected to take an ExecutorToken as the first
       // parameter to all their @ReactMethod-annotated methods. We compensate for that here.
       int executorTokenOffset = 0;
@@ -256,10 +246,10 @@ public abstract class BaseJavaModule implements NativeModule {
         executorTokenOffset = 1;
       }
 
-      ArgumentExtractor<?>[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
+      ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
       for (int i = 0; i < paramTypes.length - executorTokenOffset; i += argumentExtractors[i].getJSArgumentsNeeded()) {
         int paramIndex = i + executorTokenOffset;
-        Class<?> argumentClass = paramTypes[paramIndex];
+        Class argumentClass = paramTypes[paramIndex];
         if (argumentClass == Boolean.class || argumentClass == boolean.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
         } else if (argumentClass == Integer.class || argumentClass == int.class) {
@@ -295,10 +285,9 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     private ArgumentExtractor<?> findArgumentExtractorForType(Class<?> argumentClass) {
-      for (ArgumentExtractor.Factory argumentExtractorFactory : mArgumentExtractorFactories) {
-        ArgumentExtractor<?> argumentExtractor = argumentExtractorFactory.get(argumentClass);
-        if (argumentExtractor != null) {
-          return argumentExtractor;
+      for (CustomArgumentExtractor customArgumentExtractor : getCustomExtractors()) {
+        if (customArgumentExtractor.supportsType(argumentClass)) {
+          return customArgumentExtractor;
         }
       }
       return null;
@@ -404,14 +393,14 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     private String buildSignature(Method method) {
-      Class<?>[] paramTypes = method.getParameterTypes();
+      Class[] paramTypes = method.getParameterTypes();
       StringBuilder builder = new StringBuilder(paramTypes.length + 2);
 
       builder.append(returnTypeToChar(method.getReturnType()));
       builder.append('.');
 
       for (int i = 0; i < paramTypes.length; i++) {
-        Class<?> paramClass = paramTypes[i];
+        Class paramClass = paramTypes[i];
         if (paramClass == ExecutorToken.class) {
           if (!BaseJavaModule.this.supportsWebWorkers()) {
             throw new RuntimeException(
@@ -505,7 +494,7 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  private static char paramTypeToChar(Class<?> paramClass) {
+  private static char paramTypeToChar(Class paramClass) {
     char tryCommon = commonTypeToChar(paramClass);
     if (tryCommon != '\0') {
       return tryCommon;
@@ -525,7 +514,7 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private static char returnTypeToChar(Class<?> returnClass) {
+  private static char returnTypeToChar(Class returnClass) {
     char tryCommon = commonTypeToChar(returnClass);
     if (tryCommon != '\0') {
       return tryCommon;
@@ -542,7 +531,7 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private static char commonTypeToChar(Class<?> typeClass) {
+  private static char commonTypeToChar(Class typeClass) {
     if (typeClass == boolean.class) {
       return 'z';
     } else if (typeClass == Boolean.class) {

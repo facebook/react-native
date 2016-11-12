@@ -42,6 +42,13 @@ RCT_EXPORT_MODULE();
 React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly told to. This is done using the `RCT_EXPORT_METHOD()` macro:
 
 ```objective-c
+#import "CalendarManager.h"
+#import "RCTLog.h"
+
+@implementation CalendarManager
+
+RCT_EXPORT_MODULE();
+
 RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 {
   RCTLogInfo(@"Pretending to create an event %@ at %@", name, location);
@@ -250,16 +257,16 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 >
 > The `methodQueue` method will be called once when the module is initialized, and then retained by the bridge, so there is no need to retain the queue yourself, unless you wish to make use of it within your module. However, if you wish to share the same queue between multiple modules then you will need to ensure that you retain and return the same queue instance for each of them; merely returning a queue of the same name for each won't work.
 
-## Depedency Injection
+## Dependency Injection
 The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).
- 
+
 You can do this by creating a class that implements the RTCBridgeDelegate Protocol, initializing an RTCBridge with the delegate as an argument and initialising a RTCRootView with the initialized bridge.
- 
+
 ```objective-c
 id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRTCBridgeDelegate alloc] init];
- 
+
 RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:nil];
- 
+
 RCTRootView *rootView = [[RCTRootView alloc]
                         initWithBridge:bridge
                             moduleName:kModuleName
@@ -376,7 +383,8 @@ Let's say we have the same `CalendarManager` but as a Swift class:
 @objc(CalendarManager)
 class CalendarManager: NSObject {
 
-  @objc func addEvent(name: String, location: String, date: NSNumber) -> Void {
+  @objc(addEvent:location:date:)
+  func addEvent(name: String, location: String, date: NSNumber) -> Void {
     // Date is ready to use!
   }
 

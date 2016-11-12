@@ -81,6 +81,11 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 /**
+ * Called on the child bridge to run the executor and start loading.
+ */
+- (void)start;
+
+/**
  * Used by RCTModuleData to register the module for frame updates after it is
  * lazily initialized.
  */
@@ -142,5 +147,6 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (void)start;
 
 @end

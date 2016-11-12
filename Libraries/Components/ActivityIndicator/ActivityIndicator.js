@@ -12,14 +12,15 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const GRAY = '#999999';
 

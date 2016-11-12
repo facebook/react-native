@@ -5,8 +5,6 @@
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 
-#include "FollySupport.h"
-
 #include <exception>
 #include <string>
 
@@ -100,7 +98,7 @@ inline double jsArgAsDouble(const folly::dynamic& args, size_t n) {
 // Extract the n'th arg from the given dynamic, as a string.  Throws a
 // JsArgumentException if this fails for some reason.
 inline std::string jsArgAsString(const folly::dynamic& args, size_t n) {
-  return facebook::react::detail::toStdString(jsArgN(args, n, &folly::dynamic::asString));
+  return jsArgN(args, n, &folly::dynamic::asString);
 }
 
 }}

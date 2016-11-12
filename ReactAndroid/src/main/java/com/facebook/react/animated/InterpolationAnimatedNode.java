@@ -136,6 +136,6 @@ import javax.annotation.Nullable;
       throw new IllegalStateException("Trying to update interpolation node that has not been " +
         "attached to the parent");
     }
-    mValue = interpolate(mParent.mValue, mInputRange, mOutputRange, mExtrapolateLeft, mExtrapolateRight);
+    mValue = interpolate(mParent.getValue(), mInputRange, mOutputRange, mExtrapolateLeft, mExtrapolateRight);
   }
 }

@@ -12,13 +12,15 @@ package com.facebook.csslayout;
 public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
 
   interface MeasureFunction {
-    void measure(
+    /**
+     * Return a value created by MeasureOutput.make(width, height);
+     */
+    long measure(
         CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput);
+        CSSMeasureMode heightMode);
   }
 
   int getChildCount();
@@ -29,8 +31,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   int indexOf(CSSNodeType child);
   void setMeasureFunction(MeasureFunction measureFunction);
   boolean isMeasureDefined();
-  void setIsTextNode(boolean isTextNode);
-  boolean isTextNode();
   void calculateLayout(CSSLayoutContext layoutContext);
   boolean isDirty();
   boolean hasNewLayout();
@@ -52,7 +52,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   CSSPositionType getPositionType();
   void setPositionType(CSSPositionType positionType);
   void setWrap(CSSWrap flexWrap);
-  float getFlex();
   void setFlex(float flex);
   float getFlexGrow();
   void setFlexGrow(float flexGrow);
@@ -60,13 +59,13 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setFlexShrink(float flexShrink);
   float getFlexBasis();
   void setFlexBasis(float flexBasis);
-  Spacing getMargin();
+  float getMargin(int spacingType);
   void setMargin(int spacingType, float margin);
-  Spacing getPadding();
+  float getPadding(int spacingType);
   void setPadding(int spacingType, float padding);
-  Spacing getBorder();
+  float getBorder(int spacingType);
   void setBorder(int spacingType, float border);
-  Spacing getPosition();
+  float getPosition(int spacingType);
   void setPosition(int spacingType, float position);
   float getStyleWidth();
   void setStyleWidth(float width);
@@ -89,6 +88,5 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setOverflow(CSSOverflow overflow);
   void setData(Object data);
   Object getData();
-  void init();
   void reset();
 }

@@ -53,6 +53,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _incrementalDataBlock = nil;
   _responseBlock = nil;
   _uploadProgressBlock = nil;
+  _requestToken = nil;
 }
 
 - (void)dispatchCallback:(dispatch_block_t)callback
@@ -66,6 +67,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)start
 {
+  if (_status != RCTNetworkTaskPending) {
+    RCTLogError(@"RCTNetworkTask was already started or completed");
+    return;
+  }
+
   if (_requestToken == nil) {
     id token = [_handler sendRequest:_request withDelegate:self];
     if ([self validateRequestToken:token]) {
@@ -77,6 +83,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancel
 {
+  if (_status == RCTNetworkTaskFinished) {
+    return;
+  }
+
   _status = RCTNetworkTaskFinished;
   id token = _requestToken;
   if (token && [_handler respondsToSelector:@selector(cancelRequest:)]) {

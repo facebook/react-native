@@ -33,6 +33,15 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                    fallbackResource:(NSString *)resourceName;
 
 /**
+ * Returns the resourceURL for a given bundle entrypoint and
+ * the fallback offline resource file if the packager is not running.
+ */
+- (NSURL *)resourceURLForResourceRoot:(NSString *)root
+                         resourceName:(NSString *)name
+                    resourceExtension:(NSString *)extension
+                        offlineBundle:(NSBundle *)offlineBundle;
+
+/**
  * Returns the URL of the packager server.
  */
 - (NSURL *)packagerServerURL;
@@ -57,5 +66,14 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification;
+
+/**
+ * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
+ * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
+ * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
+ */
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                                query:(NSString *)query;
 
 @end

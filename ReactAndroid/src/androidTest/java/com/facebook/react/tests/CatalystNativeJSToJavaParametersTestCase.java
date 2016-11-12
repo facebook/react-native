@@ -29,11 +29,12 @@ import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,34 +53,24 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     void returnBasicTypes();
 
     void returnArrayWithBasicTypes();
-
     void returnNestedArray();
-
     void returnArrayWithMaps();
 
     void returnMapWithBasicTypes();
-
     void returnNestedMap();
-
     void returnMapWithArrays();
 
     void returnArrayWithStringDoubleIntMapArrayBooleanNull();
-
     void returnMapWithStringDoubleIntMapArrayBooleanNull();
 
     void returnMapForMerge1();
-
     void returnMapForMerge2();
 
     void returnMapWithMultibyteUTF8CharacterString();
-
     void returnArrayWithMultibyteUTF8CharacterString();
 
     void returnArrayWithLargeInts();
-
     void returnMapWithLargeInts();
-
-    void returnCustomType();
   }
 
   private RecordingTestModule mRecordingTestModule;
@@ -94,7 +85,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -729,28 +720,24 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
   }
 
   private class RecordingTestModule extends BaseJavaModule {
-    RecordingTestModule() {
-      super(Collections.singletonList(new ArgumentExtractor.Factory() {
-        @Nullable @Override public ArgumentExtractor<?> get(Class<?> type) {
-          if (CustomType.class.isAssignableFrom(type)) {
-            return new ArgumentExtractor<CustomType>() {
-              @Nullable @Override public CustomType extractArgument(
-                CatalystInstance catalystInstance, ExecutorToken executorToken,
-                ReadableNativeArray jsArguments, int atIndex) {
-                return new CustomType(jsArguments.getMap(0));
-              }
-            };
-          } else {
-            return null;
-          }
-        }
-      }));
-    }
-
     private final List<Object[]> mBasicTypesCalls = new ArrayList<>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<>();
     private final List<ReadableMap> mMapCalls = new ArrayList<>();
     private final List<CustomType> mCustomTypeCalls = new ArrayList<>();
+
+    @Override protected List<? extends CustomArgumentExtractor> getCustomExtractors() {
+      return Collections.singletonList(new CustomArgumentExtractor() {
+        @Override public boolean supportsType(Class<?> type) {
+          return CustomType.class.isAssignableFrom(type);
+        }
+
+        @Nullable @Override public CustomType extractArgument(
+          CatalystInstance catalystInstance, ExecutorToken executorToken,
+          ReadableNativeArray jsArguments, int atIndex) {
+          return new CustomType(jsArguments.getMap(0));
+        }
+      });
+    }
 
     @Override
     public String getName() {
