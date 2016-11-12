@@ -194,7 +194,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
     if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
-          new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
+          new AbsoluteSizeSpan(textCSSNode.mAllowFontScaling ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) :
+                  (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
           0,
           sb.length(),
           Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -424,7 +425,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public void setAllowFontScaling(@Nullable Boolean allowFontScaling) {
     mAllowFontScaling = allowFontScaling != null && allowFontScaling.booleanValue();
 
-    if (!mAllowFontScaling) {
+    if (!mAllowFontScaling && mFontSizeInput > UNSET) {
       setFontSize(mFontSizeInput, true);
     }
   }
