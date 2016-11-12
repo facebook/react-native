@@ -24,7 +24,7 @@ export type InterpolationConfigType = {
   extrapolate?: ExtrapolateType,
   extrapolateLeft?: ExtrapolateType,
   extrapolateRight?: ExtrapolateType,
-  expr?: (input: number) => number | string,
+  expression?: (input: number) => number | string,
 };
 
 var linear = (t) => t;
@@ -40,8 +40,8 @@ class Interpolation {
       return createInterpolationFromStringOutputRange(config);
     }
 
-    if(config.expr) {
-      return config.expr;
+    if(config.expression) {
+      return config.expression;
     }
 
     var outputRange: Array<number> = (config.outputRange: any);
