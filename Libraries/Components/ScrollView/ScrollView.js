@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const omit = require('lodash').omit;
+
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
@@ -532,12 +534,12 @@ const ScrollView = React.createClass({
         // Since the ScrollView is wrapped add the style props to the
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
         // Note: we should only apply prop.style on the wrapper
-        const { style, ...restProps } = props;
+        const propsWithoutStyle = omit(props, 'style');
 
         return React.cloneElement(
           refreshControl,
           {style: props.style},
-          <ScrollViewClass {...restProps} ref={this._setScrollViewRef}>
+          <ScrollViewClass {...propsWithoutStyle} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
         );
