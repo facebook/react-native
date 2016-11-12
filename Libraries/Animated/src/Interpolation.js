@@ -40,7 +40,7 @@ class Interpolation {
       return createInterpolationFromStringOutputRange(config);
     }
 
-    if(config.expression) {
+    if (config.expression) {
       return config.expression;
     }
 
