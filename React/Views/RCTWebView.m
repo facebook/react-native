@@ -224,10 +224,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   BOOL isHTTPRequest = [[request.URL scheme] isEqualToString:@"http"] || [[request.URL scheme] isEqualToString:@"https"];
 
   // skip this for the JS Navigation handler, initial load, iFrames and non-http(s) requests
-  if(!isJSNavigation && isTopFrame && !isLoadingSourceURL && isHTTPRequest) {
-    BOOL _shouldBlock = false;
-
-    if(_navigationBlockingPolicies.count > 0) {
+  if (!isJSNavigation && isTopFrame && !isLoadingSourceURL && isHTTPRequest) {
+    if (_navigationBlockingPolicies.count > 0) {
       NSDictionary *currentValues = @{
                                       @"currentURL": sourceURL,
                                       @"url": requestURL,
@@ -236,22 +234,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSString *eventValue;
       BOOL policyFulfilled;
 
-      for(NSDictionary *policy in _navigationBlockingPolicies) {
+      for (NSDictionary *policy in _navigationBlockingPolicies) {
         // policy with no rules
-        if(policy.count < 1) {
+        if (policy.count < 1) {
           continue;
         }
 
         policyFulfilled = YES;
 
-        for(NSString *key in policy) {
+        for (NSString *key in policy) {
           // policy has failed already
-          if(!policyFulfilled) break;
+          if (!policyFulfilled) break;
 
           eventValue = [currentValues objectForKey:key];
 
           // unverifiable policy rule
-          if(!eventValue) {
+          if (!eventValue) {
             RCTLogWarn(@"Could not verify webview loading policy named %@. Failing policy with rules %@", key, policy);
             policyFulfilled = NO;
             break;
@@ -262,20 +260,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
           policyFulfilled = [rule evaluateWithObject: eventValue];
         }
 
-        if(policyFulfilled) {
-          _shouldBlock = !_shouldBlock;
-          break;
+        // call blocked callback
+        if (policyFulfilled && _onNavigationBlocked) {
+          _onNavigationBlocked(event);
+          return NO;
         }
       }
-    }
-
-    // call blocked callback
-    if(_shouldBlock) {
-      if(_onNavigationBlocked) {
-        _onNavigationBlocked(event);
-      }
-
-      return NO;
     }
   }
 
