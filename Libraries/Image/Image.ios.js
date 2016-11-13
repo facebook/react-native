@@ -255,7 +255,6 @@ const Image = React.createClass({
     onProgress: PropTypes.func,
     /**
      * Invoked on load error with `{nativeEvent: {error}}`.
-     * @platform ios
      */
     onError: PropTypes.func,
     /**
