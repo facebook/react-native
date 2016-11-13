@@ -15,7 +15,6 @@
 
 @interface RCTNavigator : UIView <RCTFrameUpdateObserver>
 
-@property (nonatomic, strong) UIView *reactNavSuperviewLink;
 @property (nonatomic, assign) NSInteger requestedTopOfStack;
 @property (nonatomic, assign) BOOL interactivePopGestureEnabled;
 
