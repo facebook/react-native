@@ -810,7 +810,7 @@ public class UIImplementation {
       }
     }
 
-    int tag = cssNode.getReactTag();
+    final int tag = cssNode.getReactTag();
     boolean frameDidChange = cssNode.dispatchUpdates(
         absoluteX,
         absoluteY,

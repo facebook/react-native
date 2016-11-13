@@ -76,7 +76,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private int mIntrinsicHeight;
   private OnIntrinsicSizeChangedListener mOnIntrinsicSizeChangedListener;
 
-  public static interface OnIntrinsicSizeChangedListener {
+  public interface OnIntrinsicSizeChangedListener {
     void onSizeChanged(ReactRootView rootView, int width, int height);
   }
 
