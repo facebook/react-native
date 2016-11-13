@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.react.LazyReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -74,6 +75,18 @@ import com.facebook.react.views.webview.ReactWebViewManager;
  */
 public class MainReactPackage extends LazyReactPackage {
 
+  private MainPackageConfig mConfig;
+
+  public MainReactPackage() {
+  }
+
+  /**
+   * Create a new package with configuration
+   */
+  public MainReactPackage(MainPackageConfig config) {
+    mConfig = config;
+  }
+
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext context) {
     return Arrays.asList(
@@ -116,7 +129,7 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(FrescoModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new FrescoModule(context);
+          return new FrescoModule(context, mConfig != null ? mConfig.getFrescoConfig() : null);
         }
       }),
       new ModuleSpec(I18nManagerModule.class, new Provider<NativeModule>() {
