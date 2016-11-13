@@ -627,7 +627,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement<any> { return <TextEventsExample />; },
+    render: function(): React.Element<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',
@@ -725,7 +725,7 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): ReactElement<any> { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Multiline blur on submit',
@@ -832,5 +832,41 @@ exports.examples = [
         </View>
       );
     }
-  }
+  },
+  {
+    title: 'TextInput maxLength',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="maxLength: 5">
+            <TextInput
+              maxLength={5}
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with placeholder">
+            <TextInput
+              maxLength={5}
+              placeholder="ZIP code entry"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="94025"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with very long default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="9402512345"
+              style={styles.default}
+            />
+          </WithLabel>
+        </View>
+      );
+    }
+  },
 ];

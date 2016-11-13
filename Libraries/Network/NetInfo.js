@@ -16,7 +16,6 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const RCTNetInfo = NativeModules.NetInfo;
-const deprecatedCallback = require('deprecatedCallback');
 
 const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
@@ -257,12 +256,9 @@ const NetInfo = {
     },
   },
 
-  isConnectionExpensive(): Promise<any> {
-    return deprecatedCallback(
-      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
-      Array.prototype.slice.call(arguments),
-      'single-callback-value-first',
-      'NetInfo.isConnectionMetered(callback) is deprecated. Use the returned Promise instead.'
+  isConnectionExpensive(): Promise<boolean> {
+    return (
+      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS'))
     );
   },
 };

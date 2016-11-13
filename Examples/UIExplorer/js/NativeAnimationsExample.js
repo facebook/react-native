@@ -191,6 +191,7 @@ class EventExample extends React.Component {
         <Animated.ScrollView
           horizontal
           style={{ height: 100, marginTop: 16 }}
+          scrollEventThrottle={16}
           onScroll={
             Animated.event([{
               nativeEvent: { contentOffset: { x: this.state.scrollX } }
@@ -320,7 +321,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
@@ -335,8 +336,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
@@ -462,19 +464,18 @@ exports.examples = [
     },
   },
   {
-    title: 'Internal Settings',
+    title: 'Animated events',
     render: function() {
       return (
-        <InternalSettings />
+        <EventExample />
       );
     },
   },
   {
-    title: 'Animated events',
-    platform: 'android',
+    title: 'Internal Settings',
     render: function() {
       return (
-        <EventExample />
+        <InternalSettings />
       );
     },
   },

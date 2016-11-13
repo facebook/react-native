@@ -1,0 +1,31 @@
+include_defs('//ReactAndroid/DEFS')
+
+robolectric3_test(
+  name = 'devsupport',
+  # Please change the contact to the oncall of your team
+  contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/devsupport:devsupport'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react:react'),
+
+    react_native_tests_target('java/com/facebook/react/bridge:testhelpers'),
+    react_native_dep('third-party/java/okhttp:okhttp3'),
+    react_native_dep('third-party/java/okhttp:okhttp3-ws'),
+    react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
+    react_native_dep('third-party/java/fest:fest'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_dep('third-party/java/junit:junit'),
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
+
+project_config(
+  test_target = ':devsupport',
+)

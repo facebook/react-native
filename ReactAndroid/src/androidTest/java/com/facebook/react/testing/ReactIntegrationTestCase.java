@@ -52,7 +52,8 @@ import static org.mockito.Mockito.mock;
  */
 public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 
-  private static final long IDLE_TIMEOUT_MS = 15000;
+  // we need a bigger timeout for CI builds because they run on a slow emulator
+  private static final long IDLE_TIMEOUT_MS = 60000;
 
   private @Nullable CatalystInstance mInstance;
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
