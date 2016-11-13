@@ -219,8 +219,8 @@ var Image = React.createClass({
     },
 
     /**
-     * Resolves an asset reference into an object which has the properties `uri`, `width`, 
-     * and `height`. The input may either be a number (opaque type returned by 
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
      * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
      */
     resolveAssetSource: resolveAssetSource,
