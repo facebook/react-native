@@ -13,7 +13,7 @@ const denodeify = require('denodeify');
 const sane = require('sane');
 const execSync = require('child_process').execSync;
 
-const MAX_WAIT_TIME = 120000;
+const MAX_WAIT_TIME = 360000;
 
 const detectWatcherClass = () => {
   try {

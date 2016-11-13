@@ -35,7 +35,7 @@ const {
   TouchableOpacity
 } = ReactNative;
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 const CameraRollView = require('./CameraRollView');
 
@@ -143,6 +143,6 @@ exports.description = 'Example component that uses CameraRoll to list user\'s ph
 exports.examples = [
   {
     title: 'Photos',
-    render(): ReactElement<any> { return <CameraRollExample />; }
+    render(): React.Element<any> { return <CameraRollExample />; }
   }
 ];

@@ -31,11 +31,13 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(const std::string& asset
   return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager), assetName);
 }
 
+__attribute__((visibility("default")))
 AAssetManager *extractAssetManager(jobject jassetManager) {
   auto env = jni::Environment::current();
   return AAssetManager_fromJava(env, jassetManager);
 }
 
+__attribute__((visibility("default")))
 std::unique_ptr<const JSBigString> loadScriptFromAssets(
     AAssetManager *manager,
     const std::string& assetName) {

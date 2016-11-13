@@ -7,8 +7,8 @@
 #include <JavaScriptCore/JSPerfStats.h>
 #include <JavaScriptCore/JSValueRef.h>
 
-#include "JSCHelpers.h"
-#include "Value.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 static JSValueRef nativeGetHeapStats(
     JSContextRef ctx,

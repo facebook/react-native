@@ -14,16 +14,16 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
- * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
- * {@link CSSNode} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
+ * {@link CSSNodeDEPRECATED} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -43,7 +43,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
  * information.
  */
 @ReactPropertyHolder
-public class ReactShadowNode extends CSSNode {
+public class ReactShadowNode extends CSSNodeDEPRECATED {
 
   private int mReactTag;
   private @Nullable String mViewClassName;
@@ -51,7 +51,6 @@ public class ReactShadowNode extends CSSNode {
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
   private boolean mNodeUpdated = true;
-  private int mSizeFlexibility;
 
   // layout-only nodes
   private boolean mIsLayoutOnly;
@@ -114,14 +113,6 @@ public class ReactShadowNode extends CSSNode {
     return mNodeUpdated;
   }
 
-  public int getSizeFlexibility() {
-    return mSizeFlexibility;
-  }
-
-  public void setSizeFlexibility(int sizeFlexibility) {
-    mSizeFlexibility = sizeFlexibility;
-  }
-
   @Override
   public void dirty() {
     if (!isVirtual()) {
@@ -172,7 +163,7 @@ public class ReactShadowNode extends CSSNode {
   }
 
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(CSSNodeDEPRECATED child, int i) {
     super.addChildAt(child, i);
     markUpdated();
     ReactShadowNode node = (ReactShadowNode) child;
@@ -246,6 +237,9 @@ public class ReactShadowNode extends CSSNode {
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
   }
 
+  /**
+   * @return true if layout (position or dimensions) changed, false otherwise.
+   */
   /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
@@ -256,25 +250,28 @@ public class ReactShadowNode extends CSSNode {
     }
 
     if (hasNewLayout()) {
-      int absoluteLeft = Math.round(absoluteX + getLayoutX());
-      int absoluteTop = Math.round(absoluteY + getLayoutY());
-      int absoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      int absoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      float newLeft = Math.round(absoluteX + getLayoutX());
+      float newTop = Math.round(absoluteY + getLayoutY());
+      float newRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      float newBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
 
-      if (absoluteLeft != mAbsoluteLeft || absoluteTop != mAbsoluteTop ||
-        absoluteRight != mAbsoluteRight || absoluteBottom != mAbsoluteBottom) {
-        mAbsoluteLeft = absoluteLeft;
-        mAbsoluteTop = absoluteTop;
-        mAbsoluteRight = absoluteRight;
-        mAbsoluteBottom = absoluteBottom;
-
-        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-
-        return true;
+      if (newLeft == mAbsoluteLeft &&
+          newRight == mAbsoluteRight &&
+          newTop == mAbsoluteTop &&
+          newBottom == mAbsoluteBottom) {
+        return false;
       }
-    }
 
-    return false;
+      mAbsoluteLeft = newLeft;
+      mAbsoluteTop = newTop;
+      mAbsoluteRight = newRight;
+      mAbsoluteBottom = newBottom;
+
+      nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public final int getReactTag() {

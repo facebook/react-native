@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import android.app.Instrumentation;
 import android.content.Context;
@@ -144,25 +143,14 @@ public class ReactTestHelper {
         @Override
         public CatalystInstance build() {
           final CatalystInstance instance = builder.build();
-          try {
-            instance.getReactQueueConfiguration().getJSQueueThread().callOnQueue(
-              new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                  testCase.initializeWithInstance(instance);
-                  instance.runJSBundle();
-                  return null;
-                }
-              }).get();
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-              @Override
-              public void run() {
-                instance.initialize();
-              }
-            });
-          } catch (Exception e) {
-            throw new RuntimeException(e);
-          }
+          testCase.initializeWithInstance(instance);
+          instance.runJSBundle();
+          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+              instance.initialize();
+            }
+          });
           testCase.waitForBridgeAndUIIdle();
           return instance;
         }

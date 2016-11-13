@@ -7,9 +7,9 @@
 #include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <jsc_legacy_profiler.h>
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 #include "JSCLegacyProfiler.h"
-#include "Value.h"
 
 static JSValueRef nativeProfilerStart(
     JSContextRef ctx,

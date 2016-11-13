@@ -58,7 +58,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  * <p>
  * <h2>== CSSNodes ==</h2>
  * In order to allow layout and measurement to occur on a non-UI thread, this module also
- * operates on intermediate CSSNode objects that correspond to a native view. These CSSNode are able
+ * operates on intermediate CSSNodeDEPRECATED objects that correspond to a native view. These CSSNodeDEPRECATED are able
  * to calculate layout according to their styling rules, and then the resulting x/y/width/height of
  * that layout is scheduled as an operation that will be applied to native view hierarchy at the end
  * of current batch.
@@ -87,12 +87,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
-      UIImplementation uiImplementation) {
+      UIImplementationProvider uiImplementationProvider) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerList);
-    mUIImplementation = uiImplementation;
+    mUIImplementation = uiImplementationProvider
+      .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
     reactContext.addLifecycleEventListener(this);
   }
@@ -211,7 +212,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
-    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight, mEventDispatcher);
+    mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
 
   @ReactMethod
@@ -498,7 +499,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
           .arg("BatchId", batchId)
           .flush();
     try {
-      mUIImplementation.dispatchViewUpdates(mEventDispatcher, batchId);
+      mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

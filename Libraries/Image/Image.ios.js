@@ -15,9 +15,8 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ImageResizeMode = require('ImageResizeMode');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -26,6 +25,8 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
+
+const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 

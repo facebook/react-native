@@ -41,7 +41,7 @@ RCT_EXPORT_MODULE()
   if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
   }
-  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
+  NSUInteger allowedLength = textField.maxLength.integerValue - MIN(textField.maxLength.integerValue, textField.text.length) + range.length;
   if (string.length > allowedLength) {
     if (string.length > 1) {
       // Truncate the input string so the result is exactly maxLength

@@ -2,7 +2,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <folly/json.h>
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 
 #ifdef WITH_FBJSCEXTENSION
 #undef ASSERT
@@ -17,11 +17,11 @@ using namespace facebook::react;
 
 #ifdef ANDROID
 #include <android/looper.h>
-void prepare() {
+static void prepare() {
   ALooper_prepare(0);
 }
 #else
-void prepare() {
+static void prepare() {
 }
 #endif
 
@@ -105,4 +105,3 @@ TEST(Value, BadUtf16) {
   JSGlobalContextRelease(ctx);
 }
 #endif
-
