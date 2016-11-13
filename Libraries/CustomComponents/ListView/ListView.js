@@ -196,6 +196,8 @@ var ListView = React.createClass({
      * section until it reaches the top of the screen, at which point it will
      * stick to the top until it is pushed off the screen by the next section
      * header.
+     *
+     * NOTE: On Android, the header is not sticky.
      */
     renderSectionHeader: PropTypes.func,
     /**
