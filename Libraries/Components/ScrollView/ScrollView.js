@@ -531,7 +531,7 @@ const ScrollView = React.createClass({
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
         // Since the ScrollView is wrapped add the style props to the
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
-        // Note: we should only apply prop.style on the wrapper
+        // Note: we should only apply props.style on the wrapper
         // however, the ScrollView still needs the baseStyle to be scrollable
 
         return React.cloneElement(
