@@ -21,6 +21,9 @@ import com.facebook.react.uimanager.UIManagerModule;
 public class ReactScrollViewHelper {
 
   public static final long MOMENTUM_DELAY = 20;
+  public static final String OVER_SCROLL_ALWAYS = "always";
+  public static final String OVER_SCROLL_IF_CONTENT_SCROLLS = "always-if-content-scrolls";
+  public static final String OVER_SCROLL_NEVER = "never";
 
   /**
    * Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}.

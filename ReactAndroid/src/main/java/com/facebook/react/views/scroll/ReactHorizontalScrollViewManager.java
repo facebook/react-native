@@ -12,6 +12,7 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import android.graphics.Color;
+import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
@@ -96,6 +97,20 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "pagingEnabled")
   public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);
+  }
+
+  /**
+   * Controls overScroll behaviour
+   */
+  @ReactProp(name = "overScrollMode")
+  public void setOverScrollMode(ReactScrollView view, String value) {
+    if (value == null || value.equals(ReactScrollViewHelper.OVER_SCROLL_IF_CONTENT_SCROLLS)) {
+      view.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+    } else if (value.equals(ReactScrollViewHelper.OVER_SCROLL_ALWAYS)) {
+      view.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+    } else if (value.equals(ReactScrollViewHelper.OVER_SCROLL_NEVER)) {
+      view.setOverScrollMode(View.OVER_SCROLL_NEVER);
+    }
   }
 
   @Override
