@@ -352,14 +352,14 @@ const ScrollView = React.createClass({
 
      /**
      * Used to override default value of overScroll mode.
-     * 
+     *
      * Possible values:
      *
      *  - `'always'` - Always allow a user to over-scroll this view.
-     *  - `'always-if-content-scrolls'` - Default value, allow a user to over-scroll 
+     *  - `'always-if-content-scrolls'` - Default value, allow a user to over-scroll
      *    this view only if the content is large enough to meaningfully scroll.
      *  - `'never'` - Never allow a user to over-scroll this view.
-     * 
+     *
      * @platform android
      */
     overScrollMode: PropTypes.oneOf([
