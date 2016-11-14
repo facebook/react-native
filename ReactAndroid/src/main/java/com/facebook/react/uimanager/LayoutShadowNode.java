@@ -29,27 +29,32 @@ public class LayoutShadowNode extends ReactShadowNode {
 
   @ReactProp(name = ViewProps.MIN_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
   public void setMinWidth(float minWidth) {
-    setStyleMinWidth(CSSConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
+    setStyleMinWidth(
+      CSSConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
   }
 
   @ReactProp(name = ViewProps.MAX_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
   public void setMaxWidth(float maxWidth) {
-    setStyleMaxWidth(CSSConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
+    setStyleMaxWidth(
+      CSSConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
   }
 
   @ReactProp(name = ViewProps.HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
   public void setHeight(float height) {
-    setStyleHeight(CSSConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
+    setStyleHeight(
+      CSSConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
   }
 
   @ReactProp(name = ViewProps.MIN_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
   public void setMinHeight(float minHeight) {
-    setStyleMinHeight(CSSConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
+    setStyleMinHeight(
+      CSSConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
   }
 
   @ReactProp(name = ViewProps.MAX_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
   public void setMaxHeight(float maxHeight) {
-    setStyleMaxHeight(CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
+    setStyleMaxHeight(
+      CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
   }
 
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
@@ -81,7 +86,8 @@ public class LayoutShadowNode extends ReactShadowNode {
 
   @ReactProp(name = ViewProps.FLEX_WRAP)
   public void setFlexWrap(@Nullable String flexWrap) {
-    setWrap(flexWrap == null ? CSSWrap.NOWRAP : CSSWrap.valueOf(flexWrap.toUpperCase(Locale.US)));
+    setFlexWrap(
+      flexWrap == null ? CSSWrap.NOWRAP : CSSWrap.valueOf(flexWrap.toUpperCase(Locale.US)));
   }
 
   @ReactProp(name = ViewProps.ALIGN_SELF)

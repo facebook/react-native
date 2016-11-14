@@ -33,7 +33,6 @@ import android.widget.TextView;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
@@ -43,6 +42,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -105,15 +105,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   private static void buildSpannedFromTextCSSNode(
-      ReactTextShadowNode textCSSNode,
+      ReactTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
     int start = sb.length();
-    if (textCSSNode.mText != null) {
-      sb.append(textCSSNode.mText);
+    if (textShadowNode.mText != null) {
+      sb.append(textShadowNode.mText);
     }
-    for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
-      CSSNodeDEPRECATED child = textCSSNode.getChildAt(i);
+    for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
+      ReactShadowNode child = textShadowNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
@@ -129,57 +129,57 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         throw new IllegalViewOperationException("Unexpected view type nested under text node: "
                 + child.getClass());
       }
-      ((ReactShadowNode) child).markUpdateSeen();
+      child.markUpdateSeen();
     }
     int end = sb.length();
     if (end >= start) {
-      if (textCSSNode.mIsColorSet) {
-        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textCSSNode.mColor)));
+      if (textShadowNode.mIsColorSet) {
+        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textShadowNode.mColor)));
       }
-      if (textCSSNode.mIsBackgroundColorSet) {
+      if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
-                new BackgroundColorSpan(textCSSNode.mBackgroundColor)));
+                new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (textCSSNode.mFontSize != UNSET) {
-        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textCSSNode.mFontSize)));
+      if (textShadowNode.mFontSize != UNSET) {
+        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textShadowNode.mFontSize)));
       }
-      if (textCSSNode.mFontStyle != UNSET ||
-          textCSSNode.mFontWeight != UNSET ||
-          textCSSNode.mFontFamily != null) {
+      if (textShadowNode.mFontStyle != UNSET ||
+          textShadowNode.mFontWeight != UNSET ||
+          textShadowNode.mFontFamily != null) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
                 new CustomStyleSpan(
-                    textCSSNode.mFontStyle,
-                    textCSSNode.mFontWeight,
-                    textCSSNode.mFontFamily,
-                    textCSSNode.getThemedContext().getAssets())));
+                    textShadowNode.mFontStyle,
+                    textShadowNode.mFontWeight,
+                    textShadowNode.mFontFamily,
+                    textShadowNode.getThemedContext().getAssets())));
       }
-      if (textCSSNode.mIsUnderlineTextDecorationSet) {
+      if (textShadowNode.mIsUnderlineTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
       }
-      if (textCSSNode.mIsLineThroughTextDecorationSet) {
+      if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if (textCSSNode.mTextShadowOffsetDx != 0 || textCSSNode.mTextShadowOffsetDy != 0) {
+      if (textShadowNode.mTextShadowOffsetDx != 0 || textShadowNode.mTextShadowOffsetDy != 0) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
                 new ShadowStyleSpan(
-                    textCSSNode.mTextShadowOffsetDx,
-                    textCSSNode.mTextShadowOffsetDy,
-                    textCSSNode.mTextShadowRadius,
-                    textCSSNode.mTextShadowColor)));
+                    textShadowNode.mTextShadowOffsetDx,
+                    textShadowNode.mTextShadowOffsetDy,
+                    textShadowNode.mTextShadowRadius,
+                    textShadowNode.mTextShadowColor)));
       }
-      if (!Float.isNaN(textCSSNode.getEffectiveLineHeight())) {
+      if (!Float.isNaN(textShadowNode.getEffectiveLineHeight())) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
-                new CustomLineHeightSpan(textCSSNode.getEffectiveLineHeight())));
+                new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
       }
-      ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
+      ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
 
@@ -218,7 +218,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private static final CSSNodeAPI.MeasureFunction TEXT_MEASURE_FUNCTION =
+  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
       new CSSNodeAPI.MeasureFunction() {
         @Override
         public long measure(
@@ -228,11 +228,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
             float height,
             CSSMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-          ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
           Spanned text = Assertions.assertNotNull(
-              reactCSSNode.mPreparedSpannableText,
+              mPreparedSpannableText,
               "Spannable element has not been prepared in onBeforeLayout");
           BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
           float desiredWidth = boring == null ?
@@ -278,11 +277,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 true);
           }
 
-          if (reactCSSNode.mNumberOfLines != UNSET &&
-              reactCSSNode.mNumberOfLines < layout.getLineCount()) {
+          if (mNumberOfLines != UNSET &&
+              mNumberOfLines < layout.getLineCount()) {
             return MeasureOutput.make(
                 layout.getWidth(),
-                layout.getLineBottom(reactCSSNode.mNumberOfLines - 1));
+                layout.getLineBottom(mNumberOfLines - 1));
           } else {
             return MeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
@@ -356,7 +355,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public ReactTextShadowNode(boolean isVirtual) {
     mIsVirtual = isVirtual;
     if (!isVirtual) {
-      setMeasureFunction(TEXT_MEASURE_FUNCTION);
+      setMeasureFunction(mTextMeasureFunction);
     }
   }
 
