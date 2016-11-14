@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.react.LazyReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
