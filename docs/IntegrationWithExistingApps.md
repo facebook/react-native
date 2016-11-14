@@ -107,11 +107,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
+For this demo create a new single view Objective-C project. You can also use your existing Objective-C project for this, but it is best to practice on a newly created project.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
+For this demo create a new single view Swift project. You can also use your existing Swift project for this, but it is best to practice on a newly created project.
 
 <block class="objc swift" />
 
@@ -119,12 +119,12 @@ Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a 
 
 ## Package Dependencies
 
-React Native integration requires both the React and React Native node modules. The React Native Framework will provide the code to allow your application integration to happen.
+React Native integration requires both the React and React Native node modules. The React Native Framework will provide the code to allow your application integration to happen. You will use Node package manager to install these dependencies. But first, you have to specify all dependencies that you need in the `package.json` file. You can read more about npm [here](https://docs.npmjs.com/) and `package.json` [here](https://docs.npmjs.com/getting-started/using-a-package.json)
 
 
 ### `package.json`
 
-We will add the package dependencies to a `package.json` file. Create this file in the root of your project if it does not exist.
+Create a file name `package.json` using a text editor.  
 
 > Normally with React Native projects, you will put files like `package.json`, `index.ios.js`, etc. in the root directory of your project and then have your iOS specific native code in a subdirectory like `ios/` where your Xcode project is located (e.g., `.xcodeproj`).
 
@@ -136,15 +136,15 @@ Below is an example of what your `package.json` file should minimally contain.
 
 ```bash
 {
-  "name": "NumberTileGame",
+  "name": "HelloWorld",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react": "15.0.2",
-    "react-native": "0.26.1"
+    "react": "15.3.2",
+    "react-native": "0.37.0"
   }
 }
 ```
@@ -153,15 +153,15 @@ Below is an example of what your `package.json` file should minimally contain.
 
 ```bash
 {
-  "name": "swift-2048",
+  "name": "HelloWorld",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react": "15.0.2",
-    "react-native": "0.26.1"
+    "react": "15.3.2",
+    "react-native": "0.37.0"
   }
 }
 ```
@@ -227,7 +227,7 @@ end
 source 'https://github.com/CocoaPods/Specs.git'
 
 # Required for Swift apps
-platform :ios, '8.0'
+platform :ios, '10.1'
 use_frameworks!
 
 # The target name is most likely the name of your project.
@@ -235,7 +235,7 @@ target 'swift-2048' do
 
   # Your 'node_modules' directory is probably in the root of your project,
   # but if not, adjust the `:path` accordingly
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  pod 'React', :path => './node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
     'RCTNetwork',
@@ -271,17 +271,14 @@ Pod installation complete! There are 3 dependencies from the Podfile and 1 total
 
 <block class="swift" />
 
-> If you get a warning such as "*The `swift-2048 [Debug]` target overrides the `FRAMEWORK_SEARCH_PATHS` build setting defined in `Pods/Target Support Files/Pods-swift-2048/Pods-swift-2048.debug.xcconfig`. This can lead to problems with the CocoaPods installation*", then make sure the `Framework Search Paths` in `Build Settings` for both `Debug` and `Release` only contain `$(inherited)`.
-
 <block class="objc swift" />
 
 ## Code Integration
 
-Now that we have a package foundation, we will actually modify the native application to integrate React Native into the application. For our 2048 app, we will add a "High Score" screen in React Native.
-
+Now that we have a package foundation, we will actually modify the native application to integrate React Native into the application. We will create a view that displays Hello World on screen.
 ### The React Native component
 
-The first bit of code we will write is the actual React Native code for the new "High Score" screen that will be integrated into our application.
+The first bit of code we will write is the actual React Native code for the HelloWorld that will be displayed.
 
 #### Create a `index.ios.js` file
 
@@ -301,76 +298,36 @@ In your `index.ios.js`, create your component. In our sample here, we will add s
 ```js
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View
+  Text
 } from 'react-native';
 
-class RNHighScores extends React.Component {
+class HelloWorld extends Component {
   render() {
-    var contents = this.props["scores"].map(
-      score => <Text key={score.name}>{score.name}:{score.value}{"\n"}</Text>
-    );
     return (
-      <View style={styles.container}>
-        <Text style={styles.highScoresTitle}>
-          2048 High Scores!
-        </Text>
-        <Text style={styles.scores}>
-          {contents}
-        </Text>
-      </View>
+      <Text>Hello world!</Text>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  highScoresTitle: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  scores: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
-
-// Module name
-AppRegistry.registerComponent('RNHighScores', () => RNHighScores);
+AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
 ```
 
-> `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
+> `HelloWorld` is the name of your module that will be used when you add a view to React Native from within your iOS application.
 
 ## The Magic: `RCTRootView`
 
 Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
 
-We will tie our React Native component with a new native view in the `ViewController` that will actually host it called `RCTRootView` .
-
-### Create an Event Path
-
-You can add a new link on the main game menu to go to the "High Score" React Native page.
-
-![Event Path](img/react-native-add-react-native-integration-link.png)
-
 #### Event Handler
 
 We will now add an event handler from the menu link. A method will be added to the main `ViewController` of your application. This is where `RCTRootView` comes into play.
 
-When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `RNHighScore` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `NSURL`) and tie it to the module.
+When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `HelloWorld` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `URL`) and tie it to the module.
 
-We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
+We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `HelloWorld` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
 
 <block class="objc" />
 
@@ -420,28 +377,76 @@ First `import` the `React` library.
 import React
 ```
 
-> The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
+In your `ViewController` class, declare a `RCTRootView` variable named `rootView`.
+```
+var rootView: RCTRootView!
+```
+Next, declare a constant variable, which holds the path to your React Native code. You can do this in your `ViewController` class or in the context where you will add your React Native view.
 
 ```
-@IBAction func highScoreButtonTapped(sender : UIButton) {
-  NSLog("Hello")
-  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
-  let mockData:NSDictionary = ["scores":
-      [
-          ["name":"Alex", "value":"42"],
-          ["name":"Joel", "value":"10"]
-      ]
-  ]
+let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+```
 
-  let rootView = RCTRootView(
-      bundleURL: jsCodeLocation,
-      moduleName: "RNHighScores",
-      initialProperties: mockData as [NSObject : AnyObject],
-      launchOptions: nil
+Now, you can initialize your `RCTRootView` and add it to your view. We will do it in `viewDidLoad`. Also, your have to specify the size and origin of your RCTRootView, otherwise, it will not show on screen.
+
+```
+override func viewDidLoad() {
+  super.viewDidLoad()
+
+  // Specify React Native code location
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+
+  //Iniialize the rootview as RCTRootView
+  rootView = RCTRootView( bundleURL: jsCodeLocation, moduleName: "HelloWorld", initialProperties: nil, launchOptions: nil)
+
+  //Specify the RCTRootView's size and location on view, and add it to view as sub view.
+  let view  = (
+    x: self.view.bounds.origin.x,
+    y: self.view.bounds.origin.y,
+    width: self.view.bounds.width,
+    height: self.view.bounds.height
   )
-  let vc = UIViewController()
-  vc.view = rootView
-  self.present(vc, animated: true, completion: nil)
+
+  rootView.frame = CGRect(x: view.x, y: view.y, width: view.width, height: view.height)
+
+  self.view.addSubview(rootView)
+
+}  
+```
+
+Your `ViewController` class should look like this:
+
+```
+import UIKit
+import React
+
+class ViewController: UIViewController {
+
+  //Declare an RCTRootView to link your react native code with native code
+  var rootView: RCTRootView!
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Specify React Native code location
+    let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+
+    //Iniialize the rootview as RCTRootView
+    rootView = RCTRootView( bundleURL: jsCodeLocation, moduleName: "HelloWorld", initialProperties: nil, launchOptions: nil)
+
+    //Specify the RCTRootView's size and location on view, and add it to view as sub view.
+    let view  = (
+      x: self.view.bounds.origin.x,
+      y: self.view.bounds.origin.y,
+      width: self.view.bounds.width,
+      height: self.view.bounds.height
+    )
+
+    rootView.frame = CGRect(x: view.x, y: view.y, width: view.width, height: view.height)
+
+    self.view.addSubview(rootView)
+
+  }  
 }
 ```
 
@@ -449,21 +454,13 @@ import React
 
 <block class="objc" />
 
-> When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `[[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
+> When moving your app to production, the `URL` can point to a pre-bundled file on disk via something like `[[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
 <block class="swift" />
 
-> When moving your app to production, the `NSURL` can point to a pre-bundled file on disk via something like `let mainBundle = NSBundle(URLForResource: "main" withExtension:"jsbundle")`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
+> When moving your app to production, the `URL` can point to a pre-bundled file on disk via something like `let mainBundle = NSBundle(URLForResource: "main" withExtension:"jsbundle")`. You can use the `react-native-xcode.sh` script in `node_modules/react-native/packager/` to generate that pre-bundled file.
 
 <block class="objc swift" />
-
-#### Wire Up
-
-Wire up the new link in the main menu to the newly added event handler method.
-
-![Event Path](img/react-native-add-react-native-integration-wire-up.png)
-
-> One of the easier ways to do this is to open the view in the storyboard and right click on the new link. Select something such as the `Touch Up Inside` event, drag that to the storyboard and then select the created method from the list provided.
 
 ## Test Your Integration
 
@@ -503,15 +500,11 @@ If you are using Xcode or your favorite editor, build and run your native iOS ap
 $ react-native run-ios
 ```
 
-In our sample application, you should see the link to the "High Scores" and then when you click on that you will see the rendering of your React Native component.
-
-Here is the *native* application home screen:
-
-![Home Screen](img/react-native-add-react-native-integration-example-home-screen.png)
+In your simulator, you should see `Hello World` on the left corner of the simulator. It is overlaid by some text. You can add more styling to your `index.ios.js` file to make it look better.
 
 Here is the *React Native* high score screen:
 
-![High Scores](img/react-native-add-react-native-integration-example-high-scores.png)
+![Hello World](img/react-native-add-react-native-integration-example-hello-world.png)
 
 > If you are getting module resolution issues when running your application please see [this GitHub issue](https://github.com/facebook/react-native/issues/4968) for information and possible resolution. [This comment](https://github.com/facebook/react-native/issues/4968#issuecomment-220941717) seemed to be the latest possible resolution.
 
@@ -523,7 +516,7 @@ You can examine the code that added the React Native screen on [GitHub](https://
 
 <block class="swift" />
 
-You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/swift-2048/commit/13272a31ee6dd46dc68b1dcf4eaf16c1a10f5229).
+You can examine the code that added the React Native screen on [GitHub](https://github.com/COMP491ReactNative/HelloWorld-react-native-swift).
 
 <block class="android" />
 
