@@ -224,6 +224,7 @@
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.34.0",
+    "graphlib-dot": "0.6.2",
     "graphql": "0.6.2",
     "jest": "^17.0.0",
     "jest-repl": "^17.0.0",
