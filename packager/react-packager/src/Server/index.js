@@ -502,7 +502,11 @@ class Server {
         data => {
           // Tell clients to cache this for 1 year.
           // This is safe as the asset url contains a hash of the asset.
-          res.setHeader('Cache-Control', 'max-age=31536000');
+          if (process.env.NODE_ENV === 'production') {
+            res.setHeader('Cache-Control', 'max-age=31536000');
+          } else {
+            res.setHeader('Cache-Control', 'max-age=0');
+          }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
           print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
         },
