@@ -67,14 +67,22 @@ var TouchableOpacity = React.createClass({
   },
 
   getInitialState: function() {
+    var childStyle = flattenStyle(this.props.style) || {};
+    var opacity = childStyle.opacity === undefined ? 1 : childStyle.opacity;
     return {
       ...this.touchableGetInitialState(),
-      anim: new Animated.Value(1),
+      anim: new Animated.Value(opacity),
     };
   },
 
   componentDidMount: function() {
     ensurePositiveDelayProps(this.props);
+  },
+
+  componentDidUpdate: function() {
+    if (!this._hideTimeout && !this._pressIn) {
+      this._opacityInactive();
+    }
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -98,6 +106,7 @@ var TouchableOpacity = React.createClass({
   touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
+    this._pressIn = true;
     this._opacityActive();
     this.props.onPressIn && this.props.onPressIn(e);
   },
@@ -106,6 +115,7 @@ var TouchableOpacity = React.createClass({
     if (!this._hideTimeout) {
       this._opacityInactive();
     }
+    this._pressIn = false;
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
