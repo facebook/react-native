@@ -379,7 +379,6 @@ describe('processRequest', () => {
 
       server.processRequest(req, res);
       jest.runAllTimers();
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -392,7 +391,6 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -406,7 +404,6 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
@@ -422,7 +419,6 @@ describe('processRequest', () => {
         'imgs/\u{4E3B}\u{9875}/logo.png',
         undefined
       );
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });
