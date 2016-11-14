@@ -43,7 +43,7 @@ class EmptyPage extends React.Component {
 }
 
 class NavigatorIOSColors extends React.Component {
-  static title = '<NavigatorIOS> - Custom Colors';
+  static title = '<NavigatorIOS> - Custom Bar Style';
   static description = 'iOS navigation with custom nav bar colors';
 
   render() {
@@ -62,14 +62,10 @@ class NavigatorIOSColors extends React.Component {
             this.props.onExampleExit();
           },
           passProps: {
-            text: 'The nav bar has custom colors with tintColor, ' +
-              'barTintColor and titleTextColor props.',
+            text: 'The nav bar is black with barStyle prop.',
           },
         }}
-        tintColor="#FFFFFF"
-        barTintColor="#183E63"
-        titleTextColor="#FFFFFF"
-        translucent={true}
+        barStyle="black"
       />
     );
   }

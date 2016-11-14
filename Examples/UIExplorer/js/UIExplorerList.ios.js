@@ -81,6 +81,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./NavigatorIOSColorsExample'),
   },
   {
+    key: 'NavigatorIOSBarStyleExample',
+    module: require('./NavigatorIOSBarStyleExample'),
+  },
+  {
     key: 'NavigatorIOSExample',
     module: require('./NavigatorIOSExample'),
   },
@@ -127,6 +131,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'TabBarIOSExample',
     module: require('./TabBarIOSExample'),
+  },
+  {
+    key: 'TabBarIOSCustomBarStyle',
+    module: require('./TabBarIOSCustomBarStyle'),
   },
   {
     key: 'TextExample',
