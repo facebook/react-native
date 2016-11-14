@@ -424,10 +424,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
-    mAllowFontScaling = allowFontScaling;
-
-    if (mFontSizeInput > UNSET) {
-      setFontSize(mFontSizeInput, true);
+    if (allowFontScaling != mAllowFontScaling) {
+      mAllowFontScaling = allowFontScaling;
+      setFontSize(mFontSizeInput);
     }
   }
 
@@ -452,18 +451,16 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
-    setFontSize(fontSize, false);
-  }
-
-  public void setFontSize(float fontSize, boolean forceRecalculation) {
     mFontSizeInput = fontSize;
 
-    if (fontSize != UNSET || forceRecalculation) {
-      if (mAllowFontScaling) {
-        fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
-      } else {
-        fontSize = (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
-      }
+    if (fontSize == UNSET) {
+      fontSize = ViewDefaults.FONT_SIZE_SP;
+    }
+
+    if (mAllowFontScaling) {
+      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+    } else {
+      fontSize = (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
     markUpdated();
