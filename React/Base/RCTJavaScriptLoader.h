@@ -52,6 +52,14 @@ typedef union {
  */
 RCT_EXTERN RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header);
 
+/**
+ * RCTStringForScriptTag
+ *
+ * Convert an `RCTScriptTag` enum into a string, useful for emitting in errors
+ * and diagnostic messages.
+ */
+RCT_EXTERN NSString *RCTStringForScriptTag(RCTScriptTag tag);
+
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
 NS_ENUM(NSInteger) {
