@@ -205,20 +205,24 @@ The `Podfile` will be created and saved in the *iOS* directory (e.g., `ios/`) of
 <block class="objc" />
 
 ```
+platform :ios, '10.1'
+
 # The target name is most likely the name of your project.
-target 'NumberTileGame' do
 
   # Your 'node_modules' directory is probably in the root of your project,
   # but if not, adjust the `:path` accordingly
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'Core',
-    'RCTText',
-    'RCTNetwork',
-    'RCTWebSocket', # needed for debugging
-    # Add any other subspecs you want to use in your project
-  ]
 
-end
+  target 'HelloWorld-obj-c' do
+
+    pod 'React', :path => './node_modules/react-native', :subspecs => [
+        'Core',
+        'RCTText',
+        'RCTNetwork',
+        'RCTWebSocket',
+    ]
+
+  end
+
 ```
 
 <block class="swift" />
@@ -321,9 +325,9 @@ AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
 
 Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
 
-#### Event Handler
+#### Adding `RCTRootView` to your project
 
-We will now add an event handler from the menu link. A method will be added to the main `ViewController` of your application. This is where `RCTRootView` comes into play.
+We will now add a React Native view into your project. You can do it from multiple places like when an event happens, or the application segues into a new ViewController. In this demo, we will add the React Native view in `viewDidLoad` of the main `ViewController`. This is where `RCTRootView` comes into play.
 
 When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `HelloWorld` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `URL`) and tie it to the module.
 
@@ -336,35 +340,37 @@ First `import` the `RCTRootView` library.
 ```
 #import "RCTRootView.h"
 ```
+Second specify the path to your React Native code, and initialize a `RCTRootView` named `rootView`. You have to specify `rootView` frame. Otherwise, the view will not show on screen. Last, point `ViewController`'s `view` to `rootView`.
 
-> The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
+Your `ViewController` should look like this:
 
 ```
-- (IBAction)highScoreButtonPressed:(id)sender {
-    NSLog(@"High Score Button Pressed");
-    NSURL *jsCodeLocation = [NSURL
-                             URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
-    RCTRootView *rootView =
-      [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
-                           moduleName        : @"RNHighScores"
-                           initialProperties :
-                             @{
-                               @"scores" : @[
-                                 @{
-                                   @"name" : @"Alex",
-                                   @"value": @"42"
-                                  },
-                                 @{
-                                   @"name" : @"Joel",
-                                   @"value": @"10"
-                                 }
-                               ]
-                             }
-                           launchOptions    : nil];
-    UIViewController *vc = [[UIViewController alloc] init];
-    vc.view = rootView;
-    [self presentViewController:vc animated:YES completion:nil];
+@implementation ViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  NSURL *jsCodeLocation = [NSURL
+                           URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+  RCTRootView *rootView =
+  [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
+                       moduleName        : @"HelloWorld"
+                       initialProperties : nil
+                       launchOptions     : nil];
+
+  CGRect view = CGRectMake(self.view.frame.origin.x,
+                           self.view.frame.origin.y,
+                           self.view.frame.size.width,
+                           self.view.frame.size.height);
+
+  rootView.frame = view;
+
+  self.view = rootView;
 }
+
+@end
+
+
 ```
 
 > Note that `RCTRootView initWithURL` starts up a new JSC VM. To save resources and simplify the communication between RN views in different parts of your native app, you can have multiple views powered by React Native that are associated with a single JS runtime. To do that, instead of using `[RCTRootView alloc] initWithURL`, use [`RCTBridge initWithBundleURL`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridge.h#L93) to create a bridge and then use `RCTRootView initWithBridge`.
@@ -512,7 +518,7 @@ Here is the *React Native* high score screen:
 
 <block class="objc" />
 
-You can examine the code that added the React Native screen on [GitHub](https://github.com/JoelMarcey/iOS-2048/commit/9ae70c7cdd53eb59f5f7c7daab382b0300ed3585).
+You can examine the code that added the React Native screen on [GitHub](https://github.com/COMP491ReactNative/HelloWorld-react-native-obj-c).
 
 <block class="swift" />
 
