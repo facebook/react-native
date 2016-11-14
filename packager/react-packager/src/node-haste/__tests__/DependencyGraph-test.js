@@ -15,6 +15,7 @@ jest
   .mock('../../Logger')
   .mock('../../lib/TransformCache');
 
+const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -28,7 +29,6 @@ beforeEach(() => {
 
 describe('DependencyGraph', function() {
   let Module;
-  let extractDependencies;
   let defaults;
 
   function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
@@ -99,8 +99,6 @@ describe('DependencyGraph', function() {
     Cache.prototype.end = jest.genMockFn();
 
     const transformCacheKey = 'abcdef';
-    extractDependencies =
-      require('../../JSTransformer/worker/extract-dependencies');
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
@@ -2651,7 +2649,6 @@ describe('DependencyGraph', function() {
       jest.resetModules();
       jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
-      extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
     });
 
     afterEach(function() {
