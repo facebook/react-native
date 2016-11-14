@@ -1,29 +1,18 @@
 [ignore]
-
-# We fork some components by platform.
+; We fork some components by platform
 .*/*[.]android.js
 
-# Ignore templates with `@flow` in header
-.*/local-cli/generator.*
-
-# Ignore malformed json
-.*/node_modules/y18n/test/.*\.json
-
-# Ignore the website subdir
-<PROJECT_ROOT>/website/.*
-
-# Ignore BUCK generated dirs
+; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-# Ignore unexpected extra @providesModule
-.*/node_modules/commoner/test/source/widget/share.js
+; Ignore unexpected extra "@providesModule"
 .*/node_modules/.*/node_modules/fbjs/.*
 
-# Ignore duplicate module providers
-# For RN Apps installed via npm, "Libraries" folder is inside node_modules/react-native but in the source repo it is in the root
+; Ignore duplicate module providers
+; For RN Apps installed via npm, "Libraries" folder is inside
+; "node_modules/react-native" but in the source repo it is in the root
 .*/Libraries/react-native/React.js
 .*/Libraries/react-native/ReactNative.js
-.*/node_modules/jest-runtime/build/__tests__/.*
 
 [include]
 
@@ -34,9 +23,6 @@ flow/
 
 [options]
 module.system=haste
-
-esproposal.class_static_fields=enable
-esproposal.class_instance_fields=enable
 
 experimental.strict_type_args=true
 
