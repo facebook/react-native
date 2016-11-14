@@ -148,7 +148,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    it('should get dependencies', function() {
+    xit('should get dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
