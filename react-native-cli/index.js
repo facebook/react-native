@@ -43,6 +43,7 @@ var spawn = require('child_process').spawn;
 var chalk = require('chalk');
 var prompt = require('prompt');
 var semver = require('semver');
+var resolveSymlink = require('./resolveSymlink');
 /**
  * Used arguments:
  *   -v --version - to print current version of react-native-cli and react-native dependency
@@ -57,22 +58,16 @@ var semver = require('semver');
  */
 var argv = require('minimist')(process.argv.slice(2));
 
+var REACT_NATIVE_DIR = resolveSymlink(
+  path.resolve('node_modules', 'react-native')
+);
+
 var CLI_MODULE_PATH = function() {
-  return path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react-native',
-    'cli.js'
-  );
+  return path.join(REACT_NATIVE_DIR, 'cli.js');
 };
 
 var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
-  return path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react-native',
-    'package.json'
-  );
+  return path.join(REACT_NATIVE_DIR, 'package.json');
 };
 
 // Use Yarn if available, it's much faster than the npm client.
