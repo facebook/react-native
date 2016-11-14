@@ -2092,23 +2092,27 @@ static void layoutNodeImpl(const CSSNodeRef node,
 
   // If the user didn't specify a width or height for the node, set the
   // dimensions based on the children.
-  if (measureModeMainDim == CSSMeasureModeUndefined) {
+  if (measureModeMainDim == CSSMeasureModeUndefined ||
+      (node->style.overflow != CSSOverflowScroll && measureModeMainDim == CSSMeasureModeAtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
     node->layout.measuredDimensions[dim[mainAxis]] = boundAxis(node, mainAxis, maxLineMainDim);
-  } else if (measureModeMainDim == CSSMeasureModeAtMost) {
+  } else if (node->style.overflow == CSSOverflowScroll &&
+             measureModeMainDim == CSSMeasureModeAtMost) {
     node->layout.measuredDimensions[dim[mainAxis]] =
         fmaxf(fminf(availableInnerMainDim + paddingAndBorderAxisMain,
                     boundAxisWithinMinAndMax(node, mainAxis, maxLineMainDim)),
               paddingAndBorderAxisMain);
   }
 
-  if (measureModeCrossDim == CSSMeasureModeUndefined) {
+  if (measureModeCrossDim == CSSMeasureModeUndefined ||
+      (node->style.overflow != CSSOverflowScroll && measureModeCrossDim == CSSMeasureModeAtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
     node->layout.measuredDimensions[dim[crossAxis]] =
         boundAxis(node, crossAxis, totalLineCrossDim + paddingAndBorderAxisCross);
-  } else if (measureModeCrossDim == CSSMeasureModeAtMost) {
+  } else if (node->style.overflow == CSSOverflowScroll &&
+             measureModeCrossDim == CSSMeasureModeAtMost) {
     node->layout.measuredDimensions[dim[crossAxis]] =
         fmaxf(fminf(availableInnerCrossDim + paddingAndBorderAxisCross,
                     boundAxisWithinMinAndMax(node,
