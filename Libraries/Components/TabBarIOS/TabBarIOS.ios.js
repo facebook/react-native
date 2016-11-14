@@ -47,6 +47,11 @@ class TabBarIOS extends React.Component {
      */
     barTintColor: ColorPropType,
     /**
+     * Used instead of setting barTintColor to black: gives a black tab bar
+     * with higher translucency.
+     */
+    barStyle: React.PropTypes.oneOf(['default', 'black']),
+    /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
     translucent: React.PropTypes.bool,
@@ -69,6 +74,7 @@ class TabBarIOS extends React.Component {
         unselectedTintColor={this.props.unselectedTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
+        barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
         {

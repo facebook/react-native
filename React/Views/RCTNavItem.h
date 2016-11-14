@@ -29,6 +29,9 @@
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *titleTextColor;
 @property (nonatomic, assign) BOOL translucent;
+#if !TARGET_OS_TV
+@property (nonatomic, assign) UIBarStyle barStyle;
+#endif
 
 @property (nonatomic, readonly) UIImageView *titleImageView;
 @property (nonatomic, readonly) UIBarButtonItem *backButtonItem;

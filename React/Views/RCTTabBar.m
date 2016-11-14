@@ -9,6 +9,7 @@
 
 #import "RCTTabBar.h"
 
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTTabBarItem.h"
@@ -141,13 +142,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.tintColor = tintColor;
 }
 
-- (BOOL)translucent {
+- (BOOL)translucent
+{
   return _tabController.tabBar.isTranslucent;
 }
 
-- (void)setTranslucent:(BOOL)translucent {
+- (void)setTranslucent:(BOOL)translucent
+{
   _tabController.tabBar.translucent = translucent;
 }
+
+#if !TARGET_OS_TV
+- (UIBarStyle)barStyle
+{
+  return _tabController.tabBar.barStyle;
+}
+
+- (void)setBarStyle:(UIBarStyle)barStyle
+{
+  _tabController.tabBar.barStyle = barStyle;
+}
+#endif
 
 - (UITabBarItemPositioning)itemPositoning
 {
