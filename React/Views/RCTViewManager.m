@@ -20,10 +20,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if TARGET_OS_TV
-#import "RCTTVView.h"
-#endif
-
 @implementation RCTConvert(UIAccessibilityTraits)
 
 RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
@@ -61,11 +57,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-#if TARGET_OS_TV
-  return [RCTTVView new];
-#else
   return [RCTView new];
-#endif
 }
 
 - (RCTShadowView *)shadowView
@@ -106,13 +98,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - View properties
 
-#if TARGET_OS_TV
-// Apple TV properties
-RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
-#endif
-
+RCT_EXPORT_VIEW_PROPERTY(accessibilityElementsHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
@@ -124,10 +110,10 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
 {
   if (json) {
-    view.clipsToBounds = [RCTConvert YGOverflow:json] != YGOverflowVisible;
+    view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
   } else {
     view.clipsToBounds = defaultView.clipsToBounds;
   }
@@ -303,15 +289,15 @@ RCT_EXPORT_SHADOW_PROPERTY(flex, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexGrow, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexShrink, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexBasis, float)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, YGFlexDirection)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, YGWrap)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, YGJustify)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, YGAlign)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
-RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrap)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
 RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
+RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
