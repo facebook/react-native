@@ -137,7 +137,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CSSAlign alignSelf;
 @property (nonatomic, assign) CSSAlign alignItems;
 @property (nonatomic, assign) CSSPositionType position;
-@property (nonatomic, assign) CSSWrapType flexWrap;
+@property (nonatomic, assign) CSSWrap flexWrap;
 
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;

@@ -69,7 +69,7 @@ typedef struct CSSStyle {
   CSSAlign alignItems;
   CSSAlign alignSelf;
   CSSPositionType positionType;
-  CSSWrapType flexWrap;
+  CSSWrap flexWrap;
   CSSOverflow overflow;
   float flex;
   float flexGrow;
@@ -423,7 +423,7 @@ CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignContent, alignContent, alignContent)
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignItems, alignItems, alignItems);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSAlign, AlignSelf, alignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSPositionType, PositionType, positionType, positionType);
-CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrapType, FlexWrap, flexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY_IMPL(CSSWrap, FlexWrap, flexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY_IMPL(CSSOverflow, Overflow, overflow, overflow);
 
 CSS_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
@@ -1395,7 +1395,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
   const CSSFlexDirection crossAxis = getCrossFlexDirection(mainAxis, direction);
   const bool isMainAxisRow = isRowDirection(mainAxis);
   const CSSJustify justifyContent = node->style.justifyContent;
-  const bool isNodeFlexWrap = node->style.flexWrap == CSSWrapTypeWrap;
+  const bool isNodeFlexWrap = node->style.flexWrap == CSSWrapWrap;
 
   CSSNodeRef firstAbsoluteChild = NULL;
   CSSNodeRef currentAbsoluteChild = NULL;
