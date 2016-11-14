@@ -105,6 +105,14 @@ void jni_CSSLog(alias_ref<jclass> clazz, jint level, jstring message) {
   Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
+void jni_CSSLayoutSetExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature, jboolean enabled) {
+  CSSLayoutSetExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature), enabled);
+}
+
+jboolean jni_CSSLayoutIsExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature) {
+  return CSSLayoutIsExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature));
+}
+
 jint jni_CSSNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return CSSNodeGetInstanceCount();
 }
@@ -291,6 +299,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeGetInstanceCount),
                         CSSMakeNativeMethod(jni_CSSLayoutSetLogger),
                         CSSMakeNativeMethod(jni_CSSLog),
+                        CSSMakeNativeMethod(jni_CSSLayoutSetExperimentalFeatureEnabled),
+                        CSSMakeNativeMethod(jni_CSSLayoutIsExperimentalFeatureEnabled),
                     });
   });
 }

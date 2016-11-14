@@ -123,6 +123,10 @@ typedef enum CSSLogLevel {
   CSSLogLevelVerbose,
 } CSSLogLevel;
 
+typedef enum CSSExperimentalFeature {
+  CSSExperimentalFeatureCount,
+} CSSExperimentalFeature;
+
 typedef struct CSSNode *CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   float width,
@@ -237,5 +241,8 @@ CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
+
+WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
+WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
 
 CSS_EXTERN_C_END

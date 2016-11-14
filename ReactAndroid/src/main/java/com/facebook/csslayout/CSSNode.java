@@ -40,6 +40,20 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSLayoutSetLogger(logger);
   }
 
+  private static native void jni_CSSLayoutSetExperimentalFeatureEnabled(
+      int feature,
+      boolean enabled);
+  public static void setExperimentalFeatureEnabled(
+      CSSExperimentalFeature feature,
+      boolean enabled) {
+    jni_CSSLayoutSetExperimentalFeatureEnabled(feature.ordinal(), enabled);
+  }
+
+  private static native boolean jni_CSSLayoutIsExperimentalFeatureEnabled(int feature);
+  public static boolean isExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+    return jni_CSSLayoutIsExperimentalFeatureEnabled(feature.ordinal());
+  }
+
   private CSSNode mParent;
   private List<CSSNode> mChildren;
   private MeasureFunction mMeasureFunction;

@@ -2512,3 +2512,13 @@ void CSSLog(CSSLogLevel level, const char *format, ...) {
   gLogger(level, format, args);
   va_end(args);
 }
+
+static bool experimentalFeatures[CSSExperimentalFeatureCount];
+
+void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled) {
+  experimentalFeatures[feature] = enabled;
+}
+
+bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+  return experimentalFeatures[feature];
+}
