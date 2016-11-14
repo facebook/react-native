@@ -175,6 +175,11 @@ public abstract class ReactInstanceManager {
   public abstract void attachMeasuredRootView(ReactRootView rootView);
 
   /**
+   * Rerender the given {@param rootView}
+   */
+  public abstract void updateRootView(ReactRootView rootView);
+
+  /**
    * Detach given {@param rootView} from current catalyst instance. It's safe to call this method
    * multiple times on the same {@param rootView} - in that case view will be detached with the
    * first call.

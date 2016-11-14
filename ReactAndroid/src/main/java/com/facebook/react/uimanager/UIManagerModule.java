@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.react.ReactRootView;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -163,7 +165,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * TODO(6242243): Make addMeasuredRootView thread safe
    * NB: this method is horribly not-thread-safe.
    */
-  public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+  public int addMeasuredRootView(final ReactRootView rootView) {
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -183,7 +185,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     final ThemedReactContext themedRootContext =
         new ThemedReactContext(getReactApplicationContext(), rootView.getContext());
 
-    mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
+    mUIImplementation.registerRootView(rootView, tag, width, height, rootView.getSizeFlexibility(), themedRootContext);
 
     rootView.setOnSizeChangedListener(
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {

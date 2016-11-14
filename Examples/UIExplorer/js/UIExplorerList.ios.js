@@ -256,8 +256,8 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./PushNotificationIOSExample'),
   },
   {
-    key: 'RCTRootViewIOSExample',
-    module: require('./RCTRootViewIOSExample'),
+    key: 'RootViewExample',
+    module: require('./RootViewExample'),
   },
   {
     key: 'RTLExample',

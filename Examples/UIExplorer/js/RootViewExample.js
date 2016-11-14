@@ -29,6 +29,7 @@ const {
   StyleSheet,
   Text,
   View,
+  Platform,
 } = ReactNative;
 
 const requireNativeComponent = require('requireNativeComponent');
@@ -56,10 +57,11 @@ class RootViewSizeFlexibilityExample extends React.Component {
   render() {
     // Do not require this unless we are actually rendering.
     const FlexibleSizeExampleView = requireNativeComponent('FlexibleSizeExampleView');
+    const ListenerName = Platform.OS === 'ios' ? 'RCTRootViewDelegate' : 'OnIntrinsicSizeChangedListener';
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
-          Press the button to resize it. On resize, RCTRootViewDelegate is notified. You can use it to handle content size updates.
+          {`Press the button to resize it. On resize, ${ListenerName} is notified. You can use it to handle content size updates.`}
         </Text>
         <FlexibleSizeExampleView style={styles.nativeView}>
           <Text style={styles.text}>
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
   }
 });
 
-exports.title = 'RCTRootView';
+exports.title = 'RootView';
 exports.description = 'Examples that show useful methods when embedding React Native in a native application';
 exports.examples = [
 {
@@ -97,7 +99,7 @@ exports.examples = [
   },
 },
 {
-  title: 'RCTRootView\'s size flexibility',
+  title: 'RootView\'s size flexibility',
   render(): React.Element<any> {
     return (
       <RootViewSizeFlexibilityExample/>

@@ -11,12 +11,15 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.ReactRootView;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -118,12 +121,14 @@ public class UIImplementation {
       int tag,
       int width,
       int height,
+      int sizeFlexibility,
       ThemedReactContext context) {
     final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
+    rootCSSNode.setSizeFlexibility(sizeFlexibility);
 
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
@@ -530,12 +535,30 @@ public class UIImplementation {
     mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
+  protected void applySizeConstraints(ReactShadowNode cssRoot) {
+    switch (cssRoot.getSizeFlexibility()) {
+      case ReactRootView.SizeFlexibilityNone:
+        break;
+      case ReactRootView.SizeFlexibilityWidth:
+        cssRoot.setStyleWidth(CSSConstants.UNDEFINED);
+        break;
+      case ReactRootView.SizeFlexibilityHeight:
+        cssRoot.setStyleHeight(CSSConstants.UNDEFINED);
+        break;
+      case ReactRootView.SizeFlexibilityWidthAndHeight:
+        cssRoot.setStyleWidth(CSSConstants.UNDEFINED);
+        cssRoot.setStyleHeight(CSSConstants.UNDEFINED);
+        break;
+    }
+  }
+
   protected void updateViewHierarchy() {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
 
+      applySizeConstraints(cssRoot);
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f);
     }
@@ -787,27 +810,39 @@ public class UIImplementation {
       }
     }
 
-    int tag = cssNode.getReactTag();
-    if (!mShadowNodeRegistry.isRootNode(tag)) {
-      boolean frameDidChange = cssNode.dispatchUpdates(
-          absoluteX,
-          absoluteY,
-          mOperationsQueue,
-          mNativeViewHierarchyOptimizer);
+    final int tag = cssNode.getReactTag();
+    boolean frameDidChange = cssNode.dispatchUpdates(
+        absoluteX,
+        absoluteY,
+        mOperationsQueue,
+        mNativeViewHierarchyOptimizer);
 
-      // Notify JS about layout event if requested
-      // and if the position or dimensions actually changed
-      // (consistent with iOS).
-      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
-        mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
-                tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
-      }
+    // Notify JS about layout event if requested
+    // and if the position or dimensions actually changed
+    // (consistent with iOS).
+    if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
+      mEventDispatcher.dispatchEvent(
+          OnLayoutEvent.obtain(
+              tag,
+              cssNode.getScreenX(),
+              cssNode.getScreenY(),
+              cssNode.getScreenWidth(),
+              cssNode.getScreenHeight()));
     }
+
+    if (mShadowNodeRegistry.isRootNode(tag)) {
+      final int width = cssNode.getScreenWidth();
+      final int height = cssNode.getScreenHeight();
+
+      addUIBlock(new UIBlock() {
+        @Override
+        public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+          ReactRootView rootView = (ReactRootView) nativeViewHierarchyManager.resolveView(tag);
+          rootView.setIntrinsicSize(width, height);
+        }
+      });
+    }
+
     cssNode.markUpdateSeen();
   }
 

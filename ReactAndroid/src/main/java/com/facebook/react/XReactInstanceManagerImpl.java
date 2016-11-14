@@ -670,6 +670,25 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
   }
 
+  @Override
+  public void updateRootView(ReactRootView rootView) {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mReactContextInitAsyncTask == null && mCurrentReactContext != null) {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "updateRootView");
+
+      @Nullable Bundle launchOptions = rootView.getLaunchOptions();
+      WritableMap initialProps = Arguments.makeNativeMap(launchOptions);
+      String jsAppModuleName = rootView.getJSModuleName();
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", rootView.getRootViewTag());
+      appParams.putMap("initialProps", initialProps);
+      mCurrentReactContext.getCatalystInstance().getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
   /**
    * Detach given {@param rootView} from current catalyst instance. It's safe to call this method
    * multiple times on the same {@param rootView} - in that case view will be detached with the

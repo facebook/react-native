@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Size;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -65,6 +66,20 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private boolean mIsAttachedToInstance = false;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
+  public static final int SizeFlexibilityNone = 0;
+  public static final int SizeFlexibilityWidth = 1;
+  public static final int SizeFlexibilityHeight = 2;
+  public static final int SizeFlexibilityWidthAndHeight = 3;
+
+  private int mSizeFlexibility = SizeFlexibilityNone;
+  private int mIntrinsicWidth;
+  private int mIntrinsicHeight;
+  private OnIntrinsicSizeChangedListener mOnIntrinsicSizeChangedListener;
+
+  public interface OnIntrinsicSizeChangedListener {
+    void onSizeChanged(ReactRootView rootView, int width, int height);
+  }
+
   public ReactRootView(Context context) {
     super(context);
   }
@@ -75,6 +90,46 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+  }
+
+  public void setSizeFlexibility(int sizeFlexibility) {
+    mSizeFlexibility = sizeFlexibility;
+    requestLayout();
+  }
+
+  public int getSizeFlexibility() {
+    return mSizeFlexibility;
+  }
+
+  public void setOnIntrinsicSizeChangedListener(OnIntrinsicSizeChangedListener listener) {
+    mOnIntrinsicSizeChangedListener = listener;
+  }
+
+  public int getIntrinsicWidth() {
+    return mIntrinsicWidth;
+  }
+
+  public int getIntrinsicHeight() {
+    return mIntrinsicHeight;
+  }
+
+  public void setIntrinsicSize(int width, int height) {
+    boolean oldSizeHasAZeroDimension = (mIntrinsicWidth == 0 || mIntrinsicHeight == 0);
+    boolean newSizeHasAZeroDimension = (width == 0 || height == 0);
+    boolean bothSizesHaveAZeroDimension = (oldSizeHasAZeroDimension && newSizeHasAZeroDimension);
+
+    boolean sizesAreEqual = (width == mIntrinsicWidth && height == mIntrinsicHeight);
+
+    mIntrinsicWidth = width;
+    mIntrinsicHeight = height;
+
+    if (bothSizesHaveAZeroDimension || sizesAreEqual) {
+      return;
+    }
+
+    if (mOnIntrinsicSizeChangedListener != null) {
+      mOnIntrinsicSizeChangedListener.onSizeChanged(this, mIntrinsicWidth, mIntrinsicHeight);
+    }
   }
 
   @Override
@@ -208,6 +263,17 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     // will make this view startReactApplication itself to instance manager once onMeasure is called.
     if (mWasMeasured) {
       attachToReactInstanceManager();
+    }
+  }
+
+  /**
+   * Update launch options and rerender this view.
+   */
+  public void updateLaunchOptions(@Nullable Bundle launchOptions) {
+    mLaunchOptions = launchOptions;
+
+    if (mIsAttachedToInstance) {
+      Assertions.assertNotNull(mReactInstanceManager).updateRootView(this);
     }
   }
 

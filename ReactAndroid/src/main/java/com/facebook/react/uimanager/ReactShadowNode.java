@@ -51,6 +51,7 @@ public class ReactShadowNode extends CSSNodeDEPRECATED {
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
   private boolean mNodeUpdated = true;
+  private int mSizeFlexibility;
 
   // layout-only nodes
   private boolean mIsLayoutOnly;
@@ -111,6 +112,14 @@ public class ReactShadowNode extends CSSNodeDEPRECATED {
 
   public boolean hasUnseenUpdates() {
     return mNodeUpdated;
+  }
+
+  public int getSizeFlexibility() {
+    return mSizeFlexibility;
+  }
+
+  public void setSizeFlexibility(int sizeFlexibility) {
+    mSizeFlexibility = sizeFlexibility;
   }
 
   @Override
