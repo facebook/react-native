@@ -142,7 +142,11 @@ public class ReactShadowNode {
     mChildren.add(i, child);
     child.mParent = this;
 
-    mCSSNode.addChildAt(child.mCSSNode, i);
+    // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
+    // more, it asserts that you don't add children to nodes with measure functions.
+    if (!mCSSNode.isMeasureDefined()) {
+      mCSSNode.addChildAt(child.mCSSNode, i);
+    }
     markUpdated();
 
     int increase = child.mIsLayoutOnly ? child.mTotalNativeChildren : 1;
@@ -159,7 +163,9 @@ public class ReactShadowNode {
     ReactShadowNode removed = mChildren.remove(i);
     removed.mParent = null;
 
-    mCSSNode.removeChildAt(i);
+    if (!mCSSNode.isMeasureDefined()) {
+      mCSSNode.removeChildAt(i);
+    }
     markUpdated();
 
     int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
@@ -191,7 +197,9 @@ public class ReactShadowNode {
 
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      mCSSNode.removeChildAt(i);
+      if (!mCSSNode.isMeasureDefined()) {
+        mCSSNode.removeChildAt(i);
+      }
       ReactShadowNode toRemove = getChildAt(i);
       toRemove.mParent = null;
       decrease += toRemove.mIsLayoutOnly ? toRemove.mTotalNativeChildren : 1;
@@ -633,6 +641,12 @@ public class ReactShadowNode {
   }
 
   public void setMeasureFunction(CSSNodeAPI.MeasureFunction measureFunction) {
+    if ((measureFunction == null ^ mCSSNode.isMeasureDefined()) &&
+        getChildCount() != 0) {
+      throw new RuntimeException(
+        "Since a node with a measure function does not add any native CSSLayout children, it's " +
+          "not safe to transition to/from having a measure function unless a node has no children");
+    }
     mCSSNode.setMeasureFunction(measureFunction);
   }
 
