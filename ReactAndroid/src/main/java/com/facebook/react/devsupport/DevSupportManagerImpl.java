@@ -635,18 +635,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       mRedBoxDialog.dismiss();
     }
 
-    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
-      .setTitle(R.string.catalyst_jsload_title)
-      .setMessage(mApplicationContext.getString(
-          mDevSettings.isRemoteJSDebugEnabled() ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message))
-      .create();
-    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-    dialog.show();
-
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      reloadJSInProxyMode(dialog);
+      reloadJSInProxyMode(showProgressDialog());
     } else {
-      reloadJSFromServer(dialog);
+      String bundleURL =
+        mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
+      reloadJSFromServer(bundleURL);
     }
   }
 
@@ -741,7 +735,22 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     };
   }
 
-  private void reloadJSFromServer(final AlertDialog progressDialog) {
+  private AlertDialog showProgressDialog() {
+    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
+      .setTitle(R.string.catalyst_jsload_title)
+      .setMessage(mApplicationContext.getString(
+          mDevSettings.isRemoteJSDebugEnabled() ?
+          R.string.catalyst_remotedbg_message :
+          R.string.catalyst_jsload_message))
+      .create();
+    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    dialog.show();
+    return dialog;
+  }
+
+  public void reloadJSFromServer(final String bundleURL) {
+    final AlertDialog progressDialog = showProgressDialog();
+
     mDevServerHelper.downloadBundleFromURL(
         new DevServerHelper.BundleDownloadCallback() {
           @Override
@@ -776,8 +785,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 });
           }
         },
-        Assertions.assertNotNull(mJSAppBundleName),
-        mJSBundleTempFile);
+        mJSBundleTempFile,
+        bundleURL);
     progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
       @Override
       public void onCancel(DialogInterface dialog) {
