@@ -222,16 +222,19 @@ public class DevServerHelper {
     return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
   }
 
+  public String getDevServerBundleURL(final String jsModulePath) {
+    return createBundleURL(
+      getDebugServerHost(),
+      jsModulePath,
+      getDevMode(),
+      getHMR(),
+      getJSMinifyMode());
+  }
+
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
-      final String jsModulePath,
-      final File outputFile) {
-    final String bundleURL = createBundleURL(
-        getDebugServerHost(),
-        jsModulePath,
-        getDevMode(),
-        getHMR(),
-        getJSMinifyMode());
+      final File outputFile,
+      final String bundleURL) {
     final Request request = new Request.Builder()
         .url(bundleURL)
         .build();

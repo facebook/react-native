@@ -102,7 +102,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private WebViewConfig mWebViewConfig;
   private @Nullable WebView.PictureListener mPictureListener;
 
-  private static class ReactWebViewClient extends WebViewClient {
+  protected static class ReactWebViewClient extends WebViewClient {
 
     private boolean mLastLoadFailed = false;
 
@@ -202,7 +202,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
    * to call {@link WebView#destroy} on activty destroy event and also to clear the client
    */
-  private static class ReactWebView extends WebView implements LifecycleEventListener {
+  protected static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
     private boolean messagingEnabled = false;
 

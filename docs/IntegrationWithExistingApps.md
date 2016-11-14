@@ -728,6 +728,8 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 
 That's it, your activity is ready to run some JavaScript code.
 
+> If your app is targeting the Android `api level 23` or greater, make sure you have, for the development build, the `overlay permission` enabled. You can check it with `Settings.canDrawOverlays(this);`. This is required because, if your app produces an error in the react native component, the error view is displayed above all the other windows. Due to the new permissions system, introduced in the api level 23, the user needs to approve it.
+
 ## Run your app
 
 To run your app, you need to first start the development server. To do this, simply run the following command in your root folder:

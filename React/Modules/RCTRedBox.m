@@ -244,6 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+    cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
     cell.textLabel.numberOfLines = 2;
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
@@ -296,7 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // mechanism instead
 
   return @[
-
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
                        modifierFlags:0

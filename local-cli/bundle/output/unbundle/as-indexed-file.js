@@ -8,13 +8,14 @@
  */
 'use strict';
 
+const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
+const Promise = require('promise');
+
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');
-const Promise = require('promise');
 const writeSourceMap = require('./write-sourcemap');
-const {joinModules} = require('./util');
 
-const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
+const {joinModules} = require('./util');
 const SIZEOF_UINT32 = 4;
 
 /**
