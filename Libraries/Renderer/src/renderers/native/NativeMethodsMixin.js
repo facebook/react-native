@@ -142,7 +142,7 @@ var NativeMethodsMixin = {
     if (!this.viewConfig) {
       var ctor = this.constructor;
       var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
-      throw new Error(componentName + ' "viewConfig" is not defined.');
+      invariant(false, componentName + ' "viewConfig" is not defined.');
     }
 
     if (__DEV__) {
