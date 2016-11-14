@@ -28,10 +28,10 @@ function init(projectDir, argsOrName) {
   console.log('Setting up new React Native app in ' + projectDir);
 
   const args = Array.isArray(argsOrName)
-    ? argsOrName // ['AwesomeApp', '--verbose']
-    : [argsOrName].concat(process.argv.slice(4)); // 'AwesomeApp'
+    ? argsOrName // argsOrName was e.g. ['AwesomeApp', '--verbose']
+    : [argsOrName].concat(process.argv.slice(4)); // argsOrName was e.g. 'AwesomeApp'
 
-  // args is ['AwesomeApp', '--verbose']
+  // args array is e.g. ['AwesomeApp', '--verbose']
   if (!args || args.lentgh == 0) {
     console.error('react-native init requires a project name.');
     return;

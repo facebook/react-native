@@ -5,8 +5,6 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @flow
  */
 'use strict';
 
@@ -36,8 +34,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
     if (options && options.upgrade) {
       // Don't upgrade these files
       const fileName = path.basename(absoluteSrcFilePath);
-      // TODO __tests__/index.ios.js
-      // TODO __tests__/index.android.js
+      // This also includes __tests__/index.*.js
       if (fileName === 'index.ios.js') return;
       if (fileName === 'index.android.js') return;
     }
@@ -76,9 +73,10 @@ function upgradeFileContentChangedCallback(
       'latest version?\nIf you ever made any changes ' +
       'to this file, you\'ll probably want to keep it.\n' +
       'You can see the new version here: ' + absoluteSrcFilePath + '\n' +
-      'Please answer "keep" / "replace" for ' + relativeDestPath + ':');
+      'Do you want to replace ' + relativeDestPath + '? ' +
+      'Answer y to replace, n to keep your version: ');
     const answer = prompt();
-    if (answer == 'replace') {
+    if (answer === 'y') {
       console.log('Replacing ' + relativeDestPath);
       return 'overwrite';
     } else {
@@ -88,7 +86,7 @@ function upgradeFileContentChangedCallback(
   } else if (contentChanged === 'identical') {
     return 'keep';
   } else {
-    throw new Error(`Unkown file changed state: {relativeDestPath}, {contentChanged}`);
+    throw new Error(`Unkown file changed state: ${relativeDestPath}, ${contentChanged}`);
   }
 }
 
