@@ -201,7 +201,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   }
 
   @Override
-  public void addChildAt(CSSNodeDEPRECATED child, int i) {
+  public void addChildAt(ReactShadowNode child, int i) {
     super.addChildAt(child, i);
     if (mForceMountChildrenToView && child instanceof FlatShadowNode) {
       ((FlatShadowNode) child).forceMountToView();

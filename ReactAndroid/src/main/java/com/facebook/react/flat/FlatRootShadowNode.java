@@ -18,13 +18,4 @@ package com.facebook.react.flat;
     forceMountToView();
     signalBackingViewIsCreated();
   }
-
-  /**
-   * Returns true when this CSSNodeDEPRECATED tree needs to be re-laid out. If true, FlatUIImplementation
-   * will request LayoutEngine to perform a layout pass to update node boundaries. This is used
-   * to avoid unnecessary node updates.
-   */
-  /* package */ boolean needsLayout() {
-    return isDirty();
-  }
 }

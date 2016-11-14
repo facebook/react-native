@@ -115,7 +115,7 @@ public class FlatUIImplementation extends UIImplementation {
     ReactShadowNode node = new FlatRootShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      node.setDirection(CSSDirection.RTL);
+      node.setLayoutDirection(CSSDirection.RTL);
     }
     return node;
   }

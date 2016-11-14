@@ -11,7 +11,6 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -93,7 +92,7 @@ import com.facebook.react.uimanager.ViewManager;
   }
 
   @Override
-  public void addChildAt(CSSNodeDEPRECATED child, int i) {
+  public void addChildAt(ReactShadowNode child, int i) {
     super.addChildAt(child, i);
     if (mForceMountGrandChildrenToView && child instanceof FlatShadowNode) {
       ((FlatShadowNode) child).forceMountChildrenToView();

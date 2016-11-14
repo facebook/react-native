@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -40,7 +41,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private ShadowStyleSpan mShadowStyleSpan = ShadowStyleSpan.INSTANCE;
 
   @Override
-  public void addChildAt(CSSNodeDEPRECATED child, int i) {
+  public void addChildAt(ReactShadowNode child, int i) {
     super.addChildAt(child, i);
     notifyChanged(true);
   }
