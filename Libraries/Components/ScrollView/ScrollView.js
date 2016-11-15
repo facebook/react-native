@@ -185,8 +185,8 @@ const ScrollView = React.createClass({
      *     catch taps, but children of the scroll view can catch taps.
      *   - 'handled', they keyboard will not dismiss automatically when the tap was handled by
      *     a children, (or captured by an ancestor).
-     *   - false is an alias for 'never'
-     *   - true is an alias for 'always'
+     *   - false, deprecated, use 'never' instead
+     *   - true, deprecated, use 'always' instead
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
