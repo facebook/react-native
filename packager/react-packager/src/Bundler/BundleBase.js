@@ -110,7 +110,11 @@ class BundleBase {
 
   setRamGroups(ramGroups: Array<string>) {}
 
-  toJSON(): mixed {
+  toJSON(): {
+    modules: Array<ModuleTransport>,
+    assets: Array<mixed>,
+    mainModuleId: number | void,
+  } {
     return {
       modules: this._modules,
       assets: this._assets,
