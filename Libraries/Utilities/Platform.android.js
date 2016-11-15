@@ -18,6 +18,7 @@ var Platform = {
     return require('NativeModules').AndroidConstants.Version;
   },
   select: (obj: Object) => obj.android,
+  is: (osString: string): boolean => { return osString === 'android'},
 };
 
 module.exports = Platform;
