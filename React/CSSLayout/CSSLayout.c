@@ -122,6 +122,8 @@ static int _csslayoutAndroidLog(CSSLogLevel level, const char *format, va_list a
     case CSSLogLevelVerbose:
       androidLevel = ANDROID_LOG_VERBOSE;
       break;
+    case CSSLogLevelCount:
+      break;
   }
   const int result = __android_log_vprint(androidLevel, "css-layout", format, args);
   return result;
@@ -1824,6 +1826,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         leadingMainDim = betweenMainDim / 2;
         break;
       case CSSJustifyFlexStart:
+      case CSSJustifyCount:
         break;
     }
 
@@ -2015,6 +2018,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
         break;
       case CSSAlignAuto:
       case CSSAlignFlexStart:
+      case CSSAlignCount:
         break;
     }
 
@@ -2074,6 +2078,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
                 break;
               }
               case CSSAlignAuto:
+              case CSSAlignCount:
                 break;
             }
           }

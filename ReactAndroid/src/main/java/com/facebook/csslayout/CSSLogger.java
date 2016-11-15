@@ -13,15 +13,9 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * Inteface for recieving logs from native layer. Use by setting CSSNode.setLogger(myLogger);
- * LOG_LEVEL_ERROR indicated a fatal error.
+ * See CSSLogLevel for the different log levels.
  */
 public interface CSSLogger {
-  public final int LOG_LEVEL_ERROR = 0;
-  public final int LOG_LEVEL_WARN = 1;
-  public final int LOG_LEVEL_INFO = 2;
-  public final int LOG_LEVEL_DEBUG = 3;
-  public final int LOG_LEVEL_VERBOSE = 4;
-
   @DoNotStrip
-  void log(int level, String message);
+  void log(CSSLogLevel level, String message);
 }
