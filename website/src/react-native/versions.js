@@ -64,6 +64,8 @@ var versions = React.createClass({
       return version.type === 'release';
     });
 
+    // Note: Our Algolia DocSearch box supports version-specific queries. If you will be drastically changing the way versions are listed in this page, make sure https://github.com/algolia/docsearch-configs/blob/master/configs/react-native-versions.json is updated accordingly.
+    
     return (
       <Site section="versions" title="React Native Versions">
         <section className="content wrap documentationContent nosidebar">
