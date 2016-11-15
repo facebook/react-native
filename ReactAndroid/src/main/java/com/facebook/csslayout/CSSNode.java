@@ -33,6 +33,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * Get native instance count. Useful for testing only.
    */
   static native int jni_CSSNodeGetInstanceCount();
+  static native void jni_CSSLog(int level, String message);
+
+  private static native void jni_CSSLayoutSetLogger(Object logger);
+  public static void setLogger(CSSLogger logger) {
+    jni_CSSLayoutSetLogger(logger);
+  }
 
   private CSSNode mParent;
   private List<CSSNode> mChildren;

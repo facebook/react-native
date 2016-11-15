@@ -6189,7 +6189,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',
@@ -6214,7 +6214,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',

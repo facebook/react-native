@@ -74,9 +74,9 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
     .JSValueIsUndefined = JSValueIsUndefined,
     .JSValueIsNull = JSValueIsNull,
     .JSEvaluateScript = JSEvaluateScript,
+    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
     .configureJSCForIOS = (voidWithNoParamsFuncType)noOpSystemJSCFunc,
-    .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };

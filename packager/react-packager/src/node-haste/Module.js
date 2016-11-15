@@ -21,16 +21,10 @@ const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
+import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
-
-type TransformedCode = {
-  code: string,
-  dependencies: Array<string>,
-  dependencyOffsets: Array<number>,
-  map?: ?{},
-};
 
 type ReadResult = {
   code?: string,
