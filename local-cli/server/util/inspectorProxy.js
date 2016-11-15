@@ -131,6 +131,13 @@ class Device {
         return;
       }
 
+      // TODO: This should be handled way earlier, preferably in the inspector itself.
+      // That is how it works it newer versions but it requires installing hooks.
+      if (message.indexOf('Network.loadResourceForFrontend') !== -1) {
+        this._loadResourceForFrontend(socket, JSON.parse(message));
+        return;
+      }
+
       this._send({
         event: 'wrappedEvent',
         payload: {
@@ -223,6 +230,36 @@ class Device {
     for (const pageId of this._connections.keys()) {
       this._removeConnection(pageId);
     }
+  }
+
+  _loadResourceForFrontend(socket: WebSocket, event: Object) {
+    const id: number = nullthrows(event.id);
+    const url: string = nullthrows(nullthrows(event.params).url);
+    debug('loadResourceForFrontend:', url);
+    http.get(this._normalizeUrl(url), (response) => {
+      // $FlowFixMe callback is optional
+      response.setTimeout(0);
+      let data = '';
+      response.on('data', (chunk) => { data += chunk; });
+      response.on('end', () => {
+        socket.send(JSON.stringify({
+          id: id,
+          result: {
+            statusCode: response.statusCode,
+            content: data,
+            responseHeaders: response.headers,
+          },
+        }));
+      });
+      response.on('error', (error) => {
+        console.error('Failed to get resource', error);
+      });
+    });
+  }
+
+  _normalizeUrl(url: string): string {
+    return url.replace('http://10.0.3.2', 'http://localhost')
+      .replace('http://10.0.2.2', 'http://localhost');
   }
 }
 
