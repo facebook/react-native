@@ -8,8 +8,8 @@
  */
 'use strict';
 
-var path = require('path');
 var fs = require('fs');
+var path = require('path');
 
 function copyAndReplace(src, dest, replacements) {
   if (fs.lstatSync(src).isDirectory()) {

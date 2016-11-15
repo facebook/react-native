@@ -10,6 +10,7 @@
 #import "RCTLog.h"
 
 #include <asl.h>
+#include <cxxabi.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
@@ -29,7 +30,7 @@ const char *RCTLogLevels[] = {
 };
 
 #if RCT_DEBUG
-static const RCTLogLevel RCTDefaultLogThreshold = RCTLogLevelInfo - 1;
+static const RCTLogLevel RCTDefaultLogThreshold = (RCTLogLevel)(RCTLogLevelInfo - 1);
 #else
 static const RCTLogLevel RCTDefaultLogThreshold = RCTLogLevelError;
 #endif
@@ -184,6 +185,20 @@ NSString *RCTFormatLog(
   return log;
 }
 
+static NSRegularExpression *nativeStackFrameRegex()
+{
+  static dispatch_once_t onceToken;
+  static NSRegularExpression *_regex;
+  dispatch_once(&onceToken, ^{
+    NSError *regexError;
+    _regex = [NSRegularExpression regularExpressionWithPattern:@"0x[0-9a-f]+ (.*) \\+ (\\d+)$" options:0 error:&regexError];
+    if (regexError) {
+      RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
+    }
+  });
+  return _regex;
+}
+
 void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumber, NSString *format, ...)
 {
   RCTLogFunction logFunction = RCTGetLocalLogFunction();
@@ -208,18 +223,32 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
       [stackSymbols enumerateObjectsUsingBlock:^(NSString *frameSymbols, NSUInteger idx, __unused BOOL *stop) {
-        if (idx > 0) { // don't include the current frame
-          NSString *address = [[frameSymbols componentsSeparatedByString:@"0x"][1] componentsSeparatedByString:@" "][0];
-          NSRange addressRange = [frameSymbols rangeOfString:address];
-          NSString *methodName = [frameSymbols substringFromIndex:(addressRange.location + addressRange.length + 1)];
-          if (idx == 1 && fileName) {
-            NSString *file = [@(fileName) componentsSeparatedByString:@"/"].lastObject;
-            [stack addObject:@{@"methodName": methodName, @"file": file, @"lineNumber": @(lineNumber)}];
-          } else {
-            [stack addObject:@{@"methodName": methodName}];
-          }
+        if (idx == 0) {
+          // don't include the current frame
+          return;
+        }
+
+        NSRange range = NSMakeRange(0, frameSymbols.length);
+        NSTextCheckingResult *match = [nativeStackFrameRegex() firstMatchInString:frameSymbols                                                                           options:0 range:range];
+        if (!match) {
+          return;
+        }
+
+        NSString *methodName = [frameSymbols substringWithRange:[match rangeAtIndex:1]];
+        char *demangledName = abi::__cxa_demangle([methodName UTF8String], NULL, NULL, NULL);
+        if (demangledName) {
+          methodName = @(demangledName);
+          free(demangledName);
+        }
+
+        if (idx == 1 && fileName) {
+          NSString *file = [@(fileName) componentsSeparatedByString:@"/"].lastObject;
+          [stack addObject:@{@"methodName": methodName, @"file": file, @"lineNumber": @(lineNumber)}];
+        } else {
+          [stack addObject:@{@"methodName": methodName}];
         }
       }];
+
       dispatch_async(dispatch_get_main_queue(), ^{
         // red box is thread safe, but by deferring to main queue we avoid a startup
         // race condition that causes the module to be accessed before it has loaded

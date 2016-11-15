@@ -9,10 +9,10 @@
 'use strict';
 
 const chalk = require('chalk');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
-const findSymlinksPaths = require('./findSymlinksPaths');
 const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**

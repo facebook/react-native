@@ -81,10 +81,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setHitSlopRect(null);
     } else {
       view.setHitSlopRect(new Rect(
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+          hitSlop.hasKey("left") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")) : 0,
+          hitSlop.hasKey("top") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")) : 0,
+          hitSlop.hasKey("right") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")) : 0,
+          hitSlop.hasKey("bottom") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom")) : 0
       ));
     }
   }

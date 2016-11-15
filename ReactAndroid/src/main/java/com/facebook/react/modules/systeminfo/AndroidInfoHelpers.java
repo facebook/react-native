@@ -1,3 +1,5 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
 package com.facebook.react.modules.systeminfo;
 
 import android.os.Build;
@@ -29,5 +31,14 @@ public class AndroidInfoHelpers {
     }
 
     return DEVICE_LOCALHOST;
+  }
+
+  public static String getFriendlyDeviceName() {
+    if (isRunningOnGenymotion()) {
+      // Genymotion already has a friendly name by default
+      return Build.MODEL;
+    } else {
+      return Build.MODEL + " - " + Build.VERSION.RELEASE + " - API " + Build.VERSION.SDK_INT;
+    }
   }
 }

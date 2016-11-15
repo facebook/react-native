@@ -693,7 +693,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy(this);
+        mReactInstanceManager.onDestroy();
     }
 }
 ```

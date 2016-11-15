@@ -13,6 +13,7 @@ jest.autoMockOff();
 var path = require('path');
 var fs = require('fs');
 
+// eslint-disable-next-line improperly-disabled-jasmine-tests
 xdescribe('React Yeoman Generators', function() {
   describe('react:react', function() {
     var assert;
@@ -44,7 +45,7 @@ xdescribe('React Yeoman Generators', function() {
         jest.runAllTicks();
         jest.runOnlyPendingTimers();
         return generated;
-      }, "generation", 750);
+      }, 'generation', 750);
     });
 
     it('creates files', function() {
@@ -87,7 +88,7 @@ xdescribe('React Yeoman Generators', function() {
       var stat = fs.statSync('android');
 
       expect(stat.isDirectory()).toBe(true);
-    })
+    });
   });
 
   describe('react:android', function () {
@@ -123,7 +124,7 @@ xdescribe('React Yeoman Generators', function() {
         jest.runAllTicks();
         jest.runOnlyPendingTimers();
         return generated;
-      }, "generation", 750);
+      }, 'generation', 750);
     });
 
     it('creates files', function () {
@@ -203,7 +204,7 @@ xdescribe('React Yeoman Generators', function() {
         jest.runAllTicks();
         jest.runOnlyPendingTimers();
         return generated;
-      }, "generation", 750);
+      }, 'generation', 750);
     });
 
     it('creates files', function() {
