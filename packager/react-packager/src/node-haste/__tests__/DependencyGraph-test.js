@@ -13,7 +13,10 @@ jest.useRealTimers();
 jest
   .mock('fs')
   .mock('../../Logger')
-  .mock('../../lib/TransformCache');
+  .mock('../../lib/TransformCache')
+  // It's noticeably faster to prevent running watchman from FileWatcher.
+  .mock('child_process', () => ({}))
+  ;
 
 // This is an ugly hack:
 // * jest-haste-map uses `find` for fast file system crawling which won't work
