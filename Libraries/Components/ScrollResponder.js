@@ -18,6 +18,7 @@ var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
+var warning = require('fbjs/lib/warning');
 
 var { ScrollViewManager } = require('NativeModules');
 
@@ -485,6 +486,13 @@ var ScrollResponderMixin = {
    * The `keyboardWillShow` is called before input focus.
    */
   componentWillMount: function() {
+    var keyboardShouldPersistTaps = this.props.keyboardShouldPersistTaps;
+    warning(
+      typeof keyboardShouldPersistTaps !== 'boolean',
+      `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+    );
+
     this.keyboardWillOpenTo = null;
     this.additionalScrollOffset = 0;
     this.addListenerOn(Keyboard, 'keyboardWillShow', this.scrollResponderKeyboardWillShow);
