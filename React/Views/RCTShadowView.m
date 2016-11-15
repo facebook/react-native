@@ -599,6 +599,8 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
           CSSNodeStyleSetHeight(cssNode, amount);
         }
         break;
+      case CSSDimensionCount:
+        break;
     }
   }
 }
@@ -648,7 +650,7 @@ RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
-RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrap)
 RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
 
 - (void)setBackgroundColor:(UIColor *)color

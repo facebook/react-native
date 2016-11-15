@@ -31,6 +31,7 @@
 #import "RCTSourceCode.h"
 #import "RCTJSCWrapper.h"
 #import "RCTJSCErrorHandling.h"
+#import "JSCSamplingProfiler.h"
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
@@ -417,6 +418,36 @@ static NSThread *newJavaScriptThread(void)
         [weakBridge.flowIDMapLock unlock];
       }
     };
+
+    // Add toggles for JSC's sampling profiler, if the profiler is enabled
+    if (self->_jscWrapper->JSSamplingProfilerEnabled()) {
+        // Mark this thread as the main JS thread before starting profiling.
+        self->_jscWrapper->JSStartSamplingProfilingOnMainJSCThread(context.JSGlobalContextRef);
+
+      // Allow to toggle the sampling profiler through RN's dev menu
+      __weak JSContext *weakContext = self->_context.context;
+      [self->_bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
+        // JSPokeSamplingProfiler() toggles the profiling process
+        JSValueRef jsResult = self->_jscWrapper->JSPokeSamplingProfiler(weakContext.JSGlobalContextRef);
+
+        if (!self->_jscWrapper->JSValueIsNull(weakContext.JSGlobalContextRef, jsResult)) {
+          NSString *results = [[self->_jscWrapper->JSValue valueWithJSValueRef:jsResult inContext:weakContext] toObject];
+          JSCSamplingProfiler *profilerModule = [self->_bridge moduleForClass:[JSCSamplingProfiler class]];
+          [profilerModule operationCompletedWithResults:results];
+        }
+      }]];
+
+      // Allow for the profiler to be poked from JS code as well
+      // (see SamplingProfiler.js for an example of how it could be used with the JSCSamplingProfiler module).
+      context[@"pokeSamplingProfiler"] = ^(NSDictionary *){
+        RCTJSCExecutor *strongSelf = weakSelf;
+        if (!strongSelf.isValid) {
+          return @{};
+        }
+        JSValueRef result = strongSelf->_jscWrapper->JSPokeSamplingProfiler(weakContext.JSGlobalContextRef);
+        return (NSDictionary *)[[strongSelf->_jscWrapper->JSValue valueWithJSValueRef:result inContext:weakContext] toObject];
+      };
+    }
 #endif
 
 #if RCT_DEV

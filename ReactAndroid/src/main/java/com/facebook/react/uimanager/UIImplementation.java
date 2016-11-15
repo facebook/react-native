@@ -86,7 +86,7 @@ public class UIImplementation {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setDirection(CSSDirection.RTL);
+      rootCSSNode.setLayoutDirection(CSSDirection.RTL);
     }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
