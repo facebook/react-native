@@ -365,7 +365,7 @@ If everything is set up correctly, you should see your new app running in your A
 > If you hit a `ERROR  Watcher took too long to load`, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
 
 > A common issue if running the application for the first time if you are targeting to Android API level 23 is that it throws an overlay permission error if it has not been previously granted which can be fixed by toggling on when the permission page shows.
-
+Not all modules are tested on Marshmallow and might break. So it's at your own risk if you change target SDK to 23. 
 
 <block class="windows linux android" />
 
