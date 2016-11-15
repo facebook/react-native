@@ -8,8 +8,9 @@
  */
 'use strict';
 
-const fs = require('fs');
 const Promise = require('promise');
+
+const fs = require('fs');
 
 function writeFile(file, data, encoding) {
   return new Promise((resolve, reject) => {

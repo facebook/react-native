@@ -105,6 +105,14 @@ void jni_CSSLog(alias_ref<jclass> clazz, jint level, jstring message) {
   Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
+void jni_CSSLayoutSetExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature, jboolean enabled) {
+  CSSLayoutSetExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature), enabled);
+}
+
+jboolean jni_CSSLayoutIsExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature) {
+  return CSSLayoutIsExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature));
+}
+
 jint jni_CSSNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return CSSNodeGetInstanceCount();
 }
@@ -203,7 +211,7 @@ CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignItems);
 CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignSelf);
 CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignContent);
 CSS_NODE_JNI_STYLE_PROP(jint, CSSPositionType, PositionType);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSWrapType, FlexWrap);
+CSS_NODE_JNI_STYLE_PROP(jint, CSSWrap, FlexWrap);
 CSS_NODE_JNI_STYLE_PROP(jint, CSSOverflow, Overflow);
 
 void jni_CSSNodeStyleSetFlex(alias_ref<jobject>, jlong nativePointer, jfloat value) {
@@ -291,6 +299,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeGetInstanceCount),
                         CSSMakeNativeMethod(jni_CSSLayoutSetLogger),
                         CSSMakeNativeMethod(jni_CSSLog),
+                        CSSMakeNativeMethod(jni_CSSLayoutSetExperimentalFeatureEnabled),
+                        CSSMakeNativeMethod(jni_CSSLayoutIsExperimentalFeatureEnabled),
                     });
   });
 }

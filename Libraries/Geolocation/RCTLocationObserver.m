@@ -144,6 +144,14 @@ RCT_EXPORT_MODULE()
   if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
     [_locationManager requestAlwaysAuthorization];
+
+    // On iOS 9+ we also need to enable background updates
+    NSArray* backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+    if(backgroundModes && [backgroundModes containsObject:@"location"]) {
+      if([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
+        [_locationManager setAllowsBackgroundLocationUpdates:YES];
+      }
+    }
   } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
     [_locationManager requestWhenInUseAuthorization];

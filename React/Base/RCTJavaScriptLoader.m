@@ -37,6 +37,18 @@ RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header)
   return RCTScriptString;
 }
 
+NSString *RCTStringForScriptTag(RCTScriptTag tag)
+{
+  switch (tag) {
+    case RCTScriptString:
+      return @"String";
+    case RCTScriptRAMBundle:
+      return @"RAM Bundle";
+    case RCTScriptBCBundle:
+      return @"BC Bundle";
+  }
+}
+
 @implementation RCTLoadingProgress
 
 - (NSString *)description

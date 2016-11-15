@@ -74,10 +74,10 @@ typedef enum CSSPositionType {
   CSSPositionTypeAbsolute,
 } CSSPositionType;
 
-typedef enum CSSWrapType {
-  CSSWrapTypeNoWrap,
-  CSSWrapTypeWrap,
-} CSSWrapType;
+typedef enum CSSWrap {
+  CSSWrapNoWrap,
+  CSSWrapWrap,
+} CSSWrap;
 
 typedef enum CSSMeasureMode {
   CSSMeasureModeUndefined,
@@ -122,6 +122,10 @@ typedef enum CSSLogLevel {
   CSSLogLevelDebug,
   CSSLogLevelVerbose,
 } CSSLogLevel;
+
+typedef enum CSSExperimentalFeature {
+  CSSExperimentalFeatureCount,
+} CSSExperimentalFeature;
 
 typedef struct CSSNode *CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
@@ -207,7 +211,7 @@ CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignContent, alignContent);
 CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignItems, alignItems);
 CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
-CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY(CSSWrap, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
 
 WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
@@ -237,5 +241,8 @@ CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
+
+WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
+WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
 
 CSS_EXTERN_C_END
