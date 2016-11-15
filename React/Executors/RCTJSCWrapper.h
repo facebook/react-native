@@ -9,7 +9,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <FBReactKit/RCTDefines.h>
+#import "RCTDefines.h"
 
 typedef void (*voidWithNoParamsFuncType)();
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
