@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(operationComplete:(int)token result:(id)profileData error:(id)
   if (connection) {
     RCTLogInfo(@"JSC CPU Profile data sent successfully.");
   } else {
-    RCTLogWarn(@"JSC CPU Profile data failed to send.")
+    RCTLogWarn(@"JSC CPU Profile data failed to send.");
   }
 }
 
