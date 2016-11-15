@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const Logger = require('../Logger');
@@ -16,6 +19,8 @@ const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
 const debug = require('debug')('ReactNativePackager:JStransformer');
+
+import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -46,6 +51,13 @@ const validateOpts = declareOpts({
   },
 });
 
+type Options = {
+  transformModulePath?: ?string,
+  transformTimeoutInterval?: ?number,
+  worker?: ?string,
+  methods?: ?Array<string>,
+};
+
 const maxConcurrentWorkers = ((cores, override) => {
   if (override) {
     return Math.min(cores, override);
@@ -61,7 +73,7 @@ const maxConcurrentWorkers = ((cores, override) => {
     return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
   }
   return cores / 2;
-})(os.cpus().length, process.env.REACT_NATIVE_MAX_WORKERS);
+})(os.cpus().length, parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10));
 
 function makeFarm(worker, methods, timeout) {
   return workerFarm(
@@ -79,7 +91,28 @@ function makeFarm(worker, methods, timeout) {
 }
 
 class Transformer {
-  constructor(options) {
+
+  _opts: {
+    transformModulePath?: ?string,
+    transformTimeoutInterval: number,
+    worker: ?string,
+    methods: Array<string>,
+  };
+  _workers: {[name: string]: mixed};
+  _transformModulePath: ?string;
+  _transform: (
+    transform: string,
+    filename: string,
+    sourceCode: string,
+    options: ?TransformOptions,
+  ) => Promise<TransformData>;
+  minify: (
+    filename: string,
+    code: string,
+    sourceMap: string,
+  ) => Promise<mixed>;
+
+  constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
 
     const {transformModulePath} = opts;
@@ -88,6 +121,8 @@ class Transformer {
       this._workers =
         makeFarm(opts.worker, opts.methods, opts.transformTimeoutInterval);
       opts.methods.forEach(name => {
+        /* $FlowFixMe: assigning the class object fields directly is
+         * questionable, because it's prone to conflicts. */
         this[name] = this._workers[name];
       });
     }
@@ -108,12 +143,13 @@ class Transformer {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName, code, options) {
+  transformFile(fileName: string, code: string, options: TransformOptions) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
+      /* $FlowFixMe: _transformModulePath may be empty, see constructor */
       ._transform(this._transformModulePath, fileName, code, options)
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
@@ -128,13 +164,16 @@ class Transformer {
             `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
             'You can adjust timeout via the \'transformTimeoutInterval\' option'
           );
+          /* $FlowFixMe: monkey-patch Error */
           timeoutErr.type = 'TimeoutError';
           throw timeoutErr;
         } else if (error.type === 'ProcessTerminatedError') {
           const uncaughtError = new Error(
             'Uncaught error in the transformer worker: ' +
+            /* $FlowFixMe: _transformModulePath may be empty, see constructor */
             this._opts.transformModulePath
           );
+          /* $FlowFixMe: monkey-patch Error */
           uncaughtError.type = 'ProcessTerminatedError';
           throw uncaughtError;
         }
@@ -142,6 +181,8 @@ class Transformer {
         throw formatError(error, fileName);
       });
   }
+
+  static TransformError;
 }
 
 module.exports = Transformer;
