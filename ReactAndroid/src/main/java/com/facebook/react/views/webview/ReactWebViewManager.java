@@ -137,16 +137,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             url.startsWith("file://")) {
           return false;
         } else {
-          boolean result = true;
           try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             view.getContext().startActivity(intent);
           } catch (ActivityNotFoundException e) {
             FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
-            result = false;
           }
-          return result;
+          return true;
         }
     }
 
