@@ -478,9 +478,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setReturnKeyType(returnKeyType);
   }
 
-  @ReactProp(name = "disableExtractUI", defaultBoolean = false)
-  public void setDisableExtractUI(ReactEditText view, boolean disableExtractUI) {
-    view.setDisableExtractUI(disableExtractUI);
+  @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
+  public void setDisableFullscreenUI(ReactEditText view, boolean disableFullscreenUI) {
+    view.setDisableFullscreenUI(disableFullscreenUI);
   }
 
   private static final int IME_ACTION_ID = 0x670;

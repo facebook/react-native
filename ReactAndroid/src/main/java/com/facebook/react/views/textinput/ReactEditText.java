@@ -75,7 +75,7 @@ public class ReactEditText extends EditText {
   private int mStagedInputType;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
-  private boolean mDisableExtractUI;
+  private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
@@ -100,7 +100,7 @@ public class ReactEditText extends EditText {
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
     mBlurOnSubmit = true;
-    mDisableExtractUI = false;
+    mDisableFullscreen = false;
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
@@ -258,13 +258,13 @@ public class ReactEditText extends EditText {
     return mBlurOnSubmit;
   }
 
-  public void setDisableExtractUI(boolean disableExtractUI) {
-    mDisableExtractUI = disableExtractUI;
+  public void setDisableFullscreenUI(boolean disableFullscreenUI) {
+    mDisableFullscreen = disableFullscreenUI;
     updateImeOptions();
   }
 
-  public boolean getDisableExtractUI() {
-    return mDisableExtractUI;
+  public boolean getDisableFullscreenUI() {
+    return mDisableFullscreen;
   }
 
   public void setReturnKeyType(String returnKeyType) {
@@ -458,8 +458,8 @@ public class ReactEditText extends EditText {
       }
     }
 
-    if (mDisableExtractUI) {
-      setImeOptions(returnKeyFlag | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+    if (mDisableFullscreen) {
+      setImeOptions(returnKeyFlag | EditorInfo.IME_FLAG_NO_FULLSCREEN);
     } else {
       setImeOptions(returnKeyFlag);
     }

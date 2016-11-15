@@ -312,7 +312,7 @@ const TextInput = React.createClass({
      * Defaults to `false`.
      * @platform android
      */
-    disableExtractUI: PropTypes.bool,
+    disableFullscreenUI: PropTypes.bool,
     /**
      * If `true`, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is `false`.
@@ -710,7 +710,7 @@ const TextInput = React.createClass({
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
-        disableExtractUI={this.props.disableExtractUI}
+        disableFullscreenUI={this.props.disableFullscreenUI}
       />;
 
     return (
