@@ -273,19 +273,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void linkBridge() {
       if (messagingEnabled) {
-        if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-          // See isNative in lodash
-          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-          evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String value) {
-              if (value.equals("true")) {
-                FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-              }
-            }
-          });
-        }
-
         loadUrl("javascript:(" +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data) {" +
