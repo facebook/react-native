@@ -165,7 +165,6 @@
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.5",
     "fbjs-scripts": "^0.7.0",
-    "flow-bin": "^0.35.0",
     "fs-extra": "^0.26.2",
     "glob": "^5.0.15",
     "graceful-fs": "^4.1.3",
