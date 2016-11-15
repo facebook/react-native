@@ -221,10 +221,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
   BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
   BOOL isLoadingSourceURL = ([sourceURL isEqualToString:requestURL] && !_webView.isLoading);
-  BOOL isHTTPRequest = [[request.URL scheme] isEqualToString:@"http"] || [[request.URL scheme] isEqualToString:@"https"];
-
+  
   // skip this for the JS Navigation handler, initial load, iFrames and non-http(s) requests
-  if (!isJSNavigation && isTopFrame && !isLoadingSourceURL && isHTTPRequest) {
+  if (!isJSNavigation && isTopFrame && !isLoadingSourceURL) {
     if (_navigationBlockingPolicies.count > 0) {
       NSDictionary *currentValues = @{
                                       @"currentURL": sourceURL,
