@@ -46,6 +46,7 @@ const parseUrl = require('url').parse;
 const WebSocket = require('ws');
 
 const debug = require('debug')('ReactNativePackager:InspectorProxy');
+const launchChrome = require('./launchChrome');
 
 type DevicePage = {
   id: string,
@@ -77,6 +78,10 @@ type ConnectEvent = Message<'connect', {
 }>;
 
 type DisconnectEvent = Message<'disconnect', {
+  pageId?: string,
+}>;
+
+type OpenEvent = Message<'open', {
   pageId?: string,
 }>;
 
@@ -178,6 +183,8 @@ class Device {
       this._handleWrappedEvent(message);
     } else if (message.event === 'disconnect') {
       this._handleDisconnect(message);
+    } else if (message.event === 'open') {
+      this._handleOpen(message);
     }
   }
 
@@ -195,6 +202,13 @@ class Device {
     const payload = nullthrows(event.payload);
     const pageId = nullthrows(payload.pageId);
     this._removeConnection(pageId);
+  }
+
+  _handleOpen(event: OpenEvent) {
+    const payload = nullthrows(event.payload);
+    const pageId = nullthrows(payload.pageId);
+    const url = DEVTOOLS_URL_BASE + makeInspectorPageUrl(this._id, pageId);
+    launchChrome(url);
   }
 
   _removeConnection(pageId: string) {
@@ -229,10 +243,7 @@ class InspectorProxy {
   }
 
   _makePage(server: Address, deviceId: string, deviceName: string, devicePage: DevicePage): Page {
-    // The inspector frontend doesn't handle urlencoded params so we
-    // manually urlencode it and decode it on the other side in _createPageHandler
-    const query = querystring.escape(`device=${deviceId}&page=${devicePage.id}`);
-    const wsUrl = `localhost:${server.port}/inspector/page?${query}`;
+    const wsUrl = makeInspectorPageUrl(deviceId, devicePage.id);
     return {
       id: `${deviceId}-${devicePage.id}`,
       title: devicePage.title,
@@ -391,6 +402,13 @@ function escapeHtmlSpecialChar(char: string): string {
     char === '>' ? '&gt;' :
     char
   );
+}
+
+function makeInspectorPageUrl(deviceId: string, pageId: string): string {
+  // The inspector frontend doesn't handle urlencoded params so we
+  // manually urlencode it and decode it on the other side in _createPageHandler
+  const query = querystring.escape(`device=${deviceId}&page=${pageId}`);
+  return `localhost:8081/inspector/page?${query}`;
 }
 
 function attachToServer(server: http.Server, pathPrefix: string): InspectorProxy {

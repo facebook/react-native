@@ -162,6 +162,12 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
+  public void openInspector(String id) {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendOpenEvent(id);
+    }
+  }
+
   public void closeInspectorConnection() {
     new AsyncTask<Void, Void, Void>() {
       @Override
