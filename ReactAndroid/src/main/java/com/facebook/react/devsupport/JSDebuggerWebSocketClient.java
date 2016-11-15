@@ -10,6 +10,7 @@
 package com.facebook.react.devsupport;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import com.facebook.common.logging.FLog;
@@ -117,7 +118,6 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       String methodName,
       String jsonArgsArray,
       JSDebuggerCallback callback) {
-
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
 
@@ -194,6 +194,12 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       reader.beginObject();
       while (reader.hasNext()) {
         String field = reader.nextName();
+
+        if (JsonToken.NULL == reader.peek()) {
+          reader.skipValue();
+          continue;
+        }
+
         if ("replyID".equals(field)) {
           replyID = reader.nextInt();
         } else if ("result".equals(field)) {

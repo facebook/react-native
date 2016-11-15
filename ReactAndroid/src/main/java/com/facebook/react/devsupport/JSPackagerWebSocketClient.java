@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.facebook.common.logging.FLog;
 
@@ -130,6 +131,12 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
       reader.beginObject();
       while (reader.hasNext()) {
         String field = reader.nextName();
+
+        if (JsonToken.NULL == reader.peek()) {
+          reader.skipValue();
+          continue;
+        }
+
         if ("version".equals(field)) {
           version = reader.nextInt();
         } else if ("target".equals(field)) {
