@@ -197,7 +197,7 @@ class WebView extends React.Component {
     saveFormDataDisabled: PropTypes.bool,
 
     /**
-     * Override the native component used to render the WebView. Enables a custom native 
+     * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.
      */
     nativeComponent: PropTypes.any,
