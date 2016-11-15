@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -334,7 +335,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
   @Override
   public void showDevOptionsDialog() {
-    if (mDevOptionsDialog != null || !mIsDevSupportEnabled) {
+    if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey()) {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
