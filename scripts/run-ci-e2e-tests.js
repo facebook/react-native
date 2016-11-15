@@ -33,8 +33,8 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // To make sure we actually installed the local version
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
-const MARKER_IOS = exec(`mktemp ${ROOT}/local-cli/generator-ios/templates/app/XXXXXXXX`).stdout.trim();
-const MARKER_ANDROID = exec(`mktemp ${ROOT}/local-cli/generator-android/templates/src/XXXXXXXX`).stdout.trim();
+const MARKER_IOS = exec(`mktemp ${ROOT}/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX`).stdout.trim();
+const MARKER_ANDROID = exec(`mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX`).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
