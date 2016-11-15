@@ -12,7 +12,9 @@
   },
   "jest": {
     "automock": true,
-    "scriptPreprocessor": "jest/preprocessor.js",
+    "transform": {
+      ".*": "jest/preprocessor.js"
+    },
     "setupFiles": [
       "jest/setup.js"
     ],
@@ -171,7 +173,7 @@
     "immutable": "~3.7.6",
     "imurmurhash": "^0.1.4",
     "inquirer": "^0.12.0",
-    "jest-haste-map": "15.0.1",
+    "jest-haste-map": "17.0.2",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
@@ -208,7 +210,7 @@
     "ws": "^1.1.0",
     "xcode": "^0.8.9",
     "xmldoc": "^0.4.0",
-    "yargs": "^3.24.0",
+    "yargs": "^6.4.0",
     "yeoman-environment": "1.5.3",
     "yeoman-generator": "0.21.2"
   },
@@ -223,9 +225,9 @@
     "flow-bin": "^0.35.0",
     "graphlib-dot": "0.6.2",
     "graphql": "0.6.2",
-    "jest": "16.0.1",
-    "jest-repl": "16.0.0",
-    "jest-runtime": "16.0.0",
+    "jest": "17.0.2",
+    "jest-repl": "17.0.2",
+    "jest-runtime": "17.0.2",
     "mock-fs": "^3.11.0",
     "opener": "1.4.2",
     "portfinder": "0.4.0",
