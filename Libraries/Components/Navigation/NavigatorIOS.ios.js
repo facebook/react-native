@@ -907,7 +907,7 @@ var NavigatorIOS = React.createClass({
   },
 
   _disableTVEventHandler(): void {
-    if(this._tvEventHandler) {
+    if (this._tvEventHandler) {
       this._tvEventHandler.disable();
       delete this._tvEventHandler;
     }

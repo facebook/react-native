@@ -142,7 +142,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
   }
 
   componentWillUnmount(): void {
-    if(this._tvEventHandler) {
+    if (this._tvEventHandler) {
       this._tvEventHandler.disable();
       delete this._tvEventHandler;
     }
