@@ -236,9 +236,10 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
-     * A function that is invoked when the webview calls `window.postMessage`.
+     * A function that will be invoked when the webview calls `window.postMessage`.
      * Setting this property will inject a `postMessage` global into your
-     * webview, but will still call pre-existing values of `postMessage`.
+     * webview. If you need the old postMessage, it's under
+     * `window.originalPostMessage`.
      *
      * `window.postMessage` accepts one argument, `data`, which will be
      * available on the event object, `event.nativeEvent.data`. `data`
