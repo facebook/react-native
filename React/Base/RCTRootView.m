@@ -30,6 +30,7 @@
 
 #if TARGET_OS_TV
 #import "RCTTVRemoteHandler.h"
+#import "RCTTVNavigationEventEmitter.h"
 #endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";

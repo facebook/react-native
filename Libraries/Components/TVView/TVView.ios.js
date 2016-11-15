@@ -62,16 +62,6 @@ class TVView extends View {
         onTVBlur: PropTypes.func,
 
         /**
-         * *(Apple TV only)* Optional method.  When implemented, this method will be called when
-         * the user presses a button or makes a swipe gesture on the TV remote.  The event passed
-         * into this method will have a nativeEvent property, with a type that is one of
-         * [left, right, up, down, playPause, menu].
-         *
-         * @platform ios
-         */
-        onTVNavEvent: PropTypes.func,
-
-        /**
          * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
          *
          * @platform ios

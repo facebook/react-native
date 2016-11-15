@@ -19,6 +19,7 @@ var React = require('React');
 var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
+var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
 var invariant = require('fbjs/lib/invariant');
@@ -519,11 +520,13 @@ var NavigatorIOS = React.createClass({
 
   componentDidMount: function() {
     this._emitDidFocus(this.state.routeStack[this.state.observedTopOfStack]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
     this.navigationContext.dispose();
     this.navigationContext = new NavigationContext();
+    this._disableTVEventHandler();
   },
 
   getDefaultProps: function(): Object {
@@ -891,15 +894,28 @@ var NavigatorIOS = React.createClass({
     );
   },
 
-  _handleTVEvent(evt: Object): void {
-    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === 'menu') {
-      this.pop();
+  _tvEventHandler: TVEventHandler,
+
+  _enableTVEventHandler(): void {
+    var cmp = this;
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(function(evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler(): void {
+    if(this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
     }
   },
 
   render: function() {
     return (
-      <View style={this.props.style} onTVNavEvent={(evt) => this._handleTVEvent(evt)}>
+      <View style={this.props.style}>
         {this._renderNavigationStackItems()}
       </View>
     );

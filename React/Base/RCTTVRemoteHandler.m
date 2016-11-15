@@ -19,6 +19,7 @@
 #import "RCTRootView.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTTVNavigationEventEmitter.h"
 
 @implementation RCTTVRemoteHandler
 {
@@ -138,15 +139,8 @@
 }
 
 - (void)sendAppleTVEvent:(NSString *)eventType toView:(UIView *)v {
-  if([v respondsToSelector:@selector(onTVNavEvent)]) {
-    RCTDirectEventBlock onTVNavEvent = [v performSelector:@selector(onTVNavEvent) withObject:nil];
-    if(onTVNavEvent) {
-      onTVNavEvent(@{@"eventType":eventType});
-    }
-  }
-  for(UIView *u in [v subviews]) {
-    [self sendAppleTVEvent:eventType toView:u];
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                      object:@{@"eventType":eventType}];
 }
 
 

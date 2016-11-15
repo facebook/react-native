@@ -44,7 +44,7 @@ var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
-var TVView = require('TVView');
+var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
 var clamp = require('clamp');
@@ -473,6 +473,7 @@ var Navigator = React.createClass({
   componentDidMount: function() {
     this._handleSpringUpdate();
     this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
@@ -486,6 +487,8 @@ var Navigator = React.createClass({
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
     }
+
+    this._disableTVEventHandler();
   },
 
   /**
@@ -1303,10 +1306,21 @@ var Navigator = React.createClass({
     });
   },
 
- _handleTVEvent: function(evt: Object) {
-    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === 'menu') {
-      this.pop();
-    }
+  _tvEventHandler: null,
+
+  _enableTVEventHandler(): void {
+    var cmp = this;
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(function(evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler(): void {
+    this.__tvEventHandler.disable();
+    delete this.__tvEventHandler;
   },
 
   render: function() {
@@ -1324,7 +1338,7 @@ var Navigator = React.createClass({
     });
     this._renderedSceneMap = newRenderedSceneMap;
     return (
-      <TVView style={[styles.container, this.props.style]} onTVNavEvent={(evt) => this._handleTVEvent(evt)}>
+      <View style={[styles.container, this.props.style]}>
         <View
           style={styles.transitioner}
           {...this.panGesture.panHandlers}
@@ -1335,7 +1349,7 @@ var Navigator = React.createClass({
           {scenes}
         </View>
         {this._renderNavigationBar()}
-      </TVView>
+      </View>
     );
   },
 

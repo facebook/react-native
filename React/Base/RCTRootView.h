@@ -13,10 +13,6 @@
 
 @protocol RCTRootViewDelegate;
 
-#if TARGET_OS_TV
-@class RCTTVRemoteHandler;
-#endif
-
 /**
  * This enum is used to define size flexibility type of the root view.
  * If a dimension is flexible, the view will recalculate that dimension

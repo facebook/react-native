@@ -32,7 +32,6 @@ RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVSelect, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onTVNavEvent, RCTDirectEventBlock)
 
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {

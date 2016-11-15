@@ -39,6 +39,7 @@ const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
 const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+const TVEventHandler = require('TVEventHandler');
 
 const {
   Animated,
@@ -128,9 +129,22 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _handleTVEvent(props: Props, evt: Object): void {
-    if (evt && evt.nativeEvent && evt.nativeEvent.eventType === 'menu') {
-      props.onNavigateBack && props.onNavigateBack();
+  _tvEventHandler: TVEventHandler;
+
+  componentDidMount(): void {
+    var cmp = this;
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(function(evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.props.onNavigateBack && cmp.props.onNavigateBack();
+      }
+    });
+  }
+
+  componentWillUnmount(): void {
+    if(this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
     }
   }
 
@@ -148,18 +162,17 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       : APPBAR_HEIGHT + this.props.statusBarHeight;
 
     return (
-      <Animated.TVView style={[
+      <Animated.View style={[
           styles.appbar,
           { height: barHeight },
           style
         ]}
-        onTVNavEvent={(evt) => this._handleTVEvent(this.props,evt)}
         {...viewProps}
       >
         {scenesProps.map(this._renderLeft, this)}
         {scenesProps.map(this._renderTitle, this)}
         {scenesProps.map(this._renderRight, this)}
-      </Animated.TVView>
+      </Animated.View>
     );
   }
 

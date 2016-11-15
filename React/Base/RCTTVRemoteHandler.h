@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 @class RCTBridge;
+@class RCTTVNavigationEventEmitter;
 
 @interface RCTTVRemoteHandler : NSObject
 

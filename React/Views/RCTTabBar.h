@@ -11,7 +11,6 @@
 
 #import "RCTComponent.h"
 
-
 @interface RCTTabBar : UIView
 
 @property (nonatomic, strong) UIColor *unselectedTintColor;
@@ -24,7 +23,5 @@
  */
 @property (nonatomic, copy) RCTDirectEventBlock onTVFocus; // Called when this view comes into focus when navigating via TV remote swipes or arrow keys
 @property (nonatomic, copy) RCTDirectEventBlock onTVBlur; // Called when this view leaves focus when navigating via TV remote swipes or arrow keys
-@property (nonatomic, copy) RCTDirectEventBlock onTVNavEvent; // Called on any TV remote action other than select (menu, play/pause, swipes or arrow keys);
-
 
 @end
