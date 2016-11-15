@@ -120,6 +120,10 @@ var Image = React.createClass({
      */
     onLoadStart: PropTypes.func,
     /**
+     * Invoked on load error
+     */
+    onError: PropTypes.func,
+    /**
      * Invoked when load completes successfully
      */
     onLoad: PropTypes.func,
@@ -284,10 +288,10 @@ var Image = React.createClass({
         sources = source;
       }
 
-      const {onLoadStart, onLoad, onLoadEnd} = this.props;
+      const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
