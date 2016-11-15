@@ -8,7 +8,6 @@ LOCAL_SRC_FILES := \
   jni/CSSJNI.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
-LOCAL_C_INCLUDES += $(REACT_COMMON_DIR)
 
 LOCAL_CFLAGS += -Wall -Werror -fvisibility=hidden -fexceptions -frtti
 CXX11_FLAGS := -std=c++11
