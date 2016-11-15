@@ -821,6 +821,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.openPackagerConnection(this);
+      mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -861,6 +862,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.closePackagerConnection();
+      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

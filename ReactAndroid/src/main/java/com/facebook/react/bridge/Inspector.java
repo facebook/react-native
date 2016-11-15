@@ -3,10 +3,13 @@
 package com.facebook.react.bridge;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.ReactConstants;
 
 @DoNotStrip
 public class Inspector {
@@ -17,11 +20,21 @@ public class Inspector {
   private final HybridData mHybridData;
 
   public static List<Page> getPages() {
-    return Arrays.asList(instance().getPagesNative());
+    try {
+      return Arrays.asList(instance().getPagesNative());
+    } catch (UnsatisfiedLinkError e) {
+      FLog.e(ReactConstants.TAG, "Inspector doesn't work in open source yet", e);
+      return Collections.emptyList();
+    }
   }
 
   public static LocalConnection connect(int pageId, RemoteConnection remote) {
-    return instance().connectNative(pageId, remote);
+    try {
+      return instance().connectNative(pageId, remote);
+    } catch (UnsatisfiedLinkError e) {
+      FLog.e(ReactConstants.TAG, "Inspector doesn't work in open source yet", e);
+      throw new RuntimeException(e);
+    }
   }
 
   private static native Inspector instance();
