@@ -219,7 +219,7 @@ RCT_EXPORT_MODULE()
     self.remoteNotificationCallbacks[notificationId] = completionHandler;
   }
 
-  [self sendEventWithName:@"remoteNotificationReceived" body:notification.userInfo];
+  [self sendEventWithName:@"remoteNotificationReceived" body:remoteNotification];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification

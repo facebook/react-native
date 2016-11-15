@@ -29,99 +29,14 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #define CSSUndefined NAN
 
 #include "CSSMacros.h"
+#include "CSSEnums.h"
 
 CSS_EXTERN_C_BEGIN
-
-typedef enum CSSDirection {
-  CSSDirectionInherit,
-  CSSDirectionLTR,
-  CSSDirectionRTL,
-} CSSDirection;
-
-typedef enum CSSFlexDirection {
-  CSSFlexDirectionColumn,
-  CSSFlexDirectionColumnReverse,
-  CSSFlexDirectionRow,
-  CSSFlexDirectionRowReverse,
-} CSSFlexDirection;
-
-typedef enum CSSJustify {
-  CSSJustifyFlexStart,
-  CSSJustifyCenter,
-  CSSJustifyFlexEnd,
-  CSSJustifySpaceBetween,
-  CSSJustifySpaceAround,
-} CSSJustify;
-
-typedef enum CSSOverflow {
-  CSSOverflowVisible,
-  CSSOverflowHidden,
-  CSSOverflowScroll,
-} CSSOverflow;
-
-// Note: auto is only a valid value for alignSelf. It is NOT a valid value for
-// alignItems.
-typedef enum CSSAlign {
-  CSSAlignAuto,
-  CSSAlignFlexStart,
-  CSSAlignCenter,
-  CSSAlignFlexEnd,
-  CSSAlignStretch,
-} CSSAlign;
-
-typedef enum CSSPositionType {
-  CSSPositionTypeRelative,
-  CSSPositionTypeAbsolute,
-} CSSPositionType;
-
-typedef enum CSSWrapType {
-  CSSWrapTypeNoWrap,
-  CSSWrapTypeWrap,
-} CSSWrapType;
-
-typedef enum CSSMeasureMode {
-  CSSMeasureModeUndefined,
-  CSSMeasureModeExactly,
-  CSSMeasureModeAtMost,
-  CSSMeasureModeCount,
-} CSSMeasureMode;
-
-typedef enum CSSDimension {
-  CSSDimensionWidth,
-  CSSDimensionHeight,
-} CSSDimension;
-
-typedef enum CSSEdge {
-  CSSEdgeLeft,
-  CSSEdgeTop,
-  CSSEdgeRight,
-  CSSEdgeBottom,
-  CSSEdgeStart,
-  CSSEdgeEnd,
-  CSSEdgeHorizontal,
-  CSSEdgeVertical,
-  CSSEdgeAll,
-  CSSEdgeCount,
-} CSSEdge;
-
-typedef enum CSSPrintOptions {
-  CSSPrintOptionsLayout = 1,
-  CSSPrintOptionsStyle = 2,
-  CSSPrintOptionsChildren = 4,
-} CSSPrintOptions;
 
 typedef struct CSSSize {
   float width;
   float height;
 } CSSSize;
-
-typedef enum CSSLogLevel {
-  CSSLogLevelError,
-  CSSLogLevelWarn,
-  CSSLogLevelInfo,
-  CSSLogLevelDebug,
-  CSSLogLevelVerbose,
-} CSSLogLevel;
 
 typedef struct CSSNode *CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
@@ -207,7 +122,7 @@ CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignContent, alignContent);
 CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignItems, alignItems);
 CSS_NODE_STYLE_PROPERTY(CSSAlign, AlignSelf, alignSelf);
 CSS_NODE_STYLE_PROPERTY(CSSPositionType, PositionType, positionType);
-CSS_NODE_STYLE_PROPERTY(CSSWrapType, FlexWrap, flexWrap);
+CSS_NODE_STYLE_PROPERTY(CSSWrap, FlexWrap, flexWrap);
 CSS_NODE_STYLE_PROPERTY(CSSOverflow, Overflow, overflow);
 
 WIN_EXPORT void CSSNodeStyleSetFlex(const CSSNodeRef node, const float flex);
@@ -237,5 +152,8 @@ CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
+
+WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
+WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
 
 CSS_EXTERN_C_END

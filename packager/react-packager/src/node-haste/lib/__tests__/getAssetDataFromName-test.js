@@ -62,6 +62,14 @@ describe('getAssetDataFromName', () => {
       name: 'c',
       platform: 'ios',
     });
+
+    expect(getAssetDataFromName('a/b /c.png')).toEqual({
+      resolution: 1,
+      assetName: 'a/b /c.png',
+      type: 'png',
+      name: 'c',
+      platform: null,
+    });
   });
 
   describe('resolution extraction', () => {

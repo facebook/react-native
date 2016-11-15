@@ -8,7 +8,6 @@
  */
 'use strict';
 
-var fs = require('fs');
 var path = require('path');
 var yeoman = require('yeoman-environment');
 
