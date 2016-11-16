@@ -896,7 +896,7 @@ var NavigatorIOS = React.createClass({
 
   _tvEventHandler: TVEventHandler,
 
-  _enableTVEventHandler(): void {
+  _enableTVEventHandler: function() {
     this._tvEventHandler = new TVEventHandler();
     this._tvEventHandler.enable(this, function(cmp, evt) {
       if (evt && evt.eventType === 'menu') {
@@ -905,7 +905,7 @@ var NavigatorIOS = React.createClass({
     });
   },
 
-  _disableTVEventHandler(): void {
+  _disableTVEventHandler: function() {
     if (this._tvEventHandler) {
       this._tvEventHandler.disable();
       delete this._tvEventHandler;

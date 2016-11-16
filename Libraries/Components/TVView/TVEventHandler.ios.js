@@ -28,7 +28,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule TVEventHandler
- * @flow
  */
 'use strict';
 
@@ -36,37 +35,33 @@ const React = require('React');
 const TVNavigationEventEmitter = require('NativeModules').TVNavigationEventEmitter;
 const NativeEventEmitter = require('NativeEventEmitter');
 
-var TVEventHandler = React.createClass({
+function TVEventHandler() {
+  this.__nativeTVNavigationEventListener = null;
+  this.__nativeTVNavigationEventEmitter = null;
+}
 
-  __nativeTVNavigationEventListener: NativeEventEmitter,
-  __nativeTVNavigationEventEmitter: NativeEventEmitter,
-
-  enable: function(component: ?any, callback: Function) {
-    var handler = callback;
-    var cmp = component;
-    this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
-    this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
-      'onTVNavEvent',
-      (data) => {
-        if (handler) {
-          handler(cmp, data);
-        }
+TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {
+  var handler = callback;
+  var cmp = component;
+  this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
+  this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
+    'onTVNavEvent',
+    (data) => {
+      if (handler) {
+        handler(cmp, data);
       }
-    );
-  },
-
-  disable: function() {
-    if (this.__nativeTVNavigationEventListener) {
-      this.__nativeTVNavigationEventListener.remove();
-      delete this.__nativeTVNavigationEventListener;
     }
-    if (this.__nativeTVNavigationEventEmitter) {
-      delete this.__nativeTVNavigationEventEmitter;
-    }
-  },
+  );
+};
 
-  render: function() {}
-
-});
+TVEventHandler.prototype.disable = function() {
+  if (this.__nativeTVNavigationEventListener) {
+    this.__nativeTVNavigationEventListener.remove();
+    delete this.__nativeTVNavigationEventListener;
+  }
+  if (this.__nativeTVNavigationEventEmitter) {
+    delete this.__nativeTVNavigationEventEmitter;
+  }
+};
 
 module.exports = TVEventHandler;
