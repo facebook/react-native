@@ -328,6 +328,11 @@ void JSCExecutor::loadApplicationScript(
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
     sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+
+    folly::throwOnFail<std::runtime_error>(
+      sourceCode != nullptr,
+      "Could not create compiled source code"
+    );
   } else {
     auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
     if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
