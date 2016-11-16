@@ -334,8 +334,8 @@ void JSCExecutor::loadApplicationScript(
       "Could not create compiled source code"
     );
   } else {
-    auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
-    if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
+    auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
+    if (!jsScriptBigString->isAscii()) {
       LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }

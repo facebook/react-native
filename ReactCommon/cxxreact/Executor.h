@@ -148,7 +148,7 @@ private:
   size_t m_size;
 };
 
-class JSBigMmapString : public JSBigString  {
+class JSBigOptimizedBundleString : public JSBigString  {
 public:
   enum class Encoding {
     Unknown,
@@ -158,7 +158,7 @@ public:
   };
 
 
-  JSBigMmapString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
+  JSBigOptimizedBundleString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
     m_fd(fd),
     m_size(size),
     m_encoding(encoding),
@@ -167,7 +167,7 @@ public:
     memcpy(m_hash, sha1, 20);
   }
 
-  ~JSBigMmapString() {
+  ~JSBigOptimizedBundleString() {
     if (m_str) {
       CHECK(munmap((void *)m_str, m_size) != -1);
     }
@@ -202,7 +202,7 @@ public:
     return m_encoding;
   }
 
-  static std::unique_ptr<const JSBigMmapString> fromOptimizedBundle(const std::string& bundlePath);
+  static std::unique_ptr<const JSBigOptimizedBundleString> fromOptimizedBundle(const std::string& bundlePath);
 
 private:
   int m_fd;
@@ -263,7 +263,5 @@ public:
   virtual void destroy() {}
   virtual ~JSExecutor() {}
 };
-
-std::unique_ptr<const JSBigMmapString> readJSBundle(const std::string& path);
 
 } }
