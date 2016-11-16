@@ -68,14 +68,21 @@ static CSSSize _jniMeasureFunc(CSSNodeRef node,
   return CSSSize{measuredWidth, measuredHeight};
 }
 
+struct JCSSLogLevel : public JavaClass<JCSSLogLevel> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/csslayout/CSSLogLevel;";
+};
+
 static global_ref<jobject> *jLogger;
 static int _jniLog(CSSLogLevel level, const char *format, va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
   static auto logFunc =
-      findClassLocal("com/facebook/csslayout/CSSLogger")->getMethod<void(jint, jstring)>("log");
-  logFunc(jLogger->get(), static_cast<jint>(level), Environment::current()->NewStringUTF(buffer));
+      findClassLocal("com/facebook/csslayout/CSSLogger")->getMethod<void(local_ref<JCSSLogLevel>, jstring)>("log");
+
+  static auto logLevelFromInt = JCSSLogLevel::javaClassStatic()->getStaticMethod<JCSSLogLevel::javaobject(jint)>("fromInt");
+
+  logFunc(jLogger->get(), logLevelFromInt(JCSSLogLevel::javaClassStatic(), static_cast<jint>(level)), Environment::current()->NewStringUTF(buffer));
 
   return result;
 }

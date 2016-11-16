@@ -9,15 +9,20 @@
 
 package com.facebook.csslayout;
 
-public enum CSSFlexDirection {
-  COLUMN(0),
-  COLUMN_REVERSE(1),
-  ROW(2),
-  ROW_REVERSE(3);
+public enum CSSEdge {
+  LEFT(0),
+  TOP(1),
+  RIGHT(2),
+  BOTTOM(3),
+  START(4),
+  END(5),
+  HORIZONTAL(6),
+  VERTICAL(7),
+  ALL(8);
 
   private int mIntValue;
 
-  CSSFlexDirection(int intValue) {
+  CSSEdge(int intValue) {
     mIntValue = intValue;
   }
 
@@ -25,12 +30,17 @@ public enum CSSFlexDirection {
     return mIntValue;
   }
 
-  public static CSSFlexDirection fromInt(int value) {
+  public static CSSEdge fromInt(int value) {
     switch (value) {
-      case 0: return COLUMN;
-      case 1: return COLUMN_REVERSE;
-      case 2: return ROW;
-      case 3: return ROW_REVERSE;
+      case 0: return LEFT;
+      case 1: return TOP;
+      case 2: return RIGHT;
+      case 3: return BOTTOM;
+      case 4: return START;
+      case 5: return END;
+      case 6: return HORIZONTAL;
+      case 7: return VERTICAL;
+      case 8: return ALL;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

@@ -87,7 +87,7 @@ public class LayoutShadowNode extends ReactShadowNode {
   @ReactProp(name = ViewProps.FLEX_WRAP)
   public void setFlexWrap(@Nullable String flexWrap) {
     setFlexWrap(
-      flexWrap == null ? CSSWrap.NOWRAP : CSSWrap.valueOf(flexWrap.toUpperCase(Locale.US)));
+      flexWrap == null ? CSSWrap.NO_WRAP : CSSWrap.valueOf(flexWrap.toUpperCase(Locale.US)));
   }
 
   @ReactProp(name = ViewProps.ALIGN_SELF)

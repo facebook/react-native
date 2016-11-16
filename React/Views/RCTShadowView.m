@@ -599,6 +599,8 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
           CSSNodeStyleSetHeight(cssNode, amount);
         }
         break;
+      case CSSDimensionCount:
+        break;
     }
   }
 }

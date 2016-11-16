@@ -24,12 +24,15 @@ assert(false);\
 }
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSPokeSamplingProfiler)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
 
 #undef UNIMPLEMENTED_SYSTEM_JSC_FUNCTION
 
 // A no-op function, to replace void functions that do no exist in the system JSC
 //  with a function that does nothing.
 static void noOpSystemJSCFunc(void *args...){ }
+static bool alwaysFalseSystemJSCFunc(void *args...){ return false; }
 
 void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
   return;
@@ -85,6 +88,9 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
     .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
     .configureJSCForIOS = (voidWithNoParamsFuncType)noOpSystemJSCFunc,
+    .JSSamplingProfilerEnabled = (JSSamplingProfilerEnabledFuncType)alwaysFalseSystemJSCFunc,
+    .JSPokeSamplingProfiler = (JSValueRefWithJSContextRefFuncType)UnimplementedJSPokeSamplingProfiler,
+    .JSStartSamplingProfilingOnMainJSCThread = (JSStartSamplingProfilingOnMainJSCThreadFuncType)UnimplementedJSStartSamplingProfilingOnMainJSCThread,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };
@@ -114,7 +120,7 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
     .JSPropertyNameArrayRelease = (JSPropertyNameArrayReleaseFuncType)dlsym(libraryHandle, "JSPropertyNameArrayRelease"),
     .JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString"),
     .JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction"),
-    .JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
+    .JSValueMakeNull = (JSValueRefWithJSContextRefFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
     .JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString"),
     .JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined"),
     .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
@@ -122,6 +128,9 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
     .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
     .configureJSCForIOS = (voidWithNoParamsFuncType)dlsym(libraryHandle, "configureJSCForIOS"),
+    .JSSamplingProfilerEnabled = (JSSamplingProfilerEnabledFuncType)dlsym(libraryHandle, "JSSamplingProfilerEnabled"),
+    .JSPokeSamplingProfiler = (JSValueRefWithJSContextRefFuncType)dlsym(libraryHandle, "JSPokeSamplingProfiler"),
+    .JSStartSamplingProfilingOnMainJSCThread = (JSStartSamplingProfilingOnMainJSCThreadFuncType)dlsym(libraryHandle, "JSStartSamplingProfilingOnMainJSCThread"),
     .JSBytecodeFileFormatVersion = *(const int32_t *)dlsym(libraryHandle, "JSBytecodeFileFormatVersion"),
     .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
     .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),

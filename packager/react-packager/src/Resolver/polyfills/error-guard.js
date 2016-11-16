@@ -15,14 +15,14 @@
  */
 
 /* eslint strict:0 */
-const _inGuard = 0;
+let _inGuard = 0;
 
 /**
  * This is the error handler that is called when we encounter an exception
  * when loading a module. This will report any errors encountered before
  * ExceptionsManager is configured.
  */
-const _globalHandler = function onError(e) {
+let _globalHandler = function onError(e) {
   throw e;
 };
 

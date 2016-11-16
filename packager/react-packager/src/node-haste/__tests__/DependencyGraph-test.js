@@ -8,105 +8,22 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.useRealTimers();
 jest
   .mock('fs')
   .mock('../../Logger')
-  .mock('../../lib/TransformCache');
-
-// This is an ugly hack:
-// * jest-haste-map uses `find` for fast file system crawling which won't work
-//   when we mock the file system in node. This mock copies the node crawler's
-//   implementation and always falls back to the node crawling mechanism.
-//   Ideally we'll make this an option in jest-haste-map to force it to use
-//   the node crawler.
-jest.mock('jest-haste-map/build/crawlers/node', () => {
-  const H = require('jest-haste-map/build/constants');
-
-  const fs = require('fs');
-  const path = require('path');
-
-  function find(
-  roots,
-  extensions,
-  ignore,
-  callback)
-  {
-    const result = [];
-    let activeCalls = 0;
-
-    function search(directory) {
-      activeCalls++;
-      fs.readdir(directory, (err, names) => {
-        activeCalls--;
-
-        names.forEach(file => {
-          file = path.join(directory, file);
-          if (ignore(file)) {
-            return;
-          }
-          activeCalls++;
-
-          fs.lstat(file, (err, stat) => {
-            activeCalls--;
-
-            if (!err && stat && !stat.isSymbolicLink()) {
-              if (stat.isDirectory()) {
-                search(file);
-              } else {
-                const ext = path.extname(file).substr(1);
-                if (extensions.indexOf(ext) !== -1) {
-                  result.push([file, stat.mtime.getTime()]);
-                }
-              }
-            }
-            if (activeCalls === 0) {
-              callback(result);
-            }
-          });
-        });
-
-        if (activeCalls === 0) {
-          callback(result);
-        }
-      });
-    }
-
-    roots.forEach(search);
-  }
-
-  return function nodeCrawl(
-  roots,
-  extensions,
-  ignore,
-  data)
-  {
-    return new Promise(resolve => {
-      const callback = list => {
-        const files = Object.create(null);
-        list.forEach(fileData => {
-          const name = fileData[0];
-          const mtime = fileData[1];
-          const existingFile = data.files[name];
-          if (existingFile && existingFile[H.MTIME] === mtime) {
-            files[name] = existingFile;
-          } else {
-            // See ../constants.js
-            files[name] = ['', mtime, 0, []];
-          }
-        });
-        data.files = files;
-        resolve(data);
-      };
-
-      find(roots, extensions, ignore, callback);
-    });
-  };
-
-});
+  .mock('../../lib/TransformCache')
+  // It's noticeably faster to prevent running watchman from FileWatcher.
+  .mock('child_process', () => ({}))
+  ;
 
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
+
+// This doesn't have state, and it's huge (Babel) so it's much faster to
+// require it only once.
+const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDependencies);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -119,7 +36,6 @@ beforeEach(() => {
 
 describe('DependencyGraph', function() {
   let Module;
-  let extractDependencies;
   let defaults;
 
   function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
@@ -190,21 +106,15 @@ describe('DependencyGraph', function() {
     Cache.prototype.end = jest.genMockFn();
 
     const transformCacheKey = 'abcdef';
-    extractDependencies =
-      require('../../JSTransformer/worker/extract-dependencies');
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
       fileWatcher,
+      forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
         'haste-fbjs',
         'react-haste',
         'react-native',
-        // Parse requires AsyncStorage. They will
-        // change that to require('react-native') which
-        // should work after this release and we can
-        // remove it from here.
-        'parse',
       ],
       platforms: ['ios', 'android'],
       shouldThrowOnUnresolvedErrors: () => false,
@@ -2741,7 +2651,6 @@ describe('DependencyGraph', function() {
       jest.resetModules();
       jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
-      extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
     });
 
     afterEach(function() {

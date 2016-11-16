@@ -26,12 +26,15 @@ const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
+const InspectorProxy = require('./util/inspectorProxy.js');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const unless = require('./middleware/unless');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
   var ms = null;
   const packagerServer = getPackagerServer(args, config);
+  const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
@@ -45,6 +48,7 @@ function runServer(args, config, readyCallback) {
     .use(cpuProfilerMiddleware)
     .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
+    .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -65,6 +69,7 @@ function runServer(args, config, readyCallback) {
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
       webSocketProxy.attachToServer(serverInstance, '/devtools');
+      inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
   );

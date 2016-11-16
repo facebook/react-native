@@ -16,6 +16,8 @@ const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
 const minify = require('./minify');
 
+import type {LogEntry} from '../../Logger/Types';
+
 function makeTransformParams(filename, sourceCode, options) {
   if (filename.endsWith('.json')) {
     sourceCode = 'module.exports=' + sourceCode;
@@ -36,15 +38,17 @@ type Transform = (params: {
   options: ?{},
 }) => mixed;
 
-type Options = {transform?: {}};
+export type Options = {transform?: {}};
+
+export type Data = {
+  result: TransformedCode,
+  transformFileStartLogEntry: LogEntry,
+  transformFileEndLogEntry: LogEntry,
+};
 
 type Callback = (
   error: ?Error,
-  data: ?{
-    result: TransformedCode,
-    transformFileStartLogEntry: {},
-    transformFileEndLogEntry: {},
-  },
+  data: ?Data,
 ) => mixed;
 
 function transformCode(
