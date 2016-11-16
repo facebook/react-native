@@ -694,6 +694,15 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 
 @end
 
+@implementation RCTDevMenuItem
+
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(void(^)(void))handler {return nil;}
++ (instancetype)toggleItemWithKey:(NSString *)key
+                            title:(NSString *)title
+                    selectedTitle:(NSString *)selectedTitle
+                          handler:(void(^)(BOOL selected))handler {return nil;}
+@end
+
 #endif
 
 @implementation  RCTBridge (RCTDevMenu)

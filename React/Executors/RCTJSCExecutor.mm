@@ -175,7 +175,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 RCT_EXPORT_MODULE()
 
 #if RCT_DEV
-
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   if (RCTJSCProfilerIsSupported()) {
@@ -419,8 +418,6 @@ static NSThread *newJavaScriptThread(void)
       }
     };
 
-#ifdef RCT_DEV
-
     // Add toggles for JSC's sampling profiler, if the profiler is enabled
     if (self->_jscWrapper->JSSamplingProfilerEnabled()) {
         // Mark this thread as the main JS thread before starting profiling.
@@ -450,7 +447,6 @@ static NSThread *newJavaScriptThread(void)
         return (NSDictionary *)[[strongSelf->_jscWrapper->JSValue valueWithJSValueRef:result inContext:weakContext] toObject];
       };
     }
-#endif
 #endif
 
 #if RCT_DEV
