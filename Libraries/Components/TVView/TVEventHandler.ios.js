@@ -41,14 +41,15 @@ var TVEventHandler = React.createClass({
   __nativeTVNavigationEventListener: NativeEventEmitter,
   __nativeTVNavigationEventEmitter: NativeEventEmitter,
 
-  enable: function(callback: Function) {
+  enable: function(component: ?any, callback: Function) {
     var handler = callback;
+    var cmp = component;
     this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
     this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
       'onTVNavEvent',
       (data) => {
-        if(handler) {
-          handler(data);
+        if (handler) {
+          handler(cmp, data);
         }
       }
     );

@@ -897,9 +897,8 @@ var NavigatorIOS = React.createClass({
   _tvEventHandler: TVEventHandler,
 
   _enableTVEventHandler(): void {
-    var cmp = this;
     this._tvEventHandler = new TVEventHandler();
-    this._tvEventHandler.enable(function(evt) {
+    this._tvEventHandler.enable(this, function(cmp, evt) {
       if (evt && evt.eventType === 'menu') {
         cmp.pop();
       }
