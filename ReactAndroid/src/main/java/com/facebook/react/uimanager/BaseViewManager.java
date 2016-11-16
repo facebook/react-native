@@ -5,6 +5,7 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -21,6 +22,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  private static final String PROP_VIEW_LAYER_TYPE = "viewLayerTypeAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
@@ -76,6 +78,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setZIndex(T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
+  }
+
+  @ReactProp(name = PROP_VIEW_LAYER_TYPE)
+  public void setViewLayerType(T view, String viewLayerType) {
+    int type = View.LAYER_TYPE_NONE;
+    if (viewLayerType == null || viewLayerType.equals("none")) {
+      type = View.LAYER_TYPE_NONE;
+    } else if (viewLayerType.equals("hardware")) {
+      type = View.LAYER_TYPE_HARDWARE;
+    } else if (viewLayerType.equals("software")) {
+      type = View.LAYER_TYPE_SOFTWARE;
+    } else {
+      Assertions.assertCondition(false, "wrong viewLayerType: " + viewLayerType);
+    }
+
+    view.setLayerType(type, null);
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
