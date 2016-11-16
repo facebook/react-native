@@ -10,4 +10,20 @@
 package com.facebook.csslayout;
 
 public enum CSSExperimentalFeature {
+__EMPTY(-1);
+  private int mIntValue;
+
+  CSSExperimentalFeature(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSExperimentalFeature fromInt(int value) {
+    switch (value) {
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

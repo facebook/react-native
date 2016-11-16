@@ -28,13 +28,15 @@ typedef JSStringRef (*JSPropertyNameArrayGetNameAtIndexFuncType)(JSPropertyNameA
 typedef void (*JSPropertyNameArrayReleaseFuncType)(JSPropertyNameArrayRef);
 typedef JSValueRef (*JSValueMakeFromJSONStringFuncType)(JSContextRef, JSStringRef);
 typedef JSValueRef (*JSObjectCallAsFunctionFuncType)(JSContextRef, JSObjectRef, JSObjectRef, size_t, const JSValueRef *, JSValueRef *);
-typedef JSValueRef (*JSValueMakeNullFuncType)(JSContextRef);
+typedef JSValueRef (*JSValueRefWithJSContextRefFuncType)(JSContextRef);
 typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef, unsigned, JSValueRef *);
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
 typedef JSObjectRef (*JSValueToObjectFuncType)(JSContextRef, JSValueRef, JSValueRef *);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
 typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
+typedef bool (*JSSamplingProfilerEnabledFuncType)();
+typedef void (*JSStartSamplingProfilingOnMainJSCThreadFuncType)(JSGlobalContextRef);
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -60,7 +62,7 @@ typedef struct RCTJSCWrapper {
   JSPropertyNameArrayReleaseFuncType JSPropertyNameArrayRelease;
   JSValueMakeFromJSONStringFuncType JSValueMakeFromJSONString;
   JSObjectCallAsFunctionFuncType JSObjectCallAsFunction;
-  JSValueMakeNullFuncType JSValueMakeNull;
+  JSValueRefWithJSContextRefFuncType JSValueMakeNull;
   JSValueCreateJSONStringFuncType JSValueCreateJSONString;
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
@@ -68,6 +70,9 @@ typedef struct RCTJSCWrapper {
   JSEvaluateScriptFuncType JSEvaluateScript;
   JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
   voidWithNoParamsFuncType configureJSCForIOS;
+  JSSamplingProfilerEnabledFuncType JSSamplingProfilerEnabled;
+  JSValueRefWithJSContextRefFuncType JSPokeSamplingProfiler;
+  JSStartSamplingProfilingOnMainJSCThreadFuncType JSStartSamplingProfilingOnMainJSCThread;
   const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;

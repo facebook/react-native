@@ -8,7 +8,12 @@
  */
 'use strict';
 
-module.exports = {
-  WatchmanWatcher: jest.genMockFromModule('sane/src/watchman_watcher'),
-  NodeWatcher: jest.genMockFromModule('sane/src/node_watcher'),
+module.exports = (url, middleware) => {
+  return (req, res, next) =>  {
+    if (req.url === url || req.url.startsWith(url + '/')) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
 };

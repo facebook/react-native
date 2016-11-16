@@ -29,103 +29,14 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #define CSSUndefined NAN
 
 #include "CSSMacros.h"
+#include "CSSEnums.h"
 
 CSS_EXTERN_C_BEGIN
-
-typedef enum CSSDirection {
-  CSSDirectionInherit,
-  CSSDirectionLTR,
-  CSSDirectionRTL,
-} CSSDirection;
-
-typedef enum CSSFlexDirection {
-  CSSFlexDirectionColumn,
-  CSSFlexDirectionColumnReverse,
-  CSSFlexDirectionRow,
-  CSSFlexDirectionRowReverse,
-} CSSFlexDirection;
-
-typedef enum CSSJustify {
-  CSSJustifyFlexStart,
-  CSSJustifyCenter,
-  CSSJustifyFlexEnd,
-  CSSJustifySpaceBetween,
-  CSSJustifySpaceAround,
-} CSSJustify;
-
-typedef enum CSSOverflow {
-  CSSOverflowVisible,
-  CSSOverflowHidden,
-  CSSOverflowScroll,
-} CSSOverflow;
-
-// Note: auto is only a valid value for alignSelf. It is NOT a valid value for
-// alignItems.
-typedef enum CSSAlign {
-  CSSAlignAuto,
-  CSSAlignFlexStart,
-  CSSAlignCenter,
-  CSSAlignFlexEnd,
-  CSSAlignStretch,
-} CSSAlign;
-
-typedef enum CSSPositionType {
-  CSSPositionTypeRelative,
-  CSSPositionTypeAbsolute,
-} CSSPositionType;
-
-typedef enum CSSWrap {
-  CSSWrapNoWrap,
-  CSSWrapWrap,
-} CSSWrap;
-
-typedef enum CSSMeasureMode {
-  CSSMeasureModeUndefined,
-  CSSMeasureModeExactly,
-  CSSMeasureModeAtMost,
-  CSSMeasureModeCount,
-} CSSMeasureMode;
-
-typedef enum CSSDimension {
-  CSSDimensionWidth,
-  CSSDimensionHeight,
-} CSSDimension;
-
-typedef enum CSSEdge {
-  CSSEdgeLeft,
-  CSSEdgeTop,
-  CSSEdgeRight,
-  CSSEdgeBottom,
-  CSSEdgeStart,
-  CSSEdgeEnd,
-  CSSEdgeHorizontal,
-  CSSEdgeVertical,
-  CSSEdgeAll,
-  CSSEdgeCount,
-} CSSEdge;
-
-typedef enum CSSPrintOptions {
-  CSSPrintOptionsLayout = 1,
-  CSSPrintOptionsStyle = 2,
-  CSSPrintOptionsChildren = 4,
-} CSSPrintOptions;
 
 typedef struct CSSSize {
   float width;
   float height;
 } CSSSize;
-
-typedef enum CSSLogLevel {
-  CSSLogLevelError,
-  CSSLogLevelWarn,
-  CSSLogLevelInfo,
-  CSSLogLevelDebug,
-  CSSLogLevelVerbose,
-} CSSLogLevel;
-
-typedef enum CSSExperimentalFeature {
-  CSSExperimentalFeatureCount,
-} CSSExperimentalFeature;
 
 typedef struct CSSNode *CSSNodeRef;
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
@@ -135,6 +46,11 @@ typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   CSSMeasureMode heightMode);
 typedef void (*CSSPrintFunc)(CSSNodeRef node);
 typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
+
+typedef void *(*CSSMalloc)(size_t size);
+typedef void *(*CSSCalloc)(size_t count, size_t size);
+typedef void *(*CSSRealloc)(void *ptr, size_t size);
+typedef void (*CSSFree)(void *ptr);
 
 // CSSNode
 WIN_EXPORT CSSNodeRef CSSNodeNew(void);
@@ -244,5 +160,10 @@ WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
 
 WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
 WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
+
+WIN_EXPORT void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
+                                        CSSCalloc cssCalloc,
+                                        CSSRealloc cssRealloc,
+                                        CSSFree cssFree);
 
 CSS_EXTERN_C_END

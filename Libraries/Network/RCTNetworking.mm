@@ -116,7 +116,7 @@ static NSString *RCTGenerateFormBoundary()
   // We've processed the last item. Finish and return.
   [_multipartBody appendData:[[NSString stringWithFormat:@"--%@--\r\n", _boundary]
                               dataUsingEncoding:NSUTF8StringEncoding]];
-  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=\"%@\"", _boundary];
+  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", _boundary];
   return _callback(nil, @{@"body": _multipartBody, @"contentType": contentType});
 }
 

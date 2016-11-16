@@ -287,8 +287,12 @@
   if (!self.rct_nextClippingView && !self.rct_removesClippedSubviews) {
     return;
   }
-  // If we are currently clipped our active clipping rect would be null rect. That's why we ask for out superview's.
-  CGRect clippingRectForSuperview = self.reactSuperview ? [self.reactSuperview rct_activeClippingRect] : CGRectInfinite;
+  // If we are currently clipped our active clipping rect would be null rect. That's why we ask for our superview's.
+  // Actually it's not that simple. Clipping logic operates on uiview hierarchy. If the current view is clipped we cannot use its superview, since its nil.
+  // Fortunately we can use `reactSuperview`. UI and React view hierachies doesn't have to match, but when they don't match we don't clip.
+  // Therefore because this view is clipped it means its reactSuperview is the same as its (clipped) UI superview.
+  UIView *clippingRectSource = self.superview ? self.superview : self.reactSuperview;
+  CGRect clippingRectForSuperview = clippingRectSource ? [clippingRectSource rct_activeClippingRect] : CGRectInfinite;
   if (CGRectIsNull(clippingRectForSuperview)) {
     return;
   }

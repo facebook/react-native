@@ -185,12 +185,12 @@ try {
 
   if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build android package');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
       echo('Could not build ios package');
       exitCode = 1;
       throw Error(exitCode);

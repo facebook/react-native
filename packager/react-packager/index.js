@@ -45,26 +45,14 @@ function createServer(options) {
     enableDebug();
   }
 
+  options = Object.assign({}, options);
+  delete options.verbose;
   var Server = require('./src/Server');
-  return new Server(omit(options, ['verbose']));
+  return new Server(options);
 }
 
 function createNonPersistentServer(options) {
   Logger.disablePrinting();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
+  options.watch = options.nonPersistent != null;
   return createServer(options);
-}
-
-function omit(obj, blacklistedKeys) {
-  return Object.keys(obj).reduce((clone, key) => {
-    if (blacklistedKeys.indexOf(key) === -1) {
-      clone[key] = obj[key];
-    }
-
-    return clone;
-  }, {});
 }
