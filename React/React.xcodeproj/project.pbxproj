@@ -175,6 +175,8 @@
 		2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
 		2DD60CA11DD1563700788D15 /* RCTTVViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB532CB1DCE45750056782F /* RCTTVViewManager.m */; };
 		2DD60CA21DD1564200788D15 /* RCTTVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DB532C81DCE410F0056782F /* RCTTVView.m */; };
+		2DF603491DDBE9AD00493BA5 /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DF603481DDBE9AD00493BA5 /* JSCSamplingProfiler.m */; };
+		2DF6034A1DDBE9C900493BA5 /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DF603481DDBE9AD00493BA5 /* JSCSamplingProfiler.m */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
 		391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 391E86A21C623EC800009732 /* RCTTouchEvent.m */; };
 		3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */; };
@@ -392,6 +394,8 @@
 		2DB532C81DCE410F0056782F /* RCTTVView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVView.m; sourceTree = "<group>"; };
 		2DB532CA1DCE45750056782F /* RCTTVViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVViewManager.h; sourceTree = "<group>"; };
 		2DB532CB1DCE45750056782F /* RCTTVViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVViewManager.m; sourceTree = "<group>"; };
+		2DF603471DDBE9AD00493BA5 /* JSCSamplingProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCSamplingProfiler.h; sourceTree = "<group>"; };
+		2DF603481DDBE9AD00493BA5 /* JSCSamplingProfiler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCSamplingProfiler.m; sourceTree = "<group>"; };
 		352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTI18nUtil.h; sourceTree = "<group>"; };
 		352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nUtil.m; sourceTree = "<group>"; };
 		391E86A21C623EC800009732 /* RCTTouchEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchEvent.m; sourceTree = "<group>"; };
@@ -505,6 +509,8 @@
 		13B07FE01A69315300A75B9A /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				2DF603471DDBE9AD00493BA5 /* JSCSamplingProfiler.h */,
+				2DF603481DDBE9AD00493BA5 /* JSCSamplingProfiler.m */,
 				13D9FEE91CDCCECF00158BD7 /* RCTEventEmitter.h */,
 				13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */,
 				E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */,
@@ -984,6 +990,7 @@
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
 				2D3B5EC61D9B095000451313 /* RCTProfileTrampoline-x86_64.S in Sources */,
+				2DF6034A1DDBE9C900493BA5 /* JSCSamplingProfiler.m in Sources */,
 				2D3B5ED01D9B097200451313 /* RCTMap.m in Sources */,
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
@@ -1115,6 +1122,7 @@
 				13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */,
 				83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */,
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
+				2DF603491DDBE9AD00493BA5 /* JSCSamplingProfiler.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
 				391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */,
 				1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */,
