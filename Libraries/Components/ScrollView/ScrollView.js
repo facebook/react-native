@@ -183,7 +183,7 @@ const ScrollView = React.createClass({
      *     is up dismisses the keyboard. When this happens, children won't receive the tap.
      *   - 'always', the keyboard will not dismiss automatically, and the scroll view will not
      *     catch taps, but children of the scroll view can catch taps.
-     *   - 'handled', they keyboard will not dismiss automatically when the tap was handled by
+     *   - 'handled', the keyboard will not dismiss automatically when the tap was handled by
      *     a children, (or captured by an ancestor).
      *   - false, deprecated, use 'never' instead
      *   - true, deprecated, use 'always' instead
