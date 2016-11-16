@@ -144,7 +144,7 @@ import Perf from 'react-addons-perf';
 ...
 ```
 
-Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on.
+Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on in the javascript thread.
 
 > **TODO**: Add more tools for profiling JS
 

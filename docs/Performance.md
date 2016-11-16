@@ -327,7 +327,7 @@ learn to use systrace.
 
 You can use `react-addons-perf` to have a first insight on wich components are the bottleneck.
 
-```javascript
+```js
 import Perf from 'react-addons-perf';
 
 ....
@@ -343,4 +343,4 @@ import Perf from 'react-addons-perf';
 ...
 ```
 
-Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on.
+Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on in the javascript thread.
