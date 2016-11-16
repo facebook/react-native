@@ -55,7 +55,7 @@ class UIExplorerPage extends React.Component {
       ContentWrapper = (ScrollView: ReactClass<any>);
       // $FlowFixMe found when converting React.createClass to ES6
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
-      wrapperProps.keyboardShouldPersistTaps = true;
+      wrapperProps.keyboardShouldPersistTaps = 'handled';
       wrapperProps.keyboardDismissMode = 'interactive';
     }
     var title = this.props.title ?
