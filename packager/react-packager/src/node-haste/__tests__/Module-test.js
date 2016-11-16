@@ -47,6 +47,10 @@ function mockIndexFile(indexJs) {
 }
 
 describe('Module', () => {
+  const fileWatcher = {
+    on: () =>  this,
+    isWatchman: () => Promise.resolve(false),
+  };
   const fileName = '/root/index.js';
 
   let cache, fastfs;
@@ -81,6 +85,7 @@ describe('Module', () => {
     new Fastfs(
       'test',
       ['/root'],
+      fileWatcher,
       ['/root/index.js', '/root/package.json'],
       {ignore: []},
     );
@@ -114,22 +119,22 @@ describe('Module', () => {
         mockIndexFile(source);
       });
 
-      it('extracts the module name from the header', () =>
+      pit('extracts the module name from the header', () =>
         module.getName().then(name => expect(name).toEqual(moduleId))
       );
 
-      it('identifies the module as haste module', () =>
+      pit('identifies the module as haste module', () =>
         module.isHaste().then(isHaste => expect(isHaste).toBe(true))
       );
 
-      it('does not transform the file in order to access the name', () => {
+      pit('does not transform the file in order to access the name', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).getName()
           .then(() => expect(transformCode).not.toBeCalled());
       });
 
-      it('does not transform the file in order to access the haste status', () => {
+      pit('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).isHaste()
@@ -142,22 +147,22 @@ describe('Module', () => {
         mockIndexFile(source.replace(/@providesModule/, '@provides'));
       });
 
-      it('extracts the module name from the header if it has a @provides annotation', () =>
+      pit('extracts the module name from the header if it has a @provides annotation', () =>
         module.getName().then(name => expect(name).toEqual(moduleId))
       );
 
-      it('identifies the module as haste module', () =>
+      pit('identifies the module as haste module', () =>
         module.isHaste().then(isHaste => expect(isHaste).toBe(true))
       );
 
-      it('does not transform the file in order to access the name', () => {
+      pit('does not transform the file in order to access the name', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).getName()
           .then(() => expect(transformCode).not.toBeCalled());
       });
 
-      it('does not transform the file in order to access the haste status', () => {
+      pit('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).isHaste()
@@ -170,22 +175,22 @@ describe('Module', () => {
         mockIndexFile('arbitrary(code);');
       });
 
-      it('uses the file name as module name', () =>
+      pit('uses the file name as module name', () =>
         module.getName().then(name => expect(name).toEqual(fileName))
       );
 
-      it('does not identify the module as haste module', () =>
+      pit('does not identify the module as haste module', () =>
         module.isHaste().then(isHaste => expect(isHaste).toBe(false))
       );
 
-      it('does not transform the file in order to access the name', () => {
+      pit('does not transform the file in order to access the name', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).getName()
           .then(() => expect(transformCode).not.toBeCalled());
       });
 
-      it('does not transform the file in order to access the haste status', () => {
+      pit('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
         return createModule({transformCode}).isHaste()
@@ -200,12 +205,12 @@ describe('Module', () => {
       mockIndexFile(fileContents);
     });
 
-    it('exposes file contents as `code` property on the data exposed by `read()`', () =>
+    pit('exposes file contents as `code` property on the data exposed by `read()`', () =>
       createModule().read().then(({code}) =>
         expect(code).toBe(fileContents))
     );
 
-    it('exposes file contents via the `getCode()` method', () =>
+    pit('exposes file contents via the `getCode()` method', () =>
       createModule().getCode().then(code =>
         expect(code).toBe(fileContents))
     );
@@ -236,7 +241,7 @@ describe('Module', () => {
       mockIndexFile(fileContents);
     });
 
-    it('passes the module and file contents to the transform function when reading', () => {
+    pit('passes the module and file contents to the transform function when reading', () => {
       const module = createModule({transformCode});
       return module.read()
         .then(() => {
@@ -244,7 +249,7 @@ describe('Module', () => {
         });
     });
 
-    it('passes any additional options to the transform function when reading', () => {
+    pit('passes any additional options to the transform function when reading', () => {
       const module = createModule({transformCode});
       const transformOptions = {arbitrary: Object()};
       return module.read(transformOptions)
@@ -253,7 +258,7 @@ describe('Module', () => {
         );
     });
 
-    it('passes module and file contents if the file is annotated with @extern', () => {
+    pit('passes the module and file contents to the transform if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
       const customFileContents = `
         /**
@@ -266,7 +271,7 @@ describe('Module', () => {
       });
     });
 
-    it('passes the module and file contents to the transform for JSON files', () => {
+    pit('passes the module and file contents to the transform for JSON files', () => {
       mockPackageFile();
       const module = createJSONModule({transformCode});
       return module.read().then(() => {
@@ -274,7 +279,7 @@ describe('Module', () => {
       });
     });
 
-    it('does not extend the passed options object if the file is annotated with @extern', () => {
+    pit('does not extend the passed options object if the file is annotated with @extern', () => {
       const module = createModule({transformCode});
       const customFileContents = `
         /**
@@ -290,7 +295,7 @@ describe('Module', () => {
       });
     });
 
-    it('does not extend the passed options object for JSON files', () => {
+    pit('does not extend the passed options object for JSON files', () => {
       mockPackageFile();
       const module = createJSONModule({transformCode});
       const options = {arbitrary: 'foo'};
@@ -301,7 +306,7 @@ describe('Module', () => {
       });
     });
 
-    it('uses dependencies that `transformCode` resolves to, instead of extracting them', () => {
+    pit('uses dependencies that `transformCode` resolves to, instead of extracting them', () => {
       const mockedDependencies = ['foo', 'bar'];
       transformResult = {
         code: exampleCode,
@@ -314,7 +319,7 @@ describe('Module', () => {
       });
     });
 
-    it('forwards all additional properties of the result provided by `transformCode`', () => {
+    pit('forwards all additional properties of the result provided by `transformCode`', () => {
       transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
@@ -329,7 +334,7 @@ describe('Module', () => {
       });
     });
 
-    it('only stores dependencies if `cacheTransformResults` option is disabled', () => {
+    pit('does not store anything but dependencies if the `cacheTransformResults` option is disabled', () => {
       transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
@@ -349,7 +354,7 @@ describe('Module', () => {
       });
     });
 
-    it('stores all things if options is undefined', () => {
+    pit('stores all things if options is undefined', () => {
       transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
@@ -365,7 +370,7 @@ describe('Module', () => {
       });
     });
 
-    it('exposes the transformed code rather than the raw file contents', () => {
+    pit('exposes the transformed code rather than the raw file contents', () => {
       transformResult = {code: exampleCode};
       const module = createModule({transformCode});
       return Promise.all([module.read(), module.getCode()])
@@ -375,13 +380,13 @@ describe('Module', () => {
         });
     });
 
-    it('exposes the raw file contents as `source` property', () => {
+    pit('exposes the raw file contents as `source` property', () => {
       const module = createModule({transformCode});
       return module.read()
         .then(data => expect(data.source).toBe(fileContents));
     });
 
-    it('exposes a source map returned by the transform', () => {
+    pit('exposes a source map returned by the transform', () => {
       const map = {version: 3};
       transformResult = {map, code: exampleCode};
       const module = createModule({transformCode});
@@ -392,7 +397,7 @@ describe('Module', () => {
         });
     });
 
-    it('caches the transform result for the same transform options', () => {
+    pit('caches the transform result for the same transform options', () => {
       let module = createModule({transformCode});
       return module.read()
         .then(() => {
@@ -407,7 +412,7 @@ describe('Module', () => {
         });
     });
 
-    it('triggers a new transform for different transform options', () => {
+    pit('triggers a new transform for different transform options', () => {
       const module = createModule({transformCode});
       return module.read({foo: 1})
         .then(() => {
@@ -419,7 +424,7 @@ describe('Module', () => {
         });
     });
 
-    it('triggers a new transform for different source code', () => {
+    pit('triggers a new transform for different source code', () => {
       let module = createModule({transformCode});
       return module.read()
         .then(() => {
@@ -435,7 +440,7 @@ describe('Module', () => {
         });
     });
 
-    it('triggers a new transform for different transform cache key', () => {
+    pit('triggers a new transform for different transform cache key', () => {
       let module = createModule({transformCode});
       return module.read()
         .then(() => {

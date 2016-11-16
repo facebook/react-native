@@ -15,6 +15,7 @@ const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
 const DeprecatedAssetMap = require('./DependencyGraph/DeprecatedAssetMap');
 const Fastfs = require('./fastfs');
+const FileWatcher = require('./FileWatcher');
 const HasteMap = require('./DependencyGraph/HasteMap');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
@@ -46,16 +47,12 @@ const {
   print,
 } = require('../Logger');
 
-const escapePath = (p: string) => {
-  return (path.sep === '\\')  ? p.replace(/(\/|\\(?!\.))/g, '\\\\') : p;
-};
-
 class DependencyGraph {
 
   _opts: {
     roots: Array<string>,
     ignoreFilePath: (filePath: string) => boolean,
-    watch: boolean,
+    fileWatcher: FileWatcher,
     forceNodeFilesystemAPI: boolean,
     assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
@@ -74,23 +71,21 @@ class DependencyGraph {
     maxWorkers: number,
     resetCache: boolean,
   };
-  _assetDependencies: mixed;
-  _assetPattern: RegExp;
   _cache: Cache;
-  _deprecatedAssetMap: DeprecatedAssetMap;
-  _fastfs: Fastfs;
-  _haste: JestHasteMap;
-  _hasteMap: HasteMap;
-  _hasteMapError: ?Error;
+  _assetDependencies: mixed;
   _helpers: DependencyGraphHelpers;
+  _fastfs: Fastfs;
   _moduleCache: ModuleCache;
+  _hasteMap: HasteMap;
+  _deprecatedAssetMap: DeprecatedAssetMap;
+  _hasteMapError: ?Error;
 
-  _loading: Promise<mixed>;
+  _loading: ?Promise<mixed>;
 
   constructor({
     roots,
     ignoreFilePath,
-    watch,
+    fileWatcher,
     forceNodeFilesystemAPI,
     assetRoots_DEPRECATED,
     assetExts,
@@ -114,7 +109,7 @@ class DependencyGraph {
   }: {
     roots: Array<string>,
     ignoreFilePath: (filePath: string) => boolean,
-    watch: boolean,
+    fileWatcher: FileWatcher,
     forceNodeFilesystemAPI?: boolean,
     assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
@@ -138,7 +133,7 @@ class DependencyGraph {
     this._opts = {
       roots,
       ignoreFilePath: ignoreFilePath || (() => {}),
-      watch: !!watch,
+      fileWatcher,
       forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
       assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
       assetExts: assetExts || [],
@@ -160,9 +155,6 @@ class DependencyGraph {
       maxWorkers,
       resetCache,
     };
-    this._assetPattern =
-      new RegExp('^' + this._opts.assetRoots_DEPRECATED.map(escapePath).join('|'));
-
     this._cache = cache;
     this._assetDependencies = assetDependencies;
     this._helpers = new DependencyGraphHelpers(this._opts);
@@ -175,7 +167,7 @@ class DependencyGraph {
     }
 
     const mw = this._opts.maxWorkers;
-    this._haste = new JestHasteMap({
+    const haste = new JestHasteMap({
       extensions: this._opts.extensions.concat(this._opts.assetExts),
       forceNodeFilesystemAPI: this._opts.forceNodeFilesystemAPI,
       ignorePattern: {test: this._opts.ignoreFilePath},
@@ -188,10 +180,9 @@ class DependencyGraph {
       retainAllFiles: true,
       roots: this._opts.roots.concat(this._opts.assetRoots_DEPRECATED),
       useWatchman: this._opts.useWatchman,
-      watch: this._opts.watch,
     });
 
-    this._loading = this._haste.build().then(hasteMap => {
+    this._loading = haste.build().then(hasteMap => {
       const initializingPackagerLogEntry =
         print(log(createActionStartEntry('Initializing Packager')));
 
@@ -200,11 +191,14 @@ class DependencyGraph {
       this._fastfs = new Fastfs(
         'JavaScript',
         this._opts.roots,
+        this._opts.fileWatcher,
         hasteFSFiles,
         {
           ignore: this._opts.ignoreFilePath,
         }
       );
+
+      this._fastfs.on('change', this._processFileChange.bind(this));
 
       this._moduleCache = new ModuleCache({
         fastfs: this._fastfs,
@@ -225,7 +219,14 @@ class DependencyGraph {
         platforms: this._opts.platforms,
       });
 
-      const assetFiles = hasteMap.hasteFS.matchFiles(this._assetPattern);
+      const escapePath = (p: string) => {
+        return (path.sep === '\\')  ? p.replace(/(\/|\\(?!\.))/g, '\\\\') : p;
+      };
+
+      const assetPattern =
+        new RegExp('^' + this._opts.assetRoots_DEPRECATED.map(escapePath).join('|'));
+
+      const assetFiles = hasteMap.hasteFS.matchFiles(assetPattern);
 
       this._deprecatedAssetMap = new DeprecatedAssetMap({
         helpers: this._helpers,
@@ -234,11 +235,11 @@ class DependencyGraph {
         files: assetFiles,
       });
 
-      this._haste.on('change', ({eventsQueue}) =>
-        eventsQueue.forEach(({type, filePath, stat}) =>
-          this.processFileChange(type, filePath, stat)
-        )
-      );
+      this._fastfs.on('change', (type, filePath, root, fstat) => {
+        if (assetPattern.test(path.join(root, filePath))) {
+          this._deprecatedAssetMap.processFileChange(type, filePath, root, fstat);
+        }
+      });
 
       const buildingHasteMapLogEntry =
         print(log(createActionStartEntry('Building Haste Map')));
@@ -276,10 +277,6 @@ class DependencyGraph {
 
   getFS() {
     return this._fastfs;
-  }
-
-  getWatcher() {
-    return this._haste;
   }
 
   /**
@@ -368,16 +365,21 @@ class DependencyGraph {
     );
   }
 
-  processFileChange(type: string, filePath: string, stat: Object) {
-    this._fastfs.processFileChange(type, filePath, stat);
-    this._moduleCache.processFileChange(type, filePath, stat);
-    if (this._assetPattern.test(filePath)) {
-      this._deprecatedAssetMap.processFileChange(type, filePath, stat);
+  _processFileChange(type, filePath, root, fstat) {
+    const absPath = path.join(root, filePath);
+    if (fstat && fstat.isDirectory() ||
+        this._opts.ignoreFilePath(absPath) ||
+        this._helpers.isNodeModulesDir(absPath)) {
+      return;
     }
 
-    // This code reports failures but doesn't block recovery in the dev server
-    // mode. When the hasteMap is left in an incorrect state, we'll rebuild when
-    // the next file changes.
+    // Ok, this is some tricky promise code. Our requirements are:
+    // * we need to report back failures
+    // * failures shouldn't block recovery
+    // * Errors can leave `hasteMap` in an incorrect state, and we need to rebuild
+    // After we process a file change we record any errors which will also be
+    // reported via the next request. On the next file change, we'll see that
+    // we are in an error state and we should decide to do a full rebuild.
     const resolve = () => {
       if (this._hasteMapError) {
         console.warn(
@@ -389,14 +391,13 @@ class DependencyGraph {
         // Rebuild the entire map if last change resulted in an error.
         this._loading = this._hasteMap.build();
       } else {
-        this._loading = this._hasteMap.processFileChange(type, filePath);
-        this._loading.catch(error => {
-          this._hasteMapError = error;
-        });
+        this._loading = this._hasteMap.processFileChange(type, absPath);
+        this._loading.catch((e) => {this._hasteMapError = e;});
       }
       return this._loading;
     };
-
+    /* $FlowFixMe: there is a risk this happen before we assign that
+     * variable in the load() function. */
     this._loading = this._loading.then(resolve, resolve);
   }
 
@@ -410,6 +411,7 @@ class DependencyGraph {
 
   static Cache;
   static Fastfs;
+  static FileWatcher;
   static Module;
   static Polyfill;
   static getAssetDataFromName;
@@ -422,6 +424,7 @@ class DependencyGraph {
 Object.assign(DependencyGraph, {
   Cache,
   Fastfs,
+  FileWatcher,
   Module,
   Polyfill,
   getAssetDataFromName,

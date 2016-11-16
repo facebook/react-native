@@ -79,6 +79,10 @@ const validateOpts = declareOpts({
     type: 'object',
     required: false,
   },
+  nonPersistent: {
+    type: 'boolean',
+    default: false,
+  },
   assetRoots: {
     type: 'array',
     required: false,
@@ -87,9 +91,9 @@ const validateOpts = declareOpts({
     type: 'array',
     default: ['png'],
   },
-  watch: {
-    type: 'boolean',
-    default: false,
+  fileWatcher: {
+    type: 'object',
+    required: true,
   },
   assetServer: {
     type: 'object',
@@ -120,9 +124,10 @@ type Options = {
   resetCache: boolean,
   transformModulePath: string,
   extraNodeModules: {},
+  nonPersistent: boolean,
   assetRoots: Array<string>,
   assetExts: Array<string>,
-  watch: boolean,
+  fileWatcher: {},
   assetServer: AssetServer,
   transformTimeoutInterval: ?number,
   allowBundleUpdates: boolean,
@@ -186,7 +191,7 @@ class Bundler {
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
-      watch: opts.watch,
+      fileWatcher: opts.fileWatcher,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       polyfillModuleNames: opts.polyfillModuleNames,
@@ -212,12 +217,9 @@ class Bundler {
     }
   }
 
-  end() {
+  kill() {
     this._transformer.kill();
-    return Promise.all([
-      this._cache.end(),
-      this.getResolver().getDependencyGraph().getWatcher().end(),
-    ]);
+    return this._cache.end();
   }
 
   bundle(options: {

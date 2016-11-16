@@ -9,6 +9,7 @@
 'use strict';
 
 const AssetServer = require('../AssetServer');
+const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
@@ -75,7 +76,7 @@ const validateOpts = declareOpts({
     type: 'object',
     required: false,
   },
-  watch: {
+  nonPersistent: {
     type: 'boolean',
     default: false,
   },
@@ -199,32 +200,57 @@ const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 class Server {
   constructor(options) {
     const opts = this._opts = validateOpts(options);
-    const processFileChange =
-      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
 
+    const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
+
+    let watchRootConfigs = opts.projectRoots.map(dir => {
+      return {
+        dir: dir,
+        globs: [
+          '**/*.js',
+          '**/*.json',
+        ].concat(assetGlobs),
+      };
+    });
+
+    if (opts.assetRoots != null) {
+      watchRootConfigs = watchRootConfigs.concat(
+        opts.assetRoots.map(dir => {
+          return {
+            dir: dir,
+            globs: assetGlobs,
+          };
+        })
+      );
+    }
+
+    this._fileWatcher = options.nonPersistent
+      ? FileWatcher.createDummyWatcher()
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
+
     this._assetServer = new AssetServer({
       assetExts: opts.assetExts,
+      fileWatcher: this._fileWatcher,
       projectRoots: opts.projectRoots,
     });
 
     const bundlerOpts = Object.create(opts);
+    bundlerOpts.fileWatcher = this._fileWatcher;
     bundlerOpts.assetServer = this._assetServer;
-    bundlerOpts.allowBundleUpdates = options.watch;
-    bundlerOpts.watch = options.watch;
+    bundlerOpts.allowBundleUpdates = !options.nonPersistent;
     this._bundler = new Bundler(bundlerOpts);
 
+    this._fileWatcher.on('all', this._onFileChange.bind(this));
+
     // changes to the haste map can affect resolution of files in the bundle
-    const dependencyGraph = this._bundler.getResolver().getDependencyGraph();
+    const dependencyGraph = this._bundler.getResolver().getDependecyGraph();
+
     dependencyGraph.load().then(() => {
-      dependencyGraph.getWatcher().on(
-        'change',
-        ({eventsQueue}) => eventsQueue.forEach(processFileChange),
-      );
       dependencyGraph.getHasteMap().on('change', () => {
         debug('Clearing bundle cache due to haste map change');
         this._clearBundles();
@@ -256,7 +282,10 @@ class Server {
   }
 
   end() {
-    return this._bundler.end();
+    Promise.all([
+      this._fileWatcher.end(),
+      this._bundler.kill(),
+    ]);
   }
 
   setHMRFileChangeListener(listener) {
@@ -270,7 +299,7 @@ class Server {
   }
 
   buildBundle(options) {
-    return this._bundler.getResolver().getDependencyGraph().load().then(() => {
+    return this._bundler.getResolver().getDependecyGraph().load().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }
@@ -341,9 +370,9 @@ class Server {
     });
   }
 
-  onFileChange(type, filePath, stat) {
-    this._assetServer.onFileChange(type, filePath, stat);
-    this._bundler.invalidateFile(filePath);
+  _onFileChange(type, filepath, root) {
+    const absPath = path.join(root, filepath);
+    this._bundler.invalidateFile(absPath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -351,26 +380,26 @@ class Server {
     if (this._hmrFileChangeListener) {
       // Clear cached bundles in case user reloads
       this._clearBundles();
-      this._hmrFileChangeListener(filePath, this._bundler.stat(filePath));
+      this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
       return;
-    } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
+    } else if (type !== 'change' && absPath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files
       debug('Clearing bundles due to potential node_modules resolution change');
       this._clearBundles();
     }
 
     Promise.all(
-      this._fileChangeListeners.map(listener => listener(filePath))
+      this._fileChangeListeners.map(listener => listener(absPath))
     ).then(
-      () => this._onFileChangeComplete(filePath),
-      () => this._onFileChangeComplete(filePath)
+      () => this._onFileChangeComplete(absPath),
+      () => this._onFileChangeComplete(absPath)
     );
   }
 
-  _onFileChangeComplete(filePath) {
+  _onFileChangeComplete(absPath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
-    this._debouncedFileChangeHandler(filePath);
+    this._debouncedFileChangeHandler(absPath);
   }
 
   _clearBundles() {

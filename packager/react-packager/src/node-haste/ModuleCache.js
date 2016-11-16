@@ -16,6 +16,8 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
+const path = require('path');
+
 import type Cache from './Cache';
 import type {
   DepGraphHelpers,
@@ -67,6 +69,8 @@ class ModuleCache {
     this._assetDependencies = assetDependencies;
     this._moduleOptions = moduleOptions;
     this._packageModuleMap = new WeakMap();
+
+    fastfs.on('change', this._processFileChange.bind(this));
   }
 
   getModule(filePath: string) {
@@ -145,14 +149,16 @@ class ModuleCache {
     });
   }
 
-  processFileChange(type: string, filePath: string) {
-    if (this._moduleCache[filePath]) {
-      this._moduleCache[filePath].invalidate();
-      delete this._moduleCache[filePath];
+  _processFileChange(type, filePath, root) {
+    const absPath = path.join(root, filePath);
+
+    if (this._moduleCache[absPath]) {
+      this._moduleCache[absPath].invalidate();
+      delete this._moduleCache[absPath];
     }
-    if (this._packageCache[filePath]) {
-      this._packageCache[filePath].invalidate();
-      delete this._packageCache[filePath];
+    if (this._packageCache[absPath]) {
+      this._packageCache[absPath].invalidate();
+      delete this._packageCache[absPath];
     }
   }
 }

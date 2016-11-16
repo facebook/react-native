@@ -35,9 +35,9 @@ const validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  watch: {
-    type: 'boolean',
-    default: false,
+  fileWatcher: {
+    type: 'object',
+    required: true,
   },
   assetExts: {
     type: 'array',
@@ -101,13 +101,14 @@ class Resolver {
       providesModuleNodeModules: defaults.providesModuleNodeModules,
       platforms: defaults.platforms,
       preferNativePlatform: true,
-      watch: opts.watch,
+      fileWatcher: opts.fileWatcher,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      // for jest-haste-map
       resetCache: options.resetCache,
       moduleOptions: {
         cacheTransformResults: true,
@@ -259,7 +260,7 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependencyGraph() {
+  getDependecyGraph() {
     return this._depGraph;
   }
 }

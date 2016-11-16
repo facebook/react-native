@@ -55,8 +55,8 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
+      nonPersistent: true,
       resetCache: args.resetCache,
-      watch: false,
     };
 
     packagerInstance = new Server(options);

@@ -18,6 +18,10 @@ const {EventEmitter} = require('events');
 
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
+interface FileWatcher {
+  on(event: 'all', handler: (type: string, filePath: string, rootPath: string, fstat: fs.Stats) => void): void,
+}
+
 const {
   createActionStartEntry,
   createActionEndEntry,
@@ -28,6 +32,7 @@ const {
 class Fastfs extends EventEmitter {
 
   _name: string;
+  _fileWatcher: FileWatcher;
   _ignore: (filePath: string) => boolean;
   _roots: Array<File>;
   _fastPaths: {[filePath: string]: File};
@@ -35,6 +40,7 @@ class Fastfs extends EventEmitter {
   constructor(
     name: string,
     roots: Array<string>,
+    fileWatcher: FileWatcher,
     files: Array<string>,
     {ignore}: {
       ignore: (filePath: string) => boolean,
@@ -42,6 +48,7 @@ class Fastfs extends EventEmitter {
   ) {
     super();
     this._name = name;
+    this._fileWatcher = fileWatcher;
     this._ignore = ignore;
     this._roots = roots.map(root => {
       // If the path ends in a separator ("/"), remove it to make string
@@ -75,6 +82,10 @@ class Fastfs extends EventEmitter {
     });
 
     print(log(createActionEndEntry(buildingInMemoryFSLogEntry)));
+
+    if (this._fileWatcher) {
+      this._fileWatcher.on('all', this._processFileChange.bind(this));
+    }
   }
 
   stat(filePath: string) {
@@ -194,23 +205,33 @@ class Fastfs extends EventEmitter {
     return this._fastPaths[filePath];
   }
 
-  processFileChange(type: string, filePath: string) {
+  _processFileChange(type, filePath, rootPath, fstat) {
+    const absPath = path.join(rootPath, filePath);
+    if (this._ignore(absPath) || (fstat && fstat.isDirectory())) {
+      return;
+    }
+
+    // Make sure this event belongs to one of our roots.
+    const root = this._getRoot(absPath);
+    if (!root) {
+      return;
+    }
+
     if (type === 'delete' || type === 'change') {
-      const file = this._getFile(filePath);
+      const file = this._getFile(absPath);
       if (file) {
         file.remove();
       }
     }
 
-    delete this._fastPaths[path.resolve(filePath)];
+    delete this._fastPaths[path.resolve(absPath)];
 
     if (type !== 'delete') {
-      const file = new File(filePath, false);
-      const root = this._getRoot(filePath);
-      if (root) {
-        root.addChild(file, this._fastPaths);
-      }
+      const file = new File(absPath, false);
+      root.addChild(file, this._fastPaths);
     }
+
+    this.emit('change', type, filePath, rootPath, fstat);
   }
 }
 
