@@ -148,6 +148,61 @@ private:
   size_t m_size;
 };
 
+// JSBigString interface implemented by a file-backed mmap region.
+class JSBigFileString : public JSBigString {
+public:
+
+  JSBigFileString(int fd, size_t size, off_t offset = 0)
+    : m_fd   {fd}
+    , m_data {nullptr}
+  {
+    // Offsets given to mmap must be page aligend. We abstract away that
+    // restriction by sending a page aligned offset to mmap, and keeping track
+    // of the offset within the page that we must alter the mmap pointer by to
+    // get the final desired offset.
+    auto ps = getpagesize();
+    auto d  = lldiv(offset, ps);
+
+    m_mapOff  = d.quot;
+    m_pageOff = d.rem;
+    m_size    = size + m_pageOff;
+  }
+
+  ~JSBigFileString() {
+    if (m_data) {
+      munmap((void *)m_data, m_size);
+    }
+    close(m_fd);
+  }
+
+  bool isAscii() const override {
+    return true;
+  }
+
+  const char *c_str() const override {
+    if (!m_data) {
+      m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+      CHECK(m_data != MAP_FAILED);
+    }
+    return m_data + m_pageOff;
+  }
+
+  size_t size() const override {
+    return m_size - m_pageOff;
+  }
+
+  int fd() const {
+    return m_fd;
+  }
+
+private:
+  int m_fd;                     // The file descriptor being mmaped
+  size_t m_size;                // The size of the mmaped region
+  size_t m_pageOff;             // The offset in the mmaped region to the data.
+  off_t m_mapOff;               // The offset in the file to the mmaped region.
+  mutable const char *m_data;   // Pointer to the mmaped region.
+};
+
 class JSBigOptimizedBundleString : public JSBigString  {
 public:
   enum class Encoding {
@@ -156,7 +211,6 @@ public:
     Utf8,
     Utf16,
   };
-
 
   JSBigOptimizedBundleString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
     m_fd(fd),
