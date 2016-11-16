@@ -66,18 +66,17 @@ describe('Android Test App', function () {
       app: path.resolve('buck-out/gen/android/app/app.apk')
     };
 
-    // React Native in dev mode often starts with Red Box "Can't fibd variable __fbBatchedBridge..."
+    // React Native in dev mode often starts with Red Box "Can't find variable __fbBatchedBridge..."
     // This is fixed by clicking Reload JS which will trigger a request to packager server
     return driver
       .init(desired)
-      .setImplicitWaitTimeout(5000)
+      .setImplicitWaitTimeout(60000)
       .waitForElementByXPath('//android.widget.Button[@text="Reload JS"]').
       then((elem) => {
         elem.click();
       }, (err) => {
         // ignoring if Reload JS button can't be located
-      })
-      .setImplicitWaitTimeout(150000);
+      });
   });
 
   after(function () {
