@@ -100,8 +100,7 @@ class NavigationCard extends React.Component<any, Props, any> {
         {...viewPanHandlers}
         pointerEvents={pointerEvents}
         ref={this.props.onComponentRef}
-        accessibilityElementsHidden={!props.scene.isActive} // iOS
-        importantForAccessibility={props.scene.isActive ? 'yes' : 'no-hide-descendants'} // Android
+        accessibilityElementsHidden={!props.scene.isActive}
         style={[styles.main, viewStyle]}>
         {renderScene(props)}
       </Animated.View>
