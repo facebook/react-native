@@ -35,13 +35,11 @@ var UIExplorerTitle = require('./UIExplorerTitle');
 
 class UIExplorerPage extends React.Component {
   props: {
-    keyboardShouldPersistTaps?: boolean,
     noScroll?: boolean,
     noSpacer?: boolean,
   };
 
   static propTypes = {
-    keyboardShouldPersistTaps: React.PropTypes.bool,
     noScroll: React.PropTypes.bool,
     noSpacer: React.PropTypes.bool,
   };
