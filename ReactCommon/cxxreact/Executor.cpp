@@ -57,14 +57,10 @@ std::unique_ptr<const JSBigMmapString> JSBigMmapString::fromOptimizedBundle(
   {
     auto sourcePath = bundlePath + UNPACKED_JS_SOURCE_PATH_SUFFIX;
     fd = ::open(sourcePath.c_str(), O_RDONLY);
-    if (fd == -1) {
-      throw std::runtime_error(std::string("could not open js bundle file: ") + ::strerror(errno));
-    }
+    folly::checkUnixError(fd, "could not open js bundle file.");
   }
 
-  if (::fstat(fd, &fileInfo)) {
-    throw std::runtime_error(std::string("fstat on js bundle failed: ") + strerror(errno));
-  }
+  folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on js bundle failed.");
 
   return folly::make_unique<const JSBigMmapString>(
       fd,
