@@ -31,6 +31,7 @@
 #import "RCTSourceCode.h"
 #import "RCTJSCWrapper.h"
 #import "RCTJSCErrorHandling.h"
+#import "JSCSamplingProfiler.h"
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
@@ -83,6 +84,7 @@ struct TaggedScript {
 
 struct RCTJSContextData {
   BOOL useCustomJSCLibrary;
+  BOOL tryBytecode;
   NSThread *javaScriptThread;
   JSContext *context;
   RCTJSCWrapper *jscWrapper;
@@ -154,6 +156,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   // Set at init time:
   BOOL _useCustomJSCLibrary;
+  BOOL _tryBytecode;
   NSThread *_javaScriptThread;
 
   // Set at setUp time:
@@ -172,7 +175,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 RCT_EXPORT_MODULE()
 
 #if RCT_DEV
-
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   if (RCTJSCProfilerIsSupported()) {
@@ -239,10 +241,18 @@ static NSThread *newJavaScriptThread(void)
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
 {
+  return [self initWithUseCustomJSCLibrary:useCustomJSCLibrary
+                               tryBytecode:NO];
+}
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode
+{
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTJSCExecutor init]", nil);
 
   if (self = [super init]) {
     _useCustomJSCLibrary = useCustomJSCLibrary;
+    _tryBytecode = tryBytecode;
     _valid = YES;
     _javaScriptThread = newJavaScriptThread();
   }
@@ -252,26 +262,20 @@ static NSThread *newJavaScriptThread(void)
 }
 
 + (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                     applicationScript:(NSData *)applicationScript
-                                             sourceURL:(NSURL *)sourceURL
                                              JSContext:(JSContext **)JSContext
-                                                 error:(NSError **)error
 {
   const RCTJSContextData data = JSContextProvider.data;
   if (JSContext) {
     *JSContext = data.context;
   }
-  RCTJSCExecutor *executor = [[RCTJSCExecutor alloc] initWithJSContextData:data];
-  if (applicationScript && ![executor _synchronouslyExecuteApplicationScript:applicationScript sourceURL:sourceURL JSContext:data.context error:error]) {
-    return nil; // error has been set by _synchronouslyExecuteApplicationScript:
-  }
-  return executor;
+  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
 }
 
 - (instancetype)initWithJSContextData:(const RCTJSContextData &)data
 {
   if (self = [super init]) {
     _useCustomJSCLibrary = data.useCustomJSCLibrary;
+    _tryBytecode = data.tryBytecode;
     _valid = YES;
     _javaScriptThread = data.javaScriptThread;
     _jscWrapper = data.jscWrapper;
@@ -280,33 +284,24 @@ static NSThread *newJavaScriptThread(void)
   return self;
 }
 
-- (BOOL)_synchronouslyExecuteApplicationScript:(NSData *)script
-                                     sourceURL:(NSURL *)sourceURL
-                                     JSContext:(JSContext *)context
-                                         error:(NSError **)error
+- (NSError *)synchronouslyExecuteApplicationScript:(NSData *)script
+                                         sourceURL:(NSURL *)sourceURL
 {
-  TaggedScript taggedScript = loadTaggedScript(script, sourceURL, _performanceLogger, _randomAccessBundle, error);
+  NSError *loadError;
+  TaggedScript taggedScript = loadTaggedScript(script, sourceURL, _performanceLogger, _randomAccessBundle, &loadError);
 
-  if (!taggedScript.script) {
-    return NO;
+  if (loadError) {
+    return loadError;
   }
 
   if (taggedScript.tag == RCTScriptRAMBundle) {
-    registerNativeRequire(context, self);
+    registerNativeRequire(_context.context, self);
   }
 
-  NSError *returnedError = executeApplicationScript(taggedScript, sourceURL,
-                                                    _jscWrapper,
-                                                    _performanceLogger,
-                                                    _context.context.JSGlobalContextRef);
-  if (returnedError) {
-    if (error) {
-      *error = returnedError;
-    }
-    return NO;
-  } else {
-    return YES;
-  }
+  return executeApplicationScript(taggedScript, sourceURL,
+                                  _jscWrapper,
+                                  _performanceLogger,
+                                  _context.context.JSGlobalContextRef);
 }
 
 - (RCTJavaScriptContext *)context
@@ -350,6 +345,7 @@ static NSThread *newJavaScriptThread(void)
       [self->_performanceLogger markStopForTag:RCTPLJSCWrapperOpenLibrary];
 
       RCTAssert(self->_context == nil, @"Didn't expect to set up twice");
+      self->_jscWrapper->configureJSCForIOS();
       context = [self->_jscWrapper->JSContext new];
       self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
@@ -421,6 +417,36 @@ static NSThread *newJavaScriptThread(void)
         [weakBridge.flowIDMapLock unlock];
       }
     };
+
+    // Add toggles for JSC's sampling profiler, if the profiler is enabled
+    if (self->_jscWrapper->JSSamplingProfilerEnabled()) {
+        // Mark this thread as the main JS thread before starting profiling.
+        self->_jscWrapper->JSStartSamplingProfilingOnMainJSCThread(context.JSGlobalContextRef);
+
+      // Allow to toggle the sampling profiler through RN's dev menu
+      __weak JSContext *weakContext = self->_context.context;
+      [self->_bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
+        // JSPokeSamplingProfiler() toggles the profiling process
+        JSValueRef jsResult = self->_jscWrapper->JSPokeSamplingProfiler(weakContext.JSGlobalContextRef);
+
+        if (!self->_jscWrapper->JSValueIsNull(weakContext.JSGlobalContextRef, jsResult)) {
+          NSString *results = [[self->_jscWrapper->JSValue valueWithJSValueRef:jsResult inContext:weakContext] toObject];
+          JSCSamplingProfiler *profilerModule = [self->_bridge moduleForClass:[JSCSamplingProfiler class]];
+          [profilerModule operationCompletedWithResults:results];
+        }
+      }]];
+
+      // Allow for the profiler to be poked from JS code as well
+      // (see SamplingProfiler.js for an example of how it could be used with the JSCSamplingProfiler module).
+      context[@"pokeSamplingProfiler"] = ^(NSDictionary *){
+        RCTJSCExecutor *strongSelf = weakSelf;
+        if (!strongSelf.isValid) {
+          return @{};
+        }
+        JSValueRef result = strongSelf->_jscWrapper->JSPokeSamplingProfiler(weakContext.JSGlobalContextRef);
+        return (NSDictionary *)[[strongSelf->_jscWrapper->JSValue valueWithJSValueRef:result inContext:weakContext] toObject];
+      };
+    }
 #endif
 
 #if RCT_DEV
@@ -513,6 +539,13 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 #if RCT_PROFILE
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif
+}
+
+- (int32_t)bytecodeFileFormatVersion
+{
+  return _tryBytecode
+    ? _jscWrapper->JSBytecodeFileFormatVersion
+    : JSNoBytecodeFileFormatVersion;
 }
 
 - (NSString *)contextName
@@ -703,9 +736,9 @@ static TaggedScript loadTaggedScript(NSData *script,
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / prepare bundle", nil);
 
-  RCTMagicNumber magicNumber = {.allBytes = 0};
-  [script getBytes:&magicNumber length:sizeof(magicNumber)];
-  RCTScriptTag tag = RCTParseMagicNumber(magicNumber);
+  RCTBundleHeader header = {};
+  [script getBytes:&header length:sizeof(header)];
+  RCTScriptTag tag = RCTParseTypeFromHeader(header);
 
   NSData *loadedScript = NULL;
   switch (tag) {
@@ -988,10 +1021,12 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 }
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode
 {
   if (self = [super init]) {
     _semaphore = dispatch_semaphore_create(0);
     _useCustomJSCLibrary = useCustomJSCLibrary;
+    _tryBytecode = tryBytecode;
     _javaScriptThread = newJavaScriptThread();
     [self performSelector:@selector(_createContext) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
   }
@@ -1001,6 +1036,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 - (void)_createContext
 {
   _jscWrapper = RCTJSCWrapperCreate(_useCustomJSCLibrary);
+  _jscWrapper->configureJSCForIOS();
   _context = [_jscWrapper->JSContext new];
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
@@ -1012,6 +1048,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
   return {
     .useCustomJSCLibrary = _useCustomJSCLibrary,
+    .tryBytecode = _tryBytecode,
     .javaScriptThread = _javaScriptThread,
     .context = _context,
     .jscWrapper = _jscWrapper,

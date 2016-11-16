@@ -33,6 +33,26 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * Get native instance count. Useful for testing only.
    */
   static native int jni_CSSNodeGetInstanceCount();
+  static native void jni_CSSLog(int level, String message);
+
+  private static native void jni_CSSLayoutSetLogger(Object logger);
+  public static void setLogger(CSSLogger logger) {
+    jni_CSSLayoutSetLogger(logger);
+  }
+
+  private static native void jni_CSSLayoutSetExperimentalFeatureEnabled(
+      int feature,
+      boolean enabled);
+  public static void setExperimentalFeatureEnabled(
+      CSSExperimentalFeature feature,
+      boolean enabled) {
+    jni_CSSLayoutSetExperimentalFeatureEnabled(feature.intValue(), enabled);
+  }
+
+  private static native boolean jni_CSSLayoutIsExperimentalFeatureEnabled(int feature);
+  public static boolean isExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+    return jni_CSSLayoutIsExperimentalFeatureEnabled(feature.intValue());
+  }
 
   private CSSNode mParent;
   private List<CSSNode> mChildren;
@@ -62,8 +82,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
-
-    mChildren = new ArrayList<>(4);
   }
 
   private native void jni_CSSNodeFree(long nativePointer);
@@ -98,7 +116,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int getChildCount() {
-    return mChildren.size();
+    return mChildren == null ? 0 : mChildren.size();
   }
 
   @Override
@@ -113,6 +131,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
     mChildren.add(i, child);
     child.mParent = this;
     jni_CSSNodeInsertChild(mNativePointer, child.mNativePointer, i);
@@ -136,19 +157,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public int indexOf(CSSNode child) {
-    return mChildren.indexOf(child);
-  }
-
-  private native void jni_CSSNodeSetIsTextNode(long nativePointer, boolean isTextNode);
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    jni_CSSNodeSetIsTextNode(mNativePointer, isTextNode);
-  }
-
-  private native boolean jni_CSSNodeGetIsTextNode(long nativePointer);
-  @Override
-  public boolean isTextNode() {
-    return jni_CSSNodeGetIsTextNode(mNativePointer);
+    return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
   private native void jni_CSSNodeCalculateLayout(long nativePointer);
@@ -190,7 +199,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetDirection(long nativePointer, int direction);
   @Override
   public void setDirection(CSSDirection direction) {
-    jni_CSSNodeStyleSetDirection(mNativePointer, direction.ordinal());
+    jni_CSSNodeStyleSetDirection(mNativePointer, direction.intValue());
   }
 
   private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
@@ -202,7 +211,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetFlexDirection(long nativePointer, int flexDirection);
   @Override
   public void setFlexDirection(CSSFlexDirection flexDirection) {
-    jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.ordinal());
+    jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
   }
 
   private native int jni_CSSNodeStyleGetJustifyContent(long nativePointer);
@@ -214,7 +223,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetJustifyContent(long nativePointer, int justifyContent);
   @Override
   public void setJustifyContent(CSSJustify justifyContent) {
-    jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.ordinal());
+    jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignItems(long nativePointer);
@@ -226,7 +235,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignItems(long nativePointer, int alignItems);
   @Override
   public void setAlignItems(CSSAlign alignItems) {
-    jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.ordinal());
+    jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignSelf(long nativePointer);
@@ -238,7 +247,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignSelf(long nativePointer, int alignSelf);
   @Override
   public void setAlignSelf(CSSAlign alignSelf) {
-    jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.ordinal());
+    jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignContent(long nativePointer);
@@ -250,7 +259,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignContent(long nativePointer, int alignContent);
   @Override
   public void setAlignContent(CSSAlign alignContent) {
-    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.ordinal());
+    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetPositionType(long nativePointer);
@@ -262,13 +271,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetPositionType(long nativePointer, int positionType);
   @Override
   public void setPositionType(CSSPositionType positionType) {
-    jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.ordinal());
+    jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.intValue());
   }
 
   private native void jni_CSSNodeStyleSetFlexWrap(long nativePointer, int wrapType);
   @Override
   public void setWrap(CSSWrap flexWrap) {
-    jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.ordinal());
+    jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
   }
 
   private native int jni_CSSNodeStyleGetOverflow(long nativePointer);
@@ -280,7 +289,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetOverflow(long nativePointer, int overflow);
   @Override
   public void setOverflow(CSSOverflow overflow) {
-    jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.ordinal());
+    jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.intValue());
   }
 
   private native void jni_CSSNodeStyleSetFlex(long nativePointer, float flex);
@@ -493,8 +502,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
+  // Implementation Note: Why this method needs to stay final
+  //
+  // We cache the jmethodid for this method in CSSLayout code. This means that even if a subclass
+  // were to override measure, we'd still call this implementation from layout code since the
+  // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip
-  public long measure(float width, int widthMode, float height, int heightMode) {
+  public final long measure(float width, int widthMode, float height, int heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }

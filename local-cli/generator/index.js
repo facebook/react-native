@@ -42,6 +42,17 @@ function getYarnVersionIfAvailable() {
   }
 }
 
+/**
+ * Check that 'react-native init' itself used yarn to install React Native.
+ * When using an old global react-native-cli@1.0.0 (or older), we don't want
+ * to install React Native with npm, and React + Jest with yarn.
+ * Let's be safe and not mix yarn and npm in a single project.
+ * @param projectDir e.g. /Users/martin/AwesomeApp
+ */
+function isGlobalCliUsingYarn(projectDir) {
+  return fs.existsSync(path.join(projectDir, 'yarn.lock'));
+}
+
 module.exports = yeoman.generators.NamedBase.extend({
   constructor: function() {
     yeoman.generators.NamedBase.apply(this, arguments);
@@ -101,6 +112,10 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.destinationPath('.gitignore')
     );
     this.fs.copy(
+      this.templatePath('_gitattributes'),
+      this.destinationPath('.gitattributes')
+    );
+    this.fs.copy(
       this.templatePath('_watchmanconfig'),
       this.destinationPath('.watchmanconfig')
     );
@@ -147,7 +162,7 @@ module.exports = yeoman.generators.NamedBase.extend({
       return;
     }
 
-    const yarnVersion = (!this.options['npm']) && getYarnVersionIfAvailable();
+    const yarnVersion = (!this.options['npm']) && getYarnVersionIfAvailable() && isGlobalCliUsingYarn(this.destinationRoot());
 
     console.log('Installing React...');
     if (yarnVersion) {

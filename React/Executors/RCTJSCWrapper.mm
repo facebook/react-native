@@ -24,8 +24,15 @@ assert(false);\
 }
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSPokeSamplingProfiler)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
 
 #undef UNIMPLEMENTED_SYSTEM_JSC_FUNCTION
+
+// A no-op function, to replace void functions that do no exist in the system JSC
+//  with a function that does nothing.
+static void noOpSystemJSCFunc(void *args...){ }
+static bool alwaysFalseSystemJSCFunc(void *args...){ return false; }
 
 void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
   return;
@@ -58,20 +65,32 @@ static RCTJSCWrapper *RCTSetUpSystemLibraryPointers()
   return new RCTJSCWrapper {
     .JSStringCreateWithCFString = JSStringCreateWithCFString,
     .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
+    .JSStringCopyCFString = JSStringCopyCFString,
     .JSStringRelease = JSStringRelease,
     .JSGlobalContextSetName = JSGlobalContextSetName,
     .JSObjectSetProperty = JSObjectSetProperty,
     .JSContextGetGlobalObject = JSContextGetGlobalObject,
     .JSObjectGetProperty = JSObjectGetProperty,
+    .JSObjectIsFunction = JSObjectIsFunction,
+    .JSObjectIsConstructor = JSObjectIsConstructor,
+    .JSObjectCopyPropertyNames = JSObjectCopyPropertyNames,
+    .JSPropertyNameArrayGetCount = JSPropertyNameArrayGetCount,
+    .JSPropertyNameArrayGetNameAtIndex = JSPropertyNameArrayGetNameAtIndex,
+    .JSPropertyNameArrayRelease = JSPropertyNameArrayRelease,
     .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
     .JSObjectCallAsFunction = JSObjectCallAsFunction,
     .JSValueMakeNull = JSValueMakeNull,
     .JSValueCreateJSONString = JSValueCreateJSONString,
     .JSValueIsUndefined = JSValueIsUndefined,
     .JSValueIsNull = JSValueIsNull,
+    .JSValueToObject = JSValueToObject,
     .JSEvaluateScript = JSEvaluateScript,
     .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)UnimplementedJSEvaluateBytecodeBundle,
+    .configureJSCForIOS = (voidWithNoParamsFuncType)noOpSystemJSCFunc,
+    .JSSamplingProfilerEnabled = (JSSamplingProfilerEnabledFuncType)alwaysFalseSystemJSCFunc,
+    .JSPokeSamplingProfiler = (JSValueRefWithJSContextRefFuncType)UnimplementedJSPokeSamplingProfiler,
+    .JSStartSamplingProfilingOnMainJSCThread = (JSStartSamplingProfilingOnMainJSCThreadFuncType)UnimplementedJSStartSamplingProfilingOnMainJSCThread,
     .JSContext = [JSContext class],
     .JSValue = [JSValue class],
   };
@@ -87,19 +106,31 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
   auto wrapper = new RCTJSCWrapper {
     .JSStringCreateWithCFString = (JSStringCreateWithCFStringFuncType)dlsym(libraryHandle, "JSStringCreateWithCFString"),
     .JSStringCreateWithUTF8CString = (JSStringCreateWithUTF8CStringFuncType)dlsym(libraryHandle, "JSStringCreateWithUTF8CString"),
+    .JSStringCopyCFString = (JSStringCopyCFStringFuncType)dlsym(libraryHandle, "JSStringCopyCFString"),
     .JSStringRelease = (JSStringReleaseFuncType)dlsym(libraryHandle, "JSStringRelease"),
     .JSGlobalContextSetName = (JSGlobalContextSetNameFuncType)dlsym(libraryHandle, "JSGlobalContextSetName"),
     .JSObjectSetProperty = (JSObjectSetPropertyFuncType)dlsym(libraryHandle, "JSObjectSetProperty"),
     .JSContextGetGlobalObject = (JSContextGetGlobalObjectFuncType)dlsym(libraryHandle, "JSContextGetGlobalObject"),
     .JSObjectGetProperty = (JSObjectGetPropertyFuncType)dlsym(libraryHandle, "JSObjectGetProperty"),
+    .JSObjectIsFunction = (JSObjectIsFunctionFuncType)dlsym(libraryHandle, "JSObjectIsFunction"),
+    .JSObjectIsConstructor = (JSObjectIsConstructorFuncType)dlsym(libraryHandle, "JSObjectIsConstructor"),
+    .JSObjectCopyPropertyNames = (JSObjectCopyPropertyNamesFuncType)dlsym(libraryHandle, "JSObjectCopyPropertyNames"),
+    .JSPropertyNameArrayGetCount = (JSPropertyNameArrayGetCountFuncType)dlsym(libraryHandle, "JSPropertyNameArrayGetCount"),
+    .JSPropertyNameArrayGetNameAtIndex = (JSPropertyNameArrayGetNameAtIndexFuncType)dlsym(libraryHandle, "JSPropertyNameArrayGetNameAtIndex"),
+    .JSPropertyNameArrayRelease = (JSPropertyNameArrayReleaseFuncType)dlsym(libraryHandle, "JSPropertyNameArrayRelease"),
     .JSValueMakeFromJSONString = (JSValueMakeFromJSONStringFuncType)dlsym(libraryHandle, "JSValueMakeFromJSONString"),
     .JSObjectCallAsFunction = (JSObjectCallAsFunctionFuncType)dlsym(libraryHandle, "JSObjectCallAsFunction"),
-    .JSValueMakeNull = (JSValueMakeNullFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
+    .JSValueMakeNull = (JSValueRefWithJSContextRefFuncType)dlsym(libraryHandle, "JSValueMakeNull"),
     .JSValueCreateJSONString = (JSValueCreateJSONStringFuncType)dlsym(libraryHandle, "JSValueCreateJSONString"),
     .JSValueIsUndefined = (JSValueIsUndefinedFuncType)dlsym(libraryHandle, "JSValueIsUndefined"),
     .JSValueIsNull = (JSValueIsNullFuncType)dlsym(libraryHandle, "JSValueIsNull"),
+    .JSValueToObject = (JSValueToObjectFuncType)dlsym(libraryHandle, "JSValueToObject"),
     .JSEvaluateScript = (JSEvaluateScriptFuncType)dlsym(libraryHandle, "JSEvaluateScript"),
     .JSEvaluateBytecodeBundle = (JSEvaluateBytecodeBundleFuncType)dlsym(libraryHandle, "JSEvaluateBytecodeBundle"),
+    .configureJSCForIOS = (voidWithNoParamsFuncType)dlsym(libraryHandle, "configureJSCForIOS"),
+    .JSSamplingProfilerEnabled = (JSSamplingProfilerEnabledFuncType)dlsym(libraryHandle, "JSSamplingProfilerEnabled"),
+    .JSPokeSamplingProfiler = (JSValueRefWithJSContextRefFuncType)dlsym(libraryHandle, "JSPokeSamplingProfiler"),
+    .JSStartSamplingProfilingOnMainJSCThread = (JSStartSamplingProfilingOnMainJSCThreadFuncType)dlsym(libraryHandle, "JSStartSamplingProfilingOnMainJSCThread"),
     .JSBytecodeFileFormatVersion = *(const int32_t *)dlsym(libraryHandle, "JSBytecodeFileFormatVersion"),
     .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
     .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),

@@ -32,10 +32,12 @@ const {
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   View,
 } = ReactNative;
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
+const DEFAULT_HTTP_URL = 'http://localhost:5556/';
 const WS_EVENTS = [
   'close',
   'error',
@@ -95,6 +97,8 @@ function showValue(value) {
 
 type State = {
   url: string;
+  httpUrl: string;
+  fetchStatus: ?string;
   socket: ?WebSocket;
   socketState: ?number;
   lastSocketEvent: ?string;
@@ -109,6 +113,8 @@ class WebSocketExample extends React.Component<any, any, State> {
 
   state: State = {
     url: DEFAULT_WS_URL,
+    httpUrl: DEFAULT_HTTP_URL,
+    fetchStatus: null,
     socket: null,
     socketState: null,
     lastSocketEvent: null,
@@ -154,6 +160,19 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({outgoingMessage: ''});
   };
 
+  _sendHttp = () => {
+    this.setState({
+      fetchStatus: 'fetching',
+    });
+    fetch(this.state.httpUrl).then((response) => {
+      if (response.status >= 200 && response.status < 400) {
+        this.setState({
+          fetchStatus: 'OK',
+        });
+      }
+    });
+  };
+
   _sendBinary = () => {
     if (!this.state.socket ||
         typeof ArrayBuffer === 'undefined' ||
@@ -176,16 +195,11 @@ class WebSocketExample extends React.Component<any, any, State> {
       this.state.socket.readyState >= WebSocket.CLOSING;
     const canSend = !!this.state.socket;
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.note}>
-          <Text>Pro tip:</Text>
+          <Text>To start the WS test server:</Text>
           <Text style={styles.monospace}>
-            node Examples/UIExplorer/websocket_test_server.js
-          </Text>
-          <Text>
-            {' in the '}
-            <Text style={styles.monospace}>react-native</Text>
-            {' directory starts a test server.'}
+            ./Examples/UIExplorer/js/websocket_test_server.js
           </Text>
         </View>
         <Row
@@ -207,16 +221,18 @@ class WebSocketExample extends React.Component<any, any, State> {
           onChangeText={(url) => this.setState({url})}
           value={this.state.url}
         />
-        <Button
-          onPress={this._connect}
-          label="Connect"
-          disabled={!canConnect}
-        />
-        <Button
-          onPress={this._disconnect}
-          label="Disconnect"
-          disabled={canConnect}
-        />
+        <View style={styles.buttonRow}>
+          <Button
+            onPress={this._connect}
+            label="Connect"
+            disabled={!canConnect}
+          />
+          <Button
+            onPress={this._disconnect}
+            label="Disconnect"
+            disabled={canConnect}
+          />
+        </View>
         <TextInput
           style={styles.textInput}
           autoCorrect={false}
@@ -236,7 +252,32 @@ class WebSocketExample extends React.Component<any, any, State> {
             disabled={!canSend}
           />
         </View>
-      </View>
+        <View style={styles.note}>
+          <Text>To start the HTTP test server:</Text>
+          <Text style={styles.monospace}>
+            ./Examples/UIExplorer/http_test_server.js
+          </Text>
+        </View>
+        <TextInput
+          style={styles.textInput}
+          autoCorrect={false}
+          placeholder="HTTP URL..."
+          onChangeText={(httpUrl) => this.setState({httpUrl})}
+          value={this.state.httpUrl}
+        />
+        <View style={styles.buttonRow}>
+          <Button
+            onPress={this._sendHttp}
+            label="Send HTTP request to set cookie"
+            disabled={this.state.fetchStatus === 'fetching'}
+          />
+        </View>
+        <View style={styles.note}>
+          <Text>
+            {this.state.fetchStatus === 'OK' ? 'Done. Check your WS server console to see if the next WS requests include the cookie (should be "wstest=OK")' : '-'}
+          </Text>
+        </View>
+      </ScrollView>
     );
   }
 

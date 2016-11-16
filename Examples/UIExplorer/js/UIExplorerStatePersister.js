@@ -40,7 +40,7 @@ export type PassProps<State> = {
  * this in real apps with user data, but we could maybe pull it out for other internal settings-type
  * usage.
  */
-function createContainer<Props, State>(
+function createContainer<Props: Object, State>(
   Component: ReactClass<Props & {persister: PassProps<State>}>,
   spec: {
     cacheKeySuffix: (props: Props) => string,

@@ -56,7 +56,7 @@ class MultipartResponse {
     if (!headers) {
       return;
     }
-    for (let key in headers) {
+    for (const key in headers) {
       this.setHeader(key, headers[key]);
     }
   }
@@ -78,7 +78,7 @@ class MultipartResponse {
 }
 
 function acceptsMultipartResponse(req) {
-  return req.headers && req.headers['accept'] === 'multipart/mixed';
+  return req.headers && req.headers.accept === 'multipart/mixed';
 }
 
 module.exports = MultipartResponse;

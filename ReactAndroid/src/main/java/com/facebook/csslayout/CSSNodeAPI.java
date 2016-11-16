@@ -31,8 +31,6 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   int indexOf(CSSNodeType child);
   void setMeasureFunction(MeasureFunction measureFunction);
   boolean isMeasureDefined();
-  void setIsTextNode(boolean isTextNode);
-  boolean isTextNode();
   void calculateLayout(CSSLayoutContext layoutContext);
   boolean isDirty();
   boolean hasNewLayout();

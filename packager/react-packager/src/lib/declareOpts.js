@@ -15,13 +15,24 @@
  * });
  *
  * var myOptions = validate(someOptions);
+ *
+ * @flow
  */
 
 'use strict';
 
 var Joi = require('joi');
 
-module.exports = function(descriptor) {
+/**
+ * TOut is always more specific than TIn, so it's a subtype.
+ */
+module.exports = function<TIn: {}, TOut: TIn>(
+  descriptor: {[name: string]: {
+    type: mixed,
+    required?: boolean,
+    default?: mixed,
+  }},
+): (untyped: TIn) => TOut {
   var joiKeys = {};
   Object.keys(descriptor).forEach(function(prop) {
     var record = descriptor[prop];

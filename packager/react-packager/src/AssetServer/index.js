@@ -8,10 +8,9 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const fs = require('fs');
 const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
@@ -23,7 +22,7 @@ function timeoutableDenodeify(fsFunc, timeout) {
   return function raceWrapper(...args) {
     return Promise.race([
       createTimeoutPromise(timeout),
-      Promise.denodeify(fsFunc).apply(this, args)
+      denodeify(fsFunc).apply(this, args)
     ]);
   };
 }

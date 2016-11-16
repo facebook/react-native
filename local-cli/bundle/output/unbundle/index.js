@@ -8,8 +8,8 @@
  */
 'use strict';
 
-const asIndexedFile = require('./as-indexed-file');
 const asAssets = require('./as-assets');
+const asIndexedFile = require('./as-indexed-file');
 
 function buildBundle(packagerClient, requestOptions) {
   return packagerClient.buildBundle({

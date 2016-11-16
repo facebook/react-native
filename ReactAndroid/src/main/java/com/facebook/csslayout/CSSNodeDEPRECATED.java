@@ -58,7 +58,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   private @Nullable CSSNodeDEPRECATED mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
-  private boolean mIsTextNode = false;
   private Object mData;
 
   @Override
@@ -122,16 +121,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   @Override
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
-  }
-
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    mIsTextNode = isTextNode;
-  }
-
-  @Override
-  public boolean isTextNode() {
-    return mIsTextNode;
   }
 
   long measure(float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {

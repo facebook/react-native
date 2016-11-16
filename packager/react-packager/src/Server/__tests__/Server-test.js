@@ -19,7 +19,7 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('../../node-haste')
-    .mock('../../Activity');
+    .mock('../../Logger');
 
 let FileWatcher;
 

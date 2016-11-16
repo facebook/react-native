@@ -14,7 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -27,7 +27,7 @@ const requireNativeComponent = require('requireNativeComponent');
 type Event = Object;
 
 /**
- * State an annotation on the map.
+ * State of an annotation on the map.
  */
 export type AnnotationDragState = $Enum<{
   /**
@@ -53,14 +53,18 @@ export type AnnotationDragState = $Enum<{
 }>;
 
 /**
- * **This component is only supported on iOS.**
+ * **IMPORTANT: This component is now DEPRECATED and will be removed
+ * in January 2017 (React Native version 0.42). This component only supports
+ * iOS.**
+ *
+ * **Please use
+ * [react-native-maps](https://github.com/airbnb/react-native-maps) by Airbnb
+ * instead of this component.** Our friends at Airbnb have done an amazing job
+ * building a cross-platform `MapView` component that is more feature
+ * complete. It is used extensively (over 9k installs / month).
  *
  * `MapView` is used to display embeddable maps and annotations using
  * `MKMapView`.
- *
- * For a cross-platform solution, check out
- * [react-native-maps](https://github.com/airbnb/react-native-maps)
- * by Airbnb.
  *
  * ```
  * import React, { Component } from 'react';

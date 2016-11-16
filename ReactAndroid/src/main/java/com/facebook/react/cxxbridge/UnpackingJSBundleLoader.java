@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.soloader.FileLocker;
 import com.facebook.soloader.SysUtil;
 import com.facebook.systrace.Systrace;
@@ -71,6 +73,11 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
   private final @Nullable Runnable mOnUnpackedCallback;
 
   /**
+   * True if prepare was called.
+   */
+  private boolean mPrepared;
+
+  /**
    * Synchronizes unpacking within this process.
    */
   private static final Semaphore sProcessLock = new Semaphore(1);
@@ -94,13 +101,22 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
     mFinishOnBackgroundThread = builder.finishOnBackgroundThread;
     mOnUnpackedCallback = builder.callback;
     mFileLocker = null;
+    mPrepared = false;
   }
 
   /**
    * Checks if any file needs to be extracted again, and if so, clears the destination
    * directory and unpacks everything again.
+   *
+   * This method does not do anything if called for the second time
    */
-  /* package */ void prepare() {
+  public synchronized void prepare() {
+    if (mPrepared) {
+      return;
+    }
+
+    ReactMarker.logMarker(ReactMarkerConstants.UNPACKER_CHECK_START);
+
     boolean unpacked = false;
     try {
       lock();
@@ -118,9 +134,17 @@ public class UnpackingJSBundleLoader extends JSBundleLoader {
       throw new RuntimeException(e);
     }
 
+    if (unpacked) {
+      ReactMarker.logMarker(ReactMarkerConstants.UNPACKER_BUNDLE_EXTRACTED);
+    }
+
     if (unpacked && mOnUnpackedCallback != null) {
       mOnUnpackedCallback.run();
     }
+
+    ReactMarker.logMarker(ReactMarkerConstants.UNPACKER_CHECK_END);
+
+    mPrepared = true;
   }
 
   private boolean prepareLocked() throws IOException {

@@ -11,21 +11,32 @@
 
 #import "RCTDefines.h"
 
+typedef void (*voidWithNoParamsFuncType)();
 typedef JSStringRef (*JSStringCreateWithCFStringFuncType)(CFStringRef);
 typedef JSStringRef (*JSStringCreateWithUTF8CStringFuncType)(const char *);
+typedef CFStringRef (*JSStringCopyCFStringFuncType)(CFAllocatorRef, JSStringRef);
 typedef void (*JSStringReleaseFuncType)(JSStringRef);
 typedef void (*JSGlobalContextSetNameFuncType)(JSGlobalContextRef, JSStringRef);
 typedef void (*JSObjectSetPropertyFuncType)(JSContextRef, JSObjectRef, JSStringRef, JSValueRef, JSPropertyAttributes, JSValueRef *);
 typedef JSObjectRef (*JSContextGetGlobalObjectFuncType)(JSContextRef);
 typedef JSValueRef (*JSObjectGetPropertyFuncType)(JSContextRef, JSObjectRef, JSStringRef, JSValueRef *);
+typedef bool (*JSObjectIsFunctionFuncType)(JSContextRef, JSObjectRef);
+typedef bool (*JSObjectIsConstructorFuncType)(JSContextRef, JSObjectRef);
+typedef JSPropertyNameArrayRef (*JSObjectCopyPropertyNamesFuncType)(JSContextRef, JSObjectRef);
+typedef size_t (*JSPropertyNameArrayGetCountFuncType)(JSPropertyNameArrayRef);
+typedef JSStringRef (*JSPropertyNameArrayGetNameAtIndexFuncType)(JSPropertyNameArrayRef, size_t);
+typedef void (*JSPropertyNameArrayReleaseFuncType)(JSPropertyNameArrayRef);
 typedef JSValueRef (*JSValueMakeFromJSONStringFuncType)(JSContextRef, JSStringRef);
 typedef JSValueRef (*JSObjectCallAsFunctionFuncType)(JSContextRef, JSObjectRef, JSObjectRef, size_t, const JSValueRef *, JSValueRef *);
-typedef JSValueRef (*JSValueMakeNullFuncType)(JSContextRef);
+typedef JSValueRef (*JSValueRefWithJSContextRefFuncType)(JSContextRef);
 typedef JSStringRef (*JSValueCreateJSONStringFuncType)(JSContextRef, JSValueRef, unsigned, JSValueRef *);
 typedef bool (*JSValueIsUndefinedFuncType)(JSContextRef, JSValueRef);
 typedef bool (*JSValueIsNullFuncType)(JSContextRef, JSValueRef);
+typedef JSObjectRef (*JSValueToObjectFuncType)(JSContextRef, JSValueRef, JSValueRef *);
 typedef JSValueRef (*JSEvaluateScriptFuncType)(JSContextRef, JSStringRef, JSObjectRef, JSStringRef, int, JSValueRef *);
 typedef JSValueRef (*JSEvaluateBytecodeBundleFuncType)(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef *);
+typedef bool (*JSSamplingProfilerEnabledFuncType)();
+typedef void (*JSStartSamplingProfilingOnMainJSCThreadFuncType)(JSGlobalContextRef);
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -37,19 +48,31 @@ extern const int32_t JSNoBytecodeFileFormatVersion;
 typedef struct RCTJSCWrapper {
   JSStringCreateWithCFStringFuncType JSStringCreateWithCFString;
   JSStringCreateWithUTF8CStringFuncType JSStringCreateWithUTF8CString;
+  JSStringCopyCFStringFuncType JSStringCopyCFString;
   JSStringReleaseFuncType JSStringRelease;
   JSGlobalContextSetNameFuncType JSGlobalContextSetName;
   JSObjectSetPropertyFuncType JSObjectSetProperty;
   JSContextGetGlobalObjectFuncType JSContextGetGlobalObject;
   JSObjectGetPropertyFuncType JSObjectGetProperty;
+  JSObjectIsFunctionFuncType JSObjectIsFunction;
+  JSObjectIsConstructorFuncType JSObjectIsConstructor;
+  JSObjectCopyPropertyNamesFuncType JSObjectCopyPropertyNames;
+  JSPropertyNameArrayGetCountFuncType JSPropertyNameArrayGetCount;
+  JSPropertyNameArrayGetNameAtIndexFuncType JSPropertyNameArrayGetNameAtIndex;
+  JSPropertyNameArrayReleaseFuncType JSPropertyNameArrayRelease;
   JSValueMakeFromJSONStringFuncType JSValueMakeFromJSONString;
   JSObjectCallAsFunctionFuncType JSObjectCallAsFunction;
-  JSValueMakeNullFuncType JSValueMakeNull;
+  JSValueRefWithJSContextRefFuncType JSValueMakeNull;
   JSValueCreateJSONStringFuncType JSValueCreateJSONString;
   JSValueIsUndefinedFuncType JSValueIsUndefined;
   JSValueIsNullFuncType JSValueIsNull;
+  JSValueToObjectFuncType JSValueToObject;
   JSEvaluateScriptFuncType JSEvaluateScript;
   JSEvaluateBytecodeBundleFuncType JSEvaluateBytecodeBundle;
+  voidWithNoParamsFuncType configureJSCForIOS;
+  JSSamplingProfilerEnabledFuncType JSSamplingProfilerEnabled;
+  JSValueRefWithJSContextRefFuncType JSPokeSamplingProfiler;
+  JSStartSamplingProfilingOnMainJSCThreadFuncType JSStartSamplingProfilingOnMainJSCThread;
   const int32_t JSBytecodeFileFormatVersion;
   Class JSContext;
   Class JSValue;
