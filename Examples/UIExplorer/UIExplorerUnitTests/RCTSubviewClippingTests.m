@@ -369,4 +369,39 @@
   XCTAssert([[NSSet setWithArray:contentView.subviews] isEqualToSet:[NSSet setWithArray:(@[rowView2, rowView3])]]);
 }
 
+
+/**
+ In this test case the react view hiearchy is
+   clippingView -> directReactChildView -> deeperChildView
+ while the uiview hierarchy is
+   clippingView -> nonReactChildView -> directReactChildView -> deeperChildView
+ */
+- (void)testClippingWhenReactHierarchyDoesntMatchUIHierarchy
+{
+  RCTView *clippingView = [RCTView new];
+  [clippingView reactSetFrame:CGRectMake(0, 0, 50, 50)];
+
+  RCTView *directReactChildView = [RCTView new];
+  [directReactChildView reactSetFrame:CGRectMake(-50, 0, 100, 50)];
+  [clippingView insertReactSubview:directReactChildView atIndex:0];
+  [clippingView didUpdateReactSubviews];
+
+  RCTView *deeperChildView = [RCTView new];
+  [deeperChildView reactSetFrame:CGRectMake(0, 0, 50, 50)];
+  [directReactChildView insertReactSubview:deeperChildView atIndex:0];
+  [directReactChildView didUpdateReactSubviews];
+
+  UIView *nonReactChildView = [UIView new];
+  [nonReactChildView setFrame:CGRectMake(50, 0, 50, 50)];
+  [clippingView addSubview:nonReactChildView];
+  [nonReactChildView addSubview:directReactChildView];
+
+  [clippingView rct_setRemovesClippedSubviews:YES];
+  [directReactChildView reactSetFrame:CGRectMake(-50, 0, 99, 50)];
+
+  XCTAssertEqual(clippingView.subviews.count, 1u);
+  XCTAssertEqual(nonReactChildView.subviews.count, 1u);
+  XCTAssertEqual(directReactChildView.subviews.count, 1u);
+}
+
 @end
