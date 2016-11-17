@@ -9,6 +9,10 @@
  * @flow
  */
 
+'use strict';
+
+import DependencyGraphHelpers from '../../node-haste/DependencyGraph/DependencyGraphHelpers';
+
 type ModuleID = string;
 export type Path = string;
 type Platform = string;
@@ -20,14 +24,17 @@ export type Module = {
   path: Path,
   type: 'Module',
   getName(): Promise<ModuleID>,
+  getPackage(): ?Package,
   isHaste(): Promise<boolean>,
 };
 
 export type Package = {
-  type: 'Package',
+  path: Path,
   root: Path,
+  type: 'Package',
   getMain(): Promise<Path>,
   getName(): Promise<ModuleID>,
+  isHaste(): Promise<boolean>,
   redirectRequire(id: ModuleID): Promise<Path | false>,
 };
 
@@ -36,30 +43,21 @@ export interface ModuleCache {
   getAssetModule(path: Path): Module,
   getModule(path: Path): Module,
   getPackage(path: Path): Package,
+  getPackageOf(path: Path): ?Package,
 }
 
 export type FastFS = {
   dirExists(path: Path): boolean,
+  closest(path: string, fileName: string): ?string,
   fileExists(path: Path): boolean,
   getAllFiles(): Array<Path>,
   matches(directory: Path, pattern: RegExp): Array<Path>,
 };
 
-type HelpersOptions = {|
-  assetExts: Extensions,
-  providesModuleNodeModules: Array<string>,
-|};
-
-declare class Helpers {
-  // node-haste/DependencyGraph/DependencyGraphHelpers.js
-  constructor(options: HelpersOptions): void,
-}
-export type HelpersT = Helpers;
-
 type DeprecatedAssetMapOptions = {|
   assetExts: Extensions,
   files: Array<Path>,
-  helpers: Helpers,
+  helpers: DependencyGraphHelpers,
   platforms: Platforms,
 |};
 
@@ -70,17 +68,19 @@ declare class DeprecatedAssetMap {
 export type DeprecatedAssetMapT = DeprecatedAssetMap;
 
 type HasteMapOptions = {|
+  allowRelativePaths: boolean,
   extensions: Extensions,
   fastfs: FastFS,
+  helpers: DependencyGraphHelpers,
   moduleCache: ModuleCache,
-  preferNativePlatform: true,
-  helpers: Helpers,
   platforms: Platforms,
+  preferNativePlatform: true,
 |};
 
 declare class HasteMap {
   // node-haste/DependencyGraph/HasteMap.js
   constructor(options: HasteMapOptions): void,
+  build(): Promise<Object>,
 }
 export type HasteMapT = HasteMap;
 
@@ -90,7 +90,7 @@ type ResolutionRequestOptions = {|
   preferNativePlatform: true,
   hasteMap: HasteMap,
   deprecatedAssetMap: DeprecatedAssetMap,
-  helpers: Helpers,
+  helpers: DependencyGraphHelpers,
   moduleCache: ModuleCache,
   fastfs: FastFS,
   shouldThrowOnUnresolvedErrors: () => true,

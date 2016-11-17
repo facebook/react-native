@@ -187,6 +187,10 @@ void jni_CSSNodeMarkLayoutSeen(alias_ref<jobject>, jlong nativePointer) {
   CSSNodeSetHasNewLayout(_jlong2CSSNodeRef(nativePointer), false);
 }
 
+void jni_CSSNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcNativePointer) {
+  CSSNodeCopyStyle(_jlong2CSSNodeRef(dstNativePointer), _jlong2CSSNodeRef(srcNativePointer));
+}
+
 #define CSS_NODE_JNI_STYLE_PROP(javatype, type, name)                                       \
   javatype jni_CSSNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer) {             \
     return (javatype) CSSNodeStyleGet##name(_jlong2CSSNodeRef(nativePointer));              \
@@ -257,6 +261,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeIsDirty),
                         CSSMakeNativeMethod(jni_CSSNodeMarkLayoutSeen),
                         CSSMakeNativeMethod(jni_CSSNodeSetHasMeasureFunc),
+                        CSSMakeNativeMethod(jni_CSSNodeCopyStyle),
 
                         CSSMakeNativeMethod(jni_CSSNodeStyleGetDirection),
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetDirection),

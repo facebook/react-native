@@ -813,6 +813,8 @@ if (!foundHash) {
 }
 </script>
 
+<block class="android" />
+
 ## Creating a release build in Android Studio
 
 You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which’ll be included with your native Android app:

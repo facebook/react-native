@@ -180,7 +180,7 @@ static inline float computedEdgeValue(const float edges[CSSEdgeCount],
   return defaultValue;
 }
 
-static int32_t gNodeInstanceCount = 0;
+int32_t gNodeInstanceCount = 0;
 
 CSSNodeRef CSSNodeNew(void) {
   const CSSNodeRef node = gCSSCalloc(1, sizeof(CSSNode));
@@ -339,6 +339,13 @@ void CSSNodeMarkDirty(const CSSNodeRef node) {
 
 bool CSSNodeIsDirty(const CSSNodeRef node) {
   return node->isDirty;
+}
+
+void CSSNodeCopyStyle(const CSSNodeRef dstNode, const CSSNodeRef srcNode) {
+  if (memcmp(&dstNode->style, &srcNode->style, sizeof(CSSStyle)) != 0) {
+    memcpy(&dstNode->style, &srcNode->style, sizeof(CSSStyle));
+    _CSSNodeMarkDirty(dstNode);
+  }
 }
 
 inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
@@ -2519,7 +2526,7 @@ void CSSLog(CSSLogLevel level, const char *format, ...) {
   va_end(args);
 }
 
-static bool experimentalFeatures[CSSExperimentalFeatureCount];
+static bool experimentalFeatures[CSSExperimentalFeatureCount + 1];
 
 void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled) {
   experimentalFeatures[feature] = enabled;
