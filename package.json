@@ -223,7 +223,7 @@
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.35.0",
     "graphlib-dot": "0.6.2",
-    "graphql": "0.6.2",
+    "graphql": "0.8.2",
     "jest": "17.0.2",
     "jest-repl": "17.0.2",
     "jest-runtime": "17.0.2",
