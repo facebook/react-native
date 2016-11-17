@@ -341,6 +341,13 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
   return node->isDirty;
 }
 
+void CSSNodeCopyStyle(const CSSNodeRef dstNode, const CSSNodeRef srcNode) {
+  if (memcmp(&dstNode->style, &srcNode->style, sizeof(CSSStyle)) != 0) {
+    memcpy(&dstNode->style, &srcNode->style, sizeof(CSSStyle));
+    _CSSNodeMarkDirty(dstNode);
+  }
+}
+
 inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;

@@ -98,6 +98,8 @@ WIN_EXPORT bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
                                                const float marginRow,
                                                const float marginColumn);
 
+WIN_EXPORT void CSSNodeCopyStyle(const CSSNodeRef dstNode, const CSSNodeRef srcNode);
+
 #define CSS_NODE_PROPERTY(type, name, paramName)                           \
   WIN_EXPORT void CSSNodeSet##name(const CSSNodeRef node, type paramName); \
   WIN_EXPORT type CSSNodeGet##name(const CSSNodeRef node);
