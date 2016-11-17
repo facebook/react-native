@@ -35,7 +35,8 @@ const {
 } = ReactNative;
 
 class AddRemoveExample extends React.Component {
-  
+  state: any;
+
   constructor(props) {
     super(props);
     this.state = {
