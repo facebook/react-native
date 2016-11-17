@@ -7,14 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TVView
+ * @flow
  */
 'use strict';
 
 const React = require('React');
 const View = require('View');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const StyleSheetPropType = require('StyleSheetPropType');
-const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -27,87 +26,108 @@ const PropTypes = React.PropTypes;
  * @extends View
  * @platform ios
  */
-class TVView extends View {
-    static viewConfig = {
-        uiViewClassName: 'RCTTVView',
-        validAttributes: ReactNativeViewAttributes.RCTTVView
-    };
+class TVView extends React.Component {
 
-    static propTypes = {
-        ...View.propTypes,
+  _tvView: ?RCTTVView;
 
-        /**
-         * *(Apple TV only)* Optional method.  When implemented, this view will be focusable
-         * and navigable using the Apple TV remote.
-         *
-         * @platform ios
-         */
-        onTVSelect: PropTypes.func,
+  _saveTVView: (tvRef: ?RCTTVView) => void;
 
-        /**
-         * *(Apple TV only)* Optional method. Will be called if this view comes into focus
-         * during navigation with the TV remote.  May be used to give the view a different
-         * appearance when focused.
-         *
-         * @platform ios
-         */
-        onTVFocus: PropTypes.func,
+  constructor(props: Object) {
+    super(props);
+    this._saveTVView = this._saveTVView.bind(this);
+  }
 
-        /**
-         * *(Apple TV only)* Optional method.  Will be called if this view leaves focus during
-         * navigation with the TV remote.
-         *
-         * @platform ios
-         */
-        onTVBlur: PropTypes.func,
+  static viewConfig = {
+    uiViewClassName: 'RCTTVView',
+    validAttributes: ReactNativeViewAttributes.RCTTVView
+  };
 
-        /**
-         * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
-         *
-         * @platform ios
-         */
-        hasTVPreferredFocus: PropTypes.bool,
+  static propTypes = {
+    ...View.propTypes,
 
-        /**
-         * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
-         *
-         * @platform ios
-         */
-        tvParallaxDisable: PropTypes.bool,
+    /**
+     * *(Apple TV only)* Optional method.  When implemented, this view will be focusable
+     * and navigable using the Apple TV remote.
+     *
+     * @platform ios
+     */
+     onTVSelect: PropTypes.func,
 
-        /**
-         * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
-         *
-         * @platform ios
-         */
-        tvParallaxShiftDistanceX: PropTypes.number,
+    /**
+     * *(Apple TV only)* Optional method. Will be called if this view comes into focus
+     * during navigation with the TV remote.  May be used to give the view a different
+     * appearance when focused.
+     *
+     * @platform ios
+     */
+    onTVFocus: PropTypes.func,
 
-        /**
-         * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
-         *
-         * @platform ios
-         */
-        tvParallaxShiftDistanceY: PropTypes.number,
+    /**
+     * *(Apple TV only)* Optional method.  Will be called if this view leaves focus during
+     * navigation with the TV remote.
+     *
+     * @platform ios
+     */
+    onTVBlur: PropTypes.func,
 
-        /**
-         * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
-         *
-         * @platform ios
-         */
-        tvParallaxTiltAngle: PropTypes.number,
+    /**
+     * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
+     *
+     * @platform ios
+     */
+    hasTVPreferredFocus: PropTypes.bool,
 
-        /**
-         * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
-         *
-         * @platform ios
-         */
-        tvParallaxMagnification: PropTypes.number,
+    /**
+     * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
+     *
+     * @platform ios
+     */
+    tvParallaxDisable: PropTypes.bool,
 
-    };
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     *
+     * @platform ios
+     */
+    tvParallaxShiftDistanceX: PropTypes.number,
 
-    render() {
-        return <RCTTVView {...this.props} />;
-    }
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+     *
+     * @platform ios
+     */
+    tvParallaxShiftDistanceY: PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
+     *
+     * @platform ios
+     */
+    tvParallaxTiltAngle: PropTypes.number,
+
+    /**
+     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
+     *
+     * @platform ios
+     */
+    tvParallaxMagnification: PropTypes.number,
+
+  };
+
+  render() {
+    return <RCTTVView
+                ref={this._saveTVView}
+                {...this.props} />;
+  };
+
+  setNativeProps(props: ?any) {
+    this._tvView && this._tvView.setNativeProps(props);
+  };
+
+  _saveTVView(tvRef: ?RCTTVView): void {
+    this._tvView = tvRef;
+  }
+
 }
 
 const RCTTVView = requireNativeComponent('RCTTVView', TVView, { });
