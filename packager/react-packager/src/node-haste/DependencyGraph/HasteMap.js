@@ -26,6 +26,7 @@ class HasteMap extends EventEmitter {
     preferNativePlatform,
     helpers,
     platforms,
+    moduleOptions,
   }) {
     super();
     this._extensions = extensions;
@@ -34,6 +35,7 @@ class HasteMap extends EventEmitter {
     this._preferNativePlatform = preferNativePlatform;
     this._helpers = helpers;
     this._platforms = platforms;
+    this._moduleOptions = moduleOptions;
 
     this._processHastePackage = throat(1, this._processHastePackage.bind(this));
     this._processHasteModule = throat(1, this._processHasteModule.bind(this));
@@ -91,24 +93,29 @@ class HasteMap extends EventEmitter {
   }
 
   getModule(name, platform = null) {
-    const modulesMap = this._map[name];
-    if (modulesMap == null) {
-      return null;
-    }
+    // getModule override can be provided
+    if (this._moduleOptions && this._moduleOptions.getModule) {
+      return this._moduleOptions.getModule(this, name, this._preferNativePlatform, NATIVE_PLATFORM, GENERIC_PLATFORM, platform);
+    } else {
+      const modulesMap = this._map[name];
+      if (modulesMap == null) {
+        return null;
+      }
 
-    // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
-    // a plain .js file.
-    let module;
-    if (module == null && platform != null) {
-      module = modulesMap[platform];
+      // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
+      // a plain .js file.
+      let module;
+      if (module == null && platform != null) {
+        module = modulesMap[platform];
+      }
+      if (module == null && this._preferNativePlatform) {
+        module = modulesMap[NATIVE_PLATFORM];
+      }
+      if (module == null) {
+        module = modulesMap[GENERIC_PLATFORM];
+      }
+      return module;
     }
-    if (module == null && this._preferNativePlatform) {
-      module = modulesMap[NATIVE_PLATFORM];
-    }
-    if (module == null) {
-      module = modulesMap[GENERIC_PLATFORM];
-    }
-    return module;
   }
 
   _processHasteModule(file, previousName) {

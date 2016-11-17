@@ -89,6 +89,8 @@ class Resolver {
 
   constructor(options) {
     const opts = validateOpts(options);
+    const configOpts = getResolveConfigOpts(opts.assetRoots);
+    const additionalPlatforms = configOpts ? configOpts.additionalPlatforms : [];
 
     this._depGraph = new DependencyGraph({
       roots: opts.projectRoots,
@@ -99,7 +101,7 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: defaults.platforms,
+      platforms: defaults.platforms.concat(additionalPlatforms),
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
@@ -108,6 +110,9 @@ class Resolver {
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
+      moduleOptions: configOpts || {
+        cacheTransformResults: true,
+      },
       // for jest-haste-map
       resetCache: options.resetCache,
       moduleOptions: {
@@ -283,6 +288,17 @@ function definePolyfillCode(code,) {
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
+}
+
+// Check for resolveConfig overrides
+function getResolveConfigOpts(projectPaths, resolveConfigFile = '/.resolveConfig') {
+  // iterate over paths until success or empty
+  if (projectPaths.length === 0) return null;
+  try {
+    return require(path.join(projectPaths.pop(), resolveConfigFile));
+  } catch(e) {
+    return getResolveConfigOpts(projectPaths, resolveConfigFile);
+  }
 }
 
 module.exports = Resolver;
