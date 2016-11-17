@@ -8,12 +8,14 @@
  */
 'use strict';
 
+const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
@@ -25,10 +27,8 @@ const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInE
 const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const webSocketProxy = require('./util/webSocketProxy.js');
-const InspectorProxy = require('./util/inspectorProxy.js');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
 const unless = require('./middleware/unless');
+const webSocketProxy = require('./util/webSocketProxy.js');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
@@ -86,17 +86,17 @@ function getPackagerServer(args, config) {
     undefined;
 
   return ReactPackager.createServer({
-    nonPersistent: args.nonPersistent,
-    projectRoots: args.projectRoots,
+    assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRoots: args.assetRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
-    assetRoots: args.assetRoots,
-    assetExts: defaultAssetExts.concat(args.assetExts),
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    projectRoots: args.projectRoots,
     resetCache: args.resetCache,
+    transformModulePath: transformModulePath,
     verbose: args.verbose,
+    watch: !args.nonPersistent,
   });
 }
 

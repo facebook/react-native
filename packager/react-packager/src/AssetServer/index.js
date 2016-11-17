@@ -42,10 +42,6 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
-  fileWatcher: {
-    type: 'object',
-    required: true,
-  }
 });
 
 class AssetServer {
@@ -55,9 +51,6 @@ class AssetServer {
     this._assetExts = opts.assetExts;
     this._hashes = new Map();
     this._files = new Map();
-
-    opts.fileWatcher
-      .on('all', (type, root, file) => this._onFileChange(type, root, file));
   }
 
   get(assetPath, platform = null) {
@@ -84,7 +77,6 @@ class AssetServer {
       data.scales = record.scales;
       data.files = record.files;
 
-
       if (this._hashes.has(assetPath)) {
         data.hash = this._hashes.get(assetPath);
         return data;
@@ -106,9 +98,8 @@ class AssetServer {
     });
   }
 
-  _onFileChange(type, root, file) {
-    const asset = this._files.get(path.join(root, file));
-    this._hashes.delete(asset);
+  onFileChange(type, filePath) {
+    this._hashes.delete(this._files.get(filePath));
   }
 
   /**
@@ -187,7 +178,10 @@ class AssetServer {
       }
 
       const rootsString = roots.map(s => `'${s}'`).join(', ');
-      throw new Error(`'${debugInfoFile}' could not be found, because '${dir}' is not a subdirectory of any of the roots  (${rootsString})`);
+      throw new Error(
+        `'${debugInfoFile}' could not be found, because '${dir}' is not a ` +
+        `subdirectory of any of the roots  (${rootsString})`,
+      );
     });
   }
 

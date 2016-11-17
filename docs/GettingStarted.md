@@ -362,8 +362,6 @@ If everything is set up correctly, you should see your new app running in your A
 
 <block class="windows android" />
 
-> If you hit a `ERROR  Watcher took too long to load`, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
-
 > If you're targeting API level 23, the app might crash on first launch with an error smilar to `Unable to add window android.view.ViewRootImpl$W@c51fa6 -- permission denied for this window type`. To fix this, you need to go to `System settings > Apps > Configure apps > Draw over other apps` and grant the permission for the app.
 
 NOTE: Many React Native modules haven't been tested on Marshmallow and might break. Please throughly test the app if you target API level 23 and file a bug report if you find that something is broken.
@@ -467,7 +465,7 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
           }
           // We would have broken out if both targetPlatform and devOS hadn't been filled.
           display('os', devOS);
-          display('platform', targetPlatform);      
+          display('platform', targetPlatform);
           foundHash = true;
           break;
         }
