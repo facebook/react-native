@@ -21,10 +21,12 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -39,7 +41,7 @@ import com.facebook.infer.annotation.Assertions;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
   private static Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -58,6 +60,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private View mContentView;
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -98,6 +101,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     } else {
       mScroller = null;
     }
+
+    this.setOnHierarchyChangeListener(this);
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -341,4 +346,61 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
   }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    setContentView(1 /* expectedChildCount */);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    setContentView(0 /* expectedChildCount */);
+
+  }
+
+  private void setContentView(int expectedChildCount) {
+    if (mContentView != null) {
+      mContentView.removeOnLayoutChangeListener(this);
+    }
+    if (this.getChildCount() != expectedChildCount) {
+      FLog.w(
+              ReactConstants.TAG,
+              String.format("Expected %s children for ReactScrollView, found %s.", expectedChildCount, this.getChildCount()));
+    }
+
+    if (this.getChildCount() > 0) {
+      mContentView = this.getChildAt(0);
+      mContentView.addOnLayoutChangeListener(this);
+    } else { // no children
+      mContentView = null;
+    }
+  }
+
+  /**
+   * Called when a mContentView's layout has changed.
+   */
+  @Override
+  public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    this.onContentLayoutChange(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
+  }
+
+  private void onContentLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    if (mContentView == null) {
+      FLog.w(
+              ReactConstants.TAG,
+              "mContentView is not set on call to onContentLayoutChange");
+      return;
+    }
+
+    int contentHeight = mContentView.getMeasuredHeight();
+    int currentScrollY = getScrollY();
+    int thisHeight = this.getMeasuredHeight();
+
+    int maxScrollY = Math.max(0, contentHeight - thisHeight);
+
+    if (currentScrollY > maxScrollY) {
+      this.scrollTo(getScrollX(), maxScrollY);
+    }
+  }
 }
+
