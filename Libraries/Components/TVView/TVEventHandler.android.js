@@ -28,24 +28,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule TVEventHandler
- * @flow
  */
 'use strict';
 
-const React = require('React');
+function TVEventHandler() {
+}
 
-// Stub version for Android
+TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {
+};
 
-var TVEventHandler = React.createClass({
-
-  enable: function(callback: Function) {
-  },
-
-  disable: function() {
-  },
-
-  render: function() {}
-
-});
+TVEventHandler.prototype.disable = function() {
+};
 
 module.exports = TVEventHandler;
