@@ -7,6 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+type _SourceMap = {
+  version: number,
+  file: string,
+  sources: Array<string>,
+  names: Array<string>,
+  mappings: string,
+  sourcesContent: Array<string>,
+};
+
 // based on babylon v6.13.1
 type BabylonOptions = {
   allowImportExportEverywhere?: boolean,
@@ -40,12 +49,14 @@ type GeneratorOptions = {
   sourceFileName?: string,
 };
 
+type InlinePlugin = [() => {}, {}];
+
 // based on https://babeljs.io/docs/usage/options/ -- 2016-11-11
 type _TransformOptions = {
   filename?: string,
   filenameRelative?: string,
   presets?: Array<string | Object>,
-  plugins?: Array<string | Object>,
+  plugins?: Array<string | Object | InlinePlugin>,
   parserOpts?: BabylonOptions,
   generatorOpts?: GeneratorOptions,
   highlightCode?: boolean,
@@ -54,7 +65,7 @@ type _TransformOptions = {
   auxiliaryCommentBefore?: boolean,
   auxiliaryCommentAfter?: boolean,
   sourceMaps?: boolean,
-  inputSourceMap?: Object,
+  inputSourceMap?: ?Object,
   sourceMapTarget?: string,
   sourceFileName?: string,
   sourceRoot?: string,
@@ -76,16 +87,23 @@ type _TransformOptions = {
 
 type TransformOptions =
   _TransformOptions & {env?: {[key: string]: TransformOptions}};
-type TransformResult = {};
+declare class _Ast {};
+type TransformResult = {
+  ast: ?_Ast,
+  code: ?string,
+  map: ?_SourceMap,
+};
 type VisitFn = <State>(path: Object, state: State) => any;
 
 declare module 'babel-core' {
+  declare type SourceMap = _SourceMap;
+  declare type Ast = _Ast;
   declare function transform(
     code: string,
     options?: TransformOptions,
   ): TransformResult;
   declare function traverse<State>(
-    ast: Object,
+    ast: _Ast,
     visitor: {[key: string]: VisitFn<State> |
                              {enter?: VisitFn<State>, exit?: VisitFn<State>}},
     scope?: ?Object,
@@ -93,11 +111,16 @@ declare module 'babel-core' {
     parentPath?: ?Object,
   ): void;
   declare var types: {[key: string]: Function};
+  declare function transformFromAst(
+    ast: _Ast,
+    code?: ?string,
+    babelOptions?: TransformOptions,
+  ): TransformResult;
 }
 
 declare module 'babel-generator' {
   declare function exports(
-    ast: Object,
+    ast: _Ast,
     options?: GeneratorOptions,
   ): {ast: Object, code: string, map: Object};
 }

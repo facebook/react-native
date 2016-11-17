@@ -11,19 +11,13 @@
 
 'use strict';
 
-type SourceMapBase = {
+import type {SourceMap as BabelSourceMap} from 'babel-core';
+
+export type SourceMap = BabelSourceMap;
+
+export type CombinedSourceMap = {
   version: number,
   file: string,
-};
-
-export type SourceMap = SourceMapBase & {
-  sources: Array<string>,
-  names: Array<string>,
-  mappings: string,
-  sourcesContent: Array<string>,
-};
-
-export type CombinedSourceMap = SourceMapBase & {
   sections: Array<{
     offset: {line: number, column: number},
     map: SourceMap,

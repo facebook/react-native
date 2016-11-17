@@ -9,6 +9,10 @@
 
 #include "CSSNodeList.h"
 
+extern CSSMalloc gCSSMalloc;
+extern CSSRealloc gCSSRealloc;
+extern CSSFree gCSSFree;
+
 struct CSSNodeList {
   uint32_t capacity;
   uint32_t count;
@@ -16,12 +20,12 @@ struct CSSNodeList {
 };
 
 CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
-  const CSSNodeListRef list = malloc(sizeof(struct CSSNodeList));
+  const CSSNodeListRef list = gCSSMalloc(sizeof(struct CSSNodeList));
   CSS_ASSERT(list != NULL, "Could not allocate memory for list");
 
   list->capacity = initialCapacity;
   list->count = 0;
-  list->items = malloc(sizeof(CSSNodeRef) * list->capacity);
+  list->items = gCSSMalloc(sizeof(CSSNodeRef) * list->capacity);
   CSS_ASSERT(list->items != NULL, "Could not allocate memory for items");
 
   return list;
@@ -29,8 +33,8 @@ CSSNodeListRef CSSNodeListNew(const uint32_t initialCapacity) {
 
 void CSSNodeListFree(const CSSNodeListRef list) {
   if (list) {
-    free(list->items);
-    free(list);
+    gCSSFree(list->items);
+    gCSSFree(list);
   }
 }
 
@@ -56,7 +60,7 @@ void CSSNodeListInsert(CSSNodeListRef *listp, const CSSNodeRef node, const uint3
 
   if (list->count == list->capacity) {
     list->capacity *= 2;
-    list->items = realloc(list->items, sizeof(CSSNodeRef) * list->capacity);
+    list->items = gCSSRealloc(list->items, sizeof(CSSNodeRef) * list->capacity);
     CSS_ASSERT(list->items != NULL, "Could not extend allocation for items");
   }
 

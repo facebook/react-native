@@ -47,6 +47,11 @@ typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
 typedef void (*CSSPrintFunc)(CSSNodeRef node);
 typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
 
+typedef void *(*CSSMalloc)(size_t size);
+typedef void *(*CSSCalloc)(size_t count, size_t size);
+typedef void *(*CSSRealloc)(void *ptr, size_t size);
+typedef void (*CSSFree)(void *ptr);
+
 // CSSNode
 WIN_EXPORT CSSNodeRef CSSNodeNew(void);
 WIN_EXPORT void CSSNodeInit(const CSSNodeRef node);
@@ -155,5 +160,10 @@ WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
 
 WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
 WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
+
+WIN_EXPORT void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
+                                        CSSCalloc cssCalloc,
+                                        CSSRealloc cssRealloc,
+                                        CSSFree cssFree);
 
 CSS_EXTERN_C_END

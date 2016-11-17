@@ -102,6 +102,11 @@ typedef struct CSSNode {
 
 static void _CSSNodeMarkDirty(const CSSNodeRef node);
 
+CSSMalloc gCSSMalloc = &malloc;
+CSSCalloc gCSSCalloc = &calloc;
+CSSRealloc gCSSRealloc = &realloc;
+CSSFree gCSSFree = &free;
+
 #ifdef ANDROID
 #include <android/log.h>
 static int _csslayoutAndroidLog(CSSLogLevel level, const char *format, va_list args) {
@@ -178,7 +183,7 @@ static inline float computedEdgeValue(const float edges[CSSEdgeCount],
 static int32_t gNodeInstanceCount = 0;
 
 CSSNodeRef CSSNodeNew(void) {
-  const CSSNodeRef node = calloc(1, sizeof(CSSNode));
+  const CSSNodeRef node = gCSSCalloc(1, sizeof(CSSNode));
   CSS_ASSERT(node, "Could not allocate memory for node");
   gNodeInstanceCount++;
 
@@ -199,7 +204,7 @@ void CSSNodeFree(const CSSNodeRef node) {
   }
 
   CSSNodeListFree(node->children);
-  free(node);
+  gCSSFree(node);
   gNodeInstanceCount--;
 }
 
@@ -2522,4 +2527,27 @@ void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool
 
 bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
   return experimentalFeatures[feature];
+}
+
+void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
+                             CSSCalloc cssCalloc,
+                             CSSRealloc cssRealloc,
+                             CSSFree cssFree) {
+  CSS_ASSERT(gNodeInstanceCount == 0,
+             "Cannot set memory functions: all node must be freed first");
+  CSS_ASSERT((cssMalloc == NULL && cssCalloc == NULL && cssRealloc == NULL && cssFree == NULL) ||
+             (cssMalloc != NULL && cssCalloc != NULL && cssRealloc != NULL && cssFree != NULL),
+             "Cannot set memory functions: functions must be all NULL or Non-NULL");
+
+  if (cssMalloc == NULL || cssCalloc == NULL || cssRealloc == NULL || cssFree == NULL) {
+    gCSSMalloc = &malloc;
+    gCSSCalloc = &calloc;
+    gCSSRealloc = &realloc;
+    gCSSFree = &free;
+  } else {
+    gCSSMalloc = cssMalloc;
+    gCSSCalloc = cssCalloc;
+    gCSSRealloc = cssRealloc;
+    gCSSFree = cssFree;
+  }
 }
