@@ -41,6 +41,14 @@ var featured = [
     infoTitle: 'Internet giant tries to get people to pay for digital music',
   },
   {
+    name: '腾讯课堂',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_10927178_1479093114/96',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu',
+    linkAppStore: 'https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8',
+    infoLink: 'https://ke.qq.com/',
+    infoTitle: '学习成就梦想',
+  },
+  {
     name: 'FanVision Bolt',
     icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
