@@ -93,10 +93,9 @@ export type PackageData = {|
   'react-native'?: Object | string,
 |};
 
-export type TransformFnResult = {|
+export type TransformFnResult = {
   ast: Object,
-  map?: Object,
-|};
+};
 
 export type TransformFn = (
   data: {|

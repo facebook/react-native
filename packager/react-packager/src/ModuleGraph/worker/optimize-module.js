@@ -21,9 +21,9 @@ const sourceMap = require('source-map');
 import type {Callback, TransformedFile, TransformResult} from '../types.flow';
 
 export type OptimizationOptions = {|
-  dev?: boolean,
+  dev: boolean,
   isPolyfill?: boolean,
-  platform?: string,
+  platform: string,
 |};
 
 function optimizeModule(

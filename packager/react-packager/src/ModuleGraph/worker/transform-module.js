@@ -88,7 +88,7 @@ function transformJSON(json, options, callback) {
   const code =
     `__d(function(${moduleFactoryParameters.join(', ')}) { module.exports = \n${
       json
-    }\n})`;
+    }\n});`;
 
   const moduleData = {
     code,
