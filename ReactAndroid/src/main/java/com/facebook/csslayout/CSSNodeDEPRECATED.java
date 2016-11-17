@@ -222,6 +222,11 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
     return FloatUtil.floatsEqual(f1, f2);
   }
 
+  @Override
+  public void copyStyle(CSSNodeDEPRECATED srcNode) {
+    throw new UnsupportedOperationException("copyStyle is not implemented");
+  }
+
   /**
    * Get this node's direction, as defined in the style.
    */

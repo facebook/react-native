@@ -190,6 +190,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeMarkLayoutSeen(mNativePointer);
   }
 
+  private native void jni_CSSNodeCopyStyle(long dstNativePointer, long srcNativePointer);
+  @Override
+  public void copyStyle(CSSNode srcNode) {
+    jni_CSSNodeCopyStyle(mNativePointer, srcNode.mNativePointer);
+  }
+
   private native int jni_CSSNodeStyleGetDirection(long nativePointer);
   @Override
   public CSSDirection getStyleDirection() {
