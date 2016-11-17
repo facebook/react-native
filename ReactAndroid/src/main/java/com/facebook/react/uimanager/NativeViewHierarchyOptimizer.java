@@ -122,7 +122,7 @@ public class NativeViewHierarchyOptimizer {
       String className,
       ReactStylesDiffMap props) {
     if (!ENABLED) {
-      mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
+      mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), props);
       return;
     }
 
@@ -130,7 +130,7 @@ public class NativeViewHierarchyOptimizer {
     if (needsToLeaveLayoutOnly) {
       transitionLayoutOnlyViewToNativeView(node, props);
     } else if (!node.isLayoutOnly()) {
-      mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
+      mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), props);
     }
   }
 

@@ -647,7 +647,7 @@ public class UIViewOperationQueue {
     }
   }
 
-  public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
+  public void enqueueUpdateProperties(int reactTag, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
 
@@ -807,6 +807,47 @@ public class UIViewOperationQueue {
               flushPendingBatches();
             }
           });
+    }
+  }
+
+  /**
+   * Immediately execute all pending operations without waiting for a frame callback. Must be called
+   * from the UI thread. This is useful to update views when already frame aligned for example during
+   * native driven animations.
+   */
+  /* package */ void synchronouslyDispatchViewUpdates() {
+    UiThreadUtil.assertOnUiThread();
+
+    // Store the current operation queues to dispatch and create new empty ones to continue
+    // receiving new operations
+    final ArrayList<UIOperation> operations = mOperations.isEmpty() ? null : mOperations;
+    if (operations != null) {
+      mOperations = new ArrayList<>();
+    }
+
+    final UIOperation[] nonBatchedOperations;
+    synchronized (mNonBatchedOperationsLock) {
+      if (!mNonBatchedOperations.isEmpty()) {
+        nonBatchedOperations =
+          mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
+        mNonBatchedOperations.clear();
+      } else {
+        nonBatchedOperations = null;
+      }
+    }
+
+    // All nonBatchedOperations should be executed before regular operations as
+    // regular operations may depend on them
+    if (nonBatchedOperations != null) {
+      for (UIOperation op : nonBatchedOperations) {
+        op.execute();
+      }
+    }
+
+    if (operations != null) {
+      for (int i = 0; i < operations.size(); i++) {
+        operations.get(i).execute();
+      }
     }
   }
 
