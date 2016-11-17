@@ -73,11 +73,6 @@ var TouchableOpacity = React.createClass({
     return {
       activeOpacity: 0.2,
       focusedOpacity: 0.7,
-      tvParallaxDisable: false,
-      tvParallaxShiftDistanceX: 2.0,
-      tvParallaxShiftDistanceY: 2.0,
-      tvParallaxTiltAngle: 0.05,
-      tvParallaxMagnification: 1.0
     };
   },
 

@@ -25,11 +25,11 @@ exports[`TouchableHighlight renders correctly 1`] = `
     ]
   }
   testID={undefined}
-  tvParallaxDisable={false}
-  tvParallaxMagnification={1}
-  tvParallaxShiftDistanceX={2}
-  tvParallaxShiftDistanceY={2}
-  tvParallaxTiltAngle={0.05}>
+  tvParallaxDisable={undefined}
+  tvParallaxMagnification={undefined}
+  tvParallaxShiftDistanceX={undefined}
+  tvParallaxShiftDistanceY={undefined}
+  tvParallaxTiltAngle={undefined}>
   <Text
     accessible={true}
     allowFontScaling={true}

@@ -34,11 +34,6 @@ type Event = Object;
 var DEFAULT_PROPS = {
   activeOpacity: 0.85,
   underlayColor: 'black',
-  tvParallaxDisable: false,
-  tvParallaxShiftDistanceX: 2.0,
-  tvParallaxShiftDistanceY: 2.0,
-  tvParallaxTiltAngle: 0.05,
-  tvParallaxMagnification: 1.0
 };
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
