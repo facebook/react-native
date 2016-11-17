@@ -5,14 +5,21 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-// RUNS UNTRANSFORMED IN A WORKER PROCESS. ONLY USE NODE 4 COMPATIBLE FEATURES!
+const nullthrows = require('fbjs/lib/nullthrows');
 
 const {traverse, types} = require('babel-core');
 
+type AST = Object;
+
 class Replacement {
+  nameToIndex: Map<string, number>;
+  nextIndex: number;
+
   constructor() {
     this.nameToIndex = new Map();
     this.nextIndex = 0;
@@ -47,6 +54,9 @@ class Replacement {
 }
 
 class ProdReplacement {
+  replacement: Replacement;
+  names: Array<string>;
+
   constructor(names) {
     this.replacement = new Replacement();
     this.names = names;
@@ -118,15 +128,16 @@ function collectDependencies(ast, replacement, dependencyMapIdentifier) {
 
   return {
     dependencies: replacement.getNames(),
-    dependencyMapName: traversalState.dependencyMapIdentifier.name,
+    dependencyMapName: nullthrows(traversalState.dependencyMapIdentifier).name,
   };
 }
 
 exports = module.exports =
-  ast => collectDependencies(ast, new Replacement());
+  (ast: AST) => collectDependencies(ast, new Replacement());
 exports.forOptimization =
-  (ast, names, dependencyMapName) => collectDependencies(
-    ast,
-    new ProdReplacement(names),
-    dependencyMapName && types.identifier(dependencyMapName),
-  );
+  (ast: AST, names: Array<string>, dependencyMapName?: string) =>
+    collectDependencies(
+      ast,
+      new ProdReplacement(names),
+      dependencyMapName && types.identifier(dependencyMapName),
+    );
