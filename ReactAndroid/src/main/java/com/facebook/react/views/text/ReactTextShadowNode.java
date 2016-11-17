@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.Spannable;
@@ -246,14 +247,26 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                   (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
-            layout = new StaticLayout(
+
+            int hintWidth = (int) Math.ceil(desiredWidth);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+              layout = new StaticLayout(
                 text,
                 textPaint,
-                (int) Math.ceil(desiredWidth),
+                hintWidth,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
                 0.f,
                 true);
+            } else {
+              layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
+                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(true)
+                .setBreakStrategy(mTextBreakStrategy)
+                .build();
+            }
+
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
             // than the width of the text.
@@ -268,14 +281,24 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 true);
           } else {
             // Is used for multiline, boring text and the width is known.
-            layout = new StaticLayout(
-                text,
-                textPaint,
-                (int) width,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                true);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+              layout = new StaticLayout(
+                  text,
+                  textPaint,
+                  (int) width,
+                  Layout.Alignment.ALIGN_NORMAL,
+                  1.f,
+                  0.f,
+                  true);
+            } else {
+              layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
+                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(true)
+                .setBreakStrategy(mTextBreakStrategy)
+                .build();
+            }
           }
 
           if (mNumberOfLines != UNSET &&
@@ -317,6 +340,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private float mTextShadowOffsetDy = 0;
   private float mTextShadowRadius = 1;
   private int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
+  private int mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
+    0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
   private boolean mIsUnderlineTextDecorationSet = false;
   private boolean mIsLineThroughTextDecorationSet = false;
@@ -526,6 +551,25 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
+  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+
+    if (textBreakStrategy == null || "highQuality".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    } else if ("simple".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+    } else if ("balanced".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textBreakStrategy: " + textBreakStrategy);
+    }
+
+    markUpdated();
+  }
+
   @ReactProp(name = PROP_SHADOW_OFFSET)
   public void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
@@ -584,7 +628,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           getPadding(Spacing.TOP),
           getPadding(Spacing.END),
           getPadding(Spacing.BOTTOM),
-          getTextAlign()
+          getTextAlign(),
+          mTextBreakStrategy
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }

@@ -26,6 +26,7 @@ public class ReactTextUpdate {
   private final float mPaddingRight;
   private final float mPaddingBottom;
   private final int mTextAlign;
+  private final int mTextBreakStrategy;
 
   public ReactTextUpdate(
     Spannable text,
@@ -35,7 +36,8 @@ public class ReactTextUpdate {
     float paddingTop,
     float paddingEnd,
     float paddingBottom,
-    int textAlign) {
+    int textAlign,
+    int textBreakStrategy) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -44,6 +46,7 @@ public class ReactTextUpdate {
     mPaddingRight = paddingEnd;
     mPaddingBottom = paddingBottom;
     mTextAlign = textAlign;
+    mTextBreakStrategy = textBreakStrategy;
   }
 
   public Spannable getText() {
@@ -76,5 +79,9 @@ public class ReactTextUpdate {
 
   public int getTextAlign() {
     return mTextAlign;
+  }
+
+  public int getTextBreakStrategy() {
+    return mTextBreakStrategy;
   }
 }
