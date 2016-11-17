@@ -15,6 +15,13 @@ const fs = require('fs');
 const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
 
+const {
+  createActionStartEntry,
+  createActionEndEntry,
+  log,
+  print,
+} = require('../Logger');
+
 const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
   setTimeout(reject, timeout, 'fs operation timeout');
 });
@@ -57,7 +64,7 @@ class AssetServer {
     this._files = new Map();
 
     opts.fileWatcher
-      .on('all', (type, root, file) => this._onFileChange(type, root, file));
+      .on('all', (type, filePath, root) => this._onFileChange(type, filePath, root));
   }
 
   get(assetPath, platform = null) {
@@ -84,9 +91,14 @@ class AssetServer {
       data.scales = record.scales;
       data.files = record.files;
 
-
       if (this._hashes.has(assetPath)) {
+        const fetchingCachedAssetEvent =
+          print(log(createActionStartEntry({
+            action_name: 'Fetching asset from cache',
+            asset: assetPath,
+          })), ['asset']);
         data.hash = this._hashes.get(assetPath);
+        print(log(createActionEndEntry(fetchingCachedAssetEvent)), ['asset']);
         return data;
       }
 
@@ -98,7 +110,15 @@ class AssetServer {
           } else {
             data.hash = hash.digest('hex');
             this._hashes.set(assetPath, data.hash);
-            data.files.forEach(f => this._files.set(f, assetPath));
+            data.files.forEach(f => {
+              const cachingAssetEvent =
+                print(log(createActionStartEntry({
+                  action_name: 'Caching asset',
+                  asset: assetPath,
+                })), ['asset']);
+              this._files.set(f, assetPath);
+              print(log(createActionEndEntry(cachingAssetEvent)), ['asset']);
+            });
             resolve(data);
           }
         });
@@ -106,9 +126,17 @@ class AssetServer {
     });
   }
 
-  _onFileChange(type, root, file) {
-    const asset = this._files.get(path.join(root, file));
-    this._hashes.delete(asset);
+  _onFileChange(type, assetRelativePath, root) {
+    const assetPath = this._files.get(path.join(root, assetRelativePath));
+    if (assetPath) {
+      const clearingCachedAssetEvent =
+        print(log(createActionStartEntry({
+          action_name: 'Clearing cached asset',
+          asset: assetPath,
+        })), ['asset']);
+      this._hashes.delete(assetPath);
+      print(log(createActionEndEntry(clearingCachedAssetEvent)), ['asset']);
+    }
   }
 
   /**

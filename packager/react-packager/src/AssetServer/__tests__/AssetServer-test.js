@@ -13,6 +13,7 @@ jest.disableAutomock();
 
 jest.mock('fs');
 
+const Promise = require('promise');
 const AssetServer = require('../');
 const crypto = require('crypto');
 const {EventEmitter} = require('events');
@@ -307,7 +308,7 @@ describe('AssetServer', () => {
       it('changes the hash when the passed-in file watcher emits an `all` event', () => {
         return server.getAssetData('imgs/b.jpg').then(initialData => {
           fileSystem.root.imgs['b@4x.jpg'] = 'updated data';
-          fileWatcher.emit('all', 'arbitrary', '/root', 'imgs/b@4x.jpg');
+          fileWatcher.emit('all', 'arbitrary', 'imgs/b@4x.jpg', '/root');
           return server.getAssetData('imgs/b.jpg').then(data =>
             expect(data.hash).not.toEqual(initialData.hash)
           );
