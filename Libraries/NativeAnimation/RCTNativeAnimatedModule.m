@@ -322,11 +322,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
                      body:@{@"tag": node.nodeTag, @"value": @(value)}];
 }
 
-- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
+- (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
 {
   // Native animated events only work for events dispatched from the main queue.
   if (!RCTIsMainQueue() || _eventAnimationDrivers.count == 0) {
-    return NO;
+    return;
   }
 
   NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
@@ -336,11 +336,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
     [driver updateWithEvent:event];
     [self updateViewsProps];
     [driver.valueNode cleanupAnimationUpdate];
-
-    return YES;
   }
-
-  return NO;
 }
 
 - (void)updateViewsProps
