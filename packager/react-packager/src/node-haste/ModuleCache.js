@@ -17,8 +17,8 @@ const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
 import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type {
-  DepGraphHelpers,
   TransformCode,
   Options as ModuleOptions,
 } from './Module';
@@ -32,7 +32,7 @@ class ModuleCache {
   _cache: Cache;
   _transformCode: TransformCode;
   _transformCacheKey: string;
-  _depGraphHelpers: DepGraphHelpers;
+  _depGraphHelpers: DependencyGraphHelpers;
   _platforms: mixed;
   _assetDependencies: mixed;
   _moduleOptions: ModuleOptions;
@@ -52,7 +52,7 @@ class ModuleCache {
     cache: Cache,
     transformCode: TransformCode,
     transformCacheKey: string,
-    depGraphHelpers: DepGraphHelpers,
+    depGraphHelpers: DependencyGraphHelpers,
     assetDependencies: mixed,
     moduleOptions: ModuleOptions,
   }, platforms: mixed) {

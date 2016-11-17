@@ -9,6 +9,10 @@
  * @flow
  */
 
+'use strict';
+
+import DependencyGraphHelpers from '../../node-haste/DependencyGraph/DependencyGraphHelpers';
+
 type ModuleID = string;
 export type Path = string;
 type Platform = string;
@@ -45,21 +49,10 @@ export type FastFS = {
   matches(directory: Path, pattern: RegExp): Array<Path>,
 };
 
-type HelpersOptions = {|
-  assetExts: Extensions,
-  providesModuleNodeModules: Array<string>,
-|};
-
-declare class Helpers {
-  // node-haste/DependencyGraph/DependencyGraphHelpers.js
-  constructor(options: HelpersOptions): void,
-}
-export type HelpersT = Helpers;
-
 type DeprecatedAssetMapOptions = {|
   assetExts: Extensions,
   files: Array<Path>,
-  helpers: Helpers,
+  helpers: DependencyGraphHelpers,
   platforms: Platforms,
 |};
 
@@ -74,7 +67,7 @@ type HasteMapOptions = {|
   fastfs: FastFS,
   moduleCache: ModuleCache,
   preferNativePlatform: true,
-  helpers: Helpers,
+  helpers: DependencyGraphHelpers,
   platforms: Platforms,
 |};
 
@@ -90,7 +83,7 @@ type ResolutionRequestOptions = {|
   preferNativePlatform: true,
   hasteMap: HasteMap,
   deprecatedAssetMap: DeprecatedAssetMap,
-  helpers: Helpers,
+  helpers: DependencyGraphHelpers,
   moduleCache: ModuleCache,
   fastfs: FastFS,
   shouldThrowOnUnresolvedErrors: () => true,

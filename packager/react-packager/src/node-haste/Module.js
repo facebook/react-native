@@ -23,6 +23,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
 
@@ -44,8 +45,6 @@ export type Options = {
   cacheTransformResults?: boolean,
 };
 
-export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
-
 export type ConstructorArgs = {
   file: string,
   fastfs: FastFs,
@@ -53,7 +52,7 @@ export type ConstructorArgs = {
   cache: Cache,
   transformCode: ?TransformCode,
   transformCacheKey: ?string,
-  depGraphHelpers: DepGraphHelpers,
+  depGraphHelpers: DependencyGraphHelpers,
   options: Options,
 };
 
@@ -67,7 +66,7 @@ class Module {
   _cache: Cache;
   _transformCode: ?TransformCode;
   _transformCacheKey: ?string;
-  _depGraphHelpers: DepGraphHelpers;
+  _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;

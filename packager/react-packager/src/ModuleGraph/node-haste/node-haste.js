@@ -15,7 +15,6 @@ import type { // eslint-disable-line sort-requires
   DeprecatedAssetMapT,
   Extensions,
   HasteMapT,
-  HelpersT,
   Path,
   ResolutionRequestT,
 } from './node-haste.flow';
@@ -25,7 +24,7 @@ import type {
   TransformedFile,
 } from '../types.flow';
 
-const DependencyGraphHelpers: Class<HelpersT> = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
 const DeprecatedAssetMap: Class<DeprecatedAssetMapT> = require('../../node-haste/DependencyGraph/DeprecatedAssetMap');
 const FastFS = require('./FastFS');
 const HasteMap: Class<HasteMapT> = require('../../node-haste/DependencyGraph/HasteMap');
