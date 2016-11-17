@@ -36,6 +36,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 @implementation RCTView
 {
   UIColor *_backgroundColor;
+  UITapGestureRecognizer *_tap;
+  UIPinchGestureRecognizer *_pinch;
+  UIRotationGestureRecognizer *_rotation;
+  UISwipeGestureRecognizer *_swipe;
+  UIPanGestureRecognizer *_pan;
+  UIScreenEdgePanGestureRecognizer *_screenEdgePan;
+  UILongPressGestureRecognizer *_longPress;
 }
 
 @synthesize reactZIndex = _reactZIndex;
@@ -78,6 +85,74 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (pointerEvents == RCTPointerEventsBoxNone) {
     self.accessibilityViewIsModal = NO;
   }
+}
+
+- (void)setStopPropagation:(BOOL)stopPropagation {
+    if (!stopPropagation) {
+        if (_tap) {
+            [self removeGestureRecognizer:_tap];
+            _tap = nil;
+        }
+        if (_pinch) {
+            [self removeGestureRecognizer:_pinch];
+            _pinch = nil;
+        }
+        if (_rotation) {
+            [self removeGestureRecognizer:_rotation];
+            _rotation = nil;
+        }
+        if (_swipe) {
+            [self removeGestureRecognizer:_swipe];
+            _swipe = nil;
+        }
+        if (_pan) {
+            [self removeGestureRecognizer:_pan];
+            _pan = nil;
+        }
+        if (_screenEdgePan) {
+            [self removeGestureRecognizer:_screenEdgePan];
+            _screenEdgePan = nil;
+        }
+        if (_longPress) {
+            [self removeGestureRecognizer:_longPress];
+            _longPress = nil;
+        }
+        return;
+    }
+    
+    if (!_tap) {
+        _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_tap];
+    }
+    if (!_pinch) {
+        _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_pinch];
+    }
+    if (!_rotation) {
+        _rotation = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_rotation];
+    }
+    if (!_swipe) {
+        swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_swipe];
+    }
+    if (!_pan) {
+        _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_pan];
+    }
+    if (!_screenEdgePan) {
+        _screenEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_screenEdgePan];
+    }
+    if (!_longPress) {
+        _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(stopPropagationGesture:)];
+        [self addGestureRecognizer:_longPress];
+    }
+    return;
+}
+
+- (void)stopPropagationGesture:(UIGestureRecognizer *)gesture {
+    NSLog(@"stop Propagation");
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event

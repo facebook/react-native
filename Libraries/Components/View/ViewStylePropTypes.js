@@ -43,6 +43,7 @@ var ViewStylePropTypes = {
   borderBottomWidth: ReactPropTypes.number,
   borderLeftWidth: ReactPropTypes.number,
   opacity: ReactPropTypes.number,
+  stopPropagation: ReactPropTypes.number,
   /**
    * (Android-only) Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).
