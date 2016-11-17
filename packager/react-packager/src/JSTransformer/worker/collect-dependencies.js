@@ -25,7 +25,8 @@ class Replacement {
     );
   }
 
-  getIndex(name) {
+  getIndex(stringLiteral) {
+    const name = stringLiteral.value;
     let index = this.nameToIndex.get(name);
     if (index !== undefined) {
       return index;
@@ -39,8 +40,9 @@ class Replacement {
     return Array.from(this.nameToIndex.keys());
   }
 
-  makeArgs(newId, oldId) {
-    return [newId, oldId];
+  makeArgs(newId, oldId, dependencyMapIdentifier) {
+    const mapLookup = createMapLookup(dependencyMapIdentifier, newId);
+    return [mapLookup, oldId];
   }
 }
 
@@ -52,14 +54,19 @@ class ProdReplacement {
 
   isRequireCall(callee, firstArg) {
     return (
-      callee.type === 'Identifier' && callee.name === 'require' &&
-      firstArg && firstArg.type === 'NumericLiteral'
+      callee.type === 'Identifier' &&
+      callee.name === 'require' &&
+      firstArg &&
+      firstArg.type === 'MemberExpression' &&
+      firstArg.property &&
+      firstArg.property.type === 'NumericLiteral'
     );
   }
 
-  getIndex(id) {
+  getIndex(memberExpression) {
+    const id = memberExpression.property.value;
     if (id in this.names) {
-      return this.replacement.getIndex(this.names[id]);
+      return this.replacement.getIndex({value: this.names[id]});
     }
 
     throw new Error(
@@ -72,27 +79,54 @@ class ProdReplacement {
     return this.replacement.getNames();
   }
 
-  makeArgs(newId) {
-    return [newId];
+  makeArgs(newId, _, dependencyMapIdentifier) {
+    const mapLookup = createMapLookup(dependencyMapIdentifier, newId);
+    return [mapLookup];
   }
 }
 
-function collectDependencies(ast, replacement) {
+function createMapLookup(dependencyMapIdentifier, propertyIdentifier) {
+  return types.memberExpression(
+    dependencyMapIdentifier,
+    propertyIdentifier,
+    true,
+  );
+}
+
+function collectDependencies(ast, replacement, dependencyMapIdentifier) {
+  const traversalState = {dependencyMapIdentifier};
   traverse(ast, {
-    CallExpression(path) {
+    Program(path, state) {
+      if (!state.dependencyMapIdentifier) {
+        state.dependencyMapIdentifier =
+          path.scope.generateUidIdentifier('dependencyMap');
+      }
+    },
+    CallExpression(path, state) {
       const node = path.node;
       const arg = node.arguments[0];
       if (replacement.isRequireCall(node.callee, arg)) {
-        const index = replacement.getIndex(arg.value);
-        node.arguments = replacement.makeArgs(types.numericLiteral(index), arg);
+        const index = replacement.getIndex(arg);
+        node.arguments = replacement.makeArgs(
+          types.numericLiteral(index),
+          arg,
+          state.dependencyMapIdentifier,
+        );
       }
-    }
-  });
+    },
+  }, null, traversalState);
 
-  return replacement.getNames();
+  return {
+    dependencies: replacement.getNames(),
+    dependencyMapName: traversalState.dependencyMapIdentifier.name,
+  };
 }
 
 exports = module.exports =
   ast => collectDependencies(ast, new Replacement());
 exports.forOptimization =
-  (ast, names) => collectDependencies(ast, new ProdReplacement(names));
+  (ast, names, dependencyMapName) => collectDependencies(
+    ast,
+    new ProdReplacement(names),
+    dependencyMapName && types.identifier(dependencyMapName),
+  );

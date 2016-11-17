@@ -144,16 +144,21 @@ function optimizeModule(
 }
 
 function makeResult(ast, filename, sourceCode, isPolyfill = false) {
-  const dependencies = isPolyfill ? [] : collectDependencies(ast);
-  const file = isPolyfill ? wrapPolyfill(ast) : wrapModule(ast);
+  const {dependencies, dependencyMapName} = isPolyfill
+    ? {dependencies: []}
+    : collectDependencies(ast);
+  const file = isPolyfill
+    ? wrapPolyfill(ast)
+    : wrapModule(ast, dependencyMapName);
 
   const gen = generate(file, filename, sourceCode);
-  return {code: gen.code, map: gen.map, dependencies};
+  return {code: gen.code, map: gen.map, dependencies, dependencyMapName};
 }
 
-function wrapModule(file) {
+function wrapModule(file, dependencyMapName) {
   const t = babel.types;
-  const factory = functionFromProgram(file.program, moduleFactoryParameters);
+  const params = moduleFactoryParameters.concat(dependencyMapName);
+  const factory = functionFromProgram(file.program, params);
   const def = t.callExpression(t.identifier('__d'), [factory]);
   return t.file(t.program([t.expressionStatement(def)]));
 }
@@ -183,6 +188,7 @@ function optimize(transformed, file, originalCode, options) {
     : collectDependencies.forOptimization(
         optimized.ast,
         transformed.dependencies,
+        transformed.dependencyMapName,
       );
 
   const inputMap = transformed.map;
