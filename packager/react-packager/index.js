@@ -53,6 +53,6 @@ function createServer(options) {
 
 function createNonPersistentServer(options) {
   Logger.disablePrinting();
-  options.watch = options.nonPersistent != null;
+  options.watch = !options.nonPersistent;
   return createServer(options);
 }

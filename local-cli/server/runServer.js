@@ -96,7 +96,7 @@ function getPackagerServer(args, config) {
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
     verbose: args.verbose,
-    watch: args.nonPersistent != null,
+    watch: !args.nonPersistent,
   });
 }
 
