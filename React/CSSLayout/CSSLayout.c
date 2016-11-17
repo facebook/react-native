@@ -180,7 +180,7 @@ static inline float computedEdgeValue(const float edges[CSSEdgeCount],
   return defaultValue;
 }
 
-static int32_t gNodeInstanceCount = 0;
+int32_t gNodeInstanceCount = 0;
 
 CSSNodeRef CSSNodeNew(void) {
   const CSSNodeRef node = gCSSCalloc(1, sizeof(CSSNode));
