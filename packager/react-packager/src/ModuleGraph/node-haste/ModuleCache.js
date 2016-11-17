@@ -15,16 +15,19 @@ const Module = require('./Module');
 const Package = require('./Package');
 
 import type {PackageData, TransformedFile} from '../types.flow';
+import type {FastFS} from './node-haste.flow';
 
 type GetFn<T> = (path: string) => Promise<T>;
 
 module.exports = class ModuleCache {
+  fastfs: FastFS;
   getPackageData: GetFn<PackageData>;
   getTransformedFile: GetFn<TransformedFile>;
   modules: Map<string, Module>;
   packages: Map<string, Package>;
 
-  constructor(getTransformedFile: GetFn<TransformedFile>) {
+  constructor(fastfs: FastFS, getTransformedFile: GetFn<TransformedFile>) {
+    this.fastfs = fastfs;
     this.getTransformedFile = getTransformedFile;
     this.getPackageData = path => getTransformedFile(path).then(
       f => f.package || Promise.reject(new Error(`"${path}" does not exist`))
@@ -40,7 +43,7 @@ module.exports = class ModuleCache {
   getModule(path: string) {
     let m = this.modules.get(path);
     if (!m) {
-      m = new Module(path, this.getTransformedFile(path));
+      m = new Module(path, this, this.getTransformedFile(path));
       this.modules.set(path, m);
     }
     return m;
@@ -53,5 +56,10 @@ module.exports = class ModuleCache {
       this.packages.set(path, p);
     }
     return p;
+  }
+
+  getPackageOf(filePath: string) {
+    const candidate = this.fastfs.closest(filePath, 'package.json');
+    return candidate != null ? this.getPackage(candidate) : null;
   }
 };

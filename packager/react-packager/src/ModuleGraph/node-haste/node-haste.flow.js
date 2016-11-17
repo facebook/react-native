@@ -24,14 +24,17 @@ export type Module = {
   path: Path,
   type: 'Module',
   getName(): Promise<ModuleID>,
+  getPackage(): ?Package,
   isHaste(): Promise<boolean>,
 };
 
 export type Package = {
-  type: 'Package',
+  path: Path,
   root: Path,
+  type: 'Package',
   getMain(): Promise<Path>,
   getName(): Promise<ModuleID>,
+  isHaste(): Promise<boolean>,
   redirectRequire(id: ModuleID): Promise<Path | false>,
 };
 
@@ -40,10 +43,12 @@ export interface ModuleCache {
   getAssetModule(path: Path): Module,
   getModule(path: Path): Module,
   getPackage(path: Path): Package,
+  getPackageOf(path: Path): ?Package,
 }
 
 export type FastFS = {
   dirExists(path: Path): boolean,
+  closest(path: string, fileName: string): ?string,
   fileExists(path: Path): boolean,
   getAllFiles(): Array<Path>,
   matches(directory: Path, pattern: RegExp): Array<Path>,
@@ -63,17 +68,19 @@ declare class DeprecatedAssetMap {
 export type DeprecatedAssetMapT = DeprecatedAssetMap;
 
 type HasteMapOptions = {|
+  allowRelativePaths: boolean,
   extensions: Extensions,
   fastfs: FastFS,
-  moduleCache: ModuleCache,
-  preferNativePlatform: true,
   helpers: DependencyGraphHelpers,
+  moduleCache: ModuleCache,
   platforms: Platforms,
+  preferNativePlatform: true,
 |};
 
 declare class HasteMap {
   // node-haste/DependencyGraph/HasteMap.js
   constructor(options: HasteMapOptions): void,
+  build(): Promise<Object>,
 }
 export type HasteMapT = HasteMap;
 
