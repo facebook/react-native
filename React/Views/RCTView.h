@@ -86,4 +86,9 @@
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+/**
+ *  stop responder chain if set true
+ */
+@property (nonatomic, assign) BOOL stopPropagation;
+
 @end

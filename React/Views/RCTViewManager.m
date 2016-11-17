@@ -101,6 +101,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(stopPropagation, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, UIView)
 {
   view.rct_removesClippedSubviews = [RCTConvert BOOL:json] ;
