@@ -126,26 +126,6 @@ If you identified a JS problem, look for clues in the specific JS that you're ex
 
 This doesn't seem right. Why is it being called so often? Are they actually different events? The answers to these questions will probably depend on your product code. And many times, you'll want to look into [shouldComponentUpdate](https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate).
 
-You can use `react-addons-perf` to have a first insight on wich components are the bottleneck.
-
-```js
-import Perf from 'react-addons-perf';
-
-....
-    componentDidMount() {
-        console.log('start perf tracking');
-        Perf.start();
-        setTimeout(() => {
-            console.log('stop perf tracking');
-            Perf.stop();
-            Perf.printInclusive();
-        }, 10000);
-   }
-...
-```
-
-Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on in the javascript thread.
-
 > **TODO**: Add more tools for profiling JS
 
 ## Native UI Issues
