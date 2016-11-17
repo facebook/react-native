@@ -11,20 +11,25 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
-import android.content.Context;
+import java.lang.reflect.Field;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.OverScroller;
 import android.widget.ScrollView;
 
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.facebook.react.views.view.ReactClippingViewGroup;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
 
 /**
@@ -36,7 +41,11 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
 
+  private static Field sScrollerField;
+  private static boolean sTriedToGetScrollerField = false;
+
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+  private final OverScroller mScroller;
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -45,15 +54,58 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
+  private @Nullable FpsListener mFpsListener = null;
+  private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
 
-  public ReactScrollView(Context context) {
+  public ReactScrollView(ReactContext context) {
+    this(context, null);
+  }
+
+  public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
+    mFpsListener = fpsListener;
+
+    if (!sTriedToGetScrollerField) {
+      sTriedToGetScrollerField = true;
+      try {
+        sScrollerField = ScrollView.class.getDeclaredField("mScroller");
+        sScrollerField.setAccessible(true);
+      } catch (NoSuchFieldException e) {
+        Log.w(
+          ReactConstants.TAG,
+          "Failed to get mScroller field for ScrollView! " +
+            "This app will exhibit the bounce-back scrolling bug :(");
+      }
+    }
+
+    if (sScrollerField != null) {
+      try {
+        Object scroller = sScrollerField.get(this);
+        if (scroller instanceof OverScroller) {
+          mScroller = (OverScroller) scroller;
+        } else {
+          Log.w(
+            ReactConstants.TAG,
+            "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
+              "This app will exhibit the bounce-back scrolling bug :(");
+          mScroller = null;
+        }
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
+      }
+    } else {
+      mScroller = null;
+    }
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
     mSendMomentumEvents = sendMomentumEvents;
+  }
+
+  public void setScrollPerfTag(String scrollPerfTag) {
+    mScrollPerfTag = scrollPerfTag;
   }
 
   public void setScrollEnabled(boolean scrollEnabled) {
@@ -118,6 +170,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
+      enableFpsListener();
       return true;
     }
 
@@ -134,6 +187,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
+      disableFpsListener();
     }
     return super.onTouchEvent(ev);
   }
@@ -174,15 +228,46 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
-    super.fling(velocityY);
-    if (mSendMomentumEvents) {
+    if (mScroller != null) {
+      // FB SCROLLVIEW CHANGE
+
+      // We provide our own version of fling that uses a different call to the standard OverScroller
+      // which takes into account the possibility of adding new content while the ScrollView is
+      // animating. Because we give essentially no max Y for the fling, the fling will continue as long
+      // as there is content. See #onOverScrolled() to see the second part of this change which properly
+      // aborts the scroller animation when we get to the bottom of the ScrollView content.
+
+      int scrollWindowHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+
+      mScroller.fling(
+        getScrollX(),
+        getScrollY(),
+        0,
+        velocityY,
+        0,
+        0,
+        0,
+        Integer.MAX_VALUE,
+        0,
+        scrollWindowHeight / 2);
+
+      postInvalidateOnAnimation();
+
+      // END FB SCROLLVIEW CHANGE
+    } else {
+      super.fling(velocityY);
+    }
+
+    if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
+      enableFpsListener();
       ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
       Runnable r = new Runnable() {
         @Override
         public void run() {
           if (mDoneFlinging) {
             mFlinging = false;
+            disableFpsListener();
             ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
           } else {
             mDoneFlinging = true;
@@ -192,6 +277,26 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       };
       postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
     }
+  }
+
+  private void enableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.enable(mScrollPerfTag);
+    }
+  }
+
+  private void disableFpsListener() {
+    if (isScrollPerfLoggingEnabled()) {
+      Assertions.assertNotNull(mFpsListener);
+      Assertions.assertNotNull(mScrollPerfTag);
+      mFpsListener.disable(mScrollPerfTag);
+    }
+  }
+
+  private boolean isScrollPerfLoggingEnabled() {
+    return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
   }
 
   @Override
@@ -211,5 +316,29 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       mEndFillColor = color;
       mEndBackground = new ColorDrawable(mEndFillColor);
     }
+  }
+
+  @Override
+  protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+    if (mScroller != null) {
+      // FB SCROLLVIEW CHANGE
+
+      // This is part two of the reimplementation of fling to fix the bounce-back bug. See #fling() for
+      // more information.
+
+      if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
+        int scrollRange = Math.max(
+          0,
+          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
+        if (scrollY >= scrollRange) {
+          mScroller.abortAnimation();
+          scrollY = scrollRange;
+        }
+      }
+
+      // END FB SCROLLVIEW CHANGE
+    }
+
+    super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
   }
 }

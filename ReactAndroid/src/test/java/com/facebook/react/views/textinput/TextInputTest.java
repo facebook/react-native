@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -90,6 +91,7 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addMeasuredRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";
@@ -123,6 +125,7 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addMeasuredRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";
@@ -183,7 +186,7 @@ public class TextInputTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
-        new UIImplementation(reactContext, viewManagers));
+        new UIImplementationProvider());
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

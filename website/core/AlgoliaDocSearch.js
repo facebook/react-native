@@ -13,7 +13,7 @@ var AlgoliaDocSearch = React.createClass({
   render: function() {
     return (
       <div className="algolia-search-wrapper">
-        <input id="algolia-doc-search" type="text" placeholder="Search docs..." />
+        <input id="algolia-doc-search" tabIndex="0" type="text" placeholder="Search docs..." />
       </div>
     );
   }

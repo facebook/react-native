@@ -19,7 +19,7 @@ function traverseOwnerTreeUp(hierarchy, instance) {
   }
 }
 
-function findInstanceByNativeTag(rootTag, nativeTag) {
+function findInstanceByNativeTag(nativeTag) {
   return ReactNativeComponentTree.getInstanceFromNode(nativeTag);
 }
 
@@ -29,4 +29,14 @@ function getOwnerHierarchy(instance) {
   return hierarchy;
 }
 
-module.exports = {findInstanceByNativeTag, getOwnerHierarchy};
+function lastNotNativeInstance(hierarchy) {
+  for (let i = hierarchy.length - 1; i > 1; i--) {
+    const instance = hierarchy[i];
+    if (!instance.viewConfig) {
+      return instance;
+    }
+  }
+  return hierarchy[0];
+}
+
+module.exports = {findInstanceByNativeTag, getOwnerHierarchy, lastNotNativeInstance};

@@ -19,8 +19,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = "RKExceptionsManager")
 public class ExceptionsManagerModule extends BaseJavaModule {
 
   static private final Pattern mJsModuleIdPattern = Pattern.compile("(?:^|[/\\\\])(\\d+\\.js)$");
@@ -80,7 +83,11 @@ public class ExceptionsManagerModule extends BaseJavaModule {
 
   @ReactMethod
   public void reportSoftException(String title, ReadableArray details, int exceptionId) {
-    FLog.e(ReactConstants.TAG, stackTraceToString(title, details));
+    if (mDevSupportManager.getDevSupportEnabled()) {
+      mDevSupportManager.showNewJSError(title, details, exceptionId);
+    } else {
+      FLog.e(ReactConstants.TAG, stackTraceToString(title, details));
+    }
   }
 
   private void showOrThrowError(String title, ReadableArray details, int exceptionId) {

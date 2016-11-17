@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ActivityIndicatorIOS = require('ActivityIndicatorIOS');
+var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -52,16 +52,25 @@ const NavigationType = keyMirror({
 const JSNavigationScheme = 'react-js-navigation';
 
 type ErrorEvent = {
-  domain: any;
-  code: any;
-  description: any;
+  domain: any,
+  code: any,
+  description: any,
 }
 
 type Event = Object;
 
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
 var defaultRenderLoading = () => (
   <View style={styles.loadingView}>
-    <ActivityIndicatorIOS />
+    <ActivityIndicator />
   </View>
 );
 var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
@@ -82,15 +91,32 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 );
 
 /**
- * Renders a native WebView.
+ * `WebView` renders web content in a native view.
+ *
+ *```
+ * import React, { Component } from 'react';
+ * import { WebView } from 'react-native';
+ *
+ * class MyWeb extends Component {
+ *   render() {
+ *     return (
+ *       <WebView
+ *         source={{uri: 'https://github.com/facebook/react-native'}}
+ *         style={{marginTop: 20}}
+ *       />
+ *     );
+ *   }
+ * }
+ *```
+ *
+ * You can use this component to navigate back and forth in the web view's
+ * history and configure various properties for the web content.
  */
-var WebView = React.createClass({
-  statics: {
-    JSNavigationScheme: JSNavigationScheme,
-    NavigationType: NavigationType,
-  },
+class WebView extends React.Component {
+  static JSNavigationScheme = JSNavigationScheme;
+  static NavigationType = NavigationType;
 
-  propTypes: {
+  static propTypes = {
     ...View.propTypes,
 
     html: deprecatedPropType(
@@ -109,7 +135,7 @@ var WebView = React.createClass({
     source: PropTypes.oneOfType([
       PropTypes.shape({
         /*
-         * The URI to load in the WebView. Can be a local or remote file.
+         * The URI to load in the `WebView`. Can be a local or remote file.
          */
         uri: PropTypes.string,
         /*
@@ -155,108 +181,174 @@ var WebView = React.createClass({
      */
     renderLoading: PropTypes.func,
     /**
-     * Invoked when load finish
+     * Function that is invoked when the `WebView` has finished loading.
      */
     onLoad: PropTypes.func,
     /**
-     * Invoked when load either succeeds or fails
+     * Function that is invoked when the `WebView` load succeeds or fails.
      */
     onLoadEnd: PropTypes.func,
     /**
-     * Invoked on load start
+     * Function that is invoked when the `WebView` starts loading.
      */
     onLoadStart: PropTypes.func,
     /**
-     * Invoked when load fails
+     * Function that is invoked when the `WebView` load fails.
      */
     onError: PropTypes.func,
     /**
+     * Boolean value that determines whether the web view bounces
+     * when it reaches the edge of the content. The default value is `true`.
      * @platform ios
      */
     bounces: PropTypes.bool,
     /**
      * A floating-point number that determines how quickly the scroll view
-     * decelerates after the user lifts their finger. You may also use string
-     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
-     * for `UIScrollViewDecelerationRateNormal` and
-     * `UIScrollViewDecelerationRateFast` respectively.
+     * decelerates after the user lifts their finger. You may also use the
+     * string shortcuts `"normal"` and `"fast"` which match the underlying iOS
+     * settings for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively:
+     *
      *   - normal: 0.998
-     *   - fast: 0.99 (the default for iOS WebView)
+     *   - fast: 0.99 (the default for iOS web view)
      * @platform ios
      */
     decelerationRate: ScrollView.propTypes.decelerationRate,
     /**
+     * Boolean value that determines whether scrolling is enabled in the
+     * `WebView`. The default value is `true`.
      * @platform ios
      */
     scrollEnabled: PropTypes.bool,
+    /**
+     * Controls whether to adjust the content inset for web views that are
+     * placed behind a navigation bar, tab bar, or toolbar. The default value
+     * is `true`.
+     */
     automaticallyAdjustContentInsets: PropTypes.bool,
+    /**
+     * The amount by which the web view content is inset from the edges of
+     * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+     */
     contentInset: EdgeInsetsPropType,
+    /**
+     * Function that is invoked when the `WebView` loading starts or ends.
+     */
     onNavigationStateChange: PropTypes.func,
-    startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
+    /**
+     * A function that is invoked when the webview calls `window.postMessage`.
+     * Setting this property will inject a `postMessage` global into your
+     * webview, but will still call pre-existing values of `postMessage`.
+     *
+     * `window.postMessage` accepts one argument, `data`, which will be
+     * available on the event object, `event.nativeEvent.data`. `data`
+     * must be a string.
+     */
+    onMessage: PropTypes.func,
+    /**
+     * Boolean value that forces the `WebView` to show the loading view
+     * on the first load.
+     */
+    startInLoadingState: PropTypes.bool,
+    /**
+     * The style to apply to the `WebView`.
+     */
     style: View.propTypes.style,
 
     /**
-     * Used on Android only, JS is enabled by default for WebView on iOS
+     * Determines the types of data converted to clickable URLs in the web view’s content.
+     * By default only phone numbers are detected.
+     *
+     * You can provide one type or an array of many types.
+     *
+     * Possible values for `dataDetectorTypes` are:
+     *
+     * - `'phoneNumber'`
+     * - `'link'`
+     * - `'address'`
+     * - `'calendarEvent'`
+     * - `'none'`
+     * - `'all'`
+     *
+     * @platform ios
+     */
+    dataDetectorTypes: PropTypes.oneOfType([
+      PropTypes.oneOf(DataDetectorTypes),
+      PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+    ]),
+
+    /**
+     * Boolean value to enable JavaScript in the `WebView`. Used on Android only
+     * as JavaScript is enabled by default on iOS. The default value is `true`.
      * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
 
     /**
-     * Used on Android only, controls whether DOM Storage is enabled or not
+     * Boolean value to control whether DOM Storage is enabled. Used only in
+     * Android.
      * @platform android
      */
     domStorageEnabled: PropTypes.bool,
 
     /**
-     * Sets the JS to be injected when the webpage loads.
+     * Set this to provide JavaScript that will be injected into the web page
+     * when the view loads.
      */
     injectedJavaScript: PropTypes.string,
 
     /**
-     * Sets whether the webpage scales to fit the view and the user can change the scale.
+     * Sets the user-agent for the `WebView`.
+     * @platform android
+     */
+    userAgent: PropTypes.string,
+
+    /**
+     * Boolean that controls whether the web content is scaled to fit
+     * the view and enables the user to change the scale. The default value
+     * is `true`.
      */
     scalesPageToFit: PropTypes.bool,
 
     /**
-     * Allows custom handling of any webview requests by a JS handler. Return true
-     * or false from this method to continue loading the request.
+     * Function that allows custom handling of any web view requests. Return
+     * `true` from the function to continue loading the request and `false`
+     * to stop loading.
      * @platform ios
      */
     onShouldStartLoadWithRequest: PropTypes.func,
 
     /**
-     * Determines whether HTML5 videos play inline or use the native full-screen
-     * controller.
-     * default value `false`
-     * **NOTE** : "In order for video to play inline, not only does this
-     * property need to be set to true, but the video element in the HTML
-     * document must also include the webkit-playsinline attribute."
+     * Boolean that determines whether HTML5 videos play inline or use the
+     * native full-screen controller. The default value is `false`.
+     *
+     * **NOTE** : In order for video to play inline, not only does this
+     * property need to be set to `true`, but the video element in the HTML
+     * document must also include the `webkit-playsinline` attribute.
      * @platform ios
      */
     allowsInlineMediaPlayback: PropTypes.bool,
 
     /**
-     * Determines whether HTML5 audio & videos require the user to tap before they can
-     * start playing. The default value is `false`.
+     * Boolean that determines whether HTML5 audio and video requires the user
+     * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
-  },
+  };
 
-  getInitialState: function() {
-    return {
-      viewState: WebViewState.IDLE,
-      lastErrorEvent: (null: ?ErrorEvent),
-      startInLoadingState: true,
-    };
-  },
+  state = {
+    viewState: WebViewState.IDLE,
+    lastErrorEvent: (null: ?ErrorEvent),
+    startInLoadingState: true,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var otherView = null;
 
     if (this.state.viewState === WebViewState.LOADING) {
@@ -300,6 +392,8 @@ var WebView = React.createClass({
       source.uri = this.props.url;
     }
 
+    const messagingEnabled = typeof this.props.onMessage === 'function';
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -315,10 +409,13 @@ var WebView = React.createClass({
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        messagingEnabled={messagingEnabled}
+        onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        dataDetectorTypes={this.props.dataDetectorTypes}
       />;
 
     return (
@@ -327,73 +424,95 @@ var WebView = React.createClass({
         {otherView}
       </View>
     );
-  },
+  }
 
   /**
-   * Go forward one page in the webview's history.
+   * Go forward one page in the web view's history.
    */
-  goForward: function() {
+  goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goForward,
       null
     );
-  },
+  };
 
   /**
-   * Go back one page in the webview's history.
+   * Go back one page in the web view's history.
    */
-  goBack: function() {
+  goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goBack,
       null
     );
-  },
+  };
 
   /**
    * Reloads the current page.
    */
-  reload: function() {
+  reload = () => {
+    this.setState({viewState: WebViewState.LOADING});
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
       null
     );
-  },
+  };
 
-  stopLoading: function() {
+  /**
+   * Stop loading the current page.
+   */
+  stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.stopLoading,
       null
     );
-  },
+  };
+
+  /**
+   * Posts a message to the web view, which will emit a `message` event.
+   * Accepts one argument, `data`, which must be a string.
+   *
+   * In your webview, you'll need to something like the following.
+   *
+   * ```js
+   * document.addEventListener('message', e => { document.title = e.data; });
+   * ```
+   */
+  postMessage = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.postMessage,
+      [String(data)]
+    );
+  };
 
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  _updateNavigationState: function(event: Event) {
+  _updateNavigationState = (event: Event) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
-  },
+  };
 
   /**
-   * Returns the native webview node.
+   * Returns the native `WebView` node.
    */
-  getWebViewHandle: function(): any {
+  getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
-  },
+  };
 
-  _onLoadingStart: function(event: Event) {
+  _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this._updateNavigationState(event);
-  },
+  };
 
-  _onLoadingError: function(event: Event) {
+  _onLoadingError = (event: Event) => {
     event.persist(); // persist this event because we need to store it
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -404,9 +523,9 @@ var WebView = React.createClass({
       lastErrorEvent: event.nativeEvent,
       viewState: WebViewState.ERROR
     });
-  },
+  };
 
-  _onLoadingFinish: function(event: Event) {
+  _onLoadingFinish = (event: Event) => {
     var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
@@ -414,14 +533,21 @@ var WebView = React.createClass({
       viewState: WebViewState.IDLE,
     });
     this._updateNavigationState(event);
-  },
-});
+  };
+
+  _onMessage = (event: Event) => {
+    var {onMessage} = this.props;
+    onMessage && onMessage(event);
+  }
+}
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
   nativeOnly: {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onMessage: true,
+    messagingEnabled: PropTypes.bool,
   },
 });
 

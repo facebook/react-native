@@ -15,7 +15,6 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -27,13 +26,63 @@ const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+/**
+ * State of an annotation on the map.
+ */
 export type AnnotationDragState = $Enum<{
-  idle: string;
-  starting: string;
-  dragging: string;
-  canceling: string;
-  ending: string;
+  /**
+   * Annotation is not being touched.
+   */
+  idle: string,
+  /**
+   * Annotation dragging has began.
+   */
+  starting: string,
+  /**
+   * Annotation is being dragged.
+   */
+  dragging: string,
+  /**
+   * Annotation dragging is being canceled.
+   */
+  canceling: string,
+  /**
+   * Annotation dragging has ended.
+   */
+  ending: string,
 }>;
+
+/**
+ * **IMPORTANT: This component is now DEPRECATED and will be removed
+ * in January 2017 (React Native version 0.42). This component only supports
+ * iOS.**
+ *
+ * **Please use
+ * [react-native-maps](https://github.com/airbnb/react-native-maps) by Airbnb
+ * instead of this component.** Our friends at Airbnb have done an amazing job
+ * building a cross-platform `MapView` component that is more feature
+ * complete. It is used extensively (over 9k installs / month).
+ *
+ * `MapView` is used to display embeddable maps and annotations using
+ * `MKMapView`.
+ *
+ * ```
+ * import React, { Component } from 'react';
+ * import { MapView } from 'react-native';
+ *
+ * class MapMyRide extends Component {
+ *   render() {
+ *     return (
+ *       <MapView
+ *         style={{height: 200, margin: 40}}
+ *         showsUserLocation={true}
+ *       />
+ *     );
+ *   }
+ * }
+ * ```
+ *
+ */
 
 const MapView = React.createClass({
 
@@ -42,8 +91,7 @@ const MapView = React.createClass({
   propTypes: {
     ...View.propTypes,
     /**
-     * Used to style and layout the `MapView`.  See `StyleSheet.js` and
-     * `ViewStylePropTypes.js` for more info.
+     * Used to style and layout the `MapView`.
      */
     style: View.propTypes.style,
 
@@ -51,7 +99,7 @@ const MapView = React.createClass({
      * If `true` the app will ask for the user's location and display it on
      * the map. Default value is `false`.
      *
-     * **NOTE**: on iOS, you need to add the `NSLocationWhenInUseUsageDescription`
+     * **NOTE**: You'll need to add the `NSLocationWhenInUseUsageDescription`
      * key in Info.plist to enable geolocation, otherwise it will fail silently.
      */
     showsUserLocation: React.PropTypes.bool,
@@ -60,21 +108,18 @@ const MapView = React.createClass({
      * If `true` the map will follow the user's location whenever it changes.
      * Note that this has no effect unless `showsUserLocation` is enabled.
      * Default value is `true`.
-     * @platform ios
      */
     followUserLocation: React.PropTypes.bool,
 
     /**
      * If `false` points of interest won't be displayed on the map.
      * Default value is `true`.
-     * @platform ios
      */
     showsPointsOfInterest: React.PropTypes.bool,
 
     /**
-     * If `false` compass won't be displayed on the map.
+     * If `false`, compass won't be displayed on the map.
      * Default value is `true`.
-     * @platform ios
      */
     showsCompass: React.PropTypes.bool,
 
@@ -86,17 +131,21 @@ const MapView = React.createClass({
 
     /**
      * When this property is set to `true` and a valid camera is associated with
-     * the map, the camera’s heading angle is used to rotate the plane of the
-     * map around its center point. When this property is set to `false`, the
-     * camera’s heading angle is ignored and the map is always oriented so
+     * the map, the camera's heading angle is used to rotate the plane of the
+     * map around its center point.
+     *
+     * When this property is set to `false`, the
+     * camera's heading angle is ignored and the map is always oriented so
      * that true north is situated at the top of the map view
      */
     rotateEnabled: React.PropTypes.bool,
 
     /**
      * When this property is set to `true` and a valid camera is associated
-     * with the map, the camera’s pitch angle is used to tilt the plane
-     * of the map. When this property is set to `false`, the camera’s pitch
+     * with the map, the camera's pitch angle is used to tilt the plane
+     * of the map.
+     *
+     * When this property is set to `false`, the camera's pitch
      * angle is ignored and the map is always displayed as if the user
      * is looking straight down onto it.
      */
@@ -111,11 +160,9 @@ const MapView = React.createClass({
     /**
      * The map type to be displayed.
      *
-     * - standard: standard road map (default)
-     * - satellite: satellite view
-     * - hybrid: satellite view with roads and points of interest overlaid
-     *
-     * @platform ios
+     * - `standard`: Standard road map (default).
+     * - `satellite`: Satellite view.
+     * - `hybrid`: Satellite view with roads and points of interest overlaid.
      */
     mapType: React.PropTypes.oneOf([
       'standard',
@@ -145,8 +192,7 @@ const MapView = React.createClass({
     }),
 
     /**
-     * Map annotations with title/subtitle.
-     * @platform ios
+     * Map annotations with title and subtitle.
      */
     annotations: React.PropTypes.arrayOf(React.PropTypes.shape({
       /**
@@ -183,7 +229,7 @@ const MapView = React.createClass({
       onBlur: React.PropTypes.func,
 
       /**
-       * Annotation title/subtile.
+       * Annotation title and subtile.
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
@@ -244,7 +290,6 @@ const MapView = React.createClass({
 
     /**
      * Map overlays
-     * @platform ios
      */
     overlays: React.PropTypes.arrayOf(React.PropTypes.shape({
       /**
@@ -269,21 +314,17 @@ const MapView = React.createClass({
     })),
 
     /**
-     * Maximum size of area that can be displayed.
-     * @platform ios
+     * Maximum size of the area that can be displayed.
      */
     maxDelta: React.PropTypes.number,
 
     /**
-     * Minimum size of area that can be displayed.
-     * @platform ios
+     * Minimum size of the area that can be displayed.
      */
     minDelta: React.PropTypes.number,
 
     /**
      * Insets for the map's legal label, originally at bottom left of the map.
-     * See `EdgeInsetsPropType.js` for more information.
-     * @platform ios
      */
     legalLabelInsets: EdgeInsetsPropType,
 
@@ -298,7 +339,7 @@ const MapView = React.createClass({
     onRegionChangeComplete: React.PropTypes.func,
 
     /**
-     * Deprecated. Use annotation onFocus and onBlur instead.
+     * Deprecated. Use annotation `onFocus` and `onBlur` instead.
      */
     onAnnotationPress: React.PropTypes.func,
 
@@ -374,7 +415,7 @@ const MapView = React.createClass({
         }));
       }
 
-      let result = {
+      const result = {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),
         image,
@@ -392,8 +433,8 @@ const MapView = React.createClass({
       return result;
     });
     overlays = overlays && overlays.map((overlay: Object) => {
-      let {id, fillColor, strokeColor} = overlay;
-      let result = {
+      const {id, fillColor, strokeColor} = overlay;
+      const result = {
         ...overlay,
         strokeColor: strokeColor && processColor(strokeColor),
         fillColor: fillColor && processColor(fillColor),
@@ -437,9 +478,6 @@ const MapView = React.createClass({
       onAnnotationDragStateChange = (event: Event) => {
         const annotation = findByAnnotationId(event.nativeEvent.annotationId);
         if (annotation) {
-          // Update location
-          annotation.latitude = event.nativeEvent.latitude;
-          annotation.longitude = event.nativeEvent.longitude;
           // Call callback
           annotation.onDragStateChange &&
             annotation.onDragStateChange(event.nativeEvent);

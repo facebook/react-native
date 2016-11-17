@@ -40,9 +40,7 @@ const NavigationPagerStyleInterpolator = require('NavigationPagerStyleInterpolat
 const NavigationPointerEventsContainer = require('NavigationPointerEventsContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
-const View = require('View');
 
 import type  {
   NavigationPanPanHandlers,
@@ -50,13 +48,9 @@ import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
-type SceneViewProps =  {
-  sceneRenderer: NavigationSceneRenderer,
-  sceneRendererProps: NavigationSceneRendererProps,
-};
-
 type Props = NavigationSceneRendererProps & {
   onComponentRef: (ref: any) => void,
+  onNavigateBack: ?Function,
   panHandlers: ?NavigationPanPanHandlers,
   pointerEvents: string,
   renderScene: NavigationSceneRenderer,
@@ -65,26 +59,6 @@ type Props = NavigationSceneRendererProps & {
 
 const {PropTypes} = React;
 
-class SceneView extends React.Component<any, SceneViewProps, any> {
-
-  static propTypes = {
-    sceneRenderer: PropTypes.func.isRequired,
-    sceneRendererProps:
-      PropTypes.shape(NavigationPropTypes.SceneRenderer).isRequired,
-  };
-
-  shouldComponentUpdate(nextProps: SceneViewProps, nextState: any): boolean {
-    return (
-      nextProps.sceneRendererProps.scene.navigationState !==
-        this.props.sceneRendererProps.scene.navigationState
-    );
-  }
-
-  render(): ?ReactElement {
-    return this.props.sceneRenderer(this.props.sceneRendererProps);
-  }
-}
-
 /**
  * Component that renders the scene as card for the <NavigationCardStack />.
  */
@@ -92,29 +66,22 @@ class NavigationCard extends React.Component<any, Props, any> {
   props: Props;
 
   static propTypes = {
-    ...NavigationPropTypes.SceneRenderer,
+    ...NavigationPropTypes.SceneRendererProps,
     onComponentRef: PropTypes.func.isRequired,
+    onNavigateBack: PropTypes.func,
     panHandlers: NavigationPropTypes.panHandlers,
     pointerEvents: PropTypes.string.isRequired,
     renderScene: PropTypes.func.isRequired,
     style: PropTypes.any,
   };
 
-  shouldComponentUpdate(nextProps: Props, nextState: any): boolean {
-    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
-      this,
-      nextProps,
-      nextState
-    );
-  }
-
-  render(): ReactElement {
+  render(): React.Element<any> {
     const {
       panHandlers,
       pointerEvents,
       renderScene,
       style,
-      ...props, /* NavigationSceneRendererProps */
+      ...props /* NavigationSceneRendererProps */
     } = this.props;
 
     const viewStyle = style === undefined ?
@@ -122,7 +89,10 @@ class NavigationCard extends React.Component<any, Props, any> {
       style;
 
     const viewPanHandlers = panHandlers === undefined ?
-      NavigationCardStackPanResponder.forHorizontal(props) :
+      NavigationCardStackPanResponder.forHorizontal({
+        ...props,
+        onNavigateBack: this.props.onNavigateBack,
+      }) :
       panHandlers;
 
     return (
@@ -131,18 +101,10 @@ class NavigationCard extends React.Component<any, Props, any> {
         pointerEvents={pointerEvents}
         ref={this.props.onComponentRef}
         style={[styles.main, viewStyle]}>
-        <SceneView
-          sceneRenderer={renderScene}
-          sceneRendererProps={props}
-        />
+        {renderScene(props)}
       </Animated.View>
     );
   }
-
-  static CardStackPanResponder = NavigationCardStackPanResponder;
-  static CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
-  static PagerPanResponder = NavigationPagerPanResponder;
-  static PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 }
 
 const styles = StyleSheet.create({
@@ -161,5 +123,10 @@ const styles = StyleSheet.create({
 });
 
 NavigationCard = NavigationPointerEventsContainer.create(NavigationCard);
+
+NavigationCard.CardStackPanResponder = NavigationCardStackPanResponder;
+NavigationCard.CardStackStyleInterpolator = NavigationCardStackStyleInterpolator;
+NavigationCard.PagerPanResponder = NavigationPagerPanResponder;
+NavigationCard.PagerStyleInterpolator = NavigationPagerStyleInterpolator;
 
 module.exports = NavigationCard;

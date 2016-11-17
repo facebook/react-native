@@ -13,11 +13,13 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+#if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
   @"default": @(UIStatusBarStyleDefault),
   @"light-content": @(UIStatusBarStyleLightContent),
+  @"dark-content": @(UIStatusBarStyleDefault),
 }), UIStatusBarStyleDefault, integerValue);
 
 RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
@@ -27,6 +29,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 }), UIStatusBarAnimationNone, integerValue);
 
 @end
+#endif
 
 @implementation RCTStatusBarManager
 
@@ -44,28 +47,22 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (instancetype)init
+- (NSArray<NSString *> *)supportedEvents
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+  return @[@"statusBarFrameDidChange",
+           @"statusBarFrameWillChange"];
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+#if !TARGET_OS_TV
+
+- (void)startObserving
 {
-  _bridge = bridge;
-
-  // TODO: if we add an explicit "startObserving" method, we can take this out
-  // of the application startup path
-
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
   [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -86,7 +83,7 @@ RCT_EXPORT_MODULE()
       @"height": @(frame.size.height),
     },
   };
-  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+  [self sendEventWithName:eventName body:event];
 }
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
@@ -134,5 +131,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
+
+#endif //TARGET_OS_TV
 
 @end

@@ -32,7 +32,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 @end
 
-@implementation RCTTabBarItem
+@implementation RCTTabBarItem{
+  UITapGestureRecognizer *_selectRecognizer;
+}
 
 @synthesize barItem = _barItem;
 
@@ -84,11 +86,22 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _barItem.selectedImage = oldItem.selectedImage;
     _barItem.badgeValue = oldItem.badgeValue;
   }
-  
+
   if (_renderAsOriginal) {
     self.barItem.image = [_icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   } else {
     self.barItem.image = _icon;
+  }
+}
+
+- (void)setSelectedIcon:(UIImage *)selectedIcon
+{
+  _selectedIcon = selectedIcon;
+
+  if (_renderAsOriginal) {
+    self.barItem.selectedImage = [_selectedIcon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  } else {
+    self.barItem.selectedImage = _selectedIcon;
   }
 }
 

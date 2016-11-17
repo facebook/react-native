@@ -13,10 +13,8 @@ import javax.annotation.concurrent.Immutable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -28,11 +26,9 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class JavaScriptModuleRegistration {
 
   private final Class<? extends JavaScriptModule> mModuleInterface;
-  private final Map<Method, String> mMethodsToTracingNames;
 
   public JavaScriptModuleRegistration(Class<? extends JavaScriptModule> moduleInterface) {
     mModuleInterface = moduleInterface;
-    mMethodsToTracingNames = new HashMap<>();
 
     if (ReactBuildConfig.DEBUG) {
       Set<String> methodNames = new LinkedHashSet<>();
@@ -44,15 +40,6 @@ public class JavaScriptModuleRegistration {
         }
       }
     }
-  }
-
-  public String getTracingName(Method method) {
-    String name = mMethodsToTracingNames.get(method);
-    if (name == null) {
-      name = "JSCall__" + getName() + "_" + method.getName();
-      mMethodsToTracingNames.put(method, name);
-    }
-    return name;
   }
 
   public Class<? extends JavaScriptModule> getModuleInterface() {

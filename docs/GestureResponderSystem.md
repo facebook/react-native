@@ -4,7 +4,8 @@ title: Gesture Responder System
 layout: docs
 category: Guides
 permalink: docs/gesture-responder-system.html
-next: animations
+next: native-modules-ios
+previous: platform-specific-code
 ---
 
 Gesture recognition on mobile devices is much more complicated than web. A touch can go through several phases as the app determines what the user's intention is. For example, the app needs to determine if the touch is scrolling, sliding on a widget, or tapping. This can even change during the duration of a touch. There can also be multiple simultaneous touches.
@@ -54,7 +55,7 @@ If the view is responding, the following handlers can be called:
      + `pageX` - The X position of the touch, relative to the root element
      + `pageY` - The Y position of the touch, relative to the root element
      + `target` - The node id of the element receiving the touch event
-     + `timestamp` - A time identifier for the touch, useful for velocity calculation
+     + `timeStamp` - A time identifier for the touch, useful for velocity calculation
      + `touches` - Array of all current touches on the screen
 
 ### Capture ShouldSet Handlers

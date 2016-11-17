@@ -1,0 +1,45 @@
+TEST_SRCS = [
+  'CxxMessageQueueTest.cpp',
+  'jsarg_helpers.cpp',
+  'jsbigstring.cpp',
+  'jscexecutor.cpp',
+  'jsclogging.cpp',
+  'methodcall.cpp',
+  'value.cpp',
+]
+
+if THIS_IS_FBANDROID:
+  include_defs('//ReactAndroid/DEFS')
+  include_defs('//ReactAndroid/TEST_DEFS')
+
+  jni_instrumentation_test_lib(
+    name = 'tests',
+    class_under_test = 'com/facebook/react/XplatBridgeTest',
+    soname = 'libxplat-bridge.so',
+    srcs = TEST_SRCS,
+    compiler_flags = [
+      '-fexceptions',
+    ],
+    deps = [
+      '//native/third-party/android-ndk:android',
+      '//xplat/third-party/gmock:gtest',
+      react_native_xplat_target('cxxreact:bridge'),
+    ],
+    visibility = ['//instrumentation_tests/...'],
+  )
+
+if THIS_IS_FBOBJC:
+  fb_xplat_cxx_test(
+    name = 'tests',
+    srcs = TEST_SRCS,
+    compiler_flags = [
+      '-fexceptions',
+    ],
+    deps = [
+      '//xplat/folly:molly',
+      '//xplat/third-party/gmock:gtest',
+      react_native_xplat_target('cxxreact:bridge'),
+      react_native_xplat_target('jschelpers:jschelpers'),
+    ],
+    visibility = [react_native_xplat_target('cxxreact/...')],
+  )

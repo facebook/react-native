@@ -90,11 +90,13 @@ public class DialogModuleTest {
     options.putString("buttonPositive", "OK");
     options.putString("buttonNegative", "Cancel");
     options.putString("buttonNeutral", "Later");
+    options.putBoolean("cancelable", false);
 
     mDialogModule.showAlert(options, null, null);
 
     final AlertFragment fragment = getFragment();
     assertNotNull("Fragment was not displayed", fragment);
+    assertEquals(false, fragment.isCancelable());
 
     final AlertDialog dialog = (AlertDialog) fragment.getDialog();
     assertEquals("OK", dialog.getButton(DialogInterface.BUTTON_POSITIVE).getText().toString());

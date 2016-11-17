@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "UIView+React.h"
 
 /**
  * ART nodes are implemented as empty UIViews but this is just an implementation detail to fit

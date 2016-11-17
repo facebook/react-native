@@ -17,10 +17,11 @@ import android.graphics.Color;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -28,11 +29,22 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  private static final String REACT_CLASS = "RCTScrollView";
+  protected static final String REACT_CLASS = "RCTScrollView";
+
+  private @Nullable FpsListener mFpsListener = null;
+
+  public ReactScrollViewManager() {
+    this(null);
+  }
+
+  public ReactScrollViewManager(@Nullable FpsListener fpsListener) {
+    mFpsListener = fpsListener;
+  }
 
   @Override
   public String getName() {
@@ -41,7 +53,7 @@ public class ReactScrollViewManager
 
   @Override
   public ReactScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactScrollView(context);
+    return new ReactScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -70,6 +82,18 @@ public class ReactScrollViewManager
   @ReactProp(name = "sendMomentumEvents")
   public void setSendMomentumEvents(ReactScrollView view, boolean sendMomentumEvents) {
     view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
+  /**
+   * Tag used for logging scroll performance on this scroll view. Will force momentum events to be
+   * turned on (see setSendMomentumEvents).
+   *
+   * @param view
+   * @param scrollPerfTag
+   */
+  @ReactProp(name = "scrollPerfTag")
+  public void setScrollPerfTag(ReactScrollView view, String scrollPerfTag) {
+    view.setScrollPerfTag(scrollPerfTag);
   }
 
   /**

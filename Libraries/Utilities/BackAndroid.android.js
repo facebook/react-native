@@ -17,7 +17,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = $Enum<{
-  backPress: string;
+  backPress: string,
 }>;
 
 var _backPressSubscriptions = new Set();
@@ -25,11 +25,14 @@ var _backPressSubscriptions = new Set();
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   var backPressSubscriptions = new Set(_backPressSubscriptions);
   var invokeDefault = true;
-  backPressSubscriptions.forEach((subscription) => {
-    if (subscription()) {
+  var subscriptions = [...backPressSubscriptions].reverse();
+  for (var i = 0; i < subscriptions.length; ++i) {
+    if (subscriptions[i]()) {
       invokeDefault = false;
+      break;
     }
-  });
+  }
+
   if (invokeDefault) {
     BackAndroid.exitApp();
   }
@@ -38,16 +41,21 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
 /**
  * Detect hardware back button presses, and programmatically invoke the default back button
  * functionality to exit the app if there are no listeners or if none of the listeners return true.
+ * The event subscriptions are called in reverse order (i.e. last registered subscription first),
+ * and if one subscription returns true then subscriptions registered earlier will not be called.
  *
  * Example:
  *
- * ```js
+ * ```javascript
  * BackAndroid.addEventListener('hardwareBackPress', function() {
- * 	 if (!this.onMainScreen()) {
- * 	   this.goBack();
- * 	   return true;
- * 	 }
- * 	 return false;
+ *  // this.onMainScreen and this.goBack are just examples, you need to use your own implementation here
+ *  // Typically you would use the navigator here to go to the last state.
+ *
+ *  if (!this.onMainScreen()) {
+ *    this.goBack();
+ *    return true;
+ *  }
+ *  return false;
  * });
  * ```
  */

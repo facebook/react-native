@@ -48,7 +48,7 @@ public class UIViewOperationQueue {
   /**
    * A mutation or animation operation on the view hierarchy.
    */
-  protected interface UIOperation {
+  public interface UIOperation {
 
     void execute();
   }
@@ -95,7 +95,7 @@ public class UIViewOperationQueue {
   /**
    * Operation for updating native view's position and size. The operation is not created directly
    * by a {@link UIManagerModule} call from JS. Instead it gets inflated using computed position
-   * and size values by CSSNode hierarchy.
+   * and size values by CSSNodeDEPRECATED hierarchy.
    */
   private final class UpdateLayoutOperation extends ViewOperation {
 
@@ -494,6 +494,18 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class UIBlockOperation implements UIOperation {
+    private final UIBlock mBlock;
+    public UIBlockOperation (UIBlock block) {
+      mBlock = block;
+    }
+
+    @Override
+    public void execute() {
+      mBlock.execute(mNativeViewHierarchyManager);
+    }
+  }
+
   private final class SendAccessibilityEvent extends ViewOperation {
 
     private final int mEventType;
@@ -521,8 +533,8 @@ public class UIViewOperationQueue {
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
   @GuardedBy("mNonBatchedOperationsLock")
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
-
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
+  private boolean mIsDispatchUIFrameCallbackEnqueued = false;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -721,6 +733,10 @@ public class UIViewOperationQueue {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
   }
 
+  public void enqueueUIBlock(UIBlock block) {
+    mOperations.add(new UIBlockOperation(block));
+  }
+
   /* package */ void dispatchViewUpdates(final int batchId) {
     // Store the current operation queues to dispatch and create new empty ones to continue
     // receiving new operations
@@ -779,17 +795,41 @@ public class UIViewOperationQueue {
              }
            });
     }
+
+    // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
+    // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+    // sure any late-arriving UI commands are executed.
+    if (!mIsDispatchUIFrameCallbackEnqueued) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              flushPendingBatches();
+            }
+          });
+    }
   }
 
   /* package */ void resumeFrameCallback() {
+    mIsDispatchUIFrameCallbackEnqueued = true;
     ReactChoreographer.getInstance()
         .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /* package */ void pauseFrameCallback() {
-
+    mIsDispatchUIFrameCallbackEnqueued = false;
     ReactChoreographer.getInstance()
         .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    flushPendingBatches();
+  }
+
+  private void flushPendingBatches() {
+    synchronized (mDispatchRunnablesLock) {
+      for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
+        mDispatchUIRunnables.get(i).run();
+      }
+      mDispatchUIRunnables.clear();
+    }
   }
 
   /**
@@ -825,12 +865,7 @@ public class UIViewOperationQueue {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
 
-      synchronized (mDispatchRunnablesLock) {
-        for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
-          mDispatchUIRunnables.get(i).run();
-        }
-        mDispatchUIRunnables.clear();
-      }
+      flushPendingBatches();
 
       ReactChoreographer.getInstance().postFrameCallback(
         ReactChoreographer.CallbackType.DISPATCH_UI, this);

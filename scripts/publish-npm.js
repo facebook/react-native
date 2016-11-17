@@ -50,7 +50,6 @@
 require(`shelljs/global`);
 
 const buildBranch = process.env.CIRCLE_BRANCH;
-const requiredJavaVersion = `1.7`;
 
 let branchVersion;
 if (buildBranch.indexOf(`-stable`) !== -1) {
@@ -60,12 +59,17 @@ if (buildBranch.indexOf(`-stable`) !== -1) {
   exit(0);
 }
 
-// ['latest', 'v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2', 'v0.34.0', '']
-const tagsWithVersion = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
-  // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2', 'v0.34.0']
-  .filter(version => !!version && version.indexOf(`v${branchVersion}`) === 0)
+// 34c034298dc9cad5a4553964a5a324450fda0385
+const currentCommit = exec(`git rev-parse HEAD`, {silent: true}).stdout.trim();
+// [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
+const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {silent: true})
+  .stdout.split(/\s/)
+  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
+  .filter(version => !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0)
+  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
+  .filter(version => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .filter(version => version.indexOf(branchVersion) !== -1);
+  .map(version => version.slice(`refs/tags/`.length));
 
 if (tagsWithVersion.length === 0) {
   echo(`Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit`);
@@ -83,19 +87,6 @@ if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
 }
 
 // -------- Generating Android Artifacts with JavaDoc
-// Java -version outputs to stderr 0_o
-const javaVersion = exec(`java -version`).stderr;
-if (javaVersion.indexOf(requiredJavaVersion) === -1) {
-  echo(`Java version must be 1.7.x in order to generate Javadoc. Check: java -version`);
-  exit(1);
-}
-
-// Uncomment Javadoc generation
-if (sed(`-i`, `// archives androidJavadocJar`, `archives androidJavadocJar`, `ReactAndroid/release.gradle`).code) {
-  echo(`Couldn't enable Javadoc generation`);
-  exit(1);
-}
-
 if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
   echo(`Couldn't generate artifacts`);
   exit(1);

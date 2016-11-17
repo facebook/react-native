@@ -4,7 +4,8 @@ title: Building React Native from source
 layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
-next: activityindicatorios
+next: activityindicator
+previous: android-ui-performance
 ---
 
 You will need to build React Native from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
@@ -20,12 +21,24 @@ Make sure you have the following installed:
 3. Local Maven repository for Support Libraries (formerly `Android Support Repository`) >= 17 (for Android Support Library)
 4. Android NDK (download links and installation instructions below)
 
-Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK ` defined, or create a local.properties file in the root of your react-native checkout with the following contents:
+### Point Gradle to your Android SDK:
+
+**Step 1:**  Set environment variables through your local shell.
+
+Note: Files may vary based on shell flavor. See below for examples from common shells.
+
+- bash: `.bash_profile` or `.bashrc`
+- zsh: `.zprofile` or `.zshrc`
+- ksh: `.profile` or `$ENV`
+
+Example:
 
 ```
-sdk.dir=absolute_path_to_android_sdk
-ndk.dir=absolute_path_to_android_ndk
+export ANDROID_SDK=/Users/your_unix_name/android-sdk-macosx
+export ANDROID_NDK=/Users/your_unix_name/android-ndk/android-ndk-r10e
 ```
+
+**Step 2:** Create a `local.properties` file in the `android` directory of your react-native app with the following contents:
 
 Example:
 
@@ -84,7 +97,7 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
+Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
 ...
@@ -103,10 +116,10 @@ dependencies {
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
 
-Modify your `android/app/build.gradle` and replace `compile project(':react-native-custom-module')` with:
+Modify your `android/app/build.gradle`, and add:
 
 ```gradle
-compile(project(':react-native-custom-module')) {
+configurations.all {
     exclude group: 'com.facebook.react', module: 'react-native'
 }
 ```

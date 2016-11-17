@@ -13,7 +13,7 @@
 
 var Dimensions = require('Dimensions');
 var Platform = require('Platform');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var Keyboard = require('Keyboard');
 var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
@@ -104,11 +104,11 @@ var invariant = require('fbjs/lib/invariant');
 var IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
 type State = {
-    isTouching: boolean;
-    lastMomentumScrollBeginTime: number;
-    lastMomentumScrollEndTime: number;
-    observedScrollSinceBecomingResponder: boolean;
-    becameResponderWhileAnimating: boolean;
+    isTouching: boolean,
+    lastMomentumScrollBeginTime: number,
+    lastMomentumScrollEndTime: number,
+    observedScrollSinceBecomingResponder: boolean,
+    becameResponderWhileAnimating: boolean,
 };
 type Event = Object;
 
@@ -366,7 +366,7 @@ var ScrollResponderMixin = {
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollResponderScrollTo: function(
-    x?: number | { x?: number; y?: number; animated?: boolean },
+    x?: number | { x?: number, y?: number, animated?: boolean },
     y?: number,
     animated?: boolean
   ) {
@@ -397,7 +397,7 @@ var ScrollResponderMixin = {
    * @platform ios
    */
   scrollResponderZoomTo: function(
-    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    rect: { x: number, y: number, width: number, height: number, animated?: boolean },
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
     if (Platform.OS === 'android') {
@@ -476,10 +476,10 @@ var ScrollResponderMixin = {
   componentWillMount: function() {
     this.keyboardWillOpenTo = null;
     this.additionalScrollOffset = 0;
-    this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillShow', this.scrollResponderKeyboardWillShow);
-    this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
-    this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
-    this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
+    this.addListenerOn(Keyboard, 'keyboardWillShow', this.scrollResponderKeyboardWillShow);
+    this.addListenerOn(Keyboard, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
+    this.addListenerOn(Keyboard, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
+    this.addListenerOn(Keyboard, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
   },
 
   /**

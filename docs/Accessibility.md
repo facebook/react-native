@@ -4,7 +4,8 @@ title: Accessibility
 layout: docs
 category: Guides
 permalink: docs/accessibility.html
-next: direct-manipulation
+next: timers
+previous: animations
 ---
 
 ## Native App Accessibility (iOS and Android)
@@ -126,7 +127,7 @@ In the case of two overlapping UI components with the same parent, default acces
     <Text> First layout </Text>
   </View>
   <View style={{position: 'absolute', left: 10, top: 10, right: 10, height: 100,
-    backgroundColor: 'yellow'}} importantForAccessibility=”no-hide-descendant”>
+    backgroundColor: 'yellow'}} importantForAccessibility=”no-hide-descendants”>
     <Text> Second layout </Text>
   </View>
 </View>

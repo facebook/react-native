@@ -5,13 +5,14 @@ layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
 next: android-ui-performance
+previous: headless-js-android
 ---
 
 Android requires that all apps be digitally signed with a certificate before they can be installed, so to distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describes the topic in detail. This guide covers the process in brief, as well as lists the steps required to packaging the JavaScript bundle.
 
 ### Generating a signing key
 
-You can generate a private signing key using `keytool`.
+You can generate a private signing key using `keytool`. On Windows `keytool` must be run from `C:\Program Files\Java\jdkx.x.x_x\bin`.
 
     $ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
@@ -35,9 +36,11 @@ MYAPP_RELEASE_KEY_PASSWORD=*****
 
 These are going to be global gradle variables, which we can later use in our gradle config to sign our app.
 
-_Note about saving the keystore: Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords._
+> __Note about saving the keystore:__
 
-_Note about security: If you are not keen on storing your passwords in plaintext and you are running OSX, you can also [store your credentials in the Keychain Access app](https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/). Then you can skip the two last rows in `~/.gradle/gradle.properties`._ 
+> Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords.
+
+_Note about security: If you are not keen on storing your passwords in plaintext and you are running OSX, you can also [store your credentials in the Keychain Access app](https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/). Then you can skip the two last rows in `~/.gradle/gradle.properties`._
 
 
 ### Adding signing config to your app's gradle config
@@ -84,10 +87,10 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
-$ cd android && ./gradlew installRelease
+$ react-native run-android --variant=release
 ```
 
-Note that `installRelease` is only available if you've set up signing as described above.
+Note that `--variant=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 

@@ -27,12 +27,11 @@ var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
 var merge = require('merge');
-var onlyChild = require('onlyChild');
 
 type Event = Object;
 
 var DEFAULT_PROPS = {
-  activeOpacity: 0.8,
+  activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
@@ -54,13 +53,13 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *     <TouchableHighlight onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableHighlight>
  *   );
  * },
  * ```
- * > **NOTE**: TouchableHighlight supports only one child
+ * > **NOTE**: TouchableHighlight must have one child (not zero or more than one)
  * >
  * > If you wish to have several child components, wrap them in a View.
  */
@@ -227,7 +226,7 @@ var TouchableHighlight = React.createClass({
   render: function() {
     return (
       <View
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -243,7 +242,7 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
         {React.cloneElement(
-          onlyChild(this.props.children),
+          React.Children.only(this.props.children),
           {
             ref: CHILD_REF,
           }

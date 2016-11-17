@@ -57,7 +57,7 @@ try {
     }
   }
 
-  if (argv['android']) {
+  if (argv.android) {
     if (exec('./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"').code) {
       echo('Failed to compile Android binaries');
       exitCode = 1;
@@ -76,9 +76,9 @@ try {
   if (tryExecNTimes(
     () => {
       exec('sleep 10s');
-      return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
+      return exec(`react-native init EndToEndTest --version ${PACKAGE} --npm`).code;
     },
-    numberOfRetries, 
+    numberOfRetries,
     () => rm('-rf', 'EndToEndTest'))) {
       echo('Failed to execute react-native init');
       echo('Most common reason is npm registry connectivity, try again');
@@ -88,7 +88,7 @@ try {
 
   cd('EndToEndTest');
 
-  if (argv['android']) {
+  if (argv.android) {
     echo('Running an Android e2e test');
     echo('Installing e2e framework');
     if (tryExecNTimes(
@@ -122,7 +122,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('npm', ['start'], {
@@ -131,7 +131,7 @@ try {
     });
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
-    exec('sleep 5s');
+    exec('sleep 15s');
     echo('Executing android e2e test');
     if (tryExecNTimes(
       () => {
@@ -146,7 +146,7 @@ try {
     }
   }
 
-  if (argv['ios']) {
+  if (argv.ios) {
     echo('Running an iOS app');
     cd('ios');
     // Make sure we installed local version of react-native
@@ -156,7 +156,7 @@ try {
       throw Error(exitCode);
     }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'],
       {
@@ -172,7 +172,7 @@ try {
     if (tryExecNTimes(
       () => {
         exec('sleep 10s');
-        return exec('xcodebuild -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
+        return exec('xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}').code;
       },
       numberOfRetries)) {
         echo('Failed to run iOS e2e tests');
@@ -183,14 +183,14 @@ try {
     cd('..');
   }
 
-  if (argv['js']) {
+  if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build android package');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
       echo('Could not build ios package');
       exitCode = 1;
       throw Error(exitCode);
@@ -200,9 +200,14 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+    if (exec('npm test').code) {
+      echo('Jest test failure');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
-  
+
 } finally {
   cd(ROOT);
   rm(MARKER_IOS);

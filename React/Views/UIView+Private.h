@@ -9,10 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIView (RCTViewUnmounting)
+@interface UIView (Private)
 
-- (void)react_remountAllSubviews;
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
-- (UIView *)react_findClipView;
+// zIndex sorting
+- (void)clearSortedSubviews;
+
+- (CGRect)rct_activeClippingRect;
+- (UIView *)rct_nextClippingView;
+- (void)rct_updateSubviewsWithNextClippingView:(UIView *)clippingView;
+- (void)rct_clipSubviewsWithAncestralClipRect:(CGRect)clipRect;
 
 @end

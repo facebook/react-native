@@ -112,7 +112,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
   /**
    * Create and/or open the database.
    */
-  /* package */ synchronized SQLiteDatabase get() {
+  public synchronized SQLiteDatabase get() {
     ensureDatabase();
     return mDb;
   }

@@ -10,7 +10,7 @@
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__x86_64__)
+#if RCT_PROFILE && defined(__x86_64__)
 
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):

@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import com.facebook.react.bridge.ReadableMap;
@@ -25,6 +26,7 @@ public class LayoutAnimationController {
 
   private final AbstractLayoutAnimation mLayoutCreateAnimation = new LayoutCreateAnimation();
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
+  private final AbstractLayoutAnimation mLayoutDeleteAnimation = new LayoutDeleteAnimation();
   private boolean mShouldAnimateLayout;
 
   public void initializeFromConfig(final @Nullable ReadableMap config) {
@@ -49,11 +51,17 @@ public class LayoutAnimationController {
           config.getMap(LayoutAnimationType.UPDATE.toString()), globalDuration);
       mShouldAnimateLayout = true;
     }
+    if (config.hasKey(LayoutAnimationType.DELETE.toString())) {
+      mLayoutDeleteAnimation.initializeFromConfig(
+          config.getMap(LayoutAnimationType.DELETE.toString()), globalDuration);
+      mShouldAnimateLayout = true;
+    }
   }
 
   public void reset() {
     mLayoutCreateAnimation.reset();
     mLayoutUpdateAnimation.reset();
+    mLayoutDeleteAnimation.reset();
     mShouldAnimateLayout = false;
   }
 
@@ -65,7 +73,8 @@ public class LayoutAnimationController {
 
   /**
    * Update layout of given view, via immediate update or animation depending on the current batch
-   * layout animation configuration supplied during initialization.
+   * layout animation configuration supplied during initialization. Handles create and update
+   * animations.
    *
    * @param view the view to update layout of
    * @param x the new X position for the view
@@ -76,9 +85,9 @@ public class LayoutAnimationController {
   public void applyLayoutUpdate(View view, int x, int y, int width, int height) {
     UiThreadUtil.assertOnUiThread();
 
-    // Determine which animation to use : if view is initially invisible, use create animation.
-    // If view is becoming invisible, use delete animation. Otherwise, use update animation.
-    // This approach is easier than maintaining a list of tags for recently created/deleted views.
+    // Determine which animation to use : if view is initially invisible, use create animation,
+    // otherwise use update animation. This approach is easier than maintaining a list of tags
+    // for recently created views.
     AbstractLayoutAnimation layoutAnimation = (view.getWidth() == 0 || view.getHeight() == 0) ?
         mLayoutCreateAnimation :
         mLayoutUpdateAnimation;
@@ -89,6 +98,56 @@ public class LayoutAnimationController {
     }
     if (animation != null) {
       view.startAnimation(animation);
+    }
+  }
+
+  /**
+   * Animate a view deletion using the layout animation configuration supplied during initialization.
+   *
+   * @param view     The view to animate.
+   * @param listener Called once the animation is finished, should be used to
+   *                 completely remove the view.
+   */
+  public void deleteView(final View view, final LayoutAnimationListener listener) {
+    UiThreadUtil.assertOnUiThread();
+
+    AbstractLayoutAnimation layoutAnimation = mLayoutDeleteAnimation;
+
+    Animation animation = layoutAnimation.createAnimation(
+        view, view.getLeft(), view.getTop(), view.getWidth(), view.getHeight());
+
+    if (animation != null) {
+      disableUserInteractions(view);
+
+      animation.setAnimationListener(new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation anim) {}
+
+        @Override
+        public void onAnimationRepeat(Animation anim) {}
+
+        @Override
+        public void onAnimationEnd(Animation anim) {
+          listener.onAnimationEnd();
+        }
+      });
+
+      view.startAnimation(animation);
+    } else {
+      listener.onAnimationEnd();
+    }
+  }
+
+  /**
+   * Disables user interactions for a view and all it's subviews.
+   */
+  private void disableUserInteractions(View view) {
+    view.setClickable(false);
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup)view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        disableUserInteractions(viewGroup.getChildAt(i));
+      }
     }
   }
 }

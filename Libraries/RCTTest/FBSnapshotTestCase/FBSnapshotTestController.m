@@ -247,6 +247,9 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   if ([[UIScreen mainScreen] scale] > 1.0) {
     fileName = [fileName stringByAppendingFormat:@"@%.fx", [[UIScreen mainScreen] scale]];
   }
+#if TARGET_OS_TV
+  fileName = [fileName stringByAppendingString:@"_tvOS"];
+#endif
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
 }
@@ -371,11 +374,13 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   CGContextRef context = UIGraphicsGetCurrentContext();
   NSAssert1(context, @"Could not generate context for layer %@", layer);
 
+  UIGraphicsPushContext(context);
   CGContextSaveGState(context);
   {
     [layer renderInContext:context];
   }
   CGContextRestoreGState(context);
+  UIGraphicsPopContext();
 
   UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

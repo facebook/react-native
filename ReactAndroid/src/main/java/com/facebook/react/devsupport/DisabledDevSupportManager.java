@@ -9,9 +9,14 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -102,6 +107,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public String getHeapCaptureUploadUrl() {
+    return null;
+  }
+
+  @Override
   public boolean hasUpToDateJSBundleInCache() {
     return false;
   }
@@ -117,8 +127,30 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public void reloadJSFromServer(String bundleURL) {
+
+  }
+
+  @Override
   public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
 
+  }
+
+  @Override
+  public @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourceURL,
+      final File outputFile) {
+    return null;
+  }
+
+  @Override
+  public @Nullable String getLastErrorTitle() {
+    return null;
+  }
+
+  @Override
+  public @Nullable StackFrame[] getLastErrorStack() {
+    return null;
   }
 
   @Override

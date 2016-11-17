@@ -8,7 +8,7 @@
  */
 
 #import "RCTActivityIndicatorViewManager.h"
-
+#import "RCTActivityIndicatorView.h"
 #import "RCTConvert.h"
 
 @implementation RCTConvert (UIActivityIndicatorView)
@@ -29,7 +29,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [UIActivityIndicatorView new];
+  return [RCTActivityIndicatorView new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)

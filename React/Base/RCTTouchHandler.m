@@ -199,6 +199,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   }
 
   RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                         reactTag:self.view.reactTag
                                                      reactTouches:reactTouches
                                                    changedIndexes:changedIndexes
                                                     coalescingKey:_coalescingKey];
@@ -295,6 +296,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesCancelled:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
 

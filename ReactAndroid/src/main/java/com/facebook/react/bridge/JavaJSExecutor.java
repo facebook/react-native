@@ -36,11 +36,10 @@ public interface JavaJSExecutor {
 
   /**
    * Load javascript into the js context
-   * @param script script contet to be executed
    * @param sourceURL url or file location from which script content was loaded
    */
   @DoNotStrip
-  void loadApplicationScript(String script, String sourceURL) throws ProxyExecutorException;
+  void loadApplicationScript(String sourceURL) throws ProxyExecutorException;
 
   /**
    * Execute javascript method within js context

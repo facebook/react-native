@@ -1,75 +1,35 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 package com.facebook.react;
+
+import javax.annotation.Nullable;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.Settings;
 import android.view.KeyEvent;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-
-import java.util.List;
-
-import javax.annotation.Nullable;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 /**
  * Base Activity for React Native applications.
  */
-public abstract class ReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
+public abstract class ReactActivity extends Activity
+    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
-  private static final String REDBOX_PERMISSION_MESSAGE =
-      "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
+  private final ReactActivityDelegate mDelegate;
 
-  private @Nullable ReactInstanceManager mReactInstanceManager;
-  private @Nullable ReactRootView mReactRootView;
-  private LifecycleState mLifecycleState = LifecycleState.BEFORE_RESUME;
-  private boolean mDoRefresh = false;
-
-  /**
-   * Returns the name of the bundle in assets. If this is null, and no file path is specified for
-   * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will
-   * always try to load the JS bundle from the packager server.
-   * e.g. "index.android.bundle"
-   */
-  protected @Nullable String getBundleAssetName() {
-    return "index.android.bundle";
-  };
-
-  /**
-   * Returns a custom path of the bundle file. This is used in cases the bundle should be loaded
-   * from a custom path. By default it is loaded from Android assets, from a path specified
-   * by {@link getBundleAssetName}.
-   * e.g. "file://sdcard/myapp_cache/index.android.bundle"
-   */
-  protected @Nullable String getJSBundleFile() {
-    return null;
-  }
-
-  /**
-   * Returns the name of the main module. Determines the URL used to fetch the JS bundle
-   * from the packager server. It is only used when dev support is enabled.
-   * This is the first file to be executed once the {@link ReactInstanceManager} is created.
-   * e.g. "index.android"
-   */
-  protected String getJSMainModuleName() {
-    return "index.android";
-  }
-
-  /**
-   * Returns the launchOptions which will be passed to the {@link ReactInstanceManager}
-   * when the application is started. By default, this will return null and an empty
-   * object will be passed to your top level component as its initial props.
-   * If your React Native application requires props set outside of JS, override
-   * this method to return the Android.os.Bundle of your desired initial props.
-   */
-  protected @Nullable Bundle getLaunchOptions() {
-    return null;
+  protected ReactActivity() {
+    mDelegate = createReactActivityDelegate();
   }
 
   /**
@@ -77,148 +37,54 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
    * This is used to schedule rendering of the component.
    * e.g. "MoviesApp"
    */
-  protected abstract String getMainComponentName();
-
-  /**
-   * Returns whether dev mode should be enabled. This enables e.g. the dev menu.
-   */
-  protected abstract boolean getUseDeveloperSupport();
-
-  /**
-   * Returns a list of {@link ReactPackage} used by the app.
-   * You'll most likely want to return at least the {@code MainReactPackage}.
-   * If your app uses additional views or modules besides the default ones,
-   * you'll want to include more packages here.
-   */
-  protected abstract List<ReactPackage> getPackages();
-
-  /**
-   * A subclass may override this method if it needs to use a custom instance.
-   */
-  protected ReactInstanceManager createReactInstanceManager() {
-    ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
-        .setApplication(getApplication())
-        .setJSMainModuleName(getJSMainModuleName())
-        .setUseDeveloperSupport(getUseDeveloperSupport())
-        .setInitialLifecycleState(mLifecycleState);
-
-    for (ReactPackage reactPackage : getPackages()) {
-      builder.addPackage(reactPackage);
-    }
-
-    String jsBundleFile = getJSBundleFile();
-
-    if (jsBundleFile != null) {
-      builder.setJSBundleFile(jsBundleFile);
-    } else {
-      builder.setBundleAssetName(getBundleAssetName());
-    }
-
-    return builder.build();
+  protected @Nullable String getMainComponentName() {
+    return null;
   }
 
   /**
-   * A subclass may override this method if it needs to use a custom {@link ReactRootView}.
+   * Called at construction time, override if you have a custom delegate implementation.
    */
-  protected ReactRootView createRootView() {
-    return new ReactRootView(this);
+  protected ReactActivityDelegate createReactActivityDelegate() {
+    return new ReactActivityDelegate(this, getMainComponentName());
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    if (getUseDeveloperSupport() && Build.VERSION.SDK_INT >= 23) {
-      // Get permission to show redbox in dev builds.
-      if (!Settings.canDrawOverlays(this)) {
-        Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        startActivity(serviceIntent);
-        FLog.w(ReactConstants.TAG, REDBOX_PERMISSION_MESSAGE);
-        Toast.makeText(this, REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
-      }
-    }
-
-    mReactInstanceManager = createReactInstanceManager();
-    mReactRootView = createRootView();
-    mReactRootView.startReactApplication(mReactInstanceManager, getMainComponentName(), getLaunchOptions());
-    setContentView(mReactRootView);
+    mDelegate.onCreate(savedInstanceState);
   }
 
   @Override
   protected void onPause() {
     super.onPause();
-
-    mLifecycleState = LifecycleState.BEFORE_RESUME;
-
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onHostPause();
-    }
+    mDelegate.onPause();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-
-    mLifecycleState = LifecycleState.RESUMED;
-
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onHostResume(this, this);
-    }
+    mDelegate.onResume();
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-
-    mReactRootView.unmountReactApplication();
-    mReactRootView = null;
-
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.destroy();
-    }
+    mDelegate.onDestroy();
   }
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onActivityResult(requestCode, resultCode, data);
-    }
+    mDelegate.onActivityResult(requestCode, resultCode, data);
   }
 
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (mReactInstanceManager != null &&
-        mReactInstanceManager.getDevSupportManager().getDevSupportEnabled()) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        mReactInstanceManager.showDevOptionsDialog();
-        return true;
-      }
-      if (keyCode == KeyEvent.KEYCODE_R && !(getCurrentFocus() instanceof EditText)) {
-        // Enable double-tap-R-to-reload
-        if (mDoRefresh) {
-          mReactInstanceManager.getDevSupportManager().handleReloadJS();
-          mDoRefresh = false;
-        } else {
-          mDoRefresh = true;
-          new Handler().postDelayed(
-              new Runnable() {
-                @Override
-                public void run() {
-                  mDoRefresh = false;
-                }
-              },
-              200);
-        }
-      }
-    }
-    return super.onKeyUp(keyCode, event);
+    return mDelegate.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
   }
 
   @Override
   public void onBackPressed() {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.onBackPressed();
-    } else {
+    if (!mDelegate.onBackPressed()) {
       super.onBackPressed();
     }
   }
@@ -226,5 +92,40 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   @Override
   public void invokeDefaultOnBackPressed() {
     super.onBackPressed();
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (!mDelegate.onNewIntent(intent)) {
+      super.onNewIntent(intent);
+    }
+  }
+
+  @Override
+  public void requestPermissions(
+    String[] permissions,
+    int requestCode,
+    PermissionListener listener) {
+    mDelegate.requestPermissions(permissions, requestCode, listener);
+  }
+
+  @Override
+  public void onRequestPermissionsResult(
+    int requestCode,
+    String[] permissions,
+    int[] grantResults) {
+    mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
+
+  protected final ReactNativeHost getReactNativeHost() {
+    return mDelegate.getReactNativeHost();
+  }
+
+  protected final ReactInstanceManager getReactInstanceManager() {
+    return mDelegate.getReactInstanceManager();
+  }
+
+  protected final void loadApp(String appKey) {
+    mDelegate.loadApp(appKey);
   }
 }

@@ -11,10 +11,10 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
-#import "RCTComponent.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "UIView+React.h"
 
 @class RCTBridge;
 @class RCTShadowView;
@@ -64,19 +64,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 - (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
- * DEPRECATED: declare properties of type RCTDirectEventBlock instead
- *
- * Returns an array of names of events that can be sent by native views. This
- * should return non-bubbling, directly-dispatched event types. The event name
- * should not include a prefix such as 'on' or 'top', as this will be applied
- * as needed.
- *
- * Note that this method is not inherited when you subclass a view module, and
- * you should not call [super customDirectEventTypes] when overriding it.
- */
-- (NSArray<NSString *> *)customDirectEventTypes __deprecated_msg("Use RCTDirectEventBlock props instead.");
-
-/**
  * Called to notify manager that layout has finished, in case any calculated
  * properties need to be copied over from shadow view to view.
  */
@@ -85,7 +72,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 /**
  * Called after view hierarchy manipulation has finished, and all shadow props
  * have been set, but before layout has been performed. Useful for performing
- * custo  layout logic or tasks that involve walking the view hierarchy.
+ * custom layout logic or tasks that involve walking the view hierarchy.
  * To be deprecated, hopefully.
  */
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
@@ -116,5 +103,20 @@ RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
  */
 #define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
 + (NSArray<NSString *> *)propConfigShadow_##name { return @[@#type]; }
+
+/**
+ * This macro maps a named property to an arbitrary key path in the shadow view.
+ */
+#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type) \
++ (NSArray<NSString *> *)propConfigShadow_##name { return @[@#type, @#keyPath]; }
+
+/**
+ * This macro can be used when you need to provide custom logic for setting
+ * shadow view properties. The macro should be followed by a method body, which can
+ * refer to "json" and "view".
+ */
+#define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
+RCT_REMAP_SHADOW_PROPERTY(name, __custom__, type)         \
+- (void)set_##name:(id)json forShadowView:(viewClass *)view
 
 @end

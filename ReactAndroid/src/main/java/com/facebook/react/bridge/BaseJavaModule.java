@@ -9,17 +9,19 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.systrace.Systrace;
-import com.facebook.systrace.SystraceMessage;
-
 import javax.annotation.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
+
+import static com.facebook.infer.annotation.Assertions.assertNotNull;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
@@ -47,9 +49,9 @@ import java.util.Map;
  */
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
-  static final public String METHOD_TYPE_REMOTE = "remote";
-  static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
-  static final public String METHOD_TYPE_SYNC_HOOK = "syncHook";
+  static final public String METHOD_TYPE_ASYNC = "async";
+  static final public String METHOD_TYPE_PROMISE= "promise";
+  static final public String METHOD_TYPE_SYNC = "sync";
 
   private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
@@ -161,7 +163,7 @@ public abstract class BaseJavaModule implements NativeModule {
     private final ArgumentExtractor[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
-    private String mType = METHOD_TYPE_REMOTE;
+    private String mType = METHOD_TYPE_ASYNC;
     private final int mJSArgumentsNeeded;
     private final String mTraceName;
 
@@ -200,7 +202,7 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (paramClass == Promise.class) {
           Assertions.assertCondition(
             i == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         }
         builder.append(paramTypeToChar(paramClass));
       }
@@ -251,7 +253,7 @@ public abstract class BaseJavaModule implements NativeModule {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
           Assertions.assertCondition(
               paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_REMOTE_ASYNC;
+          mType = METHOD_TYPE_PROMISE;
         } else if (argumentClass == ReadableMap.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
         } else if (argumentClass == ReadableArray.class) {
@@ -279,7 +281,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     @Override
     public void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
-      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
+      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
           .arg("method", mTraceName)
           .flush();
       try {
@@ -330,14 +332,14 @@ public abstract class BaseJavaModule implements NativeModule {
               "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), ite);
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
     /**
      * Determines how the method is exported in JavaScript:
-     * METHOD_TYPE_REMOTE for regular methods
-     * METHOD_TYPE_REMOTE_ASYNC for methods that return a promise object to the caller.
+     * METHOD_TYPE_ASYNC for regular methods
+     * METHOD_TYPE_PROMISE for methods that return a promise object to the caller.
      */
     @Override
     public String getType() {
@@ -390,39 +392,46 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  private final Map<String, NativeMethod> mMethods = new HashMap<>();
-  private final Map<String, SyncNativeHook> mHooks = new HashMap<>();
+  private @Nullable Map<String, NativeMethod> mMethods;
+  private @Nullable Map<String, SyncNativeHook> mHooks;
 
-  public BaseJavaModule() {
-    Method[] targetMethods = getClass().getDeclaredMethods();
-    for (int i = 0; i < targetMethods.length; i++) {
-      Method targetMethod = targetMethods[i];
-      if (targetMethod.getAnnotation(ReactMethod.class) != null) {
-        String methodName = targetMethod.getName();
-        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-            "Java Module " + getName() + " sync method name already registered: " + methodName);
+  private void findMethods() {
+    if (mMethods == null) {
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
+      mMethods = new HashMap<>();
+      mHooks = new HashMap<>();
+
+      Method[] targetMethods = getClass().getDeclaredMethods();
+      for (Method targetMethod : targetMethods) {
+        if (targetMethod.getAnnotation(ReactMethod.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mMethods.put(methodName, new JavaMethod(targetMethod));
         }
-        mMethods.put(methodName, new JavaMethod(targetMethod));
-      }
-      if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
-        String methodName = targetMethod.getName();
-        if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-            "Java Module " + getName() + " sync method name already registered: " + methodName);
+        if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
+          String methodName = targetMethod.getName();
+          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+            // We do not support method overloading since js sees a function as an object regardless
+            // of number of params.
+            throw new IllegalArgumentException(
+              "Java Module " + getName() + " sync method name already registered: " + methodName);
+          }
+          mHooks.put(methodName, new SyncJavaHook(targetMethod));
         }
-        mHooks.put(methodName, new SyncJavaHook(targetMethod));
       }
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
   @Override
   public final Map<String, NativeMethod> getMethods() {
-    return mMethods;
+    findMethods();
+    return assertNotNull(mMethods);
   }
 
   /**
@@ -433,22 +442,8 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   public final Map<String, SyncNativeHook> getSyncHooks() {
-    return mHooks;
-  }
-
-  @Override
-  public final void writeConstantsField(JsonWriter writer, String fieldName) throws IOException {
-    Map<String, Object> constants = getConstants();
-    if (constants == null || constants.isEmpty()) {
-      return;
-    }
-
-    writer.name(fieldName).beginObject();
-    for (Map.Entry<String, Object> constant : constants.entrySet()) {
-      writer.name(constant.getKey());
-      JsonWriterHelper.value(writer, constant.getValue());
-    }
-    writer.endObject();
+    findMethods();
+    return assertNotNull(mHooks);
   }
 
   @Override
@@ -458,12 +453,8 @@ public abstract class BaseJavaModule implements NativeModule {
 
   @Override
   public boolean canOverrideExistingModule() {
+    // TODO(t11394819): Make this final and use annotation
     return false;
-  }
-
-  @Override
-  public void onReactBridgeInitialized(ReactBridge bridge) {
-    // do nothing
   }
 
   @Override

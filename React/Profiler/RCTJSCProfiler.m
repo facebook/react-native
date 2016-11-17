@@ -8,15 +8,13 @@
  */
 
 #import "RCTJSCProfiler.h"
-#import "RCTLog.h"
+
 #import <UIKit/UIKit.h>
 
+#import "RCTLog.h"
+
 #ifndef RCT_JSC_PROFILER
-  #if RCT_DEV
-    #define RCT_JSC_PROFILER 1
-  #else
-    #define RCT_JSC_PROFILER 0
-  #endif
+#define RCT_JSC_PROFILER RCT_PROFILE
 #endif
 
 #if RCT_JSC_PROFILER

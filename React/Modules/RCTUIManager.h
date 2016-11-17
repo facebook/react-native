@@ -16,6 +16,11 @@
 #import "RCTRootView.h"
 
 /**
+ * UIManager queue
+ */
+RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
+
+/**
  * Default name for the UIManager queue
  */
 RCT_EXTERN char *const RCTUIManagerQueueName;
@@ -84,6 +89,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Given a reactTag from a component, find its root view, if possible.
+ * Otherwise, this will give back nil.
+ *
+ * @param reactTag the component tag
+ * @param completion the completion block that will hand over the rootView, if any.
+ *
+ */
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
 
 /**
  * The view that is currently first responder, according to the JS context.

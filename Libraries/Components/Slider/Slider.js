@@ -13,13 +13,15 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+
+var PropTypes = React.PropTypes;
 
 type Event = Object;
 
@@ -139,8 +141,16 @@ var Slider = React.createClass({
     };
   },
 
+  viewConfig: {
+    uiViewClassName: 'RCTSlider',
+    validAttributes: {
+      ...ReactNativeViewAttributes.RCTView,
+      value: true
+    }
+  },
+
   render: function() {
-    let {style, onValueChange, onSlidingComplete, ...props} = this.props;
+    const {style, onValueChange, onSlidingComplete, ...props} = this.props;
     props.style = [styles.slider, style];
 
     props.onValueChange = onValueChange && ((event: Event) => {
@@ -159,7 +169,7 @@ var Slider = React.createClass({
       onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
     });
 
-    return <RCTSlider 
+    return <RCTSlider
       {...props}
       enabled={!this.props.disabled}
       onStartShouldSetResponder={() => true}

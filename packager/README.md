@@ -72,12 +72,10 @@ Here are the current options the packager accepts:
 
 ### /debug
 
-This is a page used for debugging, it has links to two pages:
+This is a page used for debugging, it offers a link to a single page :
 
 * Cached Packages: which shows you the packages that's been already
   generated and cached
-* Dependency Graph: is the in-memory graph of all the modules and
-  their dependencies
 
 ## Programmatic API
 
@@ -99,7 +97,7 @@ middleware. Takes the following options:
 
 * `projectRoots` array (required): Is the roots where your JavaScript
   file will exist
-* `blacklistRE` regexp: Is a patter to ignore certain paths from the
+* `blacklistRE` regexp: Is a pattern to ignore certain paths from the
   packager
 * `polyfillModuleName` array: Paths to polyfills you want to be
   included at the start of the bundle

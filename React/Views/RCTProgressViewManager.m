@@ -15,7 +15,9 @@
 
 RCT_ENUM_CONVERTER(UIProgressViewStyle, (@{
   @"default": @(UIProgressViewStyleDefault),
+#if !TARGET_OS_TV
   @"bar": @(UIProgressViewStyleBar),
+#endif
 }), UIProgressViewStyleDefault, integerValue)
 
 @end

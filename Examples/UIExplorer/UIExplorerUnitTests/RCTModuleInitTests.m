@@ -19,6 +19,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTUtils.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -48,7 +49,7 @@ RCT_EXPORT_MODULE()
 
 @interface RCTTestCustomInitModule : NSObject <RCTBridgeModule>
 
-@property (nonatomic, assign) BOOL initializedOnMainThread;
+@property (nonatomic, assign) BOOL initializedOnMainQueue;
 
 @end
 
@@ -62,7 +63,7 @@ RCT_EXPORT_MODULE()
 - (id)init
 {
   if ((self = [super init])) {
-    _initializedOnMainThread = [NSThread isMainThread];
+    _initializedOnMainQueue = RCTIsMainQueue();
   }
   return self;
 }
@@ -72,7 +73,7 @@ RCT_EXPORT_MODULE()
 
 @interface RCTTestCustomSetBridgeModule : NSObject <RCTBridgeModule>
 
-@property (nonatomic, assign) BOOL setBridgeOnMainThread;
+@property (nonatomic, assign) BOOL setBridgeOnMainQueue;
 
 @end
 
@@ -86,7 +87,7 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _setBridgeOnMainThread = [NSThread isMainThread];
+  _setBridgeOnMainQueue = RCTIsMainQueue();
 }
 
 @end
@@ -95,7 +96,7 @@ RCT_EXPORT_MODULE()
 @interface RCTTestExportConstantsModule : NSObject <RCTBridgeModule>
 
 @property (nonatomic, assign) BOOL exportedConstants;
-@property (nonatomic, assign) BOOL exportedConstantsOnMainThread;
+@property (nonatomic, assign) BOOL exportedConstantsOnMainQueue;
 
 @end
 
@@ -109,7 +110,7 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   _exportedConstants = YES;
-  _exportedConstantsOnMainThread = [NSThread isMainThread];
+  _exportedConstantsOnMainQueue = RCTIsMainQueue();
   return @{ @"foo": @"bar" };
 }
 
@@ -137,7 +138,7 @@ RCT_EXPORT_MODULE()
   BOOL _customSetBridgeModuleNotificationSent;
   BOOL _exportConstantsModuleNotificationSent;
   BOOL _lazyInitModuleNotificationSent;
-  BOOL _lazyInitModuleNotificationSentOnMainThread;
+  BOOL _lazyInitModuleNotificationSentOnMainQueue;
   BOOL _viewManagerModuleNotificationSent;
   RCTTestInjectedModule *_injectedModule;
 }
@@ -147,7 +148,8 @@ RCT_EXPORT_MODULE()
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return nil;
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
@@ -196,7 +198,7 @@ RCT_EXPORT_MODULE()
     _exportConstantsModuleNotificationSent = YES;
   } else if ([module isKindOfClass:[RCTLazyInitModule class]]) {
     _lazyInitModuleNotificationSent = YES;
-    _lazyInitModuleNotificationSentOnMainThread = [NSThread isMainThread];
+    _lazyInitModuleNotificationSentOnMainQueue = RCTIsMainQueue();
   }
 }
 
@@ -214,7 +216,7 @@ RCT_EXPORT_MODULE()
   RUN_RUNLOOP_WHILE(!_customInitModuleNotificationSent);
   XCTAssertTrue(_customInitModuleNotificationSent);
   RCTTestCustomInitModule *module = [_bridge moduleForClass:[RCTTestCustomInitModule class]];
-  XCTAssertTrue(module.initializedOnMainThread);
+  XCTAssertTrue(module.initializedOnMainQueue);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(module.methodQueue);
 }
@@ -225,12 +227,12 @@ RCT_EXPORT_MODULE()
 
   __block RCTTestCustomSetBridgeModule *module;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    module = [_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
+    module = [self->_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
   });
 
   RUN_RUNLOOP_WHILE(!module);
   XCTAssertTrue(_customSetBridgeModuleNotificationSent);
-  XCTAssertFalse(module.setBridgeOnMainThread);
+  XCTAssertFalse(module.setBridgeOnMainQueue);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(module.methodQueue);
 }
@@ -242,7 +244,7 @@ RCT_EXPORT_MODULE()
   RCTTestExportConstantsModule *module = [_bridge moduleForClass:[RCTTestExportConstantsModule class]];
   RUN_RUNLOOP_WHILE(!module.exportedConstants);
   XCTAssertTrue(module.exportedConstants);
-  XCTAssertTrue(module.exportedConstantsOnMainThread);
+  XCTAssertTrue(module.exportedConstantsOnMainQueue);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(module.methodQueue);
 }
@@ -253,12 +255,12 @@ RCT_EXPORT_MODULE()
 
   __block RCTLazyInitModule *module;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    module = [_bridge moduleForClass:[RCTLazyInitModule class]];
+    module = [self->_bridge moduleForClass:[RCTLazyInitModule class]];
   });
 
   RUN_RUNLOOP_WHILE(!module);
   XCTAssertTrue(_lazyInitModuleNotificationSent);
-  XCTAssertFalse(_lazyInitModuleNotificationSentOnMainThread);
+  XCTAssertFalse(_lazyInitModuleNotificationSentOnMainQueue);
   XCTAssertNotNil(module);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(module.methodQueue);

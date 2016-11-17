@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -38,10 +43,10 @@ const {
 } = ReactNative;
 
 type Props = {
-  children: ReactElement;
-  style: any;
-  textStyle: any;
-  viewProps: any;
+  children?: React.Element<any>,
+  style?: any,
+  textStyle?: any,
+  viewProps?: any,
 }
 
 const NavigationHeaderTitle = ({ children, style, textStyle, viewProps }: Props) => (
@@ -68,7 +73,7 @@ const styles = StyleSheet.create({
 });
 
 NavigationHeaderTitle.propTypes = {
-  children: React.PropTypes.string.isRequired,
+  children: React.PropTypes.node.isRequired,
   style: View.propTypes.style,
   textStyle: Text.propTypes.style
 };

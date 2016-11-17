@@ -17,9 +17,10 @@ const NavigationScenesReducer = require('NavigationScenesReducer');
  * Simulate scenes transtion with changes of navigation states.
  */
 function testTransition(states) {
-  const navigationStates = states.map(keys => {
+  const routes = states.map(keys => {
     return {
-      children: keys.map(key => {
+      index: 0,
+      routes: keys.map(key => {
         return { key };
       }),
     };
@@ -27,7 +28,7 @@ function testTransition(states) {
 
   let scenes = [];
   let prevState = null;
-  navigationStates.forEach((nextState) => {
+  routes.forEach((nextState) => {
     scenes = NavigationScenesReducer(scenes, nextState, prevState);
     prevState = nextState;
   });
@@ -44,19 +45,21 @@ describe('NavigationScenesReducer', () => {
 
     expect(scenes).toEqual([
       {
-        'index': 0,
-        'isStale': false,
-        'key': 'scene_1',
-        'navigationState': {
-          'key': '1'
+        index: 0,
+        isActive: true,
+        isStale: false,
+        key: 'scene_1',
+        route: {
+          key: '1'
         },
       },
       {
-        'index': 1,
-        'isStale': false,
-        'key': 'scene_2',
-        'navigationState': {
-          'key': '2'
+        index: 1,
+        isActive: false,
+        isStale: false,
+        key: 'scene_2',
+        route: {
+          key: '2'
         },
       },
     ]);
@@ -71,30 +74,115 @@ describe('NavigationScenesReducer', () => {
 
     expect(scenes).toEqual([
       {
-        'index': 0,
-        'isStale': false,
-        'key': 'scene_1',
-        'navigationState': {
-          'key': '1'
+        index: 0,
+        isActive: true,
+        isStale: false,
+        key: 'scene_1',
+        route: {
+          key: '1'
         },
       },
       {
-        'index': 1,
-        'isStale': false,
-        'key': 'scene_2',
-        'navigationState': {
-          'key': '2'
+        index: 1,
+        isActive: false,
+        isStale: false,
+        key: 'scene_2',
+        route: {
+          key: '2'
         },
       },
       {
-        'index': 2,
-        'isStale': false,
-        'key': 'scene_3',
-        'navigationState': {
-          'key': '3'
+        index: 2,
+        isActive: false,
+        isStale: false,
+        key: 'scene_3',
+        route: {
+          key: '3'
         },
       },
     ]);
+  });
+
+  it('gets active scene when index changes', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const state2 = {
+      index: 1,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    const route = scenes2.find((scene) => scene.isActive).route;
+    expect(route).toEqual({key: '2'});
+  });
+
+  it('gets same scenes', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const state2 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).toBe(scenes2);
+  });
+
+  it('gets different scenes when keys are different', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1'}, {key: '2'}],
+    };
+
+    const state2 = {
+      index: 0,
+      routes: [{key: '2'}, {key: '1'}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).not.toBe(scenes2);
+  });
+
+  it('gets different scenes when routes are different', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1', x: 1}, {key: '2', x: 2}],
+    };
+
+    const state2 = {
+      index: 0,
+      routes: [{key: '1', x: 3}, {key: '2', x: 4}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).not.toBe(scenes2);
+  });
+
+
+  it('gets different scenes when state index changes', () => {
+    const state1 = {
+      index: 0,
+      routes: [{key: '1', x: 1}, {key: '2', x: 2}],
+    };
+
+    const state2 = {
+      index: 1,
+      routes: [{key: '1', x: 1}, {key: '2', x: 2}],
+    };
+
+    const scenes1 = NavigationScenesReducer([], state1, null);
+    const scenes2 = NavigationScenesReducer(scenes1, state2, state1);
+    expect(scenes1).not.toBe(scenes2);
   });
 
   it('pops scenes', () => {
@@ -106,27 +194,30 @@ describe('NavigationScenesReducer', () => {
 
     expect(scenes).toEqual([
       {
-        'index': 0,
-        'isStale': false,
-        'key': 'scene_1',
-        'navigationState': {
-          'key': '1'
+        index: 0,
+        isActive: true,
+        isStale: false,
+        key: 'scene_1',
+        route: {
+          key: '1'
         },
       },
       {
-        'index': 1,
-        'isStale': false,
-        'key': 'scene_2',
-        'navigationState': {
-          'key': '2'
+        index: 1,
+        isActive: false,
+        isStale: false,
+        key: 'scene_2',
+        route: {
+          key: '2'
         },
       },
       {
-        'index': 2,
-        'isStale': true,
-        'key': 'scene_3',
-        'navigationState': {
-          'key': '3'
+        index: 2,
+        isActive: false,
+        isStale: true,
+        key: 'scene_3',
+        route: {
+          key: '3'
         },
       },
     ]);
@@ -140,27 +231,30 @@ describe('NavigationScenesReducer', () => {
 
     expect(scenes).toEqual([
       {
-        'index': 0,
-        'isStale': true,
-        'key': 'scene_1',
-        'navigationState': {
-          'key': '1'
+        index: 0,
+        isActive: false,
+        isStale: true,
+        key: 'scene_1',
+        route: {
+          key: '1'
         },
       },
       {
-        'index': 0,
-        'isStale': false,
-        'key': 'scene_3',
-        'navigationState': {
-          'key': '3'
+        index: 0,
+        isActive: true,
+        isStale: false,
+        key: 'scene_3',
+        route: {
+          key: '3'
         },
       },
       {
-        'index': 1,
-        'isStale': true,
-        'key': 'scene_2',
-        'navigationState': {
-          'key': '2'
+        index: 1,
+        isActive: false,
+        isStale: true,
+        key: 'scene_2',
+        route: {
+          key: '2'
         },
       },
     ]);
@@ -175,27 +269,30 @@ describe('NavigationScenesReducer', () => {
 
     expect(scenes).toEqual([
       {
-        'index': 0,
-        'isStale': true,
-        'key': 'scene_1',
-        'navigationState': {
-          'key': '1'
+        index: 0,
+        isActive: false,
+        isStale: true,
+        key: 'scene_1',
+        route: {
+          key: '1'
         },
       },
       {
-        'index': 0,
-        'isStale': false,
-        'key': 'scene_2',
-        'navigationState': {
-          'key': '2'
+        index: 0,
+        isActive: true,
+        isStale: false,
+        key: 'scene_2',
+        route: {
+          key: '2'
         },
       },
       {
-        'index': 0,
-        'isStale': true,
-        'key': 'scene_3',
-        'navigationState': {
-          'key': '3'
+        index: 0,
+        isActive: false,
+        isStale: true,
+        key: 'scene_3',
+        route: {
+          key: '3'
         },
       },
     ]);

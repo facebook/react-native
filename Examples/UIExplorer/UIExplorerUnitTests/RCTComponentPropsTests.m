@@ -95,7 +95,8 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 {
   [super setUp];
 
-  _bridge = [[RCTBridge alloc] initWithBundleURL:nil
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
 }

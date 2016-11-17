@@ -77,7 +77,7 @@ var BASE_STYLES = {
 var Stages = {
   Left: {
     Title: merge(BASE_STYLES.Title, { left: -SCREEN_WIDTH / 2, opacity: 0 }),
-    LeftButton: merge(BASE_STYLES.LeftButton, { left: -SCREEN_WIDTH / 3, opacity: 0 }),
+    LeftButton: merge(BASE_STYLES.LeftButton, { left: 0, opacity: 0 }),
     RightButton: merge(BASE_STYLES.RightButton, { opacity: 0 }),
   },
   Center: {

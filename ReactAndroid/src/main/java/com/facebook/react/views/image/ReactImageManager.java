@@ -19,24 +19,27 @@ import android.graphics.PorterDuff.Mode;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+@ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
-  public static final String REACT_CLASS = "RCTImageView";
+  protected static final String REACT_CLASS = "RCTImageView";
 
   @Override
   public String getName() {
     return REACT_CLASS;
   }
 
-  private ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
@@ -45,14 +48,12 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
-    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
-    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -74,16 +75,16 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         getCallerContext());
   }
 
-  // In JS this is Image.props.source.uri
+  // In JS this is Image.props.source
   @ReactProp(name = "src")
-  public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source, mResourceDrawableIdHelper);
+  public void setSource(ReactImageView view, @Nullable ReadableArray sources) {
+    view.setSource(sources);
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
-    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
+    view.setLoadingIndicatorSource(source);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
@@ -133,6 +134,19 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
   }
 
+  @ReactProp(name = ViewProps.RESIZE_METHOD)
+  public void setResizeMethod(ReactImageView view, @Nullable String resizeMethod) {
+    if (resizeMethod == null || "auto".equals(resizeMethod)) {
+      view.setResizeMethod(ImageResizeMethod.AUTO);
+    } else if ("resize".equals(resizeMethod)) {
+      view.setResizeMethod(ImageResizeMethod.RESIZE);
+    } else if ("scale".equals(resizeMethod)) {
+      view.setResizeMethod(ImageResizeMethod.SCALE);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid resize method: '" + resizeMethod+ "'");
+    }
+  }
+
   @ReactProp(name = "tintColor", customType = "Color")
   public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
     if (tintColor == null) {
@@ -164,9 +178,10 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         MapBuilder.of("registrationName", "onLoadStart"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
         MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+        MapBuilder.of("registrationName", "onError"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-        MapBuilder.of("registrationName", "onLoadEnd")
-    );
+        MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

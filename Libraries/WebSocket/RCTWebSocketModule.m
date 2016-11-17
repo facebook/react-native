@@ -9,8 +9,8 @@
 
 #import "RCTWebSocketModule.h"
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import <objc/runtime.h>
+
 #import "RCTConvert.h"
 #import "RCTUtils.h"
 
@@ -35,7 +35,13 @@
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
+- (NSArray *)supportedEvents
+{
+  return @[@"websocketMessage",
+           @"websocketOpen",
+           @"websocketFailed",
+           @"websocketClosed"];
+}
 
 - (void)dealloc
 {
@@ -73,6 +79,11 @@ RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber
   [_sockets[socketID] send:message];
 }
 
+RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
+{
+  [_sockets[socketID] sendPing:NULL];
+}
+
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] close];
@@ -84,7 +95,7 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   BOOL binary = [message isKindOfClass:[NSData class]];
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
+  [self sendEventWithName:@"websocketMessage" body:@{
     @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
     @"type": binary ? @"binary" : @"text",
     @"id": webSocket.reactTag
@@ -93,14 +104,14 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketOpen" body:@{
+  [self sendEventWithName:@"websocketOpen" body:@{
     @"id": webSocket.reactTag
   }];
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketFailed" body:@{
+  [self sendEventWithName:@"websocketFailed" body:@{
     @"message":error.localizedDescription,
     @"id": webSocket.reactTag
   }];
@@ -109,7 +120,7 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code
            reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketClosed" body:@{
+  [self sendEventWithName:@"websocketClosed" body:@{
     @"code": @(code),
     @"reason": RCTNullIfNil(reason),
     @"clean": @(wasClean),

@@ -35,7 +35,6 @@ RCT_EXTERN const NSInteger RCTTextUpdateLagWarningThreshold;
 RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @protocol RCTEvent <NSObject>
-
 @required
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
@@ -52,6 +51,20 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @end
 
+/**
+ * This protocol allows observing events dispatched by RCTEventDispatcher.
+ */
+@protocol RCTEventDispatcherObserver <NSObject>
+
+/**
+ * Called before dispatching an event, on the same thread the event was
+ * dispatched from. Return YES if the event was handled and must not be
+ * sent to JS.
+ */
+- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event;
+
+@end
+
 
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
@@ -60,25 +73,25 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @interface RCTEventDispatcher : NSObject <RCTBridgeModule>
 
 /**
- * Send an application-specific event that does not relate to a specific
- * view, e.g. a navigation or data update notification.
+ * Deprecated, do not use.
  */
-- (void)sendAppEventWithName:(NSString *)name body:(id)body;
+- (void)sendAppEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a device or iOS event that does not relate to a specific view,
- * e.g.rotation, location, keyboard show/hide, background/awake, etc.
+ * Deprecated, do not use.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(id)body;
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
+__deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
- * Send a user input event. The body dictionary must contain a "target"
- * parameter, representing the React tag of the view sending the event
+ * Deprecated, do not use.
  */
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
+- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
+__deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
 
 /**
- * Send a text input/focus event.
+ * Send a text input/focus event. For internal use only.
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
@@ -93,6 +106,16 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
  * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
+
+/**
+ * Add an event dispatcher observer.
+ */
+- (void)addDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
+
+/**
+ * Remove an event dispatcher observer.
+ */
+- (void)removeDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
 
 @end
 

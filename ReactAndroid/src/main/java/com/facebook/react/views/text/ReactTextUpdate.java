@@ -21,11 +21,29 @@ public class ReactTextUpdate {
   private final Spannable mText;
   private final int mJsEventCounter;
   private final boolean mContainsImages;
+  private final float mPaddingLeft;
+  private final float mPaddingTop;
+  private final float mPaddingRight;
+  private final float mPaddingBottom;
+  private final int mTextAlign;
 
-  public ReactTextUpdate(Spannable text, int jsEventCounter, boolean containsImages) {
+  public ReactTextUpdate(
+    Spannable text,
+    int jsEventCounter,
+    boolean containsImages,
+    float paddingStart,
+    float paddingTop,
+    float paddingEnd,
+    float paddingBottom,
+    int textAlign) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
+    mPaddingLeft = paddingStart;
+    mPaddingTop = paddingTop;
+    mPaddingRight = paddingEnd;
+    mPaddingBottom = paddingBottom;
+    mTextAlign = textAlign;
   }
 
   public Spannable getText() {
@@ -38,5 +56,25 @@ public class ReactTextUpdate {
 
   public boolean containsImages() {
     return mContainsImages;
+  }
+
+  public float getPaddingLeft() {
+    return mPaddingLeft;
+  }
+
+  public float getPaddingTop() {
+    return mPaddingTop;
+  }
+
+  public float getPaddingRight() {
+    return mPaddingRight;
+  }
+
+  public float getPaddingBottom() {
+    return mPaddingBottom;
+  }
+
+  public int getTextAlign() {
+    return mTextAlign;
   }
 }

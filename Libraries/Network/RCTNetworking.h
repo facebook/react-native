@@ -7,12 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
-
-#import "RCTBridge.h"
+#import "RCTEventEmitter.h"
 #import "RCTNetworkTask.h"
 
-@interface RCTNetworking : NSObject <RCTBridgeModule>
+@interface RCTNetworking : RCTEventEmitter
 
 /**
  * Does a handler exist for the specified request?

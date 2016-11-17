@@ -12,19 +12,60 @@
 // Disable YellowBox so we do not have to mock its dependencies
 console.disableYellowBox = true;
 
-// Include modules used by integration tests
-require('ScrollViewTestModule');
+// Include callable JS modules first, in case one of the other ones below throws
+require('ProgressBarTestModule');
+require('ViewRenderingTestModule');
+require('TestJavaToJSArgumentsModule');
+require('TestJSLocaleModule');
+require('TestJSToJavaParametersModule');
+require('UIManagerTestModule');
+
+require('CatalystRootViewTestModule');
+require('DatePickerDialogTestModule');
+require('MeasureLayoutTestModule');
 require('PickerAndroidTestModule');
+require('ScrollViewTestModule');
+require('ShareTestModule');
 require('SwipeRefreshLayoutTestModule');
 require('TextInputTestModule');
+require('TimePickerDialogTestModule');
+
 
 // Define catalyst test apps used in integration tests
 var AppRegistry = require('AppRegistry');
 
 var apps = [
 {
+  appKey: 'CatalystRootViewTestApp',
+  component: () => require('CatalystRootViewTestModule').CatalystRootViewTestApp
+},
+{
+  appKey: 'DatePickerDialogTestApp',
+  component: () => require('DatePickerDialogTestModule').DatePickerDialogTestApp
+},
+{
+  appKey: 'JSResponderTestApp',
+  component: () => require('JSResponderTestApp'),
+},
+{
   appKey: 'HorizontalScrollViewTestApp',
   component: () => require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+},
+{
+  appKey: 'InitialPropsTestApp',
+  component: () => require('InitialPropsTestApp'),
+},
+{
+  appKey: 'LayoutEventsTestApp',
+  component: () => require('LayoutEventsTestApp'),
+},
+{
+  appKey: 'MeasureLayoutTestApp',
+  component: () => require('MeasureLayoutTestModule').MeasureLayoutTestApp
+},
+{
+  appKey: 'MultitouchHandlingTestAppModule',
+  component: () => require('MultitouchHandlingTestAppModule')
 },
 {
   appKey: 'PickerAndroidTestApp',
@@ -33,6 +74,14 @@ var apps = [
 {
   appKey: 'ScrollViewTestApp',
   component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+},
+{
+  appKey: 'ShareTestApp',
+  component: () => require('ShareTestModule').ShareTestApp,
+},
+{
+  appKey: 'SubviewsClippingTestApp',
+  component: () => require('SubviewsClippingTestModule').App,
 },
 {
   appKey: 'SwipeRefreshLayoutTestApp',
@@ -45,6 +94,14 @@ var apps = [
 {
   appKey: 'TestIdTestApp',
   component: () => require('TestIdTestModule').TestIdTestApp
+},
+{
+  appKey: 'TimePickerDialogTestApp',
+  component: () => require('TimePickerDialogTestModule').TimePickerDialogTestApp
+},
+{
+  appKey: 'TouchBubblingTestAppModule',
+  component: () => require('TouchBubblingTestAppModule')
 },
 
 ];

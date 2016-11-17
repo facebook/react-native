@@ -9,8 +9,6 @@
 
 package com.facebook.react.modules.location;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,20 +17,23 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+
+import javax.annotation.Nullable;
 
 /**
  * Native module that exposes Geolocation to JS.
  */
+@ReactModule(name = "LocationObserver")
 public class LocationModule extends ReactContextBaseJavaModule {
 
   private @Nullable String mWatchedProvider;
@@ -48,9 +49,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
       if (status == LocationProvider.OUT_OF_SERVICE) {
-        emitError("Provider " + provider + " is out of service.");
+        emitError(PositionError.POSITION_UNAVAILABLE, "Provider " + provider + " is out of service.");
       } else if (status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
-        emitError("Provider " + provider + " is temporarily unavailable.");
+        emitError(PositionError.TIMEOUT, "Provider " + provider + " is temporarily unavailable.");
       }
     }
 
@@ -76,7 +77,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
     private final boolean highAccuracy;
     private final float distanceFilter;
 
-    private LocationOptions(long timeout, double maximumAge, boolean highAccuracy, float distanceFilter) {
+    private LocationOptions(
+      long timeout,
+      double maximumAge,
+      boolean highAccuracy,
+      float distanceFilter) {
       this.timeout = timeout;
       this.maximumAge = maximumAge;
       this.highAccuracy = highAccuracy;
@@ -91,8 +96,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
           map.hasKey("maximumAge") ? map.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
       boolean highAccuracy =
           map.hasKey("enableHighAccuracy") && map.getBoolean("enableHighAccuracy");
-      float distanceFilter =
-          map.hasKey("distanceFilter") ? (float) map.getDouble("distanceFilter") : RCT_DEFAULT_LOCATION_ACCURACY;
+      float distanceFilter = map.hasKey("distanceFilter") ?
+        (float) map.getDouble("distanceFilter") :
+        RCT_DEFAULT_LOCATION_ACCURACY;
 
       return new LocationOptions(timeout, maximumAge, highAccuracy, distanceFilter);
     }
@@ -151,12 +157,16 @@ public class LocationModule extends ReactContextBaseJavaModule {
           (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
       String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
       if (provider == null) {
-        emitError("No location provider available.");
+        emitError(PositionError.PERMISSION_DENIED, "No location provider available.");
         return;
       }
       if (!provider.equals(mWatchedProvider)) {
         locationManager.removeUpdates(mLocationListener);
-        locationManager.requestLocationUpdates(provider, 1000, locationOptions.distanceFilter, mLocationListener);
+        locationManager.requestLocationUpdates(
+          provider,
+          1000,
+          locationOptions.distanceFilter,
+          mLocationListener);
       }
       mWatchedProvider = provider;
     } catch (SecurityException e) {
@@ -204,12 +214,17 @@ public class LocationModule extends ReactContextBaseJavaModule {
     coords.putDouble("speed", location.getSpeed());
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
+
+    if (android.os.Build.VERSION.SDK_INT >= 18) {
+      map.putBoolean("mocked", location.isFromMockProvider());
+    }
+
     return map;
   }
 
-  private void emitError(String error) {
+  private void emitError(int code, String message) {
     getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-        .emit("geolocationError", error);
+        .emit("geolocationError", PositionError.buildError(code, message));
   }
 
   /**
@@ -235,7 +250,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
       public void run() {
         synchronized (SingleUpdateRequest.this) {
           if (!mTriggered) {
-            mError.invoke("Location request timed out");
+            mError.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
             mLocationManager.removeUpdates(mLocationListener);
             mTriggered = true;
           }

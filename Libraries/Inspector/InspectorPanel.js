@@ -17,8 +17,8 @@ var Text = require('Text');
 var View = require('View');
 var ElementProperties = require('ElementProperties');
 var PerformanceOverlay = require('PerformanceOverlay');
-var Touchable = require('Touchable');
 var TouchableHighlight = require('TouchableHighlight');
+var NetworkOverlay = require('NetworkOverlay');
 
 var PropTypes = React.PropTypes;
 
@@ -41,6 +41,7 @@ class InspectorPanel extends React.Component {
         <ElementProperties
           style={this.props.inspected.style}
           frame={this.props.inspected.frame}
+          source={this.props.inspected.source}
           hierarchy={this.props.hierarchy}
           selection={this.props.selection}
           setSelection={this.props.setSelection}
@@ -49,6 +50,10 @@ class InspectorPanel extends React.Component {
     } else if (this.props.perfing) {
       contents = (
         <PerformanceOverlay />
+      );
+    } else if (this.props.networking) {
+      contents = (
+        <NetworkOverlay />
       );
     } else {
       contents = (
@@ -70,6 +75,10 @@ class InspectorPanel extends React.Component {
             pressed={this.props.perfing}
             onClick={this.props.setPerfing}
           />
+          <Button title={'Network'}
+            pressed={this.props.networking}
+            onClick={this.props.setNetworking}
+          />
           <Button title={'Touchables'}
             pressed={this.props.touchTargetting}
             onClick={this.props.setTouchTargetting}
@@ -89,6 +98,8 @@ InspectorPanel.propTypes = {
   setPerfing: PropTypes.func,
   touchTargetting: PropTypes.bool,
   setTouchTargetting: PropTypes.func,
+  networking: PropTypes.bool,
+  setNetworking: PropTypes.func,
 };
 
 class Button extends React.Component {

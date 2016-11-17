@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-class <%= name %> extends Component {
+export default class <%= name %> extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -23,6 +23,7 @@ class <%= name %> extends Component {
           To get started, edit index.android.js
         </Text>
         <Text style={styles.instructions}>
+          Double tap R on your keyboard to reload,{'\n'}
           Shake or press menu button for dev menu
         </Text>
       </View>

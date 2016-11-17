@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var PropTypes = require('ReactPropTypes');
+var {PropTypes} = require('React');
 var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -40,19 +40,19 @@ var animChecker = createStrictShapeTypeChecker({
   initialVelocity: PropTypes.number,
   type: PropTypes.oneOf(
     Object.keys(Types)
-  ),
+  ).isRequired,
   property: PropTypes.oneOf( // Only applies to create/delete
     Object.keys(Properties)
   ),
 });
 
 type Anim = {
-  duration?: number;
-  delay?: number;
-  springDamping?: number;
-  initialVelocity?: number;
-  type?: $Enum<typeof TypesEnum>;
-  property?: $Enum<typeof PropertiesEnum>;
+  duration?: number,
+  delay?: number,
+  springDamping?: number,
+  initialVelocity?: number,
+  type?: $Enum<typeof TypesEnum>,
+  property?: $Enum<typeof PropertiesEnum>,
 }
 
 var configChecker = createStrictShapeTypeChecker({
@@ -63,10 +63,10 @@ var configChecker = createStrictShapeTypeChecker({
 });
 
 type Config = {
-  duration: number;
-  create?: Anim;
-  update?: Anim;
-  delete?: Anim;
+  duration: number,
+  create?: Anim,
+  update?: Anim,
+  delete?: Anim,
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {

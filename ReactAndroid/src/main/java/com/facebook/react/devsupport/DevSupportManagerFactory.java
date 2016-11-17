@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 package com.facebook.react.devsupport;
 
 import javax.annotation.Nullable;
@@ -5,10 +14,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 
 import android.content.Context;
-import android.util.Log;
-
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
@@ -26,6 +31,21 @@ public class DevSupportManagerFactory {
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate) {
+
+    return create(
+      applicationContext,
+      reactInstanceCommandsHandler,
+      packagerPathForJSBundleName,
+      enableOnCreate,
+      null);
+  }
+
+  public static DevSupportManager create(
+    Context applicationContext,
+    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    @Nullable String packagerPathForJSBundleName,
+    boolean enableOnCreate,
+    @Nullable RedBoxHandler redBoxHandler) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -34,28 +54,30 @@ public class DevSupportManagerFactory {
       // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
       // confuse it.
       String className =
-          new StringBuilder(DEVSUPPORT_IMPL_PACKAGE)
-              .append(".")
-              .append(DEVSUPPORT_IMPL_CLASS)
-              .toString();
+        new StringBuilder(DEVSUPPORT_IMPL_PACKAGE)
+          .append(".")
+          .append(DEVSUPPORT_IMPL_CLASS)
+          .toString();
       Class<?> devSupportManagerClass =
-          Class.forName(className);
+        Class.forName(className);
       Constructor constructor =
-          devSupportManagerClass.getConstructor(
-              Context.class,
-              ReactInstanceDevCommandsHandler.class,
-              String.class,
-              boolean.class);
+        devSupportManagerClass.getConstructor(
+          Context.class,
+          ReactInstanceDevCommandsHandler.class,
+          String.class,
+          boolean.class,
+          RedBoxHandler.class);
       return (DevSupportManager) constructor.newInstance(
-          applicationContext,
-          reactInstanceCommandsHandler,
-          packagerPathForJSBundleName,
-          true);
+        applicationContext,
+        reactInstanceCommandsHandler,
+        packagerPathForJSBundleName,
+        true,
+        redBoxHandler);
     } catch (Exception e) {
       throw new RuntimeException(
-          "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +
-              " or could not be created",
-          e);
+        "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +
+          " or could not be created",
+        e);
     }
   }
 

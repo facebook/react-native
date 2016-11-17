@@ -1,20 +1,18 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<4c7c75ffd4800aee843a5f5828f3e3ab>>
 
 package com.facebook.csslayout;
 
 import java.util.Arrays;
 
 /**
- * The CSS style definition for a {@link CSSNode}.
+ * The CSS style definition for a {@link CSSNodeDEPRECATED}.
  */
 public class CSSStyle {
 
@@ -26,13 +24,16 @@ public class CSSStyle {
   public CSSAlign alignSelf;
   public CSSPositionType positionType;
   public CSSWrap flexWrap;
-  public float flex;
+  public CSSOverflow overflow;
+  public float flexGrow;
+  public float flexShrink;
+  public float flexBasis;
 
   public Spacing margin = new Spacing();
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
+  public Spacing position = new Spacing(CSSConstants.UNDEFINED);
 
-  public float[] position = new float[4];
   public float[] dimensions = new float[2];
 
   public float minWidth = CSSConstants.UNDEFINED;
@@ -53,14 +54,17 @@ public class CSSStyle {
     alignItems = CSSAlign.STRETCH;
     alignSelf = CSSAlign.AUTO;
     positionType = CSSPositionType.RELATIVE;
-    flexWrap = CSSWrap.NOWRAP;
-    flex = 0f;
+    flexWrap = CSSWrap.NO_WRAP;
+    overflow = CSSOverflow.VISIBLE;
+    flexGrow = 0;
+    flexShrink = 0;
+    flexBasis = CSSConstants.UNDEFINED;
 
-    margin.reset();;
+    margin.reset();
     padding.reset();
     border.reset();
+    position.reset();
 
-    Arrays.fill(position, CSSConstants.UNDEFINED);
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
 
     minWidth = CSSConstants.UNDEFINED;

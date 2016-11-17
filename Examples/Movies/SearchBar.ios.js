@@ -19,14 +19,14 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   TextInput,
   StyleSheet,
   View,
 } = ReactNative;
 
-var SearchBar = React.createClass({
-  render: function() {
+class SearchBar extends React.Component {
+  render() {
     return (
       <View style={styles.searchBar}>
         <TextInput
@@ -37,14 +37,14 @@ var SearchBar = React.createClass({
           onFocus={this.props.onFocus}
           style={styles.searchBarInput}
         />
-        <ActivityIndicatorIOS
+        <ActivityIndicator
           animating={this.props.isLoading}
           style={styles.spinner}
         />
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {

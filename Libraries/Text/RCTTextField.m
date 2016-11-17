@@ -12,12 +12,12 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
+#import "RCTTextSelection.h"
 #import "UIView+React.h"
 
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
-  NSMutableArray<UIView *> *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
   BOOL _submitted;
@@ -29,13 +29,11 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
-    _previousSelectionRange = self.selectedTextRange;
     [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
-    _reactSubviews = [NSMutableArray new];
     _blurOnSubmit = YES;
   }
   return self;
@@ -64,6 +62,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textWasPasted = YES;
   [super paste:sender];
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  UITextRange *currentSelection = self.selectedTextRange;
+  UITextPosition *start = [self positionFromPosition:self.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [self positionFromPosition:self.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [self textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    self.selectedTextRange = selectedTextRange;
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
 }
 
 - (void)setText:(NSString *)text
@@ -110,30 +128,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
-}
-
-- (NSArray<UIView *> *)reactSubviews
-{
-  // TODO: do we support subviews of textfield in React?
-  // In any case, we should have a better approach than manually
-  // maintaining array in each view subclass like this
-  return _reactSubviews;
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews removeObject:subview];
-  [subview removeFromSuperview];
-}
-
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
-{
-  // TODO: this is a bit broken - if the TextField inserts any of
-  // its own views below or between React's, the indices won't match
-  [_reactSubviews insertObject:view atIndex:atIndex];
-  [super insertSubview:view atIndex:atIndex];
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
@@ -199,16 +193,19 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldBeginEditing
 {
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self selectAll:nil];
-    });
-  }
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self->_selectTextOnFocus) {
+      [self selectAll:nil];
+    }
+
+    [self sendSelectionEvent];
+  });
 }
 
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField

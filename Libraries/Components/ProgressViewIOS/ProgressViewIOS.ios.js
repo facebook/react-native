@@ -13,12 +13,13 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+
+var PropTypes = React.PropTypes;
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.

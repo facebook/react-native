@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/animations.html
 next: accessibility
+previous: handling-touches
 ---
 
 Fluid, meaningful animations are essential to the mobile user experience. Like
@@ -24,13 +25,13 @@ component with a simple spring bounce on mount looks like this:
 
 ```javascript
 class Playground extends React.Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       bounceValue: new Animated.Value(0),
     };
   }
-  render(): ReactElement {
+  render() {
     return (
       <Animated.Image                         // Base: Image, Text, View
         source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
@@ -164,6 +165,15 @@ Input | Output
    101|      0
    200|      0
 
+`interpolate` also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:
+
+```javascript
+value.interpolate({
+  inputRange: [0, 360],
+  outputRange: ['0deg', '360deg']
+})
+```
+
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
@@ -247,7 +257,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -282,11 +292,11 @@ class App extends React.Component {
     this.state = { w: 100, h: 100 };
     this._onPress = this._onPress.bind(this);
   }
-  
+
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
+  }
 
   _onPress() {
     // Animate the update
@@ -306,7 +316,7 @@ class App extends React.Component {
       </View>
     );
   }
-};
+}
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
@@ -323,7 +333,7 @@ animations that underlies all of the JavaScript-based animation APIs.  In
 general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
-### react-tween-state (Not recommended - use [Animated](#animated) instead)
+### react-tween-state (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [react-tween-state](https://github.com/chenglou/react-tween-state) is a
 minimal library that does exactly what its name suggests: it *tweens* a
@@ -393,7 +403,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
+### Rebound (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is

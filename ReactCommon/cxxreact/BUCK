@@ -1,0 +1,158 @@
+CXX_LIBRARY_COMPILER_FLAGS = []
+REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
+if THIS_IS_FBOBJC:
+  inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
+  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
+  REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
+
+def kwargs_add(base_kwargs, **new_kwargs):
+  ret_kwargs = dict(base_kwargs)
+  for name, add_value in new_kwargs.iteritems():
+    if name in ret_kwargs:
+      # Don't use +=, it will modify base_kwargs
+      ret_kwargs[name] = ret_kwargs[name] + add_value
+    else:
+      ret_kwargs[name] = add_value
+  return ret_kwargs
+
+if THIS_IS_FBANDROID:
+  include_defs('//ReactAndroid/DEFS')
+
+  def react_library(**kwargs):
+    kwargs = kwargs_add(
+      kwargs,
+      # We depend on JSC, support the same platforms
+      supported_platforms_regex = '^android-(armv7|x86)$',
+      compiler_flags = [
+        '-Wno-pessimizing-move',
+      ],
+      deps = [
+        '//xplat/folly:molly',
+        react_native_xplat_target('inspector:inspector'),
+      ])
+
+    cxx_library(
+      name = 'bridge',
+      **kwargs_add(
+        kwargs,
+        preprocessor_flags = [
+          '-DWITH_JSC_EXTRA_TRACING=1',
+          '-DWITH_JSC_MEMORY_PRESSURE=1',
+          '-DWITH_REACT_INTERNAL_SETTINGS=1',
+          '-DWITH_FB_MEMORY_PROFILING=1',
+          '-DWITH_INSPECTOR=1',
+        ],
+        deps = JSC_DEPS
+      )
+    )
+
+elif THIS_IS_FBOBJC:
+  def react_library(**kwargs):
+    ios_library(
+      name = 'bridge',
+      header_path_prefix = "cxxreact",
+      inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+      frameworks = [
+        '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+      ],
+      tests = [
+        react_native_xplat_target('cxxreact/tests:tests')
+      ],
+      **kwargs_add(
+        kwargs,
+        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
+        deps = [
+          '//xplat/folly:molly',
+        ]
+      )
+    )
+
+cxx_library(
+  name = 'module',
+  force_static = True,
+  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+  xcode_public_headers_symlinks = True,
+  exported_headers = [
+    'CxxModule.h',
+    'JsArgumentHelpers.h',
+    'JsArgumentHelpers-inl.h',
+  ],
+  header_namespace = 'cxxreact',
+  deps = [
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_library(
+  name = 'samplemodule',
+  soname = 'libxplat_react_module_samplemodule.so',
+  srcs = ['SampleCxxModule.cpp'],
+  xcode_public_headers_symlinks = True,
+  exported_headers = ['SampleCxxModule.h'],
+  header_namespace = '',
+  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+    '-fno-omit-frame-pointer',
+    '-Wall',
+    '-Werror',
+    '-std=c++1y',
+    '-fexceptions',
+  ],
+  deps = [
+    ':module',
+    '//xplat/folly:molly',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+CXXREACT_PUBLIC_HEADERS = [
+  'CxxMessageQueue.h',
+  'CxxNativeModule.h',
+  'Executor.h',
+  'ExecutorToken.h',
+  'ExecutorTokenFactory.h',
+  'Instance.h',
+  'JSCExecutor.h',
+  'JSCNativeModules.h',
+  'JSCWebWorker.h',
+  'JSModulesUnbundle.h',
+  'MessageQueueThread.h',
+  'MethodCall.h',
+  'ModuleRegistry.h',
+  'NativeModule.h',
+  'NativeToJsBridge.h',
+  'Platform.h',
+  'SystraceSection.h',
+]
+
+react_library(
+  soname = 'libreactnativefb.$(ext)',
+  header_namespace = 'cxxreact',
+  force_static = True,
+  srcs = glob(['*.cpp']),
+  headers = glob(['*.h'], excludes=CXXREACT_PUBLIC_HEADERS),
+  xcode_public_headers_symlinks = True,
+  exported_headers = CXXREACT_PUBLIC_HEADERS,
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNative"',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-fexceptions',
+    '-fvisibility=hidden',
+    '-frtti',
+    '-std=c++1y',
+  ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
+  deps = [
+    ':module',
+    '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('jschelpers:jschelpers'),
+    react_native_xplat_target('microprofiler:microprofiler'),
+  ],
+  visibility = [ 'PUBLIC' ],
+)
