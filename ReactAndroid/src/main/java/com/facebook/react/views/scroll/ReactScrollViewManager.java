@@ -96,6 +96,11 @@ public class ReactScrollViewManager
     view.setScrollPerfTag(scrollPerfTag);
   }
 
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
