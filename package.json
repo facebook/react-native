@@ -25,6 +25,7 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
+      "local-cli/templates/",
       "/node_modules/",
       "/website/",
       "local-cli/generator/templates/"
