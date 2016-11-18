@@ -8,14 +8,9 @@
  */
 'use strict';
 
-require('babel-polyfill');
 require('babel-register')({
-  presets: ['es2015-node'],
-  plugins: [
-    'syntax-async-functions',
-    'transform-regenerator',
-  ],
-  only: /react-native-upgrader/,
+  presets: ['es2015-node', 'stage-3'],
+  only: /react-native-upgrader\/(?!(node_modules))/,
   retainLines: true,
   sourceMaps: 'inline',
   babelrc: false,

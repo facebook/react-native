@@ -70,7 +70,7 @@ function runYeomanGenerators(context) {
   }
 
   const env = yeoman.createEnv();
-  const generatorPath = path.join(__dirname, '..', 'react-native', 'local-cli', 'generator');
+  const generatorPath = path.join(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator');
   env.register(generatorPath, 'react:app');
   const generatorArgs = ['react:app', context.appName].concat(context.cliArgs._);
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true, force: true}, resolve));
