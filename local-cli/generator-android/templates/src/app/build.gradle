@@ -24,6 +24,11 @@ import com.android.build.OutputFile
  *   // whether to bundle JS and assets in release mode
  *   bundleInRelease: true,
  *
+ *   // whether to have JS in dev mode for a variant (with warnings)
+ *   devModeFor[VARIANT]: true|false,
+ *   (default : true only if variant contains "release")
+ *   Note: this param only apply if JS files are bundled.
+ *
  *   // whether to bundle JS and assets in another build variant (if configured).
  *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
  *   // The configuration property can be in the following formats
