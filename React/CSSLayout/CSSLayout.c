@@ -14,7 +14,9 @@
 
 #ifdef _MSC_VER
 #include <float.h>
+#ifndef isnan
 #define isnan _isnan
+#endif
 
 #ifndef __cplusplus
 #define inline __inline
