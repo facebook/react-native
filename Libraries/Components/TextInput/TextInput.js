@@ -335,7 +335,7 @@ const TextInput = React.createClass({
      * The default value is `simple`
      * @platform android
      */
-    textBreakStrategy: PropTypes.string,
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Callback that is called when the text input is blurred.
      */

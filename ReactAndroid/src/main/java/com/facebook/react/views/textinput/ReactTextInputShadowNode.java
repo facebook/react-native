@@ -130,7 +130,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
   public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       return;

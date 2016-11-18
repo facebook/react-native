@@ -122,7 +122,7 @@ const Text = React.createClass({
      * The default value is `highQuality`
      * @platform android
      */
-    textBreakStrategy: React.PropTypes.string,
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Invoked on mount and layout changes with
      *
