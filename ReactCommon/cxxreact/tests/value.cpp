@@ -28,8 +28,8 @@ static void prepare() {
 TEST(Value, Undefined) {
   prepare();
   JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  Value v(ctx, JSValueMakeUndefined(ctx));
-  auto s = react::String::adopt(JSValueToStringCopy(ctx, v, nullptr));
+  auto v = Value::makeUndefined(ctx);
+  auto s = String::adopt(JSValueToStringCopy(ctx, v, nullptr));
   EXPECT_EQ("undefined", s.str());
   JSGlobalContextRelease(ctx);
 }

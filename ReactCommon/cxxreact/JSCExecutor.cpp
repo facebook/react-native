@@ -73,12 +73,11 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         const JSValueRef arguments[],
         JSValueRef *exception) {
       try {
-        auto globalObj = JSContextGetGlobalObject(ctx);
-        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
         return (executor->*method)(argumentCount, arguments);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return JSValueMakeUndefined(ctx);
+        return Value::makeUndefined(ctx);
       }
     }
   };
@@ -95,12 +94,11 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
          JSStringRef propertyName,
          JSValueRef *exception) {
       try {
-        auto globalObj = JSContextGetGlobalObject(ctx);
-        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
         return (executor->*method)(object, propertyName);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, object);
-        return JSValueMakeUndefined(ctx);
+        return Value::makeUndefined(ctx);
       }
     }
   };
@@ -121,7 +119,7 @@ static JSValueRef nativeInjectHMRUpdate(
   String execJSString = Value(ctx, arguments[0]).toString();
   String jsURL = Value(ctx, arguments[1]).toString();
   evaluateScript(ctx, execJSString, jsURL);
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 #endif
 
@@ -235,7 +233,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRelease(globalClass);
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
-  JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
+  Object::getGlobalObject(m_context).setPrivate(this);
 
   #ifdef WITH_INSPECTOR
   Inspector::instance().registerGlobalContext("main", m_context);
@@ -493,7 +491,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   auto result = [&] {
     try {
       return m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
-        JSValueMakeNumber(m_context, callbackId),
+        Value::makeNumber(m_context, callbackId),
         Value::fromDynamic(m_context, std::move(arguments))
       });
     } catch (...) {
@@ -530,13 +528,8 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
     SystraceSection s("JSCExecutor.setGlobalVariable",
                       "propName", propName);
 
-    auto globalObject = JSContextGetGlobalObject(m_context);
-    String jsPropertyName(propName.c_str());
-
-    String jsValueJSON = jsStringFromBigString(*jsonValue);
-    auto valueToInject = JSValueMakeFromJSONString(m_context, jsValueJSON);
-
-    JSObjectSetProperty(m_context, globalObject, jsPropertyName, valueToInject, 0, NULL);
+    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(*jsonValue));
+    Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
@@ -736,7 +729,7 @@ JSValueRef JSCExecutor::nativePostMessage(
   JSValueRef msg = arguments[0];
   postMessageToOwner(msg);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeRequire(
@@ -754,7 +747,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   loadModule(moduleId);
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
@@ -765,7 +758,7 @@ JSValueRef JSCExecutor::nativeFlushQueueImmediate(
   }
 
   flushQueueImmediate(Value(m_context, arguments[0]));
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeStartWorker(
@@ -782,7 +775,7 @@ JSValueRef JSCExecutor::nativeStartWorker(
 
   int workerId = addWebWorker(scriptFile, worker, globalObj);
 
-  return JSValueMakeNumber(m_context, workerId);
+  return Value::makeNumber(m_context, workerId);
 }
 
 JSValueRef JSCExecutor::nativePostMessageToWorker(
@@ -799,7 +792,7 @@ JSValueRef JSCExecutor::nativePostMessageToWorker(
 
   postMessageToOwnedWebWorker((int) workerDouble, arguments[1]);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeTerminateWorker(
@@ -816,7 +809,7 @@ JSValueRef JSCExecutor::nativeTerminateWorker(
 
   terminateOwnedWebWorker((int) workerDouble);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeCallSyncHook(
@@ -836,7 +829,7 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
       methodId,
       argsJson);
   if (result.isUndefined) {
-    return JSValueMakeUndefined(m_context);
+    return Value::makeUndefined(m_context);
   }
   return Value::fromDynamic(m_context, result.result);
 }

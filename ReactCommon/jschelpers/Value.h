@@ -208,6 +208,10 @@ public:
     return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
   }
 
+  void setPrivate(void* data) const {
+    JSObjectSetPrivate(m_obj, data);
+  }
+
   JSContextRef context() const {
     return m_context;
   }
@@ -292,6 +296,16 @@ public:
 
   String toString() noexcept {
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
+  }
+
+  static Value makeError(JSContextRef ctx, const char *error);
+
+  static Value makeNumber(JSContextRef ctx, double value) {
+    return Value(ctx, JSValueMakeNumber(ctx, value));
+  }
+
+  static Value makeUndefined(JSContextRef ctx) {
+    return Value(ctx, JSValueMakeUndefined(ctx));
   }
 
   std::string toJSONString(unsigned indent = 0) const;

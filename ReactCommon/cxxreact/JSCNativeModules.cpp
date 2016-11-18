@@ -20,7 +20,7 @@ JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName)
 
   auto module = createModule(moduleName, context);
   if (!module.hasValue()) {
-    return JSValueMakeUndefined(context);
+    return Value::makeUndefined(context);
   }
 
   // Protect since we'll be holding on to this value, even though JS may not
@@ -53,7 +53,7 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
 
   Value moduleInfo = m_genNativeModuleJS->callAsFunction({
     Value::fromDynamic(context, result->config),
-    JSValueMakeNumber(context, result->index)
+    Value::makeNumber(context, result->index)
   });
   CHECK(!moduleInfo.isNull()) << "Module returned from genNativeModule is null";
 

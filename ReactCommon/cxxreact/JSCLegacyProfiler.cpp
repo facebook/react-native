@@ -11,6 +11,8 @@
 #include <jschelpers/Value.h>
 #include "JSCLegacyProfiler.h"
 
+using namespace facebook::react;
+
 static JSValueRef nativeProfilerStart(
     JSContextRef ctx,
     JSObjectRef function,
@@ -20,11 +22,11 @@ static JSValueRef nativeProfilerStart(
     JSValueRef* exception) {
   if (argumentCount < 1) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "nativeProfilerStart: requires at least 1 argument");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
@@ -34,7 +36,7 @@ static JSValueRef nativeProfilerStart(
   JSStartProfiling(ctx, title);
   #endif
   JSStringRelease(title);
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 static JSValueRef nativeProfilerEnd(
@@ -46,11 +48,11 @@ static JSValueRef nativeProfilerEnd(
     JSValueRef* exception) {
   if (argumentCount < 1) {
     if (exception) {
-      *exception = facebook::react::makeJSCException(
+      *exception = Value::makeError(
         ctx,
         "nativeProfilerEnd: requires at least 1 argument");
     }
-    return JSValueMakeUndefined(ctx);
+    return Value::makeUndefined(ctx);
   }
 
   std::string writeLocation("/sdcard/");
@@ -64,7 +66,7 @@ static JSValueRef nativeProfilerEnd(
   JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
   JSEndProfilingAndRender(ctx, title, writeLocation.c_str());
   JSStringRelease(title);
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 namespace facebook {

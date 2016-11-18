@@ -144,6 +144,18 @@ Object Value::asObject() {
   return ret;
 }
 
+Value Value::makeError(JSContextRef ctx, const char *error)
+{
+  JSValueRef exn;
+  JSValueRef args[] = { Value(ctx, String(error)) };
+  JSObjectRef errorObj = JSObjectMakeError(ctx, 1, args, &exn);
+  if (!errorObj) {
+    std::string exceptionText = Value(ctx, exn).toString().str();
+    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
+  }
+  return Value(ctx, errorObj);
+}
+
 Object::operator Value() const {
   return Value(m_context, m_obj);
 }
@@ -153,7 +165,7 @@ Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const {
-  return callAsFunction((JSObjectRef) thisObj, args.size(), args.begin());
+  return callAsFunction((JSObjectRef)thisObj, args.size(), args.begin());
 }
 
 Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
@@ -161,7 +173,7 @@ Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const {
-  return callAsFunction((JSObjectRef) thisObj, nArgs, args);
+  return callAsFunction(static_cast<JSObjectRef>(thisObj), nArgs, args);
 }
 
 Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const {

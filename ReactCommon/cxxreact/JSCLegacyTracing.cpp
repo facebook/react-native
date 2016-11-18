@@ -10,10 +10,13 @@
 #include <fbsystrace.h>
 
 #include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 #include "JSCTracing.h"
 
 static const char *ENABLED_FBSYSTRACE_PROFILE_NAME = "__fbsystrace__";
+
+using namespace facebook::react;
 
 static JSValueRef nativeTraceBeginLegacy(
     JSContextRef ctx,
@@ -23,9 +26,9 @@ static JSValueRef nativeTraceBeginLegacy(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_LIKELY(argumentCount >= 1)) {
-    uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+    uint64_t tag = tracingTagFromJSValue(ctx, arguments[0], exception);
     if (!fbsystrace_is_tracing(tag)) {
-      return JSValueMakeUndefined(ctx);
+      return Value::makeUndefined(ctx);
     }
   }
 
@@ -37,7 +40,7 @@ static JSValueRef nativeTraceBeginLegacy(
   #endif
   JSStringRelease(title);
 
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 static JSValueRef nativeTraceEndLegacy(
@@ -48,9 +51,9 @@ static JSValueRef nativeTraceEndLegacy(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_LIKELY(argumentCount >= 1)) {
-    uint64_t tag = facebook::react::tracingTagFromJSValue(ctx, arguments[0], exception);
+    uint64_t tag = tracingTagFromJSValue(ctx, arguments[0], exception);
     if (!fbsystrace_is_tracing(tag)) {
-      return JSValueMakeUndefined(ctx);
+      return Value::makeUndefined(ctx);
     }
   }
 
@@ -58,7 +61,7 @@ static JSValueRef nativeTraceEndLegacy(
   JSEndProfiling(ctx, title);
   JSStringRelease(title);
 
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 namespace facebook {

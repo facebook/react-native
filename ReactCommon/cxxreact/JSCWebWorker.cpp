@@ -112,19 +112,17 @@ JSValueRef JSCWebWorker::nativePostMessage(
     const JSValueRef arguments[],
     JSValueRef *exception) {
   if (argumentCount != 1) {
-    *exception = makeJSCException(ctx, "postMessage got wrong number of arguments");
-    return JSValueMakeUndefined(ctx);
+    *exception = Value::makeError(ctx, "postMessage got wrong number of arguments");
+    return Value::makeUndefined(ctx);
   }
   JSValueRef msg = arguments[0];
   JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSContextGetGlobalContext(ctx));
 
-  if (webWorker->isTerminated()) {
-    return JSValueMakeUndefined(ctx);
+  if (!webWorker->isTerminated()) {
+    webWorker->postMessageToOwner(msg);
   }
 
-  webWorker->postMessageToOwner(msg);
-
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 /*static*/
