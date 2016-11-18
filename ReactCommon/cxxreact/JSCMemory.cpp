@@ -28,10 +28,9 @@ static JSValueRef nativeCaptureHeap(
       return Value::makeUndefined(ctx);
   }
 
-  JSStringRef outputFilename = JSValueToStringCopy(ctx, arguments[0], exception);
-  std::string finalFilename = facebook::react::String::ref(outputFilename).str();
-  JSCaptureHeap(ctx, finalFilename.c_str(), exception);
-  JSStringRelease(outputFilename);
+  auto outputFilename = String::adopt(
+    ctx, JSValueToStringCopy(ctx, arguments[0], exception));
+  JSCaptureHeap(ctx, outputFilename.str().c_str(), exception);
   return Value::makeUndefined(ctx);
 }
 

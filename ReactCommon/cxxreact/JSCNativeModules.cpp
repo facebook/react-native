@@ -11,7 +11,7 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
   m_moduleRegistry(std::move(moduleRegistry)) {}
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
-  std::string moduleName = String::ref(jsName).str();
+  std::string moduleName = String::ref(context, jsName).str();
 
   const auto it = m_objects.find(moduleName);
   if (it != m_objects.end()) {

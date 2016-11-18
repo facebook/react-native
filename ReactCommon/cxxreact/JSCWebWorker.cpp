@@ -92,7 +92,7 @@ void JSCWebWorker::initJSVMAndLoadScript() {
 
   // TODO(9604438): Protect against script does not exist
   std::unique_ptr<const JSBigString> script = WebWorkerUtil::loadScriptFromAssets(scriptName_);
-  evaluateScript(context_, jsStringFromBigString(*script), String(scriptName_.c_str()));
+  evaluateScript(context_, jsStringFromBigString(context_, *script), String(context_, scriptName_.c_str()));
 
   installGlobalFunction(context_, "postMessage", nativePostMessage);
 }
@@ -127,7 +127,7 @@ JSValueRef JSCWebWorker::nativePostMessage(
 
 /*static*/
 Object JSCWebWorker::createMessageObject(JSContextRef context, const std::string& msgJson) {
-  Value rebornJSMsg = Value::fromJSON(context, String(msgJson.c_str()));
+  Value rebornJSMsg = Value::fromJSON(context, String(context, msgJson.c_str()));
   Object messageObject = Object::create(context);
   messageObject.setProperty("data", rebornJSMsg);
   return messageObject;

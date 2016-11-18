@@ -32,13 +32,12 @@ static JSValueRef nativeTraceBeginLegacy(
     }
   }
 
-  JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
+  String title(ctx, ENABLED_FBSYSTRACE_PROFILE_NAME);
   #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(ctx, title, true);
   #else
   JSStartProfiling(ctx, title);
   #endif
-  JSStringRelease(title);
 
   return Value::makeUndefined(ctx);
 }
@@ -57,9 +56,8 @@ static JSValueRef nativeTraceEndLegacy(
     }
   }
 
-  JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
+  String title(ctx, ENABLED_FBSYSTRACE_PROFILE_NAME);
   JSEndProfiling(ctx, title);
-  JSStringRelease(title);
 
   return Value::makeUndefined(ctx);
 }

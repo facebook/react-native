@@ -55,14 +55,14 @@ JSObjectRef makeFunction(
     JSContextRef ctx,
     const char* name,
     JSFunction function) {
-  return makeFunction(ctx, String(name), std::move(function));
+  return makeFunction(ctx, String(ctx, name), std::move(function));
 }
 
 void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSFunction function) {
-  auto jsName = String(name);
+  auto jsName = String(ctx, name);
   auto functionObj = makeFunction(ctx, jsName, std::move(function));
   Object::getGlobalObject(ctx).setProperty(jsName, Value(ctx, functionObj));
 }
@@ -71,7 +71,7 @@ JSObjectRef makeFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
-  auto jsName = String(name);
+  auto jsName = String(ctx, name);
   return JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
 }
 
@@ -79,9 +79,9 @@ void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
-  String jsName(name);
+  String jsName(ctx, name);
   JSObjectRef functionObj = JSObjectMakeFunctionWithCallback(
-      ctx, jsName, callback);
+    ctx, jsName, callback);
   Object::getGlobalObject(ctx).setProperty(jsName, Value(ctx, functionObj));
 }
 
@@ -134,7 +134,7 @@ void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef
   // The null/empty-ness of source tells us if the JS came from a
   // file/resource, or was a constructed statement.  The location
   // info will include that source, if any.
-  std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
+  std::string locationInfo = source != nullptr ? String::ref(context, source).str() : "";
   Object exObject = exception.asObject();
   auto line = exObject.getProperty("line");
   if (line != nullptr && line.isNumber()) {

@@ -209,8 +209,8 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::setContextName(const std::string& name) {
-  String jsName = String(name.c_str());
-  JSGlobalContextSetName(m_context, static_cast<JSStringRef>(jsName));
+  String jsName = String(m_context, name.c_str());
+  JSGlobalContextSetName(m_context, jsName);
 }
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
@@ -313,7 +313,7 @@ void JSCExecutor::loadApplicationScript(
     (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
     "Optimized bundle with no unpacked source or bytecode");
 
-  String jsSourceURL(sourceURL.c_str());
+  String jsSourceURL(m_context, sourceURL.c_str());
   JSSourceCodeRef sourceCode = nullptr;
   SCOPE_EXIT {
     if (sourceCode) {
@@ -338,9 +338,11 @@ void JSCExecutor::loadApplicationScript(
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
 
+    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
     if (flags & UNPACKED_BC_CACHE) {
       configureJSCBCCache(m_context, bundlePath);
     }
+    #endif
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
@@ -403,14 +405,14 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = jsStringFromBigString(*script);
+  String jsScript = jsStringFromBigString(m_context, *script);
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
   #endif
 
-  String jsSourceURL(sourceURL.c_str());
+  String jsSourceURL(m_context, sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
 
   // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
@@ -473,8 +475,8 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
   auto result = [&] {
     try {
       return m_callFunctionReturnFlushedQueueJS->callAsFunction({
-        Value(m_context, String::createExpectingAscii(moduleId)),
-        Value(m_context, String::createExpectingAscii(methodId)),
+        Value(m_context, String::createExpectingAscii(m_context, moduleId)),
+        Value(m_context, String::createExpectingAscii(m_context, methodId)),
         Value::fromDynamic(m_context, std::move(arguments))
       });
     } catch (...) {
@@ -508,8 +510,8 @@ Value JSCExecutor::callFunctionSyncWithValue(
   SystraceSection s("JSCExecutor::callFunction");
 
   Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
-    Value(m_context, String::createExpectingAscii(module)),
-    Value(m_context, String::createExpectingAscii(method)),
+    Value(m_context, String::createExpectingAscii(m_context, module)),
+    Value(m_context, String::createExpectingAscii(m_context, method)),
     std::move(args),
   }).asObject();
 
@@ -528,7 +530,7 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
     SystraceSection s("JSCExecutor.setGlobalVariable",
                       "propName", propName);
 
-    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(*jsonValue));
+    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
@@ -549,21 +551,19 @@ bool JSCExecutor::supportsProfiling() {
 
 void JSCExecutor::startProfiler(const std::string &titleString) {
   #ifdef WITH_JSC_EXTRA_TRACING
-  JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  String title(m_context, titleString.c_str());
   #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(m_context, title, false);
   #else
   JSStartProfiling(m_context, title);
   #endif
-  JSStringRelease(title);
   #endif
 }
 
 void JSCExecutor::stopProfiler(const std::string &titleString, const std::string& filename) {
   #ifdef WITH_JSC_EXTRA_TRACING
-  JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  String title(m_context, titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
-  JSStringRelease(title);
   #endif
 }
 
@@ -592,8 +592,8 @@ void JSCExecutor::flushQueueImmediate(Value&& queue) {
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
   auto module = m_unbundle->getModule(moduleId);
-  auto sourceUrl = String::createExpectingAscii(module.name);
-  auto source = String::createExpectingAscii(module.code);
+  auto sourceUrl = String::createExpectingAscii(m_context, module.name);
+  auto source = String::createExpectingAscii(m_context, module.code);
   evaluateScript(m_context, source, sourceUrl);
 }
 
@@ -700,7 +700,7 @@ void JSCExecutor::terminateOwnedWebWorker(int workerId) {
 }
 
 Object JSCExecutor::createMessageObject(const std::string& msgJson) {
-  Value rebornJSMsg = Value::fromJSON(m_context, String(msgJson.c_str()));
+  Value rebornJSMsg = Value::fromJSON(m_context, String(m_context, msgJson.c_str()));
   Object messageObject = Object::create(m_context);
   messageObject.setProperty("data", rebornJSMsg);
   return messageObject;
@@ -714,7 +714,7 @@ void JSCExecutor::installNativeHook(const char* name) {
 
 JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
   if (JSStringIsEqualToUTF8CString(propertyName, "name")) {
-    return Value(m_context, String("NativeModules"));
+    return Value(m_context, String(m_context, "NativeModules"));
   }
 
   return m_nativeModules.getModule(m_context, propertyName);

@@ -29,13 +29,12 @@ static JSValueRef nativeProfilerStart(
     return Value::makeUndefined(ctx);
   }
 
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
+  auto title = String::adopt(ctx, JSValueToStringCopy(ctx, arguments[0], exception));
   #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(ctx, title, false);
   #else
   JSStartProfiling(ctx, title);
   #endif
-  JSStringRelease(title);
   return Value::makeUndefined(ctx);
 }
 
@@ -57,15 +56,15 @@ static JSValueRef nativeProfilerEnd(
 
   std::string writeLocation("/sdcard/");
   if (argumentCount > 1) {
-    JSStringRef fileName = JSValueToStringCopy(ctx, arguments[1], exception);
-    writeLocation += facebook::react::String::ref(fileName).str();
-    JSStringRelease(fileName);
+    auto fileName = String::adopt(
+      ctx, JSValueToStringCopy(ctx, arguments[1], exception));
+    writeLocation += fileName.str();
   } else {
     writeLocation += "profile.json";
   }
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
+  auto title = String::adopt(
+    ctx, JSValueToStringCopy(ctx, arguments[0], exception));
   JSEndProfilingAndRender(ctx, title, writeLocation.c_str());
-  JSStringRelease(title);
   return Value::makeUndefined(ctx);
 }
 
