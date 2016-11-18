@@ -11,6 +11,7 @@
 const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 const querystring = require('querystring');
 const url = require('url');
+const HMRClient = require('./HMRClient');
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -21,14 +22,17 @@ const blacklist = [
  * Hot Module Replacement updates to the simulator.
  */
 function attachHMRServer({httpServer, path, packagerServer}) {
-  let client = null;
+  let clients = [];
+  let didRegisterListener = false;
+  const onDisconnect = client => {
+    clients.splice(clients.indexOf(client), 1);
+    if (clients.length === 0) {
+      packagerServer.setHMRFileChangeListener(null);
+      didRegisterListener = false;
+    }
+  };
 
-  function disconnect() {
-    client = null;
-    packagerServer.setHMRFileChangeListener(null);
-  }
-
-  // For the give platform and entry file, returns a promise with:
+  // For the given platform and entry file, returns a promise with:
   //   - The full list of dependencies.
   //   - The shallow dependencies each file on the dependency list has
   //   - Inverse shallow dependencies map
@@ -124,7 +128,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         shallowDependencies,
         inverseDependenciesCache,
       }) => {
-        client = {
+        clients.push(new HMRClient({
           ws,
           platform: params.platform,
           bundleEntry: params.bundleEntry,
@@ -132,208 +136,36 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           dependenciesModulesCache,
           shallowDependencies,
           inverseDependenciesCache,
-        };
+          onDisconnect,
+        }));
+        if (!didRegisterListener) {
+          didRegisterListener = true;
+          packagerServer.setHMRFileChangeListener((filename, stat) => {
 
-        packagerServer.setHMRFileChangeListener((filename, stat) => {
-          if (!client) {
-            return;
-          }
-          console.log(
-            `[Hot Module Replacement] File change detected (${time()})`
-          );
+            console.log(
+              `[Hot Module Replacement] File change detected (${time()})`
+            );
 
-          const blacklisted = blacklist.find(blacklistedPath =>
-            filename.indexOf(blacklistedPath) !== -1
-          );
+            const blacklisted = blacklist.find(blacklistedPath =>
+              filename.indexOf(blacklistedPath) !== -1
+            );
 
-          if (blacklisted) {
-            return;
-          }
+            if (blacklisted) {
+              return;
+            }
 
-          client.ws.send(JSON.stringify({type: 'update-start'}));
-          stat.then(() => {
-            return packagerServer.getShallowDependencies({
-              entryFile: filename,
-              platform: client.platform,
-              dev: true,
-              hot: true,
-            })
-              .then(deps => {
-                if (!client) {
-                  return [];
-                }
-
-                // if the file dependencies have change we need to invalidate the
-                // dependencies caches because the list of files we need to send
-                // to the client may have changed
-                const oldDependencies = client.shallowDependencies[filename];
-                if (arrayEquals(deps, oldDependencies)) {
-                  // Need to create a resolution response to pass to the bundler
-                  // to process requires after transform. By providing a
-                  // specific response we can compute a non recursive one which
-                  // is the least we need and improve performance.
-                  return packagerServer.getDependencies({
-                    platform: client.platform,
-                    dev: true,
-                    hot: true,
-                    entryFile: filename,
-                    recursive: true,
-                  }).then(response => {
-                    const module = packagerServer.getModuleForPath(filename);
-
-                    return response.copy({dependencies: [module]});
-                  });
-                }
-
-                // if there're new dependencies compare the full list of
-                // dependencies we used to have with the one we now have
-                return getDependencies(client.platform, client.bundleEntry)
-                  .then(({
-                    dependenciesCache: depsCache,
-                    dependenciesModulesCache: depsModulesCache,
-                    shallowDependencies: shallowDeps,
-                    inverseDependenciesCache: inverseDepsCache,
-                    resolutionResponse,
-                  }) => {
-                    if (!client) {
-                      return {};
-                    }
-
-                    // build list of modules for which we'll send HMR updates
-                    const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
-                    Object.keys(depsModulesCache).forEach(module => {
-                      if (!client.dependenciesModulesCache[module]) {
-                        modulesToUpdate.push(depsModulesCache[module]);
-                      }
-                    });
-
-                    // Need to send modules to the client in an order it can
-                    // process them: if a new dependency graph was uncovered
-                    // because a new dependency was added, the file that was
-                    // changed, which is the root of the dependency tree that
-                    // will be sent, needs to be the last module that gets
-                    // processed. Reversing the new modules makes sense
-                    // because we get them through the resolver which returns
-                    // a BFS ordered list.
-                    modulesToUpdate.reverse();
-
-                    // invalidate caches
-                    client.dependenciesCache = depsCache;
-                    client.dependenciesModulesCache = depsModulesCache;
-                    client.shallowDependencies = shallowDeps;
-                    client.inverseDependenciesCache = inverseDepsCache;
-
-                    return resolutionResponse.copy({
-                      dependencies: modulesToUpdate
-                    });
-                  });
-              })
-              .then((resolutionResponse) => {
-                if (!client) {
-                  return;
-                }
-
-                // make sure the file was modified is part of the bundle
-                if (!client.shallowDependencies[filename]) {
-                  return;
-                }
-
-                const httpServerAddress = httpServer.address();
-
-                // Sanitize the value from the HTTP server
-                let packagerHost = 'localhost';
-                if (httpServer.address().address &&
-                    httpServer.address().address !== '::' &&
-                    httpServer.address().address !== '') {
-                  packagerHost = httpServerAddress.address;
-                }
-
-                return packagerServer.buildBundleForHMR({
-                  entryFile: client.bundleEntry,
-                  platform: client.platform,
-                  resolutionResponse,
-                }, packagerHost, httpServerAddress.port);
-              })
-              .then(bundle => {
-                if (!client || !bundle || bundle.isEmpty()) {
-                  return;
-                }
-
-                return JSON.stringify({
-                  type: 'update',
-                  body: {
-                    modules: bundle.getModulesIdsAndCode(),
-                    inverseDependencies: client.inverseDependenciesCache,
-                    sourceURLs: bundle.getSourceURLs(),
-                    sourceMappingURLs: bundle.getSourceMappingURLs(),
-                  },
-                });
-              })
-              .catch(error => {
-                // send errors to the client instead of killing packager server
-                let body;
-                if (error.type === 'TransformError' ||
-                    error.type === 'NotFoundError' ||
-                    error.type === 'UnableToResolveError') {
-                  body = {
-                    type: error.type,
-                    description: error.description,
-                    filename: error.filename,
-                    lineNumber: error.lineNumber,
-                  };
-                } else {
-                  console.error(error.stack || error);
-                  body = {
-                    type: 'InternalError',
-                    description: 'react-packager has encountered an internal error, ' +
-                      'please check your terminal error output for more details',
-                  };
-                }
-
-                return JSON.stringify({type: 'error', body});
-              })
-              .then(update => {
-                if (!client || !update) {
-                  return;
-                }
-
-                console.log(
-                  '[Hot Module Replacement] Sending HMR update to client (' +
-                  time() + ')'
-                );
-                client.ws.send(update);
-              });
-            },
-            () => {
-              // do nothing, file was removed
-            },
-          ).then(() => {
-            client.ws.send(JSON.stringify({type: 'update-done'}));
+            stat.then(() => Promise.all(
+                clients.map(client =>
+                  client.receiveUpdate(filename, packagerServer, httpServer, getDependencies)
+                )
+              ), () => {/* do nothing, file was removed */});
           });
-        });
-
-        client.ws.on('error', e => {
-          console.error('[Hot Module Replacement] Unexpected error', e);
-          disconnect();
-        });
-
-        client.ws.on('close', () => disconnect());
+        }
       })
     .catch(err => {
       throw err;
     });
   });
-}
-
-function arrayEquals(arrayA, arrayB) {
-  arrayA = arrayA || [];
-  arrayB = arrayB || [];
-  return (
-    arrayA.length === arrayB.length &&
-    arrayA.every((element, index) => {
-      return element === arrayB[index];
-    })
-  );
 }
 
 function time() {
