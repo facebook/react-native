@@ -44,6 +44,17 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       .replace(/HelloWorld/g, newProjectName)
       .replace(/helloworld/g, newProjectName.toLowerCase());
     
+
+    let contentChangedCallback = null;
+    if (options && options.upgrade && (!options.force)) {
+      contentChangedCallback = (_, contentChanged) => {
+        return upgradeFileContentChangedCallback(
+          absoluteSrcFilePath,
+          relativeRenamedPath,
+          contentChanged,
+        );
+      }
+    }
     copyAndReplace(
       absoluteSrcFilePath,
       path.resolve(destPath, relativeRenamedPath),
@@ -51,9 +62,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
         'HelloWorld': newProjectName,
         'helloworld': newProjectName.toLowerCase(),
       },
-      options && options.upgrade ? (_, contentChanged) => {
-        return upgradeFileContentChangedCallback(absoluteSrcFilePath, relativeRenamedPath, contentChanged)
-      } : null
+      contentChangedCallback,
     );
   });
 }
