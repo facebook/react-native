@@ -106,7 +106,7 @@ import com.facebook.react.views.art.ARTVirtualNode;
     if (getPadding(spacingType) != padding) {
       super.setPadding(spacingType, padding);
       mPaddingChanged = true;
-      dirty();
+      markUpdated();
     }
   }
 

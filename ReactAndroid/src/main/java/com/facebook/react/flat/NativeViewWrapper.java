@@ -104,7 +104,7 @@ import com.facebook.react.uimanager.ViewManager;
     if (getPadding(spacingType) != padding) {
       super.setPadding(spacingType, padding);
       mPaddingChanged = true;
-      dirty();
+      markUpdated();
     }
   }
 
