@@ -63,38 +63,55 @@ public:
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) throw(JSException) override;
+
 #ifdef WITH_FBJSCEXTENSIONS
   virtual void loadApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
     int flags) override;
 #endif
+
+#ifdef WITH_FBJSCEXTENSIONS
+  virtual void loadApplicationScript(
+    int fd,
+    std::string sourceURL) override;
+#endif
+
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
+
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,
     const folly::dynamic& arguments) override;
+
   virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
+
   template <typename T>
   Value callFunctionSync(
       const std::string& module, const std::string& method, T&& args) {
     return callFunctionSyncWithValue(module, method,
                                      toValue(m_context, std::forward<T>(args)));
   }
+
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
+
   virtual void* getJavaScriptContext() override;
+
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
+
   virtual void handleMemoryPressureUiHidden() override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
+
   virtual void destroy() override;
+
   void setContextName(const std::string& name);
 
 private:

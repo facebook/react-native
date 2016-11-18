@@ -363,6 +363,35 @@ void JSCExecutor::loadApplicationScript(
 }
 #endif
 
+#ifdef WITH_FBJSCEXTENSIONS
+void JSCExecutor::loadApplicationScript(
+    int fd,
+    std::string sourceURL)
+{
+  String jsSourceURL {sourceURL.c_str()};
+
+  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+  if (!bcSourceCode) {
+    // Not bytecode, fall through.
+    return JSExecutor::loadApplicationScript(fd, sourceURL);
+  }
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+
+  evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
+
+  // TODO(luk): t13903306 Remove this check once we make native modules
+  // working for java2js
+  if (m_delegate) {
+    bindBridge();
+    flush();
+  }
+
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+}
+#endif
+
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
