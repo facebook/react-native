@@ -498,6 +498,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.configureNextLayoutAnimation(config, success, error);
   }
 
+  @ReactMethod
+  public void getContentSizeMultiplier(Callback callback) {
+    float scale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+    callback.invoke(scale);
+  }
+
   /**
    * To implement the transactional requirement mentioned in the class javadoc, we only commit
    * UI changes to the actual view hierarchy once a batch of JS->Java calls have been completed.
