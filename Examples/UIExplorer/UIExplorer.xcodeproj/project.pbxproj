@@ -105,7 +105,6 @@
 		2DD323EA1DA2DE3F000FE1B8 /* libReact-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact-tvOS.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
-		397D6A731DB12C1100E99986 /* RCTSubviewClippingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 397D6A711DB12C1100E99986 /* RCTSubviewClippingTests.m */; };
 		3D13F8481D6F6AF900E69E0E /* ImageInBundle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */; };
 		3D13F84A1D6F6AFD00E69E0E /* OtherImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */; };
 		3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */; };
@@ -391,7 +390,6 @@
 		2DD323A51DA2DD8B000FE1B8 /* UIExplorer-tvOSUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UIExplorer-tvOSUnitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUnicodeDecodeTests.m; sourceTree = "<group>"; };
-		397D6A711DB12C1100E99986 /* RCTSubviewClippingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSubviewClippingTests.m; sourceTree = "<group>"; };
 		3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D13F8401D6F6AE000E69E0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
 		3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ImageInBundle.png; sourceTree = "<group>"; };
@@ -618,7 +616,6 @@
 		143BC57C1B21E18100462512 /* UIExplorerUnitTests */ = {
 			isa = PBXGroup;
 			children = (
-				397D6A711DB12C1100E99986 /* RCTSubviewClippingTests.m */,
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
 				68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */,
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
@@ -1344,7 +1341,6 @@
 				1497CFAE1B21F5E400C1F8F2 /* RCTJSCExecutorTests.m in Sources */,
 				13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */,
 				1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */,
-				397D6A731DB12C1100E99986 /* RCTSubviewClippingTests.m in Sources */,
 				134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */,
 				1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */,
 				1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */,
