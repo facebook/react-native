@@ -264,6 +264,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(true)
                 .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
                 .build();
             }
 
@@ -297,6 +298,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(true)
                 .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
                 .build();
             }
           }
