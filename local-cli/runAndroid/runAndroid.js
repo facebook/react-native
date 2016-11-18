@@ -15,6 +15,7 @@ const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 const adb = require('./adb');
+const xml = require('xmldoc');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -141,10 +142,16 @@ function buildAndRun(args) {
   }
 
   try {
-    const packageName = fs.readFileSync(
+    const manifest = fs.readFileSync(
       'app/src/main/AndroidManifest.xml',
       'utf8'
-    ).match(/package="(.+?)"/)[1];
+    );
+
+    const packageName = manifest.match(/package="(.+?)"/)[1];
+
+    const activityFromManifest = findMainInManifest(manifest);
+    const activityToStart =  activityFromManifest === null
+      ? '.MainActivity' : activityFromManifest;
 
     const adbPath = getAdbPath();
 
@@ -153,7 +160,7 @@ function buildAndRun(args) {
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/' + activityToStart];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -182,6 +189,35 @@ function buildAndRun(args) {
     // `console.log(e.stderr)`
     return Promise.reject();
   }
+}
+
+function findMainInManifest(manifest) {
+  const manifestXml = new xml.XmlDocument(manifest);
+
+  const application = manifestXml.childNamed('application');
+  if (!application) {
+    return null;
+  }
+
+  const activities = application.childrenNamed('activity');
+
+  if (activities.length === 0) {
+    return null;
+  }
+
+  for (let i = 0; i < activities.length; i++) {
+    const activity = activities[i];
+
+    const intentFilter = activity.childNamed('intent-filter');
+
+    if (intentFilter) {
+      if (intentFilter.childWithAttribute('android:name','android.intent.action.MAIN') !== undefined) {
+        return activity.attr['android:name'];
+      }
+    }
+  }
+
+  return null;
 }
 
 function startServerInNewWindow() {
