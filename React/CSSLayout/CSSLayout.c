@@ -2173,7 +2173,7 @@ bool gPrintSkips = false;
 static const char *spacer = "                                                            ";
 
 static const char *getSpacer(const unsigned long level) {
-  const unsigned long spacerLen = strlen(spacer);
+  const size_t spacerLen = strlen(spacer);
   if (level > spacerLen) {
     return &spacer[0];
   } else {
