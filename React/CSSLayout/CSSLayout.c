@@ -350,7 +350,7 @@ void CSSNodeCopyStyle(const CSSNodeRef dstNode, const CSSNodeRef srcNode) {
   }
 }
 
-inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexGrow(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
   }
@@ -360,7 +360,7 @@ inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
   return 0;
 }
 
-inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexShrink(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
@@ -370,7 +370,7 @@ inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
   return 0;
 }
 
-inline float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexBasis(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexBasis)) {
     return node->style.flexBasis;
   }
