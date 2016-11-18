@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTJSCWrapper.h"
-#import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTMultipartDataTask.h"
