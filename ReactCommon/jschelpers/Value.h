@@ -249,7 +249,7 @@ public:
   }
 
   bool isBoolean() const {
-    return JSValueIsBoolean(context(), m_value);
+    return getType() == kJSTypeBoolean;
   }
 
   bool asBoolean() const {
@@ -257,15 +257,15 @@ public:
   }
 
   bool isNumber() const {
-    return JSValueIsNumber(context(), m_value);
+    return getType() == kJSTypeNumber;
   }
 
   bool isNull() const {
-    return JSValueIsNull(context(), m_value);
+    return getType() == kJSTypeNull;
   }
 
   bool isUndefined() const {
-    return JSValueIsUndefined(context(), m_value);
+    return getType() == kJSTypeUndefined;
   }
 
   double asNumber() const {
@@ -285,13 +285,13 @@ public:
   }
 
   bool isObject() const {
-    return JSValueIsObject(context(), m_value);
+    return getType() == kJSTypeObject;
   }
 
   Object asObject();
 
   bool isString() const {
-    return JSValueIsString(context(), m_value);
+    return getType() == kJSTypeString;
   }
 
   String toString() noexcept {
