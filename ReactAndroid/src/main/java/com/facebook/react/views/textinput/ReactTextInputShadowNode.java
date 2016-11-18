@@ -45,10 +45,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
-  private int mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
-      0 : Layout.BREAK_STRATEGY_SIMPLE;
 
   public ReactTextInputShadowNode() {
+    mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
+        0 : Layout.BREAK_STRATEGY_SIMPLE;
     setMeasureFunction(this);
   }
 
@@ -105,6 +105,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
+    }
+
+    if (editText.getBreakStrategy() != mTextBreakStrategy) {
+      editText.setBreakStrategy(mTextBreakStrategy);
     }
 
     editText.measure(
