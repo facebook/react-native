@@ -25,15 +25,22 @@ Pod::Spec.new do |s|
   s.source              = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
   s.default_subspec     = 'Core'
   s.requires_arc        = true
-  s.platform            = :ios, "7.0"
+  s.platform            = :ios, "8.0"
+  s.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+  s.header_dir          = 'React'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.source_files        = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files       = "**/__tests__/*", "IntegrationTests/*"
-    ss.frameworks          = "JavaScriptCore"
-    ss.libraries           = "stdc++"
-    ss.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+    ss.dependency      'React/CSSLayout'
+    ss.source_files  = "React/**/*.{c,h,m,mm,S}"
+    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/CSSLayout/*"
+    ss.frameworks    = "JavaScriptCore"
+    ss.libraries     = "stdc++"
+  end
+
+  s.subspec 'CSSLayout' do |ss|
+    ss.source_files = 'ReactCommon/CSSLayout/**/*.{c,h}'
+    ss.header_dir   = 'CSSLayout'
   end
 
   s.subspec 'ART' do |ss|
@@ -118,7 +125,6 @@ Pod::Spec.new do |s|
   s.subspec 'RCTLinkingIOS' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/LinkingIOS/*.{h,m}"
-    ss.preserve_paths = "Libraries/LinkingIOS/*.js"
   end
 
   s.subspec 'RCTTest' do |ss|
