@@ -368,7 +368,7 @@ void JSCExecutor::loadApplicationScript(
     int fd,
     std::string sourceURL)
 {
-  String jsSourceURL {sourceURL.c_str()};
+  String jsSourceURL(m_context, sourceURL.c_str());
 
   auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
   if (!bcSourceCode) {
