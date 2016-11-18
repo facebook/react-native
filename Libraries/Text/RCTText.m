@@ -9,6 +9,8 @@
 
 #import "RCTText.h"
 
+#import <MobileCoreServices/UTCoreTypes.h>
+
 #import "RCTShadowText.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -28,6 +30,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 {
   NSTextStorage *_textStorage;
   CAShapeLayer *_highlightLayer;
+  UILongPressGestureRecognizer *_longPressGestureRecognizer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -49,6 +52,22 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
   NSRange semicolonRange = [superDescription rangeOfString:@";"];
   NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, self.textStorage.string];
   return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+}
+
+- (void)setSelectable:(BOOL)selectable
+{
+  if (_selectable == selectable) {
+    return;
+  }
+
+  _selectable = selectable;
+
+  if (_selectable) {
+    [self enableContextMenu];
+  }
+  else {
+    [self disableContextMenu];
+  }
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -175,6 +194,74 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
 - (NSString *)accessibilityLabel
 {
   return _textStorage.string;
+}
+
+#pragma mark - Context Menu
+
+- (void)enableContextMenu
+{
+  _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+  [self addGestureRecognizer:_longPressGestureRecognizer];
+}
+
+- (void)disableContextMenu
+{
+  [self removeGestureRecognizer:_longPressGestureRecognizer];
+  _longPressGestureRecognizer = nil;
+}
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
+{
+#if !TARGET_OS_TV
+  UIMenuController *menuController = [UIMenuController sharedMenuController];
+
+  if (menuController.isMenuVisible) {
+    return;
+  }
+
+  if (!self.isFirstResponder) {
+    [self becomeFirstResponder];
+  }
+
+  [menuController setTargetRect:self.bounds inView:self];
+  [menuController setMenuVisible:YES animated:YES];
+#endif
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return _selectable;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if (action == @selector(copy:)) {
+    return YES;
+  }
+
+  return [super canPerformAction:action withSender:sender];
+}
+
+- (void)copy:(id)sender
+{
+#if !TARGET_OS_TV
+  NSAttributedString *attributedString = _textStorage;
+
+  NSMutableDictionary *item = [NSMutableDictionary new];
+
+  NSData *rtf = [attributedString dataFromRange:NSMakeRange(0, attributedString.length)
+                             documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
+                                          error:nil];
+
+  if (rtf) {
+    [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
+  }
+
+  [item setObject:attributedString.string forKey:(id)kUTTypeUTF8PlainText];
+
+  UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+  pasteboard.items = @[item];
+#endif
 }
 
 @end
