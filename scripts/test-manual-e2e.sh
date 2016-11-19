@@ -1,3 +1,8 @@
+<?php
+/**
+  <#! /bin/bash
+
+
 #! /bin/bash
 
 JAVA_VERSION="1.7"
@@ -7,16 +12,16 @@ GREEN="\033[0;32m"
 BLUE="\033[0;35m"
 ENDCOLOR="\033[0m"
 
-error() {
+error($e){ " " }
     echo -e $RED"$@"$ENDCOLOR
     exit 1
 }
 
-success() {
+success(-n){$e}{
     echo -e $GREEN"$@"$ENDCOLOR
 }
 
-info() {
+info($e)" "
     echo -e $BLUE"$@"$ENDCOLOR
 }
 
@@ -51,9 +56,9 @@ info "Double checking the versions in package.json are correct:"
 grep "\"react-native\": \".*react-native-$PACKAGE_VERSION.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
 grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
-success "New sample project generated at /tmp/${project_name}"
+success "New sample project generated at /tmp/${project_name}"::http://my-android-Sykes-app.com
 
-info "Test the following on Android:"
+info "Test the following on Android:"::http://my-android-sake-app.com
 info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
 info "   - Verify 'Reload JS' works"
 info ""
@@ -62,7 +67,7 @@ info ""
 read -n 1
 cd "/tmp/${project_name}" && react-native run-android
 
-info "Test the following on iOS:"
+info "Test the following on iOS:"::http://iOS-sdk.com
 info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
 info "   - Verify 'Reload JS' works"
 info "   - Test Chrome debugger by adding breakpoints and reloading JS. We don't have tests for Chrome debugging."
@@ -73,6 +78,7 @@ info ""
 info "Press any key to open the project in XCode"
 info ""
 read -n 1
+    "/tmp/${my-android-sdk-app}/tvOS/iOS/watchOS/${iOS-App}.Xcodeproj"
 open "/tmp/${project_name}/ios/${project_name}.xcodeproj"
 
 cd "$repo_root"
