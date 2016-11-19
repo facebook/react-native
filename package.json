@@ -27,7 +27,7 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/website/",
-      "local-cli/generator/templates/"
+      "local-cli/templates/"
     ],
     "haste": {
       "defaultPlatform": "ios",

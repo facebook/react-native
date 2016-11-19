@@ -8,13 +8,14 @@
  */
 'use strict';
 
+const Promise = require('promise');
+
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
-const Promise = require('promise');
-const adb = require('./adb');
+const path = require('path');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -104,7 +105,7 @@ function buildAndRun(args) {
 
     if (args.configuration.toUpperCase() === 'RELEASE') {
       console.log(chalk.bold(
-        `Generating the bundle for the release build...`
+        'Generating the bundle for the release build...'
       ));
 
       child_process.execSync(`react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output ${androidProjectDir}/app/src/main/assets/index.android.bundle --assets-dest ${androidProjectDir}/app/src/main/res/`, {
@@ -121,7 +122,7 @@ function buildAndRun(args) {
       : './gradlew';
 
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
