@@ -26,6 +26,8 @@ import {
   checkNewVersion
 } from './checks';
 
+log.heading = 'upgrader';
+
 /**
  * Promisify the callback-based shelljs function exec
  * @param command
@@ -43,6 +45,33 @@ stdout: ${stdout}`))
     });
   });
 }
+
+function readProjectDescriptors() {
+  try {
+    const rnPakPath = path.resolve(
+      process.cwd(),
+      'node_modules',
+      'react-native',
+      'package.json'
+    );
+
+    const pakPath = path.resolve(
+      process.cwd(),
+      'package.json'
+    );
+
+    const rnPak = JSON.parse(fs.readFileSync(rnPakPath, 'utf8'));
+    const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
+
+    return {rnPak, pak};
+  } catch (err) {
+    throw new Error(
+      'Unable to find project descriptors. Make sure that you have run `npm install` ' +
+      'and that you are inside a react-native project.'
+    )
+  }
+}
+
 
 function setupWorkingDir(context) {
   return new Promise((resolve, reject) => {
@@ -78,22 +107,21 @@ function runYeomanGenerators(context) {
 }
 
 async function run(cliVersion, cliArgs) {
-  const installed = JSON.parse(fs.readFileSync('node_modules/react-native/package.json', 'utf8'));
-  const pak = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const context = {
-    appName: pak.name,
-    currentVersion: installed.version,
-    declaredVersion: pak.dependencies['react-native'],
-    declaredReactVersion: pak.dependencies.react,
     tmpDir: path.resolve(os.tmpdir(), 'react-native-upgrader'),
     cliVersion,
     cliArgs
   };
 
-  log.heading = 'upgrader';
-
   try {
-    log.info('Check declared version...');
+    log.info('Read project descriptors');
+    const {rnPak, pak} = readProjectDescriptors();
+    context.appName = pak.name;
+    context.currentVersion = rnPak.version;
+    context.declaredVersion = pak.dependencies['react-native'];
+    context.declaredReactVersion = pak.dependencies.react;
+
+    log.info('Check declared version');
     checkDeclaredVersion(context);
 
     log.info('Check matching versions');
