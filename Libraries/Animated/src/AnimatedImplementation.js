@@ -1471,21 +1471,25 @@ class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
   }
 
-  __getValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetValues(style) {
+    return Object.keys(style).reduce((prev, curr) => {
+      let value = style[curr];
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from
           // JS may not be up to date.
-          style[key] = value.__getValue();
+          value = value.__getValue();
         }
-      } else {
-        style[key] = value;
+      } else if (typeof value === 'object') {
+        value = this.__walkStyleAndGetValues(value);
       }
-    }
-    return style;
+      return { ...prev, [curr]: value };
+    }, {});
+  }
+
+  __getValue(): Object {
+    return this.__walkStyleAndGetValues(this._style);
   }
 
   __getAnimatedValue(): Object {
