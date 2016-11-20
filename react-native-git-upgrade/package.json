@@ -1,11 +1,11 @@
 {
-  "name": "react-native-upgrader",
+  "name": "react-native-git-upgrade",
   "version": "0.1.0",
   "license": "BSD-3-Clause",
   "description": "The React Native upgrader tool",
   "main": "cli.js",
   "bin": {
-    "react-native-upgrader": "index.js"
+    "react-native-git-upgrade": "index.js"
   },
   "engines": {
     "node": ">=4"

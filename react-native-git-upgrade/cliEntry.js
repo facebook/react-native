@@ -26,7 +26,7 @@ import {
   checkNewVersion
 } from './checks';
 
-log.heading = 'upgrader';
+log.heading = 'git-upgrade';
 
 /**
  * Promisify the callback-based shelljs function exec
@@ -130,7 +130,7 @@ function runYeomanGenerators(context) {
 
 async function run(cliVersion, cliArgs) {
   const context = {
-    tmpDir: path.resolve(os.tmpdir(), 'react-native-upgrader'),
+    tmpDir: path.resolve(os.tmpdir(), 'react-native-git-upgrade'),
     generatorDir: path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator'),
     cliVersion,
     cliArgs
