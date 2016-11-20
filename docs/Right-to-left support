@@ -1,0 +1,35 @@
+## Right-to-left(rtl) support
+
+React native supports RTL languages. The best way to access RTL mode is via the `I18nManager`.
+
+### I18nManager
+
+#### I18nManager.isRTL()
+Getter, Returns boolean
+Checks if user's device is RTL
+
+```
+const IS_RTL = I18nManager.isRTL();
+```
+
+#### I18nManager.allowRTL();
+Setter
+If true, If IS_RTL is `true` will change app layout to RTL
+If false, will disable RTL layout
+
+```
+const I18nManager.allowRTL(true); // 
+```
+
+#### I18nManager.forceRTL(true);
+Setter
+If true, and even if user's device isn't RTL, will force app to use RTL layout
+
+```
+const I18nManager.forceRTL(true); // 
+```
+
+
+### Notes for implementation
+Keep in mind that when you use RTL layout, all components will flip horizontally. 
+For instance and as confusing it might sound, in order to make the a `<Text>` component right-aligned we will use `textAlign: 'left'` and vice versa.
