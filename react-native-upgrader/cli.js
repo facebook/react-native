@@ -9,8 +9,11 @@
 'use strict';
 
 require('babel-register')({
-  presets: ['es2015-node', 'stage-3'],
-  only: /react-native-upgrader\/(?!(node_modules))/,
+  presets: [
+    require('babel-preset-es2015-node'),
+    require('babel-preset-stage-3')
+  ],
+  only: /(react-native-upgrader\/(?!(node_modules)))|(local-cli\/generator)/,
   retainLines: true,
   sourceMaps: 'inline',
   babelrc: false,

@@ -91,6 +91,30 @@ function configureGitEnv(context) {
   process.env.GIT_WORK_TREE = '.';
 }
 
+function generateTemplates(context) {
+  try {
+    // Try requiring the index.js (entry-point of Yeoman generators)
+    const generatorEntryPoint = path.resolve(context.generatorDir, 'index.js');
+    fs.accessSync(generatorEntryPoint);
+    return runYeomanGenerators(context);
+  } catch(err) {
+    return runCopyAndReplace(context);
+  }
+}
+
+function runCopyAndReplace(context) {
+  const copyProjectTemplateAndReplacePath = path.resolve(context.generatorDir, 'copyProjectTemplateAndReplace');
+  // This module can be required twice in different RN version
+  delete require.cache[copyProjectTemplateAndReplacePath];
+  const copyProjectTemplateAndReplace = require(copyProjectTemplateAndReplacePath);
+  copyProjectTemplateAndReplace(
+    path.resolve(context.generatorDir, '..', 'templates', 'HelloWorld'),
+    process.cwd(),
+    context.appName,
+    {upgrade: true, force: true}
+  );
+}
+
 function runYeomanGenerators(context) {
   if (!context.cliArgs.verbose) {
     // Yeoman output needs monkey-patching (no silent option)
@@ -99,8 +123,7 @@ function runYeomanGenerators(context) {
   }
 
   const env = yeoman.createEnv();
-  const generatorPath = path.join(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator');
-  env.register(generatorPath, 'react:app');
+  env.register(context.generatorDir, 'react:app');
   const generatorArgs = ['react:app', context.appName].concat(context.cliArgs._);
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true, force: true}, resolve));
 }
@@ -108,6 +131,7 @@ function runYeomanGenerators(context) {
 async function run(cliVersion, cliArgs) {
   const context = {
     tmpDir: path.resolve(os.tmpdir(), 'react-native-upgrader'),
+    generatorDir: path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator'),
     cliVersion,
     cliArgs
   };
@@ -158,7 +182,7 @@ async function run(cliVersion, cliArgs) {
     context.sourcesUpdated = true;
 
     log.info('Generate old version template');
-    await runYeomanGenerators(context);
+    await generateTemplates(context);
 
     log.info('Add updated files to commit');
     await exec(context, 'git add .');
@@ -170,7 +194,7 @@ async function run(cliVersion, cliArgs) {
     await exec(context, 'npm install --save react-native@' + context.newVersion);
 
     log.info('Generate new version template');
-    await runYeomanGenerators(context);
+    await generateTemplates(context);
 
     log.info('Add updated files to commit');
     await exec(context, 'git add .');
