@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/flexbox.html
 next: handling-text-input
+previous: height-and-width
 ---
 
 A component can specify the layout of its children using the flexbox algorithm. Flexbox is designed to provide a consistent layout on different screen sizes.
@@ -76,7 +77,7 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AlignItemsBasics {
+class AlignItemsBasics extends Component {
   render() {
     return (
       // Try setting `alignItems` to 'flex-start'

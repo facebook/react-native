@@ -17,7 +17,6 @@ var PickerIOS = require('PickerIOS');
 var PickerAndroid = require('PickerAndroid');
 var Platform = require('Platform');
 var React = require('React');
-var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var UnimplementedView = require('UnimplementedView');
@@ -44,110 +43,126 @@ var MODE_DROPDOWN = 'dropdown';
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>
  */
-var Picker = React.createClass({
+class Picker extends React.Component {
+ props: {
+  style?: $FlowFixMe,
+  selectedValue?: any,
+  onValueChange?: Function,
+  enabled?: boolean,
+  mode?: 'dialog' | 'dropdown',
+  itemStyle?: $FlowFixMe,
+  prompt?: string,
+  testID?: string,
+ };
 
-  statics: {
-    /**
-     * On Android, display the options in a dialog.
-     */
-    MODE_DIALOG: MODE_DIALOG,
-    /**
-     * On Android, display the options in a dropdown (this is the default).
-     */
-    MODE_DROPDOWN: MODE_DROPDOWN,
-  },
+ /**
+  * On Android, display the options in a dialog.
+  */
+ static MODE_DIALOG = MODE_DIALOG;
 
-  getDefaultProps: function() {
-    return {
-      mode: MODE_DIALOG,
-    };
-  },
+ /**
+  * On Android, display the options in a dropdown (this is the default).
+  */
+ static MODE_DROPDOWN = MODE_DROPDOWN;
 
-  propTypes: {
-    ...View.propTypes,
-    style: pickerStyleType,
-    /**
-     * Value matching value of one of the items. Can be a string or an integer.
-     */
-    selectedValue: React.PropTypes.any,
-    /**
-     * Callback for when an item is selected. This is called with the following parameters:
-     *   - `itemValue`: the `value` prop of the item that was selected
-     *   - `itemPosition`: the index of the selected item in this picker
-     */
-    onValueChange: React.PropTypes.func,
-    /**
-     * If set to false, the picker will be disabled, i.e. the user will not be able to make a
-     * selection.
-     * @platform android
-     */
-    enabled: React.PropTypes.bool,
-    /**
-     * On Android, specifies how to display the selection items when the user taps on the picker:
-     *
-     *   - 'dialog': Show a modal dialog. This is the default.
-     *   - 'dropdown': Shows a dropdown anchored to the picker view
-     *
-     * @platform android
-     */
-    mode: React.PropTypes.oneOf(['dialog', 'dropdown']),
-    /**
-     * Style to apply to each of the item labels.
-     * @platform ios
-     */
-    itemStyle: itemStylePropType,
-    /**
-     * Prompt string for this picker, used on Android in dialog mode as the title of the dialog.
-     * @platform android
-     */
-    prompt: React.PropTypes.string,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: React.PropTypes.string,
-  },
+ static defaultProps = {
+   mode: MODE_DIALOG,
+ };
 
-  render: function() {
-      if (Platform.OS === 'ios') {
-        return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
-      } else if (Platform.OS === 'android') {
-        return <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>;
-      } else {
-        return <UnimplementedView />;
-      }
-  },
-});
+ static propTypes = {
+   ...View.propTypes,
+   style: pickerStyleType,
+   /**
+    * Value matching value of one of the items. Can be a string or an integer.
+    */
+   selectedValue: React.PropTypes.any,
+   /**
+    * Callback for when an item is selected. This is called with the following parameters:
+    *   - `itemValue`: the `value` prop of the item that was selected
+    *   - `itemPosition`: the index of the selected item in this picker
+    */
+   onValueChange: React.PropTypes.func,
+   /**
+    * If set to false, the picker will be disabled, i.e. the user will not be able to make a
+    * selection.
+    * @platform android
+    */
+   enabled: React.PropTypes.bool,
+   /**
+    * On Android, specifies how to display the selection items when the user taps on the picker:
+    *
+    *   - 'dialog': Show a modal dialog. This is the default.
+    *   - 'dropdown': Shows a dropdown anchored to the picker view
+    *
+    * @platform android
+    */
+   mode: React.PropTypes.oneOf(['dialog', 'dropdown']),
+   /**
+    * Style to apply to each of the item labels.
+    * @platform ios
+    */
+   itemStyle: itemStylePropType,
+   /**
+    * Prompt string for this picker, used on Android in dialog mode as the title of the dialog.
+    * @platform android
+    */
+   prompt: React.PropTypes.string,
+   /**
+    * Used to locate this view in end-to-end tests.
+    */
+   testID: React.PropTypes.string,
+ };
+
+ render() {
+     if (Platform.OS === 'ios') {
+       // $FlowFixMe found when converting React.createClass to ES6
+       return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
+     } else if (Platform.OS === 'android') {
+       // $FlowFixMe found when converting React.createClass to ES6
+       return <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>;
+     } else {
+       return <UnimplementedView />;
+     }
+ }
+}
 
 /**
  * Individual selectable item in a Picker.
  */
-Picker.Item = React.createClass({
+// $FlowFixMe found when converting React.createClass to ES6
+Picker.Item = class extends React.Component {
+ props: {
+  label: string,
+  value?: any,
+  color?: $FlowFixMe,
+  testID?: string,
+ };
 
-  propTypes: {
-    /**
-     * Text to display for this item.
-     */
-    label: React.PropTypes.string.isRequired,
-    /**
-     * The value to be passed to picker's `onValueChange` callback when
-     * this item is selected. Can be a string or an integer.
-     */
-    value: React.PropTypes.any,
-    /**
-     * Color of this item's text.
-     * @platform android
-     */
-    color: ColorPropType,
-    /**
-     * Used to locate the item in end-to-end tests.
-     */
-    testID: React.PropTypes.string,
-  },
+ static propTypes = {
+   /**
+    * Text to display for this item.
+    */
+   label: React.PropTypes.string.isRequired,
+   /**
+    * The value to be passed to picker's `onValueChange` callback when
+    * this item is selected. Can be a string or an integer.
+    */
+   value: React.PropTypes.any,
+   /**
+    * Color of this item's text.
+    * @platform android
+    */
+   color: ColorPropType,
+   /**
+    * Used to locate the item in end-to-end tests.
+    */
+   testID: React.PropTypes.string,
+ };
 
-  render: function() {
-    // The items are not rendered directly
-    throw null;
-  },
-});
+ render() {
+   // The items are not rendered directly
+   throw null;
+ }
+};
 
 module.exports = Picker;

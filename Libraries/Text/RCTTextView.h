@@ -29,6 +29,7 @@
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
+@property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
 

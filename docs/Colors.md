@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/colors.html
 next: images
+previous: integration-with-existing-apps
 ---
 
 The following formats are supported:

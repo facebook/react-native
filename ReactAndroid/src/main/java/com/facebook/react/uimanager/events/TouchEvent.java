@@ -33,7 +33,6 @@ public class TouchEvent extends Event<TouchEvent> {
 
   public static TouchEvent obtain(
       int viewTag,
-      long timestampMs,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
       float viewX,
@@ -45,7 +44,6 @@ public class TouchEvent extends Event<TouchEvent> {
     }
     event.init(
       viewTag,
-      timestampMs,
       touchEventType,
       motionEventToCopy,
       viewX,
@@ -67,13 +65,12 @@ public class TouchEvent extends Event<TouchEvent> {
 
   private void init(
       int viewTag,
-      long timestampMs,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(viewTag, timestampMs);
+    super.init(viewTag);
 
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);

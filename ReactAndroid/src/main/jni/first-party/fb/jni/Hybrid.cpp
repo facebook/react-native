@@ -31,7 +31,7 @@ void HybridData::setNativePointer(std::unique_ptr<BaseHybridClass> new_value) {
   // This releases ownership from the unique_ptr, and passes the pointer, and
   // ownership of it, to HybridData which is managed by the java GC.  The
   // finalizer on hybridData calls resetNative which will delete the object, if
-  // reseetNative has not already been called.
+  // resetNative has not already been called.
   setFieldValue(pointerField, reinterpret_cast<jlong>(new_value.release()));
 }
 
@@ -63,4 +63,3 @@ void HybridDataOnLoad() {
 }
 
 }}
-

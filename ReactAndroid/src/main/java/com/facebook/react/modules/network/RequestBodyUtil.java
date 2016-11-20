@@ -117,7 +117,9 @@ import okio.Source;
   /**
    * Creates a ProgressRequestBody that can be used for showing uploading progress
    */
-  public static ProgressRequestBody createProgressRequest(RequestBody requestBody, ProgressRequestListener listener) {
+  public static ProgressRequestBody createProgressRequest(
+      RequestBody requestBody,
+      ProgressListener listener) {
     return new ProgressRequestBody(requestBody, listener);
   }
 

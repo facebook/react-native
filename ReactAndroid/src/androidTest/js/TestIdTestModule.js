@@ -12,12 +12,12 @@
 'use strict';
 
 var Image = require('Image');
+var Picker = require('Picker');
 var ProgressBarAndroid = require('ProgressBarAndroid');
 var React = require('React');
 var ScrollView = require('ScrollView');
-var Picker = require('Picker');
 var StyleSheet = require('StyleSheet');
-var SwitchAndroid = require('SwitchAndroid');
+var Switch = require('Switch');
 var Text = require('Text');
 var TextInput = require('TextInput');
 var ToolbarAndroid = require('ToolbarAndroid');
@@ -34,8 +34,8 @@ var WebView = require('WebView');
  * - The app renders fine
  * - The testID property is passed to the native views
  */
-var TestIdTestApp = React.createClass({
-  render: function() {
+class TestIdTestApp extends React.Component {
+  render() {
     return (
       <View>
 
@@ -83,7 +83,7 @@ var TestIdTestApp = React.createClass({
           <Picker.Item label="Dialog picker" value="key0" />
         </Picker>
 
-        <SwitchAndroid testID="Switch" value={true} />
+        <Switch testID="Switch" value={true} />
 
         <Text testID="Text">text</Text>
 
@@ -124,8 +124,8 @@ var TestIdTestApp = React.createClass({
 
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   base: {

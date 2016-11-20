@@ -60,6 +60,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   _onTransitionEnd: () => void;
   _prevTransitionProps: ?NavigationTransitionProps;
   _transitionProps: NavigationTransitionProps;
+  _isMounted: boolean;
 
   props: Props;
   state: State;
@@ -94,11 +95,20 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     this._prevTransitionProps = null;
     this._transitionProps = buildTransitionProps(props, this.state);
+    this._isMounted = false;
   }
 
   componentWillMount(): void {
     this._onLayout = this._onLayout.bind(this);
     this._onTransitionEnd = this._onTransitionEnd.bind(this);
+  }
+
+  componentDidMount(): void {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount(): void {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps: Props): void {
@@ -124,9 +134,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       position,
       progress,
     } = nextState;
-
-    // update scenes.
-    this.setState(nextState);
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
@@ -168,15 +175,17 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       );
     }
 
-    // play the transition.
-    nextProps.onTransitionStart && nextProps.onTransitionStart(
-      this._transitionProps,
-      this._prevTransitionProps,
-    );
-    Animated.parallel(animations).start(this._onTransitionEnd);
+    // update scenes and play the transition
+    this.setState(nextState, () => {
+      nextProps.onTransitionStart && nextProps.onTransitionStart(
+        this._transitionProps,
+        this._prevTransitionProps,
+      );
+      Animated.parallel(animations).start(this._onTransitionEnd);
+    });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View
         onLayout={this._onLayout}
@@ -188,7 +197,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
   _onLayout(event: any): void {
     const {height, width} = event.nativeEvent.layout;
-
+    if (this.state.layout.initWidth === width &&
+      this.state.layout.initHeight === height) {
+      return;
+    }
     const layout = {
       ...this.state.layout,
       initHeight: height,
@@ -209,6 +221,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   }
 
   _onTransitionEnd(): void {
+    if (!this._isMounted) {
+      return;
+    }
+
     const prevTransitionProps = this._prevTransitionProps;
     this._prevTransitionProps = null;
 
@@ -218,12 +234,13 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     };
 
     this._transitionProps = buildTransitionProps(this.props, nextState);
-    this.setState(nextState);
 
-    this.props.onTransitionEnd && this.props.onTransitionEnd(
-      this._transitionProps,
-      prevTransitionProps,
-    );
+    this.setState(nextState, () => {
+      this.props.onTransitionEnd && this.props.onTransitionEnd(
+        this._transitionProps,
+        prevTransitionProps,
+      );
+    });
   }
 }
 
@@ -248,6 +265,7 @@ function buildTransitionProps(
     position,
     progress,
     scenes,
+    // $FlowFixMe(>=0.32.0) - find can return undefined
     scene: scenes.find(isSceneActive),
   };
 }

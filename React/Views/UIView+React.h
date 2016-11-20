@@ -9,11 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTShadowView;
-
 #import "RCTComponent.h"
 
-//TODO: let's try to eliminate this category if possible
+@class RCTShadowView;
 
 @interface UIView (React) <RCTComponent>
 
@@ -73,11 +71,14 @@
 - (void)reactDidMakeFirstResponder;
 - (BOOL)reactRespondsToTouch:(UITouch *)touch;
 
+#if RCT_DEV
+
 /**
  Tools for debugging
  */
-#if RCT_DEV
+
 @property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
+
 #endif
 
 @end

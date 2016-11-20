@@ -49,6 +49,10 @@ class JInstanceCallback : public InstanceCallback {
   }
 
   void incrementPendingJSCalls() override {
+    // For C++ modules, this can be called from an arbitrary thread
+    // managed by the module, via callJSCallback or callJSFunction.  So,
+    // we ensure that it is registered with the JVM.
+    jni::ThreadScope guard;
     static auto method =
       ReactCallback::javaClassStatic()->getMethod<void()>("incrementPendingJSCalls");
     method(jobj_);
@@ -101,10 +105,13 @@ void CatalystInstanceImpl::registerNatives() {
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
       makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
+      makeNativeMethod("loadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
       makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
       makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
       makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
@@ -161,8 +168,9 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
       sourceURL);
+    return;
   } else {
-    instance_->loadScriptFromString(std::move(script), std::move(sourceURL));
+    instance_->loadScriptFromString(std::move(script), sourceURL);
   }
 }
 
@@ -172,9 +180,16 @@ void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
                                        sourceURL);
 }
 
+void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                         const std::string& sourceURL,
+                                                         jint flags) {
+  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
+                                                  std::move(sourceURL),
+                                                  flags);
+}
+
 void CatalystInstanceImpl::callJSFunction(
-    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments,
-    const std::string& tracingName) {
+    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -183,10 +198,9 @@ void CatalystInstanceImpl::callJSFunction(
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
   instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            module,
-                            method,
-                            std::move(arguments->array),
-                            tracingName);
+                            std::move(module),
+                            std::move(method),
+                            std::move(arguments->array));
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
@@ -204,6 +218,10 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+jlong CatalystInstanceImpl::getJavaScriptContext() {
+  return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
 void CatalystInstanceImpl::handleMemoryPressureUiHidden() {

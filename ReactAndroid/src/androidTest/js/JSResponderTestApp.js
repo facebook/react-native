@@ -17,16 +17,18 @@ var Text = require('Text');
 var PanResponder = require('PanResponder');
 var ScrollView = require('ScrollView');
 
-var JSResponderTestApp = React.createClass({
-  _handleMoveShouldSetPanResponder: function(e, gestureState) {
+class JSResponderTestApp extends React.Component {
+  _handleMoveShouldSetPanResponder = (e, gestureState) => {
     return Math.abs(gestureState.dx) > 30;
-  },
-  componentWillMount: function() {
+  };
+
+  componentWillMount() {
     this.panGesture = PanResponder.create({
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
     });
-  },
-  render: function() {
+  }
+
+  render() {
     var views = [];
     for (var i = 0; i < 100; i++) {
       views[i] = (
@@ -45,8 +47,8 @@ var JSResponderTestApp = React.createClass({
         </ScrollView>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/tutorial.html
 next: props
+previous: getting-started
 ---
 
 React Native is like React, but it uses native components instead of web components as building blocks. So to understand the basic structure of a React Native app, you need to understand some of the basic React concepts, like JSX, components, `state`, and `props`. If you already know React, you still need to learn some React-Native-specific stuff, like the native components. This

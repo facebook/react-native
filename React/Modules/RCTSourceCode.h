@@ -13,6 +13,4 @@
 
 @interface RCTSourceCode : NSObject <RCTBridgeModule>
 
-@property (nonatomic, copy) NSURL *scriptURL;
-
 @end

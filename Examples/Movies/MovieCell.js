@@ -31,8 +31,8 @@ var getStyleFromScore = require('./getStyleFromScore');
 var getImageSource = require('./getImageSource');
 var getTextFromScore = require('./getTextFromScore');
 
-var MovieCell = React.createClass({
-  render: function() {
+class MovieCell extends React.Component {
+  render() {
     var criticsScore = this.props.movie.ratings.critics_score;
     var TouchableElement = TouchableHighlight;
     if (Platform.OS === 'android') {
@@ -66,7 +66,7 @@ var MovieCell = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   textContainer: {

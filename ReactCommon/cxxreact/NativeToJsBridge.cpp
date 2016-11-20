@@ -41,25 +41,18 @@ public:
     return m_nativeToJs->unregisterExecutor(executor);
   }
 
-  std::vector<std::string> moduleNames() override {
-    // If this turns out to be too expensive to run on the js thread,
-    // we can compute it in the ctor, and just return std::move() it
-    // here.
-    return m_registry->moduleNames();
-  }
-
-  folly::dynamic getModuleConfig(const std::string& name) override {
-    return m_registry->getConfig(name);
+  std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
+    return m_registry;
   }
 
   void callNativeModules(
-      JSExecutor& executor, std::string callJSON, bool isEndOfBatch) override {
+      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
-    m_nativeQueue->runOnQueue([this, token, callJSON=std::move(callJSON), isEndOfBatch] {
+    m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
-      for (auto& call : react::parseMethodCalls(callJSON)) {
+      for (auto& call : react::parseMethodCalls(std::move(calls))) {
         m_registry->callNativeMethod(
           token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
       }
@@ -118,45 +111,71 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                             std::string sourceURL) {
-  // TODO(t11144533): Add assert that we are on the correct thread
-  m_mainExecutor->loadApplicationScript(std::move(script), std::move(sourceURL));
+void NativeToJsBridge::loadOptimizedApplicationScript(
+    std::string bundlePath,
+    std::string sourceURL,
+    int flags) {
+  runOnExecutorQueue(
+      m_mainExecutorToken,
+      [bundlePath=std::move(bundlePath),
+       sourceURL=std::move(sourceURL),
+       flags=flags]
+        (JSExecutor* executor) {
+    executor->loadApplicationScript(std::move(bundlePath), std::move(sourceURL), flags);
+  });
 }
 
-void NativeToJsBridge::loadApplicationUnbundle(
+void NativeToJsBridge::loadApplication(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       m_mainExecutorToken,
-      [unbundle=folly::makeMoveWrapper(std::move(unbundle)),
+      [unbundleWrap=folly::makeMoveWrapper(std::move(unbundle)),
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
 
-    executor->setJSModulesUnbundle(unbundle.move());
+    auto unbundle = unbundleWrap.move();
+    if (unbundle) {
+      executor->setJSModulesUnbundle(std::move(unbundle));
+    }
     executor->loadApplicationScript(std::move(*startupScript),
                                     std::move(startupScriptSourceURL));
   });
 }
 
+void NativeToJsBridge::loadApplicationSync(
+    std::unique_ptr<JSModulesUnbundle> unbundle,
+    std::unique_ptr<const JSBigString> startupScript,
+    std::string startupScriptSourceURL) {
+  if (unbundle) {
+    m_mainExecutor->setJSModulesUnbundle(std::move(unbundle));
+  }
+  m_mainExecutor->loadApplicationScript(std::move(startupScript),
+                                        std::move(startupScriptSourceURL));
+}
+
 void NativeToJsBridge::callFunction(
     ExecutorToken executorToken,
-    const std::string& moduleId,
-    const std::string& methodId,
-    const folly::dynamic& arguments,
-    const std::string& tracingName) {
+    std::string&& module,
+    std::string&& method,
+    folly::dynamic&& arguments) {
   int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
+  std::string tracingName = fbsystrace_is_tracing(TRACE_TAG_REACT_CXX_BRIDGE) ?
+    folly::to<std::string>("JSCall__", module, '_', method) : std::string();
+  SystraceSection s(tracingName.c_str());
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
       tracingName.c_str(),
       systraceCookie);
+  #else
+  std::string tracingName;
   #endif
 
-  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [module = std::move(module), method = std::move(method), arguments = std::move(arguments), tracingName = std::move(tracingName), systraceCookie] (JSExecutor* executor) {
     #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
@@ -168,12 +187,11 @@ void NativeToJsBridge::callFunction(
     // This is safe because we are running on the executor's thread: it won't
     // destruct until after it's been unregistered (which we check above) and
     // that will happen on this thread
-    executor->callFunction(moduleId, methodId, arguments);
+    executor->callFunction(module, method, arguments);
   });
 }
 
-void NativeToJsBridge::invokeCallback(ExecutorToken executorToken, const double callbackId,
-                                      const folly::dynamic& arguments) {
+void NativeToJsBridge::invokeCallback(ExecutorToken executorToken, double callbackId, folly::dynamic&& arguments) {
   int systraceCookie = -1;
   #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
@@ -183,7 +201,7 @@ void NativeToJsBridge::invokeCallback(ExecutorToken executorToken, const double 
       systraceCookie);
   #endif
 
-  runOnExecutorQueue(executorToken, [callbackId, arguments, systraceCookie] (JSExecutor* executor) {
+  runOnExecutorQueue(executorToken, [callbackId, arguments = std::move(arguments), systraceCookie] (JSExecutor* executor) {
     #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,

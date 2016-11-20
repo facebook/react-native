@@ -1,20 +1,18 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
+ *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
-// NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<af6ef8054f37d4745903e857b95fe01f>>
 
 package com.facebook.csslayout;
 
 import java.util.Arrays;
 
 /**
- * Where the output of {@link LayoutEngine#layoutNode(CSSNode, float)} will go in the CSSNode.
+ * Where the output of {@link LayoutEngine#layoutNode(CSSNodeDEPRECATED, float)} will go in the CSSNodeDEPRECATED.
  */
 public class CSSLayout {
   // This value was chosen based on empiracle data. Even the most complicated
@@ -33,7 +31,7 @@ public class CSSLayout {
   public float[] dimensions = new float[2];
   public CSSDirection direction = CSSDirection.LTR;
 
-  public float flexBasis;
+  public float computedFlexBasis;
 
   public int generationCount;
   public CSSDirection lastParentDirection;
@@ -53,7 +51,7 @@ public class CSSLayout {
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
     direction = CSSDirection.LTR;
 
-    flexBasis = 0;
+    computedFlexBasis = CSSConstants.UNDEFINED;
 
     generationCount = 0;
     lastParentDirection = null;

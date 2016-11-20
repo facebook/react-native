@@ -26,8 +26,8 @@ var {
 
 var SearchScreen = require('./SearchScreen');
 
-var MoviesApp = React.createClass({
-  render: function() {
+class MoviesApp extends React.Component {
+  render() {
     return (
       <NavigatorIOS
         style={styles.container}
@@ -38,7 +38,7 @@ var MoviesApp = React.createClass({
       />
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

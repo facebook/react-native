@@ -8,11 +8,11 @@
  *
  * @providesModule NavigationCardStackPanResponder
  * @flow
- * @typechecks
  */
 'use strict';
 
 const Animated = require('Animated');
+const I18nManager = require('I18nManager');
 const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder');
 
 const clamp = require('clamp');
@@ -21,6 +21,8 @@ import type {
   NavigationPanPanHandlers,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
+
+const emptyFunction = () => {};
 
 /**
  * The duration of the card animation in milliseconds.
@@ -40,14 +42,6 @@ const POSITION_THRESHOLD = 1 / 3;
 const RESPOND_THRESHOLD = 15;
 
 /**
- * The distance from the edge of the navigator which gesture response can start for.
- * For horizontal scroll views, a distance of 30 from the left of the screen is the
- * standard maximum position to start touch responsiveness.
- */
-const RESPOND_POSITION_MAX_HORIZONTAL = 30;
-const RESPOND_POSITION_MAX_VERTICAL = null;
-
-/**
  * The threshold (in pixels) to finish the gesture action.
  */
 const DISTANCE_THRESHOLD = 100;
@@ -64,6 +58,10 @@ export type NavigationGestureDirection =  'horizontal' | 'vertical';
 
 type Props = NavigationSceneRendererProps & {
   onNavigateBack: ?Function,
+  /**
+  * The distance from the edge of the navigator which gesture response can start for.
+  **/
+  gestureResponseDistance: ?number,
 };
 
 /**
@@ -96,6 +94,17 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     this._isVertical = direction === Directions.VERTICAL;
     this._props = props;
     this._startValue = 0;
+
+    // Hack to make this work with native driven animations. We add a single listener
+    // so the JS value of the following animated values gets updated. We rely on
+    // some Animated private APIs and not doing so would require using a bunch of
+    // value listeners but we'd have to remove them to not leak and I'm not sure
+    // when we'd do that with the current structure we have. `stopAnimation` callback
+    // is also broken with native animated values that have no listeners so if we
+    // want to remove this we have to fix this too.
+    this._addNativeListener(this._props.layout.width);
+    this._addNativeListener(this._props.layout.height);
+    this._addNativeListener(this._props.position);
   }
 
   onMoveShouldSetPanResponder(event: any, gesture: any): boolean {
@@ -115,8 +124,12 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       layout.width.__getValue();
 
     const positionMax = isVertical ?
-      RESPOND_POSITION_MAX_VERTICAL :
-      RESPOND_POSITION_MAX_HORIZONTAL;
+      props.gestureResponseDistance :
+      /**
+      * For horizontal scroll views, a distance of 30 from the left of the screen is the
+      * standard maximum position to start touch responsiveness.
+      */
+      props.gestureResponseDistance || 30;
 
     if (positionMax != null && currentDragPosition > positionMax) {
       return false;
@@ -150,10 +163,13 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
+    const currentValue = I18nManager.isRTL && axis === 'dx' ?
+      this._startValue + (gesture[axis] / distance) :
+      this._startValue - (gesture[axis] / distance);
 
     const value = clamp(
       index - 1,
-      this._startValue - (gesture[axis] / distance),
+      currentValue,
       index
     );
 
@@ -171,7 +187,9 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
     const index = props.navigationState.index;
-    const distance = gesture[axis];
+    const distance = I18nManager.isRTL && axis === 'dx' ?
+      -gesture[axis] :
+      gesture[axis];
 
     props.position.stopAnimation((value: number) => {
       this._reset();
@@ -201,8 +219,19 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       {
         toValue: props.navigationState.index,
         duration: ANIMATION_DURATION,
+        useNativeDriver: props.position.__isNative,
       }
     ).start();
+  }
+
+  _addNativeListener(animatedValue) {
+    if (!animatedValue.__isNative) {
+      return;
+    }
+
+    if (Object.keys(animatedValue._listeners).length === 0) {
+      animatedValue.addListener(emptyFunction);
+    }
   }
 }
 

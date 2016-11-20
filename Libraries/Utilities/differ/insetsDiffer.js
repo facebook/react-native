@@ -12,10 +12,10 @@
 'use strict';
 
 type Inset = {
-  top: ?number;
-  left: ?number;
-  right: ?number;
-  bottom: ?number;
+  top: ?number,
+  left: ?number,
+  right: ?number,
+  bottom: ?number,
 }
 
 var dummyInsets = {

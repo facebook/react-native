@@ -21,8 +21,8 @@ public class TopLoadingErrorEvent extends Event<TopLoadingErrorEvent> {
   public static final String EVENT_NAME = "topLoadingError";
   private WritableMap mEventData;
 
-  public TopLoadingErrorEvent(int viewId, long timestampMs, WritableMap eventData) {
-    super(viewId, timestampMs);
+  public TopLoadingErrorEvent(int viewId, WritableMap eventData) {
+    super(viewId);
     mEventData = eventData;
   }
 

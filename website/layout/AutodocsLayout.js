@@ -12,9 +12,9 @@
 'use strict';
 
 var DocsSidebar = require('DocsSidebar');
-var H = require('Header');
 var Header = require('Header');
 var HeaderWithGithub = require('HeaderWithGithub');
+var Footer = require('Footer');
 var Marked = require('Marked');
 var Prism = require('Prism');
 var React = require('React');
@@ -253,13 +253,17 @@ var ComponentDoc = React.createClass({
         {(style.composes || []).map((name) => {
           var link;
           if (name === 'LayoutPropTypes') {
-            name = 'Flexbox';
+            name = 'Layout Props';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
+          } else if (name === 'ShadowPropTypesIOS') {
+            name = 'Shadow Props';
+            link =
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
@@ -327,7 +331,7 @@ var ComponentDoc = React.createClass({
     }
     return (
       <span>
-        <H level={3}>Methods</H>
+        <Header level={3}>Methods</Header>
         <div className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
@@ -358,7 +362,7 @@ var ComponentDoc = React.createClass({
     }
     return (
       <span>
-        <H level={3}>Type Definitions</H>
+        <Header level={3}>Type Definitions</Header>
         <div className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
@@ -377,7 +381,7 @@ var ComponentDoc = React.createClass({
         <Marked>
           {content.description}
         </Marked>
-        <H level={3}>Props</H>
+        <Header level={3}>Props</Header>
         {this.renderProps(content.props, content.composes)}
         {this.renderMethods(content.methods, namedTypes)}
         {this.renderTypeDefs(content.typedef, namedTypes)}
@@ -409,7 +413,7 @@ var APIDoc = React.createClass({
     }
     return (
       <span>
-        <H level={3}>Methods</H>
+        <Header level={3}>Methods</Header>
         <div className="props">
           {methods.filter((method) => {
             return method.name[0] !== '_';
@@ -443,7 +447,7 @@ var APIDoc = React.createClass({
     }
     return (
       <span>
-        <H level={3}>Properties</H>
+        <Header level={3}>Properties</Header>
         <div className="props">
           {properties.filter((property) => {
             return property.name[0] !== '_';
@@ -504,7 +508,7 @@ var APIDoc = React.createClass({
     }
     return (
       <span>
-        <H level={3}>Type Definitions</H>
+        <Header level={3}>Type Definitions</Header>
         <div className="props">
           {typedefs.map((typedef) => {
             return this.renderTypeDef(typedef, namedTypes);
@@ -831,13 +835,11 @@ var Autodocs = React.createClass({
     }
     return (
       <div>
-        <HeaderWithGithub
-          title="Description"
-          path={'docs/' + docs.componentName + '.md'}
-        />
+        <Header level={1}>Description</Header>
         <Marked>
           {docs.fullDescription}
         </Marked>
+        <Footer path={'docs/' + docs.componentName + '.md'} />
       </div>
     );
   },
@@ -872,7 +874,7 @@ var Autodocs = React.createClass({
 
     return (
       <div>
-        {(docs.examples.length > 1) ? <H level={3}>Examples</H> : null}
+        {(docs.examples.length > 1) ? <Header level={3}>Examples</Header> : null}
         {docs.examples.map(example => this.renderExample(example, metadata))}
       </div>
     );
@@ -886,17 +888,16 @@ var Autodocs = React.createClass({
       <APIDoc content={docs} apiName={metadata.title} />;
 
     return (
-      <Site section="docs" title={metadata.title}>
+      <Site
+        section="docs"
+        title={metadata.title} >
         <section className="content wrap documentationContent">
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <HeaderWithGithub
-              title={metadata.title}
-              level={1}
-              path={metadata.path}
-            />
+            <Header level={1}>{metadata.title}</Header>
             {content}
+            <Footer path={metadata.path} />
             {this.renderFullDescription(docs)}
             {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">

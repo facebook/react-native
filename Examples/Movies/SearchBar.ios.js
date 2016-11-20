@@ -25,8 +25,8 @@ var {
   View,
 } = ReactNative;
 
-var SearchBar = React.createClass({
-  render: function() {
+class SearchBar extends React.Component {
+  render() {
     return (
       <View style={styles.searchBar}>
         <TextInput
@@ -44,7 +44,7 @@ var SearchBar = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {

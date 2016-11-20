@@ -106,14 +106,13 @@ public class JavaScriptModuleRegistry {
         FLog.w(ReactConstants.TAG, "Dropping JS call, ExecutorToken went away...");
         return null;
       }
-      String tracingName = mModuleRegistration.getTracingName(method);
       NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mCatalystInstance.callFunction(
         executorToken,
         mModuleRegistration.getName(),
         method.getName(),
-        jsArgs,
-        tracingName);
+        jsArgs
+      );
       return null;
     }
   }

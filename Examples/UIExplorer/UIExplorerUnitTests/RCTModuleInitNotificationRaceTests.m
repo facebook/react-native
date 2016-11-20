@@ -21,6 +21,7 @@
 #import "RCTUtils.h"
 #import "RCTUIManager.h"
 #import "RCTViewManager.h"
+#import "RCTJavaScriptExecutor.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -44,7 +45,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 
-- (NSArray<NSString *> *)customDirectEventTypes
+- (NSArray<NSString *> *)customBubblingEventTypes
 {
   return @[@"foo"];
 }
@@ -99,7 +100,8 @@ RCT_EXPORT_MODULE()
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return nil;
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge

@@ -46,6 +46,8 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   // This array contains ids of events in order they come in, so we can emit them to JS in the exact same order.
   NSMutableArray<NSNumber *> *_eventQueue;
   BOOL _eventsDispatchScheduled;
+  NSMutableArray<id<RCTEventDispatcherObserver>> *_observers;
+  NSLock *_observersLock;
 }
 
 @synthesize bridge = _bridge;
@@ -59,18 +61,24 @@ RCT_EXPORT_MODULE()
   _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];
   _eventsDispatchScheduled = NO;
+  _observers = [NSMutableArray new];
+  _observersLock = [NSLock new];
 }
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit"
-                    args:body ? @[name, body] : @[name]];
+  [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
+                  method:@"emit"
+                    args:body ? @[name, body] : @[name]
+              completion:NULL];
 }
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                    args:body ? @[name, body] : @[name]];
+  [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
+                  method:@"emit"
+                    args:body ? @[name, body] : @[name]
+              completion:NULL];
 }
 
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
@@ -81,8 +89,10 @@ RCT_EXPORT_MODULE()
   }
 
   name = RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveEvent"
-                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]];
+  [_bridge enqueueJSCall:@"RCTEventEmitter"
+                  method:@"receiveEvent"
+                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
+              completion:NULL];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
@@ -134,6 +144,21 @@ RCT_EXPORT_MODULE()
 
 - (void)sendEvent:(id<RCTEvent>)event
 {
+  [_observersLock lock];
+
+  BOOL eventHandled = NO;
+  for (id<RCTEventDispatcherObserver> observer in _observers) {
+    if ([observer eventDispatcherWillDispatchEvent:event]) {
+      eventHandled = YES;
+    }
+  }
+
+  [_observersLock unlock];
+
+  if (eventHandled) {
+    return;
+  }
+
   [_eventQueueLock lock];
 
   NSNumber *eventID = RCTGetEventID(event);
@@ -163,6 +188,20 @@ RCT_EXPORT_MODULE()
       [self flushEventsQueue];
     } queue:RCTJSThread];
   }
+}
+
+- (void)addDispatchObserver:(id<RCTEventDispatcherObserver>)observer
+{
+  [_observersLock lock];
+  [_observers addObject:observer];
+  [_observersLock unlock];
+}
+
+- (void)removeDispatchObserver:(id<RCTEventDispatcherObserver>)observer
+{
+  [_observersLock lock];
+  [_observers removeObject:observer];
+  [_observersLock unlock];
 }
 
 - (void)dispatchEvent:(id<RCTEvent>)event

@@ -5,6 +5,7 @@ layout: docs
 category: The Basics
 permalink: docs/using-a-scrollview.html
 next: using-a-listview
+previous: handling-text-input
 ---
 
 The [`ScrollView`](/react-native/docs/scrollview.html) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogenous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
@@ -13,7 +14,7 @@ This example creates a vertical `ScrollView` with both images and text mixed tog
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
-import{ AppRegistry, ScrollView, Image, Text, View } from 'react-native'
+import { AppRegistry, ScrollView, Image, Text } from 'react-native'
 
 class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {

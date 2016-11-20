@@ -50,13 +50,13 @@
     });
 
     it('allows for stray high surrogates', () => {
-      const arrayBuffer = encode('a\ud8c6b');
+      const arrayBuffer = encode(String.fromCharCode(0x61, 0xd8c6, 0x62));
       expect(new Uint8Array(arrayBuffer)).toEqual(
         new Uint8Array([0x61, 0xed, 0xa3, 0x86, 0x62]));
     });
 
     it('allows for stray low surrogates', () => {
-      const arrayBuffer = encode('a\ude19b');
+      const arrayBuffer = encode(String.fromCharCode(0x61, 0xde19, 0x62));
       expect(new Uint8Array(arrayBuffer)).toEqual(
         new Uint8Array([0x61, 0xed, 0xb8, 0x99, 0x62]));
     });

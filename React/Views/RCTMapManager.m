@@ -85,6 +85,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsAnnotationCallouts, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(followUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
@@ -103,7 +104,9 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
-  [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
+  if (json) {
+    [view setRegion:[RCTConvert MKCoordinateRegion:json] animated:YES];
+  }
 }
 
 #pragma mark MKMapViewDelegate
@@ -147,6 +150,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+#if !TARGET_OS_TV
 - (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view
                               didChangeDragState:(MKAnnotationViewDragState)newState
                                     fromOldState:(MKAnnotationViewDragState)oldState
@@ -170,6 +174,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     }
   }
 }
+#endif //TARGET_OS_TV
 
 - (MKAnnotationView *)mapView:(RCTMap *)mapView
             viewForAnnotation:(RCTMapAnnotation *)annotation
@@ -278,30 +283,34 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     }
   }
 
+#if !TARGET_OS_TV
   annotationView.draggable = annotation.draggable;
+#endif
 
   return annotationView;
 }
 
-- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView
-            rendererForOverlay:(RCTMapOverlay *)overlay
-{
-  if ([overlay isKindOfClass:[RCTMapOverlay class]]) {
-    MKPolylineRenderer *polylineRenderer =
-      [[MKPolylineRenderer alloc] initWithPolyline:overlay];
-    polylineRenderer.strokeColor = overlay.strokeColor;
-    polylineRenderer.lineWidth = overlay.lineWidth;
-    return polylineRenderer;
-  } else {
-    return nil;
+- (void)mapView:(RCTMap *)mapView didAddAnnotationViews:(NSArray *)views {
+  if (mapView.showsAnnotationCallouts) {
+    for (id<MKAnnotation> annotation in mapView.annotations) {
+      [mapView selectAnnotation:annotation animated:YES];
+    }
   }
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+{
+  RCTAssert([overlay isKindOfClass:[RCTMapOverlay class]], @"Overlay must be of type RCTMapOverlay");
+  MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+  polylineRenderer.strokeColor = [(RCTMapOverlay *)overlay strokeColor];
+  polylineRenderer.lineWidth = [(RCTMapOverlay *)overlay lineWidth];
+  return polylineRenderer;
 }
 
 - (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view
                    calloutAccessoryControlTapped:(UIControl *)control
 {
   if (mapView.onPress) {
-
     // Pass to JS
     RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{

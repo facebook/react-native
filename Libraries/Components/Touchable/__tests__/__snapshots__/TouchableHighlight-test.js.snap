@@ -1,25 +1,30 @@
-exports[`TouchableHighlight renders correctly 0`] = `
+exports[`TouchableHighlight renders correctly 1`] = `
 <View
-  accessible={true}
-  accessibilityLabel={undefined}
   accessibilityComponentType={undefined}
+  accessibilityLabel={undefined}
   accessibilityTraits={undefined}
+  accessible={true}
+  hitSlop={undefined}
+  onLayout={undefined}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
   style={
     Array [
-      4,
-      Object {}
+      Object {
+        "backgroundColor": "transparent",
+      },
+      Object {},
     ]
   }
-  onLayout={undefined}
-  hitSlop={undefined}
-  onStartShouldSetResponder={[Function bound touchableHandleStartShouldSetResponder]}
-  onResponderTerminationRequest={[Function bound touchableHandleResponderTerminationRequest]}
-  onResponderGrant={[Function bound touchableHandleResponderGrant]}
-  onResponderMove={[Function bound touchableHandleResponderMove]}
-  onResponderRelease={[Function bound touchableHandleResponderRelease]}
-  onResponderTerminate={[Function bound touchableHandleResponderTerminate]}
   testID={undefined}>
-  <Text>
+  <Text
+    accessible={true}
+    allowFontScaling={true}
+    ellipsizeMode="tail">
     Touchable
   </Text>
 </View>

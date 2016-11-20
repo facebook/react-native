@@ -13,15 +13,16 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('ReactPropTypes');
+const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
-const UIManager = require('UIManager');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
+
+const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -52,8 +53,8 @@ const AccessibilityComponentType = [
   'radiobutton_unchecked',
 ];
 
-const forceTouchAvailable = (UIManager.RCTView.Constants &&
-  UIManager.RCTView.Constants.forceTouchAvailable) || false;
+const forceTouchAvailable = (NativeModules.IOSConstants &&
+  NativeModules.IOSConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
@@ -97,7 +98,7 @@ const statics = {
  *
  * ### Synthetic Touch Events
  *
- * For `View` repsonder props (e.g., `onResponderMove`), the synthetic touch event passed to them
+ * For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them
  * are of the following form:
  *
  * - `nativeEvent`
@@ -143,7 +144,7 @@ const View = React.createClass({
      * with the element. By default, the label is constructed by traversing all the
      * children and accumulating all the `Text` nodes separated by space.
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: PropTypes.node,
 
     /**
      * Indicates to accessibility services to treat UI component like a
@@ -194,7 +195,7 @@ const View = React.createClass({
      *  - `'no-hide-descendants'` - The view is not important for accessibility,
      *    nor are any of its descendant views.
      *
-     * See the [Android `importantForAccessibility` docs]( [http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
+     * See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
      * for reference.
      *
      * @platform android
@@ -390,10 +391,10 @@ const View = React.createClass({
      *     in CSS:
      * ```
      * .box-none {
-     * 		pointer-events: none;
+     *      pointer-events: none;
      * }
      * .box-none * {
-     * 		pointer-events: all;
+     *      pointer-events: all;
      * }
      * ```
      *   - `'box-only'`: The view can be the target of touch events but it's
@@ -401,10 +402,10 @@ const View = React.createClass({
      *     in CSS:
      * ```
      * .box-only {
-     * 		pointer-events: all;
+     *      pointer-events: all;
      * }
      * .box-only * {
-     * 		pointer-events: none;
+     *      pointer-events: none;
      * }
      * ```
      * > Since `pointerEvents` does not affect layout/appearance, and we are
@@ -509,10 +510,12 @@ const View = React.createClass({
 const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
     nativeBackgroundAndroid: true,
+    nativeForegroundAndroid: true,
   }
 });
 
 if (__DEV__) {
+  const UIManager = require('UIManager');
   const viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
   for (const prop in viewConfig.nativeProps) {
     const viewAny: any = View; // Appease flow

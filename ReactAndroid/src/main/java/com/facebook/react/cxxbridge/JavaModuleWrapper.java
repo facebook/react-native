@@ -15,13 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * This is part of the glue which wraps a java BaseJavaModule in a C++
@@ -45,23 +49,23 @@ import com.facebook.react.bridge.WritableNativeArray;
   }
 
   private final CatalystInstance mCatalystInstance;
-  private final BaseJavaModule mModule;
+  private final ModuleHolder mModuleHolder;
   private final ArrayList<BaseJavaModule.JavaMethod> mMethods;
 
-  public JavaModuleWrapper(CatalystInstance catalystinstance, BaseJavaModule module) {
+  public JavaModuleWrapper(CatalystInstance catalystinstance, ModuleHolder moduleHolder) {
     mCatalystInstance = catalystinstance;
-    mModule = module;
-    mMethods = new ArrayList<BaseJavaModule.JavaMethod>();
+    mModuleHolder = moduleHolder;
+    mMethods = new ArrayList<>();
   }
 
   @DoNotStrip
   public BaseJavaModule getModule() {
-    return mModule;
+    return (BaseJavaModule) mModuleHolder.getModule();
   }
 
   @DoNotStrip
   public String getName() {
-    return mModule.getName();
+    return mModuleHolder.getInfo().name();
   }
 
   @DoNotStrip
@@ -69,7 +73,7 @@ import com.facebook.react.bridge.WritableNativeArray;
     ArrayList<MethodDescriptor> descs = new ArrayList<>();
 
     for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-           mModule.getMethods().entrySet()) {
+           getModule().getMethods().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
       md.type = entry.getValue().getType();
@@ -88,7 +92,7 @@ import com.facebook.react.bridge.WritableNativeArray;
     ArrayList<MethodDescriptor> descs = new ArrayList<>();
 
     for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-           mModule.getMethods().entrySet()) {
+      getModule().getMethods().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
       md.type = entry.getValue().getType();
@@ -101,10 +105,10 @@ import com.facebook.react.bridge.WritableNativeArray;
     }
 
     for (Map.Entry<String, BaseJavaModule.SyncNativeHook> entry :
-        mModule.getSyncHooks().entrySet()) {
+      getModule().getSyncHooks().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
-      md.type = BaseJavaModule.METHOD_TYPE_SYNC_HOOK;
+      md.type = BaseJavaModule.METHOD_TYPE_SYNC;
 
       BaseJavaModule.SyncJavaHook method = (BaseJavaModule.SyncJavaHook) entry.getValue();
       md.method = method.getMethod();
@@ -120,14 +124,29 @@ import com.facebook.react.bridge.WritableNativeArray;
   // NativeMap out of OnLoad.
   @DoNotStrip
   public NativeArray getConstants() {
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
+      .arg("moduleName", getName())
+      .flush();
+    Map<String, Object> map = getModule().getConstants();
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
+      .arg("moduleName", getName())
+      .flush();
+    WritableNativeMap writableNativeMap;
+    try {
+      writableNativeMap = Arguments.makeNativeMap(map);
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
     WritableNativeArray array = new WritableNativeArray();
-    array.pushMap(Arguments.makeNativeMap(mModule.getConstants()));
+    array.pushMap(writableNativeMap);
     return array;
   }
 
   @DoNotStrip
   public boolean supportsWebWorkers() {
-    return mModule.supportsWebWorkers();
+    return getModule().supportsWebWorkers();
   }
 
   @DoNotStrip

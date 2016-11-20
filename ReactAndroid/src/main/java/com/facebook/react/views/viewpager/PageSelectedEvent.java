@@ -26,8 +26,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private final int mPosition;
 
-  protected PageSelectedEvent(int viewTag, long timestampMs, int position) {
-    super(viewTag, timestampMs);
+  protected PageSelectedEvent(int viewTag, int position) {
+    super(viewTag);
     mPosition = position;
   }
 

@@ -142,4 +142,13 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task4);
     expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
+
+  it('should not crash when last task is cancelled', () => {
+    const task1 = jest.fn();
+    taskQueue.enqueue(task1);
+    taskQueue.cancelTasks([task1]);
+    clearTaskQueue(taskQueue);
+    expect(task1).not.toBeCalled();
+    expect(taskQueue.hasTasksToProcess()).toBe(false);
+  });
 });

@@ -5,6 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
 next: activityindicator
+previous: android-ui-performance
 ---
 
 You will need to build React Native from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
@@ -96,7 +97,7 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
+Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
 ...
@@ -115,10 +116,10 @@ dependencies {
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
 
-Modify your `android/app/build.gradle` and replace `compile project(':react-native-custom-module')` with:
+Modify your `android/app/build.gradle`, and add:
 
 ```gradle
-compile(project(':react-native-custom-module')) {
+configurations.all {
     exclude group: 'com.facebook.react', module: 'react-native'
 }
 ```

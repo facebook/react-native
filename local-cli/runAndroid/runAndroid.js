@@ -8,67 +8,41 @@
  */
 'use strict';
 
+const Promise = require('promise');
+
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
-const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
-const Promise = require('promise');
-const adb = require('./adb');
+const path = require('path');
+
+// Verifies this is an Android project
+function checkAndroid(root) {
+  return fs.existsSync(path.join(root, 'android/gradlew'));
+}
 
 /**
  * Starts the app on a connected Android emulator or device.
  */
-function runAndroid(argv, config) {
-  return new Promise((resolve, reject) => {
-    _runAndroid(argv, config, resolve, reject);
-  });
-}
-
-function _runAndroid(argv, config, resolve, reject) {
-  const args = parseCommandLine([{
-    command: 'install-debug',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'root',
-    type: 'string',
-    description: 'Override the root directory for the android build (which contains the android directory)',
-  }, {
-    command: 'flavor',
-    type: 'string',
-    required: false,
-  }, {
-    command: 'variant',
-    type: 'string',
-    required: false,
-  }], argv);
-
-  args.root = args.root || '';
-
-  if (!checkAndroid(args)) {
+function runAndroid(argv, config, args) {
+  if (!checkAndroid(args.root)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
   }
 
-  resolve(isPackagerRunning().then(result => {
+  return isPackagerRunning().then(result => {
     if (result === 'running') {
-      console.log(chalk.bold(`JS server already running.`));
+      console.log(chalk.bold('JS server already running.'));
     } else if (result === 'unrecognized') {
-      console.warn(chalk.yellow(`JS server not recognized, continuing with build...`));
+      console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
     } else {
       // result == 'not_running'
-      console.log(chalk.bold(`Starting JS server...`));
+      console.log(chalk.bold('Starting JS server...'));
       startServerInNewWindow();
     }
-    run(args, reject);
-  }));
-}
-
-// Verifies this is an Android project
-function checkAndroid(args) {
-  return fs.existsSync(path.join(args.root, 'android/gradlew'));
+    return buildAndRun(args);
+  });
 }
 
 function getAdbPath() {
@@ -78,10 +52,15 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse() {
+function tryRunAdbReverse(device) {
   try {
     const adbPath = getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+
+    // If a device is specified then tell adb to use it
+    if (device) {
+      adbArgs.unshift('-s', device);
+    }
 
     console.log(chalk.bold(
       `Running ${adbPath} ${adbArgs.join(' ')}`
@@ -90,7 +69,7 @@ function tryRunAdbReverse() {
     child_process.execFileSync(adbPath, adbArgs, {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
-  } catch(e) {
+  } catch (e) {
     console.log(chalk.yellow(
       `Could not run adb reverse: ${e.message}`
     ));
@@ -98,37 +77,52 @@ function tryRunAdbReverse() {
 }
 
 // Builds the app and runs it on a connected emulator / device.
-function run(args, reject) {
-  process.chdir(path.join(args.root, 'android'));
+function buildAndRun(args) {
   try {
-    tryRunAdbReverse();
+    adb.getDevices().map((device) => tryRunAdbReverse(device));
 
+    const gradleArgs = [];
+    if (args.variant) {
+      gradleArgs.push('install' +
+        args.variant[0].toUpperCase() + args.variant.slice(1)
+      );
+    } else if (args.flavor) {
+      console.warn(chalk.yellow(
+        '--flavor has been deprecated. Use --variant instead'
+      ));
+      gradleArgs.push('install' +
+        args.flavor[0].toUpperCase() + args.flavor.slice(1)
+      );
+    } else {
+      gradleArgs.push('install');
+    }
+
+    // Append the build type to the current gradle install configuration. By default it will generate `installDebug`.
+    gradleArgs[0] = gradleArgs[0] + args.configuration[0].toUpperCase() + args.configuration.slice(1);
+
+    // Get the Android project directory.
+    const androidProjectDir = path.join(args.root, 'android');
+
+    if (args.configuration.toUpperCase() === 'RELEASE') {
+      console.log(chalk.bold(
+        'Generating the bundle for the release build...'
+      ));
+
+      child_process.execSync(`react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output ${androidProjectDir}/app/src/main/assets/index.android.bundle --assets-dest ${androidProjectDir}/app/src/main/res/`, {
+        stdio: [process.stdin, process.stdout, process.stderr]
+      });
+    }
+
+    // Change to the Android directory.
+    process.chdir(androidProjectDir);
+
+    // Get the gradle binary for the current platform.
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
       : './gradlew';
 
-    const gradleArgs = [];
-    if (args['variant']) {
-        gradleArgs.push('install' +
-          args['variant'][0].toUpperCase() + args['variant'].slice(1)
-        );
-    } else if (args['flavor']) {
-        console.warn(chalk.yellow(
-          `--flavor has been deprecated. Use --variant instead`
-        ));
-        gradleArgs.push('install' +
-          args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
-        );
-    } else {
-        gradleArgs.push('installDebug');
-    }
-
-    if (args['install-debug']) {
-      gradleArgs.push(args['install-debug']);
-    }
-
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -144,8 +138,7 @@ function run(args, reject) {
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    reject();
-    return;
+    return Promise.reject();
   }
 
   try {
@@ -183,13 +176,12 @@ function run(args, reject) {
 
   } catch (e) {
     console.log(chalk.red(
-      `adb invocation failed. Do you have adb in your PATH?`
+      'adb invocation failed. Do you have adb in your PATH?'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    reject();
-    return;
+    return Promise.reject();
   }
 }
 
@@ -224,4 +216,22 @@ function startServerInNewWindow() {
   }
 }
 
-module.exports = runAndroid;
+module.exports = {
+  name: 'run-android',
+  description: 'builds your app and starts it on a connected Android emulator or device',
+  func: runAndroid,
+  options: [{
+    command: '--root [string]',
+    description: 'Override the root directory for the android build (which contains the android directory)',
+    default: '',
+  }, {
+    command: '--flavor [string]',
+    description: '--flavor has been deprecated. Use --variant instead',
+  }, {
+    command: '--configuration [string]',
+    description: 'You can use `Release` or `Debug`. This creates a build based on the selected configuration. If you want to use the `Release` configuration make sure you have the `signingConfig` configured at `app/build.gradle`.',
+    default: 'Debug'
+  }, {
+    command: '--variant [string]',
+  }],
+};

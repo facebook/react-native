@@ -9,6 +9,8 @@
 
 #import "RCTWebSocketModule.h"
 
+#import <objc/runtime.h>
+
 #import "RCTConvert.h"
 #import "RCTUtils.h"
 
@@ -75,6 +77,11 @@ RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber
 {
   NSData *message = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
   [_sockets[socketID] send:message];
+}
+
+RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
+{
+  [_sockets[socketID] sendPing:NULL];
 }
 
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)

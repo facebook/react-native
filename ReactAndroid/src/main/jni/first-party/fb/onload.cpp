@@ -8,6 +8,9 @@
  */
 
 #include <jni.h>
+#ifndef DISABLE_CPUCAP
+#include <fb/CpuCapabilities.h>
+#endif
 #include <fb/fbjni.h>
 
 using namespace facebook::jni;
@@ -20,6 +23,9 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     initialize_fbjni();
 #ifndef DISABLE_XPLAT
     initialize_xplatinit();
+#endif
+#ifndef DISABLE_CPUCAP
+    initialize_cpucapabilities();
 #endif
   });
 }

@@ -22,4 +22,9 @@ public class SystemClock {
   public static long nanoTime() {
     return System.nanoTime();
   }
+
+  public static long uptimeMillis() {
+    return android.os.SystemClock.uptimeMillis();
+  }
+
 }

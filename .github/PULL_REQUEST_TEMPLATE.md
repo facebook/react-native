@@ -1,6 +1,6 @@
 Thanks for submitting a pull request! Please provide enough information so that others can review your pull request:
 
-(You can skip this if you're fixing a typo or adding an app to the Showcase.)
+> **Unless you are a React Native release maintainer and cherry-picking an *existing* commit into a current release, ensure your pull request is targeting the `master` React Native branch.**
 
 Explain the **motivation** for making this change. What existing problem does the pull request solve?
 

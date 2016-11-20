@@ -16,15 +16,15 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var DummyTouchableNativeFeedback = React.createClass({
-  render: function() {
+class DummyTouchableNativeFeedback extends React.Component {
+  render() {
     return (
       <View style={[styles.container, this.props.style]}>
         <Text style={styles.info}>TouchableNativeFeedback is not supported on this platform!</Text>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

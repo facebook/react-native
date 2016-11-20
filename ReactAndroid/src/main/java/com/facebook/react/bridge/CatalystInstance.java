@@ -11,9 +11,9 @@ package com.facebook.react.bridge;
 
 import java.util.Collection;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an
@@ -32,8 +32,7 @@ public interface CatalystInstance extends MemoryPressureListener {
       ExecutorToken executorToken,
       String module,
       String method,
-      NativeArray arguments,
-      String tracingName);
+      NativeArray arguments);
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
@@ -76,4 +75,9 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
+  long getJavaScriptContext();
 }

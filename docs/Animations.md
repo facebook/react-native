@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/animations.html
 next: accessibility
+previous: handling-touches
 ---
 
 Fluid, meaningful animations are essential to the mobile user experience. Like
@@ -164,6 +165,15 @@ Input | Output
    101|      0
    200|      0
 
+`interpolate` also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:
+
+```javascript
+value.interpolate({
+  inputRange: [0, 360],
+  outputRange: ['0deg', '360deg']
+})
+```
+
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
@@ -247,7 +257,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -282,7 +292,7 @@ class App extends React.Component {
     this.state = { w: 100, h: 100 };
     this._onPress = this._onPress.bind(this);
   }
-  
+
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();

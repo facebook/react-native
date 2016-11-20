@@ -10,8 +10,7 @@
 /*jslint node: true */
 'use strict';
 
-var esprima = require('esprima-fb');
-var Syntax = esprima.Syntax;
+var Syntax = require('./syntax');
 var traverseFlat = require('./traverseFlat');
 
 

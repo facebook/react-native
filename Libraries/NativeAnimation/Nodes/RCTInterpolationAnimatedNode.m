@@ -15,6 +15,8 @@
   __weak RCTValueAnimatedNode *_parentNode;
   NSArray<NSNumber *> *_inputRange;
   NSArray<NSNumber *> *_outputRange;
+  NSString *_extrapolateLeft;
+  NSString *_extrapolateRight;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -26,18 +28,11 @@
     for (id value in config[@"outputRange"]) {
       if ([value isKindOfClass:[NSNumber class]]) {
         [outputRange addObject:value];
-      } else if ([value isKindOfClass:[NSString class]]) {
-        NSString *str = (NSString *)value;
-        if ([str hasSuffix:@"deg"]) {
-          double degrees = str.doubleValue;
-          [outputRange addObject:@(RCTDegreesToRadians(degrees))];
-        } else {
-          // Assume radians
-          [outputRange addObject:@(str.doubleValue)];
-        }
       }
     }
     _outputRange = [outputRange copy];
+    _extrapolateLeft = config[@"extrapolateLeft"];
+    _extrapolateRight = config[@"extrapolateRight"];
   }
   return self;
 }
@@ -79,19 +74,20 @@
     return;
   }
 
-  NSUInteger rangeIndex = [self findIndexOfNearestValue:_parentNode.value
-                                                inRange:_inputRange];
+  CGFloat inputValue = _parentNode.value;
+  NSUInteger rangeIndex = [self findIndexOfNearestValue:inputValue inRange:_inputRange];
   NSNumber *inputMin = _inputRange[rangeIndex];
   NSNumber *inputMax = _inputRange[rangeIndex + 1];
   NSNumber *outputMin = _outputRange[rangeIndex];
   NSNumber *outputMax = _outputRange[rangeIndex + 1];
 
-  CGFloat outputValue = RCTInterpolateValue(_parentNode.value,
-                                            inputMin.doubleValue,
-                                            inputMax.doubleValue,
-                                            outputMin.doubleValue,
-                                            outputMax.doubleValue);
-  self.value = outputValue;
+  self.value = RCTInterpolateValue(inputValue,
+                                   inputMin.doubleValue,
+                                   inputMax.doubleValue,
+                                   outputMin.doubleValue,
+                                   outputMax.doubleValue,
+                                   _extrapolateLeft,
+                                   _extrapolateRight);
 }
 
 @end

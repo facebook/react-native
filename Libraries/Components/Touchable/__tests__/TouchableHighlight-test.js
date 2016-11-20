@@ -9,13 +9,8 @@
 
 jest.disableAutomock();
 
-jest.mock('NativeModules')
-  .mock('Text')
-  .mock('ensureComponentIsNative')
-  .mock('View');
-
 const React = require('React');
-const ReactTestRenderer = require('ReactTestRenderer');
+const ReactTestRenderer = require('react-test-renderer');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 

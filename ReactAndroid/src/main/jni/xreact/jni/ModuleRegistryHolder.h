@@ -83,12 +83,7 @@ class ModuleRegistryHolder : public jni::HybridClass<ModuleRegistryHolder> {
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules);
 
-  facebook::xplat::module::CxxModule::Callback makeCallback(const folly::dynamic& callbackId);
-
   std::shared_ptr<ModuleRegistry> registry_;
 };
-
-using Callback = std::function<void(folly::dynamic)>;
-Callback makeCallback(std::weak_ptr<Instance> instance, ExecutorToken token, const folly::dynamic& callbackId);
 
 }}
