@@ -34,7 +34,7 @@ export function checkReactPeerDependency({currentVersion, declaredReactVersion})
       'Your \'package.json\' file doesn\'t seem to have \'react\' as a dependency.\n' +
       '\'react\' was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
       'Therefore, it\'s necessary to include \'react\' in your project\'s dependencies.\n' +
-      'Just run \'npm install --save react\', then re-run \'react-native git-upgrade\'.\n'
+      'Just run \'npm install --save react\', then re-run \'react-native-git-upgrade\'.\n'
     );
   }
 }
@@ -55,8 +55,8 @@ export function checkNewVersion({cliVersion}, npmRegistryVersion) {
   if (!semver.valid(newVersion) && cliVersion) {
     throw new Error(
       'The specified version ' + cliVersion + ' doesn\'t exist.\n' +
-      'Re-run the git-upgrade command with an existing version,\n' +
-      'or without argument to upgrade to the latest: \'react-native git-upgrade\'.'
+      'Re-run the react-native-git-upgrade command with an existing version,\n' +
+      'or without argument to upgrade to the latest: \'react-native-git-upgrade\'.'
     );
   }
 

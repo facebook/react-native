@@ -13,7 +13,7 @@ require('babel-register')({
     require('babel-preset-es2015-node'),
     require('babel-preset-stage-3')
   ],
-  only: /(react-native-upgrader\/(?!(node_modules)))|(local-cli\/generator)/,
+  only: /(react-native-git-upgrade\/(?!(node_modules)))|(local-cli\/generator)/,
   retainLines: true,
   sourceMaps: 'inline',
   babelrc: false,

@@ -17,7 +17,7 @@ var cli = require('./cli');
 if (argv._.length === 0 && (argv.h || argv.help)) {
   console.log([
     '',
-    '  Usage: react-native-upgrader [version] [options]',
+    '  Usage: react-native-git-upgrade [version] [options]',
     '',
     '',
     '  Commands:',
@@ -36,7 +36,7 @@ if (argv._.length === 0 && (argv.h || argv.help)) {
 }
 
 if (argv._.length === 0 && (argv.v || argv.version)) {
-  console.log('react-native-upgrader: ' + require('./package.json').version);
+  console.log(require('./package.json').version);
   process.exit(0);
 }
 
