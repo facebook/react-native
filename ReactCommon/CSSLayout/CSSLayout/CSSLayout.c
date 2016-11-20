@@ -49,6 +49,7 @@ typedef struct CSSLayout {
   float dimensions[2];
   CSSDirection direction;
 
+  uint32_t computedFlexBasisGeneration;
   float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
@@ -967,7 +968,8 @@ static void computeChildFlexBasis(const CSSNodeRef node,
 
   if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
       !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
-    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+    if (CSSValueIsUndefined(child->layout.computedFlexBasis) ||
+        child->layout.computedFlexBasisGeneration != gCurrentGenerationCount) {
       child->layout.computedFlexBasis =
           fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
     }
@@ -1052,6 +1054,8 @@ static void computeChildFlexBasis(const CSSNodeRef node,
                             : child->layout.measuredDimensions[CSSDimensionHeight],
               getPaddingAndBorderAxis(child, mainAxis));
   }
+
+  child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
 }
 
 static void absoluteLayoutChild(const CSSNodeRef node,
@@ -1477,6 +1481,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
       child->nextChild = NULL;
     } else {
       if (child == singleFlexChild) {
+        child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
         child->layout.computedFlexBasis = 0;
       } else {
         computeChildFlexBasis(node,
@@ -1813,8 +1818,8 @@ static void layoutNodeImpl(const CSSNodeRef node,
       if (!CSSValueIsUndefined(node->style.minDimensions[dim[mainAxis]]) &&
           node->style.minDimensions[dim[mainAxis]] >= 0) {
         remainingFreeSpace = fmaxf(0,
-                                  node->style.minDimensions[dim[mainAxis]] -
-                                      (availableInnerMainDim - remainingFreeSpace));
+                                   node->style.minDimensions[dim[mainAxis]] -
+                                       (availableInnerMainDim - remainingFreeSpace));
       } else {
         remainingFreeSpace = 0;
       }
@@ -2542,10 +2547,9 @@ void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
                              CSSCalloc cssCalloc,
                              CSSRealloc cssRealloc,
                              CSSFree cssFree) {
-  CSS_ASSERT(gNodeInstanceCount == 0,
-             "Cannot set memory functions: all node must be freed first");
+  CSS_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
   CSS_ASSERT((cssMalloc == NULL && cssCalloc == NULL && cssRealloc == NULL && cssFree == NULL) ||
-             (cssMalloc != NULL && cssCalloc != NULL && cssRealloc != NULL && cssFree != NULL),
+                 (cssMalloc != NULL && cssCalloc != NULL && cssRealloc != NULL && cssFree != NULL),
              "Cannot set memory functions: functions must be all NULL or Non-NULL");
 
   if (cssMalloc == NULL || cssCalloc == NULL || cssRealloc == NULL || cssFree == NULL) {

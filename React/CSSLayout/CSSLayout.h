@@ -28,8 +28,8 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 
 #define CSSUndefined NAN
 
-#include "CSSMacros.h"
 #include "CSSEnums.h"
+#include "CSSMacros.h"
 
 CSS_EXTERN_C_BEGIN
 
@@ -160,7 +160,8 @@ CSS_NODE_LAYOUT_PROPERTY(CSSDirection, Direction);
 WIN_EXPORT void CSSLayoutSetLogger(CSSLogger logger);
 WIN_EXPORT void CSSLog(CSSLogLevel level, const char *message, ...);
 
-WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled);
+WIN_EXPORT void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature,
+                                                       bool enabled);
 WIN_EXPORT bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature);
 
 WIN_EXPORT void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
