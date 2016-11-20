@@ -75,16 +75,6 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-var UPGRADER_MODULE_PATH = function() {
-  return path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react-native-upgrader',
-    'cli.js'
-  );
-};
-
-
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
 function getYarnVersionIfAvailable() {
@@ -123,14 +113,7 @@ if (fs.existsSync(cliPath)) {
 // minimist api
 var commands = argv._;
 if (cli) {
-  switch (commands[0]) {
-  case 'git-upgrade':
-    upgrade(commands[1], argv);
-    break;
-  default:
-    cli.run();
-    break;
-  }
+  cli.run();
 } else {
   if (argv._.length === 0 && (argv.h || argv.help)) {
     console.log([
@@ -264,9 +247,9 @@ function createProject(name, verbose, rnPackage, forceNpmClient) {
   process.chdir(root);
 
   if (verbose) {
-    runInitVerbose(root, projectName, rnPackage, forceNpmClient);
+    runVerbose(root, projectName, rnPackage, forceNpmClient);
   } else {
-    runInit(root, projectName, rnPackage, forceNpmClient);
+    run(root, projectName, rnPackage, forceNpmClient);
   }
 }
 
@@ -282,7 +265,7 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function runInit(root, projectName, rnPackage, forceNpmClient) {
+function run(root, projectName, rnPackage, forceNpmClient) {
   const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   let installCommand;
   if (yarnVersion) {
@@ -309,7 +292,7 @@ function runInit(root, projectName, rnPackage, forceNpmClient) {
   });
 }
 
-function runInitVerbose(root, projectName, rnPackage, forceNpmClient) {
+function runVerbose(root, projectName, rnPackage, forceNpmClient) {
   // Use npm client, yarn doesn't support --verbose yet
   console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm. This might take a while...');
   var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
@@ -321,55 +304,6 @@ function runInitVerbose(root, projectName, rnPackage, forceNpmClient) {
 
     cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
-  });
-}
-
-function upgrade(newVersion, argv) {
-  var upgraderPath = UPGRADER_MODULE_PATH();
-  var npmCommand;
-  if (fs.existsSync(upgraderPath)) {
-    npmCommand = 'update';
-    console.log('Update `react-native-upgrader` to the latest version...');
-  } else {
-    npmCommand = 'install';
-    console.log('Install the latest version of `react-native-upgrader`...');
-  }
-
-  if (argv.verbose) {
-    runUpgradeVerbose(npmCommand, newVersion, argv);
-  } else {
-    runUpgrade(npmCommand, newVersion, argv)
-  }
-}
-
-function runUpgrade(npmCommand, newVersion, argv) {
-  if (npmCommand === 'install') {
-    console.log('This may take some time...');
-  }
-
-  exec('npm ' + npmCommand + ' --save --save-dev react-native-upgrader@latest', function(e, stdout, stderr) {
-    if (e) {
-      console.log(stdout);
-      console.error(stderr);
-      console.error('`npm ' + npmCommand + ' --save --save-dev react-native-upgrader@latest` failed');
-      process.exit(1);
-    }
-
-    var upgrader = require(UPGRADER_MODULE_PATH());
-    upgrader.run(newVersion, argv);
-  });
-}
-
-function runUpgradeVerbose(npmCommand, newVersion, argv) {
-  var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', [npmCommand, '--save-dev', '--verbose', 'react-native-upgrader@latest'], {stdio: 'inherit'});
-  proc.on('close', function (code) {
-    if (code !== 0) {
-      console.error('`npm ' + npmCommand + ' --save-dev react-native-upgrader@latest` failed');
-      return;
-    }
-
-    var upgrader = require(UPGRADER_MODULE_PATH());
-    upgrader.run(newVersion, argv);
   });
 }
 
