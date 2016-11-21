@@ -15,6 +15,7 @@
 
 var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -22,7 +23,13 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-var TVView = require('TVView');
+
+var isTVOS = (Platform && Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
+
+var TVView;
+if (isTVOS) {
+  TVView = require('TVView');
+}
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -269,41 +276,70 @@ var TouchableHighlight = React.createClass({
   },
 
   render: function() {
-    return (
-      <TVView
-        accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
-        ref={UNDERLAY_REF}
-        style={this.state.underlayStyle}
-        onLayout={this.props.onLayout}
-        hitSlop={this.props.hitSlop}
-        onTVSelect={this.props.onPress}
-        onTVFocus={this._showUnderlay}
-        onTVBlur={this._hideUnderlay}
-        tvParallaxDisable={this.props.tvParallaxDisable}
-        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
-        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
-        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
-        tvParallaxMagnification={this.props.tvParallaxMagnification}
-        hasTVPreferredFocus={this.state.hasTVPreferredFocus}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}
-        testID={this.props.testID}>
-        {React.cloneElement(
-          React.Children.only(this.props.children),
-          {
-            ref: CHILD_REF,
-          }
-        )}
-        {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
-      </TVView>
-    );
+    if (isTVOS) {
+      return (
+        <TVView
+          accessible={this.props.accessible !== false}
+          accessibilityLabel={this.props.accessibilityLabel}
+          accessibilityComponentType={this.props.accessibilityComponentType}
+          accessibilityTraits={this.props.accessibilityTraits}
+          ref={UNDERLAY_REF}
+          style={this.state.underlayStyle}
+          onLayout={this.props.onLayout}
+          hitSlop={this.props.hitSlop}
+          onTVSelect={this.props.onPress}
+          onTVFocus={this._showUnderlay}
+          onTVBlur={this._hideUnderlay}
+          tvParallaxDisable={this.props.tvParallaxDisable}
+          tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
+          tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
+          tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
+          tvParallaxMagnification={this.props.tvParallaxMagnification}
+          hasTVPreferredFocus={this.state.hasTVPreferredFocus}
+          onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+          onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+          onResponderGrant={this.touchableHandleResponderGrant}
+          onResponderMove={this.touchableHandleResponderMove}
+          onResponderRelease={this.touchableHandleResponderRelease}
+          onResponderTerminate={this.touchableHandleResponderTerminate}
+          testID={this.props.testID}>
+          {React.cloneElement(
+            React.Children.only(this.props.children),
+            {
+              ref: CHILD_REF,
+            }
+          )}
+          {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
+        </TVView>
+      );
+    } else {
+      return (
+        <View
+          accessible={this.props.accessible !== false}
+          accessibilityLabel={this.props.accessibilityLabel}
+          accessibilityComponentType={this.props.accessibilityComponentType}
+          accessibilityTraits={this.props.accessibilityTraits}
+          ref={UNDERLAY_REF}
+          style={this.state.underlayStyle}
+          onLayout={this.props.onLayout}
+          hitSlop={this.props.hitSlop}
+          onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+          onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+          onResponderGrant={this.touchableHandleResponderGrant}
+          onResponderMove={this.touchableHandleResponderMove}
+          onResponderRelease={this.touchableHandleResponderRelease}
+          onResponderTerminate={this.touchableHandleResponderTerminate}
+          testID={this.props.testID}>
+          {React.cloneElement(
+            React.Children.only(this.props.children),
+            {
+              ref: CHILD_REF,
+            }
+          )}
+          {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
+        </View>
+      );
+    }
   }
 });
 

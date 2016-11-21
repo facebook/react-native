@@ -15,7 +15,12 @@
 var Platform = {
   OS: 'ios',
   get Version() {
-    return require('NativeModules').IOSConstants.osVersion;
+    var constants = require('NativeModules').IOSConstants;
+    return constants ? constants.osVersion : "";
+  },
+  get SystemName() {
+    var constants = require('NativeModules').IOSConstants;
+    return constants ? constants.systemName : "";
   },
   select: (obj: Object) => obj.ios,
 };

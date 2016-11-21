@@ -1,10 +1,9 @@
 exports[`TouchableHighlight renders correctly 1`] = `
-<RCTTVView
+<View
   accessibilityComponentType={undefined}
   accessibilityLabel={undefined}
   accessibilityTraits={undefined}
   accessible={true}
-  hasTVPreferredFocus={undefined}
   hitSlop={undefined}
   onLayout={undefined}
   onResponderGrant={[Function]}
@@ -13,9 +12,6 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
-  onTVBlur={[Function]}
-  onTVFocus={[Function]}
-  onTVSelect={undefined}
   style={
     Array [
       Object {
@@ -24,17 +20,12 @@ exports[`TouchableHighlight renders correctly 1`] = `
       Object {},
     ]
   }
-  testID={undefined}
-  tvParallaxDisable={undefined}
-  tvParallaxMagnification={undefined}
-  tvParallaxShiftDistanceX={undefined}
-  tvParallaxShiftDistanceY={undefined}
-  tvParallaxTiltAngle={undefined}>
+  testID={undefined}>
   <Text
     accessible={true}
     allowFontScaling={true}
     ellipsizeMode="tail">
     Touchable
   </Text>
-</RCTTVView>
+</View>
 `;
