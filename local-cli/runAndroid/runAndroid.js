@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');

@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const fs = require('fs');
 
 function writeFile(file, data, encoding) {

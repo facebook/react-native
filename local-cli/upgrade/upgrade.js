@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const chalk = require('chalk');
 const copyProjectTemplateAndReplace = require('../generator/copyProjectTemplateAndReplace');
 const fs = require('fs');

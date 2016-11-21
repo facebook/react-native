@@ -10,7 +10,6 @@
 
 const chalk = require('chalk');
 const child_process = require('child_process');
-const Promise = require('promise');
 
 /**
  * Starts adb logcat

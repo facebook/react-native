@@ -9,7 +9,6 @@
 'use strict';
 
 const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
-const Promise = require('promise');
 
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');

@@ -12,7 +12,6 @@ const copyAndReplace = require('../util/copyAndReplace');
 const fs = require('fs');
 const isValidPackageName = require('../util/isValidPackageName');
 const path = require('path');
-const Promise = require('promise');
 const walk = require('../util/walk');
 
 /**
