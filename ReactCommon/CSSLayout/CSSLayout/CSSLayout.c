@@ -14,7 +14,9 @@
 
 #ifdef _MSC_VER
 #include <float.h>
+#ifndef isnan
 #define isnan _isnan
+#endif
 
 #ifndef __cplusplus
 #define inline __inline
@@ -47,6 +49,7 @@ typedef struct CSSLayout {
   float dimensions[2];
   CSSDirection direction;
 
+  uint32_t computedFlexBasisGeneration;
   float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
@@ -82,6 +85,9 @@ typedef struct CSSStyle {
   float dimensions[2];
   float minDimensions[2];
   float maxDimensions[2];
+
+  // Yoga specific properties, not compatible with flexbox specification
+  float aspectRatio;
 } CSSStyle;
 
 typedef struct CSSNode {
@@ -266,6 +272,8 @@ void CSSNodeInit(const CSSNodeRef node) {
     node->style.border[edge] = CSSUndefined;
   }
 
+  node->style.aspectRatio = CSSUndefined;
+
   node->layout.dimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.dimensions[CSSDimensionHeight] = CSSUndefined;
 
@@ -348,7 +356,7 @@ void CSSNodeCopyStyle(const CSSNodeRef dstNode, const CSSNodeRef srcNode) {
   }
 }
 
-inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexGrow(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
   }
@@ -358,7 +366,7 @@ inline float CSSNodeStyleGetFlexGrow(CSSNodeRef node) {
   return 0;
 }
 
-inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexShrink(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
@@ -368,7 +376,7 @@ inline float CSSNodeStyleGetFlexShrink(CSSNodeRef node) {
   return 0;
 }
 
-inline float CSSNodeStyleGetFlexBasis(CSSNodeRef node) {
+inline float CSSNodeStyleGetFlexBasis(const CSSNodeRef node) {
   if (!CSSValueIsUndefined(node->style.flexBasis)) {
     return node->style.flexBasis;
   }
@@ -455,6 +463,9 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, MinWidth, minWidth, minDimensions[CSSDimensi
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MinHeight, minHeight, minDimensions[CSSDimensionHeight]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxWidth, maxWidth, maxDimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxHeight, maxHeight, maxDimensions[CSSDimensionHeight]);
+
+// Yoga specific properties, not compatible with flexbox specification
+CSS_NODE_STYLE_PROPERTY_IMPL(float, AspectRatio, aspectRatio, aspectRatio);
 
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSEdgeLeft]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSEdgeTop]);
@@ -965,7 +976,8 @@ static void computeChildFlexBasis(const CSSNodeRef node,
 
   if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
       !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
-    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
+    if (CSSValueIsUndefined(child->layout.computedFlexBasis) ||
+        child->layout.computedFlexBasisGeneration != gCurrentGenerationCount) {
       child->layout.computedFlexBasis =
           fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
     }
@@ -1028,6 +1040,20 @@ static void computeChildFlexBasis(const CSSNodeRef node,
       childHeightMeasureMode = CSSMeasureModeExactly;
     }
 
+    if (!CSSValueIsUndefined(child->style.aspectRatio)) {
+      if (!isMainAxisRow && childWidthMeasureMode == CSSMeasureModeExactly) {
+        child->layout.computedFlexBasis =
+            fmaxf(childWidth * child->style.aspectRatio,
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+        return;
+      } else if (isMainAxisRow && childHeightMeasureMode == CSSMeasureModeExactly) {
+        child->layout.computedFlexBasis =
+            fmaxf(childHeight * child->style.aspectRatio,
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+        return;
+      }
+    }
+
     constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionWidth],
                             &childWidthMeasureMode,
                             &childWidth);
@@ -1050,6 +1076,8 @@ static void computeChildFlexBasis(const CSSNodeRef node,
                             : child->layout.measuredDimensions[CSSDimensionHeight],
               getPaddingAndBorderAxis(child, mainAxis));
   }
+
+  child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
 }
 
 static void absoluteLayoutChild(const CSSNodeRef node,
@@ -1099,6 +1127,20 @@ static void absoluteLayoutChild(const CSSNodeRef node,
                     (getLeadingPosition(child, CSSFlexDirectionColumn) +
                      getTrailingPosition(child, CSSFlexDirectionColumn));
       childHeight = boundAxis(child, CSSFlexDirectionColumn, childHeight);
+    }
+  }
+
+  // Exactly one dimension needs to be defined for us to be able to do aspect ratio
+  // calculation. One dimension being the anchor and the other being flexible.
+  if (CSSValueIsUndefined(childWidth) ^ CSSValueIsUndefined(childHeight)) {
+    if (!CSSValueIsUndefined(child->style.aspectRatio)) {
+      if (CSSValueIsUndefined(childWidth)) {
+        childWidth = fmaxf(childHeight * child->style.aspectRatio,
+                           getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+      } else if (CSSValueIsUndefined(childHeight)) {
+        childHeight = fmaxf(childWidth * child->style.aspectRatio,
+                            getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+      }
     }
   }
 
@@ -1475,6 +1517,7 @@ static void layoutNodeImpl(const CSSNodeRef node,
       child->nextChild = NULL;
     } else {
       if (child == singleFlexChild) {
+        child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
         child->layout.computedFlexBasis = 0;
       } else {
         computeChildFlexBasis(node,
@@ -1767,6 +1810,19 @@ static void layoutNodeImpl(const CSSNodeRef node,
           }
         }
 
+        if (!CSSValueIsUndefined(currentRelativeChild->style.aspectRatio)) {
+          if (isMainAxisRow && childHeightMeasureMode != CSSMeasureModeExactly) {
+            childHeight =
+                fmaxf(childWidth * currentRelativeChild->style.aspectRatio,
+                      getPaddingAndBorderAxis(currentRelativeChild, CSSFlexDirectionColumn));
+            childHeightMeasureMode = CSSMeasureModeExactly;
+          } else if (!isMainAxisRow && childWidthMeasureMode != CSSMeasureModeExactly) {
+            childWidth = fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
+                               getPaddingAndBorderAxis(currentRelativeChild, CSSFlexDirectionRow));
+            childWidthMeasureMode = CSSMeasureModeExactly;
+          }
+        }
+
         constrainMaxSizeForMode(currentRelativeChild->style.maxDimensions[CSSDimensionWidth],
                                 &childWidthMeasureMode,
                                 &childWidth);
@@ -1810,9 +1866,9 @@ static void layoutNodeImpl(const CSSNodeRef node,
     if (measureModeMainDim == CSSMeasureModeAtMost && remainingFreeSpace > 0) {
       if (!CSSValueIsUndefined(node->style.minDimensions[dim[mainAxis]]) &&
           node->style.minDimensions[dim[mainAxis]] >= 0) {
-        remainingFreeSpace = fmax(0,
-                                  node->style.minDimensions[dim[mainAxis]] -
-                                      (availableInnerMainDim - remainingFreeSpace));
+        remainingFreeSpace = fmaxf(0,
+                                   node->style.minDimensions[dim[mainAxis]] -
+                                       (availableInnerMainDim - remainingFreeSpace));
       } else {
         remainingFreeSpace = 0;
       }
@@ -2173,7 +2229,7 @@ bool gPrintSkips = false;
 static const char *spacer = "                                                            ";
 
 static const char *getSpacer(const unsigned long level) {
-  const unsigned long spacerLen = strlen(spacer);
+  const size_t spacerLen = strlen(spacer);
   if (level > spacerLen) {
     return &spacer[0];
   } else {
@@ -2540,10 +2596,9 @@ void CSSLayoutSetMemoryFuncs(CSSMalloc cssMalloc,
                              CSSCalloc cssCalloc,
                              CSSRealloc cssRealloc,
                              CSSFree cssFree) {
-  CSS_ASSERT(gNodeInstanceCount == 0,
-             "Cannot set memory functions: all node must be freed first");
+  CSS_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
   CSS_ASSERT((cssMalloc == NULL && cssCalloc == NULL && cssRealloc == NULL && cssFree == NULL) ||
-             (cssMalloc != NULL && cssCalloc != NULL && cssRealloc != NULL && cssFree != NULL),
+                 (cssMalloc != NULL && cssCalloc != NULL && cssRealloc != NULL && cssFree != NULL),
              "Cannot set memory functions: functions must be all NULL or Non-NULL");
 
   if (cssMalloc == NULL || cssCalloc == NULL || cssRealloc == NULL || cssFree == NULL) {

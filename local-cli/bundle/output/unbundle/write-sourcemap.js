@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const writeFile = require('../writeFile');
 
 function writeSourcemap(fileName, contents, log) {

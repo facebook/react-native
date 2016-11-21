@@ -46,7 +46,7 @@ std::string Value::toJSONString(unsigned indent) const {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Exception creating JSON string: %s", exceptionText.c_str());
   }
-  return String::adopt(stringToAdopt).str();
+  return String::adopt(m_context, stringToAdopt).str();
 }
 
 /* static */
@@ -77,7 +77,7 @@ JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
   return jsVal;
 #else
   auto json = folly::toJson(value);
-  return fromJSON(ctx, String(json.c_str()));
+  return fromJSON(ctx, String(ctx, json.c_str()));
 #endif
 }
 
@@ -97,7 +97,7 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
       return JSValueMakeNumber(ctx, obj.asDouble());
 
     case folly::dynamic::Type::STRING:
-      return JSValueMakeString(ctx, String(obj.getString().c_str()));
+      return JSValueMakeString(ctx, String(ctx, obj.getString().c_str()));
 
     case folly::dynamic::Type::ARRAY: {
       // Collect JSValue for every element in the array
@@ -118,7 +118,7 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
         JSObjectSetProperty(
           ctx,
           jsObj,
-          String(it->first.asString().c_str()),
+          String(ctx, it->first.asString().c_str()),
           fromDynamicInner(ctx, it->second),
           kJSPropertyAttributeNone,
           nullptr);
@@ -144,6 +144,18 @@ Object Value::asObject() {
   return ret;
 }
 
+Value Value::makeError(JSContextRef ctx, const char *error)
+{
+  JSValueRef exn;
+  JSValueRef args[] = { Value(ctx, String(ctx, error)) };
+  JSObjectRef errorObj = JSObjectMakeError(ctx, 1, args, &exn);
+  if (!errorObj) {
+    std::string exceptionText = Value(ctx, exn).toString().str();
+    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
+  }
+  return Value(ctx, errorObj);
+}
+
 Object::operator Value() const {
   return Value(m_context, m_obj);
 }
@@ -153,7 +165,7 @@ Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const {
-  return callAsFunction((JSObjectRef) thisObj, args.size(), args.begin());
+  return callAsFunction((JSObjectRef)thisObj, args.size(), args.begin());
 }
 
 Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
@@ -161,7 +173,7 @@ Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const {
-  return callAsFunction((JSObjectRef) thisObj, nArgs, args);
+  return callAsFunction(static_cast<JSObjectRef>(thisObj), nArgs, args);
 }
 
 Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const {
@@ -205,7 +217,7 @@ Value Object::getPropertyAtIndex(unsigned index) const {
 }
 
 Value Object::getProperty(const char *propName) const {
-  return getProperty(String(propName));
+  return getProperty(String(m_context, propName));
 }
 
 void Object::setProperty(const String& propName, const Value& value) const {
@@ -218,7 +230,7 @@ void Object::setProperty(const String& propName, const Value& value) const {
 }
 
 void Object::setProperty(const char *propName, const Value& value) const {
-  setProperty(String(propName), value);
+  setProperty(String(m_context, propName), value);
 }
 
 std::vector<String> Object::getPropertyNames() const {
@@ -227,7 +239,8 @@ std::vector<String> Object::getPropertyNames() const {
   std::vector<String> names;
   names.reserve(count);
   for (size_t i = 0; i < count; i++) {
-    names.emplace_back(String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i)));
+    names.emplace_back(
+      String::ref(m_context, JSPropertyNameArrayGetNameAtIndex(namesRef, i)));
   }
   JSPropertyNameArrayRelease(namesRef);
   return names;
@@ -238,7 +251,8 @@ std::unordered_map<std::string, std::string> Object::toJSONMap() const {
   auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
   size_t count = JSPropertyNameArrayGetCount(namesRef);
   for (size_t i = 0; i < count; i++) {
-    auto key = String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i));
+    auto key = String::ref(m_context, 
+      JSPropertyNameArrayGetNameAtIndex(namesRef, i));
     map.emplace(key.str(), getProperty(key).toJSONString());
   }
   JSPropertyNameArrayRelease(namesRef);

@@ -429,9 +429,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
       if (statusCode != 200) {
+        NSString *errorMessage = [NSString stringWithFormat:@"Failed to load %@", response.URL];
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorMessage};
         completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
                                                      code:statusCode
-                                                 userInfo:nil], nil, nil);
+                                                 userInfo:userInfo], nil, nil);
         return;
       }
 

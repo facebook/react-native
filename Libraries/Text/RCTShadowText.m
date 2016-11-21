@@ -115,10 +115,12 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
   NSNumber *parentTag = [[self reactSuperview] reactTag];
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSSMeasureModeExactly];
   CGRect textFrame = [self calculateTextFrame:textStorage];
+  BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textFrame = textFrame;
     view.textStorage = textStorage;
+    view.selectable = selectable;
 
     /**
      * NOTE: this logic is included to support rich text editing inside multiline

@@ -101,10 +101,6 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
-RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, UIView)
-{
-  view.rct_removesClippedSubviews = [RCTConvert BOOL:json] ;
-}
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
@@ -113,7 +109,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
 {
   if (json) {
     view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
@@ -121,25 +117,23 @@ RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, UIView)
     view.clipsToBounds = defaultView.clipsToBounds;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
 // TODO: t11041683 Remove this duplicate property name.
-RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
-  [view rct_reclip];
 }
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, UIView)
+RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
-  [view rct_reclip];
 }
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
@@ -166,6 +160,12 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
       break;
     default:
       RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
+{
+  if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
+    view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView) {

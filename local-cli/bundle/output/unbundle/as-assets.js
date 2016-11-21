@@ -9,7 +9,6 @@
 'use strict';
 
 const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
-const Promise = require('promise');
 
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
@@ -19,7 +18,8 @@ const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE'; // must not start with a dot, as that won't go into the apk
+// must not start with a dot, as that won't go into the apk
+const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE';
 const MODULES_DIR = 'js-modules';
 
 /**

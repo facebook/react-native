@@ -62,10 +62,6 @@ void installGlobalProxy(
 
 void removeGlobal(JSGlobalContextRef ctx, const char* name);
 
-JSValueRef makeJSCException(
-    JSContextRef ctx,
-    const char* exception_text);
-
 JSValueRef evaluateScript(
     JSContextRef ctx,
     JSStringRef script,
@@ -82,8 +78,6 @@ void formatAndThrowJSException(
     JSContextRef ctx,
     JSValueRef exn,
     JSStringRef sourceURL);
-
-JSValueRef makeJSError(JSContextRef ctx, const char *error);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);

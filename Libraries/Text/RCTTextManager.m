@@ -9,12 +9,7 @@
 
 #import "RCTTextManager.h"
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
@@ -84,6 +79,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowRadius, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(adjustsFontSizeToFit, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(minimumFontScale, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(selectable, BOOL)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {

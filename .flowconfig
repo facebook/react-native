@@ -2,8 +2,8 @@
 ; We fork some components by platform
 .*/*[.]android.js
 
-; Ignore generators because they are not real JS files
-.*/local-cli/generator/templates/.*
+; Ignore templates for 'react-native init'
+.*/local-cli/templates/.*
 
 ; Ignore the website subdir
 <PROJECT_ROOT>/website/.*

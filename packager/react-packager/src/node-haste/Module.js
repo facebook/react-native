@@ -223,19 +223,24 @@ class Module {
     // never be transformed anyway.
     invariant(_transformCode != null, 'missing code transform funtion');
     invariant(_transformCacheKey != null, 'missing cache key');
-    this._readSourceCode().then(sourceCode => {
-      return _transformCode(this, sourceCode, transformOptions)
-        .then(freshResult => {
-          TransformCache.writeSync({
-            filePath: this.path,
-            sourceCode,
-            transformCacheKey: _transformCacheKey,
-            transformOptions,
-            result: freshResult,
-          });
-          callback(undefined, freshResult);
-        });
-    }, callback);
+    this._readSourceCode()
+      .then(sourceCode =>
+        _transformCode(this, sourceCode, transformOptions)
+          .then(freshResult => {
+            TransformCache.writeSync({
+              filePath: this.path,
+              sourceCode,
+              transformCacheKey: _transformCacheKey,
+              transformOptions,
+              result: freshResult,
+            });
+            return freshResult;
+          })
+      )
+      .then(
+        freshResult => process.nextTick(callback, null, freshResult),
+        error => process.nextTick(callback, error),
+      );
   }
 
   /**

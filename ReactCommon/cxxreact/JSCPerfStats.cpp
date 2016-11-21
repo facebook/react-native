@@ -10,6 +10,8 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
+using namespace facebook::react;
+
 static JSValueRef nativeGetHeapStats(
     JSContextRef ctx,
     JSObjectRef function,
@@ -21,10 +23,10 @@ static JSValueRef nativeGetHeapStats(
   JSGetHeapStats(ctx, &heapStats);
 
   auto result = facebook::react::Object::create(ctx);
-  result.setProperty("size", {ctx, JSValueMakeNumber(ctx, heapStats.size)});
-  result.setProperty("extra_size", {ctx, JSValueMakeNumber(ctx, heapStats.extraSize)});
-  result.setProperty("capacity", {ctx, JSValueMakeNumber(ctx, heapStats.capacity)});
-  result.setProperty("object_count", {ctx, JSValueMakeNumber(ctx, heapStats.objectCount)});
+  result.setProperty("size", {ctx, Value::makeNumber(ctx, heapStats.size)});
+  result.setProperty("extra_size", {ctx, Value::makeNumber(ctx, heapStats.extraSize)});
+  result.setProperty("capacity", {ctx, Value::makeNumber(ctx, heapStats.capacity)});
+  result.setProperty("object_count", {ctx, Value::makeNumber(ctx, heapStats.objectCount)});
 
   return (JSObjectRef) result;
 }
@@ -42,10 +44,10 @@ static JSValueRef nativeGetGCStats(
   auto result = facebook::react::Object::create(ctx);
   result.setProperty(
       "last_full_gc_length",
-      {ctx, JSValueMakeNumber(ctx, gcStats.lastFullGCLength)});
+      {ctx, Value::makeNumber(ctx, gcStats.lastFullGCLength)});
   result.setProperty(
       "last_eden_gc_length",
-      {ctx, JSValueMakeNumber(ctx, gcStats.lastEdenGCLength)});
+      {ctx, Value::makeNumber(ctx, gcStats.lastEdenGCLength)});
 
   return (JSObjectRef) result;
 }

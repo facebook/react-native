@@ -12,7 +12,6 @@
 
 #include <stdexcept>
 
-using namespace facebook;
 using namespace facebook::react;
 
 #ifdef ANDROID
@@ -21,15 +20,14 @@ static void prepare() {
   ALooper_prepare(0);
 }
 #else
-static void prepare() {
-}
+static void prepare() {}
 #endif
 
 TEST(Value, Undefined) {
   prepare();
   JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  Value v(ctx, JSValueMakeUndefined(ctx));
-  auto s = react::String::adopt(JSValueToStringCopy(ctx, v, nullptr));
+  auto v = Value::makeUndefined(ctx);
+  auto s = String::adopt(ctx, JSValueToStringCopy(ctx, v, nullptr));
   EXPECT_EQ("undefined", s.str());
   JSGlobalContextRelease(ctx);
 }
@@ -37,7 +35,7 @@ TEST(Value, Undefined) {
 TEST(Value, FromJSON) {
   prepare();
   JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  react::String s("{\"a\": 4}");
+  String s(ctx, "{\"a\": 4}");
   Value v(Value::fromJSON(ctx, s));
   EXPECT_TRUE(JSValueIsObject(ctx, v));
   JSGlobalContextRelease(ctx);
@@ -46,7 +44,7 @@ TEST(Value, FromJSON) {
 TEST(Value, ToJSONString) {
   prepare();
   JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  react::String s("{\"a\": 4}");
+  String s(ctx, "{\"a\": 4}");
   Value v(Value::fromJSON(ctx, s));
   folly::dynamic dyn = folly::parseJson(v.toJSONString());
   ASSERT_NE(nullptr, dyn);

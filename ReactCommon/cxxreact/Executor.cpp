@@ -22,6 +22,14 @@ void JSExecutor::loadApplicationScript(std::string bundlePath, std::string sourc
       std::move(sourceURL));
 }
 
+void JSExecutor::loadApplicationScript(int fd, std::string sourceURL) {
+  struct stat fileInfo;
+  folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on bundle failed.");
+
+  auto bundle = folly::make_unique<JSBigFileString>(fd, fileInfo.st_size);
+  return loadApplicationScript(std::move(bundle), std::move(sourceURL));
+}
+
 static JSBigOptimizedBundleString::Encoding encodingFromByte(uint8_t byte) {
   switch (byte) {
   case 0:

@@ -47,18 +47,18 @@ private:
 
 class String : public noncopyable {
 public:
-  explicit String(const char* utf8) :
-    m_string(JSStringCreateWithUTF8CString(utf8))
+  explicit String(JSContextRef context, const char* utf8) :
+    m_context(context), m_string(JSStringCreateWithUTF8CString(utf8))
   {}
 
   String(String&& other) :
-    m_string(other.m_string)
+    m_context(other.m_context), m_string(other.m_string)
   {
     other.m_string = nullptr;
   }
 
   String(const String& other) :
-    m_string(other.m_string)
+    m_context(other.m_context), m_string(other.m_string)
   {
     if (m_string) {
       JSStringRetain(m_string);
@@ -111,35 +111,36 @@ public:
   }
 
   // This assumes ascii is nul-terminated.
-  static String createExpectingAscii(const char* ascii, size_t len) {
+  static String createExpectingAscii(JSContextRef context, const char* ascii, size_t len) {
 #if WITH_FBJSCEXTENSIONS
-    return String(JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+    return String(context, JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
 #else
-    return String(JSStringCreateWithUTF8CString(ascii), true);
+    return String(context, JSStringCreateWithUTF8CString(ascii), true);
 #endif
   }
 
-  static String createExpectingAscii(std::string const &ascii) {
-    return createExpectingAscii(ascii.c_str(), ascii.size());
+  static String createExpectingAscii(JSContextRef context, std::string const &ascii) {
+    return createExpectingAscii(context, ascii.c_str(), ascii.size());
   }
 
-  static String ref(JSStringRef string) {
-    return String(string, false);
+  static String ref(JSContextRef context, JSStringRef string) {
+    return String(context, string, false);
   }
 
-  static String adopt(JSStringRef string) {
-    return String(string, true);
+  static String adopt(JSContextRef context, JSStringRef string) {
+    return String(context, string, true);
   }
 
 private:
-  explicit String(JSStringRef string, bool adopt) :
-    m_string(string)
+  explicit String(JSContextRef context, JSStringRef string, bool adopt) :
+    m_context(context), m_string(string)
   {
     if (!adopt && string) {
       JSStringRetain(string);
     }
   }
 
+  JSContextRef m_context;
   JSStringRef m_string;
 };
 
@@ -208,6 +209,10 @@ public:
     return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
   }
 
+  void setPrivate(void* data) const {
+    JSObjectSetPrivate(m_obj, data);
+  }
+
   JSContextRef context() const {
     return m_context;
   }
@@ -245,7 +250,7 @@ public:
   }
 
   bool isBoolean() const {
-    return JSValueIsBoolean(context(), m_value);
+    return getType() == kJSTypeBoolean;
   }
 
   bool asBoolean() const {
@@ -253,15 +258,15 @@ public:
   }
 
   bool isNumber() const {
-    return JSValueIsNumber(context(), m_value);
+    return getType() == kJSTypeNumber;
   }
 
   bool isNull() const {
-    return JSValueIsNull(context(), m_value);
+    return getType() == kJSTypeNull;
   }
 
   bool isUndefined() const {
-    return JSValueIsUndefined(context(), m_value);
+    return getType() == kJSTypeUndefined;
   }
 
   double asNumber() const {
@@ -281,17 +286,27 @@ public:
   }
 
   bool isObject() const {
-    return JSValueIsObject(context(), m_value);
+    return getType() == kJSTypeObject;
   }
 
   Object asObject();
 
   bool isString() const {
-    return JSValueIsString(context(), m_value);
+    return getType() == kJSTypeString;
   }
 
   String toString() noexcept {
-    return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
+    return String::adopt(context(), JSValueToStringCopy(context(), m_value, nullptr));
+  }
+
+  static Value makeError(JSContextRef ctx, const char *error);
+
+  static Value makeNumber(JSContextRef ctx, double value) {
+    return Value(ctx, JSValueMakeNumber(ctx, value));
+  }
+
+  static Value makeUndefined(JSContextRef ctx) {
+    return Value(ctx, JSValueMakeUndefined(ctx));
   }
 
   std::string toJSONString(unsigned indent = 0) const;

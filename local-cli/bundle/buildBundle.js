@@ -9,7 +9,6 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Promise = require('promise');
 const Server = require('../../packager/react-packager/src/Server');
 
 const outputBundle = require('./output/bundle');

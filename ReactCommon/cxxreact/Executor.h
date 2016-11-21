@@ -182,7 +182,11 @@ public:
   const char *c_str() const override {
     if (!m_data) {
       m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
-      CHECK(m_data != MAP_FAILED);
+      CHECK(m_data != MAP_FAILED)
+        << " fd: " << m_fd
+        << " size: " << m_size
+        << " offset: " << m_mapOff
+        << " error: " << std::strerror(errno);
     }
     return m_data + m_pageOff;
   }
@@ -278,6 +282,14 @@ public:
    * Execute an application script optimized bundle in the JS context.
    */
   virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
+
+  /**
+   * @experimental
+   *
+   * Read an app bundle from a file descriptor, determine how it should be
+   * loaded, load and execute it in the JS context.
+   */
+  virtual void loadApplicationScript(int fd, std::string source);
 
   /**
    * Add an application "unbundle" file

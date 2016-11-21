@@ -475,7 +475,9 @@ class Server {
           // This is safe as the asset url contains a hash of the asset.
           res.setHeader('Cache-Control', 'max-age=31536000');
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
-          print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          process.nextTick(() => {
+            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          });
         },
         error => {
           console.error(error.stack);
@@ -747,7 +749,9 @@ class Server {
     }).then(
       stack => {
         res.end(JSON.stringify({stack: stack}));
-        print(log(createActionEndEntry(symbolicatingLogEntry)));
+        process.nextTick(() => {
+          print(log(createActionEndEntry(symbolicatingLogEntry)));
+        });
       },
       error => {
         console.error(error.stack || error);
