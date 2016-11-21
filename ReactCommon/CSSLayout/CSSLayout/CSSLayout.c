@@ -1247,6 +1247,34 @@ static void setMeasuredDimensionsForNodeWithMeasureFunc(const CSSNodeRef node,
   }
 }
 
+// For nodes with no children, use the available values if they were provided,
+// or the minimum size as indicated by the padding and border sizes.
+static void setMeasuredDimensionsForEmptyContainer(const CSSNodeRef node,
+                                                   const float availableWidth,
+                                                   const float availableHeight,
+                                                   const CSSMeasureMode widthMeasureMode,
+                                                   const CSSMeasureMode heightMeasureMode) {
+  const float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
+  const float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
+  const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
+  const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
+
+  node->layout.measuredDimensions[CSSDimensionWidth] =
+      boundAxis(node,
+                CSSFlexDirectionRow,
+                (widthMeasureMode == CSSMeasureModeUndefined ||
+                 widthMeasureMode == CSSMeasureModeAtMost)
+                    ? paddingAndBorderAxisRow
+                    : availableWidth - marginAxisRow);
+  node->layout.measuredDimensions[CSSDimensionHeight] =
+      boundAxis(node,
+                CSSFlexDirectionColumn,
+                (heightMeasureMode == CSSMeasureModeUndefined ||
+                 heightMeasureMode == CSSMeasureModeAtMost)
+                    ? paddingAndBorderAxisColumn
+                    : availableHeight - marginAxisColumn);
+}
+
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
@@ -1375,11 +1403,6 @@ static void layoutNodeImpl(const CSSNodeRef node,
              "availableHeight is indefinite so heightMeasureMode must be "
              "CSSMeasureModeUndefined");
 
-  const float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
-  const float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
-  const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
-  const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
-
   // Set the resolved resolution in the node's layout.
   const CSSDirection direction = resolveDirection(node, parentDirection);
   node->layout.direction = direction;
@@ -1390,27 +1413,17 @@ static void layoutNodeImpl(const CSSNodeRef node,
     return;
   }
 
-  // For nodes with no children, use the available values if they were provided,
-  // or
-  // the minimum size as indicated by the padding and border sizes.
   const uint32_t childCount = CSSNodeListCount(node->children);
   if (childCount == 0) {
-    node->layout.measuredDimensions[CSSDimensionWidth] =
-        boundAxis(node,
-                  CSSFlexDirectionRow,
-                  (widthMeasureMode == CSSMeasureModeUndefined ||
-                   widthMeasureMode == CSSMeasureModeAtMost)
-                      ? paddingAndBorderAxisRow
-                      : availableWidth - marginAxisRow);
-    node->layout.measuredDimensions[CSSDimensionHeight] =
-        boundAxis(node,
-                  CSSFlexDirectionColumn,
-                  (heightMeasureMode == CSSMeasureModeUndefined ||
-                   heightMeasureMode == CSSMeasureModeAtMost)
-                      ? paddingAndBorderAxisColumn
-                      : availableHeight - marginAxisColumn);
+    setMeasuredDimensionsForEmptyContainer(
+        node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode);
     return;
   }
+
+  const float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
+  const float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
+  const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
+  const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
 
   // If we're not being asked to perform a full layout, we can handle a number
   // of common
