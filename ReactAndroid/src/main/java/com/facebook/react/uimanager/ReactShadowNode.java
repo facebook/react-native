@@ -74,7 +74,15 @@ public class ReactShadowNode {
   private float mAbsoluteBottom;
   private final Spacing mDefaultPadding = new Spacing(0);
   private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
-  private final CSSNode mCSSNode = new CSSNode();
+  private final CSSNode mCSSNode;
+
+  public ReactShadowNode() {
+    CSSNode node = CSSNodePool.get().acquire();
+    if (node == null) {
+      node = new CSSNode();
+    }
+    mCSSNode = node;
+  }
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -190,7 +198,7 @@ public class ReactShadowNode {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  public void removeAllChildren() {
+  public void removeAndDisposeAllChildren() {
     if (getChildCount() == 0) {
       return;
     }
@@ -202,6 +210,8 @@ public class ReactShadowNode {
       }
       ReactShadowNode toRemove = getChildAt(i);
       toRemove.mParent = null;
+      toRemove.dispose();
+
       decrease += toRemove.mIsLayoutOnly ? toRemove.mTotalNativeChildren : 1;
     }
     Assertions.assertNotNull(mChildren).clear();
@@ -653,5 +663,10 @@ public class ReactShadowNode {
   @Override
   public String toString() {
     return mCSSNode.toString();
+  }
+
+  public void dispose() {
+    mCSSNode.reset();
+    CSSNodePool.get().release(mCSSNode);
   }
 }
