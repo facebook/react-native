@@ -6,12 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
+var Metadata = require('Metadata');
 var React = require('React');
 var Site = require('Site');
-var Metadata = require('Metadata');
 
-var versions = React.createClass({
+module.exports = React.createClass({
   render: function() {
     var availableDocs = (Metadata.config.RN_AVAILABLE_DOCS_VERSIONS || '').split(',');
     var latestVersion = Metadata.config.RN_LATEST_VERSION;
@@ -37,7 +38,7 @@ var versions = React.createClass({
         path: isLatest ? '/react-native' : '/react-native/releases/' + version,
         release: 'https://github.com/facebook/react-native/releases/tag/v' + version + '.0' + (isRC ? '-rc.0' : ''),
         type: isLatest ? 'latest' : (isRC ? 'release-candidate' : 'release'),
-      }
+      };
     }));
 
     if (!latestVersion) {
@@ -65,7 +66,7 @@ var versions = React.createClass({
     });
 
     // Note: Our Algolia DocSearch box supports version-specific queries. If you will be drastically changing the way versions are listed in this page, make sure https://github.com/algolia/docsearch-configs/blob/master/configs/react-native-versions.json is updated accordingly.
-    
+
     return (
       <Site section="versions" title="React Native Versions">
         <section className="content wrap documentationContent nosidebar">
@@ -130,5 +131,3 @@ var versions = React.createClass({
     );
   }
 });
-
-module.exports = versions;
