@@ -98,11 +98,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     return;
   }
 
-    if (type != UIAlertViewStyleDefault) {
-      [alertView textFieldAtIndex:0].text = defaultValue;
-      [alertView textFieldAtIndex:0].keyboardType = keyboardType;
-    }
-
   UIAlertController *alertController = [UIAlertController
                                         alertControllerWithTitle:title
                                         message:nil
@@ -112,6 +107,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.secureTextEntry = NO;
         textField.text = defaultValue;
+        textField.keyboardType = keyboardType;
       }];
       break;
     }
@@ -120,6 +116,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
         textField.placeholder = RCTUIKitLocalizedString(@"Password");
         textField.secureTextEntry = YES;
         textField.text = defaultValue;
+        textField.keyboardType = keyboardType;
       }];
       break;
     }
@@ -127,6 +124,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = RCTUIKitLocalizedString(@"Login");
         textField.text = defaultValue;
+        textField.keyboardType = keyboardType;
       }];
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = RCTUIKitLocalizedString(@"Password");
