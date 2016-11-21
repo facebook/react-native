@@ -19,8 +19,8 @@ import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSOverflow;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.CSSWrap;
@@ -30,9 +30,9 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
- * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
- * {@link CSSNodeDEPRECATED} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
+ * {@link CSSNode} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -74,7 +74,7 @@ public class ReactShadowNode {
   private float mAbsoluteBottom;
   private final Spacing mDefaultPadding = new Spacing(0);
   private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
-  private final CSSNodeDEPRECATED mCSSNode = new CSSNodeDEPRECATED();
+  private final CSSNode mCSSNode = new CSSNode();
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
