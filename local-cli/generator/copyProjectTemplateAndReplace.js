@@ -39,10 +39,9 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
     }
 
     const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);
-    const relativeRenamedPath = relativeFilePath
+    const relativeRenamedPath = dotFilePath(relativeFilePath)
       .replace(/HelloWorld/g, newProjectName)
       .replace(/helloworld/g, newProjectName.toLowerCase());
-
 
     let contentChangedCallback = null;
     if (options && options.upgrade && (!options.force)) {
@@ -64,6 +63,24 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       contentChangedCallback,
     );
   });
+}
+
+/**
+ * There are various dotfiles in the templates folder in the RN repo. We want
+ * these to be ignored by tools when working with React Native itself.
+ * Example: _babelrc file is ignored by Babel, renamed to .babelrc inside
+ *          a real app folder.
+ * This is especially important for .gitignore because npm has some special
+ * behavior of automatically renaming .gitignore to .npmignore.
+ */
+function dotFilePath(path) {
+  if (!path) return path;
+  return path
+    .replace('_gitignore', '.gitignore')
+    .replace('_babelrc', '.babelrc')
+    .replace('_flowconfig', '.flowconfig')
+    .replace('_buckconfig', '.buckconfig')
+    .replace('_watchmanconfig', '.watchmanconfig');
 }
 
 function upgradeFileContentChangedCallback(
