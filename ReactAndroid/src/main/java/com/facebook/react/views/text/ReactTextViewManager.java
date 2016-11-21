@@ -55,24 +55,6 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     view.setEllipsize(TextUtils.TruncateAt.END);
   }
 
-  @ReactProp(name = ViewProps.TEXT_ALIGN)
-  public void setTextAlign(ReactTextView view, @Nullable String textAlign) {
-    if (textAlign == null || "auto".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.NO_GRAVITY);
-    } else if ("left".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else if ("right".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.RIGHT);
-    } else if ("center".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
-    } else if ("justify".equals(textAlign)) {
-      // Fallback gracefully for cross-platform compat instead of error
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
-    }
-  }
-
   @ReactProp(name = ViewProps.LINE_BREAK_MODE)
   public void setLineBreakMode(ReactTextView view, @Nullable String ellipsizeMode) {
     if(ellipsizeMode == null) {

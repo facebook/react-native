@@ -90,17 +90,17 @@ var PickerIOS = React.createClass({
   },
 });
 
-PickerIOS.Item = React.createClass({
-  propTypes: {
+PickerIOS.Item = class extends React.Component {
+  static propTypes = {
     value: React.PropTypes.any, // string or integer basically
     label: React.PropTypes.string,
-  },
+  };
 
-  render: function() {
+  render() {
     // These items don't get rendered directly.
     return null;
-  },
-});
+  }
+};
 
 var styles = StyleSheet.create({
   pickerIOS: {

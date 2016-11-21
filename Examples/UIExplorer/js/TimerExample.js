@@ -40,19 +40,17 @@ function burnCPU(milliseconds) {
   while (performanceNow() < (start + milliseconds)) {}
 }
 
-var RequestIdleCallbackTester = React.createClass({
-  _idleTimer: (null: any),
-  _iters: 0,
+class RequestIdleCallbackTester extends React.Component {
+  state = {
+    message: '-',
+  };
 
-  getInitialState() {
-    return {
-      message: '-',
-    };
-  },
+  _idleTimer: any = null;
+  _iters = 0;
 
   componentWillUnmount() {
     cancelIdleCallback(this._idleTimer);
-  },
+  }
 
   render() {
     return (
@@ -76,9 +74,9 @@ var RequestIdleCallbackTester = React.createClass({
         <Text>{this.state.message}</Text>
       </View>
     );
-  },
+  }
 
-  _run(shouldBurnCPU) {
+  _run = (shouldBurnCPU) => {
     cancelIdleCallback(this._idleTimer);
     this._idleTimer = requestIdleCallback((deadline) => {
       let message = '';
@@ -89,9 +87,9 @@ var RequestIdleCallbackTester = React.createClass({
       }
       this.setState({message: `${message} ${deadline.timeRemaining()}ms remaining in frame`});
     });
-  },
+  };
 
-  _runBackground() {
+  _runBackground = () => {
     cancelIdleCallback(this._idleTimer);
     const handler = (deadline) => {
       while (deadline.timeRemaining() > 5) {
@@ -102,13 +100,13 @@ var RequestIdleCallbackTester = React.createClass({
       this._idleTimer = requestIdleCallback(handler);
     };
     this._idleTimer = requestIdleCallback(handler);
-  },
+  };
 
-  _stopBackground() {
+  _stopBackground = () => {
     this._iters = 0;
     cancelIdleCallback(this._idleTimer);
-  }
-});
+  };
+}
 
 var TimerTester = React.createClass({
   mixins: [TimerMixin],
@@ -245,14 +243,12 @@ exports.examples = [
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
     render: function(): ReactElement<any> {
-      var IntervalExample = React.createClass({
-        getInitialState: function() {
-          return {
-            showTimer: true,
-          };
-        },
+      class IntervalExample extends React.Component {
+        state = {
+          showTimer: true,
+        };
 
-        render: function() {
+        render() {
           if (this.state.showTimer) {
             var timer = [
               <TimerTester ref="interval" dt={25} type="setInterval" />,
@@ -273,9 +269,9 @@ exports.examples = [
               </UIExplorerButton>
             </View>
           );
-        },
+        }
 
-        _renderTimer: function() {
+        _renderTimer = () => {
           return (
             <View>
               <TimerTester ref="interval" dt={25} type="setInterval" />
@@ -284,12 +280,13 @@ exports.examples = [
               </UIExplorerButton>
             </View>
           );
-        },
+        };
 
-        _toggleTimer: function() {
+        _toggleTimer = () => {
           this.setState({showTimer: !this.state.showTimer});
-        },
-      });
+        };
+      }
+
       return <IntervalExample />;
     },
   },

@@ -33,8 +33,8 @@ var {
   View,
 } = ReactNative;
 
-var Button = React.createClass({
-  render: function() {
+class Button extends React.Component {
+  render() {
     return (
       <TouchableHighlight
         underlayColor={'white'}
@@ -46,7 +46,7 @@ var Button = React.createClass({
       </TouchableHighlight>
     );
   }
-});
+}
 
 class NotificationExample extends React.Component {
   componentWillMount() {

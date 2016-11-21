@@ -32,34 +32,30 @@ var {
   View,
 } = ReactNative;
 
-var DatePickerExample = React.createClass({
-  getDefaultProps: function () {
-    return {
-      date: new Date(),
-      timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
-    };
-  },
+class DatePickerExample extends React.Component {
+  static defaultProps = {
+    date: new Date(),
+    timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+  };
 
-  getInitialState: function() {
-    return {
-      date: this.props.date,
-      timeZoneOffsetInHours: this.props.timeZoneOffsetInHours,
-    };
-  },
+  state = {
+    date: this.props.date,
+    timeZoneOffsetInHours: this.props.timeZoneOffsetInHours,
+  };
 
-  onDateChange: function(date) {
+  onDateChange = (date) => {
     this.setState({date: date});
-  },
+  };
 
-  onTimezoneChange: function(event) {
+  onTimezoneChange = (event) => {
     var offset = parseInt(event.nativeEvent.text, 10);
     if (isNaN(offset)) {
       return;
     }
     this.setState({timeZoneOffsetInHours: offset});
-  },
+  };
 
-  render: function() {
+  render() {
     // Ideally, the timezone input would be a picker rather than a
     // text input, but we don't have any pickers yet :(
     return (
@@ -103,11 +99,11 @@ var DatePickerExample = React.createClass({
         />
       </View>
     );
-  },
-});
+  }
+}
 
-var WithLabel = React.createClass({
-  render: function() {
+class WithLabel extends React.Component {
+  render() {
     return (
       <View style={styles.labelContainer}>
         <View style={styles.labelView}>
@@ -119,10 +115,10 @@ var WithLabel = React.createClass({
       </View>
     );
   }
-});
+}
 
-var Heading = React.createClass({
-  render: function() {
+class Heading extends React.Component {
+  render() {
     return (
       <View style={styles.headingContainer}>
         <Text style={styles.heading}>
@@ -131,7 +127,7 @@ var Heading = React.createClass({
       </View>
     );
   }
-});
+}
 
 exports.displayName = (undefined: ?string);
 exports.title = '<DatePickerIOS>';

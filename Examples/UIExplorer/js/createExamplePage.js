@@ -39,13 +39,11 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
   : ReactClass<any> {
   invariant(!!exampleModule.examples, 'The module must have examples');
 
-  var ExamplePage = React.createClass({
-    statics: {
-      title: exampleModule.title,
-      description: exampleModule.description,
-    },
+  class ExamplePage extends React.Component {
+    static title = exampleModule.title;
+    static description = exampleModule.description;
 
-    getBlock: function(example: Example, i) {
+    getBlock = (example: Example, i) => {
       // Filter platform-specific examples
       var {title, description, platform} = example;
       if (platform) {
@@ -82,16 +80,16 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
           {renderedComponent}
         </UIExplorerBlock>
       );
-    },
+    };
 
-    render: function() {
+    render() {
       return (
         <UIExplorerPage title={title}>
           {exampleModule.examples.map(this.getBlock)}
         </UIExplorerPage>
       );
     }
-  });
+  }
 
   return ExamplePage;
 };

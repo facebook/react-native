@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const getInverseDependencies = require('node-haste').getInverseDependencies;
+const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 const querystring = require('querystring');
 const url = require('url');
 

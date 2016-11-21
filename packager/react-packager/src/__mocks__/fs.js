@@ -8,4 +8,4 @@
  */
 'use strict';
 
-module.exports = require.requireActual('node-haste/mocks/graceful-fs');
+module.exports = require.requireActual('../node-haste/__mocks__/graceful-fs');

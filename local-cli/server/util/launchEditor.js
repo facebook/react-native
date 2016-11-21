@@ -52,6 +52,9 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
       return addWorkspaceToArgumentsIfExists([fileName + ':' + lineNumber], workspace);
     case 'subl':
     case 'sublime':
+    case 'wstorm':
+    case 'appcode':
+    case 'idea':  
       return [fileName + ':' + lineNumber];
     case 'joe':
     case 'emacs':

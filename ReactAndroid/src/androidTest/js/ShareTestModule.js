@@ -17,11 +17,11 @@ var RecordingModule = require('NativeModules').ShareRecordingModule;
 var Share = require('Share');
 var View = require('View');
 
-var ShareTestApp = React.createClass({
-  render: function() {
+class ShareTestApp extends React.Component {
+  render() {
     return (<View />);
-  },
-});
+  }
+}
 
 var ShareTestModule = {
   ShareTestApp: ShareTestApp,

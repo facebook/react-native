@@ -29,7 +29,7 @@ var {
   View,
 } = ReactNative;
 
-var AccessibilityIOSExample = React.createClass({
+class AccessibilityIOSExample extends React.Component {
   render() {
     return (
       <View>
@@ -60,8 +60,8 @@ var AccessibilityIOSExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 exports.title = 'AccessibilityIOS';
 exports.description = 'Interface to show iOS\' accessibility samples';

@@ -76,8 +76,8 @@ var initStyle = function(index, presentedIndex) {
     NavigatorBreadcrumbNavigationBarStyles.Right[index];
 };
 
-var NavigatorBreadcrumbNavigationBar = React.createClass({
-  propTypes: {
+class NavigatorBreadcrumbNavigationBar extends React.Component {
+  static propTypes = {
     navigator: PropTypes.shape({
       push: PropTypes.func,
       pop: PropTypes.func,
@@ -95,13 +95,11 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       presentedIndex: React.PropTypes.number,
     }),
     style: View.propTypes.style,
-  },
+  };
 
-  statics: {
-    Styles: NavigatorBreadcrumbNavigationBarStyles,
-  },
+  static Styles = NavigatorBreadcrumbNavigationBarStyles;
 
-  _updateIndexProgress: function(progress, index, fromIndex, toIndex) {
+  _updateIndexProgress = (progress, index, fromIndex, toIndex) => {
     var amount = toIndex > fromIndex ? progress : (1 - progress);
     var oldDistToCenter = index - fromIndex;
     var newDistToCenter = index - toIndex;
@@ -143,32 +141,32 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
         pointerEvents: rightButtonStyle.opacity === 0 ? 'none' : 'auto',
       });
     }
-  },
+  };
 
-  updateProgress: function(progress, fromIndex, toIndex) {
+  updateProgress = (progress, fromIndex, toIndex) => {
     var max = Math.max(fromIndex, toIndex);
     var min = Math.min(fromIndex, toIndex);
     for (var index = min; index <= max; index++) {
       this._updateIndexProgress(progress, index, fromIndex, toIndex);
     }
-  },
+  };
 
-  onAnimationStart: function(fromIndex, toIndex) {
+  onAnimationStart = (fromIndex, toIndex) => {
     var max = Math.max(fromIndex, toIndex);
     var min = Math.min(fromIndex, toIndex);
     for (var index = min; index <= max; index++) {
       this._setRenderViewsToHardwareTextureAndroid(index, true);
     }
-  },
+  };
 
-  onAnimationEnd: function() {
+  onAnimationEnd = () => {
     var max = this.props.navState.routeStack.length - 1;
     for (var index = 0; index <= max; index++) {
       this._setRenderViewsToHardwareTextureAndroid(index, false);
     }
-  },
+  };
 
-  _setRenderViewsToHardwareTextureAndroid: function(index, renderToHardwareTexture) {
+  _setRenderViewsToHardwareTextureAndroid = (index, renderToHardwareTexture) => {
     var props = {
       renderToHardwareTextureAndroid: renderToHardwareTexture,
     };
@@ -177,13 +175,13 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     this._setPropsIfExists('separator_' + index, props);
     this._setPropsIfExists('title_' + index, props);
     this._setPropsIfExists('right_' + index, props);
-  },
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     this._reset();
-  },
+  }
 
-  render: function() {
+  render() {
     var navState = this.props.navState;
     var icons = navState && navState.routeStack.map(this._getBreadcrumb);
     var titles = navState.routeStack.map(this._getTitle);
@@ -197,23 +195,23 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
         {buttons}
       </View>
     );
-  },
+  }
 
-  immediatelyRefresh: function() {
+  immediatelyRefresh = () => {
     this._reset();
     this.forceUpdate();
-  },
+  };
 
-  _reset() {
+  _reset = () => {
     this._key = guid();
     this._descriptors = {
       crumb: new Map(),
       title: new Map(),
       right: new Map(),
     };
-  },
+  };
 
-  _getBreadcrumb: function(route, index) {
+  _getBreadcrumb = (route, index) => {
     if (this._descriptors.crumb.has(route)) {
       return this._descriptors.crumb.get(route);
     }
@@ -237,9 +235,9 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
 
     this._descriptors.crumb = this._descriptors.crumb.set(route, breadcrumbDescriptor);
     return breadcrumbDescriptor;
-  },
+  };
 
-  _getTitle: function(route, index) {
+  _getTitle = (route, index) => {
     if (this._descriptors.title.has(route)) {
       return this._descriptors.title.get(route);
     }
@@ -260,9 +258,9 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     );
     this._descriptors.title = this._descriptors.title.set(route, titleDescriptor);
     return titleDescriptor;
-  },
+  };
 
-  _getRightButton: function(route, index) {
+  _getRightButton = (route, index) => {
     if (this._descriptors.right.has(route)) {
       return this._descriptors.right.get(route);
     }
@@ -285,13 +283,13 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     );
     this._descriptors.right = this._descriptors.right.set(route, rightButtonDescriptor);
     return rightButtonDescriptor;
-  },
+  };
 
-  _setPropsIfExists: function(ref, props) {
+  _setPropsIfExists = (ref, props) => {
     var ref = this.refs[ref];
     ref && ref.setNativeProps(props);
-  },
-});
+  };
+}
 
 var styles = StyleSheet.create({
   breadCrumbContainer: {

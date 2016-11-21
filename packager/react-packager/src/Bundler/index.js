@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
-const Cache = require('node-haste').Cache;
+const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -351,14 +351,13 @@ class Bundler {
     if (!resolutionResponse) {
       let onProgress = noop;
       if (process.stdout.isTTY && !this._opts.silent) {
-        const bar = new ProgressBar(
-          'transformed :current/:total (:percent)',
-          {complete: '=', incomplete: ' ', width: 40, total: 1},
-        );
-        onProgress = (_, total) => {
-          bar.total = total;
-          bar.tick();
-        };
+        const bar = new ProgressBar('transformed :current/:total (:percent)', {
+          complete: '=',
+          incomplete: ' ',
+          width: 40,
+          total: 1,
+        });
+        onProgress = debouncedTick(bar);
       }
 
       resolutionResponse = this.getDependencies({
@@ -706,6 +705,25 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
+}
+
+function debouncedTick(progressBar) {
+  let n = 0;
+  let start, total;
+
+  return (_, t) => {
+    total = t;
+    n += 1;
+    if (start) {
+      if (progressBar.curr + n >= total || Date.now() - start > 200) {
+        progressBar.total = total;
+        progressBar.tick(n);
+        start = n = 0;
+      }
+    } else {
+      start = Date.now();
+    }
+  };
 }
 
 module.exports = Bundler;

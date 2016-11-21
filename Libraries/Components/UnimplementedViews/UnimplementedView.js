@@ -10,13 +10,14 @@
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 
-var UnimplementedView = React.createClass({
-  setNativeProps: function() {
+class UnimplementedView extends React.Component {
+  setNativeProps = () => {
     // Do nothing.
     // This method is required in order to use this view as a Touchable* child.
     // See ensureComponentIsNative.js for more info
-  },
-  render: function() {
+  };
+
+  render() {
     // Workaround require cycle from requireNativeComponent
     var View = require('View');
     return (
@@ -24,8 +25,8 @@ var UnimplementedView = React.createClass({
         {this.props.children}
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   unimplementedView: {

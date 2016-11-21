@@ -42,12 +42,10 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
 
-var ActionSheetExample = React.createClass({
-  getInitialState() {
-    return {
-      clicked: 'none',
-    };
-  },
+class ActionSheetExample extends React.Component {
+  state = {
+    clicked: 'none',
+  };
 
   render() {
     return (
@@ -60,9 +58,9 @@ var ActionSheetExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
 
-  showActionSheet() {
+  showActionSheet = () => {
     ActionSheetIOS.showActionSheetWithOptions({
       options: BUTTONS,
       cancelButtonIndex: CANCEL_INDEX,
@@ -71,15 +69,13 @@ var ActionSheetExample = React.createClass({
     (buttonIndex) => {
       this.setState({ clicked: BUTTONS[buttonIndex] });
     });
-  }
-});
+  };
+}
 
-var ActionSheetTintExample = React.createClass({
-  getInitialState() {
-    return {
-      clicked: 'none',
-    };
-  },
+class ActionSheetTintExample extends React.Component {
+  state = {
+    clicked: 'none',
+  };
 
   render() {
     return (
@@ -92,9 +88,9 @@ var ActionSheetTintExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
 
-  showActionSheet() {
+  showActionSheet = () => {
     ActionSheetIOS.showActionSheetWithOptions({
       options: BUTTONS,
       cancelButtonIndex: CANCEL_INDEX,
@@ -104,15 +100,13 @@ var ActionSheetTintExample = React.createClass({
     (buttonIndex) => {
       this.setState({ clicked: BUTTONS[buttonIndex] });
     });
-  }
-});
+  };
+}
 
-var ShareActionSheetExample = React.createClass({
-  getInitialState() {
-    return {
-      text: ''
-    };
-  },
+class ShareActionSheetExample extends React.Component {
+  state = {
+    text: ''
+  };
 
   render() {
     return (
@@ -125,9 +119,9 @@ var ShareActionSheetExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
 
-  showShareActionSheet() {
+  showShareActionSheet = () => {
     ActionSheetIOS.showShareActionSheetWithOptions({
       url: this.props.url,
       message: 'message to go with the shared url',
@@ -146,15 +140,13 @@ var ShareActionSheetExample = React.createClass({
       }
       this.setState({text});
     });
-  }
-});
+  };
+}
 
-var ShareScreenshotExample = React.createClass({
-  getInitialState() {
-    return {
-      text: ''
-    };
-  },
+class ShareScreenshotExample extends React.Component {
+  state = {
+    text: ''
+  };
 
   render() {
     return (
@@ -167,9 +159,9 @@ var ShareScreenshotExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  }
 
-  showShareActionSheet() {
+  showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
     UIManager.takeSnapshot('window').then((uri) => {
       // Share image data
@@ -190,8 +182,8 @@ var ShareScreenshotExample = React.createClass({
         this.setState({text});
       });
     }).catch((error) => alert(error));
-  }
-});
+  };
+}
 
 var style = StyleSheet.create({
   button: {

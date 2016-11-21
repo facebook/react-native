@@ -7,7 +7,7 @@ const spawnOpts = {
 
 log.heading = 'rnpm-install';
 
-module.exports = function install(config, args, callback) {
+module.exports = function install(args, config) {
   const name = args[0];
 
   var res = spawnSync('npm', ['install', name, '--save'], spawnOpts);

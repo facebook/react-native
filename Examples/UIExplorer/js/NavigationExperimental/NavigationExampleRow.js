@@ -30,8 +30,8 @@ var {
   TouchableHighlight,
 } = ReactNative;
 
-var NavigationExampleRow = React.createClass({
-  render: function() {
+class NavigationExampleRow extends React.Component {
+  render() {
     if (this.props.onPress) {
       return (
         <TouchableHighlight
@@ -51,8 +51,8 @@ var NavigationExampleRow = React.createClass({
         </Text>
       </View>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   row: {

@@ -30,8 +30,8 @@ var {
 
 var IS_RIPPLE_EFFECT_SUPPORTED = Platform.Version >= 21;
 
-var SearchBar = React.createClass({
-  render: function() {
+class SearchBar extends React.Component {
+  render() {
     var background = IS_RIPPLE_EFFECT_SUPPORTED ?
       TouchableNativeFeedback.SelectableBackgroundBorderless() :
       TouchableNativeFeedback.SelectableBackground();
@@ -67,7 +67,7 @@ var SearchBar = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {

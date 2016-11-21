@@ -93,7 +93,7 @@ const linkAssets = (project, assets) => {
  *
  * If optional argument [packageName] is provided, it's the only one that's checked
  */
-module.exports = function link(config, args) {
+module.exports = function link(args, config) {
   var project;
   try {
     project = config.getProjectConfig();

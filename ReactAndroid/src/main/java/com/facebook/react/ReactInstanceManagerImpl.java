@@ -773,6 +773,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    rootView.setRootViewTag(rootTag);
     @Nullable Bundle launchOptions = rootView.getLaunchOptions();
     WritableMap initialProps = launchOptions != null
         ? Arguments.fromBundle(launchOptions)

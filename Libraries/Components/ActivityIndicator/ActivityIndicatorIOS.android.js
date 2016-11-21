@@ -13,10 +13,10 @@
 var React = require('React');
 var View = require('View');
 
-var ActivityIndicatorIOS = React.createClass({
+class ActivityIndicatorIOS extends React.Component {
   render(): ReactElement {
     return <View {...this.props} />;
   }
-});
+}
 
 module.exports = ActivityIndicatorIOS;

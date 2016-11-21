@@ -58,6 +58,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable Bundle mLaunchOptions;
   private @Nullable KeyboardListener mKeyboardListener;
   private @Nullable OnGenericMotionListener mOnGenericMotionListener;
+  private int mRootViewTag;
   private boolean mWasMeasured = false;
   private boolean mIsAttachedToInstance = false;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
@@ -279,6 +280,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         "was garbage collected. This usually means that your application is leaking large amounts of " +
         "memory. To solve this, make sure to call ReactRootView#unmountReactApplication in the onDestroy() " +
         "of your hosting Activity or in the onDestroyView() of your hosting Fragment.");
+  }
+
+  public int getRootViewTag() {
+    return mRootViewTag;
+  }
+
+  public void setRootViewTag(int rootViewTag) {
+    mRootViewTag = rootViewTag;
   }
 
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {

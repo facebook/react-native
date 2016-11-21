@@ -83,9 +83,9 @@ public class LayoutPropertyApplicatorTest {
     verify(map).getFloat(eq("width"), anyFloat());
     verify(reactShadowNode).setStyleHeight(anyFloat());
     verify(map).getFloat(eq("height"), anyFloat());
-    verify(reactShadowNode).setPositionLeft(anyFloat());
+    verify(reactShadowNode).setPositionValue(eq(Spacing.START), anyFloat());
     verify(map).getFloat(eq("left"), anyFloat());
-    verify(reactShadowNode).setPositionTop(anyFloat());
+    verify(reactShadowNode).setPositionValue(eq(Spacing.TOP), anyFloat());
     verify(map).getFloat(eq("top"), anyFloat());
 
     reactShadowNode = spy(new LayoutShadowNode());
@@ -96,9 +96,9 @@ public class LayoutPropertyApplicatorTest {
     verify(map, never()).getFloat(eq("width"), anyFloat());
     verify(reactShadowNode, never()).setStyleHeight(anyFloat());
     verify(map, never()).getFloat(eq("height"), anyFloat());
-    verify(reactShadowNode, never()).setPositionLeft(anyFloat());
+    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.START), anyFloat());
     verify(map, never()).getFloat(eq("left"), anyFloat());
-    verify(reactShadowNode, never()).setPositionTop(anyFloat());
+    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.TOP), anyFloat());
     verify(map, never()).getFloat(eq("top"), anyFloat());
   }
 
@@ -128,8 +128,8 @@ public class LayoutPropertyApplicatorTest {
             "right", 5.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setPositionBottom(anyFloat());
-    verify(reactShadowNode).setPositionRight(anyFloat());
+    verify(reactShadowNode).setPositionValue(eq(Spacing.BOTTOM), anyFloat());
+    verify(reactShadowNode).setPositionValue(eq(Spacing.END), anyFloat());
     verify(reactShadowNode).setPositionType(any(CSSPositionType.class));
     verify(map).getFloat("bottom", Float.NaN);
     verify(map).getFloat("right", Float.NaN);
@@ -138,8 +138,8 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles());
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode, never()).setPositionBottom(anyFloat());
-    verify(reactShadowNode, never()).setPositionRight(anyFloat());
+    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.BOTTOM), anyFloat());
+    verify(reactShadowNode, never()).setPositionValue(eq(Spacing.END), anyFloat());
     verify(reactShadowNode, never()).setPositionType(any(CSSPositionType.class));
     verify(map, never()).getFloat("bottom", Float.NaN);
     verify(map, never()).getFloat("right", Float.NaN);
@@ -192,7 +192,7 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles("marginLeft", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setMargin(eq(Spacing.LEFT), anyFloat());
+    verify(reactShadowNode).setMargin(eq(Spacing.START), anyFloat());
     verify(map).getFloat("marginLeft", CSSConstants.UNDEFINED);
 
     // marginRight
@@ -200,7 +200,7 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles("marginRight", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setMargin(eq(Spacing.RIGHT), anyFloat());
+    verify(reactShadowNode).setMargin(eq(Spacing.END), anyFloat());
     verify(map).getFloat("marginRight", CSSConstants.UNDEFINED);
 
     // no margin
@@ -259,7 +259,7 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles("paddingLeft", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setPadding(eq(Spacing.LEFT), anyFloat());
+    verify(reactShadowNode).setPadding(eq(Spacing.START), anyFloat());
     verify(map).getFloat("paddingLeft", CSSConstants.UNDEFINED);
 
     // paddingRight
@@ -267,7 +267,7 @@ public class LayoutPropertyApplicatorTest {
     map = spy(buildStyles("paddingRight", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setPadding(eq(Spacing.RIGHT), anyFloat());
+    verify(reactShadowNode).setPadding(eq(Spacing.END), anyFloat());
     verify(map).getFloat("paddingRight", CSSConstants.UNDEFINED);
 
     // no padding
@@ -332,11 +332,11 @@ public class LayoutPropertyApplicatorTest {
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(10.f);
     verify(reactShadowNode).setStyleHeight(10.f);
-    verify(reactShadowNode).setPositionLeft(10.f);
-    verify(reactShadowNode).setPositionTop(10.f);
+    verify(reactShadowNode).setPositionValue(Spacing.START, 10.f);
+    verify(reactShadowNode).setPositionValue(Spacing.TOP, 10.f);
     verify(reactShadowNode).setFlex(1.0f);
     verify(reactShadowNode).setPadding(Spacing.ALL, 10.f);
-    verify(reactShadowNode).setMargin(Spacing.LEFT, 10.f);
+    verify(reactShadowNode).setMargin(Spacing.START, 10.f);
     verify(reactShadowNode).setBorder(Spacing.TOP, 10.f);
     verify(reactShadowNode).setFlexDirection(CSSFlexDirection.ROW);
     verify(reactShadowNode).setAlignSelf(CSSAlign.STRETCH);
@@ -363,11 +363,11 @@ public class LayoutPropertyApplicatorTest {
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(CSSConstants.UNDEFINED);
     verify(reactShadowNode).setStyleHeight(CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPositionLeft(CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPositionTop(CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setPositionValue(Spacing.START, CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setPositionValue(Spacing.TOP, CSSConstants.UNDEFINED);
     verify(reactShadowNode).setFlex(0.f);
     verify(reactShadowNode).setPadding(Spacing.ALL, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setMargin(Spacing.LEFT, CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setMargin(Spacing.START, CSSConstants.UNDEFINED);
     verify(reactShadowNode).setBorder(Spacing.TOP, CSSConstants.UNDEFINED);
     verify(reactShadowNode).setFlexDirection(CSSFlexDirection.COLUMN);
     verify(reactShadowNode).setAlignSelf(CSSAlign.AUTO);
@@ -391,9 +391,9 @@ public class LayoutPropertyApplicatorTest {
     LayoutShadowNode[] nodes = new LayoutShadowNode[7];
     for (int idx = 0; idx < nodes.length; idx++) {
       nodes[idx] = new LayoutShadowNode();
-      nodes[idx].setDefaultPadding(Spacing.LEFT, 15);
+      nodes[idx].setDefaultPadding(Spacing.START, 15);
       nodes[idx].setDefaultPadding(Spacing.TOP, 25);
-      nodes[idx].setDefaultPadding(Spacing.RIGHT, 35);
+      nodes[idx].setDefaultPadding(Spacing.END, 35);
       nodes[idx].setDefaultPadding(Spacing.BOTTOM, 45);
     }
 
@@ -413,39 +413,39 @@ public class LayoutPropertyApplicatorTest {
       nodes[idx].updateProperties(mapNodes[idx]);
     }
 
-    assertEquals(10.0, nodes[0].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(10.0, nodes[0].getPadding().get(Spacing.START), .0001);
     assertEquals(25.0, nodes[0].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(5.0, nodes[0].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(5.0, nodes[0].getPadding().get(Spacing.END), .0001);
     assertEquals(45.0, nodes[0].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(10.0, nodes[1].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(10.0, nodes[1].getPadding().get(Spacing.START), .0001);
     assertEquals(5.0, nodes[1].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(10.0, nodes[1].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(10.0, nodes[1].getPadding().get(Spacing.END), .0001);
     assertEquals(10.0, nodes[1].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(10.0, nodes[2].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(10.0, nodes[2].getPadding().get(Spacing.START), .0001);
     assertEquals(5.0, nodes[2].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(35.0, nodes[2].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(35.0, nodes[2].getPadding().get(Spacing.END), .0001);
     assertEquals(5.0, nodes[2].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(5.0, nodes[3].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(5.0, nodes[3].getPadding().get(Spacing.START), .0001);
     assertEquals(25.0, nodes[3].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(5.0, nodes[3].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(5.0, nodes[3].getPadding().get(Spacing.END), .0001);
     assertEquals(10.0, nodes[3].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(15.0, nodes[4].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(15.0, nodes[4].getPadding().get(Spacing.START), .0001);
     assertEquals(5.0, nodes[4].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(35.0, nodes[4].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(35.0, nodes[4].getPadding().get(Spacing.END), .0001);
     assertEquals(45.0, nodes[4].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(15.0, nodes[5].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(15.0, nodes[5].getPadding().get(Spacing.START), .0001);
     assertEquals(7.0, nodes[5].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(10.0, nodes[5].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(10.0, nodes[5].getPadding().get(Spacing.END), .0001);
     assertEquals(7.0, nodes[5].getPadding().get(Spacing.BOTTOM), .0001);
 
-    assertEquals(15.0, nodes[6].getPadding().get(Spacing.LEFT), .0001);
+    assertEquals(15.0, nodes[6].getPadding().get(Spacing.START), .0001);
     assertEquals(25.0, nodes[6].getPadding().get(Spacing.TOP), .0001);
-    assertEquals(35.0, nodes[6].getPadding().get(Spacing.RIGHT), .0001);
+    assertEquals(35.0, nodes[6].getPadding().get(Spacing.END), .0001);
     assertEquals(45.0, nodes[6].getPadding().get(Spacing.BOTTOM), .0001);
   }
 }

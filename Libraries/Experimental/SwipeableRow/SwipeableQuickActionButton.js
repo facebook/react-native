@@ -36,8 +36,19 @@ const {PropTypes} = React;
  * with SwipeableListView. Each button takes an image and text with optional
  * formatting.
  */
-const SwipeableQuickActionButton = React.createClass({
-  propTypes: {
+class SwipeableQuickActionButton extends React.Component {
+  props: {
+    accessibilityLabel?: string,
+    imageSource: $FlowFixMe,
+    imageStyle?: $FlowFixMe,
+    onPress?: Function,
+    style?: $FlowFixMe,
+    testID?: string,
+    text?: string,
+    textStyle?: $FlowFixMe,
+  };
+
+  static propTypes = {
     accessibilityLabel: PropTypes.string,
     imageSource: Image.propTypes.source.isRequired,
     imageStyle: Image.propTypes.style,
@@ -46,7 +57,7 @@ const SwipeableQuickActionButton = React.createClass({
     testID: PropTypes.string,
     text: PropTypes.string,
     textStyle: Text.propTypes.style,
-  },
+  };
 
   render(): ?ReactElement<any> {
     if (!this.props.imageSource && !this.props.text) {
@@ -70,7 +81,7 @@ const SwipeableQuickActionButton = React.createClass({
         </View>
       </TouchableHighlight>
     );
-  },
-});
+  }
+}
 
 module.exports = SwipeableQuickActionButton;

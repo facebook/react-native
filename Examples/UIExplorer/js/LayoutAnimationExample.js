@@ -32,25 +32,22 @@ const {
   TouchableOpacity,
 } = ReactNative;
 
-const AddRemoveExample = React.createClass({
-
-  getInitialState() {
-    return {
-      views: [],
-    };
-  },
+class AddRemoveExample extends React.Component {
+  state = {
+    views: [],
+  };
 
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
-  },
+  }
 
-  _onPressAddView() {
+  _onPressAddView = () => {
     this.setState((state) => ({views: [...state.views, {}]}));
-  },
+  };
 
-  _onPressRemoveView() {
+  _onPressRemoveView = () => {
     this.setState((state) => ({views: state.views.slice(0, -1)}));
-  },
+  };
 
   render() {
     const views = this.state.views.map((view, i) =>
@@ -75,8 +72,8 @@ const AddRemoveExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 const GreenSquare = () =>
   <View style={styles.greenSquare}>
@@ -88,18 +85,15 @@ const BlueSquare = () =>
     <Text>Blue square</Text>
   </View>;
 
-const CrossFadeExample = React.createClass({
+class CrossFadeExample extends React.Component {
+  state = {
+    toggled: false,
+  };
 
-  getInitialState() {
-    return {
-      toggled: false,
-    };
-  },
-
-  _onPressToggle() {
+  _onPressToggle = () => {
     LayoutAnimation.easeInEaseOut();
     this.setState((state) => ({toggled: !state.toggled}));
-  },
+  };
 
   render() {
     return (
@@ -118,8 +112,8 @@ const CrossFadeExample = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

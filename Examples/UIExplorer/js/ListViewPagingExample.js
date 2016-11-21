@@ -57,26 +57,28 @@ var THUMB_URLS = [
 var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
-var Thumb = React.createClass({
-  getInitialState: function() {
-    return {thumbIndex: this._getThumbIdx(), dir: 'row'};
-  },
-  componentWillMount: function() {
+class Thumb extends React.Component {
+  componentWillMount() {
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
-  },
-  _getThumbIdx: function() {
+  }
+
+  _getThumbIdx = () => {
     return Math.floor(Math.random() * THUMB_URLS.length);
-  },
-  _onPressThumb: function() {
+  };
+
+  _onPressThumb = () => {
     var config = layoutAnimationConfigs[this.state.thumbIndex % layoutAnimationConfigs.length];
     LayoutAnimation.configureNext(config);
     this.setState({
       thumbIndex: this._getThumbIdx(),
       dir: this.state.dir === 'row' ? 'column' : 'row',
     });
-  },
-  render: function() {
+  };
+
+  state = {thumbIndex: this._getThumbIdx(), dir: 'row'};
+
+  render() {
     return (
       <TouchableOpacity
         onPress={this._onPressThumb}
@@ -94,15 +96,16 @@ var Thumb = React.createClass({
       </TouchableOpacity>
     );
   }
-});
+}
 
-var ListViewPagingExample = React.createClass({
-  statics: {
-    title: '<ListView> - Paging',
-    description: 'Floating headers & layout animations.'
-  },
+class ListViewPagingExample extends React.Component {
+  state: *;
+  static title = '<ListView> - Paging';
+  static description = 'Floating headers & layout animations.';
 
-  getInitialState: function() {
+  // $FlowFixMe found when converting React.createClass to ES6
+  constructor(props) {
+    super(props);
     var getSectionData = (dataBlob, sectionID) => {
       return dataBlob[sectionID];
     };
@@ -132,17 +135,18 @@ var ListViewPagingExample = React.createClass({
         dataBlob[rowName] = rowName;
       }
     }
-    return {
+
+    this.state = {
       dataSource: dataSource.cloneWithRowsAndSections(dataBlob, sectionIDs, rowIDs),
       headerPressCount: 0,
     };
-  },
+  }
 
-  renderRow: function(rowData: string, sectionID: string, rowID: string): ReactElement<any> {
+  renderRow = (rowData: string, sectionID: string, rowID: string): ReactElement<any> => {
     return (<Thumb text={rowData}/>);
-  },
+  };
 
-  renderSectionHeader: function(sectionData: string, sectionID: string) {
+  renderSectionHeader = (sectionData: string, sectionID: string) => {
     return (
       <View style={styles.section}>
         <Text style={styles.text}>
@@ -150,9 +154,9 @@ var ListViewPagingExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  };
 
-  renderHeader: function() {
+  renderHeader = () => {
     var headerLikeText = this.state.headerPressCount % 2 ?
       <View><Text style={styles.text}>1 Like</Text></View> :
       null;
@@ -166,9 +170,9 @@ var ListViewPagingExample = React.createClass({
         </View>
       </TouchableOpacity>
     );
-  },
+  };
 
-  renderFooter: function() {
+  renderFooter = () => {
     return (
       <View style={styles.header}>
         <Text onPress={() => console.log('Footer!')} style={styles.text}>
@@ -176,9 +180,9 @@ var ListViewPagingExample = React.createClass({
         </Text>
       </View>
     );
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <ListView
         style={styles.listview}
@@ -193,15 +197,14 @@ var ListViewPagingExample = React.createClass({
         scrollRenderAheadDistance={500}
       />
     );
-  },
+  }
 
-  _onPressHeader: function() {
+  _onPressHeader = () => {
     var config = layoutAnimationConfigs[Math.floor(this.state.headerPressCount / 2) % layoutAnimationConfigs.length];
     LayoutAnimation.configureNext(config);
     this.setState({headerPressCount: this.state.headerPressCount + 1});
-  },
-
-});
+  };
+}
 
 var styles = StyleSheet.create({
   listview: {

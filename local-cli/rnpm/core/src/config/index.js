@@ -31,7 +31,7 @@ exports.getProjectConfig = function getProjectConfig() {
 exports.getDependencyConfig = function getDependencyConfig(packageName) {
   const folder = path.join(process.cwd(), 'node_modules', packageName);
   const rnpm = getRNPMConfig(
-    path.join(process.cwd(), 'node_modules', packageName.split('/')[0])
+    path.join(process.cwd(), 'node_modules', packageName)
   );
 
   return Object.assign({}, rnpm, {

@@ -48,22 +48,25 @@ const {PropTypes} = React;
  * - It can bounce the 1st row of the list so users know it's swipeable
  * - More to come
  */
-const SwipeableListView = React.createClass({
-  statics: {
-    getNewDataSource(): Object {
-      return new SwipeableListViewDataSource({
-        getRowData: (data, sectionID, rowID) => data[sectionID][rowID],
-        getSectionHeaderData: (data, sectionID) => data[sectionID],
-        sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      });
-    },
-  },
+class SwipeableListView extends React.Component {
+  props: {
+    bounceFirstRowOnMount: boolean,
+    dataSource: SwipeableListViewDataSource,
+    maxSwipeDistance: number,
+    renderRow: Function,
+    renderQuickActions: Function,
+  };
 
-  _listViewRef: (null: ?string),
-  _shouldBounceFirstRowOnMount: false,
+  static getNewDataSource(): Object {
+    return new SwipeableListViewDataSource({
+      getRowData: (data, sectionID, rowID) => data[sectionID][rowID],
+      getSectionHeaderData: (data, sectionID) => data[sectionID],
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+  }
 
-  propTypes: {
+  static propTypes = {
     /**
      * To alert the user that swiping is possible, the first row can bounce
      * on component mount.
@@ -80,24 +83,23 @@ const SwipeableListView = React.createClass({
     renderRow: PropTypes.func.isRequired,
     // Callback method to render the view that will be unveiled on swipe
     renderQuickActions: PropTypes.func.isRequired,
-  },
+  };
 
-  getDefaultProps(): Object {
-    return {
-      bounceFirstRowOnMount: false,
-      renderQuickActions: () => null,
-    };
-  },
+  static defaultProps = {
+    bounceFirstRowOnMount: false,
+    renderQuickActions: () => null,
+  };
 
-  getInitialState(): Object {
-    return {
-      dataSource: this.props.dataSource,
-    };
-  },
+  state: Object = {
+    dataSource: this.props.dataSource,
+  };
+
+  _listViewRef: ?string = null;
+  _shouldBounceFirstRowOnMount = false;
 
   componentWillMount(): void {
     this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
-  },
+  }
 
   componentWillReceiveProps(nextProps: Object): void {
     if (
@@ -107,7 +109,7 @@ const SwipeableListView = React.createClass({
         dataSource: nextProps.dataSource,
       });
     }
-  },
+  }
 
   render(): ReactElement<any> {
     return (
@@ -121,7 +123,7 @@ const SwipeableListView = React.createClass({
         scrollEnabled={this.state.scrollEnabled}
       />
     );
-  },
+  }
 
   /**
    * This is a work-around to lock vertical `ListView` scrolling on iOS and
@@ -129,26 +131,22 @@ const SwipeableListView = React.createClass({
    * scrolling is active allows us to significantly improve framerates
    * (from high 20s to almost consistently 60 fps)
    */
-  _setListViewScrollable(value: boolean): void {
+  _setListViewScrollable = (value: boolean): void => {
     if (this._listViewRef && this._listViewRef.setNativeProps) {
       this._listViewRef.setNativeProps({
         scrollEnabled: value,
       });
     }
-  },
+  };
 
   // Passing through ListView's getScrollResponder() function
-  getScrollResponder(): ?Object {
+  getScrollResponder = (): ?Object => {
     if (this._listViewRef && this._listViewRef.getScrollResponder) {
       return this._listViewRef.getScrollResponder();
     }
-  },
+  };
 
-  _renderRow(
-    rowData: Object,
-    sectionID: string,
-    rowID: string,
-  ): ReactElement<any> {
+  _renderRow = (rowData: Object, sectionID: string, rowID: string): ReactElement<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
     // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
@@ -157,6 +155,7 @@ const SwipeableListView = React.createClass({
     }
 
     let shouldBounceOnMount = false;
+    // $FlowFixMe found when converting React.createClass to ES6
     if (this._shouldBounceFirstRowOnMount) {
       this._shouldBounceFirstRowOnMount = false;
       shouldBounceOnMount = rowID === this.props.dataSource.getFirstRowID();
@@ -175,13 +174,13 @@ const SwipeableListView = React.createClass({
         {this.props.renderRow(rowData, sectionID, rowID)}
       </SwipeableRow>
     );
-  },
+  };
 
-  _onOpen(rowID: string): void {
+  _onOpen = (rowID: string): void => {
     this.setState({
       dataSource: this.state.dataSource.setOpenRowID(rowID),
     });
-  },
-});
+  };
+}
 
 module.exports = SwipeableListView;

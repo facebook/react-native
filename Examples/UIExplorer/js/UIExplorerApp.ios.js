@@ -206,16 +206,17 @@ AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 UIExplorerList.ComponentExamples.concat(UIExplorerList.APIExamples).forEach((Example: UIExplorerExample) => {
   const ExampleModule = Example.module;
   if (ExampleModule.displayName) {
-    const Snapshotter = React.createClass({
-      render: function() {
+    class Snapshotter extends React.Component {
+      render() {
         const Renderable = UIExplorerExampleList.makeRenderable(ExampleModule);
         return (
           <SnapshotViewIOS>
             <Renderable />
           </SnapshotViewIOS>
         );
-      },
-    });
+      }
+    }
+
     AppRegistry.registerComponent(ExampleModule.displayName, () => Snapshotter);
   }
 });

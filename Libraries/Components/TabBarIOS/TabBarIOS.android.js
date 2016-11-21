@@ -15,15 +15,15 @@ var React = require('React');
 var View = require('View');
 var StyleSheet = require('StyleSheet');
 
-var DummyTabBarIOS = React.createClass({
-  render: function() {
+class DummyTabBarIOS extends React.Component {
+  render() {
     return (
       <View style={[this.props.style, styles.tabGroup]}>
         {this.props.children}
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tabGroup: {

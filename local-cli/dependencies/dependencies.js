@@ -8,50 +8,14 @@
  */
 
 const fs = require('fs');
-const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');
 
-/**
- * Returns the dependencies an entry path has.
- */
-function dependencies(argv, config, packagerInstance) {
-  return new Promise((resolve, reject) => {
-    _dependencies(argv, config, resolve, reject, packagerInstance);
-  });
-}
-
-function _dependencies(argv, config, resolve, reject, packagerInstance) {
-  const args = parseCommandLine([
-    {
-      command: 'entry-file',
-      description: 'Absolute path to the root JS file',
-      type: 'string',
-      required: true,
-    }, {
-      command: 'output',
-      description: 'File name where to store the output, ex. /tmp/dependencies.txt',
-      type: 'string',
-    }, {
-      command: 'platform',
-      description: 'The platform extension used for selecting modules',
-      type: 'string',
-    }, {
-      command: 'transformer',
-      type: 'string',
-      default: null,
-      description: 'Specify a custom transformer to be used'
-    }, {
-      command: 'verbose',
-      description: 'Enables logging',
-      default: false,
-    }
-  ], argv);
-
-  const rootModuleAbsolutePath = args['entry-file'];
+function dependencies(argv, config, args, packagerInstance) {
+  const rootModuleAbsolutePath = args.entryFile;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
-    reject(`File ${rootModuleAbsolutePath} does not exist`);
+    return Promise.reject(`File ${rootModuleAbsolutePath} does not exist`);
   }
 
   const transformModulePath =
@@ -86,7 +50,7 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  resolve((packagerInstance ?
+  return Promise.resolve((packagerInstance ?
     packagerInstance.getOrderedDependencyPaths(options) :
     ReactPackager.getOrderedDependencyPaths(packageOpts, options)).then(
     deps => {
@@ -110,4 +74,27 @@ function _dependencies(argv, config, resolve, reject, packagerInstance) {
   ));
 }
 
-module.exports = dependencies;
+module.exports = {
+  name: 'dependencies',
+  func: dependencies,
+  options: [
+    {
+      command: '--entry-file <path>',
+      description: 'Absolute path to the root JS file',
+    }, {
+      command: '--output [path]',
+      description: 'File name where to store the output, ex. /tmp/dependencies.txt',
+    }, {
+      command: '--platform [extension]',
+      description: 'The platform extension used for selecting modules',
+    }, {
+      command: '--transformer [path]',
+      default: null,
+      description: 'Specify a custom transformer to be used'
+    }, {
+      command: '--verbose',
+      description: 'Enables logging',
+      default: false,
+    },
+  ],
+};

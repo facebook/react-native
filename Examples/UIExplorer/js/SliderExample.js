@@ -31,18 +31,14 @@ var {
   View,
 } = ReactNative;
 
-var SliderExample = React.createClass({
-  getDefaultProps() {
-    return {
-      value: 0,
-    }
-  },
+class SliderExample extends React.Component {
+  static defaultProps = {
+    value: 0,
+  };
 
-  getInitialState() {
-    return {
-      value: this.props.value,
-    };
-  },
+  state = {
+    value: this.props.value,
+  };
 
   render() {
     return (
@@ -56,15 +52,13 @@ var SliderExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var SlidingCompleteExample = React.createClass({
-  getInitialState() {
-    return {
-      slideCompletionValue: 0,
-      slideCompletionCount: 0,
-    };
-  },
+class SlidingCompleteExample extends React.Component {
+  state = {
+    slideCompletionValue: 0,
+    slideCompletionCount: 0,
+  };
 
   render() {
     return (
@@ -80,7 +74,7 @@ var SlidingCompleteExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   slider: {

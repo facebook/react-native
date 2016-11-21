@@ -34,8 +34,8 @@ var WebView = require('WebView');
  * - The app renders fine
  * - The testID property is passed to the native views
  */
-var TestIdTestApp = React.createClass({
-  render: function() {
+class TestIdTestApp extends React.Component {
+  render() {
     return (
       <View>
 
@@ -124,8 +124,8 @@ var TestIdTestApp = React.createClass({
 
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   base: {

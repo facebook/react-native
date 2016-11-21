@@ -65,8 +65,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   }
 };
 
-var MoviesApp = React.createClass({
-  render: function() {
+class MoviesApp extends React.Component {
+  render() {
     var initialRoute = {name: 'search'};
     return (
       <Navigator
@@ -77,7 +77,7 @@ var MoviesApp = React.createClass({
       />
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

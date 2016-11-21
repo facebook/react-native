@@ -54,15 +54,14 @@ type State = {
   viewStyle: { margin: number },
 };
 
-var LayoutEventExample = React.createClass({
-  getInitialState(): State {
-    return {
-      viewStyle: {
-        margin: 20,
-      },
-    };
-  },
-  animateViewLayout: function() {
+class LayoutEventExample extends React.Component {
+  state: State = {
+    viewStyle: {
+      margin: 20,
+    },
+  };
+
+  animateViewLayout = () => {
     LayoutAnimation.configureNext(
       LayoutAnimation.Presets.spring,
       () => {
@@ -75,29 +74,35 @@ var LayoutEventExample = React.createClass({
         margin: this.state.viewStyle.margin > 20 ? 20 : 60,
       }
     });
-  },
-  addWrapText: function() {
+  };
+
+  addWrapText = () => {
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
       this.changeContainer
     );
-  },
-  changeContainer: function() {
+  };
+
+  changeContainer = () => {
     this.setState({containerStyle: {width: 280}});
-  },
-  onViewLayout: function(e: LayoutEvent) {
+  };
+
+  onViewLayout = (e: LayoutEvent) => {
     console.log('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout});
-  },
-  onTextLayout: function(e: LayoutEvent) {
+  };
+
+  onTextLayout = (e: LayoutEvent) => {
     console.log('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout});
-  },
-  onImageLayout: function(e: LayoutEvent) {
+  };
+
+  onImageLayout = (e: LayoutEvent) => {
     console.log('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout});
-  },
-  render: function() {
+  };
+
+  render() {
     var viewStyle = [styles.view, this.state.viewStyle];
     var textLayout = this.state.textLayout || {width: '?', height: '?'};
     var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
@@ -131,7 +136,7 @@ var LayoutEventExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   view: {

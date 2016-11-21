@@ -10,56 +10,47 @@
 
 module.exports = [
   {
-    command: 'entry-file',
+    command: '--entry-file <path>',
     description: 'Path to the root JS file, either absolute or relative to JS root',
-    type: 'string',
-    required: true,
   }, {
-    command: 'platform',
+    command: '--platform [string]',
     description: 'Either "ios" or "android"',
-    type: 'string',
+    default: 'ios',
   }, {
-    command: 'transformer',
-    description: 'Specify a custom transformer to be used',
-    type: 'string',
-    default: null,
+    command: '--transformer [string]',
+    description: 'Specify a custom transformer to be used (absolute path)',
+    default: require.resolve('../../packager/transformer'),
   }, {
-    command: 'dev',
+    command: '--dev [boolean]',
     description: 'If false, warnings are disabled and the bundle is minified',
+    parse: (val) => val === 'false' ? false : true,
     default: true,
   }, {
-    command: 'prepack',
-    description: 'If true, the output bundle will use the Prepack format.',
-    default: false
+    command: '--prepack',
+    description: 'When passed, the output bundle will use the Prepack format.',
   }, {
-    command: 'bridge-config',
+    command: '--bridge-config [string]',
     description: 'File name of a a JSON export of __fbBatchedBridgeConfig. Used by Prepack. Ex. ./bridgeconfig.json',
-    type: 'string'
   }, {
-    command: 'bundle-output',
+    command: '--bundle-output <string>',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
-    type: 'string',
-    required: true,
   }, {
-    command: 'bundle-encoding',
+    command: '--bundle-encoding [string]',
     description: 'Encoding the bundle should be written in (https://nodejs.org/api/buffer.html#buffer_buffer).',
-    type: 'string',
     default: 'utf8',
   }, {
-    command: 'sourcemap-output',
+    command: '--sourcemap-output [string]',
     description: 'File name where to store the sourcemap file for resulting bundle, ex. /tmp/groups.map',
-    type: 'string',
   }, {
-    command: 'assets-dest',
+    command: '--assets-dest [string]',
     description: 'Directory name where to store assets referenced in the bundle',
-    type: 'string',
   }, {
-    command: 'verbose',
+    command: '--verbose',
     description: 'Enables logging',
     default: false,
   }, {
-    command: 'reset-cache',
+    command: '--reset-cache',
     description: 'Removes cached files',
-    default: false
-  }
+    default: false,
+  },
 ];

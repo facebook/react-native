@@ -149,12 +149,12 @@ public class LayoutEngine {
   }
 
   private static float getRelativePosition(CSSNode node, int axis) {
-    float lead = node.style.position[leading[axis]];
+    float lead = node.style.position.getWithFallback(leadingSpacing[axis], leading[axis]);
     if (!Float.isNaN(lead)) {
       return lead;
     }
 
-    float trailingPos = node.style.position[trailing[axis]];
+    float trailingPos = node.style.position.getWithFallback(trailingSpacing[axis], trailing[axis]);
     return Float.isNaN(trailingPos) ? 0 : -trailingPos;
   }
 
@@ -1069,12 +1069,15 @@ public class LayoutEngine {
         child = node.getChildAt(i);
 
         if (child.style.positionType == CSSPositionType.ABSOLUTE &&
-            !Float.isNaN(child.style.position[leading[mainAxis]])) {
+          !Float.isNaN(child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]))) {
           if (performLayout) {
             // In case the child is position absolute and has left/top being
             // defined, we override the position to whatever the user said
             // (and margin/border).
-            child.layout.position[pos[mainAxis]] = (Float.isNaN(child.style.position[leading[mainAxis]]) ?  0 : child.style.position[leading[mainAxis]]) +
+            child.layout.position[pos[mainAxis]] =
+              (Float.isNaN(child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) ?
+              0 :
+              child.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis])) +
               node.style.border.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]) +
               child.style.margin.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]);
           }
@@ -1136,8 +1139,11 @@ public class LayoutEngine {
           if (child.style.positionType == CSSPositionType.ABSOLUTE) {
             // If the child is absolutely positioned and has a top/left/bottom/right
             // set, override all the previously computed positions to set it correctly.
-            if (!Float.isNaN(child.style.position[leading[crossAxis]])) {
-              child.layout.position[pos[crossAxis]] = (Float.isNaN(child.style.position[leading[crossAxis]]) ?  0 : child.style.position[leading[crossAxis]]) +
+            if (!Float.isNaN(child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]))) {
+              child.layout.position[pos[crossAxis]] =
+                (Float.isNaN(child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis])) ?
+                0 :
+                child.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis])) +
                 node.style.border.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]) +
                 child.style.margin.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]);
             } else {
@@ -1293,38 +1299,7 @@ public class LayoutEngine {
         paddingAndBorderAxisCross);
     }
 
-    // STEP 10: SETTING TRAILING POSITIONS FOR CHILDREN
-    if (performLayout) {
-      boolean needsMainTrailingPos = false;
-      boolean needsCrossTrailingPos = false;
-
-      if (mainAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
-          mainAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
-        needsMainTrailingPos = true;
-      }
-
-      if (crossAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
-          crossAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
-        needsCrossTrailingPos = true;
-      }
-
-      // Set trailing position if necessary.
-      if (needsMainTrailingPos || needsCrossTrailingPos) {
-        for (i = 0; i < childCount; ++i) {
-          child = node.getChildAt(i);
-
-          if (needsMainTrailingPos) {
-            child.layout.position[trailing[mainAxis]] = node.layout.measuredDimensions[dim[mainAxis]] - (child.style.positionType == CSSPositionType.ABSOLUTE ? 0 : child.layout.measuredDimensions[dim[mainAxis]]) - child.layout.position[pos[mainAxis]];
-          }
-
-          if (needsCrossTrailingPos) {
-            child.layout.position[trailing[crossAxis]] = node.layout.measuredDimensions[dim[crossAxis]] - (child.style.positionType == CSSPositionType.ABSOLUTE ? 0 : child.layout.measuredDimensions[dim[crossAxis]]) - child.layout.position[pos[crossAxis]];
-          }
-        }
-      }
-    }
-
-    // STEP 11: SIZING AND POSITIONING ABSOLUTE CHILDREN
+    // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
     currentAbsoluteChild = firstAbsoluteChild;
     while (currentAbsoluteChild != null) {
       // Now that we know the bounds of the container, perform layout again on the
@@ -1338,10 +1313,16 @@ public class LayoutEngine {
           childWidth = currentAbsoluteChild.style.dimensions[DIMENSION_WIDTH] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]));
         } else {
           // If the child doesn't have a specified width, compute the width based on the left/right offsets if they're defined.
-          if (!Float.isNaN(currentAbsoluteChild.style.position[POSITION_LEFT]) && !Float.isNaN(currentAbsoluteChild.style.position[POSITION_RIGHT])) {
+          if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) &&
+              !Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW]))) {
             childWidth = node.layout.measuredDimensions[DIMENSION_WIDTH] -
               (node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])) -
-              (currentAbsoluteChild.style.position[POSITION_LEFT] + currentAbsoluteChild.style.position[POSITION_RIGHT]);
+              ((Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_ROW], leading[CSS_FLEX_DIRECTION_ROW])) +
+              (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_ROW], trailing[CSS_FLEX_DIRECTION_ROW])));
             childWidth = boundAxis(currentAbsoluteChild, CSS_FLEX_DIRECTION_ROW, childWidth);
           }
         }
@@ -1350,10 +1331,16 @@ public class LayoutEngine {
           childHeight = currentAbsoluteChild.style.dimensions[DIMENSION_HEIGHT] + (currentAbsoluteChild.style.margin.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + currentAbsoluteChild.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]));
         } else {
           // If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined.
-          if (!Float.isNaN(currentAbsoluteChild.style.position[POSITION_TOP]) && !Float.isNaN(currentAbsoluteChild.style.position[POSITION_BOTTOM])) {
+          if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) &&
+              !Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]))) {
             childHeight = node.layout.measuredDimensions[DIMENSION_HEIGHT] -
               (node.style.border.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN]) + node.style.border.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])) -
-              (currentAbsoluteChild.style.position[POSITION_TOP] + currentAbsoluteChild.style.position[POSITION_BOTTOM]);
+              ((Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[CSS_FLEX_DIRECTION_COLUMN], leading[CSS_FLEX_DIRECTION_COLUMN])) +
+              (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])) ?
+              0 :
+              currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN])));
             childHeight = boundAxis(currentAbsoluteChild, CSS_FLEX_DIRECTION_COLUMN, childHeight);
           }
         }
@@ -1388,24 +1375,61 @@ public class LayoutEngine {
 
         layoutNodeInternal(layoutContext, currentAbsoluteChild, childWidth, childHeight, direction, CSSMeasureMode.EXACTLY, CSSMeasureMode.EXACTLY, true, "abs-layout");
 
-        if (!Float.isNaN(currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_ROW]]) &&
-            !!Float.isNaN(currentAbsoluteChild.style.position[leading[CSS_FLEX_DIRECTION_ROW]])) {
-          currentAbsoluteChild.layout.position[leading[CSS_FLEX_DIRECTION_ROW]] =
-            node.layout.measuredDimensions[dim[CSS_FLEX_DIRECTION_ROW]] -
-            currentAbsoluteChild.layout.measuredDimensions[dim[CSS_FLEX_DIRECTION_ROW]] -
-            (Float.isNaN(currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_ROW]]) ?  0 : currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_ROW]]);
+        if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])) &&
+            Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[mainAxis], leading[mainAxis]))) {
+          currentAbsoluteChild.layout.position[leading[mainAxis]] =
+            node.layout.measuredDimensions[dim[mainAxis]] -
+            currentAbsoluteChild.layout.measuredDimensions[dim[mainAxis]] -
+            (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis])) ?  0 : currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[mainAxis], trailing[mainAxis]));
         }
 
-        if (!Float.isNaN(currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_COLUMN]]) &&
-            !!Float.isNaN(currentAbsoluteChild.style.position[leading[CSS_FLEX_DIRECTION_COLUMN]])) {
-          currentAbsoluteChild.layout.position[leading[CSS_FLEX_DIRECTION_COLUMN]] =
-            node.layout.measuredDimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] -
-            currentAbsoluteChild.layout.measuredDimensions[dim[CSS_FLEX_DIRECTION_COLUMN]] -
-            (Float.isNaN(currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_COLUMN]]) ?  0 : currentAbsoluteChild.style.position[trailing[CSS_FLEX_DIRECTION_COLUMN]]);
+        if (!Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])) &&
+            Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(leadingSpacing[crossAxis], leading[crossAxis]))) {
+          currentAbsoluteChild.layout.position[leading[crossAxis]] =
+            node.layout.measuredDimensions[dim[crossAxis]] -
+            currentAbsoluteChild.layout.measuredDimensions[dim[crossAxis]] -
+            (Float.isNaN(currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis])) ?  0 : currentAbsoluteChild.style.position.getWithFallback(trailingSpacing[crossAxis], trailing[crossAxis]));
         }
       }
 
       currentAbsoluteChild = currentAbsoluteChild.nextChild;
+    }
+
+    // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
+    if (performLayout) {
+      boolean needsMainTrailingPos = false;
+      boolean needsCrossTrailingPos = false;
+
+      if (mainAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
+          mainAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
+        needsMainTrailingPos = true;
+      }
+
+      if (crossAxis == CSS_FLEX_DIRECTION_ROW_REVERSE ||
+          crossAxis == CSS_FLEX_DIRECTION_COLUMN_REVERSE) {
+        needsCrossTrailingPos = true;
+      }
+
+      // Set trailing position if necessary.
+      if (needsMainTrailingPos || needsCrossTrailingPos) {
+        for (i = 0; i < childCount; ++i) {
+          child = node.getChildAt(i);
+
+          if (needsMainTrailingPos) {
+            child.layout.position[trailing[mainAxis]] =
+              node.layout.measuredDimensions[dim[mainAxis]] -
+              child.layout.measuredDimensions[dim[mainAxis]] -
+              child.layout.position[pos[mainAxis]];
+          }
+
+          if (needsCrossTrailingPos) {
+            child.layout.position[trailing[crossAxis]] =
+              node.layout.measuredDimensions[dim[crossAxis]] -
+              child.layout.measuredDimensions[dim[crossAxis]] -
+              child.layout.position[pos[crossAxis]];
+          }
+        }
+      }
     }
   }
 }

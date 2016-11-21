@@ -75,6 +75,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./StatusBarExample'),
   },
   {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample')
+  },
+  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
   },

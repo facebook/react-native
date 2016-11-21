@@ -15,14 +15,15 @@ var React = require('React');
 var Recording = require('NativeModules').Recording;
 var View = require('View');
 
-var CatalystRootViewTestApp = React.createClass({
-  componentWillUnmount: function() {
+class CatalystRootViewTestApp extends React.Component {
+  componentWillUnmount() {
     Recording.record('RootComponentWillUnmount');
-  },
-  render: function() {
+  }
+
+  render() {
     return <View collapsable={false} style={{alignSelf: 'stretch'}} />;
-  },
-});
+  }
+}
 
 module.exports = {
   CatalystRootViewTestApp: CatalystRootViewTestApp,

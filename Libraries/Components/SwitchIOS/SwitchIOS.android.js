@@ -16,15 +16,15 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-var DummySwitchIOS = React.createClass({
-  render: function() {
+class DummySwitchIOS extends React.Component {
+  render() {
     return (
       <View style={[styles.dummySwitchIOS, this.props.style]}>
         <Text style={styles.text}>SwitchIOS is not supported on this platform!</Text>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   dummySwitchIOS: {

@@ -31,13 +31,12 @@ var {
   View
 } = ReactNative;
 
-var BasicSwitchExample = React.createClass({
-  getInitialState() {
-    return {
-      trueSwitchIsOn: true,
-      falseSwitchIsOn: false,
-    };
-  },
+class BasicSwitchExample extends React.Component {
+  state = {
+    trueSwitchIsOn: true,
+    falseSwitchIsOn: false,
+  };
+
   render() {
     return (
       <View>
@@ -51,9 +50,9 @@ var BasicSwitchExample = React.createClass({
       </View>
     );
   }
-});
+}
 
-var DisabledSwitchExample = React.createClass({
+class DisabledSwitchExample extends React.Component {
   render() {
     return (
       <View>
@@ -66,16 +65,15 @@ var DisabledSwitchExample = React.createClass({
           value={false} />
       </View>
     );
-  },
-});
+  }
+}
 
-var ColorSwitchExample = React.createClass({
-  getInitialState() {
-    return {
-      colorTrueSwitchIsOn: true,
-      colorFalseSwitchIsOn: false,
-    };
-  },
+class ColorSwitchExample extends React.Component {
+  state = {
+    colorTrueSwitchIsOn: true,
+    colorFalseSwitchIsOn: false,
+  };
+
   render() {
     return (
       <View>
@@ -94,16 +92,15 @@ var ColorSwitchExample = React.createClass({
           value={this.state.colorTrueSwitchIsOn} />
       </View>
     );
-  },
-});
+  }
+}
 
-var EventSwitchExample = React.createClass({
-  getInitialState() {
-    return {
-      eventSwitchIsOn: false,
-      eventSwitchRegressionIsOn: true,
-    };
-  },
+class EventSwitchExample extends React.Component {
+  state = {
+    eventSwitchIsOn: false,
+    eventSwitchRegressionIsOn: true,
+  };
+
   render() {
     return (
       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -132,7 +129,7 @@ var EventSwitchExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var examples = [
   {

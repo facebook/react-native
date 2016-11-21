@@ -35,12 +35,17 @@ var PickerItemIOS = PickerIOS.Item;
 var STORAGE_KEY = '@AsyncStorageExample:key';
 var COLORS = ['red', 'orange', 'yellow', 'green', 'blue'];
 
-var BasicStorageExample = React.createClass({
+class BasicStorageExample extends React.Component {
+  state = {
+    selectedValue: COLORS[0],
+    messages: [],
+  };
+
   componentDidMount() {
     this._loadInitialState().done();
-  },
+  }
 
-  async _loadInitialState() {
+  _loadInitialState = async () => {
     try {
       var value = await AsyncStorage.getItem(STORAGE_KEY);
       if (value !== null){
@@ -52,14 +57,7 @@ var BasicStorageExample = React.createClass({
     } catch (error) {
       this._appendMessage('AsyncStorage error: ' + error.message);
     }
-  },
-
-  getInitialState() {
-    return {
-      selectedValue: COLORS[0],
-      messages: [],
-    };
-  },
+  };
 
   render() {
     var color = this.state.selectedValue;
@@ -91,9 +89,9 @@ var BasicStorageExample = React.createClass({
         {this.state.messages.map((m) => <Text key={m}>{m}</Text>)}
       </View>
     );
-  },
+  }
 
-  async _onValueChange(selectedValue) {
+  _onValueChange = async (selectedValue) => {
     this.setState({selectedValue});
     try {
       await AsyncStorage.setItem(STORAGE_KEY, selectedValue);
@@ -101,21 +99,21 @@ var BasicStorageExample = React.createClass({
     } catch (error) {
       this._appendMessage('AsyncStorage error: ' + error.message);
     }
-  },
+  };
 
-  async _removeStorage() {
+  _removeStorage = async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY);
       this._appendMessage('Selection removed from disk.');
     } catch (error) {
       this._appendMessage('AsyncStorage error: ' + error.message);
     }
-  },
+  };
 
-  _appendMessage(message) {
+  _appendMessage = (message) => {
     this.setState({messages: this.state.messages.concat(message)});
-  },
-});
+  };
+}
 
 exports.title = 'AsyncStorage';
 exports.description = 'Asynchronous local disk storage.';

@@ -253,13 +253,17 @@ var ComponentDoc = React.createClass({
         {(style.composes || []).map((name) => {
           var link;
           if (name === 'LayoutPropTypes') {
-            name = 'Flexbox';
+            name = 'Layout Props';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
+          } else if (name === 'ShadowPropTypesIOS') {
+            name = 'Shadow Props';
+            link =
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#props'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =

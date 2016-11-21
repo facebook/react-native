@@ -40,15 +40,13 @@ exports.framework = 'React';
 exports.title = '<Permissions>';
 exports.description = 'Permissions example for API 23+.';
 
-const PermissionsExample = React.createClass({
-  getInitialState: function() {
-    return {
-      permission: 'android.permission.WRITE_EXTERNAL_STORAGE',
-      hasPermission: 'Not Checked',
-    };
-  },
+class PermissionsExample extends React.Component {
+  state = {
+    permission: 'android.permission.WRITE_EXTERNAL_STORAGE',
+    hasPermission: 'Not Checked',
+  };
 
-  render: function() {
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Permission Name:</Text>
@@ -72,15 +70,15 @@ const PermissionsExample = React.createClass({
         </TouchableWithoutFeedback>
       </View>
     );
-  },
+  }
 
-  _updateText: function(event: Object) {
+  _updateText = (event: Object) => {
     this.setState({
       permission: event.nativeEvent.text,
     });
-  },
+  };
 
-  _checkPermission: function() {
+  _checkPermission = () => {
     Permissions.checkPermission(
       this.state.permission,
       (permission: string, result: boolean) => {
@@ -89,9 +87,9 @@ const PermissionsExample = React.createClass({
         });
       },
       this._showError);
-  },
+  };
 
-  _shouldExplainPermission: function() {
+  _shouldExplainPermission = () => {
     Permissions.shouldShowRequestPermissionRationale(
       this.state.permission,
       (permission: string, shouldShow: boolean) => {
@@ -110,9 +108,9 @@ const PermissionsExample = React.createClass({
         }
       },
       this._showError);
-  },
+  };
 
-  _requestPermission: function() {
+  _requestPermission = () => {
     Permissions.requestPermission(
       this.state.permission,
       (permission: string, result: boolean) => {
@@ -121,12 +119,12 @@ const PermissionsExample = React.createClass({
         });
       },
       this._showError);
-  },
+  };
 
-  _showError: function() {
+  _showError = () => {
     DialogManager.showAlert({message: 'Error'}, {}, {});
-  }
-});
+  };
+}
 
 exports.examples = [
   {

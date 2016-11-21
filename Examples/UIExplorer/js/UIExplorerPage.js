@@ -33,21 +33,27 @@ var {
 
 var UIExplorerTitle = require('./UIExplorerTitle');
 
-var UIExplorerPage = React.createClass({
+class UIExplorerPage extends React.Component {
+  props: {
+    keyboardShouldPersistTaps?: boolean,
+    noScroll?: boolean,
+    noSpacer?: boolean,
+  };
 
-  propTypes: {
+  static propTypes = {
     keyboardShouldPersistTaps: React.PropTypes.bool,
     noScroll: React.PropTypes.bool,
     noSpacer: React.PropTypes.bool,
-  },
+  };
 
-  render: function() {
+  render() {
     var ContentWrapper;
     var wrapperProps = {};
     if (this.props.noScroll) {
       ContentWrapper = (View: ReactClass<any>);
     } else {
       ContentWrapper = (ScrollView: ReactClass<any>);
+      // $FlowFixMe found when converting React.createClass to ES6
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
       wrapperProps.keyboardShouldPersistTaps = true;
       wrapperProps.keyboardDismissMode = 'interactive';
@@ -62,13 +68,15 @@ var UIExplorerPage = React.createClass({
         <ContentWrapper
           style={styles.wrapper}
           {...wrapperProps}>
-            {this.props.children}
+            {
+              // $FlowFixMe found when converting React.createClass to ES6
+              this.props.children}
             {spacer}
         </ContentWrapper>
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   container: {

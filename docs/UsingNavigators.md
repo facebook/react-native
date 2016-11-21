@@ -31,7 +31,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 export default class MyScene extends Component {
-  getDefaultProps() {
+  static get defaultProps() {
     return {
       title: 'MyScene'
     };

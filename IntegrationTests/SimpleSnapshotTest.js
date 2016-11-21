@@ -20,17 +20,17 @@ var {
 } = ReactNative;
 var { TestModule } = ReactNative.NativeModules;
 
-var SimpleSnapshotTest = React.createClass({
+class SimpleSnapshotTest extends React.Component {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
-  },
+  }
 
-  done(success : boolean) {
+  done = (success : boolean) => {
     TestModule.markTestPassed(success);
-  },
+  };
 
   render() {
     return (
@@ -40,7 +40,7 @@ var SimpleSnapshotTest = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   box1: {

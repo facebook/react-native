@@ -38,20 +38,18 @@ exports.framework = 'React';
 exports.title = '<Modal>';
 exports.description = 'Component for presenting modal views.';
 
-var Button = React.createClass({
-  getInitialState() {
-    return {
-      active: false,
-    };
-  },
+class Button extends React.Component {
+  state = {
+    active: false,
+  };
 
-  _onHighlight() {
+  _onHighlight = () => {
     this.setState({active: true});
-  },
+  };
 
-  _onUnhighlight() {
+  _onUnhighlight = () => {
     this.setState({active: false});
-  },
+  };
 
   render() {
     var colorStyle = {
@@ -68,28 +66,26 @@ var Button = React.createClass({
       </TouchableHighlight>
     );
   }
-});
+}
 
-var ModalExample = React.createClass({
-  getInitialState() {
-    return {
-      animationType: 'none',
-      modalVisible: false,
-      transparent: false,
-    };
-  },
+class ModalExample extends React.Component {
+  state = {
+    animationType: 'none',
+    modalVisible: false,
+    transparent: false,
+  };
 
-  _setModalVisible(visible) {
+  _setModalVisible = (visible) => {
     this.setState({modalVisible: visible});
-  },
+  };
 
-  _setAnimationType(type) {
+  _setAnimationType = (type) => {
     this.setState({animationType: type});
-  },
+  };
 
-  _toggleTransparent() {
+  _toggleTransparent = () => {
     this.setState({transparent: !this.state.transparent});
-  },
+  };
 
   render() {
     var modalBackgroundStyle = {
@@ -144,8 +140,8 @@ var ModalExample = React.createClass({
         </Button>
       </View>
     );
-  },
-});
+  }
+}
 
 exports.examples = [
   {

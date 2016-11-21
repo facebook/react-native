@@ -92,9 +92,8 @@ function newRandomRoute() {
   };
 }
 
-var NavigationBarSample = React.createClass({
-
-  componentWillMount: function() {
+class NavigationBarSample extends React.Component {
+  componentWillMount() {
     var navigator = this.props.navigator;
 
     var callback = (event) => {
@@ -113,13 +112,13 @@ var NavigationBarSample = React.createClass({
       navigator.navigationContext.addListener('willfocus', callback),
       navigator.navigationContext.addListener('didfocus', callback),
     ];
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     this._listeners && this._listeners.forEach(listener => listener.remove());
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <Navigator
         debugOverlay={false}
@@ -154,9 +153,8 @@ var NavigationBarSample = React.createClass({
         }
       />
     );
-  },
-
-});
+  }
+}
 
 var styles = StyleSheet.create({
   messageText: {

@@ -194,7 +194,7 @@ const View = React.createClass({
      *  - `'no-hide-descendants'` - The view is not important for accessibility,
      *    nor are any of its descendant views.
      *
-     * See the [Android `importantForAccessibility` docs]( [http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
+     * See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
      * for reference.
      *
      * @platform android

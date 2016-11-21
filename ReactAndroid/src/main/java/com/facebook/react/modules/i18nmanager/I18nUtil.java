@@ -12,6 +12,10 @@ package com.facebook.react.modules.i18nmanager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.support.v4.text.TextUtilsCompat;
+import android.support.v4.view.ViewCompat;
+
+import java.util.Locale;
 
 public class I18nUtil {
   private static I18nUtil sharedI18nUtilInstance = null;
@@ -32,10 +36,11 @@ public class I18nUtil {
     return sharedI18nUtilInstance;
   }
 
-  // If set allowRTL on the JS side,
+  // If the current device language is RTL and RTL is allowed for the app,
   // the RN app will automatically have a RTL layout.
   public boolean isRTL(Context context) {
-    return allowRTL(context);
+    return allowRTL(context) &&
+      isDevicePreferredLanguageRTL();
   }
 
   private boolean allowRTL(Context context) {
@@ -50,4 +55,11 @@ public class I18nUtil {
     editor.putBoolean(KEY_FOR_PREFS, allowRTL);
     editor.apply();
   }
+
+  // Check if the current device language is RTL
+  private boolean isDevicePreferredLanguageRTL() {
+    final int directionality =
+      TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault());
+    return directionality == ViewCompat.LAYOUT_DIRECTION_RTL;
+   }
 }

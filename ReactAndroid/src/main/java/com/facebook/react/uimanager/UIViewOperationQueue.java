@@ -48,7 +48,7 @@ public class UIViewOperationQueue {
   /**
    * A mutation or animation operation on the view hierarchy.
    */
-  protected interface UIOperation {
+  public interface UIOperation {
 
     void execute();
   }

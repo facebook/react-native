@@ -31,17 +31,20 @@ var {
   View,
 } = ReactNative;
 
-var UIExplorerBlock = React.createClass({
-  propTypes: {
+class UIExplorerBlock extends React.Component {
+  props: {
+    title?: string,
+    description?: string,
+  };
+
+  static propTypes = {
     title: React.PropTypes.string,
     description: React.PropTypes.string,
-  },
+  };
 
-  getInitialState: function() {
-    return {description: (null: ?string)};
-  },
+  state = {description: (null: ?string)};
 
-  render: function() {
+  render() {
     var description;
     if (this.props.description) {
       description =
@@ -59,12 +62,14 @@ var UIExplorerBlock = React.createClass({
           {description}
         </View>
         <View style={styles.children}>
-          {this.props.children}
+          {
+            // $FlowFixMe found when converting React.createClass to ES6
+            this.props.children}
         </View>
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

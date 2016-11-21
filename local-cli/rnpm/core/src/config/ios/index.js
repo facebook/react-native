@@ -2,6 +2,19 @@ const path = require('path');
 const findProject = require('./findProject');
 
 /**
+ * For libraries specified without an extension, add '.tbd' for those that
+ * start with 'lib' and '.framework' to the rest.
+ */
+const mapSharedLibaries = (libraries) => {
+  return libraries.map(name => {
+    if (path.extname(name)) {
+      return name;
+    }
+    return name + (name.indexOf('lib') === 0 ? '.tbd' : '.framework');
+  });
+};
+
+/**
  * Returns project config by analyzing given folder and applying some user defaults
  * when constructing final object
  */
@@ -24,6 +37,7 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
     projectPath: projectPath,
     projectName: path.basename(projectPath),
     libraryFolder: userConfig.libraryFolder || 'Libraries',
+    sharedLibraries: mapSharedLibaries(userConfig.sharedLibraries || []),
     plist: userConfig.plist || [],
   };
 };

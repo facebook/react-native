@@ -11,16 +11,21 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import java.lang.reflect.Field;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.OverScroller;
 import android.widget.ScrollView;
 
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactClippingViewGroup;
@@ -36,7 +41,11 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
 
+  private static Field sScrollerField;
+  private static boolean sTriedToGetScrollerField = false;
+
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+  private final OverScroller mScroller;
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -57,6 +66,29 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
+
+    if (!sTriedToGetScrollerField) {
+      sTriedToGetScrollerField = true;
+      try {
+        sScrollerField = ScrollView.class.getDeclaredField("mScroller");
+        sScrollerField.setAccessible(true);
+      } catch (NoSuchFieldException e) {
+        Log.w(
+          ReactConstants.TAG,
+          "Failed to get mScroller field for ScrollView! " +
+            "This app will exhibit the bounce-back scrolling bug :(");
+      }
+    }
+
+    if (sScrollerField != null) {
+      try {
+        mScroller = (OverScroller) sScrollerField.get(this);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
+      }
+    } else {
+      mScroller = null;
+    }
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -187,7 +219,36 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
-    super.fling(velocityY);
+    if (mScroller != null) {
+      // FB SCROLLVIEW CHANGE
+
+      // We provide our own version of fling that uses a different call to the standard OverScroller
+      // which takes into account the possibility of adding new content while the ScrollView is
+      // animating. Because we give essentially no max Y for the fling, the fling will continue as long
+      // as there is content. See #onOverScrolled() to see the second part of this change which properly
+      // aborts the scroller animation when we get to the bottom of the ScrollView content.
+
+      int scrollWindowHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+
+      mScroller.fling(
+        getScrollX(),
+        getScrollY(),
+        0,
+        velocityY,
+        0,
+        0,
+        0,
+        Integer.MAX_VALUE,
+        0,
+        scrollWindowHeight / 2);
+
+      postInvalidateOnAnimation();
+
+      // END FB SCROLLVIEW CHANGE
+    } else {
+      super.fling(velocityY);
+    }
+
     if (mSendMomentumEvents || isScrollPerfLoggingEnabled()) {
       mFlinging = true;
       enableFpsListener();
@@ -246,5 +307,28 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       mEndFillColor = color;
       mEndBackground = new ColorDrawable(mEndFillColor);
     }
+  }
+
+  @Override
+  protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
+    if (mScroller != null) {
+      // FB SCROLLVIEW CHANGE
+
+      // This is part two of the reimplementation of fling to fix the bounce-back bug. See #fling() for
+      // more information.
+
+      if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
+        int scrollRange = Math.max(
+          0,
+          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
+        if (scrollY >= scrollRange) {
+          mScroller.abortAnimation();
+        }
+      }
+
+      // END FB SCROLLVIEW CHANGE
+    }
+
+    super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
   }
 }

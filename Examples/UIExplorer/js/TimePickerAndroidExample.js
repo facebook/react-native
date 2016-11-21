@@ -32,27 +32,19 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var TimePickerAndroidExample = React.createClass({
+class TimePickerAndroidExample extends React.Component {
+  static title = 'TimePickerAndroid';
+  static description = 'Standard Android time picker dialog';
 
-  statics: {
-    title: 'TimePickerAndroid',
-    description: 'Standard Android time picker dialog',
-  },
+  state = {
+    isoFormatText: 'pick a time (24-hour format)',
+    presetHour: 4,
+    presetMinute: 4,
+    presetText: 'pick a time, default: 4:04AM',
+    simpleText: 'pick a time',
+  };
 
-  getInitialState() {
-    // *Text, *Hour and *Minute are set by successCallback -- this updates the text with the time
-    // picked by the user and makes it so the next time they open it the hour and minute they picked
-    // before is displayed.
-    return {
-      isoFormatText: 'pick a time (24-hour format)',
-      presetHour: 4,
-      presetMinute: 4,
-      presetText: 'pick a time, default: 4:04AM',
-      simpleText: 'pick a time',
-    };
-  },
-
-  async showPicker(stateKey, options) {
+  showPicker = async (stateKey, options) => {
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
       var newState = {};
@@ -67,7 +59,7 @@ var TimePickerAndroidExample = React.createClass({
     } catch ({code, message}) {
       console.warn(`Error in example '${stateKey}': `, message);
     }
-  },
+  };
 
   render() {
     return (
@@ -100,8 +92,8 @@ var TimePickerAndroidExample = React.createClass({
         </UIExplorerBlock>
       </UIExplorerPage>
     );
-  },
-});
+  }
+}
 
 /**
  * Returns e.g. '3:05'.

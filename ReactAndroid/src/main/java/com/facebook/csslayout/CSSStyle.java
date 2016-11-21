@@ -30,8 +30,8 @@ public class CSSStyle {
   public Spacing margin = new Spacing();
   public Spacing padding = new Spacing();
   public Spacing border = new Spacing();
+  public Spacing position = new Spacing();
 
-  public float[] position = new float[4];
   public float[] dimensions = new float[2];
 
   public float minWidth = CSSConstants.UNDEFINED;
@@ -56,11 +56,18 @@ public class CSSStyle {
     overflow = CSSOverflow.VISIBLE;
     flex = 0f;
 
-    margin.reset();;
+    margin.reset();
     padding.reset();
     border.reset();
+    position.reset();
 
-    Arrays.fill(position, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.LEFT, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.RIGHT, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.TOP, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.BOTTOM, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.START, CSSConstants.UNDEFINED);
+    position.setDefault(Spacing.END, CSSConstants.UNDEFINED);
+
     Arrays.fill(dimensions, CSSConstants.UNDEFINED);
 
     minWidth = CSSConstants.UNDEFINED;

@@ -12,11 +12,14 @@
 const React = require('React');
 const {Component} = React;
 
+const RealText = require.requireActual('Text');
+
 class Text extends Component {
   render() {
     const {children, ...props} = this.props;
     return React.createElement('Text', props, children);
   }
 }
+Text.propTypes = RealText.propTypes;
 
 module.exports = Text;
