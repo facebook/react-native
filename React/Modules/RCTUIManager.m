@@ -260,7 +260,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(YES)];
+                                                body:RCTExportedDimensions(nextOrientation)];
 #pragma clang diagnostic pop
   }
 
@@ -1525,22 +1525,43 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions(NO);
+#if !TARGET_OS_TV
+  constants[@"Dimensions"] = RCTExportedDimensions(_currentInterfaceOrientation);
+#else
+  constants[@"Dimensions"] = RCTExportedDimensions();
+#endif
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
+#if !TARGET_OS_TV
+static NSDictionary *RCTExportedDimensions(UIInterfaceOrientation orientation)
 {
   RCTAssertMainQueue();
+  
+  // Don't use RCTScreenSize since the interface orientation doesn't apply to it
+  CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+  BOOL isPortrait = screenSize.height > screenSize.width;
+  return isPortrait == UIInterfaceOrientationIsPortrait(orientation) ?
+    makeExportedDimensions(screenSize) :
+    makeExportedDimensions(CGSizeMake(screenSize.height, screenSize.width));
+}
+#else
+static NSDictionary *RCTExportedDimensions()
+{
+  RCTAssertMainQueue();
+  
+  return makeExportedDimensions([[UIScreen mainScreen] bounds].size);
+}
+#endif
 
-  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
+static NSDictionary *makeExportedDimensions(CGSize screenSize)
+{
   return @{
     @"window": @{
-        @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
-        @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
-        @"scale": @(RCTScreenScale()),
+      @"width": @(screenSize.width),
+      @"height": @(screenSize.height),
+      @"scale": @(RCTScreenScale()),
     },
   };
 }
