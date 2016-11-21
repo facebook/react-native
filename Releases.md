@@ -3,15 +3,14 @@ https://github.com/facebook/react-native/releases
 
 ## Release schedule
 
-| Version | RC release       | Stable release |
-| ------- | ---------------- | -------------- |
-| 0.27.0  | week of May 16   | June 6         |
-| 0.28.0  | week of June 6   | June 20        |
-| 0.29.0  | week of June 20  | July 4         |
-| 0.30.0  | week of July 4   | July 18        |
-| 0.31.0  | week of July 18  | Aug 1          |
-| 0.32.0  | week of Aug 1    | Aug 15         |
-| ...     | ...              | ...            |
+| Version | RC release          | Stable release |
+| ------- | ------------------- | -------------- |
+| 0.36.0  | week of October 10  | October 24     |
+| 0.37.0  | week of October 24  | November 7     |
+| 0.38.0  | week of November 7  | November 21    |
+| 0.39.0  | week of November 21 | December 5     |
+| 0.40.0  | week of December 5  | December 19    |
+| ...     | ...                 | ...            |
 
 -------------------
 ## How to cut a new release branch
@@ -48,9 +47,6 @@ git checkout -b <version_you_are_releasing>-stable
 
 node ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.22.0-rc
-
-git push origin <version_you_are_releasing>-stable --follow-tags
-# e.g. git push origin 0.22-stable --follow-tags
 ```
 
 Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.22.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
@@ -113,9 +109,6 @@ If everything worked:
 ```bash
 node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.28.0-rc.1
-
-git push origin version_you_are_releasing-stable --follow-tags
-# e.g. git push origin 0.22-stable --follow-tags
 ````
 
 -------------------
@@ -145,15 +138,6 @@ If everything worked:
 ```bash
 node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 # e.g. node ./scripts/bump-oss-version.js 0.22.0
-
-git tag -d latest
-git push origin :latest
-
-git tag latest
-# The latest tag marks when to regenerate the website.
-
-git push origin version_you_are_releasing-stable --follow-tags
-# e.g. git push origin 0.22-stable --follow-tags
 ```
 
 #### Update the release notes

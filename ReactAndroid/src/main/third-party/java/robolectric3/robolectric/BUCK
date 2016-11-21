@@ -110,8 +110,16 @@ prebuilt_jar(
     visibility = ['//ReactAndroid/...',],
 )
 
-remote_file(
+# This new rule will make the .jar file appear in the "right" location,
+# though that may change in the future
+export_file(
     name = 'robolectric-android-all-binary-jar',
+    src = ':robolectric-android-all-binary-remote-jar',
+    out = 'android-all-4.1.2_r1-robolectric-0.jar', # name defines filename used by robolectric in runtime
+)
+
+remote_file(
+    name = 'robolectric-android-all-binary-remote-jar',
     url = 'mvn:org.robolectric:android-all:jar:4.1.2_r1-robolectric-0',
     sha1 = 'aecc8ce5119a25fcea1cdf8285469c9d1261a352',
 )
@@ -122,8 +130,14 @@ prebuilt_jar(
     visibility = ['//ReactAndroid/...',],
 )
 
-remote_file(
+export_file(
     name = 'json-jar',
+    src = ':json-remote-jar',
+    out = 'json-20080701.jar', # name defines filename used by robolectric in runtime
+)
+
+remote_file(
+    name = 'json-remote-jar',
     url = 'mvn:org.json:json:jar:20080701',
     sha1 = 'd652f102185530c93b66158b1859f35d45687258',
 )
@@ -134,8 +148,14 @@ prebuilt_jar(
     visibility = ['//ReactAndroid/...',],
 )
 
-remote_file(
+export_file(
     name = 'tagsoup-jar',
+    src = ':tagsoup-remote-jar',
+    out = 'tagsoup-1.2.jar', # name defines filename used by robolectric in runtime
+)
+
+remote_file(
+    name = 'tagsoup-remote-jar',
     url = 'mvn:org.ccil.cowan.tagsoup:tagsoup:jar:1.2',
     sha1 = '639fd364750d7363c85797dc944b4a80f78fa684',
 )
@@ -146,8 +166,14 @@ prebuilt_jar(
     visibility = ['//ReactAndroid/...',],
 )
 
-remote_file(
+export_file(
     name = 'robolectric-shadows-binary-jar',
+    src = ':robolectric-shadows-binary-remote-jar',
+    out = 'shadows-core-3.0-16.jar', # name defines filename used by robolectric in runtime
+)
+
+remote_file(
+    name = 'robolectric-shadows-binary-remote-jar',
     url = 'https://repo1.maven.org/maven2/org/robolectric/shadows-core/3.0/shadows-core-3.0-16.jar',
     sha1 = '39d7a856bf91640b1a6d044333336a2b3f3c198f',
 )

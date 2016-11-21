@@ -11,5 +11,5 @@
 
 #import "RCTImageLoader.h"
 
-@interface RCTImageCache : NSObject <RCTImageCacheDelegate>
+@interface RCTImageCache : NSObject <RCTImageCache>
 @end

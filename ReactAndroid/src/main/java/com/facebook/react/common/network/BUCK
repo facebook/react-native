@@ -1,0 +1,16 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'network',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_dep('third-party/java/okhttp:okhttp3'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':network',
+)

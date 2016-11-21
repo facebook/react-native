@@ -31,9 +31,8 @@ const UIExplorerPage = require('UIExplorerPage');
 const {
   Picker,
   Text,
-  TouchableWithoutFeedback,
 } = ReactNative;
-// $FlowFixMe found when converting React.createClass to ES6
+
 const Item = Picker.Item;
 
 class PickerExample extends React.Component {

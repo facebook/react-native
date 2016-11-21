@@ -9,7 +9,56 @@
 
 #import <UIKit/UIKit.h>
 
-extern uint32_t const RCTRAMBundleMagicNumber;
+#import "RCTDefines.h"
+
+/**
+ * RCTScriptTag
+ *
+ * Scripts given to the JS Executors to run could be in any of the following
+ * formats. They are tagged so the executor knows how to run them.
+ */
+typedef NS_ENUM(NSInteger) {
+  RCTScriptString = 0,
+  RCTScriptRAMBundle,
+  RCTScriptBCBundle,
+} RCTScriptTag;
+
+/**
+ * RCTBundleHeader
+ *
+ * RAM bundles and BC bundles begin with headers. For RAM bundles this is
+ * 4 bytes, for BC bundles this is 12 bytes. This structure holds the first 12
+ * bytes from a bundle in a way that gives access to that information.
+ */
+typedef union {
+  // `allBytes` is the first field so that zero-initializing the union fills
+  // it completely with zeroes. Without it, only the first field of the union
+  // gets zero-initialized.
+  uint32_t allBytes[3];
+
+  uint32_t RAMMagic;
+
+  struct {
+    uint64_t BCMagic;
+    uint32_t BCVersion;
+  };
+} RCTBundleHeader;
+
+/**
+ * RCTParseTypeFromHeader
+ *
+ * Takes the first 8 bytes of a bundle, and returns a tag describing the
+ * bundle's format.
+ */
+RCT_EXTERN RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header);
+
+/**
+ * RCTStringForScriptTag
+ *
+ * Convert an `RCTScriptTag` enum into a string, useful for emitting in errors
+ * and diagnostic messages.
+ */
+RCT_EXTERN NSString *RCTStringForScriptTag(RCTScriptTag tag);
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
@@ -19,25 +68,36 @@ NS_ENUM(NSInteger) {
   RCTJavaScriptLoaderErrorFailedReadingFile = 3,
   RCTJavaScriptLoaderErrorFailedStatingFile = 3,
   RCTJavaScriptLoaderErrorURLLoadFailed = 3,
+  RCTJavaScriptLoaderErrorBCVersion = 4,
 
   RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously = 1000,
 };
 
+@interface RCTLoadingProgress : NSObject
+
+@property (nonatomic, copy) NSString *status;
+@property (strong, nonatomic) NSNumber *done;
+@property (strong, nonatomic) NSNumber *total;
+
+@end
+
+typedef void (^RCTSourceLoadProgressBlock)(RCTLoadingProgress *progressData);
 typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
 
 @interface RCTJavaScriptLoader : NSObject
 
-+ (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete;
++ (void)loadBundleAtURL:(NSURL *)scriptURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)onComplete;
 
 /**
  * @experimental
  * Attempts to synchronously load the script at the given URL. The following two conditions must be met:
  *   1. It must be a file URL.
- *   2. It must point to a RAM bundle.
+ *   2. It must not point to a text/javascript file.
  * If the URL does not meet those conditions, this method will return nil and supply an error with the domain
  * RCTJavaScriptLoaderErrorDomain and the code RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously.
  */
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
+                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error;
 

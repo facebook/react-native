@@ -28,6 +28,8 @@ import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 
 /**
@@ -201,8 +203,8 @@ public class ReactViewGroup extends ViewGroup implements
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color) {
-    getOrCreateReactViewBackground().setBorderColor(position, color);
+  public void setBorderColor(int position, float rgb, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, rgb, alpha);
   }
 
   public void setBorderRadius(float borderRadius) {

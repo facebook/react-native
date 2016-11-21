@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+var ReactPropTypes = require('React').PropTypes;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -83,7 +83,7 @@ var LayoutPropTypes = {
    *  use logical pixel units, rather than percents, ems, or any of that.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom
-   *  for more details of how `top` affects layout.
+   *  for more details of how `bottom` affects layout.
    */
   bottom: ReactPropTypes.number,
 
@@ -276,7 +276,7 @@ var LayoutPropTypes = {
 
   /** `flexWrap` controls whether children can wrap around after they
    *  hit the end of a flex container.
-   *  It works like `flex-wrap` in CSS.
+   *  It works like `flex-wrap` in CSS (default: nowrap).
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
    *  for more details.
    */
@@ -288,7 +288,7 @@ var LayoutPropTypes = {
   /** `justifyContent` aligns children in the main direction.
    *  For example, if children are flowing vertically, `justifyContent`
    *  controls how they align vertically.
-   *  It works like `justify-content` in CSS.
+   *  It works like `justify-content` in CSS (default: flex-start).
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
    *  for more details.
    */
@@ -303,8 +303,7 @@ var LayoutPropTypes = {
   /** `alignItems` aligns children in the cross direction.
    *  For example, if children are flowing vertically, `alignItems`
    *  controls how they align horizontally.
-   *  It works like `align-items` in CSS, except the default value
-   *  is `stretch` instead of `flex-start`.
+   *  It works like `align-items` in CSS (default: stretch).
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
    *  for more details.
    */
@@ -317,7 +316,7 @@ var LayoutPropTypes = {
 
   /** `alignSelf` controls how a child aligns in the cross direction,
    *  overriding the `alignItems` of the parent. It works like `align-self`
-   *  in CSS.
+   *  in CSS (default: auto).
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-self
    *  for more details.
    */
@@ -327,6 +326,19 @@ var LayoutPropTypes = {
     'flex-end',
     'center',
     'stretch'
+  ]),
+
+  /** `overflow` controls how a children are measured and displayed.
+   *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
+   *  causes views to be measured independently of their parents main axis.`
+   *  It works like `overflow` in CSS (default: visible).
+   *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
+   *  for more details.
+   */
+  overflow: ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+    'scroll',
   ]),
 
   /** In React Native `flex` does not work the same way that it does in CSS.
@@ -345,8 +357,13 @@ var LayoutPropTypes = {
    *  When `flex` is -1, the component is normally sized according
    *  `width` and `height`. However, if there's not enough space,
    *  the component will shrink to its `minWidth` and `minHeight`.
+   *
+   * flexGrow, flexShrink, and flexBasis work the same as in CSS.
    */
   flex: ReactPropTypes.number,
+  flexGrow: ReactPropTypes.number,
+  flexShrink: ReactPropTypes.number,
+  flexBasis: ReactPropTypes.number,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to

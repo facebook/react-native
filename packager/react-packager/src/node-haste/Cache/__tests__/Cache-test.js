@@ -15,7 +15,7 @@ jest
 jest
   .mock('fs')
   .setMock('os', {
-    tmpDir() { return 'tmpDir'; },
+    tmpdir() { return 'tmpdir'; },
   });
 
 jest.useRealTimers();
@@ -152,6 +152,30 @@ describe('Cache', () => {
             .then(value3 => expect(value3).toBe('lol2'))
           )
         );
+    });
+
+    it('does not cache rejections', () => {
+      fs.stat.mockImpl((file, callback) => {
+        callback(null, {
+          mtime: {
+            getTime: () => {},
+          },
+        });
+      });
+
+      var cache = new Cache({
+        cacheKey: 'cache',
+      });
+      var loaderCb = () => Promise.reject('lol');
+
+      return cache
+        .get('/rootDir/someFile', 'field', loaderCb)
+        .catch(() => {
+          var shouldBeCalled = jest.fn(() => Promise.resolve());
+          const assert = value => expect(shouldBeCalled).toBeCalled();
+          return cache.get('/rootDir/someFile', 'field', shouldBeCalled)
+            .then(assert, assert);
+        });
     });
   });
 

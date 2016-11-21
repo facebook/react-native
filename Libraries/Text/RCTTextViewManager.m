@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTTextView.h"
+#import "RCTFont.h"
 
 @implementation RCTTextViewManager
 
@@ -44,22 +45,23 @@ RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, textView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(selectionColor, tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, CGFloat, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
+  view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withWeight:json]; // defaults to normal
+  view.font = [RCTFont updateFont:view.font withWeight:json]; // defaults to normal
 }
-RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, RCTTextView)
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withStyle:json]; // defaults to normal
+  view.font = [RCTFont updateFont:view.font withStyle:json]; // defaults to normal
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
 {
-  view.font = [RCTConvert UIFont:view.font withFamily:json ?: defaultView.font.familyName];
+  view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDetectorTypes)

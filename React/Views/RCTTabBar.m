@@ -151,12 +151,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (UITabBarItemPositioning)itemPositoning
 {
+#if TARGET_OS_TV
+  return 0;
+#else
   return _tabController.tabBar.itemPositioning;
+#endif
 }
 
 - (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
 {
+#if !TARGET_OS_TV
   _tabController.tabBar.itemPositioning = itemPositioning;
+#endif
 }
 
 #pragma mark - UITabBarControllerDelegate

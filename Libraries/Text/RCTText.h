@@ -13,5 +13,7 @@
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, strong) NSTextStorage *textStorage;
+@property (nonatomic, assign) CGRect textFrame;
+@property (nonatomic, assign) BOOL selectable;
 
 @end

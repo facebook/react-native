@@ -14,6 +14,17 @@
 		139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
 		13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
+		2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
+		2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
+		2D3B5F1D1D9B0D1300451313 /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
+		2D3B5F1E1D9B0D1300451313 /* RCTGIFImageDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5B11AA8C50D0002E2BE /* RCTGIFImageDecoder.m */; };
+		2D3B5F1F1D9B0D1300451313 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5A81AA8C4A30002E2BE /* RCTImageView.m */; };
+		2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */; };
+		2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
+		2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
 		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
@@ -21,6 +32,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		2D2A28381D9B042B00D4039D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		58B5115B1A9E6B3D00147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -47,6 +67,7 @@
 		13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLocalAssetImageLoader.m; sourceTree = "<group>"; };
 		143879361AAD32A300F088A5 /* RCTImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoader.h; sourceTree = "<group>"; };
 		143879371AAD32A300F088A5 /* RCTImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoader.m; sourceTree = "<group>"; };
+		2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTImage-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		35123E691B59C99D00EBAD80 /* RCTImageStoreManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageStoreManager.h; sourceTree = "<group>"; };
 		35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageStoreManager.m; sourceTree = "<group>"; };
 		354631661B69857700AA0B86 /* RCTImageEditingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageEditingManager.h; sourceTree = "<group>"; };
@@ -59,6 +80,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2D2A28371D9B042B00D4039D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		58B5115A1A9E6B3D00147676 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -104,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				58B5115D1A9E6B3D00147676 /* libRCTImage.a */,
+				2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,6 +140,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2D2A28391D9B042B00D4039D /* RCTImage-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */;
+			buildPhases = (
+				2D2A28361D9B042B00D4039D /* Sources */,
+				2D2A28371D9B042B00D4039D /* Frameworks */,
+				2D2A28381D9B042B00D4039D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTImage-tvOS";
+			productName = "RCTImage-tvOS";
+			productReference = 2D2A283A1D9B042B00D4039D /* libRCTImage-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		58B5115C1A9E6B3D00147676 /* RCTImage */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTImage" */;
@@ -137,6 +183,10 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
+					2D2A28391D9B042B00D4039D = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
 					58B5115C1A9E6B3D00147676 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -155,11 +205,30 @@
 			projectRoot = "";
 			targets = (
 				58B5115C1A9E6B3D00147676 /* RCTImage */,
+				2D2A28391D9B042B00D4039D /* RCTImage-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2D2A28361D9B042B00D4039D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */,
+				2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */,
+				2D3B5F1D1D9B0D1300451313 /* RCTLocalAssetImageLoader.m in Sources */,
+				2D3B5F1F1D9B0D1300451313 /* RCTImageEditingManager.m in Sources */,
+				2D3B5F1E1D9B0D1300451313 /* RCTGIFImageDecoder.m in Sources */,
+				2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */,
+				2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */,
+				2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */,
+				2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */,
+				2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */,
+				2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		58B511591A9E6B3D00147676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -181,6 +250,54 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2D2A28401D9B042B00D4039D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../Network/**",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		2D2A28411D9B042B00D4039D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../Network/**",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
 		58B5116F1A9E6B3D00147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -216,7 +333,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -256,7 +373,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -312,6 +429,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D2A28401D9B042B00D4039D /* Debug */,
+				2D2A28411D9B042B00D4039D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		58B511581A9E6B3D00147676 /* Build configuration list for PBXProject "RCTImage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

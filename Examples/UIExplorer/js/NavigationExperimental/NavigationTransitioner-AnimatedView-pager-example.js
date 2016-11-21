@@ -95,7 +95,7 @@ class Example extends Component {
     this.state = reducer();
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View style={styles.example}>
         <ExampleNavigator
@@ -137,8 +137,6 @@ class Example extends Component {
 class ExampleNavigator extends Component {
   _render: Function;
   _renderScene: Function;
-  _back: Function;
-  _forward: Function;
 
   props: {
     navigate: Function,
@@ -154,11 +152,9 @@ class ExampleNavigator extends Component {
     super(props, context);
     this._render = this._render.bind(this);
     this._renderScene = this._renderScene.bind(this);
-    this._back = this._back.bind(this);
-    this._forward = this._forward.bind(this);
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <NavigationTransitioner
         navigationState={this.props.navigationState}
@@ -169,7 +165,7 @@ class ExampleNavigator extends Component {
 
   _render(
     transitionProps: NavigationTransitionProps,
-  ): ReactElement<any> {
+  ): React.Element<any> {
     const scenes = transitionProps.scenes.map((scene) => {
       const sceneProps = {
         ...transitionProps,
@@ -186,7 +182,7 @@ class ExampleNavigator extends Component {
 
   _renderScene(
     sceneProps: NavigationSceneRendererProps,
-  ): ReactElement<any> {
+  ): React.Element<any> {
     return (
       <ExampleScene
         {...sceneProps}
@@ -194,14 +190,6 @@ class ExampleNavigator extends Component {
         navigate={this.props.navigate}
       />
     );
-  }
-
-  _back(): void {
-    this.props.navigate('back');
-  }
-
-  _forward(): void {
-    this.props.navigate('forward');
   }
 }
 
@@ -215,7 +203,7 @@ class ExampleScene extends Component {
     navigate: PropTypes.func.isRequired,
   };
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {scene, navigate} = this.props;
 
     const panHandlers = NavigationPagerPanResponder.forHorizontal({
@@ -260,10 +248,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 50,
   },
   heading: {
     alignItems : 'center',

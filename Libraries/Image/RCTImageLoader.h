@@ -14,8 +14,29 @@
 #import "RCTResizeMode.h"
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
+typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
+
+/**
+ * Provides an interface to use for providing a image caching strategy.
+ */
+@protocol RCTImageCache <NSObject>
+
+- (UIImage *)imageForUrl:(NSString *)url
+                    size:(CGSize)size
+                   scale:(CGFloat)scale
+              resizeMode:(RCTResizeMode)resizeMode
+            responseDate:(NSString *)responseDate;
+
+- (void)addImageToCache:(UIImage *)image
+                    URL:(NSString *)url
+                   size:(CGSize)size
+                  scale:(CGFloat)scale
+             resizeMode:(RCTResizeMode)resizeMode
+           responseDate:(NSString *)responseDate;
+
+@end
 
 @interface UIImage (React)
 
@@ -62,6 +83,9 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * select the optimal dimensions for the loaded image. The `clipped` option
  * controls whether the image will be clipped to fit the specified size exactly,
  * or if the original aspect ratio should be retained.
+ * `partialLoadBlock` is meant for custom image loaders that do not ship with the core RN library.
+ * It is meant to be called repeatedly while loading the image as higher quality versions are decoded,
+ * for instance with progressive JPEGs.
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                       size:(CGSize)size
@@ -69,6 +93,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                                                    clipped:(BOOL)clipped
                                                 resizeMode:(RCTResizeMode)resizeMode
                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
@@ -91,6 +116,13 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
+
+/**
+ * Allows developers to set their own caching implementation for
+ * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * protocol. This method should be called in bridgeDidInitializeModule.
+ */
+- (void)setImageCache:(id<RCTImageCache>)cache;
 
 @end
 
@@ -128,6 +160,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @optional
@@ -196,26 +229,5 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * undefined.
  */
 - (float)decoderPriority;
-
-@end
-
-/**
- * Provides an interface to use for providing a image caching strategy.
- */
-
-@protocol RCTImageCacheDelegate <NSObject>
-
-- (UIImage *)imageForUrl:(NSString *)url
-                    size:(CGSize)size
-                   scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate;
-
-- (void)addImageToCache:(UIImage *)image
-                    URL:(NSString *)url
-                   size:(CGSize)size
-                  scale:(CGFloat)scale
-             resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate;
 
 @end

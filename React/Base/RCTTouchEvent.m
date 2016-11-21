@@ -21,11 +21,13 @@
 @synthesize viewTag = _viewTag;
 
 - (instancetype)initWithEventName:(NSString *)eventName
+                         reactTag:(NSNumber *)reactTag
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
                    changedIndexes:(NSArray<NSNumber *> *)changedIndexes
                     coalescingKey:(uint16_t)coalescingKey
 {
   if (self = [super init]) {
+    _viewTag = reactTag;
     _eventName = eventName;
     _reactTouches = reactTouches;
     _changedIndexes = changedIndexes;

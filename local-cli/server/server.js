@@ -9,18 +9,19 @@
 'use strict';
 
 const chalk = require('chalk');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
-const findSymlinksPaths = require('./findSymlinksPaths');
+const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(
-    args.root,
-    findSymlinksPaths(path.resolve(process.cwd(), 'node_modules'))
+  const roots = args.projectRoots.concat(args.root);
+  args.projectRoots = roots.concat(
+    findSymlinksPaths(NODE_MODULES, roots)
   );
 
   console.log(formatBanner(
@@ -63,7 +64,7 @@ function server(argv, config, args) {
     }
     console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
     console.log('for common problems and solutions.');
-    process.exit(1);
+    process.exit(11);
   });
 
   runServer(args, config, () => console.log('\nReact packager ready.\n'));
@@ -96,6 +97,11 @@ module.exports = {
     parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
     default: (config) => config.getAssetRoots(),
   }, {
+    command: '--assetExts [list]',
+    description: 'Specify any additional asset extentions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getAssetExts(),
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
@@ -103,8 +109,7 @@ module.exports = {
     description: 'Disable file watcher'
   }, {
     command: '--transformer [string]',
-    default: require.resolve('../../packager/transformer'),
-    description: 'Specify a custom transformer to be used (absolute path)'
+    description: 'Specify a custom transformer to be used'
   }, {
     command: '--reset-cache, --resetCache',
     description: 'Removes cached files',

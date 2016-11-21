@@ -9,6 +9,7 @@
 'use strict';
 
 const Promise = require('promise');
+
 const meta = require('./meta');
 const writeFile = require('./writeFile');
 

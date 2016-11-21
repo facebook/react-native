@@ -175,7 +175,7 @@ RCT_EXPORT_MODULE()
   return _sendIdleEvents || _timers.count > 0;
 }
 
-- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
+- (void)didUpdateFrame:(RCTFrameUpdate *)update
 {
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
@@ -192,7 +192,10 @@ RCT_EXPORT_MODULE()
 
   // Call timers that need to be called
   if (timersToCall.count > 0) {
-    [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
+    [_bridge enqueueJSCall:@"JSTimersExecution"
+                    method:@"callTimers"
+                      args:@[timersToCall]
+                completion:NULL];
   }
 
   if (_sendIdleEvents) {
@@ -200,7 +203,10 @@ RCT_EXPORT_MODULE()
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
       NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
-      [_bridge enqueueJSCall:@"JSTimersExecution.callIdleCallbacks" args:@[absoluteFrameStartMS]];
+      [_bridge enqueueJSCall:@"JSTimersExecution"
+                      method:@"callIdleCallbacks"
+                        args:@[absoluteFrameStartMS]
+                  completion:NULL];
     }
   }
 

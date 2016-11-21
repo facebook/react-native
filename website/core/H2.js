@@ -8,9 +8,10 @@
  *
  * @providesModule H2
  */
+'use strict';
 
-var React = require('React');
 var Header = require('Header');
+var React = require('React');
 
 var H2 = React.createClass({
   render: function() {

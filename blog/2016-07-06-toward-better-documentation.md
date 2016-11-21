@@ -1,7 +1,11 @@
 ---
 title: Toward Better Documentation
 author: Kevin Lacker
+authorTitle: Engineering Manager at Facebook
 authorURL: https://twitter.com/lacker
+authorImage: http://www.gravatar.com/avatar/9b790592be15d4f55a5ed7abb5103304?s=128
+authorTwitter: lacker
+category: announcements
 ---
 
 Part of having a great developer experience is having great documentation. A lot goes into creating good docs - the ideal documentation is concise, helpful, accurate, complete, and delightful. Recently we've been working hard to make the docs better based on your feedback, and we wanted to share some of the improvements we've made.

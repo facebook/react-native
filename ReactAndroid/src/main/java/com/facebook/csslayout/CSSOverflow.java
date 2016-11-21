@@ -10,6 +10,26 @@
 package com.facebook.csslayout;
 
 public enum CSSOverflow {
-  VISIBLE,
-  HIDDEN,
+  VISIBLE(0),
+  HIDDEN(1),
+  SCROLL(2);
+
+  private int mIntValue;
+
+  CSSOverflow(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSOverflow fromInt(int value) {
+    switch (value) {
+      case 0: return VISIBLE;
+      case 1: return HIDDEN;
+      case 2: return SCROLL;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

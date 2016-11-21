@@ -92,20 +92,12 @@ RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
 // Does this device support force touch (aka 3D Touch)?
 RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 
-// Return a UIAlertView initialized with the given values
-// or nil if running in an app extension
-RCT_EXTERN UIAlertView *__nullable RCTAlertView(NSString *title,
-                                                NSString *__nullable message,
-                                                id __nullable delegate,
-                                                NSString *__nullable cancelButtonTitle,
-                                                NSArray<NSString *> *__nullable otherButtonTitles);
-
 // Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id __nullable RCTNilIfNull(id __nullable value);
-RCT_EXTERN id RCTNullIfNil(id __nullable value);
+#define RCTNullIfNil(value) (value ?: (id)kCFNull)
+#define RCTNilIfNull(value) (value == (id)kCFNull ? nil : value)
 
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);

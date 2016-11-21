@@ -11,7 +11,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
+#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
+#else
+#import "CSSLayout.h"
+#endif
+
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
@@ -93,6 +99,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 // `UIKeyboardWillChangeFrameNotification`s.
 + (void)initializeStatics
 {
+#if !TARGET_OS_TV
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -100,12 +107,15 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
                                                 name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
   });
+#endif
 }
 
 + (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   NSDictionary *userInfo = notification.userInfo;
   _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+#endif
 }
 
 - (instancetype)initWithDuration:(NSTimeInterval)duration dictionary:(NSDictionary *)config
@@ -219,8 +229,9 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
-
+#if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
+#endif
 }
 
 @synthesize bridge = _bridge;
@@ -229,15 +240,20 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
+  // Report the event across the bridge.
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                              body:@([_bridge.accessibilityManager multiplier])];
+
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
 - (void)interfaceOrientationWillChange:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
     [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
 
@@ -254,6 +270,7 @@ RCT_EXPORT_MODULE()
   }
 
   _currentInterfaceOrientation = nextOrientation;
+#endif
 }
 
 - (void)invalidate
@@ -278,7 +295,7 @@ RCT_EXPORT_MODULE()
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"", nil);
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   });
 }
 
@@ -333,11 +350,13 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationWillChange:)
                                                name:UIApplicationWillChangeStatusBarOrientationNotification
                                              object:nil];
+#endif
+
   [RCTAnimation initializeStatics];
 }
 
@@ -424,8 +443,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
+    BOOL needsLayout = NO;
     if (!CGRectEqualToRect(frame, shadowView.frame)) {
       shadowView.frame = frame;
+      needsLayout = YES;
     }
 
     // Trigger re-layout when size flexibility changes, as the root view might grow or
@@ -434,8 +455,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
       if (rootShadowView.sizeFlexibility != sizeFlexibility) {
         rootShadowView.sizeFlexibility = sizeFlexibility;
-        [self batchDidComplete];
+        needsLayout = YES;
       }
+    }
+
+    if (needsLayout) {
+      [self setNeedsLayout];
     }
   });
 }
@@ -451,7 +476,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
     shadowView.intrinsicContentSize = size;
 
-    [self batchDidComplete];
+    [self setNeedsLayout];
   });
 }
 
@@ -837,18 +862,21 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
   RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
 
   RCTShadowView *superShadowView = shadowView.superview;
-  RCTAssert(superShadowView != nil, @"shadowView super (of ID %@) not found", reactTag);
+  if (!superShadowView) {
+    RCTAssert(NO, @"shadowView super (of ID %@) not found", reactTag);
+    return;
+  }
 
   NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObject:shadowView];
   RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
   NSArray<NSNumber *> *removeAtIndices = @[@(indexOfView)];
   NSArray<NSNumber *> *addTags = @[newReactTag];
   [self manageChildren:superShadowView.reactTag
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:addTags
+       moveFromIndices:nil
+         moveToIndices:nil
+     addChildReactTags:addTags
           addAtIndices:removeAtIndices
-        removeAtIndices:removeAtIndices];
+       removeAtIndices:removeAtIndices];
 }
 
 RCT_EXPORT_METHOD(setChildren:(nonnull NSNumber *)containerTag
@@ -1144,7 +1172,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCTProfileBeginFlowEvent();
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
-      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", nil);
+      RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
+        @"count": @(previousPendingUIBlocks.count),
+      }));
       @try {
         for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
           block(self, self->_viewRegistry);
@@ -1153,9 +1183,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       @catch (NSException *exception) {
         RCTLogError(@"Exception thrown while executing UI block: %@", exception);
       }
-      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"objc_call", @{
-        @"count": @(previousPendingUIBlocks.count),
-      });
     });
   }
 }
@@ -1224,6 +1251,26 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
       @(windowFrame.size.height),
     ]);
   }];
+}
+
+/**
+ * Returs if the shadow view provided has the `ancestor` shadow view as
+ * an actual ancestor.
+ */
+RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
+                  ancestor:(nonnull NSNumber *)ancestorReactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
+  if (!shadowView) {
+    return;
+  }
+  if (!ancestorShadowView) {
+    return;
+  }
+  BOOL viewIsAncestor = [shadowView viewIsDescendantOf:ancestorShadowView];
+  callback(@[@(viewIsAncestor)]);
 }
 
 static void RCTMeasureLayout(RCTShadowView *view,
@@ -1429,22 +1476,19 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
-  NSMutableDictionary<NSString *, NSDictionary *> *allJSConstants = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
-  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-
-     NSMutableDictionary<NSString *, id> *constantsNamespace =
-       [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+  [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
+     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
      // Add manager class
-     constantsNamespace[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
 
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     constantsNamespace[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1476,17 +1520,19 @@ RCT_EXPORT_METHOD(clearJSResponder)
        }
      }
 
-     allJSConstants[name] = constantsNamespace;
+     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+     constants[name] = moduleConstants;
   }];
 
+#if !TARGET_OS_TV
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
-  [allJSConstants addEntriesFromDictionary:@{
-    @"customBubblingEventTypes": bubblingEvents,
-    @"customDirectEventTypes": directEvents,
-    @"Dimensions": RCTExportedDimensions(NO)
-  }];
+#endif
 
-  return allJSConstants;
+  constants[@"customBubblingEventTypes"] = bubblingEvents;
+  constants[@"customDirectEventTypes"] = directEvents;
+  constants[@"Dimensions"] = RCTExportedDimensions(NO);
+
+  return constants;
 }
 
 static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
@@ -1521,6 +1567,59 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
+}
+
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
+{
+  RCTAssertMainQueue();
+  RCTAssert(completion != nil, @"Attempted to resolve rootView for tag %@ without a completion block", reactTag);
+
+  if (reactTag == nil) {
+    completion(nil);
+    return;
+  }
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    NSNumber *rootTag = [self _rootTagForReactTag:reactTag];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UIView *rootView = nil;
+      if (rootTag != nil) {
+        rootView = [self viewForReactTag:rootTag];
+      }
+      completion(rootView);
+    });
+  });
+}
+
+- (NSNumber *)_rootTagForReactTag:(NSNumber *)reactTag
+{
+  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
+
+  if (reactTag == nil) {
+    return nil;
+  }
+
+  if (RCTIsReactRootView(reactTag)) {
+    return reactTag;
+  }
+
+  NSNumber *rootTag = nil;
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  while (shadowView) {
+    RCTShadowView *parent = [shadowView reactSuperview];
+    if (!parent && RCTIsReactRootView(shadowView.reactTag)) {
+      rootTag = shadowView.reactTag;
+      break;
+    }
+    shadowView = parent;
+  }
+
+  return rootTag;
 }
 
 static UIView *_jsResponder;

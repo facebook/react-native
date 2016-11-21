@@ -20,40 +20,61 @@ import java.util.Locale;
 public class I18nUtil {
   private static I18nUtil sharedI18nUtilInstance = null;
 
-  private static final String MY_PREFS_NAME =
+  private static final String SHARED_PREFS_NAME =
     "com.facebook.react.modules.i18nmanager.I18nUtil";
-  private static final String KEY_FOR_PREFS =
+  private static final String KEY_FOR_PREFS_ALLOWRTL =
     "RCTI18nUtil_allowRTL";
+  private static final String KEY_FOR_PREFS_FORCERTL =
+    "RCTI18nUtil_forceRTL";
 
   private I18nUtil() {
      // Exists only to defeat instantiation.
   }
 
   public static I18nUtil getInstance() {
-    if(sharedI18nUtilInstance == null) {
+    if (sharedI18nUtilInstance == null) {
       sharedI18nUtilInstance = new I18nUtil();
     }
     return sharedI18nUtilInstance;
   }
 
-  // If the current device language is RTL and RTL is allowed for the app,
-  // the RN app will automatically have a RTL layout.
+  /**
+   * Check if the device is currently running on an RTL locale.
+   * This only happens when the app:
+   * - is forcing RTL layout, regardless of the active language (for development purpose)
+   * - allows RTL layout when using RTL locale
+   */
   public boolean isRTL(Context context) {
-    return allowRTL(context) &&
+    if (isRTLForced(context)) {
+      return true;
+    }
+    return isRTLAllowed(context) &&
       isDevicePreferredLanguageRTL();
   }
 
-  private boolean allowRTL(Context context) {
-    SharedPreferences prefs =
-      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE);
-    return prefs.getBoolean(KEY_FOR_PREFS, false);
+  /**
+   * Should be used very early during app start up
+   * Before the bridge is initialized
+   * @return whether the app allows RTL layout, default is true
+   */
+  private boolean isRTLAllowed(Context context) {
+    return isPrefSet(context, KEY_FOR_PREFS_ALLOWRTL, true);
   }
 
-  public void setAllowRTL(Context context, boolean allowRTL) {
-    SharedPreferences.Editor editor =
-      context.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE).edit();
-    editor.putBoolean(KEY_FOR_PREFS, allowRTL);
-    editor.apply();
+  public void allowRTL(Context context, boolean allowRTL) {
+    setPref(context, KEY_FOR_PREFS_ALLOWRTL, allowRTL);
+  }
+
+  /**
+   * Could be used to test RTL layout with English
+   * Used for development and testing purpose
+   */
+  private boolean isRTLForced(Context context) {
+    return isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false);
+  }
+
+  public void forceRTL(Context context, boolean forceRTL) {
+    setPref(context, KEY_FOR_PREFS_FORCERTL, forceRTL);
   }
 
   // Check if the current device language is RTL
@@ -62,4 +83,17 @@ public class I18nUtil {
       TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault());
     return directionality == ViewCompat.LAYOUT_DIRECTION_RTL;
    }
+
+  private boolean isPrefSet(Context context, String key, boolean defaultValue) {
+    SharedPreferences prefs =
+      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+    return prefs.getBoolean(key, defaultValue);
+  }
+
+  private void setPref(Context context, String key, boolean value) {
+    SharedPreferences.Editor editor =
+      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit();
+    editor.putBoolean(key, value);
+    editor.apply();
+  }
 }

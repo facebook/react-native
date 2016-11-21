@@ -30,7 +30,7 @@ class RCTDeviceEventEmitter extends EventEmitter {
     super(sharedSubscriber);
     this.sharedSubscriber = sharedSubscriber;
   }
-  
+
   _nativeEventModule(eventType: ?string) {
     if (eventType) {
       if (eventType.lastIndexOf('statusBar', 0) === 0) {

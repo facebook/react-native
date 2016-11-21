@@ -5,14 +5,28 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
+const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
-let cachedConfig = null;
+
+export type ConfigT = {
+  extraNodeModules?: {[id: string]: string},
+  getAssetExts?: () => Array<string>,
+  getTransformModulePath?: () => string,
+  getTransformOptionsModulePath?: () => string,
+  transformVariants?: () => {[name: string]: Object},
+
+  getAssetRoots(): Array<string>,
+  getBlacklistRE(): RegExp,
+  getProjectRoots(): Array<string>,
+};
 
 /**
  * Module capable of getting the configuration that should be used for
@@ -25,26 +39,44 @@ let cachedConfig = null;
  * error will be thrown.
  */
 const Config = {
-  get(cwd, defaultConfig) {
-    if (cachedConfig) {
-      return cachedConfig;
+  get(
+    cwd: string,
+    defaultConfig?: ConfigT | null,
+    pathToConfig?: string | null,
+  ): ConfigT {
+    let baseConfig;
+
+    // Handle the legacy code path where pathToConfig is unspecified
+    if (pathToConfig === undefined) {
+      const configPath = Config.findConfigPath(cwd);
+      if (!configPath && !defaultConfig) {
+        throw new Error(
+          `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${cwd}"`
+        );
+      }
+      // $FlowFixMe nope
+      baseConfig = require(configPath);
+    } else if (pathToConfig == null) {
+      assert(defaultConfig, 'Must have a default config if config is missing');
+    } else {
+      baseConfig = path.isAbsolute(pathToConfig) ?
+        // $FlowFixMe nope
+        require(pathToConfig) :
+        // $FlowFixMe nope
+        require(path.join(cwd, pathToConfig));
     }
 
+    return {
+      ...defaultConfig,
+      ...baseConfig,
+      cwd,
+    };
+  },
+
+  findConfigPath(cwd: string): ?string {
     const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
-    if (!parentDir && !defaultConfig) {
-      throw new Error(
-        `Can't find "rn-cli.config.js" file in any parent folder of "${cwd}"`
-      );
-    }
-
-    const config = parentDir
-      ? require(path.join(parentDir, RN_CLI_CONFIG))
-      : {};
-
-    cachedConfig = Object.assign({}, defaultConfig, config);
-    cachedConfig.cwd = cwd;
-    return cachedConfig;
-  }
+    return parentDir ? path.join(parentDir, RN_CLI_CONFIG) : null;
+  },
 };
 
 // Finds the most near ancestor starting at `currentFullPath` that has

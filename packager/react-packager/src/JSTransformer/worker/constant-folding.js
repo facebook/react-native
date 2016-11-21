@@ -5,14 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const babel = require('babel-core');
-const t = babel.types;
 
-const isLiteral = binaryExpression =>
-  t.isLiteral(binaryExpression.left) && t.isLiteral(binaryExpression.right);
+import type {Ast, SourceMap} from 'babel-core';
+const t = babel.types;
 
 const Conditional = {
   exit(path) {
@@ -68,7 +70,11 @@ const plugin = {
   },
 };
 
-function constantFolding(filename, transformResult) {
+function constantFolding(filename: string, transformResult: {
+  ast: Ast,
+  code?: ?string,
+  map: ?SourceMap,
+}) {
   return babel.transformFromAst(transformResult.ast, transformResult.code, {
     filename,
     plugins: [plugin],
@@ -81,5 +87,5 @@ function constantFolding(filename, transformResult) {
   });
 }
 
+constantFolding.plugin = plugin;
 module.exports = constantFolding;
-

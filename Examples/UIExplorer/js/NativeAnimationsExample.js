@@ -22,16 +22,15 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   View,
   Text,
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
 } = ReactNative;
-var UIExplorerButton = require('./UIExplorerButton');
 
 class Tester extends React.Component {
   state = {
@@ -42,17 +41,16 @@ class Tester extends React.Component {
   current = 0;
 
   onPress = () => {
+    const animConfig = (
+      this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
+    );
     this.current = this.current ? 0 : 1;
     const config = {
-      ...this.props.config,
+      ...animConfig,
       toValue: this.current,
     };
-    try {
-      Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
-    } catch (e) {
-      // uncomment this if you want to get the redbox errors!
-      throw e;
-    }
+
+    Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
     Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
   };
 
@@ -74,6 +72,139 @@ class Tester extends React.Component {
           </View>
         </View>
       </TouchableWithoutFeedback>
+    );
+  }
+}
+
+class ValueListenerExample extends React.Component {
+  state = {
+    anim: new Animated.Value(0),
+    progress: 0,
+  };
+  _current = 0;
+
+  componentDidMount() {
+    this.state.anim.addListener((e) => this.setState({ progress: e.value }));
+  }
+
+  componentWillUnmount() {
+    this.state.anim.removeAllListeners();
+  }
+
+  _onPress = () => {
+    this._current = this._current ? 0 : 1;
+    const config = {
+      duration: 1000,
+      toValue: this._current,
+    };
+
+    Animated.timing(this.state.anim, { ...config, useNativeDriver: true }).start();
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._onPress}>
+        <View>
+          <View style={styles.row}>
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  opacity: this.state.anim,
+                }
+              ]}
+            />
+          </View>
+          <Text>Value: {this.state.progress}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
+
+const UIExplorerSettingSwitchRow = require('UIExplorerSettingSwitchRow');
+class InternalSettings extends React.Component {
+  _stallInterval: ?number;
+  state: {busyTime: number | string, filteredStall: number};
+  render() {
+    return (
+      <View>
+        <UIExplorerSettingSwitchRow
+          initialValue={false}
+          label="Force JS Stalls"
+          onEnable={() => {
+            this._stallInterval = setInterval(() => {
+              const start = Date.now();
+              console.warn('burn CPU');
+              while ((Date.now() - start) < 100) {}
+            }, 300);
+          }}
+          onDisable={() => {
+            clearInterval(this._stallInterval || 0);
+          }}
+        />
+        <UIExplorerSettingSwitchRow
+          initialValue={false}
+          label="Track JS Stalls"
+          onEnable={() => {
+            require('JSEventLoopWatchdog').install({thresholdMS: 25});
+            this.setState({busyTime: '<none>'});
+            require('JSEventLoopWatchdog').addHandler({
+              onStall: ({busyTime}) => this.setState((state) => ({
+                busyTime,
+                filteredStall: (state.filteredStall || 0) * 0.97 + busyTime * 0.03,
+              })),
+            });
+          }}
+          onDisable={() => {
+            console.warn('Cannot disable yet....');
+          }}
+        />
+        {this.state && <Text>
+          JS Stall filtered: {Math.round(this.state.filteredStall)}, last: {this.state.busyTime}
+        </Text>}
+      </View>
+    );
+  }
+}
+
+class EventExample extends React.Component {
+  state = {
+    scrollX: new Animated.Value(0),
+  };
+
+  render() {
+    const opacity = this.state.scrollX.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
+    return (
+      <View>
+        <Animated.View
+          style={[
+            styles.block,
+            {
+              opacity,
+            }
+          ]}
+        />
+        <Animated.ScrollView
+          horizontal
+          style={{ height: 100, marginTop: 16 }}
+          scrollEventThrottle={16}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { x: this.state.scrollX } }
+            }], {
+              useNativeDriver: true,
+            })
+          }
+        >
+          <View style={{ width: 600, backgroundColor: '#eee', justifyContent: 'center' }}>
+            <Text>Scroll me!</Text>
+          </View>
+        </Animated.ScrollView>
+      </View>
     );
   }
 }
@@ -102,8 +233,7 @@ exports.examples = [
       return (
           <Tester
             type="timing"
-            config={{ duration: 1000 }}
-          >
+            config={{ duration: 1000 }}>
             {anim => (
               <Animated.View
                 style={[
@@ -153,8 +283,7 @@ exports.examples = [
       return (
           <Tester
             type="timing"
-            config={{ duration: 1000 }}
-          >
+            config={{ duration: 1000 }}>
             {anim => (
               <Animated.View
                 style={[
@@ -192,14 +321,13 @@ exports.examples = [
     },
   },
   {
-    title: 'Scale interpolation',
+    title: 'Scale interpolation with clamping',
     description: 'description',
     render: function() {
       return (
         <Tester
           type="timing"
-          config={{ duration: 1000 }}
-        >
+          config={{ duration: 1000 }}>
           {anim => (
             <Animated.View
               style={[
@@ -208,8 +336,9 @@ exports.examples = [
                   transform: [
                     {
                       scale: anim.interpolate({
-                        inputRange: [0, 1],
+                        inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
+                        extrapolateRight: 'clamp',
                       })
                     }
                   ],
@@ -228,8 +357,7 @@ exports.examples = [
       return (
         <Tester
           type="timing"
-          config={{ duration: 1000 }}
-        >
+          config={{ duration: 1000 }}>
           {anim => (
             <Animated.View
               style={[
@@ -251,8 +379,7 @@ exports.examples = [
       return (
         <Tester
           type="timing"
-          config={{ duration: 1000 }}
-        >
+          config={{ duration: 1000 }}>
           {anim => (
             <Animated.View
               style={[
@@ -281,8 +408,7 @@ exports.examples = [
       return (
         <Tester
           type="spring"
-          config={{ bounciness: 0 }}
-        >
+          config={{ bounciness: 0 }}>
           {anim => (
             <Animated.View
               style={[
@@ -294,13 +420,62 @@ exports.examples = [
                         inputRange: [0, 1],
                         outputRange: [0, 100],
                       })
-                    }
+                    },
                   ],
                 }
               ]}
             />
           )}
         </Tester>
+      );
+    },
+  },{
+    title: 'translateX => Animated.decay',
+    render: function() {
+      return (
+        <Tester
+          type="decay"
+          config={{ velocity: 0.5 }}
+          reverseConfig={{ velocity: -0.5 }}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim
+                    },
+                  ],
+                }
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'Animated value listener',
+    render: function() {
+      return (
+        <ValueListenerExample />
+      );
+    },
+  },
+  {
+    title: 'Animated events',
+    render: function() {
+      return (
+        <EventExample />
+      );
+    },
+  },
+  {
+    title: 'Internal Settings',
+    render: function() {
+      return (
+        <InternalSettings />
       );
     },
   },
