@@ -363,6 +363,11 @@ public class FlatUIImplementation extends UIImplementation {
    * and drops all Views used by it and its children.
    */
   private void removeChild(ReactShadowNode child, ReactShadowNode parentNode) {
+    dropNativeViews(child, parentNode);
+    removeShadowNode(child);
+  }
+
+  private void dropNativeViews(ReactShadowNode child, ReactShadowNode parentNode) {
     if (child instanceof FlatShadowNode) {
       FlatShadowNode node = (FlatShadowNode) child;
       if (node.mountsToView() && node.isBackingViewCreated()) {
@@ -388,16 +393,13 @@ public class FlatUIImplementation extends UIImplementation {
 
         // this will recursively drop all subviews
         mStateBuilder.dropView(node, tag);
-        removeShadowNode(node);
         return;
       }
     }
 
     for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
-      removeChild(child.getChildAt(i), child);
+      dropNativeViews(child.getChildAt(i), child);
     }
-
-    removeShadowNode(child);
   }
 
   /**
