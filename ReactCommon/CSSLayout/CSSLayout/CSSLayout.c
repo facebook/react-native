@@ -1198,6 +1198,55 @@ static void absoluteLayoutChild(const CSSNodeRef node,
   }
 }
 
+static void setMeasuredDimensionsForNodeWithMeasureFunc(const CSSNodeRef node,
+                                                        const float availableWidth,
+                                                        const float availableHeight,
+                                                        const CSSMeasureMode widthMeasureMode,
+                                                        const CSSMeasureMode heightMeasureMode) {
+  CSS_ASSERT(node->measure, "Expected node to have custom measure function");
+
+  const float paddingAndBorderAxisRow = getPaddingAndBorderAxis(node, CSSFlexDirectionRow);
+  const float paddingAndBorderAxisColumn = getPaddingAndBorderAxis(node, CSSFlexDirectionColumn);
+  const float marginAxisRow = getMarginAxis(node, CSSFlexDirectionRow);
+  const float marginAxisColumn = getMarginAxis(node, CSSFlexDirectionColumn);
+
+  const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+  const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+
+  if (widthMeasureMode == CSSMeasureModeExactly && heightMeasureMode == CSSMeasureModeExactly) {
+    // Don't bother sizing the text if both dimensions are already defined.
+    node->layout.measuredDimensions[CSSDimensionWidth] =
+        boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
+    node->layout.measuredDimensions[CSSDimensionHeight] =
+        boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
+  } else if (innerWidth <= 0 || innerHeight <= 0) {
+    // Don't bother sizing the text if there's no horizontal or vertical
+    // space.
+    node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow, 0);
+    node->layout.measuredDimensions[CSSDimensionHeight] =
+        boundAxis(node, CSSFlexDirectionColumn, 0);
+  } else {
+    // Measure the text under the current constraints.
+    const CSSSize measuredSize =
+        node->measure(node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
+
+    node->layout.measuredDimensions[CSSDimensionWidth] =
+        boundAxis(node,
+                  CSSFlexDirectionRow,
+                  (widthMeasureMode == CSSMeasureModeUndefined ||
+                   widthMeasureMode == CSSMeasureModeAtMost)
+                      ? measuredSize.width + paddingAndBorderAxisRow
+                      : availableWidth - marginAxisRow);
+    node->layout.measuredDimensions[CSSDimensionHeight] =
+        boundAxis(node,
+                  CSSFlexDirectionColumn,
+                  (heightMeasureMode == CSSMeasureModeUndefined ||
+                   heightMeasureMode == CSSMeasureModeAtMost)
+                      ? measuredSize.height + paddingAndBorderAxisColumn
+                      : availableHeight - marginAxisColumn);
+  }
+}
+
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
@@ -1335,45 +1384,9 @@ static void layoutNodeImpl(const CSSNodeRef node,
   const CSSDirection direction = resolveDirection(node, parentDirection);
   node->layout.direction = direction;
 
-  // For content (text) nodes, determine the dimensions based on the text
-  // contents.
   if (node->measure) {
-    const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-    const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
-
-    if (widthMeasureMode == CSSMeasureModeExactly && heightMeasureMode == CSSMeasureModeExactly) {
-      // Don't bother sizing the text if both dimensions are already defined.
-      node->layout.measuredDimensions[CSSDimensionWidth] =
-          boundAxis(node, CSSFlexDirectionRow, availableWidth - marginAxisRow);
-      node->layout.measuredDimensions[CSSDimensionHeight] =
-          boundAxis(node, CSSFlexDirectionColumn, availableHeight - marginAxisColumn);
-    } else if (innerWidth <= 0 || innerHeight <= 0) {
-      // Don't bother sizing the text if there's no horizontal or vertical
-      // space.
-      node->layout.measuredDimensions[CSSDimensionWidth] = boundAxis(node, CSSFlexDirectionRow, 0);
-      node->layout.measuredDimensions[CSSDimensionHeight] =
-          boundAxis(node, CSSFlexDirectionColumn, 0);
-    } else {
-      // Measure the text under the current constraints.
-      const CSSSize measuredSize =
-          node->measure(node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
-
-      node->layout.measuredDimensions[CSSDimensionWidth] =
-          boundAxis(node,
-                    CSSFlexDirectionRow,
-                    (widthMeasureMode == CSSMeasureModeUndefined ||
-                     widthMeasureMode == CSSMeasureModeAtMost)
-                        ? measuredSize.width + paddingAndBorderAxisRow
-                        : availableWidth - marginAxisRow);
-      node->layout.measuredDimensions[CSSDimensionHeight] =
-          boundAxis(node,
-                    CSSFlexDirectionColumn,
-                    (heightMeasureMode == CSSMeasureModeUndefined ||
-                     heightMeasureMode == CSSMeasureModeAtMost)
-                        ? measuredSize.height + paddingAndBorderAxisColumn
-                        : availableHeight - marginAxisColumn);
-    }
-
+    setMeasuredDimensionsForNodeWithMeasureFunc(
+        node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode);
     return;
   }
 
