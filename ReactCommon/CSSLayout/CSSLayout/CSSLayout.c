@@ -85,6 +85,9 @@ typedef struct CSSStyle {
   float dimensions[2];
   float minDimensions[2];
   float maxDimensions[2];
+
+  // Yoga specific properties, not compatible with flexbox specification
+  float aspectRatio;
 } CSSStyle;
 
 typedef struct CSSNode {
@@ -268,6 +271,8 @@ void CSSNodeInit(const CSSNodeRef node) {
     node->style.padding[edge] = CSSUndefined;
     node->style.border[edge] = CSSUndefined;
   }
+
+  node->style.aspectRatio = CSSUndefined;
 
   node->layout.dimensions[CSSDimensionWidth] = CSSUndefined;
   node->layout.dimensions[CSSDimensionHeight] = CSSUndefined;
@@ -458,6 +463,9 @@ CSS_NODE_STYLE_PROPERTY_IMPL(float, MinWidth, minWidth, minDimensions[CSSDimensi
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MinHeight, minHeight, minDimensions[CSSDimensionHeight]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxWidth, maxWidth, maxDimensions[CSSDimensionWidth]);
 CSS_NODE_STYLE_PROPERTY_IMPL(float, MaxHeight, maxHeight, maxDimensions[CSSDimensionHeight]);
+
+// Yoga specific properties, not compatible with flexbox specification
+CSS_NODE_STYLE_PROPERTY_IMPL(float, AspectRatio, aspectRatio, aspectRatio);
 
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[CSSEdgeLeft]);
 CSS_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[CSSEdgeTop]);
@@ -1032,6 +1040,20 @@ static void computeChildFlexBasis(const CSSNodeRef node,
       childHeightMeasureMode = CSSMeasureModeExactly;
     }
 
+    if (!CSSValueIsUndefined(child->style.aspectRatio)) {
+      if (!isMainAxisRow && childWidthMeasureMode == CSSMeasureModeExactly) {
+        child->layout.computedFlexBasis =
+            fmaxf(childWidth * child->style.aspectRatio,
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+        return;
+      } else if (isMainAxisRow && childHeightMeasureMode == CSSMeasureModeExactly) {
+        child->layout.computedFlexBasis =
+            fmaxf(childHeight * child->style.aspectRatio,
+                  getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+        return;
+      }
+    }
+
     constrainMaxSizeForMode(child->style.maxDimensions[CSSDimensionWidth],
                             &childWidthMeasureMode,
                             &childWidth);
@@ -1105,6 +1127,20 @@ static void absoluteLayoutChild(const CSSNodeRef node,
                     (getLeadingPosition(child, CSSFlexDirectionColumn) +
                      getTrailingPosition(child, CSSFlexDirectionColumn));
       childHeight = boundAxis(child, CSSFlexDirectionColumn, childHeight);
+    }
+  }
+
+  // Exactly one dimension needs to be defined for us to be able to do aspect ratio
+  // calculation. One dimension being the anchor and the other being flexible.
+  if (CSSValueIsUndefined(childWidth) ^ CSSValueIsUndefined(childHeight)) {
+    if (!CSSValueIsUndefined(child->style.aspectRatio)) {
+      if (CSSValueIsUndefined(childWidth)) {
+        childWidth = fmaxf(childHeight * child->style.aspectRatio,
+                           getPaddingAndBorderAxis(child, CSSFlexDirectionColumn));
+      } else if (CSSValueIsUndefined(childHeight)) {
+        childHeight = fmaxf(childWidth * child->style.aspectRatio,
+                            getPaddingAndBorderAxis(child, CSSFlexDirectionRow));
+      }
     }
   }
 
@@ -1770,6 +1806,19 @@ static void layoutNodeImpl(const CSSNodeRef node,
           } else {
             childWidth = currentRelativeChild->style.dimensions[CSSDimensionWidth] +
                          getMarginAxis(currentRelativeChild, CSSFlexDirectionRow);
+            childWidthMeasureMode = CSSMeasureModeExactly;
+          }
+        }
+
+        if (!CSSValueIsUndefined(currentRelativeChild->style.aspectRatio)) {
+          if (isMainAxisRow && childHeightMeasureMode != CSSMeasureModeExactly) {
+            childHeight =
+                fmaxf(childWidth * currentRelativeChild->style.aspectRatio,
+                      getPaddingAndBorderAxis(currentRelativeChild, CSSFlexDirectionColumn));
+            childHeightMeasureMode = CSSMeasureModeExactly;
+          } else if (!isMainAxisRow && childWidthMeasureMode != CSSMeasureModeExactly) {
+            childWidth = fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
+                               getPaddingAndBorderAxis(currentRelativeChild, CSSFlexDirectionRow));
             childWidthMeasureMode = CSSMeasureModeExactly;
           }
         }
