@@ -301,7 +301,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eecc66',
   },
   tile512: {
-    backgroundColor: '#eecc55',
+    backgroundColor: '#eecc54',
   },
   tile1024: {
     backgroundColor: '#eecc33',
