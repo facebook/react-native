@@ -68,14 +68,24 @@ static CSSSize _jniMeasureFunc(CSSNodeRef node,
   return CSSSize{measuredWidth, measuredHeight};
 }
 
+struct JCSSLogLevel : public JavaClass<JCSSLogLevel> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/csslayout/CSSLogLevel;";
+};
+
 static global_ref<jobject> *jLogger;
 static int _jniLog(CSSLogLevel level, const char *format, va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
-  static auto logFunc =
-      findClassLocal("com/facebook/csslayout/CSSLogger")->getMethod<void(jint, jstring)>("log");
-  logFunc(jLogger->get(), static_cast<jint>(level), Environment::current()->NewStringUTF(buffer));
+  static auto logFunc = findClassLocal("com/facebook/csslayout/CSSLogger")
+                            ->getMethod<void(local_ref<JCSSLogLevel>, jstring)>("log");
+
+  static auto logLevelFromInt =
+      JCSSLogLevel::javaClassStatic()->getStaticMethod<JCSSLogLevel::javaobject(jint)>("fromInt");
+
+  logFunc(jLogger->get(),
+          logLevelFromInt(JCSSLogLevel::javaClassStatic(), static_cast<jint>(level)),
+          Environment::current()->NewStringUTF(buffer));
 
   return result;
 }
@@ -105,7 +115,9 @@ void jni_CSSLog(alias_ref<jclass> clazz, jint level, jstring message) {
   Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
-void jni_CSSLayoutSetExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature, jboolean enabled) {
+void jni_CSSLayoutSetExperimentalFeatureEnabled(alias_ref<jclass> clazz,
+                                                jint feature,
+                                                jboolean enabled) {
   CSSLayoutSetExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature), enabled);
 }
 
@@ -180,6 +192,10 @@ void jni_CSSNodeMarkLayoutSeen(alias_ref<jobject>, jlong nativePointer) {
   CSSNodeSetHasNewLayout(_jlong2CSSNodeRef(nativePointer), false);
 }
 
+void jni_CSSNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcNativePointer) {
+  CSSNodeCopyStyle(_jlong2CSSNodeRef(dstNativePointer), _jlong2CSSNodeRef(srcNativePointer));
+}
+
 #define CSS_NODE_JNI_STYLE_PROP(javatype, type, name)                                       \
   javatype jni_CSSNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer) {             \
     return (javatype) CSSNodeStyleGet##name(_jlong2CSSNodeRef(nativePointer));              \
@@ -233,6 +249,9 @@ CSS_NODE_JNI_STYLE_PROP(jfloat, float, Height);
 CSS_NODE_JNI_STYLE_PROP(jfloat, float, MinHeight);
 CSS_NODE_JNI_STYLE_PROP(jfloat, float, MaxHeight);
 
+// Yoga specific properties, not compatible with flexbox specification
+CSS_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
+
 #define CSSMakeNativeMethod(name) makeNativeMethod(#name, name)
 
 jint JNI_OnLoad(JavaVM *vm, void *) {
@@ -250,6 +269,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeIsDirty),
                         CSSMakeNativeMethod(jni_CSSNodeMarkLayoutSeen),
                         CSSMakeNativeMethod(jni_CSSNodeSetHasMeasureFunc),
+                        CSSMakeNativeMethod(jni_CSSNodeCopyStyle),
 
                         CSSMakeNativeMethod(jni_CSSNodeStyleGetDirection),
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetDirection),
@@ -295,6 +315,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetMaxWidth),
                         CSSMakeNativeMethod(jni_CSSNodeStyleGetMaxHeight),
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetMaxHeight),
+                        CSSMakeNativeMethod(jni_CSSNodeStyleGetAspectRatio),
+                        CSSMakeNativeMethod(jni_CSSNodeStyleSetAspectRatio),
 
                         CSSMakeNativeMethod(jni_CSSNodeGetInstanceCount),
                         CSSMakeNativeMethod(jni_CSSLayoutSetLogger),

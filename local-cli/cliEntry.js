@@ -11,7 +11,6 @@
 'use strict';
 
 const Config = require('./util/Config');
-const Promise = require('promise');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
 const chalk = require('chalk');

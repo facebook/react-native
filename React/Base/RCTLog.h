@@ -124,7 +124,7 @@ RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *pref
  * Private logging function - ignore this.
  */
 #if RCTLOG_ENABLED
-#define _RCTLog(lvl, ...) _RCTLogNativeInternal(lvl, __FILE__, __LINE__, __VA_ARGS__);
+#define _RCTLog(lvl, ...) _RCTLogNativeInternal(lvl, __FILE__, __LINE__, __VA_ARGS__)
 #else
 #define _RCTLog(lvl, ...) do { } while (0)
 #endif

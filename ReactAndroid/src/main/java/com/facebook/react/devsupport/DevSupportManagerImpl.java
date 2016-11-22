@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +42,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -334,7 +336,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
   @Override
   public void showDevOptionsDialog() {
-    if (mDevOptionsDialog != null || !mIsDevSupportEnabled) {
+    if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey()) {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
@@ -357,6 +359,19 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             handleReloadJS();
           }
         });
+    if (Inspector.isSupported()) {
+      options.put(
+        "Debug JS on-device (experimental)", new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            List<Inspector.Page> pages = Inspector.getPages();
+            if (pages.size() > 0) {
+              // TODO: We should get the actual page id instead of the first one.
+              mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
+            }
+          }
+        });
+    }
     options.put(
       mDevSettings.isReloadOnJSChangeEnabled()
         ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
@@ -820,6 +835,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.openPackagerConnection(this);
+      mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -860,6 +876,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.closePackagerConnection();
+      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

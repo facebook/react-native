@@ -7,8 +7,7 @@
 #include <thread>
 #include <queue>
 
-#include <JavaScriptCore/JSValueRef.h>
-
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
 namespace facebook {

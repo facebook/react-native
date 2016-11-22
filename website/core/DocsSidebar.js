@@ -8,9 +8,10 @@
  *
  * @providesModule DocsSidebar
  */
+'use strict';
 
-var React = require('React');
 var Metadata = require('Metadata');
+var React = require('React');
 
 var DocsSidebar = React.createClass({
   getCategories: function() {

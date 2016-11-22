@@ -54,7 +54,7 @@ public class CSSStyle {
     alignItems = CSSAlign.STRETCH;
     alignSelf = CSSAlign.AUTO;
     positionType = CSSPositionType.RELATIVE;
-    flexWrap = CSSWrap.NOWRAP;
+    flexWrap = CSSWrap.NO_WRAP;
     overflow = CSSOverflow.VISIBLE;
     flexGrow = 0;
     flexShrink = 0;

@@ -8,9 +8,8 @@ LOCAL_SRC_FILES := \
   jni/CSSJNI.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
-LOCAL_C_INCLUDES += $(REACT_COMMON_DIR)
 
-LOCAL_CFLAGS += -Wall -Werror -fvisibility=hidden -fexceptions -frtti
+LOCAL_CFLAGS += -Wall -Werror -fvisibility=hidden -fexceptions -frtti -O3
 CXX11_FLAGS := -std=c++11
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)

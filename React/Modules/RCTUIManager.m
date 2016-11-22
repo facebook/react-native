@@ -11,12 +11,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
@@ -240,6 +235,10 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
+  // Report the event across the bridge.
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                              body:@([_bridge.accessibilityManager multiplier])];
+
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
@@ -1563,6 +1562,11 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion

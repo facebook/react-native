@@ -54,14 +54,14 @@ class DeprecatedAssetMap {
     }
   }
 
-  processFileChange(type, filePath, root, fstat) {
+  processFileChange(type, filePath, fstat) {
     const name = assetName(filePath);
     if (type === 'change' || type === 'delete') {
       delete this._map[name];
     }
 
     if (type === 'change' || type === 'add') {
-      this._processAsset(path.join(root, filePath));
+      this._processAsset(filePath);
     }
   }
 }

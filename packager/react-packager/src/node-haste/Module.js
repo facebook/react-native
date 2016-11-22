@@ -23,6 +23,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
 
@@ -44,8 +45,6 @@ export type Options = {
   cacheTransformResults?: boolean,
 };
 
-export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
-
 export type ConstructorArgs = {
   file: string,
   fastfs: FastFs,
@@ -53,7 +52,7 @@ export type ConstructorArgs = {
   cache: Cache,
   transformCode: ?TransformCode,
   transformCacheKey: ?string,
-  depGraphHelpers: DepGraphHelpers,
+  depGraphHelpers: DependencyGraphHelpers,
   options: Options,
 };
 
@@ -67,7 +66,7 @@ class Module {
   _cache: Cache;
   _transformCode: ?TransformCode;
   _transformCacheKey: ?string;
-  _depGraphHelpers: DepGraphHelpers;
+  _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
@@ -114,11 +113,11 @@ class Module {
     );
   }
 
-  getCode(transformOptions: mixed) {
+  getCode(transformOptions: Object) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: mixed) {
+  getMap(transformOptions: Object) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -154,7 +153,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: mixed) {
+  getDependencies(transformOptions: Object) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -224,19 +223,24 @@ class Module {
     // never be transformed anyway.
     invariant(_transformCode != null, 'missing code transform funtion');
     invariant(_transformCacheKey != null, 'missing cache key');
-    this._readSourceCode().then(sourceCode => {
-      return _transformCode(this, sourceCode, transformOptions)
-        .then(freshResult => {
-          TransformCache.writeSync({
-            filePath: this.path,
-            sourceCode,
-            transformCacheKey: _transformCacheKey,
-            transformOptions,
-            result: freshResult,
-          });
-          callback(undefined, freshResult);
-        });
-    }, callback);
+    this._readSourceCode()
+      .then(sourceCode =>
+        _transformCode(this, sourceCode, transformOptions)
+          .then(freshResult => {
+            TransformCache.writeSync({
+              filePath: this.path,
+              sourceCode,
+              transformCacheKey: _transformCacheKey,
+              transformOptions,
+              result: freshResult,
+            });
+            return freshResult;
+          })
+      )
+      .then(
+        freshResult => process.nextTick(callback, null, freshResult),
+        error => process.nextTick(callback, error),
+      );
   }
 
   /**
@@ -244,7 +248,7 @@ class Module {
    * dependencies, etc. The overall process is to read the cache first, and if
    * it's a miss, we let the worker write to the cache and read it again.
    */
-  read(transformOptions: mixed): Promise<ReadResult> {
+  read(transformOptions: Object): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {

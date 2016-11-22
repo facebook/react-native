@@ -37,6 +37,7 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void dirty();
   void markLayoutSeen();
   boolean valuesEqual(float f1, float f2);
+  void copyStyle(CSSNodeType srcNode);
   CSSDirection getStyleDirection();
   void setDirection(CSSDirection direction);
   CSSFlexDirection getFlexDirection();

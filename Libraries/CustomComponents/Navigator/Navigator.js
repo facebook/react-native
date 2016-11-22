@@ -914,7 +914,7 @@ var Navigator = React.createClass({
       }
       return;
     }
-    if (this._doesGestureOverswipe(this.state.activeGesture)) {
+    if (gesture.overswipe && this._doesGestureOverswipe(this.state.activeGesture)) {
       var frictionConstant = gesture.overswipe.frictionConstant;
       var frictionByDistance = gesture.overswipe.frictionByDistance;
       var frictionRatio = 1 / ((frictionConstant) + (Math.abs(nextProgress) * frictionByDistance));

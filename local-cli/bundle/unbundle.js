@@ -23,5 +23,9 @@ module.exports = {
   name: 'unbundle',
   description: 'builds javascript as "unbundle" for offline use',
   func: unbundle,
-  options: bundleCommandLineArgs,
+  options: bundleCommandLineArgs.concat({
+    command: '--indexed-unbundle',
+    description: 'Force indexed unbundle file format, even when building for android',
+    default: false,
+  }),
 };

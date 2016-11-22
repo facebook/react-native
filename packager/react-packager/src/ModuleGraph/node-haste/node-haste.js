@@ -15,7 +15,6 @@ import type { // eslint-disable-line sort-requires
   DeprecatedAssetMapT,
   Extensions,
   HasteMapT,
-  HelpersT,
   Path,
   ResolutionRequestT,
 } from './node-haste.flow';
@@ -25,29 +24,28 @@ import type {
   TransformedFile,
 } from '../types.flow';
 
-const DependencyGraphHelpers: Class<HelpersT> = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
 const DeprecatedAssetMap: Class<DeprecatedAssetMapT> = require('../../node-haste/DependencyGraph/DeprecatedAssetMap');
 const FastFS = require('./FastFS');
 const HasteMap: Class<HasteMapT> = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const ResolutionRequest: Class<ResolutionRequestT> = require('../../node-haste/DependencyGraph/ResolutionRequest');
+const defaults = require('../../../../defaults');
 
-type ResolveOptions = {
+type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
-  providesModuleNodeModules: Array<string>,
   transformedFiles: {[path: Path]: TransformedFile},
-};
+|};
 
-const platforms = new Set(['android', 'ios']);
+const platforms = new Set(defaults.platforms);
 const returnTrue = () => true;
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
     assetExts,
     extraNodeModules,
-    providesModuleNodeModules,
     transformedFiles,
   } = options;
   const files = Object.keys(transformedFiles);
@@ -58,7 +56,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
 
   const helpers = new DependencyGraphHelpers({
     assetExts,
-    providesModuleNodeModules,
+    providesModuleNodeModules: defaults.providesModuleNodeModules,
   });
   const deprecatedAssetMap = new DeprecatedAssetMap({
     assetExts,
@@ -68,8 +66,9 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   });
 
   const fastfs = new FastFS(files);
-  const moduleCache = new ModuleCache(getTransformedFile);
+  const moduleCache = new ModuleCache(fastfs, getTransformedFile);
   const hasteMap = new HasteMap({
+    allowRelativePaths: true,
     extensions: ['js', 'json'],
     fastfs,
     helpers,
@@ -78,6 +77,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     preferNativePlatform: true,
   });
 
+  const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
@@ -96,11 +96,13 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
       });
     }
 
-    const from = new Module(source, getTransformedFile(source));
-    resolutionRequest.resolveDependency(from, id).then(
-      // nextTick to escape promise error handling
-      module => process.nextTick(callback, null, module.path),
-      error => process.nextTick(callback, error),
-    );
+    const from = new Module(source, moduleCache, getTransformedFile(source));
+    hasteMapBuilt
+      .then(() => resolutionRequest.resolveDependency(from, id))
+      .then(
+        // nextTick to escape promise error handling
+        module => process.nextTick(callback, null, module.path),
+        error => process.nextTick(callback, error),
+      );
   };
 };

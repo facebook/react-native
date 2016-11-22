@@ -693,7 +693,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy(this);
+        mReactInstanceManager.onDestroy();
     }
 }
 ```
@@ -812,6 +812,8 @@ if (!foundHash) {
   display('platform', isMac ? 'objc' : 'android');
 }
 </script>
+
+<block class="android" />
 
 ## Creating a release build in Android Studio
 

@@ -9,6 +9,7 @@
  * @providesModule mixInEventEmitter
  * @flow
  */
+'use strict';
 
 const EventEmitter = require('EventEmitter');
 const EventEmitterWithHolding = require('EventEmitterWithHolding');
