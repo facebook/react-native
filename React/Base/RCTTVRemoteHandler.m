@@ -85,41 +85,50 @@
   return self;
 }
 
-- (void)playPausePressed:(UIGestureRecognizer *)r {
+- (void)playPausePressed:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"playPause" toView:r.view];
 }
 
-- (void)menuPressed:(UIGestureRecognizer *)r {
+- (void)menuPressed:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"menu" toView:r.view];
 }
 
-- (void)selectPressed:(UIGestureRecognizer *)r {
+- (void)selectPressed:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"select" toView:r.view];
 }
 
-- (void)longPress:(UIGestureRecognizer *)r {
+- (void)longPress:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"longPress" toView:r.view];
 }
 
-- (void)swipedUp:(UIGestureRecognizer *)r {
+- (void)swipedUp:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"up" toView:r.view];
 }
 
-- (void)swipedDown:(UIGestureRecognizer *)r {
+- (void)swipedDown:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"down" toView:r.view];
 }
 
-- (void)swipedLeft:(UIGestureRecognizer *)r {
+- (void)swipedLeft:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"left" toView:r.view];
 }
 
-- (void)swipedRight:(UIGestureRecognizer *)r {
+- (void)swipedRight:(UIGestureRecognizer *)r
+{
   [self sendAppleTVEvent:@"right" toView:r.view];
 }
 
 #pragma mark -
 
-- (void)addTapGestureRecognizerWithSelector:(nonnull SEL)selector pressType:(UIPressType)pressType {
+- (void)addTapGestureRecognizerWithSelector:(nonnull SEL)selector pressType:(UIPressType)pressType
+{
   
   UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
   recognizer.allowedPressTypes = @[@(pressType)];
@@ -129,7 +138,8 @@
   [gestureRecognizers addObject:recognizer];
 }
 
-- (void)addSwipeGestureRecognizerWithSelector:(nonnull SEL)selector direction:(UISwipeGestureRecognizerDirection)direction {
+- (void)addSwipeGestureRecognizerWithSelector:(nonnull SEL)selector direction:(UISwipeGestureRecognizerDirection)direction
+{
   
   UISwipeGestureRecognizer *recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:selector];
   recognizer.direction = direction;
@@ -138,7 +148,8 @@
   [gestureRecognizers addObject:recognizer];
 }
 
-- (void)sendAppleTVEvent:(NSString *)eventType toView:(UIView *)v {
+- (void)sendAppleTVEvent:(NSString *)eventType toView:(UIView *)v
+{
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
                                                       object:@{@"eventType":eventType}];
 }

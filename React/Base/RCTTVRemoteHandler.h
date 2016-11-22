@@ -10,13 +10,11 @@
 #import <UIKit/UIKit.h>
 
 @class RCTBridge;
-@class RCTTVNavigationEventEmitter;
 
 @interface RCTTVRemoteHandler : NSObject
 
 @property(nonatomic, nonnull, strong) NSArray *tvRemoteGestureRecognizers;
 
-//- (instancetype _Nullable)initWithBridge:(RCTBridge * _Nullable)bridge NS_DESIGNATED_INITIALIZER;
 - (void)cancel;
 
 @end
