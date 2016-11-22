@@ -365,6 +365,12 @@ const TextInput = React.createClass({
      */
     onLayout: PropTypes.func,
     /**
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
+    /**
      * The string that will be rendered before text input has been entered.
      */
     placeholder: PropTypes.node,
@@ -652,6 +658,7 @@ const TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
         />;
     }
 
@@ -810,6 +817,10 @@ const TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
+  },
+
+  _onScroll: function(event: Event) {
+    this.props.onScroll && this.props.onScroll(event);
   },
 });
 
