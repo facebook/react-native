@@ -60,6 +60,15 @@ const DataDetectorTypes = [
   'all',
 ];
 
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
 /**
  * A foundational component for inputting text into the app via a
  * keyboard. Props provide configurability for several features, such as
