@@ -181,7 +181,7 @@ if (navigator === undefined) {
 }
 
 // see https://github.com/facebook/react-native/issues/10881
-defineProperty(navigator, 'product', () => 'ReactNative');
+defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections
