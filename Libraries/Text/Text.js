@@ -119,7 +119,7 @@ const Text = React.createClass({
     numberOfLines: React.PropTypes.number,
     /**
      * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
-     * The default value is `highQuality`
+     * The default value is `highQuality`.
      * @platform android
      */
     textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
