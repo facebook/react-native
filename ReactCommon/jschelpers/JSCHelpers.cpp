@@ -6,10 +6,10 @@
 #include <fbsystrace.h>
 #endif
 
-#include <JavaScriptCore/JSStringRef.h>
 #include <folly/String.h>
 #include <glog/logging.h>
 
+#include "JavaScriptCore.h"
 #include "Value.h"
 
 namespace facebook {

@@ -2,22 +2,19 @@
 
 #include "JSCWebWorker.h"
 
-
 #include <condition_variable>
 #include <mutex>
 #include <unordered_map>
 
 #include <folly/Memory.h>
+#include <glog/logging.h>
 
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
+
 #include "MessageQueueThread.h"
 #include "Platform.h"
 #include "JSCUtils.h"
-
-#include <glog/logging.h>
-
-#include <JavaScriptCore/JSValueRef.h>
 
 namespace facebook {
 namespace react {

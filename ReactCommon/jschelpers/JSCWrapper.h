@@ -128,4 +128,17 @@ const JSCWrapper *customJSCWrapper();
 
 } }
 
+#else
+
+namespace facebook {
+namespace react {
+
+template <typename T>
+bool isCustomJSCPtr(T *x) {
+  // Always use system JSC pointers
+  return false;
+}
+
+} }
+
 #endif

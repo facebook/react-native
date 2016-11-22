@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include "Value.h"
-
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSValueRef.h>
+#include <jschelpers/Value.h>
+#include <jschelpers/JavaScriptCore.h>
 
 #include <stdexcept>
 #include <algorithm>

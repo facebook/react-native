@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <jsc_legacy_profiler.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 #include "JSCLegacyProfiler.h"

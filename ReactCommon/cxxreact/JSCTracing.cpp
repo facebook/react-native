@@ -5,10 +5,10 @@
 #include "JSCTracing.h"
 
 #include <algorithm>
-#include <JavaScriptCore/JavaScript.h>
 #include <fbsystrace.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 

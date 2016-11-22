@@ -5,6 +5,7 @@
 #include "Value.h"
 
 #include "JSCHelpers.h"
+#include "JavaScriptCore.h"
 
 // See the comment under Value::fromDynamic()
 #if !defined(__APPLE__) && defined(WITH_FB_JSC_TUNING)

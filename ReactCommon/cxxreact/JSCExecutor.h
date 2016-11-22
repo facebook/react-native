@@ -6,11 +6,10 @@
 #include <memory>
 #include <unordered_map>
 
-#include <JavaScriptCore/JSContextRef.h>
-
 #include <folly/json.h>
 #include <folly/Optional.h>
 
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
@@ -163,7 +162,7 @@ private:
   void terminateOwnedWebWorker(int worker);
   Object createMessageObject(const std::string& msgData);
 
-  template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+  template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 

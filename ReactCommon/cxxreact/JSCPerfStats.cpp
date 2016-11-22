@@ -5,8 +5,6 @@
 #ifdef JSC_HAS_PERF_STATS_API
 
 #include <JavaScriptCore/JSPerfStats.h>
-#include <JavaScriptCore/JSValueRef.h>
-
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 

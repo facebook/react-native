@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <JavaScriptCore/JavaScript.h>
+#include "JSCMemory.h"
 
 #ifdef WITH_FB_MEMORY_PROFILING
 

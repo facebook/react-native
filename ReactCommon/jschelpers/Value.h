@@ -7,19 +7,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSStringRef.h>
-#include <JavaScriptCore/JSValueRef.h>
-
 #include <folly/dynamic.h>
 
-#include "noncopyable.h"
-#include "Unicode.h"
-
-#if WITH_FBJSCEXTENSIONS
-#include <jsc_stringref.h>
-#endif
+#include <jschelpers/JavaScriptCore.h>
+#include <jschelpers/noncopyable.h>
+#include <jschelpers/Unicode.h>
 
 namespace facebook {
 namespace react {
