@@ -202,7 +202,7 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * We will allow the scroll view to give up its lock iff it acquired the lock
+   * We will allow the scroll view to give up its lock if it acquired the lock
    * during an animation. This is a very useful default that happens to satisfy
    * many common user experiences.
    *
