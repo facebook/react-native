@@ -45,8 +45,4 @@ ReactNativeViewAttributes.RCTView = {
   removeClippedSubviews: true,
 };
 
-ReactNativeViewAttributes.RCTTVView = {
-  ...ReactNativeViewAttributes.RCTView,
-};
-
 module.exports = ReactNativeViewAttributes;

@@ -39,7 +39,7 @@ class TVView extends React.Component {
 
   static viewConfig = {
     uiViewClassName: 'RCTTVView',
-    validAttributes: ReactNativeViewAttributes.RCTTVView
+    validAttributes: ReactNativeViewAttributes.RCTView
   };
 
   static propTypes = {
