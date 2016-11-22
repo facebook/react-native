@@ -56,8 +56,8 @@ class <span class="token class-name">SimpleNavigationApp</span> extends <span cl
           &lt;MyScene
             title<span class="token operator">=</span><span class="token punctuation">{</span>route<span class="token punctuation">.</span>title<span class="token punctuation">}</span>
 
-           <span class="token comment" spellcheck="true"> // Function to call when a new scene should be displayed           
-</span>            onForward<span class="token operator">=</span><span class="token punctuation">{</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>    
+           <span class="token comment" spellcheck="true"> // Function to call when a new scene should be displayed
+</span>            onForward<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>    
               const nextIndex <span class="token operator">=</span> route<span class="token punctuation">.</span>index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
               navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
                 title<span class="token punctuation">:</span> <span class="token string">&#x27;Scene &#x27;</span> <span class="token operator">+</span> nextIndex<span class="token punctuation">,</span>
@@ -85,10 +85,12 @@ export default class <span class="token class-name">MyScene</span> extends <span
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View<span class="token operator">&gt;</span>
-        &lt;Text<span class="token operator">&gt;</span>Current Scene<span class="token punctuation">:</span> <span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>title <span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;Text<span class="token operator">&gt;</span>Current Scene<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>title<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+
         &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onForward<span class="token punctuation">}</span><span class="token operator">&gt;</span>
           &lt;Text<span class="token operator">&gt;</span>Tap me to load the next scene&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+
         &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onBack<span class="token punctuation">}</span><span class="token operator">&gt;</span>
           &lt;Text<span class="token operator">&gt;</span>Tap me to go back&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
