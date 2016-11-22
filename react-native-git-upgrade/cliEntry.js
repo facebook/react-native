@@ -8,213 +8,228 @@
  */
 'use strict';
 
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import shell from 'shelljs';
-import Promise from 'promise';
-import yeoman from 'yeoman-environment';
-import TerminalAdapter from 'yeoman-environment/lib/adapter'
-import log from 'npmlog';
-import rimraf from 'rimraf';
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const shell = require('shelljs');
+const Promise = require('promise');
+const yeoman = require('yeoman-environment');
+const TerminalAdapter = require('yeoman-environment/lib/adapter');
+const log = require('npmlog');
+const rimraf = require('rimraf');
+const semver = require('semver');
 
-import {
+const {
   checkDeclaredVersion,
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
   checkNewVersion
-} from './checks';
+} = require('./checks');
 
 log.heading = 'git-upgrade';
 
 /**
  * Promisify the callback-based shelljs function exec
  * @param command
- * @param opts
+ * @param logOutput
  * @returns {Promise}
  */
-function exec(context, command, forceOutput) {
+function exec(command, logOutput) {
   return new Promise((resolve, reject) => {
-    shell.exec(command, {silent: (forceOutput ? !forceOutput : !context.cliArgs.verbose)}, (code, stdout, stderr) => {
-      code
-        ? reject(new Error(`Command '${command}' exited with code ${code}:
+    shell.exec(command, {silent: !logOutput}, (code, stdout, stderr) => {
+      (code === 0)
+        ? resolve(stdout)
+        : reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
-stdout: ${stdout}`))
-        : resolve(stdout);
+stdout: ${stdout}`));
     });
   });
 }
 
-function readProjectDescriptors() {
+function readPackageFiles() {
+  const rnPakPath = path.resolve(
+    process.cwd(),
+    'node_modules',
+    'react-native',
+    'package.json'
+  );
+
+  const pakPath = path.resolve(
+    process.cwd(),
+    'package.json'
+  );
+
   try {
-    const rnPakPath = path.resolve(
-      process.cwd(),
-      'node_modules',
-      'react-native',
-      'package.json'
-    );
-
-    const pakPath = path.resolve(
-      process.cwd(),
-      'package.json'
-    );
-
     const rnPak = JSON.parse(fs.readFileSync(rnPakPath, 'utf8'));
     const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
 
     return {rnPak, pak};
   } catch (err) {
     throw new Error(
-      'Unable to find project descriptors. Make sure that you have run `npm install` ' +
-      'and that you are inside a react-native project.'
+      'Unable to find "' + pakPath + '" or "' + rnPakPath + '". Make sure that you have run ' +
+      '"npm install" and that you are inside a React Native project.'
     )
   }
 }
 
 
-function setupWorkingDir(context) {
+function setupWorkingDir(tmpDir) {
   return new Promise((resolve, reject) => {
-    rimraf(context.tmpDir, err => {
+    rimraf(tmpDir, err => {
       if (err) {
         reject(err);
       } else {
-        fs.mkdirSync(context.tmpDir);
-        resolve()
+        fs.mkdirSync(tmpDir);
+        resolve();
       }
     });
   });
 }
 
-function configureGitEnv(context) {
-  process.env.GIT_DIR = path.resolve(context.tmpDir, '.gitrn');
+function configureGitEnv(tmpDir) {
+  /*
+   * The workflow inits a temporary Git repository. We don't want to interfere
+   * with an existing user's Git repository.
+   * Thanks to Git env vars, we could address an different directory from the
+   * default ".git". See https://git-scm.com/book/tr/v2/Git-Internals-Environment-Variables
+   */
+  process.env.GIT_DIR = path.resolve(tmpDir, '.gitrn');
   process.env.GIT_WORK_TREE = '.';
 }
 
-function generateTemplates(context) {
+function generateTemplates(generatorDir, appName, verbose) {
   try {
+    const yeomanGeneratorEntryPoint = path.resolve(generatorDir, 'index.js');
     // Try requiring the index.js (entry-point of Yeoman generators)
-    const generatorEntryPoint = path.resolve(context.generatorDir, 'index.js');
-    fs.accessSync(generatorEntryPoint);
-    return runYeomanGenerators(context);
+    fs.accessSync(yeomanGeneratorEntryPoint);
+    return runYeomanGenerators(generatorDir, appName, verbose);
   } catch(err) {
-    return runCopyAndReplace(context);
+    return runCopyAndReplace(generatorDir, appName);
   }
 }
 
-function runCopyAndReplace(context) {
-  const copyProjectTemplateAndReplacePath = path.resolve(context.generatorDir, 'copyProjectTemplateAndReplace');
-  // This module can be required twice in different RN version
+function runCopyAndReplace(generatorDir, appName) {
+  const copyProjectTemplateAndReplacePath = path.resolve(generatorDir, 'copyProjectTemplateAndReplace');
+  /*
+   * This module is required twice during the process: for both old and new version
+   * of React Native.
+   * This file could have changed between these 2 versions. When generating the new template,
+   * we don't want to load the old version of the generator from the cache
+   */
   delete require.cache[copyProjectTemplateAndReplacePath];
   const copyProjectTemplateAndReplace = require(copyProjectTemplateAndReplacePath);
   copyProjectTemplateAndReplace(
-    path.resolve(context.generatorDir, '..', 'templates', 'HelloWorld'),
+    path.resolve(generatorDir, '..', 'templates', 'HelloWorld'),
     process.cwd(),
-    context.appName,
+    appName,
     {upgrade: true, force: true}
   );
 }
 
-function runYeomanGenerators(context) {
-  if (!context.cliArgs.verbose) {
+function runYeomanGenerators(generatorDir, appName, verbose) {
+  if (!verbose) {
     // Yeoman output needs monkey-patching (no silent option)
     TerminalAdapter.prototype.log = () => {};
     TerminalAdapter.prototype.log.force = () => {};
   }
 
   const env = yeoman.createEnv();
-  env.register(context.generatorDir, 'react:app');
-  const generatorArgs = ['react:app', context.appName].concat(context.cliArgs._);
+  env.register(generatorDir, 'react:app');
+  const generatorArgs = ['react:app', appName];
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true, force: true}, resolve));
 }
 
-async function run(cliVersion, cliArgs) {
+async function run(requiredVersion, cliArgs) {
   const context = {
     tmpDir: path.resolve(os.tmpdir(), 'react-native-git-upgrade'),
     generatorDir: path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator'),
-    cliVersion,
-    cliArgs
+    requiredVersion,
+    cliArgs,
   };
 
   try {
-    log.info('Read project descriptors');
-    const {rnPak, pak} = readProjectDescriptors();
+    log.info('Read package.json files');
+    const {rnPak, pak} = readPackageFiles();
     context.appName = pak.name;
     context.currentVersion = rnPak.version;
     context.declaredVersion = pak.dependencies['react-native'];
     context.declaredReactVersion = pak.dependencies.react;
 
+    const verbose = context.cliArgs.verbose;
+
     log.info('Check declared version');
-    checkDeclaredVersion(context);
+    checkDeclaredVersion(context.declaredVersion);
 
     log.info('Check matching versions');
-    checkMatchingVersions(context);
+    checkMatchingVersions(context.currentVersion, context.declaredVersion);
 
     log.info('Check React peer dependency');
-    checkReactPeerDependency(context);
+    checkReactPeerDependency(context.currentVersion, context.declaredReactVersion);
 
     log.info('Check Git installation');
     checkGitAvailable();
 
     log.info('Get react-native version from NPM registry');
-    const versionOutput = await exec(context, 'npm view react-native@' + (context.cliVersion || 'latest') + ' version');
+    const versionOutput = await exec('npm view react-native@' + (context.requiredVersion || 'latest') + ' version', verbose);
+    context.newVersion = semver.clean(versionOutput);
 
     log.info('Check new version');
-    context.newVersion = checkNewVersion(context, versionOutput);
+    checkNewVersion(context.newVersion, context.requiredVersion);
 
     log.info('Setup temporary working directory');
-    await setupWorkingDir(context);
+    await setupWorkingDir(context.tmpDir);
 
     log.info('Configure Git environment');
-    configureGitEnv(context);
+    configureGitEnv(context.tmpDir);
 
     log.info('Init Git repository');
-    await exec(context, 'git init');
+    await exec('git init', verbose);
 
     log.info('Add all files to commit');
-    await exec(context, 'git add .');
+    await exec('git add .', verbose);
 
     log.info('Commit pristine sources');
-    await exec(context, 'git commit -m "Project snapshot"');
+    await exec('git commit -m "Project snapshot"', verbose);
 
     log.info ('Create a tag before updating sources');
-    await exec(context, 'git tag project-snapshot');
+    await exec('git tag project-snapshot', verbose);
     context.sourcesUpdated = true;
 
     log.info('Generate old version template');
-    await generateTemplates(context);
+    await generateTemplates(context.generatorDir, context.appName, verbose);
 
     log.info('Add updated files to commit');
-    await exec(context, 'git add .');
+    await exec('git add .', verbose);
 
     log.info('Commit old version template');
-    await exec(context, 'git commit -m "Old version" --allow-empty');
+    await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    await exec(context, 'npm install --save react-native@' + context.newVersion);
+    await exec('npm install --save react-native@' + context.newVersion, verbose);
 
     log.info('Generate new version template');
-    await generateTemplates(context);
+    await generateTemplates(context.generatorDir, context.appName, verbose);
 
     log.info('Add updated files to commit');
-    await exec(context, 'git add .');
+    await exec('git add .', verbose);
 
     log.info('Commit new version template');
-    await exec(context, 'git commit -m "New version" --allow-empty');
+    await exec('git commit -m "New version" --allow-empty', verbose);
 
     log.info('Generate the patch between the 2 versions');
-    const diffOutput = await exec(context, 'git diff HEAD~1 HEAD');
+    const diffOutput = await exec('git diff HEAD~1 HEAD', verbose);
 
-    log.info('Write the patch on filesystem');
+    log.info('Save the patch in temp directory');
     context.patchPath = path.resolve(context.tmpDir, `upgrade_${context.currentVersion}_${context.newVersion}.patch`);
     fs.writeFileSync(context.patchPath, diffOutput);
 
     log.info('Reset the 2 temporary commits');
-    await exec(context, 'git reset HEAD~2 --hard');
+    await exec('git reset HEAD~2 --hard', verbose);
 
     try {
       log.info('Apply the patch');
-      await exec(context, `git apply --3way ${context.patchPath}`, true);
+      await exec(`git apply --3way ${context.patchPath}`, true);
     } catch (err) {
       log.warn('The upgrade process succeeded but you may have conflicts to solve');
     } finally {
@@ -229,7 +244,7 @@ async function run(cliVersion, cliArgs) {
     log.error(err.stack);
     if (context.sourcesUpdated) {
       log.error('Restore initial sources');
-      await exec(context, 'git checkout project-snapshot', true);
+      await exec('git checkout project-snapshot', true);
     }
   }
 }

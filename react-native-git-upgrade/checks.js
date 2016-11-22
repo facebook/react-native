@@ -8,57 +8,65 @@
  */
 'use strict';
 
-import {execSync} from 'child_process';
-import semver from 'semver';
+const {execSync} = require('child_process');
+const semver = require('semver');
 
-export function checkDeclaredVersion({declaredVersion}) {
+function checkDeclaredVersion(declaredVersion) {
   if (!declaredVersion) {
     throw new Error(
-      'Your \'package.json\' file doesn\'t seem to have \'react-native\' as a dependency.'
+      'Your "package.json" file doesn\'t seem to have "react-native" as a dependency.'
     );
   }
 }
 
-export function checkMatchingVersions({currentVersion, declaredVersion}) {
+function checkMatchingVersions(currentVersion, declaredVersion) {
   if (!semver.satisfies(currentVersion, declaredVersion)) {
     throw new Error(
-      'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
-      'Try running \'npm install\' to fix the issue.'
+      'react-native version in "package.json" doesn\'t match ' +
+      'the installed version in "node_modules".\n' +
+      'Try running "npm install" to fix this.'
     );
   }
 }
 
-export function checkReactPeerDependency({currentVersion, declaredReactVersion}) {
+function checkReactPeerDependency(currentVersion, declaredReactVersion) {
   if (semver.lt(currentVersion, '0.21.0') && !declaredReactVersion) {
     throw new Error(
-      'Your \'package.json\' file doesn\'t seem to have \'react\' as a dependency.\n' +
-      '\'react\' was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
-      'Therefore, it\'s necessary to include \'react\' in your project\'s dependencies.\n' +
-      'Just run \'npm install --save react\', then re-run \'react-native-git-upgrade\'.\n'
+      'Your "package.json" file doesn\'t seem to have "react" as a dependency.\n' +
+      '"react" was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
+      'Therefore, it\'s necessary to include "react" in your project\'s dependencies.\n' +
+      'Please run "npm install --save react", then re-run ' +
+      '"react-native upgrade".'
     );
   }
 }
 
-export function checkGitAvailable() {
+function checkGitAvailable() {
   try {
     execSync('git --version');
   } catch (error) {
     throw new Error(
-      'This process heavily relies on \'Git\' and it must available in the system path.\n' +
-      'Install \'Git\' (https://git-scm.com) or use the original process: \'react-native upgrade\'.\n'
+      '"react-native-git-upgrade" requires "git" to be available in path. ' +
+      'Please install Git (https://git-scm.com)"'
     );
   }
 }
 
-export function checkNewVersion({cliVersion}, npmRegistryVersion) {
-  const newVersion = semver.clean(npmRegistryVersion);
-  if (!semver.valid(newVersion) && cliVersion) {
+function checkNewVersion(newVersion, requiredVersion) {
+  if (!semver.valid(newVersion) && requiredVersion) {
     throw new Error(
-      'The specified version ' + cliVersion + ' doesn\'t exist.\n' +
+      'The specified version of React Native ' + requiredVersion + ' doesn\'t exist.\n' +
       'Re-run the react-native-git-upgrade command with an existing version,\n' +
-      'or without argument to upgrade to the latest: \'react-native-git-upgrade\'.'
+      'for example: "react-native-git-upgrade 0.38.0",\n' +
+      'or without arguments to upgrade to the latest: "react-native-git-upgrade".'
     );
   }
-
-  return newVersion;
 }
+
+module.exports = {
+  checkDeclaredVersion,
+  checkMatchingVersions,
+  checkReactPeerDependency,
+  checkGitAvailable,
+  checkNewVersion,
+};

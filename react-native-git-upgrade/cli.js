@@ -13,10 +13,8 @@ require('babel-register')({
     require('babel-preset-es2015-node'),
     require('babel-preset-stage-3')
   ],
-  only: /(react-native-git-upgrade\/(?!(node_modules)))|(local-cli\/generator)/,
-  retainLines: true,
-  sourceMaps: 'inline',
-  babelrc: false,
+  // Enable transpiling for react-native-git-upgrade AND the generator, just like the upgrade CLI command does
+  only: /(react-native-git-upgrade\/(?!(node_modules)))|(local-cli\/generator)/
 });
 
 var cliEntry = require('./cliEntry');
