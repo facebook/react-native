@@ -2534,6 +2534,25 @@ bool layoutNodeInternal(const CSSNodeRef node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
+static void roundToPixelGrid(const CSSNodeRef node) {
+  const float fractialLeft =
+      node->layout.position[CSSEdgeLeft] - floorf(node->layout.position[CSSEdgeLeft]);
+  const float fractialTop =
+      node->layout.position[CSSEdgeTop] - floorf(node->layout.position[CSSEdgeTop]);
+  node->layout.dimensions[CSSDimensionWidth] =
+      roundf(fractialLeft + node->layout.dimensions[CSSDimensionWidth]) - roundf(fractialLeft);
+  node->layout.dimensions[CSSDimensionHeight] =
+      roundf(fractialTop + node->layout.dimensions[CSSDimensionHeight]) - roundf(fractialTop);
+
+  node->layout.position[CSSEdgeLeft] = roundf(node->layout.position[CSSEdgeLeft]);
+  node->layout.position[CSSEdgeTop] = roundf(node->layout.position[CSSEdgeTop]);
+
+  const uint32_t childCount = CSSNodeListCount(node->children);
+  for (uint32_t i = 0; i < childCount; i++) {
+    roundToPixelGrid(CSSNodeGetChild(node, i));
+  }
+}
+
 void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableWidth,
                             const float availableHeight,
@@ -2583,6 +2602,10 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
                          "l")) {
     setPosition(node, node->layout.direction);
 
+    if (CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeatureRounding)) {
+      roundToPixelGrid(node);
+    }
+
     if (gPrintTree) {
       CSSNodePrint(node, CSSPrintOptionsLayout | CSSPrintOptionsChildren | CSSPrintOptionsStyle);
     }
@@ -2606,7 +2629,7 @@ void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool
   experimentalFeatures[feature] = enabled;
 }
 
-bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+inline bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
   return experimentalFeatures[feature];
 }
 
