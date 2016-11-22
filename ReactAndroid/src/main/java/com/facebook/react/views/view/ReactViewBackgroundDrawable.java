@@ -27,10 +27,10 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.FloatUtil;
 import com.facebook.csslayout.Spacing;
+import com.facebook.react.common.annotations.VisibleForTesting;
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports
@@ -150,7 +150,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
     } else {
-      outline.setRect(getBounds());
+      outline.setConvexPath(getPathForBorderOutline());
     }
   }
 
@@ -327,6 +327,59 @@ public class ReactViewBackgroundDrawable extends Drawable {
         : null;
 
     mPaint.setPathEffect(mPathEffectForBorderStyle);
+  }
+
+  private Path getPathForBorderOutline() {
+    Path mPathForBorderOutline = new Path();
+
+    int borderLeft = getBorderWidth(Spacing.LEFT);
+    int borderTop = getBorderWidth(Spacing.TOP);
+    int borderRight = getBorderWidth(Spacing.RIGHT);
+    int borderBottom = getBorderWidth(Spacing.BOTTOM);
+    int colorLeft = getBorderColor(Spacing.LEFT);
+    int colorTop = getBorderColor(Spacing.TOP);
+    int colorRight = getBorderColor(Spacing.RIGHT);
+    int colorBottom = getBorderColor(Spacing.BOTTOM);
+
+    int width =  getBounds().width();
+    int height = getBounds().height();
+
+    // top left
+    if ((borderTop > 0 && colorTop != Color.TRANSPARENT) || (borderLeft > 0 && colorLeft != Color.TRANSPARENT)) {
+      mPathForBorderOutline.moveTo(0, 0);
+    } else {
+      mPathForBorderOutline.moveTo(borderLeft, borderTop);
+    }
+
+    // top right
+    if ((borderRight > 0 && colorRight != Color.TRANSPARENT) || (borderTop > 0 && colorTop != Color.TRANSPARENT)) {
+      mPathForBorderOutline.lineTo(width, 0);
+    } else {
+      mPathForBorderOutline.lineTo(width - borderRight, borderTop);
+    }
+
+    // bottom right
+    if ((borderBottom > 0 && colorBottom != Color.TRANSPARENT) || (borderRight > 0 && colorRight != Color.TRANSPARENT)) {
+      mPathForBorderOutline.lineTo(width, height);
+    } else {
+      mPathForBorderOutline.lineTo(width - borderRight, height - borderBottom);
+    }
+
+    // bottom left
+    if ((borderLeft > 0 && colorLeft != Color.TRANSPARENT) || (borderBottom > 0 && colorBottom != Color.TRANSPARENT)) {
+      mPathForBorderOutline.lineTo(0, height);
+    } else {
+      mPathForBorderOutline.lineTo(borderLeft, height - borderBottom);
+    }
+
+    // back to start
+    if ((borderTop > 0 && colorTop != Color.TRANSPARENT) || (borderLeft > 0 && colorLeft != Color.TRANSPARENT)) {
+      mPathForBorderOutline.lineTo(0, 0);
+    } else {
+      mPathForBorderOutline.lineTo(borderLeft, borderTop);
+    }
+
+    return mPathForBorderOutline;
   }
 
   /**
