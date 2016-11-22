@@ -41,14 +41,12 @@ function TVEventHandler() {
 }
 
 TVEventHandler.prototype.enable = function(component: ?any, callback: Function) {
-  var handler = callback;
-  var cmp = component;
   this.__nativeTVNavigationEventEmitter = new NativeEventEmitter(TVNavigationEventEmitter);
   this.__nativeTVNavigationEventListener = this.__nativeTVNavigationEventEmitter.addListener(
     'onTVNavEvent',
     (data) => {
-      if (handler) {
-        handler(cmp, data);
+      if (callback) {
+        callback(component, data);
       }
     }
   );
