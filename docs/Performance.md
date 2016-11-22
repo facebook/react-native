@@ -325,22 +325,6 @@ the JavaScript thread and main thread side-by-side.
 For iOS, Instruments are an invaluable tool, and on Android you should
 learn to use systrace.
 
-You can use `react-addons-perf` to have a first insight on wich components are the bottleneck.
+You can also use [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html) to get insights into where React is spending time when rendering your components.
 
-```js
-import Perf from 'react-addons-perf';
-
-....
-    componentDidMount() {
-        console.log('start perf tracking');
-        Perf.start();
-        setTimeout(() => {
-            console.log('stop perf tracking');
-            Perf.stop();
-            Perf.printInclusive();
-        }, 10000);
-   }
-...
-```
-
-Another way is to use the chrome profiler while debugging, this won't give you accurate results but more of a general idea of what's going on in the javascript thread.
+Another way to profile JavaScript is to use the Chrome profiler while debugging. This won't give you accurate results as the code is running in Chrome but will give you a general idea of where bottlenecks might be.
