@@ -106,11 +106,6 @@ export type PushNotificationEventName = $Enum<{
  *    {
  *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
  *    }
- *    // Required for the notification event.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
- *    }
  *    // Required for the localNotification event.
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
  *    {
