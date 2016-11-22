@@ -7,8 +7,6 @@ def library(**kwargs):
     include_defs('//ReactAndroid/DEFS')
     cxx_library(
       force_static = True,
-      # We depend on JSC, support the same platforms
-      supported_platforms_regex = '^android-(armv7|x86)$',
       deps = JSC_DEPS + [
         '//xplat/folly:molly',
         react_native_xplat_target('jschelpers:jschelpers'),

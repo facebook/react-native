@@ -21,8 +21,6 @@ if THIS_IS_FBANDROID:
   def react_library(**kwargs):
     kwargs = kwargs_add(
       kwargs,
-      # We depend on JSC, support the same platforms
-      supported_platforms_regex = '^android-(armv7|x86)$',
       compiler_flags = [
         '-Wno-pessimizing-move',
       ],
