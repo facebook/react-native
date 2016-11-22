@@ -15,6 +15,7 @@
 
 var Animated = require('Animated');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -22,6 +23,8 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
+
+var isTVOS = (Platform && Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
 
 type Event = Object;
 
@@ -177,34 +180,57 @@ var TouchableOpacity = React.createClass({
   },
 
   render: function() {
-    return (
-      <Animated.TVView
-        accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
-        style={[this.props.style, {opacity: this.state.anim}]}
-        testID={this.props.testID}
-        onLayout={this.props.onLayout}
-        onTVSelect={this.props.onPress}
-        onTVFocus={this._opacityFocused}
-        onTVBlur={this._opacityInactive}
-        tvParallaxDisable={this.props.tvParallaxDisable}
-        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
-        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
-        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
-        tvParallaxMagnification={this.props.tvParallaxMagnification}
-        hitSlop={this.props.hitSlop}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
-        {this.props.children}
-        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
-      </Animated.TVView>
-    );
+    if (isTVOS) {
+      return (
+        <Animated.TVView
+          accessible={this.props.accessible !== false}
+          accessibilityLabel={this.props.accessibilityLabel}
+          accessibilityComponentType={this.props.accessibilityComponentType}
+          accessibilityTraits={this.props.accessibilityTraits}
+          style={[this.props.style, {opacity: this.state.anim}]}
+          testID={this.props.testID}
+          onLayout={this.props.onLayout}
+          onTVSelect={this.props.onPress}
+          onTVFocus={this._opacityFocused}
+          onTVBlur={this._opacityInactive}
+          tvParallaxDisable={this.props.tvParallaxDisable}
+          tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
+          tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
+          tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
+          tvParallaxMagnification={this.props.tvParallaxMagnification}
+          hitSlop={this.props.hitSlop}
+          onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+          onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+          onResponderGrant={this.touchableHandleResponderGrant}
+          onResponderMove={this.touchableHandleResponderMove}
+          onResponderRelease={this.touchableHandleResponderRelease}
+          onResponderTerminate={this.touchableHandleResponderTerminate}>
+          {this.props.children}
+          {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
+        </Animated.TVView>
+      );
+    } else {
+      return (
+        <Animated.View
+          accessible={this.props.accessible !== false}
+          accessibilityLabel={this.props.accessibilityLabel}
+          accessibilityComponentType={this.props.accessibilityComponentType}
+          accessibilityTraits={this.props.accessibilityTraits}
+          style={[this.props.style, {opacity: this.state.anim}]}
+          testID={this.props.testID}
+          onLayout={this.props.onLayout}
+          hitSlop={this.props.hitSlop}
+          onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+          onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+          onResponderGrant={this.touchableHandleResponderGrant}
+          onResponderMove={this.touchableHandleResponderMove}
+          onResponderRelease={this.touchableHandleResponderRelease}
+          onResponderTerminate={this.touchableHandleResponderTerminate}>
+          {this.props.children}
+          {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
+        </Animated.View>
+      );
+    }
   },
 });
 
