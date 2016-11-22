@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "Libraries/ActionSheetIOS/*.js"
   end
 
+
   s.subspec 'RCTAdSupport' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/AdSupport/*.{h,m}"
