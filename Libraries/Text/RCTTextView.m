@@ -519,14 +519,14 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (void)setAutoCorrect:(BOOL)autoCorrect
+- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
 {
-  _textView.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
+  _textView.autocorrectionType = autocorrectionType;
 }
 
-- (BOOL)autoCorrect
+- (UITextAutocorrectionType)autocorrectionType
 {
-  return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
+  return _textView.autocorrectionType;
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
