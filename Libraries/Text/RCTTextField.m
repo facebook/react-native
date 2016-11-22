@@ -149,16 +149,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return [self textRectForBounds:bounds];
 }
 
-- (void)setAutoCorrect:(BOOL)autoCorrect
-{
-  self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
-}
-
-- (BOOL)autoCorrect
-{
-  return self.autocorrectionType == UITextAutocorrectionTypeYes;
-}
-
 - (void)textFieldDidChange
 {
   _nativeEventCount++;
