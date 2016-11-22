@@ -4,7 +4,7 @@ title: Headless JS
 layout: docs
 category: Guides (Android)
 permalink: docs/headless-js-android.html
-next: running-on-device-android
+next: signed-apk-android
 previous: native-components-android
 ---
 
@@ -33,7 +33,7 @@ You can do anything in your task as long as it doesn't touch UI: network request
 Yes, this does still require some native code, but it's pretty thin. You need to extend `HeadlessJsTaskService` and override `getTaskConfig`, e.g.:
 
 ```java
-public class MyTaskService extends FbHeadlessJsTaskService {
+public class MyTaskService extends HeadlessJsTaskService {
 
   @Override
   protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
@@ -49,9 +49,11 @@ public class MyTaskService extends FbHeadlessJsTaskService {
 }
 ```
 
-Now, whenever you [start your service](https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)), e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
+Now, whenever you [start your service][0], e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
 
 ## Caveats
 
 * By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. There is a way around this.
-* If you start your service from a BroadcastReceiver, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
+* If you start your service from a `BroadcastReceiver`, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
+
+[0]: https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)

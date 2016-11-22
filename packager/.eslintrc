@@ -1,5 +1,6 @@
 {
   "rules": {
-    "extra-arrow-initializer": 0
+    "extra-arrow-initializer": 0,
+    "no-console-disallow": 0
   }
 }

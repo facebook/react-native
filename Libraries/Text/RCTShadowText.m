@@ -38,9 +38,9 @@ CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
   CGFloat _effectiveLetterSpacing;
 }
 
-static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
+static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
 {
-  RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
+  RCTShadowText *shadowText = (__bridge RCTShadowText *)CSSNodeGetContext(node);
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
   [shadowText calculateTextFrame:textStorage];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
@@ -115,10 +115,12 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
   NSNumber *parentTag = [[self reactSuperview] reactTag];
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSSMeasureModeExactly];
   CGRect textFrame = [self calculateTextFrame:textStorage];
+  BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textFrame = textFrame;
     view.textStorage = textStorage;
+    view.selectable = selectable;
 
     /**
      * NOTE: this logic is included to support rich text editing inside multiline
@@ -476,7 +478,7 @@ static CSSSize RCTMeasure(void *context, float width, CSSMeasureMode widthMode, 
 {
   CGRect textFrame = UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size},
                                            self.paddingAsInsets);
-  
+
 
   if (_adjustsFontSizeToFit) {
     textFrame = [self updateStorage:textStorage toFitFrame:textFrame];

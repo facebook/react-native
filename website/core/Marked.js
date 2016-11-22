@@ -1,15 +1,20 @@
 /**
  * marked - a markdown parser
- * Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/chjj/marked
  *
+ * @copyright 2011-2013 Christopher Jeffrey. MIT License.
  * @providesModule Marked
+ * @noflow
  */
 
-var React = require('React');
-var Prism = require('Prism');
-var WebPlayer = require('WebPlayer');
+/* eslint-disable */
+
+'use strict';
+
 var Header = require('Header');
+var Prism = require('Prism');
+var React = require('React');
+var WebPlayer = require('WebPlayer');
 
 /**
  * Block-Level Grammar

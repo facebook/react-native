@@ -11,7 +11,6 @@
 'use strict';
 
 const Config = require('./util/Config');
-const Promise = require('promise');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
 const chalk = require('chalk');
@@ -24,7 +23,8 @@ const minimist = require('minimist');
 const path = require('path');
 const pkg = require('../package.json');
 
-import type { Command } from './commands';
+import type {Command} from './commands';
+import type {ConfigT} from './util/Config';
 
 commander.version(pkg.version);
 
@@ -93,7 +93,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: Command, config: Config) => {
+const addCommand = (command: Command, config: ConfigT) => {
   const options = command.options || [];
 
   const cmd = commander

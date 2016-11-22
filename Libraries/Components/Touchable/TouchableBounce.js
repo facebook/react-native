@@ -13,7 +13,7 @@
 
 var Animated = require('Animated');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var Touchable = require('Touchable');
 
@@ -88,6 +88,7 @@ var TouchableBounce = React.createClass({
       toValue: value,
       velocity,
       bounciness,
+      useNativeDriver: true,
     }).start(callback);
   },
 

@@ -10,7 +10,7 @@
 
 const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
-const path = require('../fastpath');
+const path = require('path');
 
 class DeprecatedAssetMap {
   constructor({
@@ -54,14 +54,14 @@ class DeprecatedAssetMap {
     }
   }
 
-  processFileChange(type, filePath, root, fstat) {
+  processFileChange(type, filePath, fstat) {
     const name = assetName(filePath);
     if (type === 'change' || type === 'delete') {
       delete this._map[name];
     }
 
     if (type === 'change' || type === 'add') {
-      this._processAsset(path.join(root, filePath));
+      this._processAsset(filePath);
     }
   }
 }

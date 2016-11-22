@@ -28,26 +28,23 @@ function cleanup {
 }
 trap cleanup EXIT
 
-# Support for environments without xcpretty installed
-set +e
-OUTPUT_TOOL=$(which xcpretty)
-set -e
-
+if [ -z "$XCODE_BUILD_STEPS" ]; then
+  XCODE_BUILD_STEPS="build test"
+fi
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
-if [ -z "$OUTPUT_TOOL" ]; then
+if [ -n "$XCODE_DESTINATION" ]; then
   xcodebuild \
     -project $XCODE_PROJECT \
     -scheme $XCODE_SCHEME \
     -sdk $XCODE_SDK \
     -destination "$XCODE_DESTINATION" \
-    test
+    $XCODE_BUILD_STEPS
 else
   xcodebuild \
     -project $XCODE_PROJECT \
     -scheme $XCODE_SCHEME \
     -sdk $XCODE_SDK \
-    -destination "$XCODE_DESTINATION" \
-    test | $OUTPUT_TOOL && exit ${PIPESTATUS[0]}
+    $XCODE_BUILD_STEPS
 fi

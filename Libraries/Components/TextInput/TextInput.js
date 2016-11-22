@@ -14,7 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -159,6 +159,13 @@ const DataDetectorTypes = [
  * explicitly, case in which the system will take care of displaying the border
  * in the correct position, or to not display the border by setting
  * `underlineColorAndroid` to transparent.
+ *
+ * Note that on Android performing text selection in input can change
+ * app's activity `windowSoftInputMode` param to `adjustResize`.
+ * This may cause issues with components that have position: 'absolute'
+ * while keyboard is active. To avoid this behavior either specify `windowSoftInputMode`
+ * in AndroidManifest.xml ( https://developer.android.com/guide/topics/manifest/activity-element.html )
+ * or control this param programmatically with native code.
  *
  */
 const TextInput = React.createClass({
@@ -357,6 +364,12 @@ const TextInput = React.createClass({
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
     onLayout: PropTypes.func,
+    /**
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
     /**
      * The string that will be rendered before text input has been entered.
      */
@@ -645,6 +658,7 @@ const TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
         />;
     }
 
@@ -803,6 +817,10 @@ const TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
+  },
+
+  _onScroll: function(event: Event) {
+    this.props.onScroll && this.props.onScroll(event);
   },
 });
 

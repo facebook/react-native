@@ -8,29 +8,33 @@
  */
 'use strict';
 
+const InspectorProxy = require('./util/inspectorProxy.js');
+const ReactPackager = require('../../packager/react-packager');
+
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
+const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
+const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
+const indexPageMiddleware = require('./middleware/indexPage');
 const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
-const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const path = require('path');
-const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
-const indexPageMiddleware = require('./middleware/indexPage');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
+const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
-const defaultAssetExts = require('../../packager/defaultAssetExts');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
   var ms = null;
   const packagerServer = getPackagerServer(args, config);
+  const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
@@ -44,6 +48,7 @@ function runServer(args, config, readyCallback) {
     .use(cpuProfilerMiddleware)
     .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
+    .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -64,6 +69,7 @@ function runServer(args, config, readyCallback) {
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
       webSocketProxy.attachToServer(serverInstance, '/devtools');
+      inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
   );
@@ -80,17 +86,17 @@ function getPackagerServer(args, config) {
     undefined;
 
   return ReactPackager.createServer({
-    nonPersistent: args.nonPersistent,
-    projectRoots: args.projectRoots,
+    assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRoots: args.assetRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
-    assetRoots: args.assetRoots,
-    assetExts: defaultAssetExts.concat(args.assetExts),
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    projectRoots: args.projectRoots,
     resetCache: args.resetCache,
+    transformModulePath: transformModulePath,
     verbose: args.verbose,
+    watch: !args.nonPersistent,
   });
 }
 

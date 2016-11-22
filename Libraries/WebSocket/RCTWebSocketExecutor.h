@@ -9,9 +9,9 @@
 
 #import "RCTDefines.h"
 
-#if RCT_DEV // Debug executors are only supported in dev mode
-
 #import "RCTJavaScriptExecutor.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
 
 @interface RCTWebSocketExecutor : NSObject <RCTJavaScriptExecutor>
 

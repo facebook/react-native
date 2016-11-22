@@ -8,13 +8,12 @@
  */
 'use strict';
 
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
-const Promise = require('promise');
-const adb = require('./adb');
+const path = require('path');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -77,13 +76,8 @@ function tryRunAdbReverse(device) {
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
-  process.chdir(path.join(args.root, 'android'));
   try {
     adb.getDevices().map((device) => tryRunAdbReverse(device));
-
-    const cmd = process.platform.startsWith('win')
-      ? 'gradlew.bat'
-      : './gradlew';
 
     const gradleArgs = [];
     if (args.variant) {
@@ -98,15 +92,46 @@ function buildAndRun(args) {
         args.flavor[0].toUpperCase() + args.flavor.slice(1)
       );
     } else {
-      gradleArgs.push('installDebug');
+      gradleArgs.push('install');
     }
 
-    if (args.installDebug) {
-      gradleArgs.push(args.installDebug);
+    // Append the build type to the current gradle install configuration.
+    // By default it will generate `installDebug`.
+    gradleArgs[0] =
+      gradleArgs[0] + args.configuration[0].toUpperCase() + args.configuration.slice(1);
+
+    // Get the Android project directory.
+    const androidProjectDir = path.join(args.root, 'android');
+
+    if (args.configuration.toUpperCase() === 'RELEASE') {
+      console.log(chalk.bold(
+        'Generating the bundle for the release build...'
+      ));
+
+      child_process.execSync(
+        'react-native bundle ' +
+        '--platform android ' +
+        '--dev false ' +
+        '--entry-file index.android.js ' +
+        `--bundle-output ${androidProjectDir}/app/src/main/assets/index.android.bundle ` +
+        `--assets-dest ${androidProjectDir}/app/src/main/res/`,
+        {
+          stdio: [process.stdin, process.stdout, process.stderr],
+        }
+      );
     }
+
+    // Change to the Android directory.
+    process.chdir(androidProjectDir);
+
+    // Get the gradle binary for the current platform.
+    const cmd = process.platform.startsWith('win')
+      ? 'gradlew.bat'
+      : './gradlew';
 
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      'Building and installing the app on the device ' +
+      `(cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -138,7 +163,8 @@ function buildAndRun(args) {
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        const adbArgs =
+          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -180,7 +206,9 @@ function startServerInNewWindow() {
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+      return (
+        child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig)
+      );
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
@@ -205,14 +233,22 @@ module.exports = {
   description: 'builds your app and starts it on a connected Android emulator or device',
   func: runAndroid,
   options: [{
-    command: '--install-debug',
-  }, {
     command: '--root [string]',
-    description: 'Override the root directory for the android build (which contains the android directory)',
+    description:
+      'Override the root directory for the android build ' +
+      '(which contains the android directory)',
     default: '',
   }, {
     command: '--flavor [string]',
     description: '--flavor has been deprecated. Use --variant instead',
+  }, {
+    command: '--configuration [string]',
+    description:
+      'You can use `Release` or `Debug`. ' +
+      'This creates a build based on the selected configuration. ' +
+      'If you want to use the `Release` configuration make sure you have the ' +
+      '`signingConfig` configured at `app/build.gradle`.',
+    default: 'Debug'
   }, {
     command: '--variant [string]',
   }],

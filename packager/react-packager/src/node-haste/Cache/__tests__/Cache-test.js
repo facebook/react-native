@@ -15,7 +15,7 @@ jest
 jest
   .mock('fs')
   .setMock('os', {
-    tmpDir() { return 'tmpDir'; },
+    tmpdir() { return 'tmpdir'; },
   });
 
 jest.useRealTimers();

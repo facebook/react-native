@@ -21,6 +21,7 @@ RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 
 @property (nonatomic, assign) BOOL followUserLocation;
 @property (nonatomic, assign) BOOL hasStartedRendering;
+@property (nonatomic, assign) BOOL showsAnnotationCallouts;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;

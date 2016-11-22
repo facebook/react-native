@@ -6,6 +6,23 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @polyfill
+ */
+
+/* eslint-disable strict */
+
+let _inGuard = 0;
+
+/**
+ * This is the error handler that is called when we encounter an exception
+ * when loading a module. This will report any errors encountered before
+ * ExceptionsManager is configured.
+ */
+let _globalHandler = function onError(e) {
+  throw e;
+};
+
+/**
  * The particular require runtime that we are using looks for a global
  * `ErrorUtils` object and if it exists, then it requires modules with the
  * error handler specified via ErrorUtils.setGlobalHandler by calling the
@@ -13,19 +30,6 @@
  * before any of the modules, this ErrorUtils must be defined (and the handler
  * set) globally before requiring anything.
  */
-
-/* eslint strict:0 */
-const _inGuard = 0;
-
-/**
- * This is the error handler that is called when we encounter an exception
- * when loading a module. This will report any errors encountered before
- * ExceptionsManager is configured.
- */
-const _globalHandler = function onError(e) {
-  throw e;
-};
-
 const ErrorUtils = {
   setGlobalHandler: function(fun) {
     _globalHandler = fun;

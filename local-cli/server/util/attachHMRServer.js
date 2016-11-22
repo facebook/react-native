@@ -8,9 +8,11 @@
  */
 'use strict';
 
-const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 const querystring = require('querystring');
 const url = require('url');
+
+const {createEntry, print} = require('../../../packager/react-packager/src/Logger');
+const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -112,9 +114,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  console.log('[Hot Module Replacement] Server listening on', path);
+  print(createEntry(`HMR Server listening on ${path}`));
   wss.on('connection', ws => {
-    console.log('[Hot Module Replacement] Client connected');
+    print(createEntry('HMR Client connected'));
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
@@ -138,9 +140,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           if (!client) {
             return;
           }
-          console.log(
-            `[Hot Module Replacement] File change detected (${time()})`
-          );
+          print(createEntry('HMR Server detected file change'));
 
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
@@ -297,10 +297,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                console.log(
-                  '[Hot Module Replacement] Sending HMR update to client (' +
-                  time() + ')'
-                );
+                print(createEntry('HMR Server sending update to client'));
                 client.ws.send(update);
               });
             },
@@ -319,7 +316,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
         client.ws.on('close', () => disconnect());
       })
-    .done();
+    .catch(err => {
+      throw err;
+    });
   });
 }
 
@@ -332,11 +331,6 @@ function arrayEquals(arrayA, arrayB) {
       return element === arrayB[index];
     })
   );
-}
-
-function time() {
-  const date = new Date();
-  return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
 }
 
 module.exports = attachHMRServer;

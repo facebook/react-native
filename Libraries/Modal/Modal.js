@@ -98,9 +98,8 @@ class Modal extends React.Component {
      */
     visible: PropTypes.bool,
     /**
-     * The `onRequestClose` prop allows passing a function that will be called once the modal has been dismissed.
-     *
-     * _On the Android platform, this is a required function._
+     * The `onRequestClose` callback is called when the user taps the hardware back button.
+     * @platform android
      */
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
     /**
@@ -129,6 +128,10 @@ class Modal extends React.Component {
     visible: true,
   };
 
+  static contextTypes = {
+    rootTag: React.PropTypes.number,
+  };
+
   render(): ?React.Element<any> {
     if (this.props.visible === false) {
       return null;
@@ -148,7 +151,7 @@ class Modal extends React.Component {
     }
 
     const innerChildren = __DEV__ ?
-      ( <AppContainer>
+      ( <AppContainer rootTag={this.context.rootTag}>
           {this.props.children}
         </AppContainer>) :
       this.props.children;

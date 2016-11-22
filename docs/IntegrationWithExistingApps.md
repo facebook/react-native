@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device-ios.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -67,12 +67,12 @@ The keys to integrating React Native components into your Android application ar
 1. Understand what React Native components you want to integrate.
 2. Install `react-native` in your Android application root directory to create `node_modules/` directory.
 3. Create your actual React Native components in JavaScript.
-4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_nodules/` to your `build.gradle` file.
+4. Add `com.facebook.react:react-native:+` and a `maven` pointing to the `react-native` binaries in `node_modules/` to your `build.gradle` file.
 4. Create a custom React Native specific `Activity` that creates a `ReactRootView`.
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device-android.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -83,11 +83,15 @@ The keys to integrating React Native components into your Android application ar
 
 The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
+> To ensure a smooth experience, make sure your `android` project is under `$root/android`.
+
 <block class="objc swift" />
 
 ### General
 
 First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+
+> To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
 ### CocoaPods
 
@@ -103,11 +107,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="objc swift" />
 
@@ -421,7 +425,7 @@ import React
 ```
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
-  let jsCodeLocation = NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
   let mockData:NSDictionary = ["scores":
       [
           ["name":"Alex", "value":"42"],
@@ -437,7 +441,7 @@ import React
   )
   let vc = UIViewController()
   vc.view = rootView
-  self.presentViewController(vc, animated: true, completion: nil)
+  self.present(vc, animated: true, completion: nil)
 }
 ```
 
@@ -605,6 +609,10 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
+
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code
@@ -667,7 +675,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause();
+        mReactInstanceManager.onHostPause(this);
     }
 }
 
@@ -676,7 +684,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onResume(this, this);
+        mReactInstanceManager.onHostResume(this, this);
     }
 }
 
@@ -685,7 +693,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy();
+        mReactInstanceManager.onHostDestroy();
     }
 }
 ```
@@ -719,6 +727,8 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 ```
 
 That's it, your activity is ready to run some JavaScript code.
+
+> If your app is targeting the Android `api level 23` or greater, make sure you have, for the development build, the `overlay permission` enabled. You can check it with `Settings.canDrawOverlays(this);`. This is required because, if your app produces an error in the react native component, the error view is displayed above all the other windows. Due to the new permissions system, introduced in the api level 23, the user needs to approve it.
 
 ## Run your app
 
@@ -802,6 +812,8 @@ if (!foundHash) {
   display('platform', isMac ? 'objc' : 'android');
 }
 </script>
+
+<block class="android" />
 
 ## Creating a release build in Android Studio
 

@@ -8,106 +8,31 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.useRealTimers();
-jest.mock('fs');
-
-// This is an ugly hack:
-// * jest-haste-map uses `find` for fast file system crawling which won't work
-//   when we mock the file system in node. This mock copies the node crawler's
-//   implementation and always falls back to the node crawling mechanism.
-//   Ideally we'll make this an option in jest-haste-map to force it to use
-//   the node crawler.
-jest.mock('jest-haste-map/build/crawlers/node', () => {
-  const H = require('jest-haste-map/build/constants');
-
-  const fs = require('fs');
-  const path = require('path');
-
-  function find(
-  roots,
-  extensions,
-  ignore,
-  callback)
-  {
-    const result = [];
-    let activeCalls = 0;
-
-    function search(directory) {
-      activeCalls++;
-      fs.readdir(directory, (err, names) => {
-        activeCalls--;
-
-        names.forEach(file => {
-          file = process.platform === 'win32' ?
-            path.win32.join(directory, file) :
-            path.join(directory, file);
-          if (ignore(file)) {
-            return;
-          }
-          activeCalls++;
-
-          fs.lstat(file, (err, stat) => {
-            activeCalls--;
-
-            if (!err && stat && !stat.isSymbolicLink()) {
-              if (stat.isDirectory()) {
-                search(file);
-              } else {
-                const ext = path.extname(file).substr(1);
-                if (extensions.indexOf(ext) !== -1) {
-                  result.push([file, stat.mtime.getTime()]);
-                }
-              }
-            }
-            if (activeCalls === 0) {
-              callback(result);
-            }
-          });
-        });
-
-        if (activeCalls === 0) {
-          callback(result);
-        }
-      });
-    }
-
-    roots.forEach(search);
-  }
-
-  return function nodeCrawl(
-  roots,
-  extensions,
-  ignore,
-  data)
-  {
-    return new Promise(resolve => {
-      const callback = list => {
-        const files = Object.create(null);
-        list.forEach(fileData => {
-          const name = fileData[0];
-          const mtime = fileData[1];
-          const existingFile = data.files[name];
-          if (existingFile && existingFile[H.MTIME] === mtime) {
-            files[name] = existingFile;
-          } else {
-            // See ../constants.js
-            files[name] = ['', mtime, 0, []];
-          }
-        });
-        data.files = files;
-        resolve(data);
-      };
-
-      find(roots, extensions, ignore, callback);
-    });
-  };
-
-});
+jest
+  .mock('fs')
+  .mock('../../Logger')
+  .mock('../../lib/TransformCache')
+  // It's noticeably faster to prevent running watchman from FileWatcher.
+  .mock('child_process', () => ({}))
+  ;
 
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
+// This doesn't have state, and it's huge (Babel) so it's much faster to
+// require it only once.
+const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDependencies);
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
+const path = require('path');
+beforeEach(() => {
+  jest.resetModules();
+
+  jest.mock('path', () => path);
+});
 
 describe('DependencyGraph', function() {
   let Module;
@@ -136,12 +61,6 @@ describe('DependencyGraph', function() {
     jest.resetModules();
 
     Module = require('../Module');
-    const fileWatcher = {
-      on: function() {
-        return this;
-      },
-      isWatchman: () => Promise.resolve(false),
-    };
 
     const Cache = jest.genMockFn().mockImplementation(function() {
       this._maps = Object.create(null);
@@ -180,25 +99,31 @@ describe('DependencyGraph', function() {
       });
     Cache.prototype.end = jest.genMockFn();
 
+    const transformCacheKey = 'abcdef';
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
-      fileWatcher,
+      forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
         'haste-fbjs',
         'react-haste',
         'react-native',
-        // Parse requires AsyncStorage. They will
-        // change that to require('react-native') which
-        // should work after this release and we can
-        // remove it from here.
-        'parse',
       ],
       platforms: ['ios', 'android'],
       shouldThrowOnUnresolvedErrors: () => false,
       useWatchman: false,
       maxWorkers: 1,
       resetCache: true,
+      transformCode: (module, sourceCode, transformOptions) => {
+        return new Promise(resolve => {
+          let deps = {dependencies: [], dependencyOffsets: []};
+          if (!module.path.endsWith('.json')) {
+            deps = extractDependencies(sourceCode);
+          }
+          resolve({...deps, code: sourceCode});
+        });
+      },
+      transformCacheKey,
     };
   });
 
@@ -1549,7 +1474,7 @@ describe('DependencyGraph', function() {
             'subdir': {
               'lolynot.js': 'require("../other")',
             },
-            'other.js': 'some code',
+            'other.js': '/* some code */',
           },
         },
       });
@@ -1639,7 +1564,7 @@ describe('DependencyGraph', function() {
                 browser: 'client.js',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1694,7 +1619,7 @@ describe('DependencyGraph', function() {
                 browser: 'client',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1749,7 +1674,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1805,7 +1730,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1866,17 +1791,17 @@ describe('DependencyGraph', function() {
                   './hello.js': './bye.js',
                 },
               }, fieldName)),
-              'main.js': 'some other code',
+              'main.js': '/* some other code */',
               'client.js': 'require("./node")\nrequire("./dir/server.js")',
               'not-node.js': 'require("./not-browser")',
               'not-browser.js': 'require("./dir/server")',
-              'browser.js': 'some browser code',
+              'browser.js': '/* some browser code */',
               'dir': {
-                'server.js': 'some node code',
+                'server.js': '/* some node code */',
                 'client.js': 'require("../hello")',
               },
-              'hello.js': 'hello',
-              'bye.js': 'bye',
+              'hello.js': '/* hello */',
+              'bye.js': '/* bye */',
             },
           },
         });
@@ -1970,13 +1895,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -2040,13 +1965,13 @@ describe('DependencyGraph', function() {
               'index.js': 'require("./dir/ooga")',
               'dir': {
                 'ooga.js': 'require("node-package")',
-                'browser.js': 'some browser code',
+                'browser.js': '/* some browser code */',
               },
               'node-package': {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -2121,13 +2046,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -2193,7 +2118,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'booga',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -2246,7 +2171,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'index.js': 'require("./booga")',
-              'booga.js': 'some node code',
+              'booga.js': '/* some node code */',
             },
           },
         });
@@ -2304,7 +2229,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package': {
                 'package.json': JSON.stringify({
@@ -2319,7 +2244,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'nested-browser-package',
                 }),
-                'index.js': 'some code',
+                'index.js': '/* some code */',
               },
             },
           },
@@ -2446,49 +2371,49 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package-a',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-b',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-c',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-d',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package-a': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-a',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-b',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-c',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-d',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
             },
           },
@@ -2715,8 +2640,9 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'win32';
 
-      // force reload with fastpath
+      // reload path module
       jest.resetModules();
+      jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
     });
 
@@ -2796,7 +2722,7 @@ describe('DependencyGraph', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("C:\\root\\arbitrary.js");',
+          'index.js': 'require("C:\\\\root\\\\arbitrary.js");',
           'arbitrary.js': '',
         },
       });
@@ -2862,14 +2788,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -2878,7 +2804,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -3022,14 +2948,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -3039,7 +2965,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -3113,7 +3039,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -3123,7 +3049,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -3134,7 +3060,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -3514,7 +3440,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -3913,14 +3839,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -3929,7 +3855,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -4073,14 +3999,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -4090,7 +4016,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -4164,7 +4090,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -4174,7 +4100,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -4185,7 +4111,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -4564,7 +4490,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -4892,7 +4818,6 @@ describe('DependencyGraph', function() {
   });
 
   describe('file watch updating', function() {
-    var triggerFileChange;
     var mockStat = {
       isDirectory: () => false,
     };
@@ -4903,21 +4828,6 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'linux';
       DependencyGraph = require('../index');
-
-      var callbacks = [];
-      triggerFileChange = (...args) =>
-        callbacks.map(callback => callback(...args));
-
-      defaults.fileWatcher = {
-        on: function(eventType, callback) {
-          if (eventType !== 'all') {
-            throw new Error('Can only handle "all" event in watcher.');
-          }
-          callbacks.push(callback);
-          return this;
-        },
-        isWatchman: () => Promise.resolve(false),
-      };
     });
 
     afterEach(function() {
@@ -4958,7 +4868,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
-        triggerFileChange('change', 'index.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -5021,7 +4931,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
-        triggerFileChange('change', 'index.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -5083,7 +4993,7 @@ describe('DependencyGraph', function() {
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         delete filesystem.root.foo;
-        triggerFileChange('delete', 'foo.js', root);
+        dgraph.processFileChange('delete', root + '/foo.js');
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -5150,10 +5060,10 @@ describe('DependencyGraph', function() {
           ' */',
           'require("foo")',
         ].join('\n');
-        triggerFileChange('add', 'bar.js', root, mockStat);
+        dgraph.processFileChange('add', root + '/bar.js', mockStat);
 
         filesystem.root.aPackage['main.js'] = 'require("bar")';
-        triggerFileChange('change', 'aPackage/main.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/main.js', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5242,7 +5152,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root['foo.png'] = '';
-        triggerFileChange('add', 'foo.png', root, mockStat);
+        dgraph.processFileChange('add', root + '/foo.png', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5312,7 +5222,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root['foo.png'] = '';
-        triggerFileChange('add', 'foo.png', root, mockStat);
+        dgraph.processFileChange('add', root + '/foo.png', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5337,171 +5247,6 @@ describe('DependencyGraph', function() {
                 isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
-                resolveDependency: undefined,
-              },
-            ]);
-        });
-      });
-    });
-
-    it('runs changes through ignore filter', function() {
-      var root = '/root';
-      var filesystem = setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage")',
-            'require("foo")',
-          ].join('\n'),
-          'foo.js': [
-            '/**',
-            ' * @providesModule foo',
-            ' */',
-            'require("aPackage")',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js',
-            }),
-            'main.js': 'main',
-          },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        ignoreFilePath: function(filePath) {
-          if (filePath === '/root/bar.js') {
-            return true;
-          }
-          return false;
-        },
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        filesystem.root['bar.js'] = [
-          '/**',
-          ' * @providesModule bar',
-          ' */',
-          'require("foo")',
-        ].join('\n');
-        triggerFileChange('add', 'bar.js', root, mockStat);
-
-        filesystem.root.aPackage['main.js'] = 'require("bar")';
-        triggerFileChange('change', 'aPackage/main.js', root, mockStat);
-
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-          expect(deps)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage', 'foo'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'aPackage/main.js',
-                path: '/root/aPackage/main.js',
-                dependencies: ['bar'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'foo',
-                path: '/root/foo.js',
-                dependencies: ['aPackage'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-            ]);
-        });
-      });
-    });
-
-    it('should ignore directory updates', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage")',
-            'require("foo")',
-          ].join('\n'),
-          'foo.js': [
-            '/**',
-            ' * @providesModule foo',
-            ' */',
-            'require("aPackage")',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js',
-            }),
-            'main.js': 'main',
-          },
-        },
-      });
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        triggerFileChange('change', 'aPackage', '/root', {
-          isDirectory: () => true,
-        });
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-          expect(deps)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage', 'foo'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'aPackage/main.js',
-                path: '/root/aPackage/main.js',
-                dependencies: [],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'foo',
-                path: '/root/foo.js',
-                dependencies: ['aPackage'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
                 resolveDependency: undefined,
               },
             ]);
@@ -5540,7 +5285,7 @@ describe('DependencyGraph', function() {
           main: 'main.js',
           browser: 'browser.js',
         });
-        triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5602,7 +5347,7 @@ describe('DependencyGraph', function() {
           name: 'bPackage',
           main: 'main.js',
         });
-        triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5639,14 +5384,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -5697,7 +5442,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root.node_modules.foo['main.js'] = 'lol';
-        triggerFileChange('change', 'main.js', '/root/node_modules/foo', mockStat);
+        dgraph.processFileChange('change', root + '/node_modules/foo/main.js', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5745,8 +5490,8 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
-              'browser.js': 'foo module',
+              'main.js': '/* foo module */',
+              'browser.js': '/* foo module */',
             },
           },
         },
@@ -5762,7 +5507,7 @@ describe('DependencyGraph', function() {
           main: 'main.js',
           browser: 'browser.js',
         });
-        triggerFileChange('change', 'package.json', '/root/node_modules/foo', mockStat);
+        dgraph.processFileChange('change', root + '/node_modules/foo/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5819,7 +5564,7 @@ describe('DependencyGraph', function() {
       });
 
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        triggerFileChange('add', 'index.js', root, mockStat);
+        dgraph.processFileChange('add', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js');
       });
     });
@@ -6255,7 +6000,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',
@@ -6280,7 +6025,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',

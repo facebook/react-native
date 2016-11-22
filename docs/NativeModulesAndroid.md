@@ -216,7 +216,7 @@ Refactoring the above code to use a promise instead of callbacks looks like this
 public class UIManagerModule extends ReactContextBaseJavaModule {
 
 ...
-
+  private static final String E_LAYOUT_ERROR = "E_LAYOUT_ERROR";
   @ReactMethod
   public void measureLayout(
       int tag,
@@ -234,7 +234,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule {
 
       promise.resolve(map);
     } catch (IllegalViewOperationException e) {
-      promise.reject(e);
+      promise.reject(E_LAYOUT_ERROR, e);
     }
   }
 

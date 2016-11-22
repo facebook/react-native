@@ -21,7 +21,6 @@
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTRedBox.h"
 #import "RCTDevLoadingView.h"
@@ -496,9 +495,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   if (!_valid || !_javaScriptExecutor) {
     return;
   }
-
-  RCTSourceCode *sourceCodeModule = [self moduleForClass:[RCTSourceCode class]];
-  sourceCodeModule.scriptURL = self.bundleURL;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
     if (!self->_valid) {

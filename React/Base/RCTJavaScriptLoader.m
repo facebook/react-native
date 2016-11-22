@@ -11,16 +11,42 @@
 
 #import "RCTBridge.h"
 #import "RCTConvert.h"
-#import "RCTSourceCode.h"
+#import "RCTJSCWrapper.h"
 #import "RCTUtils.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTMultipartDataTask.h"
 
 #include <sys/stat.h>
 
-uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+static uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+static uint64_t const RCTBCBundleMagicNumber  = 0xFF4865726D657300;
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
+
+RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header)
+{
+  if (NSSwapLittleIntToHost(header.RAMMagic) == RCTRAMBundleMagicNumber) {
+    return RCTScriptRAMBundle;
+  }
+
+  if (NSSwapLittleLongLongToHost(header.BCMagic) == RCTBCBundleMagicNumber) {
+    return RCTScriptBCBundle;
+  }
+
+  return RCTScriptString;
+}
+
+NSString *RCTStringForScriptTag(RCTScriptTag tag)
+{
+  switch (tag) {
+    case RCTScriptString:
+      return @"String";
+    case RCTScriptRAMBundle:
+      return @"RAM Bundle";
+    case RCTScriptBCBundle:
+      return @"BC Bundle";
+  }
+}
 
 @implementation RCTLoadingProgress
 
@@ -47,6 +73,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   int64_t sourceLength;
   NSError *error;
   NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
+                                          runtimeBCVersion:JSNoBytecodeFileFormatVersion
                                               sourceLength:&sourceLength
                                                      error:&error];
   if (data) {
@@ -66,6 +93,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
+                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error
 {
@@ -112,8 +140,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  uint32_t magicNumber;
-  size_t readResult = fread(&magicNumber, sizeof(magicNumber), 1, bundle);
+  RCTBundleHeader header = {};
+  size_t readResult = fread(&header, sizeof(header), 1, bundle);
   fclose(bundle);
   if (readResult != 1) {
     if (error) {
@@ -125,15 +153,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  magicNumber = NSSwapLittleIntToHost(magicNumber);
-  if (magicNumber != RCTRAMBundleMagicNumber) {
+  RCTScriptTag tag = RCTParseTypeFromHeader(header);
+  switch (tag) {
+  case RCTScriptRAMBundle:
+    break;
+
+  case RCTScriptString:
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
                                userInfo:@{NSLocalizedDescriptionKey:
-                                            @"Cannot load non-RAM bundled files synchronously"}];
+                                            @"Cannot load text/javascript files synchronously"}];
     }
     return nil;
+
+  case RCTScriptBCBundle:
+    if (header.BCVersion != runtimeBCVersion) {
+      if (error) {
+        NSString *errDesc =
+          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %d",
+                    runtimeBCVersion, header.BCVersion];
+
+        *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorBCVersion
+                                 userInfo:@{NSLocalizedDescriptionKey: errDesc}];
+      }
+      return nil;
+    }
+    break;
   }
 
   struct stat statInfo;
@@ -149,7 +196,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (sourceLength) {
     *sourceLength = statInfo.st_size;
   }
-  return [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
+  return [NSData dataWithBytes:&header length:sizeof(header)];
 }
 
 static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoadProgressBlock onProgress, RCTSourceLoadBlock onComplete)

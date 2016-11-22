@@ -9,11 +9,11 @@
 'use strict';
 
 
-const path = require('path');
-const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
+
 const declareOpts = require('../lib/declareOpts');
-const Promise = require('promise');
+const defaults = require('../../../defaults');
+const pathJoin = require('path').join;
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -35,9 +35,9 @@ const validateOpts = declareOpts({
     type: 'array',
     default: [],
   },
-  fileWatcher: {
-    type: 'object',
-    required: true,
+  watch: {
+    type: 'boolean',
+    default: false,
   },
   assetExts: {
     type: 'array',
@@ -49,6 +49,9 @@ const validateOpts = declareOpts({
   },
   transformCode: {
     type: 'function',
+  },
+  transformCacheKey: {
+    type: 'string',
   },
   extraNodeModules: {
     type: 'object',
@@ -74,7 +77,7 @@ const getDependenciesValidateOpts = declareOpts({
   },
   unbundle: {
     type: 'boolean',
-    default: false
+    default: false,
   },
   recursive: {
     type: 'boolean',
@@ -88,7 +91,6 @@ class Resolver {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
-      activity: Activity,
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
@@ -96,25 +98,21 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
-      providesModuleNodeModules: [
-        'react-native',
-        'react-native-windows',
-        // Parse requires AsyncStorage. They will
-        // change that to require('react-native') which
-        // should work after this release and we can
-        // remove it from here.
-        'parse',
-      ],
-      platforms: ['ios', 'android', 'windows', 'web'],
+      providesModuleNodeModules: defaults.providesModuleNodeModules,
+      platforms: defaults.platforms,
       preferNativePlatform: true,
-      fileWatcher: opts.fileWatcher,
+      watch: opts.watch,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
+      transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      // for jest-haste-map
       resetCache: options.resetCache,
+      moduleOptions: {
+        cacheTransformResults: true,
+        resetCache: options.resetCache,
+      },
     });
 
     this._minifyCode = opts.minifyCode;
@@ -160,14 +158,14 @@ class Resolver {
     const opts = getDependenciesValidateOpts(options);
 
     const prelude = opts.dev
-        ? path.join(__dirname, 'polyfills/prelude_dev.js')
-        : path.join(__dirname, 'polyfills/prelude.js');
+        ? pathJoin(__dirname, 'polyfills/prelude_dev.js')
+        : pathJoin(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = defaults.moduleSystem;
 
     return [
       prelude,
-      moduleSystem
+      moduleSystem,
     ].map(moduleName => this._depGraph.createPolyfill({
       file: moduleName,
       id: moduleName,
@@ -176,17 +174,7 @@ class Resolver {
   }
 
   _getPolyfillDependencies() {
-    const polyfillModuleNames = [
-      path.join(__dirname, 'polyfills/polyfills.js'),
-      path.join(__dirname, 'polyfills/console.js'),
-      path.join(__dirname, 'polyfills/error-guard.js'),
-      path.join(__dirname, 'polyfills/Number.es6.js'),
-      path.join(__dirname, 'polyfills/String.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
-      path.join(__dirname, 'polyfills/Array.es6.js'),
-      path.join(__dirname, 'polyfills/Object.es7.js'),
-      path.join(__dirname, 'polyfills/babelHelpers.js'),
-    ].concat(this._polyfillModuleNames);
+    const polyfillModuleNames = defaults.polyfills.concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
       (polyfillModuleName, idx) => this._depGraph.createPolyfill({
@@ -242,7 +230,7 @@ class Resolver {
     code,
     meta = {},
     dev = true,
-    minify = false
+    minify = false,
   }) {
     if (module.isJSON()) {
       code = `module.exports = ${code}`;
@@ -271,19 +259,19 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependecyGraph() {
+  getDependencyGraph() {
     return this._depGraph;
   }
 }
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    '__d(',
-    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    'function(global, require, module, exports) {',
+    `__d(/* ${verboseName} */`,
+    'function(global, require, module, exports) {', // module factory
       code,
-    '\n}',
-    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    '\n}, ',
+    `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
+    dev ? `, null, ${JSON.stringify(verboseName)}` : '',
     ');',
   ].join('');
 }

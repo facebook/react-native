@@ -22,6 +22,8 @@ import type {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
+const emptyFunction = () => {};
+
 /**
  * The duration of the card animation in milliseconds.
  */
@@ -92,6 +94,17 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     this._isVertical = direction === Directions.VERTICAL;
     this._props = props;
     this._startValue = 0;
+
+    // Hack to make this work with native driven animations. We add a single listener
+    // so the JS value of the following animated values gets updated. We rely on
+    // some Animated private APIs and not doing so would require using a bunch of
+    // value listeners but we'd have to remove them to not leak and I'm not sure
+    // when we'd do that with the current structure we have. `stopAnimation` callback
+    // is also broken with native animated values that have no listeners so if we
+    // want to remove this we have to fix this too.
+    this._addNativeListener(this._props.layout.width);
+    this._addNativeListener(this._props.layout.height);
+    this._addNativeListener(this._props.position);
   }
 
   onMoveShouldSetPanResponder(event: any, gesture: any): boolean {
@@ -206,8 +219,19 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       {
         toValue: props.navigationState.index,
         duration: ANIMATION_DURATION,
+        useNativeDriver: props.position.__isNative,
       }
     ).start();
+  }
+
+  _addNativeListener(animatedValue) {
+    if (!animatedValue.__isNative) {
+      return;
+    }
+
+    if (Object.keys(animatedValue._listeners).length === 0) {
+      animatedValue.addListener(emptyFunction);
+    }
   }
 }
 

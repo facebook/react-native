@@ -36,6 +36,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
@@ -55,9 +56,10 @@ import com.facebook.react.views.text.TextInlineImageSpan;
 /**
  * Manages instances of TextInput.
  */
+@ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
 
-  /* package */ static final String REACT_CLASS = "AndroidTextInput";
+  protected static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -162,10 +164,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       float[] padding = (float[]) extraData;
 
       view.setPadding(
-          (int) Math.ceil(padding[0]),
-          (int) Math.ceil(padding[1]),
-          (int) Math.ceil(padding[2]),
-          (int) Math.ceil(padding[3]));
+          (int) Math.floor(padding[0]),
+          (int) Math.floor(padding[1]),
+          (int) Math.floor(padding[2]),
+          (int) Math.floor(padding[3]));
     } else if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
       if (update.containsImages()) {
@@ -778,8 +780,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 mReactEditText.getId(),
                 start,
                 end
-            )
-        );
+            ));
 
         mPreviousSelectionStart = start;
         mPreviousSelectionEnd = end;

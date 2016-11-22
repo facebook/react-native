@@ -21,6 +21,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
@@ -249,5 +250,11 @@ public class MainReactPackage extends LazyReactPackage {
       new ReactWebViewManager(),
       new RecyclerViewBackedScrollViewManager(),
       new SwipeRefreshLayoutManager());
+  }
+
+  @Override
+  public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    // This has to be done via reflection or we break open source.
+    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 }
