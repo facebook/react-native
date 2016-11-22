@@ -30,7 +30,7 @@ extern JSValueRef JSPokeSamplingProfiler(JSContextRef);
 namespace facebook {
 namespace react {
 
-#define JSC_WRAPPER_METHOD(m) const decltype(&m) m
+#define JSC_WRAPPER_METHOD(m) decltype(&m) m
 
 struct JSCWrapper {
   // JSGlobalContext
@@ -49,9 +49,9 @@ struct JSCWrapper {
   // JSString
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CString);
   JSC_WRAPPER_METHOD(JSStringCreateWithCFString);
-#if WITH_FBJSCEXTENSIONS
+  #if WITH_FBJSCEXTENSIONS
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CStringExpectAscii);
-#endif
+  #endif
   JSC_WRAPPER_METHOD(JSStringCopyCFString);
   JSC_WRAPPER_METHOD(JSStringGetCharactersPtr);
   JSC_WRAPPER_METHOD(JSStringGetLength);
@@ -112,7 +112,7 @@ struct JSCWrapper {
   Class JSContext;
   Class JSValue;
 
-  const int32_t JSBytecodeFileFormatVersion;
+  int32_t JSBytecodeFileFormatVersion;
 };
 
 template <typename T>
