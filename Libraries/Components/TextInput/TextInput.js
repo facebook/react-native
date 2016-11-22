@@ -332,7 +332,7 @@ const TextInput = React.createClass({
     multiline: PropTypes.bool,
     /**
      * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
-     * The default value is `simple`
+     * The default value is `simple`.
      * @platform android
      */
     textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
