@@ -32,6 +32,15 @@ function validateAndUpgrade() {
       fs.readFileSync(path.resolve(projectDir, 'package.json'), 'utf8')
   );
 
+  warn(
+    'The "react-native upgrade" command is in a transitioning phase. ' +
+    'You should consider using the new upgrade process based on Git:\n' +
+    'Reinstall the old version of React Native you used and run:\n' +
+    '- "npm install -g react-native-git-upgrade"\n' +
+    '- "react-native-git-upgrade"\n' +
+    'See https://facebook.github.io/react-native/docs/upgrading.html'
+  );
+
   const projectName = packageJSON.name;
   if (!projectName) {
     warn(
