@@ -310,7 +310,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eecc22',
   },
   whiteText: {
-    color: '#ffffff',
+    color: '#fffffe',
   },
   threeDigits: {
     fontSize: 20,
