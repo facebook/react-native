@@ -150,6 +150,19 @@ async function run(requiredVersion, cliArgs) {
   };
 
   try {
+    log.info('Check for react-native-git-upgrade updates');
+    const lastGitUpgradeVersion = await exec('npm view react-native-git-upgrade@latest version');
+    const current = require('./package').version;
+    const latest = semver.clean(lastGitUpgradeVersion);
+    if (current !== latest) {
+      log.warn(
+        'A more recent version of "react-native-git-upgrade" has been found.\n' +
+        `Current: ${current}\n` +
+        `Latest: ${latest}\n` +
+        'Please run "npm install -g react-native-git-upgrade"'
+      );
+    }
+
     log.info('Read package.json files');
     const {rnPak, pak} = readPackageFiles();
     context.appName = pak.name;
