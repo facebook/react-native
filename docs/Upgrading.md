@@ -28,7 +28,7 @@ $ npm install --save react-native@X.Y
 # where X.Y is the semantic version you are upgrading to
 ```
 
-### 2. Upgrade your project templates directly
+### 2. Upgrade your project templates
 
 The new npm package may contain updates to the files that are normally generated when you
 run `react-native init`, like the iOS and the Android sub-projects.
@@ -56,8 +56,9 @@ the process itself.
 
 The previous method can lead to a lot of conflicts and offers very limited options to resolve them.
 That's why the module `react-native-git-upgrade` has been created. It consists in 2 phases:
-1. Create a Git patch between both old and new template files
-2. Apply this patch on the user's sources
+
+* First, it creates a Git patch between both old and new template files
+* Then, the patch is applied on the user's sources
 
 ### 1. Install Git
 Your project doesn't have to be handled by the Git versioning sytem (could be Mercurial, SVN or none)
