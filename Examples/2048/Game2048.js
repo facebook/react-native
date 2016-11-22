@@ -75,6 +75,7 @@ class Tile extends React.Component {
   calculateOffset(): {top: number; left: number; opacity: number} {
     var tile = this.props.tile;
 
+
     var offset = {
       top: this.state.top,
       left: this.state.left,
