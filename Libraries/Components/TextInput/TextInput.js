@@ -811,6 +811,23 @@ const TextInput = React.createClass({
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
   },
+
+  focusTextInput: function(){
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this.refs.input),
+      UIManager.AndroidTextInput.Commands.focusTextInput,
+      null,
+    );
+  },
+
+  blurTextInput: function(){
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this.refs.input),
+      UIManager.AndroidTextInput.Commands.blurTextInput,
+      null,
+    );
+  },
+
 });
 
 var styles = StyleSheet.create({
