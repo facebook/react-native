@@ -384,6 +384,7 @@
 		369123E01DDC75850095B341 /* JSCSamplingProfiler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCSamplingProfiler.m; sourceTree = "<group>"; };
 		391E86A21C623EC800009732 /* RCTTouchEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchEvent.m; sourceTree = "<group>"; };
 		391E86A31C623EC800009732 /* RCTTouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTouchEvent.h; sourceTree = "<group>"; };
+		3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSEnums.h; sourceTree = "<group>"; };
 		3D1E68D81CABD13900DD7465 /* RCTDisplayLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDisplayLink.h; sourceTree = "<group>"; };
 		3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDisplayLink.m; sourceTree = "<group>"; };
 		3D37B5801D522B190042D5B5 /* RCTFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFont.h; sourceTree = "<group>"; };
@@ -468,14 +469,15 @@
 		133683431D37ACA10077D0C3 /* CSSLayout */ = {
 			isa = PBXGroup;
 			children = (
-				1321C8CE1D3EB50800D58318 /* CSSNodeList.c */,
-				1321C8CF1D3EB50800D58318 /* CSSNodeList.h */,
+				3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */,
 				133683441D37ACA10077D0C3 /* CSSLayout.c */,
 				133683451D37ACA10077D0C3 /* CSSLayout.h */,
 				133683481D37ACA10077D0C3 /* CSSMacros.h */,
+				1321C8CE1D3EB50800D58318 /* CSSNodeList.c */,
+				1321C8CF1D3EB50800D58318 /* CSSNodeList.h */,
 			);
 			name = CSSLayout;
-			path = ../ReactCommon/CSSLayout/CSSLayout;
+			path = CSSLayout/CSSLayout;
 			sourceTree = "<group>";
 		};
 		134FCB381A6E7F0800051CC8 /* Executors */ = {
@@ -659,10 +661,20 @@
 			path = Profiler;
 			sourceTree = "<group>";
 		};
+		3D10A3C71DDF3CED004A0F9D /* ReactCommon */ = {
+			isa = PBXGroup;
+			children = (
+				133683431D37ACA10077D0C3 /* CSSLayout */,
+			);
+			name = ReactCommon;
+			path = ../ReactCommon;
+			sourceTree = "<group>";
+		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
 				83CBBA2F1A601D0F00E9B192 /* React */,
+				3D10A3C71DDF3CED004A0F9D /* ReactCommon */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 			);
 			indentWidth = 2;
@@ -682,7 +694,6 @@
 			isa = PBXGroup;
 			children = (
 				83CBBA491A601E3B00E9B192 /* Base */,
-				133683431D37ACA10077D0C3 /* CSSLayout */,
 				134FCB381A6E7F0800051CC8 /* Executors */,
 				13B07FE01A69315300A75B9A /* Modules */,
 				1450FF7F1BCFF28A00208362 /* Profiler */,
@@ -1148,7 +1159,6 @@
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1187,6 +1197,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../ReactCommon/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1201,7 +1212,6 @@
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1233,6 +1243,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../ReactCommon/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -1251,11 +1262,6 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -1270,11 +1276,6 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				RUN_CLANG_STATIC_ANALYZER = NO;

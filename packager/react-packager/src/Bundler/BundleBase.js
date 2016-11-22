@@ -19,7 +19,7 @@ export type FinalizeOptions = {
 };
 
 export type GetSourceOptions = {
-  inlineSourceMap: boolean,
+  inlineSourceMap?: boolean,
   dev: boolean,
 };
 

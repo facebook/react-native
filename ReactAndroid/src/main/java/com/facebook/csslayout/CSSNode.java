@@ -476,6 +476,16 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
   }
 
+  private native float jni_CSSNodeStyleGetAspectRatio(long nativePointer);
+  public float getStyleAspectRatio() {
+    return jni_CSSNodeStyleGetAspectRatio(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetAspectRatio(long nativePointer, float aspectRatio);
+  public void setStyleAspectRatio(float aspectRatio) {
+    jni_CSSNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
+  }
+
   @Override
   public float getLayoutX() {
     return mLeft;

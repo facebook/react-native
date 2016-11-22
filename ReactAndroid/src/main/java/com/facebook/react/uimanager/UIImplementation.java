@@ -652,12 +652,17 @@ public class UIImplementation {
   }
 
   protected final void removeShadowNode(ReactShadowNode nodeToRemove) {
-    mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    removeShadowNodeRecursive(nodeToRemove);
+    nodeToRemove.dispose();
+  }
+
+  private void removeShadowNodeRecursive(ReactShadowNode nodeToRemove) {
+    NativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
-      removeShadowNode(nodeToRemove.getChildAt(i));
+      removeShadowNodeRecursive(nodeToRemove.getChildAt(i));
     }
-    nodeToRemove.removeAllChildren();
+    nodeToRemove.removeAndDisposeAllChildren();
   }
 
   private void measureLayout(int tag, int ancestorTag, int[] outputBuffer) {

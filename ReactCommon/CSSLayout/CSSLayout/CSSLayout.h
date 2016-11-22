@@ -149,6 +149,15 @@ CSS_NODE_STYLE_PROPERTY(float, MinHeight, minHeight);
 CSS_NODE_STYLE_PROPERTY(float, MaxWidth, maxWidth);
 CSS_NODE_STYLE_PROPERTY(float, MaxHeight, maxHeight);
 
+// Yoga specific properties, not compatible with flexbox specification
+// Aspect ratio control the size of the undefined dimension of a node.
+// - On a node with a set width/height aspect ratio control the size of the unset dimension
+// - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis if unset
+// - On a node with a measure function aspect ratio works as though the measure function measures the flex basis
+// - On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis if unset
+// - Aspect ratio takes min/max dimensions into account
+CSS_NODE_STYLE_PROPERTY(float, AspectRatio, aspectRatio);
+
 CSS_NODE_LAYOUT_PROPERTY(float, Left);
 CSS_NODE_LAYOUT_PROPERTY(float, Top);
 CSS_NODE_LAYOUT_PROPERTY(float, Right);

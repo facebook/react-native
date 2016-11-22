@@ -249,6 +249,9 @@ CSS_NODE_JNI_STYLE_PROP(jfloat, float, Height);
 CSS_NODE_JNI_STYLE_PROP(jfloat, float, MinHeight);
 CSS_NODE_JNI_STYLE_PROP(jfloat, float, MaxHeight);
 
+// Yoga specific properties, not compatible with flexbox specification
+CSS_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
+
 #define CSSMakeNativeMethod(name) makeNativeMethod(#name, name)
 
 jint JNI_OnLoad(JavaVM *vm, void *) {
@@ -312,6 +315,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetMaxWidth),
                         CSSMakeNativeMethod(jni_CSSNodeStyleGetMaxHeight),
                         CSSMakeNativeMethod(jni_CSSNodeStyleSetMaxHeight),
+                        CSSMakeNativeMethod(jni_CSSNodeStyleGetAspectRatio),
+                        CSSMakeNativeMethod(jni_CSSNodeStyleSetAspectRatio),
 
                         CSSMakeNativeMethod(jni_CSSNodeGetInstanceCount),
                         CSSMakeNativeMethod(jni_CSSLayoutSetLogger),

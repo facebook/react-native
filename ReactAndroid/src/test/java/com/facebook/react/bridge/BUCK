@@ -19,7 +19,7 @@ android_library(
   ],
 )
 
-robolectric3_test(
+rn_robolectric_test(
   name = 'bridge',
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],

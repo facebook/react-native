@@ -18,7 +18,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -26,7 +25,7 @@ import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
- * {@link CSSNodeDEPRECATED} that represents an inline image. Loading is done using Fresco.
+ * Shadow node that represents an inline image. Loading is done using Fresco.
  *
  */
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
@@ -113,5 +112,4 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   public @Nullable Object getCallerContext() {
     return mCallerContext;
   }
-
 }
