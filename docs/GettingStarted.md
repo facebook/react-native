@@ -364,7 +364,7 @@ If everything is set up correctly, you should see your new app running in your A
 
 > If you're targeting API level 23, the app might crash on first launch with an error smilar to `Unable to add window android.view.ViewRootImpl$W@c51fa6 -- permission denied for this window type`. To fix this, you need to go to `System settings > Apps > Configure apps > Draw over other apps` and grant the permission for the app.
 
-NOTE: Many React Native modules haven't been tested on Marshmallow and might break. Please throughly test the app if you target API level 23 and file a bug report if you find that something is broken.
+NOTE: Many React Native modules haven't been tested on Marshmallow and might break. Please thoroughly test the app if you target API level 23 and file a bug report if you find that something is broken.
 
 <block class="windows linux android" />
 

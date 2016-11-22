@@ -5,14 +5,19 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-const newline = /\r\n?|\n|\u2028|\u2029/g;
-const countLines =
-  string => (string.match(newline) || []).length + 1; // fastest implementation
+import type {ModuleGroups, ModuleTransportLike, SourceMap} from '../../types.flow';
 
-function lineToLineSourceMap(source, filename) {
+const newline = /\r\n?|\n|\u2028|\u2029/g;
+// fastest implementation
+const countLines = (string: string) => (string.match(newline) || []).length + 1;
+
+
+function lineToLineSourceMap(source: string, filename: string = ''): SourceMap {
   // The first line mapping in our package is the base64vlq code for zeros (A).
   const firstLine = 'AAAA;';
 
@@ -21,34 +26,52 @@ function lineToLineSourceMap(source, filename) {
   const line = 'AACA;';
 
   return {
-    version: 3,
-    sources: [filename],
+    file: filename,
     mappings: firstLine + Array(countLines(source)).join(line),
+    sources: [filename],
+    names: [],
+    version: 3,
   };
 }
 
 const wrapperEnd = wrappedCode => wrappedCode.indexOf('{') + 1;
 
-const Section = (line, column, map) => ({map, offset: {line, column}});
+const Section =
+  (line: number, column: number, map: SourceMap) =>
+    ({map, offset: {line, column}});
 
-function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
+type CombineSourceMapsOptions = {
+  moduleGroups?: ModuleGroups,
+  modules: Array<ModuleTransportLike>,
+  withCustomOffsets?: boolean,
+};
+
+function combineSourceMaps({
+  moduleGroups,
+  modules,
+  withCustomOffsets,
+}: CombineSourceMapsOptions): SourceMap {
   let offsets;
   const sections = [];
-  const sourceMap = {
-    version: 3,
+  const sourceMap: Object = {
+    file: '',
     sections,
+    version: 3,
   };
+
 
   if (withCustomOffsets) {
     offsets = sourceMap.x_facebook_offsets = [];
   }
 
   let line = 0;
-  modules.forEach(({code, id, map, name}) => {
+  modules.forEach(moduleTransport => {
+    const {code, id, name} = moduleTransport;
     let column = 0;
     let hasOffset = false;
     let group;
     let groupLines = 0;
+    let {map} = moduleTransport;
 
     if (withCustomOffsets) {
       if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
@@ -56,15 +79,19 @@ function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
         return;
       }
 
-      if (moduleGroups && moduleGroups.groups.has(id)) {
-        group = moduleGroups.groups.get(id);
-        const otherModules = Array.from(group).map(
-          moduleId => moduleGroups.modulesById.get(moduleId));
+
+      group = moduleGroups && moduleGroups.groups.get(id);
+      if (group && moduleGroups) {
+        const {modulesById} = moduleGroups;
+        const otherModules: Array<ModuleTransportLike> =
+          Array.from(group || [])
+            .map(moduleId => modulesById.get(moduleId))
+            .filter(Boolean); // needed to appease flow
         otherModules.forEach(m => {
           groupLines += countLines(m.code);
         });
         map = combineSourceMaps({
-          modules: [{code, id, map, name}].concat(otherModules),
+          modules: [moduleTransport].concat(otherModules),
         });
       }
 
@@ -85,7 +112,9 @@ function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
   return sourceMap;
 }
 
-const joinModules = modules => modules.map(m => m.code).join('\n');
+const joinModules =
+  (modules: Array<*>): string =>
+    modules.map(m => m.code).join('\n');
 
 module.exports = {
   countLines,

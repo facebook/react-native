@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <jsc_legacy_profiler.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 #include "JSCLegacyProfiler.h"
@@ -57,13 +57,13 @@ static JSValueRef nativeProfilerEnd(
   std::string writeLocation("/sdcard/");
   if (argumentCount > 1) {
     auto fileName = String::adopt(
-      ctx, JSValueToStringCopy(ctx, arguments[1], exception));
+      ctx, JSC_JSValueToStringCopy(ctx, arguments[1], exception));
     writeLocation += fileName.str();
   } else {
     writeLocation += "profile.json";
   }
   auto title = String::adopt(
-    ctx, JSValueToStringCopy(ctx, arguments[0], exception));
+    ctx, JSC_JSValueToStringCopy(ctx, arguments[0], exception));
   JSEndProfilingAndRender(ctx, title, writeLocation.c_str());
   return Value::makeUndefined(ctx);
 }

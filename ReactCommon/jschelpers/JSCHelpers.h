@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include "Value.h"
-
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSValueRef.h>
+#include <jschelpers/Value.h>
+#include <jschelpers/JavaScriptCore.h>
 
 #include <stdexcept>
 #include <algorithm>
@@ -101,7 +98,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         return (*method)(ctx, function, thisObject, argumentCount, arguments, exception);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return JSValueMakeUndefined(ctx);
+        return JSC_JSValueMakeUndefined(ctx);
       }
     }
   };

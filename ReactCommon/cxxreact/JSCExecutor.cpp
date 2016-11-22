@@ -210,12 +210,13 @@ void JSCExecutor::destroy() {
 
 void JSCExecutor::setContextName(const std::string& name) {
   String jsName = String(m_context, name.c_str());
-  JSGlobalContextSetName(m_context, jsName);
+  JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
+  const bool useCustomJSC = false;
   #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
   #endif
@@ -224,13 +225,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
+    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
-    m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+    m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
-  JSClassRelease(globalClass);
+  JSC_JSClassRelease(useCustomJSC, globalClass);
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
@@ -297,7 +298,7 @@ void JSCExecutor::terminateOnJSVMThread() {
   Inspector::instance().unregisterGlobalContext(m_context);
   #endif
 
-  JSGlobalContextRelease(m_context);
+  JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
 
@@ -713,7 +714,7 @@ void JSCExecutor::installNativeHook(const char* name) {
 }
 
 JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
-  if (JSStringIsEqualToUTF8CString(propertyName, "name")) {
+  if (JSC_JSStringIsEqualToUTF8CString(m_context, propertyName, "name")) {
     return Value(m_context, String(m_context, "NativeModules"));
   }
 

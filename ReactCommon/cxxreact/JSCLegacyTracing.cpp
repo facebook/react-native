@@ -4,11 +4,8 @@
 
 #include "JSCLegacyTracing.h"
 
-#include <JavaScriptCore/JavaScript.h>
-#include <JavaScriptCore/API/JSProfilerPrivate.h>
-
 #include <fbsystrace.h>
-
+#include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 

@@ -20,8 +20,14 @@ export type CombinedSourceMap = {
   file: string,
   sections: Array<{
     offset: {line: number, column: number},
-    map: SourceMap,
+    map: MixedSourceMap,
   }>,
 };
 
-export type MixedSourceMap = SourceMap | CombinedSourceMap;
+type FBExtensions = {x_facebook_offsets?: Array<number>};
+
+export type MixedSourceMap
+  = SourceMap
+  | CombinedSourceMap
+  | (SourceMap & FBExtensions)
+  | (CombinedSourceMap & FBExtensions);

@@ -16,6 +16,8 @@ const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 
+import type RequestOptions from './types.flow';
+
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
     output.save(bundle, args, log)
@@ -27,7 +29,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-  const requestOpts = {
+  const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,

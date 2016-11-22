@@ -67,6 +67,7 @@ typedef enum CSSDirection {
 } CSSDirection;
 
 typedef enum CSSExperimentalFeature {
+  CSSExperimentalFeatureRounding,
   CSSExperimentalFeatureCount,
 } CSSExperimentalFeature;
 

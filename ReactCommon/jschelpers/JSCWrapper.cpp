@@ -11,6 +11,7 @@
 
 #if defined(__APPLE__)
 
+#include <mutex>
 #include <glog/logging.h>
 #include <objc/runtime.h>
 
@@ -38,82 +39,12 @@ namespace react {
 
 static const JSCWrapper* s_customWrapper = nullptr;
 
-static JSCWrapper s_systemWrapper = {
-  .JSGlobalContextCreateInGroup = JSGlobalContextCreateInGroup,
-  .JSGlobalContextRelease = JSGlobalContextRelease,
-  .JSGlobalContextSetName = JSGlobalContextSetName,
+static JSCWrapper s_systemWrapper = {};
 
-  .JSContextGetGlobalContext = JSContextGetGlobalContext,
-  .JSContextGetGlobalObject = JSContextGetGlobalObject,
-
-  .JSEvaluateScript = JSEvaluateScript,
-  .JSEvaluateBytecodeBundle =
-    (decltype(&JSEvaluateBytecodeBundle))Unimplemented_JSEvaluateBytecodeBundle,
-
-  .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
-  .JSStringCreateWithCFString = JSStringCreateWithCFString,
-#if WITH_FBJSCEXTENSIONS
-  .JSStringCreateWithUTF8CStringExpectAscii =
-    (decltype(&JSStringCreateWithUTF8CStringExpectAscii))Unimplemented_JSStringCreateWithUTF8CStringExpectAscii,
-#endif
-  .JSStringCopyCFString = JSStringCopyCFString,
-  .JSStringGetCharactersPtr = JSStringGetCharactersPtr,
-  .JSStringGetLength = JSStringGetLength,
-  .JSStringGetMaximumUTF8CStringSize = JSStringGetMaximumUTF8CStringSize,
-  .JSStringIsEqualToUTF8CString = JSStringIsEqualToUTF8CString,
-  .JSStringRelease = JSStringRelease,
-  .JSStringRetain = JSStringRetain,
-
-  .JSClassCreate = JSClassCreate,
-  .JSClassRelease = JSClassRelease,
-
-  .JSObjectCallAsConstructor = JSObjectCallAsConstructor,
-  .JSObjectCallAsFunction = JSObjectCallAsFunction,
-  .JSObjectGetPrivate = JSObjectGetPrivate,
-  .JSObjectGetProperty = JSObjectGetProperty,
-  .JSObjectGetPropertyAtIndex = JSObjectGetPropertyAtIndex,
-  .JSObjectIsConstructor = JSObjectIsConstructor,
-  .JSObjectIsFunction = JSObjectIsFunction,
-  .JSObjectMake = JSObjectMake,
-  .JSObjectMakeArray = JSObjectMakeArray,
-  .JSObjectMakeError = JSObjectMakeError,
-  .JSObjectMakeFunctionWithCallback = JSObjectMakeFunctionWithCallback,
-  .JSObjectSetPrivate = JSObjectSetPrivate,
-  .JSObjectSetProperty = JSObjectSetProperty,
-
-  .JSObjectCopyPropertyNames = JSObjectCopyPropertyNames,
-  .JSPropertyNameArrayGetCount = JSPropertyNameArrayGetCount,
-  .JSPropertyNameArrayGetNameAtIndex = JSPropertyNameArrayGetNameAtIndex,
-  .JSPropertyNameArrayRelease = JSPropertyNameArrayRelease,
-
-  .JSValueCreateJSONString = JSValueCreateJSONString,
-  .JSValueGetType = JSValueGetType,
-  .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
-  .JSValueMakeBoolean = JSValueMakeBoolean,
-  .JSValueMakeNull = JSValueMakeNull,
-  .JSValueMakeNumber = JSValueMakeNumber,
-  .JSValueMakeString = JSValueMakeString,
-  .JSValueMakeUndefined = JSValueMakeUndefined,
-  .JSValueProtect = JSValueProtect,
-  .JSValueToBoolean = JSValueToBoolean,
-  .JSValueToNumber = JSValueToNumber,
-  .JSValueToObject = JSValueToObject,
-  .JSValueToStringCopy = JSValueToStringCopy,
-  .JSValueUnprotect = JSValueUnprotect,
-
-  .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
-  .JSPokeSamplingProfiler =
-    (decltype(&JSPokeSamplingProfiler))Unimplemented_JSPokeSamplingProfiler,
-  .JSStartSamplingProfilingOnMainJSCThread =
-    (decltype(&JSStartSamplingProfilingOnMainJSCThread))Unimplemented_JSStartSamplingProfilingOnMainJSCThread,
-
-  .configureJSCForIOS = (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,
-
-  .JSBytecodeFileFormatVersion = -1,
-
-  .JSContext = nullptr,
-  .JSValue = nullptr,
-};
+const JSCWrapper* customJSCWrapper() {
+  CHECK(s_customWrapper != nullptr) << "Accessing custom JSC wrapper before it's set";
+  return s_customWrapper;
+}
 
 void setCustomJSCWrapper(const JSCWrapper* wrapper) {
   CHECK(s_customWrapper == nullptr) << "Can't set custom JSC wrapper multiple times";
@@ -125,15 +56,89 @@ const JSCWrapper* systemJSCWrapper() {
   // Some fields are lazily initialized
   static std::once_flag flag;
   std::call_once(flag, []() {
-    s_systemWrapper.JSContext = objc_getClass("JSContext");
-    s_systemWrapper.JSValue = objc_getClass("JSValue");
+    s_systemWrapper = {
+      .JSGlobalContextCreateInGroup = JSGlobalContextCreateInGroup,
+      .JSGlobalContextRelease = JSGlobalContextRelease,
+      .JSGlobalContextSetName = JSGlobalContextSetName,
+
+      .JSContextGetGlobalContext = JSContextGetGlobalContext,
+      .JSContextGetGlobalObject = JSContextGetGlobalObject,
+
+      .JSEvaluateScript = JSEvaluateScript,
+      .JSEvaluateBytecodeBundle =
+        (decltype(&JSEvaluateBytecodeBundle))
+        Unimplemented_JSEvaluateBytecodeBundle,
+
+      .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
+      .JSStringCreateWithCFString = JSStringCreateWithCFString,
+      #if WITH_FBJSCEXTENSIONS
+      .JSStringCreateWithUTF8CStringExpectAscii =
+        (decltype(&JSStringCreateWithUTF8CStringExpectAscii))
+        Unimplemented_JSStringCreateWithUTF8CStringExpectAscii,
+      #endif
+      .JSStringCopyCFString = JSStringCopyCFString,
+      .JSStringGetCharactersPtr = JSStringGetCharactersPtr,
+      .JSStringGetLength = JSStringGetLength,
+      .JSStringGetMaximumUTF8CStringSize = JSStringGetMaximumUTF8CStringSize,
+      .JSStringIsEqualToUTF8CString = JSStringIsEqualToUTF8CString,
+      .JSStringRelease = JSStringRelease,
+      .JSStringRetain = JSStringRetain,
+
+      .JSClassCreate = JSClassCreate,
+      .JSClassRelease = JSClassRelease,
+
+      .JSObjectCallAsConstructor = JSObjectCallAsConstructor,
+      .JSObjectCallAsFunction = JSObjectCallAsFunction,
+      .JSObjectGetPrivate = JSObjectGetPrivate,
+      .JSObjectGetProperty = JSObjectGetProperty,
+      .JSObjectGetPropertyAtIndex = JSObjectGetPropertyAtIndex,
+      .JSObjectIsConstructor = JSObjectIsConstructor,
+      .JSObjectIsFunction = JSObjectIsFunction,
+      .JSObjectMake = JSObjectMake,
+      .JSObjectMakeArray = JSObjectMakeArray,
+      .JSObjectMakeError = JSObjectMakeError,
+      .JSObjectMakeFunctionWithCallback = JSObjectMakeFunctionWithCallback,
+      .JSObjectSetPrivate = JSObjectSetPrivate,
+      .JSObjectSetProperty = JSObjectSetProperty,
+
+      .JSObjectCopyPropertyNames = JSObjectCopyPropertyNames,
+      .JSPropertyNameArrayGetCount = JSPropertyNameArrayGetCount,
+      .JSPropertyNameArrayGetNameAtIndex = JSPropertyNameArrayGetNameAtIndex,
+      .JSPropertyNameArrayRelease = JSPropertyNameArrayRelease,
+
+      .JSValueCreateJSONString = JSValueCreateJSONString,
+      .JSValueGetType = JSValueGetType,
+      .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
+      .JSValueMakeBoolean = JSValueMakeBoolean,
+      .JSValueMakeNull = JSValueMakeNull,
+      .JSValueMakeNumber = JSValueMakeNumber,
+      .JSValueMakeString = JSValueMakeString,
+      .JSValueMakeUndefined = JSValueMakeUndefined,
+      .JSValueProtect = JSValueProtect,
+      .JSValueToBoolean = JSValueToBoolean,
+      .JSValueToNumber = JSValueToNumber,
+      .JSValueToObject = JSValueToObject,
+      .JSValueToStringCopy = JSValueToStringCopy,
+      .JSValueUnprotect = JSValueUnprotect,
+
+      .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
+      .JSPokeSamplingProfiler =
+        (decltype(&JSPokeSamplingProfiler))
+        Unimplemented_JSPokeSamplingProfiler,
+      .JSStartSamplingProfilingOnMainJSCThread =
+        (decltype(&JSStartSamplingProfilingOnMainJSCThread))
+        Unimplemented_JSStartSamplingProfilingOnMainJSCThread,
+
+      .configureJSCForIOS =
+        (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,
+
+      .JSContext = objc_getClass("JSContext"),
+      .JSValue = objc_getClass("JSValue"),
+
+      .JSBytecodeFileFormatVersion = -1,
+    };
   });
   return &s_systemWrapper;
-}
-
-const JSCWrapper* customJSCWrapper() {
-  CHECK(s_customWrapper != nullptr) << "Accessing custom JSC wrapper before it's set";
-  return s_customWrapper;
 }
 
 } }

@@ -164,10 +164,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       float[] padding = (float[]) extraData;
 
       view.setPadding(
-          (int) Math.ceil(padding[0]),
-          (int) Math.ceil(padding[1]),
-          (int) Math.ceil(padding[2]),
-          (int) Math.ceil(padding[3]));
+          (int) Math.floor(padding[0]),
+          (int) Math.floor(padding[1]),
+          (int) Math.floor(padding[2]),
+          (int) Math.floor(padding[3]));
     } else if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
       if (update.containsImages()) {
