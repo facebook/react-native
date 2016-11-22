@@ -20,7 +20,7 @@ static int64_t int64FromJSValue(
     JSValueRef value,
     JSValueRef* exception) {
   (void)exception;
-  int64_t num = (int64_t) JSValueToNumber(ctx, value, NULL);
+  int64_t num = (int64_t)JSC_JSValueToNumber(ctx, value, NULL);
   return num;
 }
 
@@ -30,19 +30,19 @@ static size_t copyTruncatedAsciiChars(
     JSContextRef ctx,
     JSValueRef value,
     size_t maxLen) {
-  JSStringRef jsString = JSValueToStringCopy(ctx, value, NULL);
-  size_t stringLen = JSStringGetLength(jsString);
+  JSStringRef jsString = JSC_JSValueToStringCopy(ctx, value, NULL);
+  size_t stringLen = JSC_JSStringGetLength(ctx, jsString);
   // Unlike the Java version, we truncate from the end of the string,
   // rather than the beginning.
   size_t toWrite = min(stringLen, min(bufLen, maxLen));
 
   const char *startBuf = buf;
-  const JSChar* chars = JSStringGetCharactersPtr(jsString);
+  const JSChar* chars = JSC_JSStringGetCharactersPtr(ctx, jsString);
   while (toWrite-- > 0) {
     *(buf++) = (char)*(chars++);
   }
 
-  JSStringRelease(jsString);
+  JSC_JSStringRelease(ctx, jsString);
 
   // Return the number of bytes written
   return buf - startBuf;

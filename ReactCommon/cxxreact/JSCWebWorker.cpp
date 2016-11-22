@@ -68,7 +68,7 @@ void JSCWebWorker::terminate() {
 
 void JSCWebWorker::terminateOnWorkerThread() {
   s_globalContextRefToJSCWebWorker.erase(context_);
-  JSGlobalContextRelease(context_);
+  JSC_JSGlobalContextRelease(context_);
   context_ = nullptr;
   workerMessageQueueThread_->quitSynchronous();
 }
@@ -81,7 +81,8 @@ void JSCWebWorker::initJSVMAndLoadScript() {
   CHECK(!isTerminated()) << "Worker was already finished!";
   CHECK(!context_) << "Worker JS VM was already created!";
 
-  context_ = JSGlobalContextCreateInGroup(
+  context_ = JSC_JSGlobalContextCreateInGroup(
+      false, // no support required for custom JSC
       NULL, // use default JS 'global' object
       NULL // create new group (i.e. new VM)
   );
@@ -113,7 +114,7 @@ JSValueRef JSCWebWorker::nativePostMessage(
     return Value::makeUndefined(ctx);
   }
   JSValueRef msg = arguments[0];
-  JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSContextGetGlobalContext(ctx));
+  JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSC_JSContextGetGlobalContext(ctx));
 
   if (!webWorker->isTerminated()) {
     webWorker->postMessageToOwner(msg);

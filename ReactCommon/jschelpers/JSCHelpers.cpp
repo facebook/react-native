@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-
+  
 #include "JSCHelpers.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -24,27 +24,44 @@ JSValueRef functionCaller(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  auto* f = static_cast<JSFunction*>(JSObjectGetPrivate(function));
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  auto* f = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(isCustomJSC, function));
   return (*f)(ctx, thisObject, argumentCount, arguments);
 }
 
-JSClassRef createFuncClass() {
+JSClassRef createFuncClass(JSContextRef ctx) {
   auto definition = kJSClassDefinitionEmpty;
-  definition.finalize = [](JSObjectRef object) {
-    auto* function = static_cast<JSFunction*>(JSObjectGetPrivate(object));
-    delete function;
-  };
+  // Need to duplicate the two different finalizer blocks, since there's no way
+  // for it to capture this static information.
+  if (isCustomJSCPtr(ctx)) {
+    definition.finalize = [](JSObjectRef object) {
+      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(true, object));
+      delete function;
+    };
+  } else {
+    definition.finalize = [](JSObjectRef object) {
+      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(false, object));
+      delete function;
+    };
+  }
   definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
 
-  return JSClassCreate(&definition);
+  return JSC_JSClassCreate(ctx, &definition);
 }
 
 JSObjectRef makeFunction(
     JSContextRef ctx,
     JSStringRef name,
     JSFunction function) {
-  static auto kClassDef = createFuncClass();
-  auto functionObject = Object(ctx, JSObjectMake(ctx, kClassDef, new JSFunction(std::move(function))));
+  static JSClassRef kClassDef = NULL, kCustomJSCClassDef = NULL;
+  JSClassRef *classRef = isCustomJSCPtr(ctx) ? &kCustomJSCClassDef : &kClassDef;
+  if (!*classRef) {
+    *classRef = createFuncClass(ctx);
+  }
+
+  // dealloc in kClassDef.finalize
+  JSFunction *functionPtr = new JSFunction(std::move(function));
+  auto functionObject = Object(ctx, JSC_JSObjectMake(ctx, *classRef, functionPtr));
   functionObject.setProperty("name", Value(ctx, name));
   return functionObject;
 }
@@ -72,7 +89,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
   auto jsName = String(ctx, name);
-  return JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
+  return JSC_JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
 }
 
 void installGlobalFunction(
@@ -80,7 +97,7 @@ void installGlobalFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
   String jsName(ctx, name);
-  JSObjectRef functionObj = JSObjectMakeFunctionWithCallback(
+  JSObjectRef functionObj = JSC_JSObjectMakeFunctionWithCallback(
     ctx, jsName, callback);
   Object::getGlobalObject(ctx).setProperty(jsName, Value(ctx, functionObj));
 }
@@ -93,9 +110,10 @@ void installGlobalProxy(
   proxyClassDefintion.className = "_FBProxyClass";
   proxyClassDefintion.getProperty = callback;
 
-  JSClassRef proxyClass = JSClassCreate(&proxyClassDefintion);
-  JSObjectRef proxyObj = JSObjectMake(ctx, proxyClass, nullptr);
-  JSClassRelease(proxyClass);
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  JSClassRef proxyClass = JSC_JSClassCreate(isCustomJSC, &proxyClassDefintion);
+  JSObjectRef proxyObj = JSC_JSObjectMake(ctx, proxyClass, nullptr);
+  JSC_JSClassRelease(isCustomJSC, proxyClass);
 
   Object::getGlobalObject(ctx).setProperty(name, Value(ctx, proxyObj));
 }
@@ -109,7 +127,7 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
   fbsystrace::FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "evaluateScript");
   #endif
   JSValueRef exn, result;
-  result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
+  result = JSC_JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
     formatAndThrowJSException(context, exn, source);
   }

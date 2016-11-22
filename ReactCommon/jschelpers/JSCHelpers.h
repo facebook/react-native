@@ -98,7 +98,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         return (*method)(ctx, function, thisObject, argumentCount, arguments, exception);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return JSValueMakeUndefined(ctx);
+        return JSC_JSValueMakeUndefined(ctx);
       }
     }
   };

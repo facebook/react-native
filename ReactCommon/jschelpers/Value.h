@@ -40,7 +40,7 @@ private:
 class String : public noncopyable {
 public:
   explicit String(JSContextRef context, const char* utf8) :
-    m_context(context), m_string(JSStringCreateWithUTF8CString(utf8))
+    m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8))
   {}
 
   String(String&& other) :
@@ -53,13 +53,13 @@ public:
     m_context(other.m_context), m_string(other.m_string)
   {
     if (m_string) {
-      JSStringRetain(m_string);
+      JSC_JSStringRetain(m_context, m_string);
     }
   }
 
   ~String() {
     if (m_string) {
-      JSStringRelease(m_string);
+      JSC_JSStringRelease(m_context, m_string);
     }
   }
 
@@ -69,12 +69,12 @@ public:
 
   // Length in characters
   size_t length() const {
-    return JSStringGetLength(m_string);
+    return JSC_JSStringGetLength(m_context, m_string);
   }
 
   // Length in bytes of a null-terminated utf8 encoded value
   size_t utf8Size() const {
-    return JSStringGetMaximumUTF8CStringSize(m_string);
+    return JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string);
   }
 
   /*
@@ -92,22 +92,22 @@ public:
    * https://mathiasbynens.be/notes/javascript-unicode
    */
   std::string str() const {
-    const JSChar* utf16 = JSStringGetCharactersPtr(m_string);
-    int stringLength = JSStringGetLength(m_string);
+    const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
+    int stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 
   // Assumes that utf8 is null terminated
   bool equals(const char* utf8) {
-    return JSStringIsEqualToUTF8CString(m_string, utf8);
+    return JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8);
   }
 
   // This assumes ascii is nul-terminated.
   static String createExpectingAscii(JSContextRef context, const char* ascii, size_t len) {
 #if WITH_FBJSCEXTENSIONS
-    return String(context, JSStringCreateWithUTF8CStringExpectAscii(ascii, len), true);
+    return String(context, JSC_JSStringCreateWithUTF8CStringExpectAscii(context, ascii, len), true);
 #else
-    return String(context, JSStringCreateWithUTF8CString(ascii), true);
+    return String(context, JSC_JSStringCreateWithUTF8CString(context, ascii), true);
 #endif
   }
 
@@ -128,7 +128,7 @@ private:
     m_context(context), m_string(string)
   {
     if (!adopt && string) {
-      JSStringRetain(string);
+      JSC_JSStringRetain(context, string);
     }
   }
 
@@ -153,7 +153,7 @@ public:
 
   ~Object() {
     if (m_isProtected && m_obj) {
-      JSValueUnprotect(m_context, m_obj);
+      JSC_JSValueUnprotect(m_context, m_obj);
     }
   }
 
@@ -171,7 +171,7 @@ public:
   operator Value() const;
 
   bool isFunction() const {
-    return JSObjectIsFunction(m_context, m_obj);
+    return JSC_JSObjectIsFunction(m_context, m_obj);
   }
 
   Value callAsFunction(std::initializer_list<JSValueRef> args) const;
@@ -191,18 +191,20 @@ public:
 
   void makeProtected() {
     if (!m_isProtected && m_obj) {
-      JSValueProtect(m_context, m_obj);
+      JSC_JSValueProtect(m_context, m_obj);
       m_isProtected = true;
     }
   }
 
   template<typename ReturnType>
   ReturnType* getPrivate() const {
-    return static_cast<ReturnType*>(JSObjectGetPrivate(m_obj));
+    const bool isCustomJSC = isCustomJSCPtr(m_context);
+    return static_cast<ReturnType*>(JSC_JSObjectGetPrivate(isCustomJSC, m_obj));
   }
 
   void setPrivate(void* data) const {
-    JSObjectSetPrivate(m_obj, data);
+    const bool isCustomJSC = isCustomJSCPtr(m_context);
+    JSC_JSObjectSetPrivate(isCustomJSC, m_obj, data);
   }
 
   JSContextRef context() const {
@@ -210,7 +212,7 @@ public:
   }
 
   static Object getGlobalObject(JSContextRef ctx) {
-    auto globalObj = JSContextGetGlobalObject(ctx);
+    auto globalObj = JSC_JSContextGetGlobalObject(ctx);
     return Object(ctx, globalObj);
   }
 
@@ -238,7 +240,7 @@ public:
   }
 
   JSType getType() const {
-    return JSValueGetType(m_context, m_value);
+    return JSC_JSValueGetType(m_context, m_value);
   }
 
   bool isBoolean() const {
@@ -246,7 +248,7 @@ public:
   }
 
   bool asBoolean() const {
-    return JSValueToBoolean(context(), m_value);
+    return JSC_JSValueToBoolean(context(), m_value);
   }
 
   bool isNumber() const {
@@ -263,7 +265,7 @@ public:
 
   double asNumber() const {
     if (isNumber()) {
-      return JSValueToNumber(context(), m_value, nullptr);
+      return JSC_JSValueToNumber(context(), m_value, nullptr);
     } else {
       return 0.0f;
     }
@@ -288,17 +290,17 @@ public:
   }
 
   String toString() noexcept {
-    return String::adopt(context(), JSValueToStringCopy(context(), m_value, nullptr));
+    return String::adopt(context(), JSC_JSValueToStringCopy(context(), m_value, nullptr));
   }
 
   static Value makeError(JSContextRef ctx, const char *error);
 
   static Value makeNumber(JSContextRef ctx, double value) {
-    return Value(ctx, JSValueMakeNumber(ctx, value));
+    return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
   }
 
   static Value makeUndefined(JSContextRef ctx) {
-    return Value(ctx, JSValueMakeUndefined(ctx));
+    return Value(ctx, JSC_JSValueMakeUndefined(ctx));
   }
 
   std::string toJSONString(unsigned indent = 0) const;
