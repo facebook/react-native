@@ -123,7 +123,7 @@ class PermissionsAndroid {
    * DEPRECATED - use request
    *
    * Prompts the user to enable a permission and returns a promise resolving to a
-   * string value indicating whether the user allowed or denied the request
+   * boolean value indicating whether the user allowed or denied the request
    *
    * If the optional rationale argument is included (which is an object with a
    * `title` and `message`), this function checks with the OS whether it is
