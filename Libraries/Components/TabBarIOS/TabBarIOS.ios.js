@@ -47,8 +47,9 @@ class TabBarIOS extends React.Component {
      */
     barTintColor: ColorPropType,
     /**
-     * Used instead of setting barTintColor to black: gives a black tab bar
-     * with higher translucency.
+     * The style of the tab bar. Supported values are 'default', 'black'. 
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a tab bar with the native iOS style with higher translucency.
      */
     barStyle: React.PropTypes.oneOf(['default', 'black']),
     /**
