@@ -47,6 +47,11 @@ function requireNativeComponent(
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): Function {
+  const cachedComponent = nativeComponentsCacheMap.get(viewName);
+  if (cachedComponent) {
+    return cachedComponent;
+  }
+
   const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
@@ -98,10 +103,12 @@ function requireNativeComponent(
     );
   }
 
-  return createReactNativeComponentClass(viewConfig);
+  const component = createReactNativeComponentClass(viewConfig);
+  nativeComponentsCacheMap.set(viewName, component);
+  return component;
 }
 
-var TypeToDifferMap = {
+const TypeToDifferMap = {
   // iOS Types
   CATransform3D: matricesDiffer,
   CGPoint: pointsDiffer,
@@ -115,7 +122,7 @@ function processColorArray(colors: []): [] {
   return colors && colors.map(processColor);
 }
 
-var TypeToProcessorMap = {
+const TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
   CGColorArray: processColorArray,
@@ -128,5 +135,7 @@ var TypeToProcessorMap = {
   Color: processColor,
   ColorArray: processColorArray,
 };
+
+const nativeComponentsCacheMap = new Map();
 
 module.exports = requireNativeComponent;

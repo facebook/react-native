@@ -23,6 +23,7 @@ var { getInstanceFromNode } = require('ReactNativeComponentTree');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
+var requireNativeComponent = require('requireNativeComponent');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -113,13 +114,25 @@ type State = {
 };
 type Event = Object;
 
+if (Platform.OS === 'android') {
+  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+} else if (Platform.OS === 'ios') {
+  var RCTTextView = requireNativeComponent('RCTTextView', null);
+  var RCTTextField = requireNativeComponent('RCTTextField', null);
+}
+
 function isTagInstanceOfTextInput(tag) {
   var instance = getInstanceFromNode(tag);
-  return instance && (
-    instance.constructor.displayName === 'AndroidTextInput' ||
-    instance.constructor.displayName === 'RCTTextView' ||
-    instance.constructor.displayName === 'RCTTextField'
-  );
+  if (instance) {
+    if (Platform.OS === 'android') {
+      return instance._currentElement.type === AndroidTextInput;
+    } else if (Platform.OS === 'ios') {
+      return instance._currentElement.type === RCTTextView ||
+        instance._currentElement.type === RCTTextField;
+    }
+  }
+
+  return false;
 }
 
 var ScrollResponderMixin = {
