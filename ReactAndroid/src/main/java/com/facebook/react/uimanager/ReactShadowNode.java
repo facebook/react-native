@@ -576,6 +576,10 @@ public class ReactShadowNode {
     mCSSNode.setFlexBasis(flexBasis);
   }
 
+  public void setStyleAspectRatio(float aspectRatio) {
+    mCSSNode.setStyleAspectRatio(aspectRatio);
+  }
+
   public void setFlexDirection(CSSFlexDirection flexDirection) {
     mCSSNode.setFlexDirection(flexDirection);
   }

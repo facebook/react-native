@@ -112,6 +112,11 @@ public class LayoutShadowNode extends ReactShadowNode {
     super.setFlexBasis(flexBasis);
   }
 
+  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = CSSConstants.UNDEFINED)
+  public void setAspectRatio(float aspectRatio) {
+    setStyleAspectRatio(aspectRatio);
+  }
+
   @ReactProp(name = ViewProps.FLEX_DIRECTION)
   public void setFlexDirection(@Nullable String flexDirection) {
     if (isVirtual()) {

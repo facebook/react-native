@@ -138,6 +138,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) float flexBasis;
 
+@property (nonatomic, assign) float aspectRatio;
+
 - (void)setFlex:(float)flex;
 
 /**
