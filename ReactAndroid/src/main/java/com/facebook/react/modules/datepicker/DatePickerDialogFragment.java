@@ -53,8 +53,13 @@ public class DatePickerDialogFragment extends DialogFragment {
     final int month = c.get(Calendar.MONTH);
     final int day = c.get(Calendar.DAY_OF_MONTH);
 
-    final DatePickerDialog dialog =
-        new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
+    DatePickerDialog dialog;
+    if (args != null && args.getBoolean(DatePickerDialogModule.ARG_SPINNERMODE)) {
+      // The style added to the DismissableDatePickerDialog constructor will make sure the datepicker is shown as a spinner.
+      dialog = new DismissableDatePickerDialog(activityContext, android.R.style.Theme_Holo_Dialog_MinWidth, onDateSetListener, year, month, day);
+    } else {
+      dialog = new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
+    }
     final DatePicker datePicker = dialog.getDatePicker();
 
     if (args != null && args.containsKey(DatePickerDialogModule.ARG_MINDATE)) {
