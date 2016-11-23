@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -94,7 +94,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (viewLayerType.equals("software")) {
       type = View.LAYER_TYPE_SOFTWARE;
     } else {
-      Assertions.assertCondition(false, "wrong viewLayerType: " + viewLayerType);
+      throw new JSApplicationIllegalArgumentException("wrong viewLayerType: " + viewLayerType);
     }
 
     view.setLayerType(type, null);
