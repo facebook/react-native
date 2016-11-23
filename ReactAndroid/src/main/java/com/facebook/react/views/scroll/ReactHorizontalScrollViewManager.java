@@ -104,13 +104,7 @@ public class ReactHorizontalScrollViewManager
    */
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
-    if (value == null || value.equals(ReactScrollViewHelper.AUTO)) {
-      view.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-    } else if (value.equals(ReactScrollViewHelper.OVER_SCROLL_ALWAYS)) {
-      view.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-    } else if (value.equals(ReactScrollViewHelper.OVER_SCROLL_NEVER)) {
-      view.setOverScrollMode(View.OVER_SCROLL_NEVER);
-    }
+    view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
   @Override
