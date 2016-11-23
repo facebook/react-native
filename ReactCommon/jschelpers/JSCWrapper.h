@@ -27,6 +27,13 @@ extern bool JSSamplingProfilerEnabled();
 extern void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 extern JSValueRef JSPokeSamplingProfiler(JSContextRef);
 
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
+
 namespace facebook {
 namespace react {
 

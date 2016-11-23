@@ -99,7 +99,6 @@
 		2D3B5EA71D9B08CE00451313 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA501A601E3B00E9B192 /* RCTUtils.m */; };
 		2D3B5EAC1D9B08EF00451313 /* RCTJSCExecutor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 134FCB3A1A6E7F0800051CC8 /* RCTJSCExecutor.mm */; };
-		2D3B5EAD1D9B08F200451313 /* RCTJSCWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 85C199ED1CD2407900DAD810 /* RCTJSCWrapper.mm */; };
 		2D3B5EAE1D9B08F800451313 /* RCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */; };
 		2D3B5EAF1D9B08FB00451313 /* RCTAccessibilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */; };
 		2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FE81A69327A00A75B9A /* RCTAlertManager.m */; };
@@ -163,6 +162,7 @@
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
 		369123E11DDC75850095B341 /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* JSCSamplingProfiler.m */; };
 		391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 391E86A21C623EC800009732 /* RCTTouchEvent.m */; };
+		3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */; };
 		3D1FA07C1DE4F2EA00E03CC6 /* RCTNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA07A1DE4F2EA00E03CC6 /* RCTNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D1FA07D1DE4F2EA00E03CC6 /* RCTNetworkTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA07B1DE4F2EA00E03CC6 /* RCTNetworkTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -194,6 +194,27 @@
 		3D3C085F1DE33E6100C268FA /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
 		3D3C08891DE342FB00C268FA /* libCSSLayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libCSSLayout.a */; };
 		3D3C088C1DE3430500C268FA /* libCSSLayout-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libCSSLayout-tvOS.a */; };
+		3D3CD8F81DE5FB2D00167DC4 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
+		3D3CD9061DE5FBD600167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
+		3D3CD9071DE5FBD600167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3CD9131DE5FBD800167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
+		3D3CD9141DE5FBD800167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3CD9201DE5FBEC00167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
+		3D3CD9211DE5FBEC00167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3CD92D1DE5FBEE00167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
+		3D3CD92E1DE5FBEE00167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD93F1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD9401DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */; };
+		3D3CD9421DE5FC5300167DC4 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */; };
+		3D3CD9431DE5FC6500167DC4 /* libcxxreact-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9321DE5FBEE00167DC4 /* libcxxreact-tvOS.a */; };
+		3D3CD9441DE5FC6500167DC4 /* libjschelpers-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9181DE5FBD800167DC4 /* libjschelpers-tvOS.a */; };
+		3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD9461DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
+		3D3CD9481DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
 		3D4545AC1DE32FB300C6C478 /* RCTAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4A1A601E3B00E9B192 /* RCTAssert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545AD1DE32FB300C6C478 /* RCTBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA5E1A601EAA00E9B192 /* RCTBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545AE1DE32FB300C6C478 /* RCTBridge+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
@@ -428,7 +449,10 @@
 		3D5FA6881DE4B9B30058FD77 /* RCTJSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 85C199EC1CD2407900DAD810 /* RCTJSCWrapper.h */; };
 		3D5FA6891DE4B9B30058FD77 /* RCTJSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 85C199EC1CD2407900DAD810 /* RCTJSCWrapper.h */; };
 		3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
-		3DC724321D8BF99A00808C32 /* RCTJSCErrorHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DC724311D8BF99A00808C32 /* RCTJSCErrorHandling.m */; };
+		3D7A27DF1DE32541002E3F95 /* JSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27DD1DE32541002E3F95 /* JSCWrapper.cpp */; };
+		3D7A27E01DE32559002E3F95 /* JSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27DD1DE32541002E3F95 /* JSCWrapper.cpp */; };
+		3D7A27E21DE325B7002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
+		3D7A27E31DE325DA002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
 		3DDEC1521DDCE0CA0020BBDF /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* JSCSamplingProfiler.m */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
 		58114A161AAE854800E7D092 /* RCTPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A131AAE854800E7D092 /* RCTPicker.m */; };
@@ -447,7 +471,6 @@
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
-		85C199EE1CD2407900DAD810 /* RCTJSCWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 85C199ED1CD2407900DAD810 /* RCTJSCWrapper.mm */; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		AC70D2ED1DE48A22002E6351 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
@@ -456,19 +479,54 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3D14D9F11DE48E1600386448 /* PBXContainerItemProxy */ = {
+		3D0574541DE5FF9600184BB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 3D3C059B1DE3340C00C268FA;
 			remoteInfo = "CSSLayout-tvOS";
 		};
-		3D14D9F31DE48E1F00386448 /* PBXContainerItemProxy */ = {
+		3D0574561DE5FF9600184BB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3CD9261DE5FBEE00167DC4;
+			remoteInfo = "cxxreact-tvOS";
+		};
+		3D0574581DE5FF9600184BB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3CD90C1DE5FBD800167DC4;
+			remoteInfo = "jschelpers-tvOS";
+		};
+		3D3CD9491DE5FCE700167DC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 3D3C04B91DE3340900C268FA;
 			remoteInfo = CSSLayout;
+		};
+		3D3CD94B1DE5FCE700167DC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3CD9191DE5FBEC00167DC4;
+			remoteInfo = cxxreact;
+		};
+		3D3CD94D1DE5FCE700167DC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3CD8FF1DE5FBD600167DC4;
+			remoteInfo = jschelpers;
+		};
+		3D3CD94F1DE5FDB900167DC4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D3CD8FF1DE5FBD600167DC4;
+			remoteInfo = jschelpers;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -649,12 +707,20 @@
 		3D37B5811D522B190042D5B5 /* RCTFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTFont.mm; sourceTree = "<group>"; };
 		3D3C059A1DE3340900C268FA /* libCSSLayout.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCSSLayout.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3C06751DE3340C00C268FA /* libCSSLayout-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCSSLayout-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBundleType.h; sourceTree = "<group>"; };
+		3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjschelpers.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D3CD9181DE5FBD800167DC4 /* libjschelpers-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjschelpers-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D3CD9321DE5FBEE00167DC4 /* libcxxreact-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcxxreact-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D7749421DC1065C007EC8D8 /* RCTPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPlatform.h; sourceTree = "<group>"; };
 		3D7749431DC1065C007EC8D8 /* RCTPlatform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
+		3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavaScriptCore.h; sourceTree = "<group>"; };
+		3D7A27DD1DE32541002E3F95 /* JSCWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCWrapper.cpp; sourceTree = "<group>"; };
+		3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCWrapper.h; sourceTree = "<group>"; };
+		3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJSCErrorHandling.mm; sourceTree = "<group>"; };
 		3DB910701C74B21600838BBE /* RCTWebSocketProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketProxy.h; sourceTree = "<group>"; };
 		3DB910711C74B21600838BBE /* RCTWebSocketProxyDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketProxyDelegate.h; sourceTree = "<group>"; };
 		3DC724301D8BF99A00808C32 /* RCTJSCErrorHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJSCErrorHandling.h; sourceTree = "<group>"; };
-		3DC724311D8BF99A00808C32 /* RCTJSCErrorHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSCErrorHandling.m; sourceTree = "<group>"; };
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
@@ -697,11 +763,9 @@
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
 		83F15A171B7CC46900F10295 /* UIView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+Private.h"; sourceTree = "<group>"; };
 		85C199EC1CD2407900DAD810 /* RCTJSCWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJSCWrapper.h; sourceTree = "<group>"; };
-		85C199ED1CD2407900DAD810 /* RCTJSCWrapper.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = RCTJSCWrapper.mm; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
-		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSBundleType.cpp; path = cxxreact/JSBundleType.cpp; sourceTree = "<group>"; };
-		AC70D2EC1DE48A22002E6351 /* JSBundleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBundleType.h; path = cxxreact/JSBundleType.h; sourceTree = "<group>"; };
-		AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "oss-compat-util.h"; path = "cxxreact/oss-compat-util.h"; sourceTree = "<group>"; };
+		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
+		AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "oss-compat-util.h"; sourceTree = "<group>"; };
 		ACDD3FDA1BC7430D00E7DE33 /* RCTBorderStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderStyle.h; sourceTree = "<group>"; };
 		B233E6E81D2D843200BC68BA /* RCTI18nManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTI18nManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nManager.m; sourceTree = "<group>"; };
@@ -717,6 +781,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */,
+				3D3CD9421DE5FC5300167DC4 /* libjschelpers.a in Frameworks */,
 				3D3C08891DE342FB00C268FA /* libCSSLayout.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -725,6 +791,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D3CD9431DE5FC6500167DC4 /* libcxxreact-tvOS.a in Frameworks */,
+				3D3CD9441DE5FC6500167DC4 /* libjschelpers-tvOS.a in Frameworks */,
 				3D3C088C1DE3430500C268FA /* libCSSLayout-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -750,11 +818,9 @@
 			isa = PBXGroup;
 			children = (
 				3DC724301D8BF99A00808C32 /* RCTJSCErrorHandling.h */,
-				3DC724311D8BF99A00808C32 /* RCTJSCErrorHandling.m */,
+				3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */,
 				134FCB391A6E7F0800051CC8 /* RCTJSCExecutor.h */,
 				134FCB3A1A6E7F0800051CC8 /* RCTJSCExecutor.mm */,
-				85C199EC1CD2407900DAD810 /* RCTJSCWrapper.h */,
-				85C199ED1CD2407900DAD810 /* RCTJSCWrapper.mm */,
 			);
 			path = Executors;
 			sourceTree = "<group>";
@@ -764,8 +830,6 @@
 			children = (
 				369123DF1DDC75850095B341 /* JSCSamplingProfiler.h */,
 				369123E01DDC75850095B341 /* JSCSamplingProfiler.m */,
-				13D9FEE91CDCCECF00158BD7 /* RCTEventEmitter.h */,
-				13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */,
 				E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */,
 				E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */,
 				13B07FE71A69327A00A75B9A /* RCTAlertManager.h */,
@@ -780,20 +844,22 @@
 				13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */,
 				13A0C2871B74F71200B29F6F /* RCTDevMenu.h */,
 				13A0C2881B74F71200B29F6F /* RCTDevMenu.m */,
+				13D9FEE91CDCCECF00158BD7 /* RCTEventEmitter.h */,
+				13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */,
 				13B07FE91A69327A00A75B9A /* RCTExceptionsManager.h */,
 				13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */,
+				B233E6E81D2D843200BC68BA /* RCTI18nManager.h */,
+				B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */,
+				352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */,
+				352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */,
+				13D9FEEC1CDCD93000158BD7 /* RCTKeyboardObserver.h */,
+				13D9FEED1CDCD93000158BD7 /* RCTKeyboardObserver.m */,
 				13F17A831B8493E5007D4C75 /* RCTRedBox.h */,
 				13F17A841B8493E5007D4C75 /* RCTRedBox.m */,
 				000E6CE91AB0E97F000CDF4D /* RCTSourceCode.h */,
 				000E6CEA1AB0E980000CDF4D /* RCTSourceCode.m */,
 				13723B4E1A82FD3C00F88898 /* RCTStatusBarManager.h */,
 				13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */,
-				352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */,
-				352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */,
-				B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */,
-				B233E6E81D2D843200BC68BA /* RCTI18nManager.h */,
-				13D9FEEC1CDCD93000158BD7 /* RCTKeyboardObserver.h */,
-				13D9FEED1CDCD93000158BD7 /* RCTKeyboardObserver.m */,
 				13B07FED1A69327A00A75B9A /* RCTTiming.h */,
 				13B07FEE1A69327A00A75B9A /* RCTTiming.m */,
 				13E067481A70F434002CDEE1 /* RCTUIManager.h */,
@@ -911,12 +977,12 @@
 		1450FF7F1BCFF28A00208362 /* Profiler */ = {
 			isa = PBXGroup;
 			children = (
+				14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */,
+				14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */,
 				14A43DF11C20B1C900794BC8 /* RCTJSCProfiler.h */,
 				14A43DF21C20B1C900794BC8 /* RCTJSCProfiler.m */,
 				14BF71811C04795500C97D0C /* RCTMacros.h */,
 				14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */,
-				14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */,
-				14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */,
 				1450FF801BCFF28A00208362 /* RCTProfile.h */,
 				1450FF811BCFF28A00208362 /* RCTProfile.m */,
 				1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */,
@@ -932,6 +998,7 @@
 			children = (
 				133683431D37ACA10077D0C3 /* CSSLayout */,
 				AC70D2EA1DE489FC002E6351 /* cxxreact */,
+				3D4A621D1DDD3985001F41B4 /* jschelpers */,
 			);
 			name = ReactCommon;
 			path = ../ReactCommon;
@@ -984,6 +1051,16 @@
 			name = PushNotificationIOS;
 			sourceTree = "<group>";
 		};
+		3D4A621D1DDD3985001F41B4 /* jschelpers */ = {
+			isa = PBXGroup;
+			children = (
+				3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */,
+				3D7A27DD1DE32541002E3F95 /* JSCWrapper.cpp */,
+				3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */,
+			);
+			path = jschelpers;
+			sourceTree = "<group>";
+		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
@@ -1003,6 +1080,10 @@
 				2D2A28131D9B038B00D4039D /* libReact-tvOS.a */,
 				3D3C059A1DE3340900C268FA /* libCSSLayout.a */,
 				3D3C06751DE3340C00C268FA /* libCSSLayout-tvOS.a */,
+				3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */,
+				3D3CD9181DE5FBD800167DC4 /* libjschelpers-tvOS.a */,
+				3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */,
+				3D3CD9321DE5FBEE00167DC4 /* libcxxreact-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1093,11 +1174,11 @@
 		AC70D2EA1DE489FC002E6351 /* cxxreact */ = {
 			isa = PBXGroup;
 			children = (
+				3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */,
 				AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */,
-				AC70D2EC1DE48A22002E6351 /* JSBundleType.h */,
 				AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */,
 			);
-			name = cxxreact;
+			path = cxxreact;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1122,6 +1203,42 @@
 				3D3C08401DE334DA00C268FA /* CSSLayout.h in Headers */,
 				3D3C08421DE334DA00C268FA /* CSSNodeList.h in Headers */,
 				3D3C083F1DE334DA00C268FA /* CSSEnums.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD9001DE5FBD600167DC4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */,
+				3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD90D1DE5FBD800167DC4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD93F1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */,
+				3D3CD9401DE5FC1400167DC4 /* JSCWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD91A1DE5FBEC00167DC4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */,
+				3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD9271DE5FBEE00167DC4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD9481DE5FC7800167DC4 /* oss-compat-util.h in Headers */,
+				3D3CD9461DE5FC7100167DC4 /* JSBundleType.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1403,7 +1520,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				3D14D9F21DE48E1600386448 /* PBXTargetDependency */,
+				3D0574551DE5FF9600184BB4 /* PBXTargetDependency */,
+				3D0574571DE5FF9600184BB4 /* PBXTargetDependency */,
+				3D0574591DE5FF9600184BB4 /* PBXTargetDependency */,
 			);
 			name = "React-tvOS";
 			productName = "React-tvOS";
@@ -1442,6 +1561,71 @@
 			productReference = 3D3C06751DE3340C00C268FA /* libCSSLayout-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		3D3CD8FF1DE5FBD600167DC4 /* jschelpers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D3CD9081DE5FBD600167DC4 /* Build configuration list for PBXNativeTarget "jschelpers" */;
+			buildPhases = (
+				3D3CD9001DE5FBD600167DC4 /* Headers */,
+				3D3CD9051DE5FBD600167DC4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = jschelpers;
+			productName = React;
+			productReference = 3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3D3CD90C1DE5FBD800167DC4 /* jschelpers-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D3CD9151DE5FBD800167DC4 /* Build configuration list for PBXNativeTarget "jschelpers-tvOS" */;
+			buildPhases = (
+				3D3CD90D1DE5FBD800167DC4 /* Headers */,
+				3D3CD9121DE5FBD800167DC4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "jschelpers-tvOS";
+			productName = "React-tvOS";
+			productReference = 3D3CD9181DE5FBD800167DC4 /* libjschelpers-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3D3CD9191DE5FBEC00167DC4 /* cxxreact */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D3CD9221DE5FBEC00167DC4 /* Build configuration list for PBXNativeTarget "cxxreact" */;
+			buildPhases = (
+				3D3CD91A1DE5FBEC00167DC4 /* Headers */,
+				3D3CD91F1DE5FBEC00167DC4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3D3CD9501DE5FDB900167DC4 /* PBXTargetDependency */,
+			);
+			name = cxxreact;
+			productName = React;
+			productReference = 3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D3CD92F1DE5FBEE00167DC4 /* Build configuration list for PBXNativeTarget "cxxreact-tvOS" */;
+			buildPhases = (
+				3D3CD9271DE5FBEE00167DC4 /* Headers */,
+				3D3CD92C1DE5FBEE00167DC4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "cxxreact-tvOS";
+			productName = "React-tvOS";
+			productReference = 3D3CD9321DE5FBEE00167DC4 /* libcxxreact-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		83CBBA2D1A601D0E00E9B192 /* React */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 83CBBA3F1A601D0F00E9B192 /* Build configuration list for PBXNativeTarget "React" */;
@@ -1455,7 +1639,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				3D14D9F41DE48E1F00386448 /* PBXTargetDependency */,
+				3D3CD94A1DE5FCE700167DC4 /* PBXTargetDependency */,
+				3D3CD94C1DE5FCE700167DC4 /* PBXTargetDependency */,
+				3D3CD94E1DE5FCE700167DC4 /* PBXTargetDependency */,
 			);
 			name = React;
 			productName = React;
@@ -1497,6 +1683,10 @@
 				2D2A28121D9B038B00D4039D /* React-tvOS */,
 				3D3C04B91DE3340900C268FA /* CSSLayout */,
 				3D3C059B1DE3340C00C268FA /* CSSLayout-tvOS */,
+				3D3CD9191DE5FBEC00167DC4 /* cxxreact */,
+				3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */,
+				3D3CD8FF1DE5FBD600167DC4 /* jschelpers */,
+				3D3CD90C1DE5FBD800167DC4 /* jschelpers-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -1589,7 +1779,6 @@
 				2D3B5EF11D9B09E700451313 /* UIView+React.m in Sources */,
 				2D3B5E931D9B087300451313 /* RCTErrorInfo.m in Sources */,
 				2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */,
-				2D3B5EAD1D9B08F200451313 /* RCTJSCWrapper.mm in Sources */,
 				2D3B5EBA1D9B092100451313 /* RCTI18nUtil.m in Sources */,
 				2D3B5EB41D9B090A00451313 /* RCTDevLoadingView.m in Sources */,
 				2D3B5EED1D9B09D700451313 /* RCTTabBarManager.m in Sources */,
@@ -1602,6 +1791,7 @@
 				2D3B5EEB1D9B09D000451313 /* RCTTabBarItem.m in Sources */,
 				2D3B5E961D9B088500451313 /* RCTBatchedBridge.m in Sources */,
 				2D3B5ED41D9B097D00451313 /* RCTModalHostView.m in Sources */,
+				3D7A27E01DE32559002E3F95 /* JSCWrapper.cpp in Sources */,
 				2D3B5E9F1D9B08AF00451313 /* RCTKeyCommands.m in Sources */,
 				2D3B5EA51D9B08C700451313 /* RCTRootView.m in Sources */,
 				2D3B5EAC1D9B08EF00451313 /* RCTJSCExecutor.mm in Sources */,
@@ -1612,15 +1802,18 @@
 				2D3B5ECC1D9B096500451313 /* RCTConvert+MapKit.m in Sources */,
 				2D3B5E981D9B089500451313 /* RCTConvert.m in Sources */,
 				2D3B5EA71D9B08CE00451313 /* RCTTouchHandler.m in Sources */,
+				3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */,
 				2D3B5EA41D9B08C200451313 /* RCTPerformanceLogger.m in Sources */,
 				2D3B5E9E1D9B08AD00451313 /* RCTJSStackFrame.m in Sources */,
 				2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */,
 				2D3B5EB81D9B091B00451313 /* RCTSourceCode.m in Sources */,
 				2D3B5EB51D9B091100451313 /* RCTDevMenu.m in Sources */,
 				2D3B5EBD1D9B092A00451313 /* RCTTiming.m in Sources */,
+				3D3CD8F81DE5FB2D00167DC4 /* JSBundleType.cpp in Sources */,
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
 				2D3B5EC61D9B095000451313 /* RCTProfileTrampoline-x86_64.S in Sources */,
+				3D7A27E31DE325DA002E3F95 /* RCTJSCErrorHandling.mm in Sources */,
 				2D3B5ED01D9B097200451313 /* RCTMap.m in Sources */,
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
@@ -1667,6 +1860,42 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3D3CD9051DE5FBD600167DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD9061DE5FBD600167DC4 /* CSSLayout.c in Sources */,
+				3D3CD9071DE5FBD600167DC4 /* CSSNodeList.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD9121DE5FBD800167DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD9131DE5FBD800167DC4 /* CSSLayout.c in Sources */,
+				3D3CD9141DE5FBD800167DC4 /* CSSNodeList.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD91F1DE5FBEC00167DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD9201DE5FBEC00167DC4 /* CSSLayout.c in Sources */,
+				3D3CD9211DE5FBEC00167DC4 /* CSSNodeList.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D3CD92C1DE5FBEE00167DC4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D3CD92D1DE5FBEE00167DC4 /* CSSLayout.c in Sources */,
+				3D3CD92E1DE5FBEE00167DC4 /* CSSNodeList.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		83CBBA2A1A601D0E00E9B192 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1698,6 +1927,7 @@
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,
 				3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */,
+				3D7A27DF1DE32541002E3F95 /* JSCWrapper.cpp in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,
 				13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */,
@@ -1716,6 +1946,7 @@
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
 				13B080051A6947C200A75B9A /* RCTScrollView.m in Sources */,
 				E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */,
+				3D7A27E21DE325B7002E3F95 /* RCTJSCErrorHandling.mm in Sources */,
 				13A0C2891B74F71200B29F6F /* RCTDevLoadingView.m in Sources */,
 				13B07FF21A69327A00A75B9A /* RCTTiming.m in Sources */,
 				1372B70A1AB030C200659ED6 /* RCTAppState.m in Sources */,
@@ -1724,7 +1955,6 @@
 				13E067591A70F44B002CDEE1 /* UIView+React.m in Sources */,
 				14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */,
 				13D033631C1837FE0021DC29 /* RCTClipboard.m in Sources */,
-				85C199EE1CD2407900DAD810 /* RCTJSCWrapper.mm in Sources */,
 				14C2CA741B3AC64300E6CBB2 /* RCTModuleData.mm in Sources */,
 				142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */,
 				83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */,
@@ -1759,7 +1989,6 @@
 				B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */,
 				13B0801A1A69489C00A75B9A /* RCTNavigator.m in Sources */,
 				137327E71AA5CF210034F82E /* RCTTabBar.m in Sources */,
-				3DC724321D8BF99A00808C32 /* RCTJSCErrorHandling.m in Sources */,
 				13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */,
 				83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */,
 				14435CE51AAC4AE100FC20F4 /* RCTMap.m in Sources */,
@@ -1777,15 +2006,40 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3D14D9F21DE48E1600386448 /* PBXTargetDependency */ = {
+		3D0574551DE5FF9600184BB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3D3C059B1DE3340C00C268FA /* CSSLayout-tvOS */;
-			targetProxy = 3D14D9F11DE48E1600386448 /* PBXContainerItemProxy */;
+			targetProxy = 3D0574541DE5FF9600184BB4 /* PBXContainerItemProxy */;
 		};
-		3D14D9F41DE48E1F00386448 /* PBXTargetDependency */ = {
+		3D0574571DE5FF9600184BB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */;
+			targetProxy = 3D0574561DE5FF9600184BB4 /* PBXContainerItemProxy */;
+		};
+		3D0574591DE5FF9600184BB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3CD90C1DE5FBD800167DC4 /* jschelpers-tvOS */;
+			targetProxy = 3D0574581DE5FF9600184BB4 /* PBXContainerItemProxy */;
+		};
+		3D3CD94A1DE5FCE700167DC4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3D3C04B91DE3340900C268FA /* CSSLayout */;
-			targetProxy = 3D14D9F31DE48E1F00386448 /* PBXContainerItemProxy */;
+			targetProxy = 3D3CD9491DE5FCE700167DC4 /* PBXContainerItemProxy */;
+		};
+		3D3CD94C1DE5FCE700167DC4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3CD9191DE5FBEC00167DC4 /* cxxreact */;
+			targetProxy = 3D3CD94B1DE5FCE700167DC4 /* PBXContainerItemProxy */;
+		};
+		3D3CD94E1DE5FCE700167DC4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3CD8FF1DE5FBD600167DC4 /* jschelpers */;
+			targetProxy = 3D3CD94D1DE5FCE700167DC4 /* PBXContainerItemProxy */;
+		};
+		3D3CD9501DE5FDB900167DC4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D3CD8FF1DE5FBD600167DC4 /* jschelpers */;
+			targetProxy = 3D3CD94F1DE5FDB900167DC4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1902,6 +2156,154 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/CSSLayout;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
+		3D3CD9091DE5FBD600167DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		3D3CD90A1DE5FBD600167DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		3D3CD9161DE5FBD800167DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		3D3CD9171DE5FBD800167DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Release;
+		};
+		3D3CD9231DE5FBEC00167DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/cxxreact;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		3D3CD9241DE5FBEC00167DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/cxxreact;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		3D3CD9301DE5FBEE00167DC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/cxxreact;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
+			};
+			name = Debug;
+		};
+		3D3CD9311DE5FBEE00167DC4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/cxxreact;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
@@ -2062,6 +2464,42 @@
 			buildConfigurations = (
 				3D3C06731DE3340C00C268FA /* Debug */,
 				3D3C06741DE3340C00C268FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D3CD9081DE5FBD600167DC4 /* Build configuration list for PBXNativeTarget "jschelpers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D3CD9091DE5FBD600167DC4 /* Debug */,
+				3D3CD90A1DE5FBD600167DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D3CD9151DE5FBD800167DC4 /* Build configuration list for PBXNativeTarget "jschelpers-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D3CD9161DE5FBD800167DC4 /* Debug */,
+				3D3CD9171DE5FBD800167DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D3CD9221DE5FBEC00167DC4 /* Build configuration list for PBXNativeTarget "cxxreact" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D3CD9231DE5FBEC00167DC4 /* Debug */,
+				3D3CD9241DE5FBEC00167DC4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D3CD92F1DE5FBEE00167DC4 /* Build configuration list for PBXNativeTarget "cxxreact-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D3CD9301DE5FBEE00167DC4 /* Debug */,
+				3D3CD9311DE5FBEE00167DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

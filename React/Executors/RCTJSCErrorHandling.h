@@ -11,8 +11,6 @@
 
 #import <React/RCTDefines.h>
 
-typedef struct RCTJSCWrapper RCTJSCWrapper;
-
 /**
  Translates a given exception into an NSError.
 
@@ -32,4 +30,4 @@ RCT_EXTERN NSError *RCTNSErrorFromJSError(JSValue *exception);
 
  @see RCTNSErrorFromJSError for details
  */
-RCT_EXTERN NSError *RCTNSErrorFromJSErrorRef(JSValueRef exception, JSGlobalContextRef ctx, RCTJSCWrapper *jscWrapper);
+RCT_EXTERN NSError *RCTNSErrorFromJSErrorRef(JSValueRef exceptionRef, JSGlobalContextRef ctx);

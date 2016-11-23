@@ -9,9 +9,10 @@
 
 #include "RCTJSCErrorHandling.h"
 
+#import <jschelpers/JavaScriptCore.h>
+
 #import "RCTAssert.h"
 #import "RCTJSStackFrame.h"
-#import "RCTJSCWrapper.h"
 
 NSString *const RCTJSExceptionUnsymbolicatedStackTraceKey = @"RCTJSExceptionUnsymbolicatedStackTraceKey";
 
@@ -31,9 +32,9 @@ NSError *RCTNSErrorFromJSError(JSValue *exception)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:userInfo];
 }
 
-NSError *RCTNSErrorFromJSErrorRef(JSValueRef exceptionRef, JSGlobalContextRef ctx, RCTJSCWrapper *jscWrapper)
+NSError *RCTNSErrorFromJSErrorRef(JSValueRef exceptionRef, JSGlobalContextRef ctx)
 {
-  JSContext *context = [jscWrapper->JSContext contextWithJSGlobalContextRef:ctx];
-  JSValue *exception = [jscWrapper->JSValue valueWithJSValueRef:exceptionRef inContext:context];
+  JSContext *context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];
+  JSValue *exception = [JSC_JSValue(ctx) valueWithJSValueRef:exceptionRef inContext:context];
   return RCTNSErrorFromJSError(exception);
 }
