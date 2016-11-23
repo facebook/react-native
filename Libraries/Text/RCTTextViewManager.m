@@ -14,6 +14,7 @@
 #import "RCTShadowView.h"
 #import "RCTTextView.h"
 #import "RCTFont.h"
+#import "RCTConvert+Text.h"
 
 @implementation RCTTextViewManager
 
@@ -25,7 +26,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
-RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_REMAP_VIEW_PROPERTY(autoCorrect, autocorrectionType, UITextAutocorrectionType)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textView.textColor, UIColor)

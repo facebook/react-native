@@ -13,6 +13,7 @@
 #import "RCTShadowView.h"
 #import "RCTTextField.h"
 #import "RCTFont.h"
+#import "RCTConvert+Text.h"
 
 @interface RCTTextFieldManager() <UITextFieldDelegate>
 
@@ -75,7 +76,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_REMAP_VIEW_PROPERTY(autoCorrect, autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(editable, enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
