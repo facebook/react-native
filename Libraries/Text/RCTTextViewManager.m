@@ -27,13 +27,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, autocorrectionType, UITextAutocorrectionType)
-RCT_CUSTOM_VIEW_PROPERTY(spellCheck, NSString, RCTTextView)
-{
-  view.spellCheckingType =
-    json == nil ? UITextSpellCheckingTypeDefault :
-    [RCTConvert BOOL:json] ? UITextSpellCheckingTypeYes :
-    UITextSpellCheckingTypeNo;
-}
+RCT_REMAP_VIEW_PROPERTY(spellCheck, spellCheckingType, UITextSpellCheckingType)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textView.textColor, UIColor)
