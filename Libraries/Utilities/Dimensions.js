@@ -72,7 +72,7 @@ class Dimensions {
    * than caching the value (for example, using inline styles rather than
    * setting a value in a `StyleSheet`).
    *
-   * Example: `var {height, width} = Dimensions.get('window');`
+   * Example: `var {width, height} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
