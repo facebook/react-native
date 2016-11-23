@@ -816,7 +816,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     NSString *property = deleteAnimation.property;
     [deleteAnimation performAnimations:^{
       if ([property isEqualToString:@"scaleXY"]) {
-        removedChild.layer.transform = CATransform3DMakeScale(0, 0, 0);
+        removedChild.layer.transform = CATransform3DMakeScale(0.001, 0.001, 0.001);
       } else if ([property isEqualToString:@"opacity"]) {
         removedChild.layer.opacity = 0.0;
       } else {
