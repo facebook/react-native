@@ -596,7 +596,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       ReactShadowNode child = node.getChildAt(i);
       if (child.isVirtual()) {
-        markLayoutSeenRecursively(child);
         continue;
       }
 
@@ -615,21 +614,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     node.resetUpdated();
 
     return updated;
-  }
-
-  /**
-   * Recursively walks this node and child nodes, marking the layout state as UP_TO_DATE.
-   *
-   * @param node The node to recur down from.
-   */
-  private void markLayoutSeenRecursively(ReactShadowNode node) {
-    if (node.hasNewLayout()) {
-      node.markLayoutSeen();
-    }
-
-    for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
-      markLayoutSeenRecursively(node.getChildAt(i));
-    }
   }
 
   /**
