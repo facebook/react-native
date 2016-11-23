@@ -77,11 +77,15 @@ public class ReactShadowNode {
   private final CSSNode mCSSNode;
 
   public ReactShadowNode() {
-    CSSNode node = CSSNodePool.get().acquire();
-    if (node == null) {
-      node = new CSSNode();
+    if (!isVirtual()) {
+      CSSNode node = CSSNodePool.get().acquire();
+      if (node == null) {
+        node = new CSSNode();
+      }
+      mCSSNode = node;
+    } else {
+      mCSSNode = null;
     }
-    mCSSNode = node;
   }
 
   /**
@@ -108,7 +112,7 @@ public class ReactShadowNode {
   }
 
   public final boolean hasUpdates() {
-    return mNodeUpdated || hasNewLayout() || mCSSNode.isDirty();
+    return mNodeUpdated || hasNewLayout() || isDirty();
   }
 
   public final void markUpdateSeen() {
@@ -139,6 +143,10 @@ public class ReactShadowNode {
     }
   }
 
+  public final boolean isDirty() {
+    return mCSSNode != null && mCSSNode.isDirty();
+  }
+
   public void addChildAt(ReactShadowNode child, int i) {
     if (child.mParent != null) {
       throw new IllegalViewOperationException(
@@ -152,8 +160,13 @@ public class ReactShadowNode {
 
     // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
     // more, it asserts that you don't add children to nodes with measure functions.
-    if (!mCSSNode.isMeasureDefined()) {
-      mCSSNode.addChildAt(child.mCSSNode, i);
+    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
+      CSSNode childCSSNode = child.mCSSNode;
+      if (childCSSNode == null) {
+        throw new RuntimeException(
+          "Cannot add a child that doesn't have a CSS node to a node without a measure function!");
+      }
+      mCSSNode.addChildAt(childCSSNode, i);
     }
     markUpdated();
 
@@ -171,7 +184,7 @@ public class ReactShadowNode {
     ReactShadowNode removed = mChildren.remove(i);
     removed.mParent = null;
 
-    if (!mCSSNode.isMeasureDefined()) {
+    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
       mCSSNode.removeChildAt(i);
     }
     markUpdated();
@@ -205,7 +218,7 @@ public class ReactShadowNode {
 
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      if (!mCSSNode.isMeasureDefined()) {
+      if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
         mCSSNode.removeChildAt(i);
       }
       ReactShadowNode toRemove = getChildAt(i);
@@ -344,11 +357,13 @@ public class ReactShadowNode {
   }
 
   public final boolean hasNewLayout() {
-    return mCSSNode.hasNewLayout();
+    return mCSSNode == null ? false : mCSSNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
-    mCSSNode.markLayoutSeen();
+    if (mCSSNode != null) {
+      mCSSNode.markLayoutSeen();
+    }
   }
 
   /**
@@ -666,7 +681,9 @@ public class ReactShadowNode {
   }
 
   public void dispose() {
-    mCSSNode.reset();
-    CSSNodePool.get().release(mCSSNode);
+    if (mCSSNode != null) {
+      mCSSNode.reset();
+      CSSNodePool.get().release(mCSSNode);
+    }
   }
 }

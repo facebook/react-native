@@ -18,8 +18,10 @@ import android.content.res.Resources;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.csslayout.CSSConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -33,6 +35,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   private @Nullable Uri mUri;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
+  private float mWidth = CSSConstants.UNDEFINED;
+  private float mHeight = CSSConstants.UNDEFINED;
 
   public FrescoBasedReactTextInlineImageShadowNode(
     AbstractDraweeControllerBuilder draweeControllerBuilder,
@@ -66,6 +70,19 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mUri = uri;
   }
 
+  /**
+   * Besides width/height, all other layout props on inline images are ignored
+   */
+  @Override
+  public void setWidth(float width) {
+    mWidth = width;
+  }
+
+  @Override
+  public void setHeight(float height) {
+    mHeight = height;
+  }
+
   public @Nullable Uri getUri() {
     return mUri;
   }
@@ -94,8 +111,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   @Override
   public TextInlineImageSpan buildInlineImageSpan() {
     Resources resources = getThemedContext().getResources();
-    int height = (int) Math.ceil(getStyleHeight());
-    int width = (int) Math.ceil(getStyleWidth());
+    int height = (int) Math.ceil(mWidth);
+    int width = (int) Math.ceil(mHeight);
     return new FrescoBasedReactTextInlineImageSpan(
       resources,
       height,

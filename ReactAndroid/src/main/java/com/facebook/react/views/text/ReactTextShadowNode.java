@@ -347,14 +347,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private @Nullable String mText = null;
 
   private @Nullable Spannable mPreparedSpannableText;
-  private final boolean mIsVirtual;
 
   protected boolean mContainsImages = false;
   private float mHeightOfTallestInlineImage = Float.NaN;
 
-  public ReactTextShadowNode(boolean isVirtual) {
-    mIsVirtual = isVirtual;
-    if (!isVirtual) {
+  public ReactTextShadowNode() {
+    if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
     }
   }
@@ -383,7 +381,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public void onBeforeLayout() {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     mPreparedSpannableText = fromTextCSSNode(this);
@@ -394,7 +392,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public void markUpdated() {
     super.markUpdated();
     // We mark virtual anchor node as dirty as updated text needs to be re-measured
-    if (!mIsVirtual) {
+    if (!isVirtual()) {
       super.dirty();
     }
   }
@@ -566,17 +564,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public boolean isVirtualAnchor() {
-    return !mIsVirtual;
-  }
-
-  @Override
-  public boolean isVirtual() {
-    return mIsVirtual;
+    return !isVirtual();
   }
 
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     super.onCollectExtraUpdates(uiViewOperationQueue);
