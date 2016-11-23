@@ -181,6 +181,8 @@
 		58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
 		58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
+		6EB564D91DB5F776008F7F2A /* RCTWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EB564D51DB5F776008F7F2A /* RCTWKWebView.m */; };
+		6EB564DA1DB5F776008F7F2A /* RCTWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EB564D71DB5F776008F7F2A /* RCTWKWebViewManager.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
 		83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8B1B62640A00BE0E65 /* RCTModalHostView.m */; };
@@ -409,6 +411,10 @@
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
+		6EB564D51DB5F776008F7F2A /* RCTWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebView.m; sourceTree = "<group>"; };
+		6EB564D61DB5F776008F7F2A /* RCTWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebView.h; sourceTree = "<group>"; };
+		6EB564D71DB5F776008F7F2A /* RCTWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebViewManager.m; sourceTree = "<group>"; };
+		6EB564D81DB5F776008F7F2A /* RCTWKWebViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebViewManager.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
@@ -633,6 +639,10 @@
 				13C156021AB1A2840079392D /* RCTWebView.m */,
 				13C156031AB1A2840079392D /* RCTWebViewManager.h */,
 				13C156041AB1A2840079392D /* RCTWebViewManager.m */,
+				6EB564D51DB5F776008F7F2A /* RCTWKWebView.m */,
+				6EB564D61DB5F776008F7F2A /* RCTWKWebView.h */,
+				6EB564D71DB5F776008F7F2A /* RCTWKWebViewManager.m */,
+				6EB564D81DB5F776008F7F2A /* RCTWKWebViewManager.h */,
 				13B080231A694A8400A75B9A /* RCTWrapperViewController.h */,
 				13B080241A694A8400A75B9A /* RCTWrapperViewController.m */,
 				83F15A171B7CC46900F10295 /* UIView+Private.h */,
@@ -1048,6 +1058,7 @@
 				3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */,
 				13B080061A6947C200A75B9A /* RCTScrollViewManager.m in Sources */,
 				14200DAA1AC179B3008EE6BA /* RCTJavaScriptLoader.m in Sources */,
+				6EB564D91DB5F776008F7F2A /* RCTWKWebView.m in Sources */,
 				137327EA1AA5CF210034F82E /* RCTTabBarManager.m in Sources */,
 				369123E11DDC75850095B341 /* JSCSamplingProfiler.m in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
@@ -1075,6 +1086,7 @@
 				13D9FEEE1CDCD93000158BD7 /* RCTKeyboardObserver.m in Sources */,
 				B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */,
 				133683521D37ACA10077D0C3 /* CSSLayout.c in Sources */,
+				6EB564DA1DB5F776008F7F2A /* RCTWKWebViewManager.m in Sources */,
 				13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */,
 				137327E91AA5CF210034F82E /* RCTTabBarItemManager.m in Sources */,
 				13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */,

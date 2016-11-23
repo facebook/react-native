@@ -518,6 +518,7 @@ const components = [
   '../Libraries/Components/View/View.js',
   '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
   '../Libraries/Components/WebView/WebView.ios.js',
+  '../Libraries/Components/WKWebViewIOS/WKWebViewIOS.ios.js',
 ];
 
 const apis = [
