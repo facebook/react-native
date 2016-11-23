@@ -364,7 +364,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   }
 
   /**
-   * Called when a mContentView's layout has changed.
+   * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
+   * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
+   * position is larger than the ScrollView's max scroll position after the content shrinks.
    */
   @Override
   public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
