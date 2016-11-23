@@ -378,7 +378,7 @@ class Shape extends React.Component {
     var d = new Path(path).toJSON();
     var gradientData = [];
     if (props.gradientStroke != null) {
-        insertColorsIntoArray(props.gradientStroke, gradientData, 0);
+      insertColorsIntoArray(props.gradientStroke, gradientData, 0);
     }
     
     return (

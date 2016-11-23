@@ -1,4 +1,4 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -47,6 +47,7 @@
       }
     }
   }
+  
   if (self.stroke && !self.gradientStroke.count) {
     CGContextSetStrokeColorWithColor(context, self.stroke);
     CGContextSetLineWidth(context, self.strokeWidth);
