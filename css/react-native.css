@@ -625,10 +625,6 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   }
 }
 
-.nav-blog li {
-  margin-bottom: 5px;
-}
-
 .home-section {
   margin: 50px 0;
 }
@@ -827,7 +823,9 @@ h2 {
 }
 
 .docs-prevnext {
-  padding-top: 20px;
+  min-width: 320px;
+  max-width: 640px;
+  margin: 0 auto 40px;
   padding-bottom: 20px;
 }
 
@@ -1656,7 +1654,7 @@ input#algolia-doc-search:focus {
 /** Blog **/
 
 .entry-header {
-  margin: 40px 0 0 0;
+  margin: 0;
 }
 
 .entry-header h1 {
@@ -1667,16 +1665,17 @@ input#algolia-doc-search:focus {
 
 .entry-header h4 {
   margin: 0 0 10px;
-  font-size: 12px;
   line-height: 16px;
+  font-size: 14px;
 }
 
 .entry-header .author {
   color: #5A6b77;
+  font-weight: 700;
 }
 
 .entry-header .date {
-  color: #66637A;
+  color: rgba(102,99,122,.5);
 }
 
 .entry-readmore {
@@ -1687,6 +1686,20 @@ input#algolia-doc-search:focus {
   padding: 36px 0;
   display: block;
   text-align: left;
+}
+
+.entry-excerpt {
+  min-width: 320px;
+  max-width: 640px;
+  margin: 0 auto 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #EDEDED;
+}
+
+.entry-body {
+  min-width: 320px;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .small-title {
@@ -1819,6 +1832,11 @@ article li {
   }
 }
 
+#mc_embed_signup {
+  clear:left;
+  width:100%;
+}
+
 /** Help **/
 .helpSection h2 {
   font-size: 24px;
@@ -1896,7 +1914,7 @@ footer .sitemap {
   display: flex;
   justify-content: space-between;
   max-width: 1080px;
-  margin: 0 auto 3em;
+  margin: 0 auto 1em;
 }
 footer .sitemap div {
   flex: 1;
@@ -1914,8 +1932,16 @@ footer .sitemap .nav-home:hover,
 footer .sitemap .nav-home:focus {
   opacity: 1.0;
 }
-@media screen and (max-width: 740px) {
+@media screen and (max-width: 768px) {
   footer .sitemap {
+    display: none;
+  }
+
+  footer .newsletter {
+    display: none;
+  }
+
+  #mc_embed_signup {
     display: none;
   }
 }
@@ -1963,4 +1989,16 @@ footer .fbOpenSource:hover {
 footer .copyright {
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
+}
+
+footer .newsletter {
+  display: flex;
+  justify-content: space-between;
+  max-width: 640px;
+  margin: 0 auto 1em;
+}
+
+footer .newsletter h5 {
+  color: #05A5D1;
+  margin: 0 0 10px;
 }
