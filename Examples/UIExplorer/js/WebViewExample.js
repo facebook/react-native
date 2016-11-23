@@ -184,7 +184,7 @@ class Button extends React.Component {
   }
 }
 
-class ControlledWebView extends React.Component {
+class BlockableWebView extends React.Component {
   state = {
     policies: [
       {
@@ -517,7 +517,7 @@ exports.examples = [
     render(): ReactElement<any> { return <MessagingTest />; }
   },
   {
-    title: 'Controlled Navigation',
-    render(): React.Element<any> { return <ControlledWebView/>; }
+    title: 'Blockable Navigation',
+    render(): React.Element<any> { return <BlockableWebView/>; }
   }
 ];

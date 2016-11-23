@@ -222,7 +222,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
   BOOL isLoadingSourceURL = ([sourceURL isEqualToString:requestURL] && !_webView.isLoading);
   
-  // skip this for the JS Navigation handler, initial load, iFrames and non-http(s) requests
+  // skip this for the JS Navigation handler, initial load, iFrames
   if (!isJSNavigation && isTopFrame && !isLoadingSourceURL) {
     if (_navigationBlockingPolicies.count > 0) {
       NSDictionary *currentValues = @{
