@@ -20,7 +20,7 @@ const getPackageName = (manifest) => manifest.attr.package;
  * Gets windows project config by analyzing given folder and taking some
  * defaults specified by user into consideration
  */
-exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
+exports.projectConfig = function projectConfigWindows(folder, userConfig) {
   const src = userConfig.sourceDir || findWindowsAppFolder(folder);
 
   if (!src) {
@@ -84,7 +84,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
  * Same as projectConfigWindows except it returns
  * different config that applies to packages only
  */
-exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) {
+exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) {
   const src = userConfig.sourceDir || findWindowsAppFolder(folder);
 
   if (!src) {
