@@ -2379,12 +2379,6 @@ module.exports = {
   ValueXY: AnimatedValueXY,
 
   /**
-   * Provides access to the AnimatedInterpolation type returned by calling
-   * interpolate on a value.
-   */
-  Interpolation: AnimatedInterpolation,
-
-  /**
    * Animates a value from an initial velocity to zero based on a decay
    * coefficient.
    */
@@ -2482,3 +2476,5 @@ module.exports = {
 
   __PropsOnlyForTests: AnimatedProps,
 };
+
+export type AnimatedInterpolation = AnimatedInterpolation;
