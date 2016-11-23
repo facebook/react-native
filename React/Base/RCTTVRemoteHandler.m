@@ -22,8 +22,6 @@
 #import "RCTTVNavigationEventEmitter.h"
 
 @implementation RCTTVRemoteHandler
-{
-}
 
 - (instancetype)init
 {
