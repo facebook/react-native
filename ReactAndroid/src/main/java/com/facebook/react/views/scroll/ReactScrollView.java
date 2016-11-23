@@ -349,31 +349,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void onChildViewAdded(View parent, View child) {
-    setContentView(1 /* expectedChildCount */);
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
   }
 
   @Override
   public void onChildViewRemoved(View parent, View child) {
-    setContentView(0 /* expectedChildCount */);
-
-  }
-
-  private void setContentView(int expectedChildCount) {
-    if (mContentView != null) {
-      mContentView.removeOnLayoutChangeListener(this);
-    }
-    if (getChildCount() != expectedChildCount) {
-      FLog.w(
-              ReactConstants.TAG,
-              String.format("Expected %s children for ReactScrollView, found %s.", expectedChildCount, getChildCount()));
-    }
-
-    if (getChildCount() > 0) {
-      mContentView = getChildAt(0);
-      mContentView.addOnLayoutChangeListener(this);
-    } else { // no children
-      mContentView = null;
-    }
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
   }
 
   /**
