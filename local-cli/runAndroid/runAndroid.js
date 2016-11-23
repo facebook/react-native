@@ -156,6 +156,20 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
+    const variantName = args.variant || 'debug';
+    const gradleFile = fs.readFileSync('app/build.gradle', 'utf8');
+
+    const appId = gradleFile.match(/applicationId "(.+?)"/)[1];
+    const buildTypes = gradleFile.substr(gradleFile.indexOf('buildTypes'));
+    const buildLoc = buildTypes.indexOf(variantName);
+    let appIdSuffix = '';
+    if (buildLoc >= 0) {
+        const buildSectionPlus = buildTypes.substr(buildLoc);
+        const buildSection = buildSectionPlus.substr(0, buildSectionPlus.indexOf('}'));
+        appIdSuffix = buildSection.match(/applicationIdSuffix "(.+?)"/)[1];
+    }
+
+
     const adbPath = getAdbPath();
 
     const devices = adb.getDevices();
@@ -164,7 +178,7 @@ function buildAndRun(args) {
       devices.forEach((device) => {
 
         const adbArgs =
-          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+          ['-s', device, 'shell', 'am', 'start', '-n', appId + appIdSuffix + '/' + packageName + '.MainActivity'];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
