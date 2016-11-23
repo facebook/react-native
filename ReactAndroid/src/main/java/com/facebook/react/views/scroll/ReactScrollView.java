@@ -304,6 +304,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
   }
 
+  private int getMaxScrollY() {
+    int contentHeight = mContentView.getHeight();
+    int viewportHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+    return Math.max(0, contentHeight - viewportHeight);
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
@@ -332,10 +338,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
-        int scrollRange = Math.max(
-          0,
-          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
-        if (scrollY >= scrollRange) {
+        int scrollRange = getMaxScrollY();
+        if (scrollY >= getMaxScrollY()) {
           mScroller.abortAnimation();
           scrollY = scrollRange;
         }
@@ -371,12 +375,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       return;
     }
 
-    int contentHeight = mContentView.getMeasuredHeight();
     int currentScrollY = getScrollY();
-    int thisHeight = getMeasuredHeight();
-
-    int maxScrollY = Math.max(0, contentHeight - thisHeight);
-
+    int maxScrollY = getMaxScrollY();
     if (currentScrollY > maxScrollY) {
       scrollTo(getScrollX(), maxScrollY);
     }
