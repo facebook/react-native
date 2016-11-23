@@ -83,6 +83,15 @@
 - (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
 
 /**
+ * Configure whether the JSCExecutor created should use the system JSC API or
+ * alternative hooks provided. When returning YES from this method, you must have
+ * previously called facebook::react::setCustomJSCWrapper.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
+
+/**
  * The bridge will automatically attempt to load the JS source code from the
  * location specified by the `sourceURLForBridge:` method, however, if you want
  * to handle loading the JS yourself, you can do so by implementing this method.
