@@ -47,24 +47,23 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 - (void)testShowCreatingActionSheet
 {
-  XCTAssertNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
+  XCTAssertFalse(_bridge.devMenu.isActionSheetShown);
   [_bridge.devMenu show];
-  XCTAssertNotNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
+  XCTAssertTrue(_bridge.devMenu.isActionSheetShown);
 }
 
 
 - (void)testClosingActionSheetAfterAction
 {
-  NSArray<RCTDevMenuItem *> *devItems = [_bridge.devMenu valueForKey:@"_presentedItems"];
-  for (RCTDevMenuItem *item in devItems) {
+  for (RCTDevMenuItem *item in _bridge.devMenu.presentedItems) {
     RCTDevMenuAlertActionHandler handler = [_bridge.devMenu alertActionHandlerForDevItem:item];
-    XCTAssertNotNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
+    XCTAssertTrue(_bridge.devMenu.isActionSheetShown);
     
     handler(nil);
-    XCTAssertNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
+    XCTAssertFalse(_bridge.devMenu.isActionSheetShown);
     
     [_bridge.devMenu show];
-    XCTAssertNotNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
+    XCTAssertTrue(_bridge.devMenu.isActionSheetShown);
   }
 }
 

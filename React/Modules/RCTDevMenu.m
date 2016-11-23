@@ -146,7 +146,6 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
-  NSArray<RCTDevMenuItem *> *_presentedItems;
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
   NSString *_webSocketExecutorName;
   NSString *_executorOverride;
@@ -695,6 +694,11 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
   }];
 
   [_updateTask resume];
+}
+
+- (BOOL)isActionSheetShown
+{
+  return _actionSheet != nil;
 }
 
 @end
