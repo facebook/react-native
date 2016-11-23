@@ -149,7 +149,9 @@ load the view for the new route.</p></div><div><strong>Parameters:</strong><tabl
 const React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const ViewExample <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./ViewExample&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 const createExamplePage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./createExamplePage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+const nativeImageSource <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;nativeImageSource&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const <span class="token punctuation">{</span>
   AlertIOS<span class="token punctuation">,</span>
   NavigatorIOS<span class="token punctuation">,</span>
@@ -231,7 +233,11 @@ class <span class="token class-name">NavigatorIOSExamplePage</span> extends <spa
               component<span class="token punctuation">:</span> EmptyPage<span class="token punctuation">,</span>
               leftButtonTitle<span class="token punctuation">:</span> <span class="token string">&#x27;Custom Left&#x27;</span><span class="token punctuation">,</span>
               onLeftButtonPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">pop<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-              rightButtonIcon<span class="token punctuation">:</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!NavBarButtonPlus&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+              rightButtonIcon<span class="token punctuation">:</span> <span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+                ios<span class="token punctuation">:</span> <span class="token string">&#x27;NavBarButtonPlus&#x27;</span><span class="token punctuation">,</span>
+                width<span class="token punctuation">:</span> <span class="token number">17</span><span class="token punctuation">,</span>
+                height<span class="token punctuation">:</span> <span class="token number">17</span>
+              <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
               onRightButtonPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
                 AlertIOS<span class="token punctuation">.</span><span class="token function">alert<span class="token punctuation">(</span></span>
                   <span class="token string">&#x27;Bar Button Action&#x27;</span><span class="token punctuation">,</span>

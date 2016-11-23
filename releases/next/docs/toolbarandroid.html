@@ -35,6 +35,8 @@ In addition to this property you need to add</p><p>  android:supportsRtl=&quot;t
 
 <span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> nativeImageSource <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;nativeImageSource&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
@@ -65,7 +67,11 @@ class <span class="token class-name">ToolbarAndroidExample</span> extends <span 
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Toolbar with title/subtitle and actions&quot;</span><span class="token operator">&gt;</span>
           &lt;ToolbarAndroid
             actions<span class="token operator">=</span><span class="token punctuation">{</span>toolbarActions<span class="token punctuation">}</span>
-            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_menu_black_24dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+              android<span class="token punctuation">:</span> <span class="token string">&#x27;ic_menu_black_24dp&#x27;</span><span class="token punctuation">,</span>
+              width<span class="token punctuation">:</span> <span class="token number">48</span><span class="token punctuation">,</span>
+              height<span class="token punctuation">:</span> <span class="token number">48</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             onActionSelected<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onActionSelected<span class="token punctuation">}</span>
             onIconClicked<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>actionText<span class="token punctuation">:</span> <span class="token string">&#x27;Icon clicked&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>toolbar<span class="token punctuation">}</span>
@@ -75,7 +81,11 @@ class <span class="token class-name">ToolbarAndroidExample</span> extends <span 
         &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Toolbar with logo &amp; custom title view (a View with Switch+Text)&quot;</span><span class="token operator">&gt;</span>
           &lt;ToolbarAndroid
-            logo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!launcher_icon&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            logo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+              android<span class="token punctuation">:</span> <span class="token string">&#x27;launcher_icon&#x27;</span><span class="token punctuation">,</span>
+              width<span class="token punctuation">:</span> <span class="token number">132</span><span class="token punctuation">,</span>
+              height<span class="token punctuation">:</span> <span class="token number">144</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>toolbar<span class="token punctuation">}</span><span class="token operator">&gt;</span>
             &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>height<span class="token punctuation">:</span> <span class="token number">56</span><span class="token punctuation">,</span> flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span> alignItems<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
               &lt;Switch
@@ -94,13 +104,25 @@ class <span class="token class-name">ToolbarAndroidExample</span> extends <span 
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Toolbar with navIcon &amp; logo, no title&quot;</span><span class="token operator">&gt;</span>
           &lt;ToolbarAndroid
             actions<span class="token operator">=</span><span class="token punctuation">{</span>toolbarActions<span class="token punctuation">}</span>
-            logo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!launcher_icon&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_menu_black_24dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            logo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+              android<span class="token punctuation">:</span> <span class="token string">&#x27;launcher_icon&#x27;</span><span class="token punctuation">,</span>
+              width<span class="token punctuation">:</span> <span class="token number">132</span><span class="token punctuation">,</span>
+              height<span class="token punctuation">:</span> <span class="token number">144</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+              android<span class="token punctuation">:</span> <span class="token string">&#x27;ic_menu_black_24dp&#x27;</span><span class="token punctuation">,</span>
+              width<span class="token punctuation">:</span> <span class="token number">48</span><span class="token punctuation">,</span>
+              height<span class="token punctuation">:</span> <span class="token number">48</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>toolbar<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>UIExplorerBlock<span class="token operator">&gt;</span>
         &lt;UIExplorerBlock title<span class="token operator">=</span><span class="token string">&quot;Toolbar with custom title colors&quot;</span><span class="token operator">&gt;</span>
           &lt;ToolbarAndroid
-            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_menu_black_24dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            navIcon<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+              android<span class="token punctuation">:</span> <span class="token string">&#x27;ic_menu_black_24dp&#x27;</span><span class="token punctuation">,</span>
+              width<span class="token punctuation">:</span> <span class="token number">48</span><span class="token punctuation">,</span>
+              height<span class="token punctuation">:</span> <span class="token number">48</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             onIconClicked<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>colorProps<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             title<span class="token operator">=</span><span class="token string">&quot;Wow, such toolbar&quot;</span>
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>toolbar<span class="token punctuation">}</span>
@@ -136,9 +158,17 @@ class <span class="token class-name">ToolbarAndroidExample</span> extends <span 
 <span class="token punctuation">}</span>
 
 <span class="token keyword">var</span> toolbarActions <span class="token operator">=</span> <span class="token punctuation">[</span>
-  <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Create&#x27;</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_create_black_48dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span> show<span class="token punctuation">:</span> <span class="token string">&#x27;always&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Create&#x27;</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+    android<span class="token punctuation">:</span> <span class="token string">&#x27;ic_create_black_48dp&#x27;</span><span class="token punctuation">,</span>
+    width<span class="token punctuation">:</span> <span class="token number">96</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">96</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> show<span class="token punctuation">:</span> <span class="token string">&#x27;always&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Filter&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Settings&#x27;</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;image!ic_settings_black_48dp&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span> show<span class="token punctuation">:</span> <span class="token string">&#x27;always&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">&#x27;Settings&#x27;</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token function">nativeImageSource<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+    android<span class="token punctuation">:</span> <span class="token string">&#x27;ic_settings_black_48dp&#x27;</span><span class="token punctuation">,</span>
+    width<span class="token punctuation">:</span> <span class="token number">96</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">96</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> show<span class="token punctuation">:</span> <span class="token string">&#x27;always&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
