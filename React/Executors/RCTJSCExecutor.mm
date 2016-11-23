@@ -17,6 +17,8 @@
 
 #import <UIKit/UIDevice.h>
 
+#import <cxxreact/JSBundleType.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
@@ -66,7 +68,7 @@ struct RandomAccessBundleStartupCode {
 };
 
 struct TaggedScript {
-  const RCTScriptTag tag;
+  const facebook::react::ScriptTag tag;
   const NSData *script;
 };
 
@@ -292,7 +294,7 @@ static NSThread *newJavaScriptThread(void)
     return loadError;
   }
 
-  if (taggedScript.tag == RCTScriptRAMBundle) {
+  if (taggedScript.tag == facebook::react::ScriptTag::RAMBundle) {
     registerNativeRequire(_context.context, self);
   }
 
@@ -712,7 +714,7 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)contextName)
       return;
     }
 
-    if (taggedScript.tag == RCTScriptRAMBundle) {
+    if (taggedScript.tag == facebook::react::ScriptTag::RAMBundle) {
       registerNativeRequire(self.context.context, self);
     }
 
@@ -734,13 +736,13 @@ static TaggedScript loadTaggedScript(NSData *script,
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / prepare bundle", nil);
 
-  RCTBundleHeader header = {};
+  facebook::react::BundleHeader header{};
   [script getBytes:&header length:sizeof(header)];
-  RCTScriptTag tag = RCTParseTypeFromHeader(header);
+  facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
 
   NSData *loadedScript = NULL;
   switch (tag) {
-    case RCTScriptRAMBundle:
+    case facebook::react::ScriptTag::RAMBundle:
       [performanceLogger markStartForTag:RCTPLRAMBundleLoad];
 
       loadedScript = loadRAMBundle(sourceURL, error, randomAccessBundle);
@@ -749,11 +751,11 @@ static TaggedScript loadTaggedScript(NSData *script,
       [performanceLogger setValue:loadedScript.length forTag:RCTPLRAMStartupCodeSize];
       break;
 
-    case RCTScriptBCBundle:
+    case facebook::react::ScriptTag::BCBundle:
       loadedScript = script;
       break;
 
-    case RCTScriptString: {
+    case facebook::react::ScriptTag::String: {
       NSMutableData *nullTerminatedScript = [NSMutableData dataWithData:script];
       [nullTerminatedScript appendBytes:"" length:1];
       loadedScript = nullTerminatedScript;
@@ -785,16 +787,16 @@ static NSError *executeApplicationScript(TaggedScript taggedScript,
   JSStringRef bundleURL = jscWrapper->JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
 
   switch (taggedScript.tag) {
-    case RCTScriptRAMBundle:
+    case facebook::react::ScriptTag::RAMBundle:
       /* fallthrough */
-    case RCTScriptString: {
+    case facebook::react::ScriptTag::String: {
       JSStringRef execJSString = jscWrapper->JSStringCreateWithUTF8CString((const char *)taggedScript.script.bytes);
       jscWrapper->JSEvaluateScript(ctx, execJSString, NULL, bundleURL, 0, &jsError);
       jscWrapper->JSStringRelease(execJSString);
       break;
     }
 
-    case RCTScriptBCBundle: {
+    case facebook::react::ScriptTag::BCBundle: {
       file_ptr source(fopen(sourceURL.path.UTF8String, "r"), fclose);
       int sourceFD = fileno(source.get());
 

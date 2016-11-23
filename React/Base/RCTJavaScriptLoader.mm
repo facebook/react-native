@@ -16,37 +16,10 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTMultipartDataTask.h"
 
+#include <cxxreact/JSBundleType.h>
 #include <sys/stat.h>
 
-static uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
-static uint64_t const RCTBCBundleMagicNumber  = 0xFF4865726D657300;
-
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
-
-RCTScriptTag RCTParseTypeFromHeader(RCTBundleHeader header)
-{
-  if (NSSwapLittleIntToHost(header.RAMMagic) == RCTRAMBundleMagicNumber) {
-    return RCTScriptRAMBundle;
-  }
-
-  if (NSSwapLittleLongLongToHost(header.BCMagic) == RCTBCBundleMagicNumber) {
-    return RCTScriptBCBundle;
-  }
-
-  return RCTScriptString;
-}
-
-NSString *RCTStringForScriptTag(RCTScriptTag tag)
-{
-  switch (tag) {
-    case RCTScriptString:
-      return @"String";
-    case RCTScriptRAMBundle:
-      return @"RAM Bundle";
-    case RCTScriptBCBundle:
-      return @"BC Bundle";
-  }
-}
 
 @implementation RCTLoadingProgress
 
@@ -58,7 +31,7 @@ NSString *RCTStringForScriptTag(RCTScriptTag tag)
   if (_total > 0) {
     [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
   }
-  [desc appendString:@"…"];
+  [desc appendString:@"\u2026"];
   return desc;
 }
 
@@ -140,7 +113,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  RCTBundleHeader header = {};
+  facebook::react::BundleHeader header{};
   size_t readResult = fread(&header, sizeof(header), 1, bundle);
   fclose(bundle);
   if (readResult != 1) {
@@ -153,12 +126,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  RCTScriptTag tag = RCTParseTypeFromHeader(header);
+  facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
   switch (tag) {
-  case RCTScriptRAMBundle:
+  case facebook::react::ScriptTag::RAMBundle:
     break;
 
-  case RCTScriptString:
+  case facebook::react::ScriptTag::String:
     if (error) {
       *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                    code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
@@ -167,7 +140,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
     return nil;
 
-  case RCTScriptBCBundle:
+  case facebook::react::ScriptTag::BCBundle:
     if (header.BCVersion != runtimeBCVersion) {
       if (error) {
         NSString *errDesc =
