@@ -6,14 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 const log = require('../util/log').out('bundle');
+const Promise = require('promise');
+const Server = require('../../packager/react-packager/src/Server');
+
 const outputBundle = require('./output/bundle');
 const path = require('path');
-const Promise = require('promise');
 const saveAssets = require('./saveAssets');
-const Server = require('../../packager/react-packager/src/Server');
-const defaultAssetExts = require('../../packager/defaultAssetExts');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -38,7 +40,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
-    let assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
 
     const transformModulePath =
       args.transformer ? path.resolve(args.transformer) :
@@ -53,8 +55,8 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
-      nonPersistent: true,
       resetCache: args.resetCache,
+      watch: false,
     };
 
     packagerInstance = new Server(options);

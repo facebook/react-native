@@ -48,6 +48,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, strong) UIColor *textShadowColor;
 @property (nonatomic, assign) BOOL adjustsFontSizeToFit;
 @property (nonatomic, assign) CGFloat minimumFontScale;
+@property (nonatomic, assign) BOOL selectable;
 
 - (void)recomputeText;
 

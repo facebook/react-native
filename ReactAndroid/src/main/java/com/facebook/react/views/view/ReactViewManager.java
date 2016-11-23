@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
+import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
@@ -25,13 +26,19 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.*;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * View manager for AndroidViews (plain React Views).
  */
+@ReactModule(name = ReactViewManager.REACT_CLASS)
 public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @VisibleForTesting
@@ -78,10 +85,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setHitSlopRect(null);
     } else {
       view.setHitSlopRect(new Rect(
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+          hitSlop.hasKey("left") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")) : 0,
+          hitSlop.hasKey("top") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")) : 0,
+          hitSlop.hasKey("right") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")) : 0,
+          hitSlop.hasKey("bottom") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom")) : 0
       ));
     }
   }
@@ -99,6 +106,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
     view.setTranslucentBackgroundDrawable(bg == null ?
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+  }
+
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "nativeForegroundAndroid")
+  public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
+    view.setForeground(fg == null
+        ? null
+        : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
   }
 
   @ReactProp(name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

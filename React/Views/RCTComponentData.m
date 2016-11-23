@@ -395,88 +395,67 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
-  if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customDirectEventTypes))) {
-    NSArray<NSString *> *events = [self.manager customDirectEventTypes];
-#pragma clang diagnostic pop
-    if (RCT_DEBUG) {
-      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-        @"customDirectEventTypes must return an array, but %@ returned %@",
-        _managerClass, [events class]);
-    }
-    for (NSString *event in events) {
-      [directEvents addObject:RCTNormalizeInputEventName(event)];
-    }
-  }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
-#pragma clang diagnostic pop
     NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
-    if (RCT_DEBUG) {
-      RCTAssert(!events || [events isKindOfClass:[NSArray class]],
-        @"customBubblingEventTypes must return an array, but %@ returned %@",
-        _managerClass, [events class]);
-    }
     for (NSString *event in events) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(event)];
     }
   }
+#pragma clang diagnostic pop
 
   unsigned int count = 0;
   NSMutableDictionary *propTypes = [NSMutableDictionary new];
   Method *methods = class_copyMethodList(object_getClass(_managerClass), &count);
   for (unsigned int i = 0; i < count; i++) {
-    Method method = methods[i];
-    SEL selector = method_getName(method);
-    NSString *methodName = NSStringFromSelector(selector);
-    if ([methodName hasPrefix:@"propConfig"]) {
-      NSRange nameRange = [methodName rangeOfString:@"_"];
-      if (nameRange.length) {
-        NSString *name = [methodName substringFromIndex:nameRange.location + 1];
-        NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
-        if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
-          RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
-                      "to '%@'", name, _name, propTypes[name], type);
-        }
+    SEL selector = method_getName(methods[i]);
+    const char *selectorName = sel_getName(selector);
+    if (strncmp(selectorName, "propConfig", strlen("propConfig")) != 0) {
+      continue;
+    }
 
-        if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
-          [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-          propTypes[name] = @"BOOL";
-        } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
-          [directEvents addObject:RCTNormalizeInputEventName(name)];
-          propTypes[name] = @"BOOL";
-        } else {
-          propTypes[name] = type;
-        }
-      }
+    // We need to handle both propConfig_* and propConfigShadow_* methods
+    const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
+    if (!underscorePos) {
+      continue;
+    }
+
+    NSString *name = @(underscorePos + 1);
+    NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
+    if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
+      RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
+                  "to '%@'", name, _name, propTypes[name], type);
+    }
+
+    if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
+      [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
+      propTypes[name] = @"BOOL";
+    } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
+      [directEvents addObject:RCTNormalizeInputEventName(name)];
+      propTypes[name] = @"BOOL";
+    } else {
+      propTypes[name] = type;
     }
   }
   free(methods);
 
-  if (RCT_DEBUG) {
-    for (NSString *event in directEvents) {
-      if ([bubblingEvents containsObject:event]) {
-        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                    "and a direct event", _name, event);
-      }
-    }
-    for (NSString *event in bubblingEvents) {
-      if ([directEvents containsObject:event]) {
-        RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
-                    "and a direct event", _name, event);
-      }
+#if RCT_DEBUG
+  for (NSString *event in bubblingEvents) {
+    if ([directEvents containsObject:event]) {
+      RCTLogError(@"Component '%@' registered '%@' as both a bubbling event "
+                  "and a direct event", _name, event);
     }
   }
+#endif
 
   return @{
-    @"propTypes" : propTypes,
-    @"directEvents" : directEvents,
-    @"bubblingEvents" : bubblingEvents,
+    @"propTypes": propTypes,
+    @"directEvents": directEvents,
+    @"bubblingEvents": bubblingEvents,
   };
 }
 

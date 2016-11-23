@@ -86,16 +86,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray<NSString *> *)customDirectEventTypes
-{
-  return @[];
-}
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{@"forceTouchAvailable": @(RCTForceTouchAvailable())};
-}
-
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;
@@ -111,6 +101,10 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
+RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, UIView)
+{
+  view.rct_removesClippedSubviews = [RCTConvert BOOL:json] ;
+}
 RCT_REMAP_VIEW_PROPERTY(accessible, isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
@@ -119,7 +113,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, UIView)
 {
   if (json) {
     view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
@@ -127,23 +121,25 @@ RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
     view.clipsToBounds = defaultView.clipsToBounds;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, UIView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
 // TODO: t11041683 Remove this duplicate property name.
-RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, UIView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+  [view rct_reclip];
 }
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, UIView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+  [view rct_reclip];
 }
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
@@ -172,12 +168,6 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
       RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
-{
-  if ([view respondsToSelector:@selector(setRemoveClippedSubviews:)]) {
-    view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
-  }
-}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView) {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
     view.borderRadius = json ? [RCTConvert CGFloat:json] : defaultView.borderRadius;
@@ -193,7 +183,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
     view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
   }
 }
-RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(borderWidth, float, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderWidth:)]) {
     view.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.borderWidth;
@@ -222,7 +212,7 @@ RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
-RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, CGFloat, RCTView)         \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
 {                                                                       \
   if ([view respondsToSelector:@selector(setBorder##SIDE##Width:)]) {   \
     view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
@@ -259,47 +249,47 @@ RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 RCT_EXPORT_SHADOW_PROPERTY(backgroundColor, UIColor)
 
-RCT_EXPORT_SHADOW_PROPERTY(top, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(right, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(bottom, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
+RCT_EXPORT_SHADOW_PROPERTY(top, float)
+RCT_EXPORT_SHADOW_PROPERTY(right, float)
+RCT_EXPORT_SHADOW_PROPERTY(bottom, float)
+RCT_EXPORT_SHADOW_PROPERTY(left, float);
 
-RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(width, float)
+RCT_EXPORT_SHADOW_PROPERTY(height, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, float)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(borderWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderWidth, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(marginTop, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(marginRight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(marginBottom, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(marginLeft, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(marginVertical, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(margin, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(marginTop, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginRight, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginBottom, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginLeft, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginVertical, float)
+RCT_EXPORT_SHADOW_PROPERTY(marginHorizontal, float)
+RCT_EXPORT_SHADOW_PROPERTY(margin, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(paddingTop, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(paddingRight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(padding, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(paddingTop, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingRight, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingBottom, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingLeft, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingVertical, float)
+RCT_EXPORT_SHADOW_PROPERTY(paddingHorizontal, float)
+RCT_EXPORT_SHADOW_PROPERTY(padding, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(flex, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexGrow, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexShrink, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(flexBasis, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(flex, float)
+RCT_EXPORT_SHADOW_PROPERTY(flexGrow, float)
+RCT_EXPORT_SHADOW_PROPERTY(flexShrink, float)
+RCT_EXPORT_SHADOW_PROPERTY(flexBasis, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrap)
 RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)

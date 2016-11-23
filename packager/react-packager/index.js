@@ -10,60 +10,11 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
-require('./src/node-haste/fastpath').replace();
-useGracefulFs();
-
-var debug = require('debug');
-var Activity = require('./src/Activity');
+const debug = require('debug');
+const Logger = require('./src/Logger');
 
 exports.createServer = createServer;
-exports.middleware = function(options) {
-  var server = createServer(options);
-  return server.processRequest.bind(server);
-};
-
-exports.Activity = Activity;
-
-// Renamed "package" to "bundle". But maintain backwards
-// compat.
-exports.buildPackage =
-exports.buildBundle = function(options, bundleOptions) {
-  var server = createNonPersistentServer(options);
-  return server.buildBundle(bundleOptions)
-    .then(function(p) {
-      server.end();
-      return p;
-    });
-};
-
-exports.buildPrepackBundle = function(options, bundleOptions) {
-  var server = createNonPersistentServer(options);
-  return server.buildPrepackBundle(bundleOptions)
-    .then(function(p) {
-      server.end();
-      return p;
-    });
-};
-
-exports.buildPackageFromUrl =
-exports.buildBundleFromUrl = function(options, reqUrl) {
-  var server = createNonPersistentServer(options);
-  return server.buildBundleFromUrl(reqUrl)
-    .then(function(p) {
-      server.end();
-      return p;
-    });
-};
-
-exports.getDependencies = function(options, bundleOptions) {
-  var server = createNonPersistentServer(options);
-  return server.getDependencies(bundleOptions)
-    .then(function(r) {
-      server.end();
-      return r.dependencies;
-    });
-};
-
+exports.Logger = Logger;
 exports.getOrderedDependencyPaths = function(options, bundleOptions) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(bundleOptions)
@@ -72,12 +23,6 @@ exports.getOrderedDependencyPaths = function(options, bundleOptions) {
       return paths;
     });
 };
-
-function useGracefulFs() {
-  var fs = require('fs');
-  var gracefulFs = require('graceful-fs');
-  gracefulFs.gracefulify(fs);
-}
 
 function enableDebug() {
   // react-packager logs debug messages using the 'debug' npm package, and uses
@@ -100,26 +45,14 @@ function createServer(options) {
     enableDebug();
   }
 
+  options = Object.assign({}, options);
+  delete options.verbose;
   var Server = require('./src/Server');
-  return new Server(omit(options, ['verbose']));
+  return new Server(options);
 }
 
 function createNonPersistentServer(options) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
+  Logger.disablePrinting();
+  options.watch = !options.nonPersistent;
   return createServer(options);
-}
-
-function omit(obj, blacklistedKeys) {
-  return Object.keys(obj).reduce((clone, key) => {
-    if (blacklistedKeys.indexOf(key) === -1) {
-      clone[key] = obj[key];
-    }
-
-    return clone;
-  }, {});
 }

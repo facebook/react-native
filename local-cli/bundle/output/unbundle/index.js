@@ -8,8 +8,8 @@
  */
 'use strict';
 
-const asIndexedFile = require('./as-indexed-file');
 const asAssets = require('./as-assets');
+const asIndexedFile = require('./as-indexed-file');
 
 function buildBundle(packagerClient, requestOptions) {
   return packagerClient.buildBundle({
@@ -23,7 +23,7 @@ function saveUnbundle(bundle, options, log) {
   // we fork here depending on the platform:
   // while android is pretty good at loading individual assets, ios has a large
   // overhead when reading hundreds pf assets from disk
-  return options.platform === 'android' ?
+  return options.platform === 'android' && !options.indexedUnbundle ?
     asAssets(bundle, options, log) :
     asIndexedFile(bundle, options, log);
 }

@@ -121,7 +121,7 @@ typedef BOOL css_backface_visibility_t;
 + (CSSJustify)CSSJustify:(id)json;
 + (CSSAlign)CSSAlign:(id)json;
 + (CSSPositionType)CSSPositionType:(id)json;
-+ (CSSWrapType)CSSWrapType:(id)json;
++ (CSSWrap)CSSWrap:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;

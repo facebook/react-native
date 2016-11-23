@@ -41,15 +41,8 @@ public:
     return m_nativeToJs->unregisterExecutor(executor);
   }
 
-  std::vector<std::string> moduleNames() override {
-    // If this turns out to be too expensive to run on the js thread,
-    // we can compute it in the ctor, and just return std::move() it
-    // here.
-    return m_registry->moduleNames();
-  }
-
-  folly::dynamic getModuleConfig(const std::string& name) override {
-    return m_registry->getConfig(name);
+  std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
+    return m_registry;
   }
 
   void callNativeModules(

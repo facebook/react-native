@@ -22,6 +22,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -52,7 +53,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     final UIManagerModule uiManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

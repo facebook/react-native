@@ -56,7 +56,7 @@ import javax.annotation.Nullable;
       } else if (node instanceof StyleAnimatedNode) {
         ((StyleAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
-        propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).mValue);
+        propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
       } else {
         throw new IllegalArgumentException("Unsupported type of node used in property node " +
             node.getClass());

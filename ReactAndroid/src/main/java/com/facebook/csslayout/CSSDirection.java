@@ -10,7 +10,26 @@
 package com.facebook.csslayout;
 
 public enum CSSDirection {
-  INHERIT,
-  LTR,
-  RTL,
+  INHERIT(0),
+  LTR(1),
+  RTL(2);
+
+  private int mIntValue;
+
+  CSSDirection(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSDirection fromInt(int value) {
+    switch (value) {
+      case 0: return INHERIT;
+      case 1: return LTR;
+      case 2: return RTL;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

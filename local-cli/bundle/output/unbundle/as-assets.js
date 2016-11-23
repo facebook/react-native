@@ -8,14 +8,15 @@
  */
 'use strict';
 
-const mkdirp = require('mkdirp');
-const path = require('path');
+const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
 const Promise = require('promise');
 
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
+const mkdirp = require('mkdirp');
+const path = require('path');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
-const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
+
 const {joinModules} = require('./util');
 
 const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE'; // must not start with a dot, as that won't go into the apk

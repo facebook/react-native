@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+'use strict';
+
 const glob = require('glob');
 const path = require('path');
 
@@ -37,6 +47,9 @@ module.exports = function findProject(folder) {
     })
     .filter(project => {
       return path.dirname(project) === IOS_BASE || !TEST_PROJECTS.test(project);
+    })
+    .sort((projectA, projectB) => {
+      return path.dirname(projectA) === IOS_BASE ? -1 : 1;
     });
 
   if (projects.length === 0) {

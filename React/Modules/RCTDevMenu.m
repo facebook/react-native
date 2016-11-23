@@ -19,7 +19,6 @@
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
-#import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTWebSocketProxy.h"
 
@@ -376,17 +375,12 @@ RCT_EXPORT_MODULE()
   _jsLoaded = YES;
 
   // Check if live reloading is available
-  _liveReloadURL = nil;
-  RCTSourceCode *sourceCodeModule = [_bridge moduleForClass:[RCTSourceCode class]];
-  if (!sourceCodeModule.scriptURL) {
-    if (!sourceCodeModule) {
-      RCTLogWarn(@"RCTSourceCode module not found");
-    } else if (!RCTRunningInTestEnvironment()) {
-      RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
-    }
-  } else if (!sourceCodeModule.scriptURL.fileURL) {
+  NSURL *scriptURL = _bridge.bundleURL;
+  if (![scriptURL isFileURL]) {
     // Live reloading is disabled when running from bundled JS file
-    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
+    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:scriptURL];
+  } else {
+    _liveReloadURL = nil;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -513,17 +507,19 @@ RCT_EXPORT_METHOD(show)
   }
 
   NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", [_bridge class]];
+  // On larger devices we don't have an anchor point for the action sheet
+  UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
   _actionSheet = [UIAlertController alertControllerWithTitle:title
                                                      message:@""
-                                              preferredStyle:UIAlertControllerStyleActionSheet];
+                                              preferredStyle:style];
+
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {
         [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                         // Cancel button tappped.
+                                                       handler:^(__unused UIAlertAction *action) {
                                                          [item callHandler];
                                                        }]];
         break;
@@ -532,11 +528,10 @@ RCT_EXPORT_METHOD(show)
         BOOL selected = [item.value boolValue];
         [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
+                                                       handler:^(__unused UIAlertAction *action) {
                                                          BOOL value = [self->_settings[item.key] boolValue];
                                                          [self updateSetting:item.key value:@(!value)]; // will call handler
                                                        }]];
-
         break;
       }
     }
@@ -544,11 +539,10 @@ RCT_EXPORT_METHOD(show)
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:^(UIAlertAction *action) {
-                                                 }]];
+                                                 handler:nil]];
 
   _presentedItems = items;
-  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:^(void){}];
+  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 }
 
 
@@ -692,6 +686,15 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 
+@end
+
+@implementation RCTDevMenuItem
+
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(void(^)(void))handler {return nil;}
++ (instancetype)toggleItemWithKey:(NSString *)key
+                            title:(NSString *)title
+                    selectedTitle:(NSString *)selectedTitle
+                          handler:(void(^)(BOOL selected))handler {return nil;}
 @end
 
 #endif

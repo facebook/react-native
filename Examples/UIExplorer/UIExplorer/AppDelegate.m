@@ -55,8 +55,8 @@
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"Examples/UIExplorer/js/UIExplorerApp.ios" fallbackResource:nil];
-
+  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"Examples/UIExplorer/js/UIExplorerApp.ios"
+                                                                         fallbackResource:nil];
   if (!getenv("CI_USE_PACKAGER")) {
     jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -73,9 +73,11 @@
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge
-                  withBlock:(RCTSourceLoadBlock)loadCallback
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
 {
   [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
+                            onProgress:onProgress
                             onComplete:loadCallback];
 }
 

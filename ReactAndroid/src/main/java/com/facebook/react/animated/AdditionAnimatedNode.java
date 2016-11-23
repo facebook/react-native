@@ -39,7 +39,7 @@ import com.facebook.react.bridge.ReadableMap;
     for (int i = 0; i < mInputNodes.length; i++) {
       AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mInputNodes[i]);
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
-        mValue += ((ValueAnimatedNode) animatedNode).mValue;
+        mValue += ((ValueAnimatedNode) animatedNode).getValue();
       } else {
         throw new JSApplicationCausedNativeException("Illegal node ID set as an input for " +
           "Animated.Add node");
