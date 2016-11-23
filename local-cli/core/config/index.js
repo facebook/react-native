@@ -11,6 +11,7 @@
 const android = require('./android');
 const findAssets = require('./findAssets');
 const ios = require('./ios');
+const windows = require('./windows');
 const path = require('path');
 const wrapCommands = require('./wrapCommands');
 
@@ -28,6 +29,7 @@ exports.getProjectConfig = function getProjectConfig() {
   return Object.assign({}, rnpm, {
     ios: ios.projectConfig(folder, rnpm.ios || {}),
     android: android.projectConfig(folder, rnpm.android || {}),
+    windows: windows.projectConfig(folder, rnpm.windows || {}),
     assets: findAssets(folder, rnpm.assets),
   });
 };
