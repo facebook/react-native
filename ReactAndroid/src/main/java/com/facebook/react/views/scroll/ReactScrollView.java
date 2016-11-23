@@ -102,7 +102,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       mScroller = null;
     }
 
-    this.setOnHierarchyChangeListener(this);
+    setOnHierarchyChangeListener(this);
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -362,14 +362,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mContentView != null) {
       mContentView.removeOnLayoutChangeListener(this);
     }
-    if (this.getChildCount() != expectedChildCount) {
+    if (getChildCount() != expectedChildCount) {
       FLog.w(
               ReactConstants.TAG,
-              String.format("Expected %s children for ReactScrollView, found %s.", expectedChildCount, this.getChildCount()));
+              String.format("Expected %s children for ReactScrollView, found %s.", expectedChildCount, getChildCount()));
     }
 
-    if (this.getChildCount() > 0) {
-      mContentView = this.getChildAt(0);
+    if (getChildCount() > 0) {
+      mContentView = getChildAt(0);
       mContentView.addOnLayoutChangeListener(this);
     } else { // no children
       mContentView = null;
@@ -381,7 +381,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
    */
   @Override
   public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-    this.onContentLayoutChange(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
+    onContentLayoutChange(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
   }
 
   private void onContentLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -394,12 +394,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     int contentHeight = mContentView.getMeasuredHeight();
     int currentScrollY = getScrollY();
-    int thisHeight = this.getMeasuredHeight();
+    int thisHeight = getMeasuredHeight();
 
     int maxScrollY = Math.max(0, contentHeight - thisHeight);
 
     if (currentScrollY > maxScrollY) {
-      this.scrollTo(getScrollX(), maxScrollY);
+      scrollTo(getScrollX(), maxScrollY);
     }
   }
 }
