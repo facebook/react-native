@@ -470,8 +470,9 @@ var NavigatorIOS = React.createClass({
     barTintColor: PropTypes.string,
 
     /**
-     * Used instead of setting barTintColor to black: gives a black tab bar
-     * with higher translucency.
+     * Allowed values: 'default', 'black'. 
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a tab bar with the native black style with higher translucency.
      */
     barStyle: React.PropTypes.oneOf(['default', 'black']),
 
