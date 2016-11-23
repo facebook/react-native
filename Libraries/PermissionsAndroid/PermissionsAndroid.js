@@ -119,7 +119,7 @@ class PermissionsAndroid {
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
    */
-  async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
+  async requestPermission(permission: string, rationale?: Rationale) : Promise<string> {
     if (rationale) {
       const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
 
@@ -141,7 +141,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    */
-  requestMultiplePermissions(permissions: Array<string>) : Promise<Object> {
+  requestMultiplePermissions(permissions: Array<string>) : Promise<{ [permission: string]: string }> {
     return Permissions.requestMultiplePermissions(permissions);
   }
 }
