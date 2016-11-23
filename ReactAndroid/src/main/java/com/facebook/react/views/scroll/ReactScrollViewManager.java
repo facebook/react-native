@@ -113,7 +113,7 @@ public class ReactScrollViewManager
    */
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactScrollView view, String value) {
-    if (value == null || value.equals(ReactScrollViewHelper.OVER_SCROLL_IF_CONTENT_SCROLLS)) {
+    if (value == null || value.equals(ReactScrollViewHelper.AUTO)) {
       view.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
     } else if (value.equals(ReactScrollViewHelper.OVER_SCROLL_ALWAYS)) {
       view.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
