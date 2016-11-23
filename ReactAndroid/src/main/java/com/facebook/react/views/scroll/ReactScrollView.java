@@ -364,14 +364,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
    */
   @Override
   public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-    onContentLayoutChange(v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom);
-  }
-
-  private void onContentLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
     if (mContentView == null) {
       FLog.w(
-              ReactConstants.TAG,
-              "mContentView is not set on call to onContentLayoutChange");
+          ReactConstants.TAG,
+          "mContentView is not set on call to onContentLayoutChange");
       return;
     }
 
