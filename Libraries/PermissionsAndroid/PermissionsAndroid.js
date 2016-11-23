@@ -47,7 +47,7 @@ type Rationale = {
  *                    'so you can take awesome pictures.'
  *       }
  *     )
- *     if (granted === PermissionsAndroid.RESULTS.PERMISSION_GRANTED) {
+ *     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
  *       console.log("You can use the camera")
  *     } else {
  *       console.log("Camera permission denied")
@@ -95,18 +95,45 @@ class PermissionsAndroid {
     };
 
     this.RESULTS = {
-      PERMISSION_GRANTED: 'PERMISSION_GRANTED',
-      PERMISSION_DENIED: 'PERMISSION_DENIED',
-      PERMISSION_NEVER_ASK_AGAIN: 'PERMISSION_NEVER_ASK_AGAIN',
+      GRANTED: 'granted',
+      DENIED: 'denied',
+      NEVER_ASK_AGAIN: 'never_ask_again',
     };
+  }
+
+  /**
+   * DEPRECATED - use query
+   *
+   * Returns a promise resolving to a boolean value as to whether the specified
+   * permissions has been granted
+   */
+  checkPermission(permission: string) : Promise<boolean> {
+    return Permissions.checkPermission(permission);
   }
 
   /**
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    */
-  checkPermission(permission: string) : Promise<boolean> {
+  query(permission: string) : Promise<boolean> {
     return Permissions.checkPermission(permission);
+  }
+
+  /**
+   * DEPRECATED - use request
+   *
+   * Prompts the user to enable a permission and returns a promise resolving to a
+   * string value indicating whether the user allowed or denied the request
+   *
+   * If the optional rationale argument is included (which is an object with a
+   * `title` and `message`), this function checks with the OS whether it is
+   * necessary to show a dialog explaining why the permission is needed
+   * (https://developer.android.com/training/permissions/requesting.html#explain)
+   * and then shows the system permission dialog
+   */
+  async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
+    const response = await this.request(permission, rationale);
+    return (response === this.RESULTS.GRANTED);
   }
 
   /**
@@ -119,7 +146,7 @@ class PermissionsAndroid {
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
    */
-  async requestPermission(permission: string, rationale?: Rationale) : Promise<string> {
+  async request(permission: string, rationale?: Rationale) : Promise<string> {
     if (rationale) {
       const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
 
@@ -141,7 +168,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    */
-  requestMultiplePermissions(permissions: Array<string>) : Promise<{ [permission: string]: string }> {
+  requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: string}> {
     return Permissions.requestMultiplePermissions(permissions);
   }
 }

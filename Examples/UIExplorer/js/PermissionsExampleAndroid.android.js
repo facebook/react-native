@@ -43,7 +43,7 @@ exports.description = 'Permissions example for API 23+.';
 
 class PermissionsExample extends React.Component {
   state = {
-    permission: PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    permission: PermissionsAndroid.PERMISSIONS.CAMERA,
     hasPermission: 'Not Checked',
   };
 
@@ -81,7 +81,7 @@ class PermissionsExample extends React.Component {
   };
 
   _checkPermission = async () => {
-    let result = await PermissionsAndroid.checkPermission(this.state.permission);
+    let result = await PermissionsAndroid.query(this.state.permission);
     this.setState({
       hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
         this.state.permission,
@@ -89,7 +89,7 @@ class PermissionsExample extends React.Component {
   };
 
   _requestPermission = async () => {
-    let result = await PermissionsAndroid.requestPermission(
+    let result = await PermissionsAndroid.request(
       this.state.permission,
       {
         title: 'Permission Explanation',
@@ -98,6 +98,7 @@ class PermissionsExample extends React.Component {
           ' because of reasons. Please approve.'
       },
     );
+
     this.setState({
       hasPermission: result + ' for ' +
         this.state.permission,

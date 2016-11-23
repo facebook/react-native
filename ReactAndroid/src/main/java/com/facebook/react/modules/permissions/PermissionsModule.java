@@ -39,9 +39,9 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
-  private final String PERMISSION_GRANTED = "PERMISSION_GRANTED";
-  private final String PERMISSION_DENIED = "PERMISSION_DENIED";
-  private final String PERMISSION_NEVER_ASK_AGAIN = "PERMISSION_NEVER_ASK_AGAIN";
+  private final String GRANTED = "granted";
+  private final String DENIED = "denied";
+  private final String NEVER_ASK_AGAIN = "never_ask_again";
 
   public PermissionsModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -104,7 +104,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       return;
     }
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
-      promise.resolve(true);
+      promise.resolve(GRANTED);
       return;
     }
 
@@ -117,13 +117,13 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
           public void invoke(Object... args) {
             int[] results = (int[]) args[0];
             if (results[0] == PackageManager.PERMISSION_GRANTED) {
-              promise.resolve(PERMISSION_GRANTED);
+              promise.resolve(GRANTED);
             } else {
               PermissionAwareActivity activity = (PermissionAwareActivity) args[1];
               if (activity.shouldShowRequestPermissionRationale(permission)) {
-                promise.resolve(PERMISSION_DENIED);
+                promise.resolve(DENIED);
               } else {
-                promise.resolve(PERMISSION_NEVER_ASK_AGAIN);
+                promise.resolve(NEVER_ASK_AGAIN);
               }
             }
           }
@@ -150,10 +150,10 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
 
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         grantedPermissions.putString(perm, context.checkPermission(perm, Process.myPid(), Process.myUid()) ==
-        PackageManager.PERMISSION_GRANTED ? PERMISSION_GRANTED : PERMISSION_DENIED);
+        PackageManager.PERMISSION_GRANTED ? GRANTED : DENIED);
         checkedPermissionsCount++;
       } else if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {
-        grantedPermissions.putString(perm, PERMISSION_GRANTED);
+        grantedPermissions.putString(perm, GRANTED);
         checkedPermissionsCount++;
       } else {
         permissionsToCheck.add(perm);
@@ -176,12 +176,12 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
           for (int j = 0; j < permissionsToCheck.size(); j++) {
             String permission = permissionsToCheck.get(j);
             if (results[j] == PackageManager.PERMISSION_GRANTED) {
-              grantedPermissions.putString(permission, PERMISSION_GRANTED);
+              grantedPermissions.putString(permission, GRANTED);
             } else {
               if (activity.shouldShowRequestPermissionRationale(permission)) {
-                grantedPermissions.putString(permission, PERMISSION_DENIED);
+                grantedPermissions.putString(permission, DENIED);
               } else {
-                grantedPermissions.putString(permission, PERMISSION_NEVER_ASK_AGAIN);
+                grantedPermissions.putString(permission, NEVER_ASK_AGAIN);
               }
             }
           }
