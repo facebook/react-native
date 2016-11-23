@@ -473,7 +473,9 @@ class Server {
         data => {
           // Tell clients to cache this for 1 year.
           // This is safe as the asset url contains a hash of the asset.
-          res.setHeader('Cache-Control', 'max-age=31536000');
+          if (process.env.REACT_NATIVE_ENABLE_ASSET_CACHING === true) {
+            res.setHeader('Cache-Control', 'max-age=31536000');
+          }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
           process.nextTick(() => {
             print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
