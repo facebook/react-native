@@ -32,6 +32,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
