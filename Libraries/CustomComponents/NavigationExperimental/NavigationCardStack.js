@@ -67,15 +67,15 @@ type Props = {
   style: any,
   gestureResponseDistance?: ?number,
   enableGestures: ?boolean,
-  horizontalCardStyleInterpolator: ?NavigationStyleInterpolator,
-  verticalCardStyleInterpolator: ?NavigationStyleInterpolator
+  horizontalCardStyleInterpolator: NavigationStyleInterpolator,
+  verticalCardStyleInterpolator: NavigationStyleInterpolator
 };
 
 type DefaultProps = {
   direction: NavigationGestureDirection,
   enableGestures: boolean,
-  horizontalCardStyleInterpolator: ?NavigationStyleInterpolator,
-  verticalCardStyleInterpolator: ?NavigationStyleInterpolator
+  horizontalCardStyleInterpolator: NavigationStyleInterpolator,
+  verticalCardStyleInterpolator: NavigationStyleInterpolator
 };
 
 /**
