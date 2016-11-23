@@ -49,7 +49,6 @@ typedef struct CSSLayout {
   float dimensions[2];
   CSSDirection direction;
 
-  uint32_t computedFlexBasisGeneration;
   float computedFlexBasis;
 
   // Instead of recomputing the entire layout every single time, we
@@ -974,10 +973,14 @@ static void computeChildFlexBasis(const CSSNodeRef node,
   const bool isRowStyleDimDefined = isStyleDimDefined(child, CSSFlexDirectionRow);
   const bool isColumnStyleDimDefined = isStyleDimDefined(child, CSSFlexDirectionColumn);
 
-  if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
-      !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
-    if (CSSValueIsUndefined(child->layout.computedFlexBasis) ||
-        child->layout.computedFlexBasisGeneration != gCurrentGenerationCount) {
+  if (CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeatureWebFlexBasis) &&
+      !CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child))) {
+    child->layout.computedFlexBasis =
+        fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
+  } else if (!CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeatureWebFlexBasis) &&
+             !CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
+             !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
+    if (CSSValueIsUndefined(child->layout.computedFlexBasis)) {
       child->layout.computedFlexBasis =
           fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
     }
@@ -1076,8 +1079,6 @@ static void computeChildFlexBasis(const CSSNodeRef node,
                             : child->layout.measuredDimensions[CSSDimensionHeight],
               getPaddingAndBorderAxis(child, mainAxis));
   }
-
-  child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
 }
 
 static void absoluteLayoutChild(const CSSNodeRef node,
@@ -1535,7 +1536,6 @@ static void layoutNodeImpl(const CSSNodeRef node,
       child->nextChild = NULL;
     } else {
       if (child == singleFlexChild) {
-        child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
         child->layout.computedFlexBasis = 0;
       } else {
         computeChildFlexBasis(node,
