@@ -612,7 +612,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          source={require('image!legacy_image')}
+          source={{uri: 'legacy_image', width: 120, height: 120}}
         />
       );
     },
