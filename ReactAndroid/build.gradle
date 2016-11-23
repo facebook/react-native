@@ -272,7 +272,6 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.11.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
     compile 'com.facebook.soloader:soloader:0.1.0'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
@@ -282,7 +281,6 @@ dependencies {
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
-    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
     testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
     testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
