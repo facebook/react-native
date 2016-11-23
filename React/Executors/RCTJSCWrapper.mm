@@ -34,10 +34,6 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
 static void noOpSystemJSCFunc(void *args...){ }
 static bool alwaysFalseSystemJSCFunc(void *args...){ return false; }
 
-void __attribute__((visibility("hidden"),weak)) RCTCustomJSCInit(__unused void *handle) {
-  return;
-}
-
 static void *RCTCustomLibraryHandler(void)
 {
   static dispatch_once_t token;
@@ -135,11 +131,6 @@ static RCTJSCWrapper *RCTSetUpCustomLibraryPointers()
     .JSContext = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSContext"),
     .JSValue = (__bridge Class)dlsym(libraryHandle, "OBJC_CLASS_$_JSValue"),
   };
-
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    RCTCustomJSCInit(libraryHandle);
-  });
 
   return wrapper;
 }
