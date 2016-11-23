@@ -9,13 +9,14 @@
 
 #import "RCTTextView.h"
 
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 #import "RCTShadowText.h"
 #import "RCTText.h"
-#import "RCTUtils.h"
 #import "RCTTextSelection.h"
-#import "UIView+React.h"
 
 @interface RCTUITextView : UITextView
 

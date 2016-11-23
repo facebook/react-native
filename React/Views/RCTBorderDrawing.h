@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBorderStyle.h"
+#import <React/RCTBorderStyle.h>
 
 typedef struct {
   CGFloat topLeft;

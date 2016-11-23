@@ -11,9 +11,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTUIManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTUIManager.h>
+
 #import "RCTNativeAnimatedModule.h"
 
 @implementation RCTViewPropertyMapper

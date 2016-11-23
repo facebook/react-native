@@ -14,13 +14,14 @@
 
 #import "AppDelegate.h"
 
-#import "RCTBridge.h"
-#import "RCTBundleURLProvider.h"
-#import "RCTJavaScriptLoader.h"
-#import "RCTLinkingManager.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
+
 #if !TARGET_OS_TV
-#import "RCTPushNotificationManager.h"
+#import <React/RCTPushNotificationManager.h>
 #endif
 
 @interface AppDelegate() <RCTBridgeDelegate>

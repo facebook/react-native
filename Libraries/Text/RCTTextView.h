@@ -9,8 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTView.h"
-#import "UIView+React.h"
+#import <React/RCTView.h>
+#import <React/UIView+React.h>
 
 @class RCTEventDispatcher;
 

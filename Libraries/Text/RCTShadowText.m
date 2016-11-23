@@ -9,16 +9,17 @@
 
 #import "RCTShadowText.h"
 
-#import "RCTAccessibilityManager.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTFont.h"
-#import "RCTLog.h"
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTFont.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
+
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
 #import "RCTTextView.h"
-#import "RCTUIManager.h"
-#import "RCTUtils.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";

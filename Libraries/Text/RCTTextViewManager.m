@@ -9,11 +9,12 @@
 
 #import "RCTTextViewManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTShadowView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTFont.h>
+#import <React/RCTShadowView.h>
+
 #import "RCTTextView.h"
-#import "RCTFont.h"
 #import "RCTConvert+Text.h"
 
 @implementation RCTTextViewManager

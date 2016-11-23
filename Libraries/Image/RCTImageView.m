@@ -9,16 +9,16 @@
 
 #import "RCTImageView.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTImageLoader.h"
-#import "RCTImageSource.h"
-#import "RCTImageUtils.h"
-#import "RCTUtils.h"
-#import "RCTImageBlurUtils.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTImageSource.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
 
-#import "UIView+React.h"
+#import "RCTImageBlurUtils.h"
+#import "RCTImageLoader.h"
+#import "RCTImageUtils.h"
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display

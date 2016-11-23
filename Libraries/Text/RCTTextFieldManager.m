@@ -9,10 +9,11 @@
 
 #import "RCTTextFieldManager.h"
 
-#import "RCTBridge.h"
-#import "RCTShadowView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTFont.h>
+#import <React/RCTShadowView.h>
+
 #import "RCTTextField.h"
-#import "RCTFont.h"
 #import "RCTConvert+Text.h"
 
 @interface RCTTextFieldManager() <UITextFieldDelegate>

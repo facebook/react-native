@@ -8,8 +8,9 @@
  */
 
 #import "RCTBundleURLProvider.h"
-#import "RCTDefines.h"
+
 #import "RCTConvert.h"
+#import "RCTDefines.h"
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 

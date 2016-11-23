@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 typedef NS_ENUM(NSInteger, RCTTextEventType)
 {

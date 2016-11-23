@@ -10,9 +10,8 @@
 #import <UIKit/UIKit.h>
 
 #import <CSSLayout/CSSLayout.h>
-
-#import "RCTComponent.h"
-#import "RCTRootView.h"
+#import <React/RCTComponent.h>
+#import <React/RCTRootView.h>
 
 @class RCTSparseArray;
 

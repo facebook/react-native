@@ -17,9 +17,9 @@
 
 // Crash the app (with a descriptive stack trace) if a function that is not supported by
 // the system JSC is called.
-#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME)   \
-static void Unimplemented_##FUNC_NAME(void* args...) { \
-  assert(false);                                       \
+#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME)            \
+static void Unimplemented_##FUNC_NAME(__unused void* args...) { \
+  assert(false);                                                \
 }
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
