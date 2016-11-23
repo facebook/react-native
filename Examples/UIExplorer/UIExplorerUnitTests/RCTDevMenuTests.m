@@ -52,21 +52,6 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   XCTAssertNotNil([_bridge.devMenu valueForKey:@"_actionSheet"]);
 }
 
-- (void)testActionSheetHasExtraCancelButton
-{
-  UIAlertController *actionSheet = [_bridge.devMenu valueForKey:@"_actionSheet"];
-  NSArray<UIAlertAction *> *actions = actionSheet.actions;
-  NSArray<RCTDevMenuItem *> *devItems = [_bridge.devMenu valueForKey:@"_presentedItems"];
-  XCTAssertEqual(actions.count, devItems.count);
-  
-  [_bridge.devMenu show];
-  
-  actionSheet = [_bridge.devMenu valueForKey:@"_actionSheet"];
-  actions = actionSheet.actions;
-  devItems = [_bridge.devMenu valueForKey:@"_presentedItems"];
-  
-  XCTAssertEqual(actions.count, devItems.count + 1);
-}
 
 - (void)testClosingActionSheetAfterAction
 {
