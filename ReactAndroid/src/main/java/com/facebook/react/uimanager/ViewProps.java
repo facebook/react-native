@@ -64,6 +64,8 @@ public class ViewProps {
   public static final String MIN_HEIGHT = "minHeight";
   public static final String MAX_HEIGHT = "maxHeight";
 
+  public static final String ASPECT_RATIO = "aspectRatio";
+
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";

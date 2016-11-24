@@ -77,6 +77,7 @@ function dotFilePath(path) {
   if (!path) return path;
   return path
     .replace('_gitignore', '.gitignore')
+    .replace('_gitattributes', '.gitattributes')
     .replace('_babelrc', '.babelrc')
     .replace('_flowconfig', '.flowconfig')
     .replace('_buckconfig', '.buckconfig')

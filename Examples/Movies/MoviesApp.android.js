@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -18,6 +25,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   AppRegistry,
   BackAndroid,
@@ -50,7 +59,11 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
       <View style={{flex: 1}}>
         <ToolbarAndroid
           actions={[]}
-          navIcon={require('image!android_back_white')}
+          navIcon={nativeImageSource({
+            android: 'android_back_white',
+            width: 96,
+            height: 96
+          })}
           onIconClicked={navigationOperations.pop}
           style={styles.toolbar}
           titleColor="white"

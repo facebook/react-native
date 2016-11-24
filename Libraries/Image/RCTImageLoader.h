@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTURLRequestHandler.h"
-#import "RCTResizeMode.h"
+#import <React/RCTBridge.h>
+#import <React/RCTResizeMode.h>
+#import <React/RCTURLRequestHandler.h>
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
 typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);

@@ -9,8 +9,8 @@
 
 #import "RCTViewManager.h"
 
-#import "RCTBridge.h"
 #import "RCTBorderStyle.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -294,6 +294,7 @@ RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
 

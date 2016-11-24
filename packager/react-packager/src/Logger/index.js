@@ -13,6 +13,7 @@
 
 const chalk = require('chalk');
 const os = require('os');
+const pkgjson = require('../../../package.json');
 
 const {EventEmitter} = require('events');
 
@@ -36,6 +37,7 @@ function createEntry(data: LogEntry | string): LogEntry {
   return {
     ...logEntry,
     log_session,
+    packager_version: pkgjson.version,
   };
 }
 

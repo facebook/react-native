@@ -54,19 +54,6 @@ export type FastFS = {
   matches(directory: Path, pattern: RegExp): Array<Path>,
 };
 
-type DeprecatedAssetMapOptions = {|
-  assetExts: Extensions,
-  files: Array<Path>,
-  helpers: DependencyGraphHelpers,
-  platforms: Platforms,
-|};
-
-declare class DeprecatedAssetMap {
-  // node-haste/DependencyGraph/DeprecatedAssetMap.js
-  constructor(options: DeprecatedAssetMapOptions): void,
-}
-export type DeprecatedAssetMapT = DeprecatedAssetMap;
-
 type HasteMapOptions = {|
   allowRelativePaths: boolean,
   extensions: Extensions,
@@ -89,7 +76,6 @@ type ResolutionRequestOptions = {|
   platforms: Platforms,
   preferNativePlatform: true,
   hasteMap: HasteMap,
-  deprecatedAssetMap: DeprecatedAssetMap,
   helpers: DependencyGraphHelpers,
   moduleCache: ModuleCache,
   fastfs: FastFS,

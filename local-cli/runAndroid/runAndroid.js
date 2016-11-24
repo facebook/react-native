@@ -164,7 +164,7 @@ function buildAndRun(args) {
       devices.forEach((device) => {
 
         const adbArgs =
-          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + args.mainActivity];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -251,5 +251,9 @@ module.exports = {
     default: 'Debug'
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--main-activity [string]',
+    description: 'Name of the activity to start',
+    default: 'MainActivity'
   }],
 };

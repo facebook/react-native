@@ -47,7 +47,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
       return Promise.all(Object.values(response.dependencies).map(dep => {
         return dep.getName().then(depName => {
-          if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
+          if (dep.isAsset() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
           return packagerServer.getShallowDependencies({
