@@ -46,16 +46,22 @@ public class JavaScriptModuleRegistration {
     return mModuleInterface;
   }
 
+  private String name_cached;
   public String getName() {
-    // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner classes or
-    // something because Class#getSimpleName() no longer strips the outer class name. We manually
-    // strip it here if necessary.
-    String name = mModuleInterface.getSimpleName();
-    int dollarSignIndex = name.lastIndexOf('$');
-    if (dollarSignIndex != -1) {
-      name = name.substring(dollarSignIndex + 1);
+    if (name_cached == null) {
+      // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner classes or
+      // something because Class#getSimpleName() no longer strips the outer class name. We manually
+      // strip it here if necessary.
+      String name = mModuleInterface.getSimpleName();
+      int dollarSignIndex = name.lastIndexOf('$');
+      if (dollarSignIndex != -1) {
+        name = name.substring(dollarSignIndex + 1);
+      }
+      
+      // getting the class name every call is expensive, so cache it
+      name_cached = name;
     }
-    return name;
+    return name_cached;
   }
 
   public List<Method> getMethods() {
