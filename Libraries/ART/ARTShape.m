@@ -82,8 +82,8 @@
     
     // Define the start and end points for the gradient
     // This determines the direction in which the gradient is drawn
-    CGPoint startPoint = CGPointMake(CGRectGetMinX(insetedRect), CGRectGetMinY(insetedRect));
-    CGPoint endPoint = CGPointMake(CGRectGetMaxX(insetedRect), CGRectGetMinY(insetedRect));
+    CGPoint startPoint = CGPointMake(CGRectGetMinX(insettedRect), CGRectGetMinY(insettedRect));
+    CGPoint endPoint = CGPointMake(CGRectGetMaxX(insettedRect), CGRectGetMinY(insettedRect));
     
 
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
