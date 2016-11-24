@@ -67,7 +67,8 @@
     CGFloat* colors = self.gradientStroke.array;
     CGContextAddPath(context, self.d);
     CGRect rect = CGContextGetPathBoundingBox(context);
-    
+    CGRect insettedRect = CGRectInset(rect, -(self.strokeWidth/2), -(self.strokeWidth/2));
+
     CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
     CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, self.gradientStroke.count/4);
     CGColorSpaceRelease(baseSpace), baseSpace = NULL;
@@ -81,8 +82,9 @@
     
     // Define the start and end points for the gradient
     // This determines the direction in which the gradient is drawn
-    CGPoint startPoint = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
-    CGPoint endPoint = CGPointMake(CGRectGetMinX(rect), CGRectGetMinY(rect));
+    CGPoint startPoint = CGPointMake(CGRectGetMinX(insetedRect), CGRectGetMinY(insetedRect));
+    CGPoint endPoint = CGPointMake(CGRectGetMaxX(insetedRect), CGRectGetMinY(insetedRect));
+    
 
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
     CGGradientRelease(gradient), gradient = NULL;
