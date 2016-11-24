@@ -114,25 +114,13 @@ type State = {
 };
 type Event = Object;
 
-if (Platform.OS === 'android') {
-  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-} else if (Platform.OS === 'ios') {
-  var RCTTextView = requireNativeComponent('RCTTextView', null);
-  var RCTTextField = requireNativeComponent('RCTTextField', null);
-}
-
 function isTagInstanceOfTextInput(tag) {
   var instance = getInstanceFromNode(tag);
-  if (instance) {
-    if (Platform.OS === 'android') {
-      return instance._currentElement.type === AndroidTextInput;
-    } else if (Platform.OS === 'ios') {
-      return instance._currentElement.type === RCTTextView ||
-        instance._currentElement.type === RCTTextField;
-    }
-  }
-
-  return false;
+  return instance && instance.viewConfig && (
+    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextField'
+  );
 }
 
 var ScrollResponderMixin = {

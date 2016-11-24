@@ -47,11 +47,6 @@ function requireNativeComponent(
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
 ): Function {
-  const cachedComponent = nativeComponentsCacheMap.get(viewName);
-  if (cachedComponent) {
-    return cachedComponent;
-  }
-
   const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
@@ -103,9 +98,7 @@ function requireNativeComponent(
     );
   }
 
-  const component = createReactNativeComponentClass(viewConfig);
-  nativeComponentsCacheMap.set(viewName, component);
-  return component;
+  return createReactNativeComponentClass(viewConfig);
 }
 
 const TypeToDifferMap = {
@@ -135,7 +128,5 @@ const TypeToProcessorMap = {
   Color: processColor,
   ColorArray: processColorArray,
 };
-
-const nativeComponentsCacheMap = new Map();
 
 module.exports = requireNativeComponent;
