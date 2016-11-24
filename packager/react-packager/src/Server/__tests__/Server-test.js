@@ -19,7 +19,8 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('../../node-haste')
-    .mock('../../Logger');
+    .mock('../../Logger')
+    .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
   let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
