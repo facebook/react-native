@@ -31,13 +31,9 @@ const validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
-  fileWatcher: {
-    type: 'object',
-    required: true,
+  watch: {
+    type: 'boolean',
+    default: false,
   },
   assetExts: {
     type: 'array',
@@ -92,7 +88,6 @@ class Resolver {
 
     this._depGraph = new DependencyGraph({
       roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
@@ -101,14 +96,13 @@ class Resolver {
       providesModuleNodeModules: defaults.providesModuleNodeModules,
       platforms: defaults.platforms,
       preferNativePlatform: true,
-      fileWatcher: opts.fileWatcher,
+      watch: opts.watch,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      // for jest-haste-map
       resetCache: options.resetCache,
       moduleOptions: {
         cacheTransformResults: true,
@@ -260,7 +254,7 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependecyGraph() {
+  getDependencyGraph() {
     return this._depGraph;
   }
 }

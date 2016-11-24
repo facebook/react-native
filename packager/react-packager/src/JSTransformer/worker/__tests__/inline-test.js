@@ -295,8 +295,8 @@ describe('inline constants', () => {
   });
 
   it('can work with transformed require calls', () => {
-    const code = `__arbitrary(function() {
-      var a = require(123, 'react-native').Platform.OS;
+    const code = `__arbitrary(require, function(arbitraryMapName) {
+      var a = require(arbitraryMapName[123], 'react-native').Platform.OS;
     });`;
     const {ast} = inline(
       'arbitrary', {code}, {dev: true, platform: 'android', isWrapped: true});

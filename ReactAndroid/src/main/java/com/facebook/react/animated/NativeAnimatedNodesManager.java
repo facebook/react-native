@@ -314,10 +314,10 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public boolean onEventDispatch(Event event) {
+  public void onEventDispatch(Event event) {
     // Only support events dispatched from the UI thread.
     if (!UiThreadUtil.isOnUiThread()) {
-      return false;
+      return;
     }
 
     if (!mEventDrivers.isEmpty()) {
@@ -332,11 +332,8 @@ import javax.annotation.Nullable;
       if (eventDriver != null) {
         event.dispatch(eventDriver);
         mUpdatedNodes.put(eventDriver.mValueNode.mTag, eventDriver.mValueNode);
-        return true;
       }
     }
-
-    return false;
   }
 
   /**

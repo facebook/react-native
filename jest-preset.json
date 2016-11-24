@@ -7,7 +7,6 @@
     ]
   },
   "moduleNameMapper": {
-    "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
     "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "RelativeImageStub",
     "^React$": "<rootDir>node_modules/react"
   },
@@ -15,7 +14,7 @@
     "<rootDir>/node_modules/react-native/Libraries/react-native/",
     "<rootDir>/node_modules/react-native/packager/"
   ],
-  "preprocessorIgnorePatterns": [
+  "transformIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"
   ],
   "setupFiles": [

@@ -11,9 +11,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+
 #import "RCTAnimationUtils.h"
-#import "RCTDefines.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTSpringAnimation ()

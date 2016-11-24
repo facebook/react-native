@@ -93,6 +93,15 @@ public class JSDebuggerWebSocketClientTest {
   }
 
   @Test
+  public void test_onMessage_With_Null_ReplyId_ShouldNotTriggerCallbacks() throws Exception {
+    JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
+
+    client.onMessage(ResponseBody.create(WebSocket.TEXT, "{\"replyID\":null, \"result\":\"OK\"}"));
+    PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestSuccess", anyInt(), anyString());
+    PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());
+  }
+
+  @Test
   public void test_onMessage_WithResult_ShouldTriggerRequestSuccess() throws Exception {
     JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
 
@@ -102,10 +111,27 @@ public class JSDebuggerWebSocketClientTest {
   }
 
   @Test
+  public void test_onMessage_With_Null_Result_ShouldTriggerRequestSuccess() throws Exception {
+    JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
+
+    client.onMessage(ResponseBody.create(WebSocket.TEXT, "{\"replyID\":0, \"result\":null}"));
+    PowerMockito.verifyPrivate(client).invoke("triggerRequestSuccess", 0, null);
+    PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());
+  }
+
+  @Test
   public void test_onMessage_WithError_ShouldCallAbort() throws Exception {
     JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
 
     client.onMessage(ResponseBody.create(WebSocket.TEXT, "{\"replyID\":0, \"error\":\"BOOM\"}"));
     PowerMockito.verifyPrivate(client).invoke("abort", eq("BOOM"), isA(JavascriptException.class));
+  }
+
+  @Test
+  public void test_onMessage_With_Null_Error_ShouldTriggerRequestSuccess() throws Exception {
+    JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
+
+    client.onMessage(ResponseBody.create(WebSocket.TEXT, "{\"replyID\":0, \"error\":null}"));
+    PowerMockito.verifyPrivate(client).invoke("triggerRequestSuccess", anyInt(), anyString());
   }
 }

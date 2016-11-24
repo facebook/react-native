@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -18,6 +25,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   Image,
   Platform,
@@ -42,7 +51,11 @@ class SearchBar extends React.Component {
             onPress={() => this.refs.input && this.refs.input.focus()}>
           <View>
             <Image
-              source={require('image!android_search_white')}
+              source={nativeImageSource({
+                android: 'android_search_white',
+                width: 96,
+                height: 96
+              })}
               style={styles.icon}
             />
           </View>

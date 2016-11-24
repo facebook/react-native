@@ -14,7 +14,8 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+
 #import "RCTUtils.h"
 
 @interface RCTConvert_NSURLTests : XCTestCase

@@ -8,7 +8,8 @@
  */
 
 #import <CoreGraphics/CoreGraphics.h>
-#import "RCTBridgeModule.h"
+
+#import <React/RCTBridgeModule.h>
 
 @class RCTValueAnimatedNode;
 

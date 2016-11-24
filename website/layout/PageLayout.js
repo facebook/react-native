@@ -8,10 +8,11 @@
  *
  * @providesModule PageLayout
  */
+'use strict';
 
+var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
-var Marked = require('Marked');
 
 var support = React.createClass({
   childContextTypes: {

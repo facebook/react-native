@@ -10,6 +10,24 @@
 package com.facebook.csslayout;
 
 public enum CSSWrap {
-  NOWRAP,
-  WRAP,
+  NO_WRAP(0),
+  WRAP(1);
+
+  private int mIntValue;
+
+  CSSWrap(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSWrap fromInt(int value) {
+    switch (value) {
+      case 0: return NO_WRAP;
+      case 1: return WRAP;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

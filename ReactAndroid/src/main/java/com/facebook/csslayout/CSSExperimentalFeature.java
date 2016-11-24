@@ -10,4 +10,24 @@
 package com.facebook.csslayout;
 
 public enum CSSExperimentalFeature {
+  ROUNDING(0),
+  WEB_FLEX_BASIS(1);
+
+  private int mIntValue;
+
+  CSSExperimentalFeature(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSExperimentalFeature fromInt(int value) {
+    switch (value) {
+      case 0: return ROUNDING;
+      case 1: return WEB_FLEX_BASIS;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

@@ -305,6 +305,15 @@ const TextInput = React.createClass({
      */
     numberOfLines: PropTypes.number,
     /**
+     * When `false`, if there is a small amount of space available around a text input
+     * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
+     * the text inside of a full screen text input mode. When `true`, this feature is
+     * disabled and users will always edit the text directly inside of the text input.
+     * Defaults to `false`.
+     * @platform android
+     */
+    disableFullscreenUI: PropTypes.bool,
+    /**
      * If `true`, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is `false`.
      * @platform ios
@@ -364,6 +373,12 @@ const TextInput = React.createClass({
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
     onLayout: PropTypes.func,
+    /**
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
     /**
      * The string that will be rendered before text input has been entered.
      */
@@ -652,6 +667,7 @@ const TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
         />;
     }
 
@@ -701,6 +717,7 @@ const TextInput = React.createClass({
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
+        disableFullscreenUI={this.props.disableFullscreenUI}
       />;
 
     return (
@@ -810,6 +827,10 @@ const TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
+  },
+
+  _onScroll: function(event: Event) {
+    this.props.onScroll && this.props.onScroll(event);
   },
 });
 

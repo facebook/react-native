@@ -19,13 +19,12 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-// TODO (fkg): make rootTag required
 type Context = {
-  rootTag: ?number,
+  rootTag: number,
 };
 type Props = {
   children?: React.Children,
-  rootTag?: number,
+  rootTag: number,
 };
 type State = {
   inspector: ?React.Element<*>,

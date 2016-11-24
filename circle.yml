@@ -67,16 +67,11 @@ test:
     - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1:
         timeout: 360
     # build JS bundle for instrumentation tests
-    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    - REACT_NATIVE_MAX_WORKERS=1 node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
     - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
-
-    # gradle may invalidate bridge build cache, so we pass single-threaded setting just in case
-    - ./gradlew :ReactAndroid:testDebugUnitTest -Pjobs=1 -Pcom.android.build.threadPoolSize=1
-    # Deprecated: these tests are executed using Buck above, while we support Gradle we just make sure the test code compiles
-    - ./gradlew :ReactAndroid:assembleDebugAndroidTest -Pjobs=1 -Pcom.android.build.threadPoolSize=1
 
     # Android e2e test
     - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2

@@ -273,7 +273,7 @@ function run(root, projectName, rnPackage, forceNpmClient) {
     console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
   } else {
-    console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm...');
+    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     if (!forceNpmClient) {
       console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
     }

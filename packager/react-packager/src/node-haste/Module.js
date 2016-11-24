@@ -23,6 +23,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
 
@@ -44,8 +45,6 @@ export type Options = {
   cacheTransformResults?: boolean,
 };
 
-export type DepGraphHelpers = {isNodeModulesDir: (filePath: string) => boolean};
-
 export type ConstructorArgs = {
   file: string,
   fastfs: FastFs,
@@ -53,7 +52,7 @@ export type ConstructorArgs = {
   cache: Cache,
   transformCode: ?TransformCode,
   transformCacheKey: ?string,
-  depGraphHelpers: DepGraphHelpers,
+  depGraphHelpers: DependencyGraphHelpers,
   options: Options,
 };
 
@@ -67,7 +66,7 @@ class Module {
   _cache: Cache;
   _transformCode: ?TransformCode;
   _transformCacheKey: ?string;
-  _depGraphHelpers: DepGraphHelpers;
+  _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
@@ -220,23 +219,26 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const {_transformCode, _transformCacheKey} = this;
-    // AssetModule_DEPRECATED doesn't provide transformCode, but these should
-    // never be transformed anyway.
     invariant(_transformCode != null, 'missing code transform funtion');
     invariant(_transformCacheKey != null, 'missing cache key');
-    this._readSourceCode().then(sourceCode => {
-      return _transformCode(this, sourceCode, transformOptions)
-        .then(freshResult => {
-          TransformCache.writeSync({
-            filePath: this.path,
-            sourceCode,
-            transformCacheKey: _transformCacheKey,
-            transformOptions,
-            result: freshResult,
-          });
-          callback(undefined, freshResult);
-        });
-    }, callback);
+    this._readSourceCode()
+      .then(sourceCode =>
+        _transformCode(this, sourceCode, transformOptions)
+          .then(freshResult => {
+            TransformCache.writeSync({
+              filePath: this.path,
+              sourceCode,
+              transformCacheKey: _transformCacheKey,
+              transformOptions,
+              result: freshResult,
+            });
+            return freshResult;
+          })
+      )
+      .then(
+        freshResult => process.nextTick(callback, null, freshResult),
+        error => process.nextTick(callback, error),
+      );
   }
 
   /**
@@ -307,16 +309,11 @@ class Module {
     return false;
   }
 
-  isAsset_DEPRECATED() {
-    return false;
-  }
-
   toJSON() {
     return {
       hash: this.hash(),
       isJSON: this.isJSON(),
       isAsset: this.isAsset(),
-      isAsset_DEPRECATED: this.isAsset_DEPRECATED(),
       type: this.type,
       path: this.path,
     };
