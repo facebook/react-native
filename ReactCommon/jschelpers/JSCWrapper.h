@@ -130,8 +130,8 @@ bool isCustomJSCPtr(T *x) {
 void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-const JSCWrapper *systemJSCWrapper();
-const JSCWrapper *customJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
 
 } }
 
