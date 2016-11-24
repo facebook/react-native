@@ -117,7 +117,7 @@ Builds a bundle according to the provided options.
 #### `bundleOptions`
 
 * `entryFile` string (required): the entry file of the bundle, relative to one
-  of the asset roots.
+  of the roots.
 * `dev` boolean (defaults to `true`): sets a global `__DEV__` variable
   which will effect how the React Native core libraries behave.
 * `minify` boolean: Whether to minify code and apply production optimizations.

@@ -26,7 +26,6 @@ class ResolutionRequest {
     preferNativePlatform,
     entryPath,
     hasteMap,
-    deprecatedAssetMap,
     helpers,
     moduleCache,
     fastfs,
@@ -38,7 +37,6 @@ class ResolutionRequest {
     this._preferNativePlatform = preferNativePlatform;
     this._entryPath = entryPath;
     this._hasteMap = hasteMap;
-    this._deprecatedAssetMap = deprecatedAssetMap;
     this._helpers = helpers;
     this._moduleCache = moduleCache;
     this._fastfs = fastfs;
@@ -61,14 +59,6 @@ class ResolutionRequest {
 
     if (this._immediateResolutionCache[resHash]) {
       return Promise.resolve(this._immediateResolutionCache[resHash]);
-    }
-
-    const asset_DEPRECATED = this._deprecatedAssetMap.resolve(
-      fromModule,
-      toModuleName
-    );
-    if (asset_DEPRECATED) {
-      return Promise.resolve(asset_DEPRECATED);
     }
 
     const cacheResult = (result) => {
@@ -206,8 +196,8 @@ class ResolutionRequest {
       function collect(module) {
         collectionsInProgress.start(module);
         const result = resolveDependencies(module)
-          .then(result => addMockDependencies(module, result))
-          .then(result => crawlDependencies(module, result));
+          .then(deps => addMockDependencies(module, deps))
+          .then(deps => crawlDependencies(module, deps));
         const end = () => collectionsInProgress.end(module);
         result.then(end, end);
         return result;
@@ -252,9 +242,9 @@ class ResolutionRequest {
     let mocks = null;
     if (pattern) {
       mocks = Object.create(null);
-      this._fastfs.matchFilesByPattern(pattern).forEach(file =>
-        mocks[path.basename(file, path.extname(file))] = file
-      );
+      this._fastfs.matchFilesByPattern(pattern).forEach(file => {
+        mocks[path.basename(file, path.extname(file))] = file;
+      });
     }
     return Promise.resolve(mocks);
   }
@@ -532,8 +522,8 @@ function resolveKeyWithPromise([key, promise]) {
   return promise.then(value => [key, value]);
 }
 
-function isRelativeImport(path) {
-  return /^[.][.]?(?:[/]|$)/.test(path);
+function isRelativeImport(filePath) {
+  return /^[.][.]?(?:[/]|$)/.test(filePath);
 }
 
 module.exports = ResolutionRequest;

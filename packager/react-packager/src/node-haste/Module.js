@@ -219,8 +219,6 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const {_transformCode, _transformCacheKey} = this;
-    // AssetModule_DEPRECATED doesn't provide transformCode, but these should
-    // never be transformed anyway.
     invariant(_transformCode != null, 'missing code transform funtion');
     invariant(_transformCacheKey != null, 'missing cache key');
     this._readSourceCode()
@@ -311,16 +309,11 @@ class Module {
     return false;
   }
 
-  isAsset_DEPRECATED() {
-    return false;
-  }
-
   toJSON() {
     return {
       hash: this.hash(),
       isJSON: this.isJSON(),
       isAsset: this.isAsset(),
-      isAsset_DEPRECATED: this.isAsset_DEPRECATED(),
       type: this.type,
       path: this.path,
     };

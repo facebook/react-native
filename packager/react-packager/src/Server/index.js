@@ -79,10 +79,6 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  assetRoots: {
-    type: 'array',
-    required: false,
-  },
   assetExts: {
     type: 'array',
     default: defaults.assetExts,
