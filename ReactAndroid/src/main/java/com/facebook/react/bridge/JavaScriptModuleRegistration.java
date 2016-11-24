@@ -26,6 +26,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class JavaScriptModuleRegistration {
 
   private final Class<? extends JavaScriptModule> mModuleInterface;
+  private String mName;
 
   public JavaScriptModuleRegistration(Class<? extends JavaScriptModule> moduleInterface) {
     mModuleInterface = moduleInterface;
@@ -45,10 +46,9 @@ public class JavaScriptModuleRegistration {
   public Class<? extends JavaScriptModule> getModuleInterface() {
     return mModuleInterface;
   }
-
-  private String name_cached;
+  
   public String getName() {
-    if (name_cached == null) {
+    if (mName == null) {
       // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner classes or
       // something because Class#getSimpleName() no longer strips the outer class name. We manually
       // strip it here if necessary.
@@ -59,9 +59,9 @@ public class JavaScriptModuleRegistration {
       }
       
       // getting the class name every call is expensive, so cache it
-      name_cached = name;
+      mName = name;
     }
-    return name_cached;
+    return mName;
   }
 
   public List<Method> getMethods() {
