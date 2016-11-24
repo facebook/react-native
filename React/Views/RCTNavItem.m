@@ -181,52 +181,20 @@
   }
 }
 
-- (void)setNavigationBarHidden:(BOOL)navigationBarHidden
-{
-  _navigationBarHidden = navigationBarHidden;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
+#define DELEGATE_SETTER(TYPE, SETTER, PROPERTY) \
+- (void)SETTER:(TYPE)PROPERTY \
+{ \
+  _##PROPERTY = PROPERTY; \
+  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate]; \
 }
 
-- (void)setShadowHidden:(BOOL)shadowHidden
-{
-  _shadowHidden = shadowHidden;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setTintColor:(UIColor *)tintColor
-{
-  _tintColor = tintColor;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setBarTintColor:(UIColor *)barTintColor
-{
-  _barTintColor = barTintColor;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setTranslucent:(BOOL)translucent
-{
-  _translucent = translucent;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setTitle:(NSString *)title
-{
-  _title = title;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setTitleTextColor:(UIColor *)titleTextColor
-{
-  _titleTextColor = titleTextColor;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
-
-- (void)setTitleImage:(UIImage *)titleImage
-{
-  _titleImage = titleImage;
-  if (self.delegate != nil) [self.delegate navItemPropsDidUpdate];
-}
+DELEGATE_SETTER(BOOL, setNavigationBarHidden, navigationBarHidden)
+DELEGATE_SETTER(BOOL, setShadowHidden, shadowHidden)
+DELEGATE_SETTER(UIColor *, setTintColor, tintColor)
+DELEGATE_SETTER(UIColor *, setBarTintColor, barTintColor)
+DELEGATE_SETTER(BOOL, setTranslucent, translucent)
+DELEGATE_SETTER(NSString *, setTitle, title)
+DELEGATE_SETTER(UIColor *, setTitleTextColor, titleTextColor)
+DELEGATE_SETTER(UIImage *, setTitleImage, titleImage)
 
 @end

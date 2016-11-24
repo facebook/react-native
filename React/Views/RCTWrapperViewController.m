@@ -107,10 +107,7 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
   // TODO: find a way to make this less-tightly coupled to navigation controller
   if ([self.parentViewController isKindOfClass:[UINavigationController class]])
   {
-    [self.navigationController
-     setNavigationBarHidden:_navItem.navigationBarHidden
-     animated:animated];
-    [self updateBarParams];
+    [self updateBarParams:animated];
     _navItem.delegate = self;
   }
 }
@@ -137,8 +134,11 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
   }
 }
 
-- (void)updateBarParams
+- (void)updateBarParams:(BOOL)animated
 {
+  [self.navigationController
+   setNavigationBarHidden:_navItem.navigationBarHidden
+   animated:animated];
   UINavigationBar *bar = self.navigationController.navigationBar;
   bar.barTintColor = _navItem.barTintColor;
   bar.tintColor = _navItem.tintColor;
@@ -161,7 +161,7 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
 
 - (void)navItemPropsDidUpdate
 {
-  [self updateBarParams];
+  [self updateBarParams:false];
 }
 
 @end
