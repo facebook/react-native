@@ -60,6 +60,7 @@ const JSCWrapper* customJSCWrapper() {
 
 void setCustomJSCWrapper(const JSCWrapper* wrapper) {
   #if USE_GLOG
+  CHECK(wrapper != nullptr) << "Can't set null wrapper";
   CHECK(s_customWrapper == nullptr) << "Can't set custom JSC wrapper multiple times";
   #endif
   s_customWrapper = wrapper;
