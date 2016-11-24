@@ -32,6 +32,8 @@ import com.facebook.react.modules.core.PermissionListener;
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
+  private static final String ERROR_REQUST_INTERRUPTED = "E_REQUEST_INTERRUPTED";
+
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
 
@@ -107,7 +109,11 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
         mRequestCode, new Callback() {
           @Override
           public void invoke(Object... args) {
-            promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
+            if (args[0] != null) {
+              promise.resolve(args[0].equals(PackageManager.PERMISSION_GRANTED));
+            } else {
+              promise.reject(ERROR_REQUST_INTERRUPTED, permission + " request was interrupted");
+            }
           }
         });
 
@@ -126,7 +132,11 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
       int requestCode,
       String[] permissions,
       int[] grantResults) {
-    mCallbacks.get(requestCode).invoke(grantResults[0]);
+    if (grantResults.length > 0) {
+      mCallbacks.get(requestCode).invoke(grantResults[0]);
+    } else {
+      mCallbacks.get(requestCode).invoke((Class<?>) null);
+    }
     mCallbacks.remove(requestCode);
     return mCallbacks.size() == 0;
   }
