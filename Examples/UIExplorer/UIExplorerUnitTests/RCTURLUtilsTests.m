@@ -13,7 +13,8 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "RCTUtils.h"
+
+#import <React/RCTUtils.h>
 
 @interface RCTURLUtilsTests : XCTestCase
 

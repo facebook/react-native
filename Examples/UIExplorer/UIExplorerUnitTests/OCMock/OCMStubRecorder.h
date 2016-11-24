@@ -14,7 +14,7 @@
  *  under the License.
  */
 
-#import <React/OCMRecorder.h>
+#import <OCMock/OCMRecorder.h>
 
 
 @interface OCMStubRecorder : OCMRecorder

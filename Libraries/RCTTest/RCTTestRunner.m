@@ -10,13 +10,13 @@
 #import "RCTTestRunner.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTJSCExecutor.h>
 #import <React/RCTLog.h>
+#import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 
 #import "FBSnapshotTestController.h"
-#import "RCTBridge+Private.h"
-#import "RCTJSCExecutor.h"
-#import "RCTRootView.h"
 #import "RCTTestModule.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 120;

@@ -14,8 +14,8 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTShadowView.h"
-#import "RCTRootShadowView.h"
+#import <React/RCTRootShadowView.h>
+#import <React/RCTShadowView.h>
 
 
 @interface RCTShadowViewTests : XCTestCase
