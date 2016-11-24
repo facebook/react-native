@@ -258,7 +258,7 @@ class PushNotificationIOS {
         }
       );
     }
-    _notifHandlers.set(handler, listener);
+    _notifHandlers.set(type, listener);
   }
 
   /**
@@ -270,12 +270,12 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
-    var listener = _notifHandlers.get(handler);
+    var listener = _notifHandlers.get(type);
     if (!listener) {
       return;
     }
     listener.remove();
-    _notifHandlers.delete(handler);
+    _notifHandlers.delete(type);
   }
 
   /**

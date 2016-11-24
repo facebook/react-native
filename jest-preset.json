@@ -15,7 +15,7 @@
     "<rootDir>/node_modules/react-native/Libraries/react-native/",
     "<rootDir>/node_modules/react-native/packager/"
   ],
-  "transformIgnorePatterns": [
+  "preprocessorIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"
   ],
   "setupFiles": [

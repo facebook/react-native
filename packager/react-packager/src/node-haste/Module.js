@@ -21,16 +21,10 @@ const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
+import type {TransformedCode} from '../JSTransformer/worker/worker';
 import type Cache from './Cache';
 import type ModuleCache from './ModuleCache';
 import type FastFs from './fastfs';
-
-type TransformedCode = {
-  code: string,
-  dependencies: Array<string>,
-  dependencyOffsets: Array<number>,
-  map?: ?{},
-};
 
 type ReadResult = {
   code?: string,
@@ -120,11 +114,11 @@ class Module {
     );
   }
 
-  getCode(transformOptions: mixed) {
+  getCode(transformOptions: Object) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: mixed) {
+  getMap(transformOptions: Object) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -160,7 +154,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: mixed) {
+  getDependencies(transformOptions: Object) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -250,7 +244,7 @@ class Module {
    * dependencies, etc. The overall process is to read the cache first, and if
    * it's a miss, we let the worker write to the cache and read it again.
    */
-  read(transformOptions: mixed): Promise<ReadResult> {
+  read(transformOptions: Object): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {

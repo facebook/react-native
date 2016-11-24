@@ -8,8 +8,8 @@
  */
 'use strict';
 
-var generate = require('../generate/generate');
 var fs = require('fs');
+var generate = require('../generate/generate');
 
 function android(argv, config, args) {
   return generate([
@@ -29,9 +29,9 @@ module.exports = {
       try {
         return JSON.parse(
           fs.readFileSync('package.json', 'utf8')
-        ).name
+        ).name;
       } catch (e) {
-        return 'unknown-app-name'
+        return 'unknown-app-name';
       }
     },
   }],
