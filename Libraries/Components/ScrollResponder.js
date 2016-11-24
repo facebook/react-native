@@ -23,7 +23,6 @@ var { getInstanceFromNode } = require('ReactNativeComponentTree');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
-var requireNativeComponent = require('requireNativeComponent');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
