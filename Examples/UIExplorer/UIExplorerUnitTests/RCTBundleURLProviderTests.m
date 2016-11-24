@@ -13,8 +13,8 @@
  */
 #import <XCTest/XCTest.h>
 
-#import "RCTBundleURLProvider.h"
-#import "RCTUtils.h"
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTUtils.h>
 
 
 static NSString *const testFile = @"test.jsbundle";

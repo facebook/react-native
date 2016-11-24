@@ -14,7 +14,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTNetworking.h"
+#import <React/RCTNetworking.h>
 
 static NSString* const niqqudStringB64 = @"15HWsNa816jWtdeQ16nWtNeB15nXqiwg15HWuNa816jWuNeQINeQ1rHXnNa515TWtNeZ150sINeQ1rXXqiDXlNa316nWuNa814HXnta315nWtNedLCDXldaw15DWtdeqINeU1rjXkNa416jWttelLg==";
 

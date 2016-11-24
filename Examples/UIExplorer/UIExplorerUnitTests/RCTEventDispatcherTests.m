@@ -16,8 +16,8 @@
 #import <XCTest/XCTest.h>
 
 #import <OCMock/OCMock.h>
-#import "RCTEventDispatcher.h"
-#import "RCTBridge+Private.h"
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTBridge+Private.h>
 
 @interface RCTTestEvent : NSObject <RCTEvent>
 @property (atomic, assign, readwrite) BOOL canCoalesce;

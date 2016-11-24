@@ -13,8 +13,8 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "RCTUtils.h"
-#import "RCTMultipartStreamReader.h"
+#import <React/RCTUtils.h>
+#import <React/RCTMultipartStreamReader.h>
 
 @interface RCTMultipartStreamReaderTests : XCTestCase
 

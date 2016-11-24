@@ -10,9 +10,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import <React/RCTAssert.h>
 #import <RCTTest/RCTTestRunner.h>
-
-#import "RCTAssert.h"
 
 #define RCT_TEST(name)                  \
 - (void)test##name                      \

@@ -25,6 +25,10 @@
 		2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1304D5AA1AA8C4A30002E2BE /* RCTImageViewManager.m */; };
 		2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
+		2D864B611DE761D400969F46 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2D864B621DE761D500969F46 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2D864B631DE7625900969F46 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2D864B641DE7625A00969F46 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
 		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
@@ -111,12 +115,34 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		2D864B5F1DE761A500969F46 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D864B621DE761D500969F46 /* RCTImageUtils.h in Headers */,
+				2D864B641DE7625A00969F46 /* RCTResizeMode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2D864B601DE761BC00969F46 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D864B611DE761D400969F46 /* RCTImageUtils.h in Headers */,
+				2D864B631DE7625900969F46 /* RCTResizeMode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		2D2A28391D9B042B00D4039D /* RCTImage-tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */;
 			buildPhases = (
 				2D2A28361D9B042B00D4039D /* Sources */,
+				2D864B5F1DE761A500969F46 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -132,6 +158,7 @@
 			buildConfigurationList = 58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTImage" */;
 			buildPhases = (
 				58B511591A9E6B3D00147676 /* Sources */,
+				2D864B601DE761BC00969F46 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -359,6 +386,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
@@ -374,6 +402,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 				SKIP_INSTALL = YES;
 			};

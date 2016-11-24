@@ -17,9 +17,9 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
+#import <React/RCTAssert.h>
+#import <React/RCTRedBox.h>
+#import <React/RCTRootView.h>
 
 @interface UIExplorerSnapshotTests : XCTestCase
 {

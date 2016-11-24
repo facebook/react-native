@@ -26,11 +26,11 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
 
-#import "RCTEventDispatcher.h"
-#import "RCTRootView.h"
-#import "RCTRootViewDelegate.h"
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTRootView.h>
+#import <React/RCTRootViewDelegate.h>
 
 #import <RCTTest/RCTTestRunner.h>
 

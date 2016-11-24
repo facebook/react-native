@@ -14,7 +14,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTFont.h"
+#import <React/RCTFont.h>
 
 #import <CoreText/CoreText.h>
 

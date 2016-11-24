@@ -217,7 +217,7 @@
 		3D3CD9481DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
 		3D4545AC1DE32FB300C6C478 /* RCTAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4A1A601E3B00E9B192 /* RCTAssert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545AD1DE32FB300C6C478 /* RCTBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA5E1A601EAA00E9B192 /* RCTBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D4545AE1DE32FB300C6C478 /* RCTBridge+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
+		3D4545AE1DE32FB300C6C478 /* RCTBridge+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545AF1DE32FB300C6C478 /* RCTBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545B01DE32FB300C6C478 /* RCTBridgeMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = 13AFBCA11C07287B00BBAEAA /* RCTBridgeMethod.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4545B11DE32FB300C6C478 /* RCTBridgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 830213F31A654E0800B993E6 /* RCTBridgeModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -332,7 +332,7 @@
 		3D4546201DE32FB300C6C478 /* UIView+React.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4546221DE32FEC00C6C478 /* RCTAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA4A1A601E3B00E9B192 /* RCTAssert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4546231DE32FEC00C6C478 /* RCTBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA5E1A601EAA00E9B192 /* RCTBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D4546241DE32FEC00C6C478 /* RCTBridge+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
+		3D4546241DE32FEC00C6C478 /* RCTBridge+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4546251DE32FEC00C6C478 /* RCTBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4546261DE32FEC00C6C478 /* RCTBridgeMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = 13AFBCA11C07287B00BBAEAA /* RCTBridgeMethod.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D4546271DE32FEC00C6C478 /* RCTBridgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 830213F31A654E0800B993E6 /* RCTBridgeModule.h */; settings = {ATTRIBUTES = (Public, ); }; };

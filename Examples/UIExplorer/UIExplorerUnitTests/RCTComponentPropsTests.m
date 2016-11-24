@@ -14,9 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTUIManager.h"
-#import "RCTViewManager.h"
-#import "RCTView.h"
+#import <React/RCTUIManager.h>
+#import <React/RCTViewManager.h>
+#import <React/RCTView.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
