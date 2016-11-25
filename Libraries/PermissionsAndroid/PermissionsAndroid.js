@@ -106,8 +106,11 @@ class PermissionsAndroid {
    *
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
+   *
+   * @deprecated
    */
   checkPermission(permission: string) : Promise<boolean> {
+    console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.query" instead');
     return Permissions.checkPermission(permission);
   }
 
@@ -130,8 +133,11 @@ class PermissionsAndroid {
    * necessary to show a dialog explaining why the permission is needed
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
+   *
+   * @deprecated
    */
   async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
+    console.warn('"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead');
     const response = await this.request(permission, rationale);
     return (response === this.RESULTS.GRANTED);
   }
