@@ -98,7 +98,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
     if (size == -1) {
       size = data.length - offset;
     }
-    if (offset > 0) {
+    if (offset >= 0) {
       data = Arrays.copyOfRange(data, offset, offset + size);
     }
     return data;
