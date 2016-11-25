@@ -19,7 +19,7 @@ export type FinalizeOptions = {
 };
 
 export type GetSourceOptions = {
-  inlineSourceMap: boolean,
+  inlineSourceMap?: boolean,
   dev: boolean,
 };
 
@@ -27,7 +27,7 @@ class BundleBase {
 
   _assets: Array<mixed>;
   _finalized: boolean;
-  _mainModuleId: string | void;
+  _mainModuleId: number | void;
   _modules: Array<ModuleTransport>;
   _source: ?string;
 
@@ -46,7 +46,7 @@ class BundleBase {
     return this._mainModuleId;
   }
 
-  setMainModuleId(moduleId: string) {
+  setMainModuleId(moduleId: number) {
     this._mainModuleId = moduleId;
   }
 
@@ -110,7 +110,11 @@ class BundleBase {
 
   setRamGroups(ramGroups: Array<string>) {}
 
-  toJSON(): mixed {
+  toJSON(): {
+    modules: Array<ModuleTransport>,
+    assets: Array<mixed>,
+    mainModuleId: number | void,
+  } {
     return {
       modules: this._modules,
       assets: this._assets,

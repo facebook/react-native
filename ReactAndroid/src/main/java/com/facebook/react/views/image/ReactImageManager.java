@@ -178,6 +178,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         MapBuilder.of("registrationName", "onLoadStart"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
         MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+        MapBuilder.of("registrationName", "onError"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
         MapBuilder.of("registrationName", "onLoadEnd"));
   }

@@ -40,7 +40,7 @@ describe('constant expressions', () => {
         f() ? g() : h()
       );`;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`a(true,true,2,true,{},{a:1},c,f()?g():h());`);
+      .toEqual('a(true,true,2,true,{},{a:1},c,f()?g():h());');
   });
 
   it('can optimize ternary expressions with constant conditions', () => {
@@ -50,7 +50,7 @@ describe('constant expressions', () => {
          ? ('production' != 'production' ? 'a' : 'A')
          : 'i';`;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`var a=1;var b='A';`);
+      .toEqual('var a=1;var b=\'A\';');
   });
 
   it('can optimize logical operator expressions with constant conditions', () => {
@@ -59,7 +59,7 @@ describe('constant expressions', () => {
       var b = 'android' == 'android' &&
         'production' != 'production' || null || "A";`;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`var a=true;var b="A";`);
+      .toEqual('var a=true;var b="A";');
   });
 
   it('can optimize logical operators with partly constant operands', () => {
@@ -71,7 +71,7 @@ describe('constant expressions', () => {
       var e = !1 && z();
     `;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`var a="truthy";var b=z();var c=null;var d=z();var e=false;`);
+      .toEqual('var a="truthy";var b=z();var c=null;var d=z();var e=false;');
   });
 
   it('can remode an if statement with a falsy constant test', () => {
@@ -81,7 +81,7 @@ describe('constant expressions', () => {
       }
     `;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(``);
+      .toEqual('');
   });
 
   it('can optimize if-else-branches with constant conditions', () => {
@@ -97,7 +97,7 @@ describe('constant expressions', () => {
       }
     `;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`{var a=3;var b=a+4;}`);
+      .toEqual('{var a=3;var b=a+4;}');
   });
 
   it('can optimize nested if-else constructs', () => {
@@ -117,6 +117,6 @@ describe('constant expressions', () => {
       }
     `;
     expect(normalize(constantFolding('arbitrary.js', parse(code))))
-      .toEqual(`{{require('c');}}`);
+      .toEqual('{{require(\'c\');}}');
   });
 });

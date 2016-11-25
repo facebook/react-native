@@ -57,7 +57,7 @@ const _warningMap: Map<string, WarningInfo> = new Map();
 
 if (__DEV__) {
   const {error, warn} = console;
-  console.error = function() {
+  (console: any).error = function() {
     error.apply(console, arguments);
     // Show yellow box for the `warning` module.
     if (typeof arguments[0] === 'string' &&
@@ -65,7 +65,7 @@ if (__DEV__) {
       updateWarningMap.apply(null, arguments);
     }
   };
-  console.warn = function() {
+  (console: any).warn = function() {
     warn.apply(console, arguments);
     updateWarningMap.apply(null, arguments);
   };

@@ -8,21 +8,22 @@
  */
 #import "RCTNativeAnimatedModule.h"
 
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+
 #import "RCTAdditionAnimatedNode.h"
 #import "RCTAnimationDriver.h"
-#import "RCTFrameAnimation.h"
-#import "RCTSpringAnimation.h"
 #import "RCTAnimationUtils.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventAnimation.h"
-#import "RCTInterpolationAnimatedNode.h"
-#import "RCTLog.h"
 #import "RCTDiffClampAnimatedNode.h"
 #import "RCTDivisionAnimatedNode.h"
+#import "RCTEventAnimation.h"
+#import "RCTFrameAnimation.h"
+#import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
+#import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
@@ -145,7 +146,7 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
 
   NSString *type = config[@"type"];
-  id<RCTAnimationDriver>animationDriver;
+  id<RCTAnimationDriver> animationDriver;
 
   if ([type isEqual:@"frames"]) {
     animationDriver = [[RCTFrameAnimation alloc] initWithId:animationId
@@ -172,7 +173,7 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
 {
-  id<RCTAnimationDriver>driver = _animationDrivers[animationId];
+  id<RCTAnimationDriver> driver = _animationDrivers[animationId];
   if (driver) {
     [driver removeAnimation];
     [_animationDrivers removeObjectForKey:animationId];
@@ -223,6 +224,18 @@ RCT_EXPORT_METHOD(flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
 
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
   [valueNode flattenOffset];
+}
+
+RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+    RCTLogError(@"Not a value node.");
+    return;
+  }
+
+  RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+  [valueNode extractOffset];
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
@@ -310,11 +323,11 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
                      body:@{@"tag": node.nodeTag, @"value": @(value)}];
 }
 
-- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
+- (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
 {
   // Native animated events only work for events dispatched from the main queue.
   if (!RCTIsMainQueue() || _eventAnimationDrivers.count == 0) {
-    return NO;
+    return;
   }
 
   NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
@@ -324,11 +337,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
     [driver updateWithEvent:event];
     [self updateViewsProps];
     [driver.valueNode cleanupAnimationUpdate];
-
-    return YES;
   }
-
-  return NO;
 }
 
 - (void)updateViewsProps
@@ -360,7 +369,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 {
   // Step Current active animations
   // This also recursively marks children nodes as needing update
-  for (id<RCTAnimationDriver>animationDriver in _activeAnimations) {
+  for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {
     [animationDriver stepAnimation];
   }
 
@@ -371,7 +380,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   }
 
   // Cleanup nodes and prepare for next cycle. Remove updated nodes from bucket.
-  for (id<RCTAnimationDriver>driverNode in _activeAnimations) {
+  for (id<RCTAnimationDriver> driverNode in _activeAnimations) {
     [driverNode cleanupAnimationUpdate];
   }
   for (RCTValueAnimatedNode *valueNode in _updatedValueNodes) {
@@ -379,13 +388,13 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   }
   [_updatedValueNodes removeAllObjects];
 
-  for (id<RCTAnimationDriver>driverNode in _activeAnimations) {
+  for (id<RCTAnimationDriver> driverNode in _activeAnimations) {
     if (driverNode.animationHasFinished) {
       [driverNode removeAnimation];
       [_finishedAnimations addObject:driverNode];
     }
   }
-  for (id<RCTAnimationDriver>driverNode in _finishedAnimations) {
+  for (id<RCTAnimationDriver> driverNode in _finishedAnimations) {
     [_activeAnimations removeObject:driverNode];
     [_animationDrivers removeObjectForKey:driverNode.animationId];
   }

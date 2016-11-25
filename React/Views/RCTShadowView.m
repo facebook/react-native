@@ -12,8 +12,8 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-#import "UIView+React.h"
 #import "UIView+Private.h"
+#import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -599,6 +599,8 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
           CSSNodeStyleSetHeight(cssNode, amount);
         }
         break;
+      case CSSDimensionCount:
+        break;
     }
   }
 }
@@ -648,8 +650,9 @@ RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
-RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrap)
 RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
+RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 - (void)setBackgroundColor:(UIColor *)color
 {

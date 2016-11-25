@@ -40,7 +40,6 @@ public interface CatalystInstance extends MemoryPressureListener {
    */
   void destroy();
   boolean isDestroyed();
-  boolean isAcceptingCalls();
 
   /**
    * Initialize all the native modules

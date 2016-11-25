@@ -8,31 +8,16 @@
  */
 'use strict';
 
-var child_process = require('child_process');
-var execFile = require('child_process').execFile;
-var fs = require('fs');
-var opn = require('opn');
-var path = require('path');
-
-function getChromeAppName() {
-  switch (process.platform) {
-  case 'darwin':
-    return 'google chrome';
-  case 'win32':
-    return 'chrome';
-  default:
-    return 'google-chrome';
-  }
-}
+const child_process = require('child_process');
+const execFile = require('child_process').execFile;
+const fs = require('fs');
+const path = require('path');
+const launchChrome = require('../util/launchChrome');
 
 function launchChromeDevTools(port) {
   var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
   console.log('Launching Dev Tools...');
-  opn(debuggerURL, {app: [getChromeAppName()]}, function(err) {
-    if (err) {
-      console.error('Google Chrome exited with error:', err);
-    }
-  });
+  launchChrome(debuggerURL);
 }
 
 function escapePath(path) {
@@ -77,7 +62,7 @@ module.exports = function(options, isChromeConnected) {
       // TODO: Remove this case in the future
       console.log(
         'The method /launch-chrome-devtools is deprecated. You are ' +
-        ' probably using an application created with an older CLI with the ' + 
+        ' probably using an application created with an older CLI with the ' +
         ' packager of a newer CLI. Please upgrade your application: ' +
         'https://facebook.github.io/react-native/docs/upgrading.html');
         launchDevTools(options, isChromeConnected);

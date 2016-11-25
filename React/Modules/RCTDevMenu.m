@@ -19,7 +19,6 @@
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
-#import "RCTSourceCode.h"
 #import "RCTUtils.h"
 #import "RCTWebSocketProxy.h"
 
@@ -387,17 +386,12 @@ RCT_EXPORT_MODULE()
   _jsLoaded = YES;
 
   // Check if live reloading is available
-  _liveReloadURL = nil;
-  RCTSourceCode *sourceCodeModule = [_bridge moduleForClass:[RCTSourceCode class]];
-  if (!sourceCodeModule.scriptURL) {
-    if (!sourceCodeModule) {
-      RCTLogWarn(@"RCTSourceCode module not found");
-    } else if (!RCTRunningInTestEnvironment()) {
-      RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
-    }
-  } else if (!sourceCodeModule.scriptURL.fileURL) {
+  NSURL *scriptURL = _bridge.bundleURL;
+  if (![scriptURL isFileURL]) {
     // Live reloading is disabled when running from bundled JS file
-    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
+    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:scriptURL];
+  } else {
+    _liveReloadURL = nil;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -712,6 +706,15 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 
+@end
+
+@implementation RCTDevMenuItem
+
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(void(^)(void))handler {return nil;}
++ (instancetype)toggleItemWithKey:(NSString *)key
+                            title:(NSString *)title
+                    selectedTitle:(NSString *)selectedTitle
+                          handler:(void(^)(BOOL selected))handler {return nil;}
 @end
 
 #endif

@@ -22,9 +22,8 @@ jest
   .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
-  .mock('../PrepackBundle')
   .mock('../HMRBundle')
-  .mock('../../Activity')
+  .mock('../../Logger')
   .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
@@ -39,7 +38,6 @@ describe('Bundler', function() {
     id,
     dependencies,
     isAsset,
-    isAsset_DEPRECATED,
     isJSON,
     isPolyfill,
     resolution,
@@ -51,7 +49,6 @@ describe('Bundler', function() {
       getName: () => Promise.resolve(id),
       isJSON: () => isJSON,
       isAsset: () => isAsset,
-      isAsset_DEPRECATED: () => isAsset_DEPRECATED,
       isPolyfill: () => isPolyfill,
       read: () => ({
         code: 'arbitrary',
@@ -101,13 +98,6 @@ describe('Bundler', function() {
     modules = [
       createModule({id: 'foo', path: '/root/foo.js', dependencies: []}),
       createModule({id: 'bar', path: '/root/bar.js', dependencies: []}),
-      createModule({
-        path: '/root/img/img.png',
-        id: 'image!img',
-        isAsset_DEPRECATED: true,
-        dependencies: [],
-        resolution: 2,
-      }),
       createModule({
         id: 'new_image.png',
         path: '/root/img/new_image.png',
@@ -167,9 +157,8 @@ describe('Bundler', function() {
 
         expect(ithAddedModule(0)).toEqual('/root/foo.js');
         expect(ithAddedModule(1)).toEqual('/root/bar.js');
-        expect(ithAddedModule(2)).toEqual('/root/img/img.png');
-        expect(ithAddedModule(3)).toEqual('/root/img/new_image.png');
-        expect(ithAddedModule(4)).toEqual('/root/file.json');
+        expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(3)).toEqual('/root/file.json');
 
         expect(bundle.finalize.mock.calls[0]).toEqual([{
             runMainModule: true,
@@ -178,15 +167,6 @@ describe('Bundler', function() {
         }]);
 
         expect(bundle.addAsset.mock.calls[0]).toEqual([{
-          __packager_asset: true,
-          path: '/root/img/img.png',
-          uri: 'img',
-          width: 25,
-          height: 50,
-          deprecated: true,
-        }]);
-
-        expect(bundle.addAsset.mock.calls[1]).toEqual([{
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
@@ -246,7 +226,7 @@ describe('Bundler', function() {
       sourceMapUrl: 'source_map_url',
       assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
     }).then(bundle => {
-      expect(bundle.addAsset.mock.calls[1]).toEqual([{
+      expect(bundle.addAsset.mock.calls[0]).toEqual([{
         __packager_asset: true,
         fileSystemLocation: '/root/img',
         httpServerLocation: '/assets/img',
@@ -335,7 +315,6 @@ describe('Bundler', function() {
         .then((paths) => expect(paths).toEqual([
           '/root/foo.js',
           '/root/bar.js',
-          '/root/img/img.png',
           '/root/img/new_image.png',
           '/root/img/new_image@2x.png',
           '/root/img/new_image@3x.png',

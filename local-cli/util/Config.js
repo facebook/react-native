@@ -23,7 +23,6 @@ export type ConfigT = {
   getTransformOptionsModulePath?: () => string,
   transformVariants?: () => {[name: string]: Object},
 
-  getAssetRoots(): Array<string>,
   getBlacklistRE(): RegExp,
   getProjectRoots(): Array<string>,
 };

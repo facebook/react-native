@@ -10,10 +10,10 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
 const memoize = require('async/memoize');
 const queue = require('async/queue');
 const seq = require('async/seq');
-const invariant = require('fbjs/lib/invariant');
 
 import type {GraphFn, LoadFn, ResolveFn, File, Module} from './types.flow';
 
@@ -28,7 +28,8 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
 
     if (typeof platform !== 'string') {
       log.error('`Graph`, called without a platform');
-      return callback(Error('The target platform has to be passed'));
+      callback(Error('The target platform has to be passed'));
+      return;
     }
 
     const modules: Map<string | null, Module> = new Map();

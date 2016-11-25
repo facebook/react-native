@@ -10,9 +10,30 @@
 package com.facebook.csslayout;
 
 public enum CSSJustify {
-  FLEX_START,
-  CENTER,
-  FLEX_END,
-  SPACE_BETWEEN,
-  SPACE_AROUND,
+  FLEX_START(0),
+  CENTER(1),
+  FLEX_END(2),
+  SPACE_BETWEEN(3),
+  SPACE_AROUND(4);
+
+  private int mIntValue;
+
+  CSSJustify(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSJustify fromInt(int value) {
+    switch (value) {
+      case 0: return FLEX_START;
+      case 1: return CENTER;
+      case 2: return FLEX_END;
+      case 3: return SPACE_BETWEEN;
+      case 4: return SPACE_AROUND;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

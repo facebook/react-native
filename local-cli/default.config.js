@@ -20,21 +20,10 @@ var rnpmConfig = require('./core/config');
  * to tweak.
  */
 var config = {
-  getProjectRoots() {
-    return getRoots();
-  },
+  getProjectRoots,
 
   getProjectConfig: rnpmConfig.getProjectConfig,
   getDependencyConfig: rnpmConfig.getDependencyConfig,
-
-  /**
-   * Specify where to look for assets that are referenced using
-   * `image!<image_name>`. Asset directories for images referenced using
-   * `./<image.extension>` don't require any entry in here.
-   */
-  getAssetRoots() {
-    return getRoots();
-  },
 
   /**
    * Specify any additional asset extentions to be used by the packager.
@@ -62,7 +51,7 @@ var config = {
   },
 };
 
-function getRoots() {
+function getProjectRoots() {
   var root = process.env.REACT_NATIVE_APP_ROOT;
   if (root) {
     return [path.resolve(root)];

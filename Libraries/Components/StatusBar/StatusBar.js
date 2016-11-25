@@ -131,6 +131,10 @@ function createStackEntry(props: any): any {
  * to use the static API and the component for the same prop because any value
  * set by the static API will get overriden by the one set by the component in
  * the next render.
+ *
+ * ### Constants
+ *
+ * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component {
   props: {
@@ -175,7 +179,7 @@ class StatusBar extends React.Component {
 
   /**
    * Show or hide the status bar
-   * @param hidden The dialog's title.
+   * @param hidden Hide the status bar.
    * @param animation Optional animation when
    *    changing the status bar hidden property.
    */

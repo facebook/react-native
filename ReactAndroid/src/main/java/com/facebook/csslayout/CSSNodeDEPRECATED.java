@@ -58,7 +58,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   private @Nullable CSSNodeDEPRECATED mParent;
   private @Nullable MeasureFunction mMeasureFunction = null;
   private LayoutState mLayoutState = LayoutState.DIRTY;
-  private boolean mIsTextNode = false;
   private Object mData;
 
   @Override
@@ -122,16 +121,6 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   @Override
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
-  }
-
-  @Override
-  public void setIsTextNode(boolean isTextNode) {
-    mIsTextNode = isTextNode;
-  }
-
-  @Override
-  public boolean isTextNode() {
-    return mIsTextNode;
   }
 
   long measure(float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode) {
@@ -231,6 +220,11 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
   @Override
   public boolean valuesEqual(float f1, float f2) {
     return FloatUtil.floatsEqual(f1, f2);
+  }
+
+  @Override
+  public void copyStyle(CSSNodeDEPRECATED srcNode) {
+    throw new UnsupportedOperationException("copyStyle is not implemented");
   }
 
   /**

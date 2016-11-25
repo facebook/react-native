@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include "Value.h"
-
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSValueRef.h>
+#include <jschelpers/Value.h>
+#include <jschelpers/JavaScriptCore.h>
 
 #include <stdexcept>
 #include <algorithm>
@@ -60,9 +57,7 @@ void installGlobalProxy(
     const char* name,
     JSObjectGetPropertyCallback callback);
 
-JSValueRef makeJSCException(
-    JSContextRef ctx,
-    const char* exception_text);
+void removeGlobal(JSGlobalContextRef ctx, const char* name);
 
 JSValueRef evaluateScript(
     JSContextRef ctx,
@@ -80,8 +75,6 @@ void formatAndThrowJSException(
     JSContextRef ctx,
     JSValueRef exn,
     JSStringRef sourceURL);
-
-JSValueRef makeJSError(JSContextRef ctx, const char *error);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);
@@ -105,7 +98,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         return (*method)(ctx, function, thisObject, argumentCount, arguments, exception);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return JSValueMakeUndefined(ctx);
+        return JSC_JSValueMakeUndefined(ctx);
       }
     }
   };
