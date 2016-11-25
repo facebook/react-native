@@ -33,6 +33,26 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
    * Get native instance count. Useful for testing only.
    */
   static native int jni_CSSNodeGetInstanceCount();
+  static native void jni_CSSLog(int level, String message);
+
+  private static native void jni_CSSLayoutSetLogger(Object logger);
+  public static void setLogger(CSSLogger logger) {
+    jni_CSSLayoutSetLogger(logger);
+  }
+
+  private static native void jni_CSSLayoutSetExperimentalFeatureEnabled(
+      int feature,
+      boolean enabled);
+  public static void setExperimentalFeatureEnabled(
+      CSSExperimentalFeature feature,
+      boolean enabled) {
+    jni_CSSLayoutSetExperimentalFeatureEnabled(feature.intValue(), enabled);
+  }
+
+  private static native boolean jni_CSSLayoutIsExperimentalFeatureEnabled(int feature);
+  public static boolean isExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+    return jni_CSSLayoutIsExperimentalFeatureEnabled(feature.intValue());
+  }
 
   private CSSNode mParent;
   private List<CSSNode> mChildren;
@@ -170,6 +190,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     jni_CSSNodeMarkLayoutSeen(mNativePointer);
   }
 
+  private native void jni_CSSNodeCopyStyle(long dstNativePointer, long srcNativePointer);
+  @Override
+  public void copyStyle(CSSNode srcNode) {
+    jni_CSSNodeCopyStyle(mNativePointer, srcNode.mNativePointer);
+  }
+
   private native int jni_CSSNodeStyleGetDirection(long nativePointer);
   @Override
   public CSSDirection getStyleDirection() {
@@ -179,7 +205,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetDirection(long nativePointer, int direction);
   @Override
   public void setDirection(CSSDirection direction) {
-    jni_CSSNodeStyleSetDirection(mNativePointer, direction.ordinal());
+    jni_CSSNodeStyleSetDirection(mNativePointer, direction.intValue());
   }
 
   private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
@@ -191,7 +217,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetFlexDirection(long nativePointer, int flexDirection);
   @Override
   public void setFlexDirection(CSSFlexDirection flexDirection) {
-    jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.ordinal());
+    jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
   }
 
   private native int jni_CSSNodeStyleGetJustifyContent(long nativePointer);
@@ -203,7 +229,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetJustifyContent(long nativePointer, int justifyContent);
   @Override
   public void setJustifyContent(CSSJustify justifyContent) {
-    jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.ordinal());
+    jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignItems(long nativePointer);
@@ -215,7 +241,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignItems(long nativePointer, int alignItems);
   @Override
   public void setAlignItems(CSSAlign alignItems) {
-    jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.ordinal());
+    jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignSelf(long nativePointer);
@@ -227,7 +253,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignSelf(long nativePointer, int alignSelf);
   @Override
   public void setAlignSelf(CSSAlign alignSelf) {
-    jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.ordinal());
+    jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignContent(long nativePointer);
@@ -239,7 +265,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetAlignContent(long nativePointer, int alignContent);
   @Override
   public void setAlignContent(CSSAlign alignContent) {
-    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.ordinal());
+    jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetPositionType(long nativePointer);
@@ -251,13 +277,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetPositionType(long nativePointer, int positionType);
   @Override
   public void setPositionType(CSSPositionType positionType) {
-    jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.ordinal());
+    jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.intValue());
   }
 
   private native void jni_CSSNodeStyleSetFlexWrap(long nativePointer, int wrapType);
   @Override
   public void setWrap(CSSWrap flexWrap) {
-    jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.ordinal());
+    jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
   }
 
   private native int jni_CSSNodeStyleGetOverflow(long nativePointer);
@@ -269,7 +295,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private native void jni_CSSNodeStyleSetOverflow(long nativePointer, int overflow);
   @Override
   public void setOverflow(CSSOverflow overflow) {
-    jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.ordinal());
+    jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.intValue());
   }
 
   private native void jni_CSSNodeStyleSetFlex(long nativePointer, float flex);
@@ -448,6 +474,16 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public void setStyleMaxHeight(float maxheight) {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
+  }
+
+  private native float jni_CSSNodeStyleGetAspectRatio(long nativePointer);
+  public float getStyleAspectRatio() {
+    return jni_CSSNodeStyleGetAspectRatio(mNativePointer);
+  }
+
+  private native void jni_CSSNodeStyleSetAspectRatio(long nativePointer, float aspectRatio);
+  public void setStyleAspectRatio(float aspectRatio) {
+    jni_CSSNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
   }
 
   @Override

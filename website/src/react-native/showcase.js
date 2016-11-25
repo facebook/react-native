@@ -6,10 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
 */
+'use strict';
 
 var React = require('React');
 var Site = require('Site');
-
 
 /*
 Thousands of applications use React Native, so we can't list all of them
@@ -310,7 +310,7 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
-  }  
+  }
 ];
 
 /*
@@ -359,7 +359,6 @@ var pinned = [
     linkAppStore: 'https://itunes.apple.com/us/app/airbnb/id401626263?mt=8&bev=1472279725_4ITWKWGX6KrmU6pT&utm_medium=web&utm_source=airbnb&_branch_match_id=307510898795870823',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb',
     infoLink: 'https://www.youtube.com/watch?v=tUfgQtmG3R0',
-    infoTitle: 'Hybrid React Native Apps at Airbnb',
     infoTitle: 'Tech Talk: Hybrid React Native Apps at Airbnb',
     defaultLink: 'https://www.airbnb.com/mobile',
   },
@@ -513,7 +512,7 @@ var showcase = React.createClass({
         <section className="content wrap documentationContent nosidebar showcaseSection">
           <div className="inner-content showcaseHeader">
             <h1 style={{textAlign: 'center'}}>Who's using React Native?</h1>
-            <div className="subHeader"></div>
+            <div className="subHeader" />
             <p>Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!</p>
 
             <div className="inner-content">

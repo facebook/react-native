@@ -9,7 +9,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "RCTJavaScriptExecutor.h"
+#import <React/RCTJavaScriptExecutor.h>
 
 typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
 
@@ -51,12 +51,18 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  */
 @interface RCTJSContextProvider : NSObject
 
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode;
 
 /**
  * Marks whether the provider uses the custom implementation of JSC and not the system one.
  */
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
+/**
+ * Marks whether it is safe to try and run bytecode if given the choice.
+ */
+@property (nonatomic, readonly) BOOL tryBytecode;
 
 @end
 
@@ -73,6 +79,11 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
+ * Returns the bytecode file format that the underlying runtime supports.
+ */
+@property (nonatomic, readonly) int32_t bytecodeFileFormatVersion;
+
+/**
  * Specify a name for the JSContext used, which will be visible in debugging tools
  * @default is "RCTJSContext"
  */
@@ -83,6 +94,15 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  * to initialize RCTJSCWrapper.
  */
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+/**
+ * @experimental
+ * Inits a new executor instance with given configuration flags. Please refer to
+ * the documentation for `RCTJSContextProvider` for more information as to their
+ * purpose.
+ */
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode;
 
 /**
  * @experimental

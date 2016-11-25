@@ -9,7 +9,6 @@
 'use strict';
 
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../node-haste').FileWatcher;
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
@@ -76,13 +75,9 @@ const validateOpts = declareOpts({
     type: 'object',
     required: false,
   },
-  nonPersistent: {
+  watch: {
     type: 'boolean',
     default: false,
-  },
-  assetRoots: {
-    type: 'array',
-    required: false,
   },
   assetExts: {
     type: 'array',
@@ -200,57 +195,32 @@ const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 class Server {
   constructor(options) {
     const opts = this._opts = validateOpts(options);
+    const processFileChange =
+      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
 
-    const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
-
-    let watchRootConfigs = opts.projectRoots.map(dir => {
-      return {
-        dir: dir,
-        globs: [
-          '**/*.js',
-          '**/*.json',
-        ].concat(assetGlobs),
-      };
-    });
-
-    if (opts.assetRoots != null) {
-      watchRootConfigs = watchRootConfigs.concat(
-        opts.assetRoots.map(dir => {
-          return {
-            dir: dir,
-            globs: assetGlobs,
-          };
-        })
-      );
-    }
-
-    this._fileWatcher = options.nonPersistent
-      ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs, {useWatchman: true});
-
     this._assetServer = new AssetServer({
       assetExts: opts.assetExts,
-      fileWatcher: this._fileWatcher,
       projectRoots: opts.projectRoots,
     });
 
     const bundlerOpts = Object.create(opts);
-    bundlerOpts.fileWatcher = this._fileWatcher;
     bundlerOpts.assetServer = this._assetServer;
-    bundlerOpts.allowBundleUpdates = !options.nonPersistent;
+    bundlerOpts.allowBundleUpdates = options.watch;
+    bundlerOpts.watch = options.watch;
     this._bundler = new Bundler(bundlerOpts);
 
-    this._fileWatcher.on('all', this._onFileChange.bind(this));
-
     // changes to the haste map can affect resolution of files in the bundle
-    const dependencyGraph = this._bundler.getResolver().getDependecyGraph();
-
+    const dependencyGraph = this._bundler.getResolver().getDependencyGraph();
     dependencyGraph.load().then(() => {
+      dependencyGraph.getWatcher().on(
+        'change',
+        ({eventsQueue}) => eventsQueue.forEach(processFileChange),
+      );
       dependencyGraph.getHasteMap().on('change', () => {
         debug('Clearing bundle cache due to haste map change');
         this._clearBundles();
@@ -282,10 +252,7 @@ class Server {
   }
 
   end() {
-    Promise.all([
-      this._fileWatcher.end(),
-      this._bundler.kill(),
-    ]);
+    return this._bundler.end();
   }
 
   setHMRFileChangeListener(listener) {
@@ -299,7 +266,7 @@ class Server {
   }
 
   buildBundle(options) {
-    return this._bundler.getResolver().getDependecyGraph().load().then(() => {
+    return this._bundler.getResolver().getDependencyGraph().load().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }
@@ -370,9 +337,9 @@ class Server {
     });
   }
 
-  _onFileChange(type, filepath, root) {
-    const absPath = path.join(root, filepath);
-    this._bundler.invalidateFile(absPath);
+  onFileChange(type, filePath, stat) {
+    this._assetServer.onFileChange(type, filePath, stat);
+    this._bundler.invalidateFile(filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -380,26 +347,26 @@ class Server {
     if (this._hmrFileChangeListener) {
       // Clear cached bundles in case user reloads
       this._clearBundles();
-      this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
+      this._hmrFileChangeListener(filePath, this._bundler.stat(filePath));
       return;
-    } else if (type !== 'change' && absPath.indexOf(NODE_MODULES) !== -1) {
+    } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files
       debug('Clearing bundles due to potential node_modules resolution change');
       this._clearBundles();
     }
 
     Promise.all(
-      this._fileChangeListeners.map(listener => listener(absPath))
+      this._fileChangeListeners.map(listener => listener(filePath))
     ).then(
-      () => this._onFileChangeComplete(absPath),
-      () => this._onFileChangeComplete(absPath)
+      () => this._onFileChangeComplete(filePath),
+      () => this._onFileChangeComplete(filePath)
     );
   }
 
-  _onFileChangeComplete(absPath) {
+  _onFileChangeComplete(filePath) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
-    this._debouncedFileChangeHandler(absPath);
+    this._debouncedFileChangeHandler(filePath);
   }
 
   _clearBundles() {
@@ -502,9 +469,13 @@ class Server {
         data => {
           // Tell clients to cache this for 1 year.
           // This is safe as the asset url contains a hash of the asset.
-          res.setHeader('Cache-Control', 'max-age=31536000');
+          if (process.env.REACT_NATIVE_ENABLE_ASSET_CACHING === true) {
+            res.setHeader('Cache-Control', 'max-age=31536000');
+          }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
-          print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          process.nextTick(() => {
+            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          });
         },
         error => {
           console.error(error.stack);
@@ -776,7 +747,9 @@ class Server {
     }).then(
       stack => {
         res.end(JSON.stringify({stack: stack}));
-        print(log(createActionEndEntry(symbolicatingLogEntry)));
+        process.nextTick(() => {
+          print(log(createActionEndEntry(symbolicatingLogEntry)));
+        });
       },
       error => {
         console.error(error.stack || error);

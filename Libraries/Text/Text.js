@@ -136,8 +136,6 @@ const Text = React.createClass({
     onLongPress: React.PropTypes.func,
     /**
      * Lets the user select text, to use the native copy and paste functionality.
-     *
-     * @platform android
      */
     selectable: React.PropTypes.bool,
     /**

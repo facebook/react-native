@@ -11,7 +11,7 @@
 
 'use strict';
 
-const {dirname, parse} = require('path');
+const {dirname, join, parse} = require('path');
 
 module.exports = class FastFS {
   directories: Set<string>;
@@ -22,6 +22,18 @@ module.exports = class FastFS {
     this.directories = buildDirectorySet(files);
     this.directoryEntries = buildDirectoryEntries(files.map(parse));
     this.files = new Set(files);
+  }
+
+  closest(path: string, fileName: string): ?string {
+    let {dir, root} = parse(path);
+    do {
+      const candidate = join(dir, fileName);
+      if (this.files.has(candidate)) {
+        return candidate;
+      }
+      dir = dirname(dir);
+    } while (dir !== '.' && dir !== root);
+    return null;
   }
 
   dirExists(path: string) {
@@ -47,8 +59,8 @@ function buildDirectorySet(files) {
   files.forEach(path => {
     let {dir, root} = parse(path);
     while (dir !== '.' && dir !== root && !directories.has(dir)) {
-      directories.add(path);
-      dir = dirname(path);
+      directories.add(dir);
+      dir = dirname(dir);
     }
   });
   return directories;

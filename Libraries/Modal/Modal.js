@@ -128,6 +128,10 @@ class Modal extends React.Component {
     visible: true,
   };
 
+  static contextTypes = {
+    rootTag: React.PropTypes.number,
+  };
+
   render(): ?React.Element<any> {
     if (this.props.visible === false) {
       return null;
@@ -147,7 +151,7 @@ class Modal extends React.Component {
     }
 
     const innerChildren = __DEV__ ?
-      ( <AppContainer>
+      ( <AppContainer rootTag={this.context.rootTag}>
           {this.props.children}
         </AppContainer>) :
       this.props.children;

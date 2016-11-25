@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 #if RCT_DEV
 

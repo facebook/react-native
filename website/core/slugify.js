@@ -8,6 +8,7 @@
  *
  * @providesModule slugify
  */
+'use strict';
 
 var slugify = function(string) {
   //  var accents = 'àáäâèéëêìíïîòóöôùúüûñç';

@@ -85,6 +85,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(showsAnnotationCallouts, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(followUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
@@ -287,6 +288,14 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 #endif
 
   return annotationView;
+}
+
+- (void)mapView:(RCTMap *)mapView didAddAnnotationViews:(NSArray *)views {
+  if (mapView.showsAnnotationCallouts) {
+    for (id<MKAnnotation> annotation in mapView.annotations) {
+      [mapView selectAnnotation:annotation animated:YES];
+    }
+  }
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay

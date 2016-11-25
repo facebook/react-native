@@ -12,8 +12,8 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-#import "UIView+React.h"
 #import "UIView+Private.h"
+#import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -129,7 +129,7 @@ DEFINE_PROCESS_META_PROPS(Border);
 //
 // After passing in the absolutePosition of {106.667, y}, we do the following calculations:
 // absoluteLeft = round(absolutePosition.x + viewPosition.left) = round(106.667 + 0) = 106.5
-// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.width) + round(106.667 + 0 + 106.667) = 213.5
+// absoluteRight = round(absolutePosition.x + viewPosition.left + viewSize.left) + round(106.667 + 0 + 106.667) = 213.5
 // width = 213.5 - 106.5 = 107
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
@@ -152,22 +152,22 @@ DEFINE_PROCESS_META_PROPS(Border);
   }
 #endif
 
-  const CGPoint absoluteTopLeft = {
+  CGPoint absoluteTopLeft = {
     absolutePosition.x + CSSNodeLayoutGetLeft(node),
     absolutePosition.y + CSSNodeLayoutGetTop(node)
   };
 
-  const CGPoint absoluteBottomRight = {
-    absoluteTopLeft.x + CSSNodeLayoutGetWidth(node),
-    absoluteTopLeft.y + CSSNodeLayoutGetHeight(node)
+  CGPoint absoluteBottomRight = {
+    absolutePosition.x + CSSNodeLayoutGetLeft(node) + CSSNodeLayoutGetWidth(node),
+    absolutePosition.y + CSSNodeLayoutGetTop(node) + CSSNodeLayoutGetHeight(node)
   };
 
-  const CGRect frame = {{
+  CGRect frame = {{
     RCTRoundPixelValue(CSSNodeLayoutGetLeft(node)),
     RCTRoundPixelValue(CSSNodeLayoutGetTop(node)),
   }, {
-    RCTRoundPixelValue(absoluteBottomRight.x) - RCTRoundPixelValue(absoluteTopLeft.x),
-    RCTRoundPixelValue(absoluteBottomRight.y) - RCTRoundPixelValue(absoluteTopLeft.y),
+    RCTRoundPixelValue(absoluteBottomRight.x - absoluteTopLeft.x),
+    RCTRoundPixelValue(absoluteBottomRight.y - absoluteTopLeft.y)
   }};
 
   if (!CGRectEqualToRect(frame, _frame)) {
@@ -599,6 +599,8 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
           CSSNodeStyleSetHeight(cssNode, amount);
         }
         break;
+      case CSSDimensionCount:
+        break;
     }
   }
 }
@@ -648,8 +650,9 @@ RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
 RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
-RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrapType)
+RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrap)
 RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
+RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 - (void)setBackgroundColor:(UIColor *)color
 {

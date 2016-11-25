@@ -9,15 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
-
-#import "RCTComponent.h"
-#import "RCTRootView.h"
+#import <React/RCTComponent.h>
+#import <React/RCTRootView.h>
 
 @class RCTSparseArray;
 
@@ -137,11 +131,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) CSSAlign alignSelf;
 @property (nonatomic, assign) CSSAlign alignItems;
 @property (nonatomic, assign) CSSPositionType position;
-@property (nonatomic, assign) CSSWrapType flexWrap;
+@property (nonatomic, assign) CSSWrap flexWrap;
 
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) float flexBasis;
+
+@property (nonatomic, assign) float aspectRatio;
 
 - (void)setFlex:(float)flex;
 

@@ -114,16 +114,8 @@ public class EventDispatcher implements LifecycleEventListener {
   public void dispatchEvent(Event event) {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
 
-    boolean eventHandled = false;
     for (EventDispatcherListener listener : mListeners) {
-      if (listener.onEventDispatch(event)) {
-        eventHandled = true;
-      }
-    }
-
-    // If the event was handled by one of the event listener don't send it to JS.
-    if (eventHandled) {
-      return;
+      listener.onEventDispatch(event);
     }
 
     synchronized (mEventsStagingLock) {
