@@ -13,8 +13,8 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "RCTBridge.h"
-#import "RCTDevMenu.h"
+#import <React/RCTBridge.h>
+#import <React/RCTDevMenu.h>
 
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
