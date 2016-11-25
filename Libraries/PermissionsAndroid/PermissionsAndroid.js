@@ -104,7 +104,7 @@ class PermissionsAndroid {
   }
 
   /**
-   * DEPRECATED - use query
+   * DEPRECATED - use check
    *
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
@@ -112,7 +112,7 @@ class PermissionsAndroid {
    * @deprecated
    */
   checkPermission(permission: string) : Promise<boolean> {
-    console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.query" instead');
+    console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead');
     return Permissions.checkPermission(permission);
   }
 

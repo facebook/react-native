@@ -81,7 +81,7 @@ class PermissionsExample extends React.Component {
   };
 
   _checkPermission = async () => {
-    let result = await PermissionsAndroid.query(this.state.permission);
+    let result = await PermissionsAndroid.check(this.state.permission);
     this.setState({
       hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
         this.state.permission,
