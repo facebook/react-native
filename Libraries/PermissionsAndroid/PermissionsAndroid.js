@@ -19,6 +19,8 @@ type Rationale = {
   message: string;
 }
 
+type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
+
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  * Some permissions are granted by default when the application is installed
@@ -118,7 +120,7 @@ class PermissionsAndroid {
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    */
-  query(permission: string) : Promise<boolean> {
+  check(permission: string) : Promise<boolean> {
     return Permissions.checkPermission(permission);
   }
 
@@ -152,7 +154,7 @@ class PermissionsAndroid {
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
    */
-  async request(permission: string, rationale?: Rationale) : Promise<string> {
+  async request(permission: string, rationale?: Rationale) : Promise<PermissionStatus> {
     if (rationale) {
       const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
 
@@ -174,7 +176,7 @@ class PermissionsAndroid {
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
    */
-  requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: string}> {
+  requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {
     return Permissions.requestMultiplePermissions(permissions);
   }
 }
