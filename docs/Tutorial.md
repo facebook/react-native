@@ -49,6 +49,8 @@ So this code is defining `HelloWorldApp`, a new `Component`, and it's registerin
 
 The `AppRegistry` just tells React Native which component is the root one for the whole application. You won't be thinking about `AppRegistry` a lot - there will probably just be one call to `AppRegistry.registerComponent` in your whole app. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running.
 
+You might have to change the return statement in `getMainComponentName()` to "HelloWorldApp" in android/app/src/main/java/com/{your-project-name}/MainActivity.java
+
 ## This App Doesn't Do Very Much
 
 Good point. To make components do more interesting things, you need to [learn about Props](/react-native/docs/props.html).
