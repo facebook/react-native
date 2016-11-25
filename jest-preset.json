@@ -7,7 +7,6 @@
     ]
   },
   "moduleNameMapper": {
-    "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
     "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|png|psd|svg|webp)$": "RelativeImageStub",
     "^React$": "<rootDir>node_modules/react"
   },

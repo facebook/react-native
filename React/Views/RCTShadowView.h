@@ -10,9 +10,8 @@
 #import <UIKit/UIKit.h>
 
 #import <CSSLayout/CSSLayout.h>
-
-#import "RCTComponent.h"
-#import "RCTRootView.h"
+#import <React/RCTComponent.h>
+#import <React/RCTRootView.h>
 
 @class RCTSparseArray;
 
@@ -137,6 +136,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) float flexBasis;
+
+@property (nonatomic, assign) float aspectRatio;
 
 - (void)setFlex:(float)flex;
 

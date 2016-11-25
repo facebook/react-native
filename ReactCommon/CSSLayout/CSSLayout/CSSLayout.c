@@ -977,7 +977,8 @@ static void computeChildFlexBasis(const CSSNodeRef node,
   if (!CSSValueIsUndefined(CSSNodeStyleGetFlexBasis(child)) &&
       !CSSValueIsUndefined(isMainAxisRow ? width : height)) {
     if (CSSValueIsUndefined(child->layout.computedFlexBasis) ||
-        child->layout.computedFlexBasisGeneration != gCurrentGenerationCount) {
+        (CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeatureWebFlexBasis) &&
+         child->layout.computedFlexBasisGeneration != gCurrentGenerationCount)) {
       child->layout.computedFlexBasis =
           fmaxf(CSSNodeStyleGetFlexBasis(child), getPaddingAndBorderAxis(child, mainAxis));
     }

@@ -17,10 +17,6 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
-
 @interface UIExplorerSnapshotTests : XCTestCase
 {
   RCTTestRunner *_runner;

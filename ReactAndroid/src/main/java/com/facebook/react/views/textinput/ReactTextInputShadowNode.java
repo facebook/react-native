@@ -41,7 +41,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
-    super(false);
     setMeasureFunction(this);
   }
 

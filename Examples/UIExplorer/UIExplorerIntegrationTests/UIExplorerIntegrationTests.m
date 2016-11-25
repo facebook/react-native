@@ -12,8 +12,6 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-
 #define RCT_TEST(name)                  \
 - (void)test##name                      \
 {                                       \

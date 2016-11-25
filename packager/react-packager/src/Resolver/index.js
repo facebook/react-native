@@ -31,10 +31,6 @@ const validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
   watch: {
     type: 'boolean',
     default: false,
@@ -92,7 +88,6 @@ class Resolver {
 
     this._depGraph = new DependencyGraph({
       roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||

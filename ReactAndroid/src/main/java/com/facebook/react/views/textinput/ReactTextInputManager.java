@@ -88,7 +88,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
-    editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+    editText.setReturnKeyType("done");
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
@@ -475,29 +475,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "returnKeyType")
   public void setReturnKeyType(ReactEditText view, String returnKeyType) {
-    switch (returnKeyType) {
-      case "done":
-        view.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        break;
-      case "go":
-        view.setImeOptions(EditorInfo.IME_ACTION_GO);
-        break;
-      case "next":
-        view.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        break;
-      case "none":
-        view.setImeOptions(EditorInfo.IME_ACTION_NONE);
-        break;
-      case "previous":
-        view.setImeOptions(EditorInfo.IME_ACTION_PREVIOUS);
-        break;
-      case "search":
-        view.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        break;
-      case "send":
-        view.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        break;
-    }
+    view.setReturnKeyType(returnKeyType);
+  }
+
+  @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
+  public void setDisableFullscreenUI(ReactEditText view, boolean disableFullscreenUI) {
+    view.setDisableFullscreenUI(disableFullscreenUI);
   }
 
   private static final int IME_ACTION_ID = 0x670;

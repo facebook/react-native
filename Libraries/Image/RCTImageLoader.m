@@ -7,21 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTImageLoader.h"
+#import <libkern/OSAtomic.h>
+#import <objc/runtime.h>
 
 #import <ImageIO/ImageIO.h>
 
-#import <libkern/OSAtomic.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 
-#import <objc/runtime.h>
-
-#import "RCTConvert.h"
-#import "RCTDefines.h"
 #import "RCTImageCache.h"
 #import "RCTImageUtils.h"
-#import "RCTLog.h"
-#import "RCTNetworking.h"
-#import "RCTUtils.h"
 
 @implementation UIImage (React)
 

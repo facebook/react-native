@@ -48,6 +48,9 @@ public:
   Object jsObj;
 };
 
+template <typename T>
+struct ValueEncoder;
+
 class RN_JSC_EXECUTOR_EXPORT JSCExecutor : public JSExecutor {
 public:
   /**
@@ -91,8 +94,9 @@ public:
   template <typename T>
   Value callFunctionSync(
       const std::string& module, const std::string& method, T&& args) {
-    return callFunctionSyncWithValue(module, method,
-                                     toValue(m_context, std::forward<T>(args)));
+    return callFunctionSyncWithValue(
+      module, method, ValueEncoder<typename std::decay<T>::type>::toValue(
+        m_context, std::forward<T>(args)));
   }
 
   virtual void setGlobalVariable(

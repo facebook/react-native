@@ -29,9 +29,13 @@ $ npm install --save react-native@X.Y
 
 ## 2. Upgrade your project templates
 
-The new npm package will likely contain updates to the files that are normally generated when you
-run `react-native init`, like the iOS and the Android sub-projects. To get these latest changes,
-run this in a terminal:
+The new npm package may contain updates to the files that are normally generated when you
+run `react-native init`, like the iOS and the Android sub-projects.
+
+You may consult [rn-diff](https://github.com/ncuillery/rn-diff) to see if there were changes in the project template files.
+In case there weren't any, simply rebuild the project and continue developing. In case of minor changes, you may update your project manually and rebuild.
+
+If there were major changes, run this in a terminal to get these:
 
 ```sh
 $ react-native upgrade

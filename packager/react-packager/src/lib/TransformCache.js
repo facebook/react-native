@@ -22,6 +22,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
+const toFixedHex = require('./toFixedHex');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 const CACHE_NAME = 'react-native-packager-cache';
@@ -66,15 +67,14 @@ function getCacheFilePaths(props: {
   const hasher = imurmurhash()
     .hash(props.filePath)
     .hash(jsonStableStringify(props.transformOptions) || '');
-  let hash = hasher.result().toString(16);
-  hash = Array(8 - hash.length + 1).join('0') + hash;
+  const hash = toFixedHex(8, hasher.result());
   const prefix = hash.substr(0, 2);
   const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
   const base = path.join(getCacheDirPath(), prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
-type CachedResult = {
+export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
@@ -135,7 +135,7 @@ function writeSync(props: {
   ]));
 }
 
-type CacheOptions = {resetCache?: boolean};
+export type CacheOptions = {resetCache?: boolean};
 
 /* 1 day */
 const GARBAGE_COLLECTION_PERIOD = 24 * 60 * 60 * 1000;
@@ -272,6 +272,14 @@ function readMetadataFileSync(
   };
 }
 
+export type ReadTransformProps = {
+  filePath: string,
+  sourceCode: string,
+  transformOptions: mixed,
+  transformCacheKey: string,
+  cacheOptions: CacheOptions,
+};
+
 /**
  * We verify the source hash matches to ensure we always favor rebuilding when
  * source change (rather than just using fs.mtime(), a bit less robust).
@@ -285,13 +293,7 @@ function readMetadataFileSync(
  * Meanwhile we store transforms with different options in different files so
  * that it is fast to switch between ex. minified, or not.
  */
-function readSync(props: {
-  filePath: string,
-  sourceCode: string,
-  transformOptions: mixed,
-  transformCacheKey: string,
-  cacheOptions: CacheOptions,
-}): ?CachedResult {
+function readSync(props: ReadTransformProps): ?CachedResult {
   GARBAGE_COLLECTOR.collectIfNecessarySync(props.cacheOptions);
   const cacheFilePaths = getCacheFilePaths(props);
   let metadata, transformedCode;

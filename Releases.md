@@ -74,6 +74,12 @@ Before posting the list of changes, consider asking one of contributors for thei
 
 **Important**: For release candiate releases, make sure to check "This is a pre-release"
 
+#### Update `Breaking Changes` document
+
+Once the release is cut, go to the [page](https://github.com/facebook/react-native/wiki/Breaking-Changes) where all breaking changes are listed and create section for the release. Don't forget to move all breaking changes from `master` that are now part of the release.
+
+When finished and there are breaking changes, include them in the release notes you just created.
+
 #### Tweet about the rc release
 
 Tweet about it! Link to release notes and say "please report issues" and link to the master issue to track bugs you created.
