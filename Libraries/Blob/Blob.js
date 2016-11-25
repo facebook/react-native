@@ -84,6 +84,17 @@ class Blob {
   }
 
   /**
+   * Create blob from a local content URI
+   */
+  static async fromURI(uri: string, options?: { type: string }): Promise<Blob> {
+    const blob = await BlobModule.createFromURI(uri);
+    return Blob.create({
+      ...blob,
+      type: options && options.type ? options.type : blob.type,
+    });
+  }
+
+  /**
    * Constructor for JS consumers.
    * Currently we only support creating Blobs from other Blobs.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob

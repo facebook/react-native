@@ -109,6 +109,41 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
+  private static byte[] getBytes(InputStream inputStream) throws IOException {
+    ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+    int bufferSize = 1024;
+    byte[] buffer = new byte[bufferSize];
+    int len = 0;
+    while ((len = inputStream.read(buffer)) != -1) {
+      byteBuffer.write(buffer, 0, len);
+    }
+    return byteBuffer.toByteArray();
+  }
+
+  private String getNameFromUri(Uri contentUri) {
+    if (contentUri.getScheme().equals("file")) {
+      return contentUri.getLastPathSegment();
+    }
+    String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
+    Cursor metaCursor = getReactApplicationContext().getContentResolver().query(contentUri, projection, null, null, null);
+    if (metaCursor != null) {
+      try {
+        if (metaCursor.moveToFirst()) {
+          return metaCursor.getString(0);
+        }
+      } finally {
+        metaCursor.close();
+      }
+    }
+    return contentUri.getLastPathSegment();
+  }
+
+  private long getLastModifiedFromUri(Uri contentUri) {
+    if (contentUri.getScheme().equals("file")) {
+      return new File(contentUri.toString()).lastModified();
+    }
+    return 0;
+  }
 
   @ReactMethod
   public void createFromParts(ReadableArray parts, String blobId) {
@@ -124,6 +159,39 @@ public class BlobModule extends ReactContextBaseJavaModule {
       buffer.put(resolve(part));
     }
     store(buffer.array(), blobId);
+  }
+
+  @ReactMethod
+  public void createFromURI(String path, Promise promise) {
+    try {
+      Uri uri = Uri.parse(path);
+      ContentResolver resolver = getReactApplicationContext().getContentResolver();
+
+      String type = resolver.getType(uri);
+      if (type != null) {
+        String ext = MimeTypeMap.getFileExtensionFromUrl(path);
+        if (ext != null) {
+          type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+        }
+      }
+
+      InputStream is = resolver.openInputStream(uri);
+      byte[] data = getBytes(is);
+
+      WritableMap blob = Arguments.createMap();
+      blob.putString("blobId", store(data));
+      blob.putInt("offset", 0);
+      blob.putInt("size", data.length);
+      blob.putString("type", type);
+
+      // Needed for files
+      blob.putString("name", getNameFromUri(uri));
+      blob.putDouble("lastModified", getLastModifiedFromUri(uri));
+
+      promise.resolve(blob);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
   }
 
   @ReactMethod
