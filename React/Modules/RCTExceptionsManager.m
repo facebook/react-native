@@ -18,7 +18,6 @@
 @implementation RCTExceptionsManager
 {
   __weak id<RCTExceptionsManagerDelegate> _delegate;
-  NSUInteger _reloadRetries;
 }
 
 @synthesize bridge = _bridge;

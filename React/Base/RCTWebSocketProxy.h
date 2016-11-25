@@ -7,11 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
+#import <React/RCTWebSocketProxyDelegate.h>
 
 #if RCT_DEV // Only supported in dev mode
-
-#import "RCTWebSocketProxyDelegate.h"
 
 @protocol RCTWebSocketProxy
 
@@ -19,7 +18,7 @@
 
 - (void)setDelegate:(id<RCTWebSocketProxyDelegate>)delegate forURL:(NSURL *)url;
 
-- (instancetype) init   __attribute__((unavailable("init not available, call sharedInstance instead")));
+- (instancetype)init   __attribute__((unavailable("init not available, call sharedInstance instead")));
 
 @end
 

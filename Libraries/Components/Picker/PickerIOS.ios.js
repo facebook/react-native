@@ -12,7 +12,7 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
@@ -73,8 +73,10 @@ var PickerIOS = React.createClass({
           ref={picker => this._picker = picker}
           style={[styles.pickerIOS, this.props.itemStyle]}
           components={this.state.components}
-          onChange={this._onChange}
           selectedIndexes={this.state.selectedIndexes}
+          onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );

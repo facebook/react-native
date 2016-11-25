@@ -86,7 +86,7 @@ public class UIImplementation {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setDirection(CSSDirection.RTL);
+      rootCSSNode.setLayoutDirection(CSSDirection.RTL);
     }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
@@ -652,12 +652,17 @@ public class UIImplementation {
   }
 
   protected final void removeShadowNode(ReactShadowNode nodeToRemove) {
-    mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    removeShadowNodeRecursive(nodeToRemove);
+    nodeToRemove.dispose();
+  }
+
+  private void removeShadowNodeRecursive(ReactShadowNode nodeToRemove) {
+    NativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
-      removeShadowNode(nodeToRemove.getChildAt(i));
+      removeShadowNodeRecursive(nodeToRemove.getChildAt(i));
     }
-    nodeToRemove.removeAllChildren();
+    nodeToRemove.removeAndDisposeAllChildren();
   }
 
   private void measureLayout(int tag, int ancestorTag, int[] outputBuffer) {
@@ -789,14 +794,16 @@ public class UIImplementation {
 
     int tag = cssNode.getReactTag();
     if (!mShadowNodeRegistry.isRootNode(tag)) {
-      cssNode.dispatchUpdates(
+      boolean frameDidChange = cssNode.dispatchUpdates(
           absoluteX,
           absoluteY,
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
 
-      // notify JS about layout event if requested
-      if (cssNode.shouldNotifyOnLayout()) {
+      // Notify JS about layout event if requested
+      // and if the position or dimensions actually changed
+      // (consistent with iOS).
+      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
                 tag,

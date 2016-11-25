@@ -10,7 +10,26 @@
 package com.facebook.csslayout;
 
 public enum CSSMeasureMode {
-  UNDEFINED,
-  EXACTLY,
-  AT_MOST,
+  UNDEFINED(0),
+  EXACTLY(1),
+  AT_MOST(2);
+
+  private int mIntValue;
+
+  CSSMeasureMode(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSMeasureMode fromInt(int value) {
+    switch (value) {
+      case 0: return UNDEFINED;
+      case 1: return EXACTLY;
+      case 2: return AT_MOST;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

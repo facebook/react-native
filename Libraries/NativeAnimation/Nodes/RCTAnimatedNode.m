@@ -9,7 +9,7 @@
 
 #import "RCTAnimatedNode.h"
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @implementation RCTAnimatedNode
 {

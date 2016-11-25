@@ -38,47 +38,47 @@
   NSArray<NSDictionary *> *transformConfigs = self.config[@"transforms"];
   for (NSDictionary *transformConfig in transformConfigs) {
     NSString *type = transformConfig[@"type"];
-    // TODO: Support static transform values.
-    if (![type isEqualToString: @"animated"]) {
-      continue;
+    NSString *property = transformConfig[@"property"];
+
+    CGFloat value;
+    if ([type isEqualToString: @"animated"]) {
+      NSNumber *nodeTag = transformConfig[@"nodeTag"];
+      RCTAnimatedNode *node = self.parentNodes[nodeTag];
+      if (!node.hasUpdated || ![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+        continue;
+      }
+      RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
+      value = parentNode.value;
+    } else {
+      value = [transformConfig[@"value"] floatValue];
     }
 
-    NSNumber *nodeTag = transformConfig[@"nodeTag"];
+    if ([property isEqualToString:@"scale"]) {
+      transform = CATransform3DScale(transform, value, value, 1);
 
-    RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if (node.hasUpdated && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
-      RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
+    } else if ([property isEqualToString:@"scaleX"]) {
+      transform = CATransform3DScale(transform, value, 1, 1);
 
-      NSString *property = transformConfig[@"property"];
-      CGFloat value = parentNode.value;
+    } else if ([property isEqualToString:@"scaleY"]) {
+      transform = CATransform3DScale(transform, 1, value, 1);
 
-      if ([property isEqualToString:@"scale"]) {
-        transform = CATransform3DScale(transform, value, value, 1);
+    } else if ([property isEqualToString:@"translateX"]) {
+      transform = CATransform3DTranslate(transform, value, 0, 0);
 
-      } else if ([property isEqualToString:@"scaleX"]) {
-        transform = CATransform3DScale(transform, value, 1, 1);
+    } else if ([property isEqualToString:@"translateY"]) {
+      transform = CATransform3DTranslate(transform, 0, value, 0);
 
-      } else if ([property isEqualToString:@"scaleY"]) {
-        transform = CATransform3DScale(transform, 1, value, 1);
+    } else if ([property isEqualToString:@"rotate"]) {
+      transform = CATransform3DRotate(transform, value, 0, 0, 1);
 
-      } else if ([property isEqualToString:@"translateX"]) {
-        transform = CATransform3DTranslate(transform, value, 0, 0);
+    } else if ([property isEqualToString:@"rotateX"]) {
+      transform = CATransform3DRotate(transform, value, 1, 0, 0);
 
-      } else if ([property isEqualToString:@"translateY"]) {
-        transform = CATransform3DTranslate(transform, 0, value, 0);
+    } else if ([property isEqualToString:@"rotateY"]) {
+      transform = CATransform3DRotate(transform, value, 0, 1, 0);
 
-      } else if ([property isEqualToString:@"rotate"]) {
-        transform = CATransform3DRotate(transform, value, 0, 0, 1);
-
-      } else if ([property isEqualToString:@"rotateX"]) {
-        transform = CATransform3DRotate(transform, value, 1, 0, 0);
-
-      } else if ([property isEqualToString:@"rotateY"]) {
-        transform = CATransform3DRotate(transform, value, 0, 1, 0);
-
-      } else if ([property isEqualToString:@"perspective"]) {
-        transform.m34 = 1.0 / -value;
-      }
+    } else if ([property isEqualToString:@"perspective"]) {
+      transform.m34 = 1.0 / -value;
     }
   }
 

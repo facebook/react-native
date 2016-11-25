@@ -240,7 +240,6 @@ public class LayoutEngine {
   }
 
   /*package*/ static boolean canUseCachedMeasurement(
-      boolean isTextNode,
       float availableWidth,
       float availableHeight,
       float marginRow,
@@ -279,38 +278,6 @@ public class LayoutEngine {
 
     if (isHeightValid && isWidthValid) {
       return true;
-    }
-
-    // We know this to be text so we can apply some more specialized heuristics.
-    if (isTextNode) {
-      if (isWidthSame) {
-        if (heightMeasureMode == CSSMeasureMode.UNDEFINED) {
-          // Width is the same and height is not restricted. Re-use cahced value.
-          return true;
-        }
-
-        if (heightMeasureMode == CSSMeasureMode.AT_MOST &&
-            cachedLayout.computedHeight < (availableHeight - marginColumn)) {
-          // Width is the same and height restriction is greater than the cached height. Re-use cached value.
-          return true;
-        }
-
-        // Width is the same but height restriction imposes smaller height than previously measured.
-        // Update the cached value to respect the new height restriction.
-        cachedLayout.computedHeight = availableHeight - marginColumn;
-        return true;
-      }
-
-      if (cachedLayout.widthMeasureMode == CSSMeasureMode.UNDEFINED) {
-        if (widthMeasureMode == CSSMeasureMode.UNDEFINED ||
-             (widthMeasureMode == CSSMeasureMode.AT_MOST &&
-              cachedLayout.computedWidth <= (availableWidth - marginRow))) {
-          // Previsouly this text was measured with no width restriction, if width is now restricted
-          // but to a larger value than the previsouly measured width we can re-use the measurement
-          // as we know it will fit.
-          return true;
-        }
-      }
     }
 
     return false;
@@ -364,13 +331,13 @@ public class LayoutEngine {
         node.style.margin.getWithFallback(trailingSpacing[CSS_FLEX_DIRECTION_COLUMN], trailing[CSS_FLEX_DIRECTION_COLUMN]);
 
       // First, try to use the layout cache.
-      if (canUseCachedMeasurement(node.isTextNode(), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+      if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
           widthMeasureMode, heightMeasureMode, layout.cachedLayout)) {
         cachedResults = layout.cachedLayout;
       } else {
         // Try to use the measurement cache.
         for (int i = 0; i < layout.nextCachedMeasurementsIndex; i++) {
-          if (canUseCachedMeasurement(node.isTextNode(), availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
+          if (canUseCachedMeasurement(availableWidth, availableHeight, marginAxisRow, marginAxisColumn,
               widthMeasureMode, heightMeasureMode, layout.cachedMeasurements[i])) {
             cachedResults = layout.cachedMeasurements[i];
             break;

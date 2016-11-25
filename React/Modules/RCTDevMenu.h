@@ -9,8 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTBridgeModule.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
 
 @class RCTDevMenuItem;
 

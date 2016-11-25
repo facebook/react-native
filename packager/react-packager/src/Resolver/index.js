@@ -9,7 +9,6 @@
 'use strict';
 
 
-const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
 
 const declareOpts = require('../lib/declareOpts');
@@ -32,13 +31,9 @@ const validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
-  fileWatcher: {
-    type: 'object',
-    required: true,
+  watch: {
+    type: 'boolean',
+    default: false,
   },
   assetExts: {
     type: 'array',
@@ -50,6 +45,9 @@ const validateOpts = declareOpts({
   },
   transformCode: {
     type: 'function',
+  },
+  transformCacheKey: {
+    type: 'string',
   },
   extraNodeModules: {
     type: 'object',
@@ -89,9 +87,7 @@ class Resolver {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
-      activity: Activity,
       roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
@@ -100,14 +96,18 @@ class Resolver {
       providesModuleNodeModules: defaults.providesModuleNodeModules,
       platforms: defaults.platforms,
       preferNativePlatform: true,
-      fileWatcher: opts.fileWatcher,
+      watch: opts.watch,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
+      transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      // for jest-haste-map
       resetCache: options.resetCache,
+      moduleOptions: {
+        cacheTransformResults: true,
+        resetCache: options.resetCache,
+      },
     });
 
     this._minifyCode = opts.minifyCode;
@@ -254,19 +254,19 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependecyGraph() {
+  getDependencyGraph() {
     return this._depGraph;
   }
 }
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    '__d(',
-    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    'function(global, require, module, exports) {',
+    `__d(/* ${verboseName} */`,
+    'function(global, require, module, exports) {', // module factory
       code,
-    '\n}',
-    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    '\n}, ',
+    `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
+    dev ? `, null, ${JSON.stringify(verboseName)}` : '',
     ');',
   ].join('');
 }

@@ -9,8 +9,8 @@
 
 #import "RCTViewManager.h"
 
-#import "RCTBridge.h"
 #import "RCTBorderStyle.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -215,7 +215,7 @@ RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)           \
 {                                                                       \
   if ([view respondsToSelector:@selector(setBorder##SIDE##Width:)]) {   \
-    view.border##SIDE##Width = json ? [RCTConvert float:json] : defaultView.border##SIDE##Width; \
+    view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
   }                                                                     \
 }                                                                       \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTView)         \
@@ -289,11 +289,12 @@ RCT_EXPORT_SHADOW_PROPERTY(flexGrow, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexShrink, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexBasis, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrap)
 RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
 RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
 RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
 RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
 RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
 

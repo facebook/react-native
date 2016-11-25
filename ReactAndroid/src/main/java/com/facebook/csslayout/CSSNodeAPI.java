@@ -31,14 +31,13 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   int indexOf(CSSNodeType child);
   void setMeasureFunction(MeasureFunction measureFunction);
   boolean isMeasureDefined();
-  void setIsTextNode(boolean isTextNode);
-  boolean isTextNode();
   void calculateLayout(CSSLayoutContext layoutContext);
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();
   void markLayoutSeen();
   boolean valuesEqual(float f1, float f2);
+  void copyStyle(CSSNodeType srcNode);
   CSSDirection getStyleDirection();
   void setDirection(CSSDirection direction);
   CSSFlexDirection getFlexDirection();

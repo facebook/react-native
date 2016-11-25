@@ -12,7 +12,7 @@
 'use strict';
 
 var Image = require('Image');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
 var React = require('React');

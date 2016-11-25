@@ -9,16 +9,17 @@
 
 #import "RCTShadowText.h"
 
-#import "RCTAccessibilityManager.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTFont.h"
-#import "RCTLog.h"
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTFont.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
+
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
 #import "RCTTextView.h"
-#import "RCTUIManager.h"
-#import "RCTUtils.h"
 
 NSString *const RCTShadowViewAttributeName = @"RCTShadowViewAttributeName";
 NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
@@ -115,10 +116,12 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
   NSNumber *parentTag = [[self reactSuperview] reactTag];
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSSMeasureModeExactly];
   CGRect textFrame = [self calculateTextFrame:textStorage];
+  BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTText *view = (RCTText *)viewRegistry[self.reactTag];
     view.textFrame = textFrame;
     view.textStorage = textStorage;
+    view.selectable = selectable;
 
     /**
      * NOTE: this logic is included to support rich text editing inside multiline

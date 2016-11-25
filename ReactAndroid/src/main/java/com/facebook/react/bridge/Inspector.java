@@ -1,0 +1,104 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+package com.facebook.react.bridge;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.ReactConstants;
+
+@DoNotStrip
+public class Inspector {
+  static {
+    ReactBridge.staticInit();
+  }
+
+  private final HybridData mHybridData;
+
+  public static boolean isSupported() {
+    try {
+      // This isn't a very nice way to do this but it works :|
+      instance().getPagesNative();
+      return true;
+    } catch (UnsatisfiedLinkError e) {
+      return false;
+    }
+  }
+
+  public static List<Page> getPages() {
+    try {
+      return Arrays.asList(instance().getPagesNative());
+    } catch (UnsatisfiedLinkError e) {
+      FLog.e(ReactConstants.TAG, "Inspector doesn't work in open source yet", e);
+      return Collections.emptyList();
+    }
+  }
+
+  public static LocalConnection connect(int pageId, RemoteConnection remote) {
+    try {
+      return instance().connectNative(pageId, remote);
+    } catch (UnsatisfiedLinkError e) {
+      FLog.e(ReactConstants.TAG, "Inspector doesn't work in open source yet", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static native Inspector instance();
+
+  private native Page[] getPagesNative();
+
+  private native LocalConnection connectNative(int pageId, RemoteConnection remote);
+
+  private Inspector(HybridData hybridData) {
+    mHybridData = hybridData;
+  }
+
+  @DoNotStrip
+  public static class Page {
+    private final int mId;
+    private final String mTitle;
+
+    public int getId() {
+      return mId;
+    }
+
+    public String getTitle() {
+      return mTitle;
+    }
+
+    @Override
+    public String toString() {
+      return "Page{" +
+          "mId=" + mId +
+          ", mTitle='" + mTitle + '\'' +
+          '}';
+    }
+
+    private Page(int id, String title) {
+      mId = id;
+      mTitle = title;
+    }
+  }
+
+  @DoNotStrip
+  public interface RemoteConnection {
+    void onMessage(String message);
+    void onDisconnect();
+  }
+
+  @DoNotStrip
+  public static class LocalConnection {
+    private final HybridData mHybridData;
+
+    public native void sendMessage(String message);
+    public native void disconnect();
+
+    private LocalConnection(HybridData hybridData) {
+      mHybridData = hybridData;
+    }
+  }
+}
