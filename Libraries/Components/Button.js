@@ -55,6 +55,7 @@ class Button extends React.Component {
     color?: ?string,
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
+    touchSoundEnabled?: ?boolean,
   };
 
   static propTypes = {
@@ -78,6 +79,10 @@ class Button extends React.Component {
      * Handler to be called when the user taps the button
      */
     onPress: React.PropTypes.func.isRequired,
+    /**
+     * If true, plays system sound on touch
+     **/
+    touchSoundEnabled: React.PropTypes.bool,
   };
 
   render() {
@@ -87,6 +92,7 @@ class Button extends React.Component {
       onPress,
       title,
       disabled,
+      touchSoundEnabled,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -111,7 +117,8 @@ class Button extends React.Component {
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={['button']}
         disabled={disabled}
-        onPress={onPress}>
+        onPress={onPress}
+        touchSoundEnabled={touchSoundEnabled}>
         <View style={buttonStyles}>
           <Text style={textStyles}>{formattedTitle}</Text>
         </View>

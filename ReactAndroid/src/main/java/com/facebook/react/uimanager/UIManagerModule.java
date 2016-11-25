@@ -9,6 +9,9 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
+import android.media.AudioManager;
+
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -433,6 +436,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+  }
+
+  @ReactMethod
+  public void playTouchSound() {
+    AudioManager audioManager =
+            (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager != null)
+      audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
   }
 
   /**

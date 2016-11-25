@@ -92,6 +92,10 @@ const TouchableWithoutFeedback = React.createClass({
      * views.
      */
     hitSlop: EdgeInsetsPropType,
+    /**
+     * If true, plays system sound on touch
+     **/
+    touchSoundEnabled: React.PropTypes.bool,
   },
 
   getInitialState: function() {
