@@ -9,16 +9,6 @@
 
 package com.facebook.react.modules.network;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
@@ -31,7 +21,18 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,6 +63,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_URI = "uri";
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String REQUEST_BODY_KEY_BASE64 = "base64";
+  private static final String REQUEST_BODY_KEY_BLOB_ID = "blobId";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
@@ -295,6 +297,24 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(
           method,
           RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream));
+    } else if (data.hasKey(REQUEST_BODY_KEY_BLOB_ID)) {
+      if (data.hasKey("type")) {
+        String type = data.getString("type");
+        if (!type.isEmpty()) {
+          contentType = type;
+        }
+      }
+      if (contentType == null) {
+        contentType = "application/octet-stream";
+      }
+      String blobId = data.getString(REQUEST_BODY_KEY_BLOB_ID);
+      byte[] bytes = BlobModule.resolve(
+        blobId,
+        data.getInt("offset"),
+        data.getInt("size"));;
+      requestBuilder.method(
+              method,
+              RequestBody.create(MediaType.parse(contentType), bytes));
     } else if (data.hasKey(REQUEST_BODY_KEY_FORMDATA)) {
       if (contentType == null) {
         contentType = "multipart/form-data";
@@ -367,13 +387,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               }
 
               // Otherwise send the data in one big chunk, in the format that JS requested.
-              String responseString = "";
-              if (responseType.equals("text")) {
-                responseString = responseBody.string();
-              } else if (responseType.equals("base64")) {
-                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+              if (responseType.equals("blob")) {
+                byte[] data = responseBody.bytes();
+                WritableMap blob = Arguments.createMap();
+                blob.putString("blobId", BlobModule.store(data));
+                blob.putInt("offset", 0);
+                blob.putInt("size", data.length);
+                ResponseUtil.onDataReceived(eventEmitter, requestId, blob);
+              } else {
+                String responseString = "";
+                if (responseType.equals("text")) {
+                  responseString = responseBody.string();
+                } else if (responseType.equals("base64")) {
+                  responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+                }
+                ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
               }
-              ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
               ResponseUtil.onRequestSuccess(eventEmitter, requestId);
             } catch (IOException e) {
               ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);

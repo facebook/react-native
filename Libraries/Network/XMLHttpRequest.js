@@ -13,10 +13,10 @@
 
 const EventTarget = require('event-target-shim');
 const RCTNetworking = require('RCTNetworking');
-
 const base64 = require('base64-js');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
+const Blob = require('Blob');
 
 type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
 type Response = ?Object | string;
@@ -236,10 +236,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
         break;
 
       case 'blob':
-        this._cachedResponse = new global.Blob(
-          [base64.toByteArray(this._response).buffer],
-          {type: this.getResponseHeader('content-type') || ''}
-        );
+        this._cachedResponse = Blob.create(this._response);
         break;
 
       case 'json':
@@ -486,8 +483,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     ));
 
     let nativeResponseType = 'text';
-    if (this._responseType === 'arraybuffer' || this._responseType === 'blob') {
+    if (this._responseType === 'arraybuffer') {
       nativeResponseType = 'base64';
+    }
+    if (this._responseType === 'blob') {
+      nativeResponseType = 'blob';
     }
 
     invariant(this._method, 'Request method needs to be defined.');
