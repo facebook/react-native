@@ -13,6 +13,7 @@
 
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
+const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
@@ -53,7 +54,7 @@ const viewRef = 'VIEW';
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
 const KeyboardAvoidingView = React.createClass({
-  mixins: [TimerMixin],
+  mixins: [NativeMethodsMixin, TimerMixin],
 
   propTypes: {
     ...View.propTypes,
@@ -86,8 +87,7 @@ const KeyboardAvoidingView = React.createClass({
   subscriptions: ([]: Array<EmitterSubscription>),
   frame: (null: ?Rect),
 
-  relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
-    const frame = this.frame;
+  relativeKeyboardHeight(keyboardFrame: ScreenRect, frame: Rect): number {
     if (!frame || !keyboardFrame) {
       return 0;
     }
@@ -107,18 +107,22 @@ const KeyboardAvoidingView = React.createClass({
     }
 
     const {duration, easing, endCoordinates} = event;
-    const height = this.relativeKeyboardHeight(endCoordinates);
 
-    if (duration && easing) {
-      LayoutAnimation.configureNext({
-        duration: duration,
-        update: {
+    this.measureInWindow((x, y, width, height) => {
+      const frame = {x, y, width, height};
+      const keyboardHeight = this.relativeKeyboardHeight(endCoordinates, frame);
+
+      if (duration && easing) {
+        LayoutAnimation.configureNext({
           duration: duration,
-          type: LayoutAnimation.Types[easing] || 'keyboard',
-        },
-      });
-    }
-    this.setState({bottom: height});
+          update: {
+            duration: duration,
+            type: LayoutAnimation.Types[easing] || 'keyboard',
+          },
+        });
+      }
+      this.setState({bottom: keyboardHeight});
+    });
   },
 
   onLayout(event: LayoutEvent) {
