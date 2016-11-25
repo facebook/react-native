@@ -13,7 +13,7 @@
 
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
