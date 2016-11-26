@@ -8,112 +8,27 @@
  */
 'use strict';
 
-const findWindowsAppFolder = require('./findWindowsAppFolder');
-const findProject = require('./findProject');
-const findPackageClassName = require('./findPackageClassName');
-const path = require('path');
-const readProject = require('./readProject');
-
-const getPackageName = (manifest) => manifest.attr.package;
+// const findWindowsSolution = require('./findWindowsSolution');
+// const findProject = require('./findProject');
+// const findPackageClassName = require('./findPackageClassName');
+// const path = require('path');
+// const readProject = require('./readProject');
 
 /**
  * Gets windows project config by analyzing given folder and taking some
  * defaults specified by user into consideration
  */
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
-  const src = userConfig.sourceDir || findWindowsAppFolder(folder);
 
-  if (!src) {
-    return null;
-  }
-
-  const sourceDir = path.join(folder, src);
-  const isFlat = sourceDir.indexOf('app') === -1;
-  const manifestPath = findManifest(sourceDir);
-
-  if (!manifestPath) {
-    return null;
-  }
-
-  const manifest = readManifest(manifestPath);
-
-  const packageName = userConfig.packageName || getPackageName(manifest);
-  const packageFolder = userConfig.packageFolder ||
-    packageName.replace(/\./g, path.sep);
-
-  const mainFilePath = path.join(
-    sourceDir,
-    userConfig.mainFilePath || `src/main/java/${packageFolder}/MainApplication.java`
-  );
-
-  const stringsPath = path.join(
-    sourceDir,
-    userConfig.stringsPath || 'src/main/res/values/strings.xml'
-  );
-
-  const settingsGradlePath = path.join(
-    folder,
-    'windows',
-    userConfig.settingsGradlePath || 'settings.gradle'
-  );
-
-  const assetsPath = path.join(
-    sourceDir,
-    userConfig.assetsPath || 'src/main/assets'
-  );
-
-  const buildGradlePath = path.join(
-    sourceDir,
-    userConfig.buildGradlePath || 'build.gradle'
-  );
+  const sourceDir = null;
+  const mainReactPage = null;
+  const csProj = null;
+  csSolution = null;
 
   return {
     sourceDir,
-    isFlat,
-    folder,
-    stringsPath,
-    manifestPath,
-    buildGradlePath,
-    settingsGradlePath,
-    assetsPath,
-    mainFilePath,
+    mainReactPage,
+    csProj,
+    csSolution,
   };
-};
-
-/**
- * Same as projectConfigWindows except it returns
- * different config that applies to packages only
- */
-exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) {
-  const src = userConfig.sourceDir || findWindowsAppFolder(folder);
-
-  if (!src) {
-    return null;
-  }
-
-  const sourceDir = path.join(folder, src);
-  const manifestPath = findManifest(sourceDir);
-
-  if (!manifestPath) {
-    return null;
-  }
-
-  const manifest = readManifest(manifestPath);
-  const packageName = userConfig.packageName || getPackageName(manifest);
-  const packageClassName = findPackageClassName(sourceDir);
-
-  /**
-   * This module has no package to export
-   */
-  if (!packageClassName) {
-    return null;
-  }
-
-  const packageImportPath = userConfig.packageImportPath ||
-    `import ${packageName}.${packageClassName};`;
-
-  const packageInstance = userConfig.packageInstance ||
-    `new ${packageClassName}()`;
-
-  return { sourceDir, folder, manifest, packageImportPath, packageInstance };
 };
