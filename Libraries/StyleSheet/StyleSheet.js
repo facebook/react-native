@@ -19,6 +19,7 @@ var flatten = require('flattenStyle');
 
 export type Styles = {[key: string]: Object};
 export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};
+export type StyleObject<S: Styles> = {[key: $Keys<S>]: Object};
 
 var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
@@ -161,6 +162,50 @@ module.exports = {
    * the alternative use.
    */
   flatten,
+
+  /**
+   * Sometimes you may want to validate your style object
+   * without creating StyleSheet style object.
+   *
+   * > **NOTE**: Exercise caution as abusing this can tax you in terms of
+   * > optimizations.
+   * >
+   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > to style objects directly will deprive you of these optimizations.
+   *
+   * Example:
+   * ```
+   * var styles = StyleSheet.validate({
+   *   listItem: {
+   *     flex: 1,
+   *     color: '#eeeeee',
+   *   },
+   *   selectedListItem: {
+   *     color: '#ffffff',
+   *   },
+   * });
+   *
+   * console.log(styles);
+   * // returns {listItem: {flex: 1, color: '#eeeeee'}, selectedListItem: { color: '#ffffff'}}
+   *
+   * var styles = StyleSheet.validate({
+   *   listItem: {
+   *     invalidProperty: 1,
+   *   },
+   * });
+   * // Will throw exception: "invalidProperty" is not a valid style property.
+   * ```
+   * This method internally uses `StyleSheetValidation.validateStyle(key, obj)`
+   * to validate style objects. Returns the same object.
+   * If you need style validation use 'StyleSheet.validate' instead of creating StyleSheet style
+   * and `flatten` together.
+   */
+  validate<S: Styles>(obj: S): StyleObject<S> {
+    for (var key in obj) {
+      StyleSheetValidation.validateStyle(key, obj);
+    }
+    return obj;
+  },
 
   /**
    * Creates a StyleSheet style reference from the given object.
