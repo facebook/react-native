@@ -79,7 +79,7 @@ public class ImageStoreManager extends ReactContextBaseJavaModule {
         Uri uri = Uri.parse(mUri);
         InputStream is = contentResolver.openInputStream(uri);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Base64OutputStream b64os = new Base64OutputStream(baos, Base64.DEFAULT);
+        Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
         byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
         try {
