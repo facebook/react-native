@@ -251,6 +251,7 @@ class WebView extends React.Component {
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         navigationBlockingPolicies={this.props.navigationBlockingPolicies}
+        onNavigationBlocked={this.onNavigationBlocked}
       />;
 
     return (
