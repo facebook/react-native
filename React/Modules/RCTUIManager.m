@@ -1119,7 +1119,8 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   [self _layoutAndMount];
 }
 
-RCT_EXPORT_METHOD(playTouchSound){
+RCT_EXPORT_METHOD(playTouchSound)
+{
   AudioServicesPlaySystemSoundWithCompletion(1104, nil);
 }
 

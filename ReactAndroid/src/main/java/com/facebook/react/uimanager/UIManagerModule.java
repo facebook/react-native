@@ -442,8 +442,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void playTouchSound() {
     AudioManager audioManager =
             (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-    if (audioManager != null)
+    if (audioManager != null) {
       audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+    }
   }
 
   /**
