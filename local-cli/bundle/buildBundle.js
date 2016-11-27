@@ -48,6 +48,11 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
       undefined;
 
+    const transformModulePath =
+      args.transformer ? path.resolve(args.transformer) :
+      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+      undefined;
+
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
