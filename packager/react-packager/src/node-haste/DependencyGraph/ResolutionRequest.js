@@ -445,7 +445,7 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `File ${potentialModulePath} doesnt exist`,
+          `File ${potentialModulePath} doesn't exist`,
         );
       }
 
@@ -459,7 +459,7 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `Directory ${potentialDirPath} doesnt exist`,
+          `Directory ${potentialDirPath} doesn't exist`,
         );
       }
 
