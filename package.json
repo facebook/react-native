@@ -128,9 +128,6 @@
     "lint": "eslint Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
-  "bin": {
-    "react-native": "local-cli/wrong-react-native.js"
-  },
   "peerDependencies": {
     "react": "~15.4.0-rc.4"
   },
