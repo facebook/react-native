@@ -26,7 +26,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class JavaScriptModuleRegistration {
 
   private final Class<? extends JavaScriptModule> mModuleInterface;
-  private String mName;
+  private @Nullable String mName;
 
   public JavaScriptModuleRegistration(Class<? extends JavaScriptModule> moduleInterface) {
     mModuleInterface = moduleInterface;
