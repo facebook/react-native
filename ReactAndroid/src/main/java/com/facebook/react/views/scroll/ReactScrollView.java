@@ -339,7 +339,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
         int scrollRange = getMaxScrollY();
-        if (scrollY >= getMaxScrollY()) {
+        if (scrollY >= scrollRange) {
           mScroller.abortAnimation();
           scrollY = scrollRange;
         }
