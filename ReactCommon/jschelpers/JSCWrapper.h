@@ -127,6 +127,7 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
+bool isCustomJSCWrapperSet();
 void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
