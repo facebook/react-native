@@ -10,7 +10,6 @@
 #import "RCTAssetsLibraryRequestHandler.h"
 
 #import <libkern/OSAtomic.h>
-#import <MobileCoreServices/MobileCoreServices.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -56,8 +55,6 @@ RCT_EXPORT_MODULE()
 
       ALAssetRepresentation *representation = [asset defaultRepresentation];
       NSInteger length = (NSInteger)representation.size;
-      
-        
       CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(representation.UTI), kUTTagClassMIMEType);
 
       NSURLResponse *response =
