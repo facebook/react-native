@@ -6,22 +6,28 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Sets up global variables typical in most JavaScript environments.
- *
- * 1. Global timers (via `setTimeout` etc).
- * 2. Global console object.
- * 3. Hooks for printing stack traces with source maps.
- *
- * Leaves enough room in the environment for implementing your own:
- * 1. Require system.
- * 2. Bridged modules.
- *
  * @providesModule InitializeCore
  * @flow
  */
 
-/* eslint strict: 0 */
+/* eslint-disable strict */
 /* globals window: true */
+
+
+/**
+ * Sets up global variables typical in most JavaScript environments.
+ *
+ *   1. Global timers (via `setTimeout` etc).
+ *   2. Global console object.
+ *   3. Hooks for printing stack traces with source maps.
+ *
+ * Leaves enough room in the environment for implementing your own:
+ *
+ *   1. Require system.
+ *   2. Bridged modules.
+ *
+ */
+'use strict';
 
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
@@ -173,11 +179,13 @@ let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
 }
-navigator.product = 'ReactNative';
+
+// see https://github.com/facebook/react-native/issues/10881
+defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which would
+// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
 // not exist if it were lazily defined).
 defineProperty(global, 'Map', () => require('Map'), true);
 defineProperty(global, 'Set', () => require('Set'), true);
@@ -193,6 +201,12 @@ if (__DEV__) {
 
   require('RCTDebugComponentOwnership');
   require('react-transform-hmr');
+}
+
+// Set up inspector
+if (__DEV__) {
+  const JSInspector = require('JSInspector');
+  JSInspector.registerAgent(require('NetworkAgent'));
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has

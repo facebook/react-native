@@ -19,7 +19,6 @@ var UIManager = require('UIManager');
 
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var processColor = require('processColor');
-var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 
@@ -38,13 +37,6 @@ var backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
-
-var TouchableView = requireNativeComponent('RCTView', null, {
-  nativeOnly: {
-    nativeBackgroundAndroid: backgroundPropType,
-    nativeForegroundAndroid: backgroundPropType,
-  },
-});
 
 type Event = Object;
 
@@ -258,7 +250,14 @@ var TouchableNativeFeedback = React.createClass({
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
     };
-    return <TouchableView {...childProps}/>;
+
+    // We need to clone the actual element so that the ripple background drawable
+    // can be applied directly to the background of this element rather than to
+    // a wrapper view as done in outher Touchable*
+    return React.cloneElement(
+      child,
+      childProps
+    );
   }
 });
 

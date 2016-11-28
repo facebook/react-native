@@ -12,15 +12,22 @@
 'use strict';
 
 import type {TransformedFile} from '../types.flow';
+import type {ModuleCache} from './node-haste.flow';
 
 module.exports = class Module {
   hasteID: Promise<?string>;
+  moduleCache: ModuleCache;
   name: Promise<string>;
   path: string;
   type: 'Module';
 
-  constructor(path: string, info: Promise<TransformedFile>) {
+  constructor(
+    path: string,
+    moduleCache: ModuleCache,
+    info: Promise<TransformedFile>,
+  ) {
     this.hasteID = info.then(({hasteID}) => hasteID);
+    this.moduleCache = moduleCache;
     this.name = this.hasteID.then(name => name || getName(path));
     this.path = path;
     this.type = 'Module';
@@ -28,6 +35,10 @@ module.exports = class Module {
 
   getName() {
     return this.name;
+  }
+
+  getPackage() {
+    return this.moduleCache.getPackageOf(this.path);
   }
 
   isHaste() {

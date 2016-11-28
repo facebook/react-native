@@ -25,6 +25,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   Image,
   StyleSheet,
@@ -41,7 +43,11 @@ class ImageCapInsetsExample extends React.Component {
             capInsets: none
           </Text>
           <Image
-            source={require('image!story-background')}
+            source={nativeImageSource({
+              ios: 'story-background',
+              width: 60,
+              height: 60
+            })}
             style={styles.storyBackground}
             resizeMode={Image.resizeMode.stretch}
             capInsets={{left: 0, right: 0, bottom: 0, top: 0}}
@@ -52,7 +58,11 @@ class ImageCapInsetsExample extends React.Component {
             capInsets: 15
           </Text>
           <Image
-            source={require('image!story-background')}
+            source={nativeImageSource({
+              ios: 'story-background',
+              width: 60,
+              height: 60
+            })}
             style={styles.storyBackground}
             resizeMode={Image.resizeMode.stretch}
             capInsets={{left: 15, right: 15, bottom: 15, top: 15}}

@@ -45,6 +45,7 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   boolean hasUpToDateJSBundleInCache();
   void reloadSettings();
   void handleReloadJS();
+  void reloadJSFromServer(final String bundleURL);
   void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback);
   @Nullable File downloadBundleResourceFromUrlSync(
       final String resourceURL,

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
@@ -120,6 +120,10 @@ var Image = React.createClass({
      */
     onLoadStart: PropTypes.func,
     /**
+     * Invoked on load error
+     */
+    onError: PropTypes.func,
+    /**
      * Invoked when load completes successfully
      */
     onLoad: PropTypes.func,
@@ -216,7 +220,14 @@ var Image = React.createClass({
      */
     async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
       return await ImageLoader.queryCache(urls);
-    }
+    },
+
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
+     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     */
+    resolveAssetSource: resolveAssetSource,
   },
 
   mixins: [NativeMethodsMixin],
@@ -284,10 +295,10 @@ var Image = React.createClass({
         sources = source;
       }
 
-      const {onLoadStart, onLoad, onLoadEnd} = this.props;
+      const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });

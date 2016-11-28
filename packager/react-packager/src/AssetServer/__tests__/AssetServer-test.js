@@ -13,21 +13,17 @@ jest.disableAutomock();
 
 jest.mock('fs');
 
-const Promise = require('promise');
-
 const AssetServer = require('../');
 const crypto = require('crypto');
-const {EventEmitter} = require('events');
 const fs = require('fs');
 
 const {objectContaining} = jasmine;
 
 describe('AssetServer', () => {
-  let fileWatcher;
   beforeEach(() => {
     const NodeHaste = require('../../node-haste');
-    NodeHaste.getAssetDataFromName = require.requireActual('../../node-haste/lib/getAssetDataFromName');
-    fileWatcher = new EventEmitter();
+    NodeHaste.getAssetDataFromName =
+      require.requireActual('../../node-haste/lib/getAssetDataFromName');
   });
 
   describe('assetServer.get', () => {
@@ -35,7 +31,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -61,7 +56,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -99,7 +93,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpg'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -126,7 +119,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -149,7 +141,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -181,7 +172,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root', '/root2'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -210,7 +200,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -243,7 +232,6 @@ describe('AssetServer', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpeg'],
-        fileWatcher,
       });
 
       fs.__setMockFilesystem({
@@ -273,15 +261,14 @@ describe('AssetServer', () => {
     });
 
     describe('hash:', () => {
-      let server, fileSystem;
+      let server, mockFS;
       beforeEach(() => {
         server = new AssetServer({
           projectRoots: ['/root'],
           assetExts: ['jpg'],
-          fileWatcher,
         });
 
-        fileSystem = {
+        mockFS = {
           'root': {
             imgs: {
               'b@1x.jpg': 'b1 image',
@@ -292,13 +279,13 @@ describe('AssetServer', () => {
           }
         };
 
-       fs.__setMockFilesystem(fileSystem);
+       fs.__setMockFilesystem(mockFS);
       });
 
       it('uses the file contents to build the hash', () => {
         const hash = crypto.createHash('md5');
-        for (const name in fileSystem.root.imgs) {
-          hash.update(fileSystem.root.imgs[name]);
+        for (const name in mockFS.root.imgs) {
+          hash.update(mockFS.root.imgs[name]);
         }
 
         return server.getAssetData('imgs/b.jpg').then(data =>
@@ -308,8 +295,8 @@ describe('AssetServer', () => {
 
       it('changes the hash when the passed-in file watcher emits an `all` event', () => {
         return server.getAssetData('imgs/b.jpg').then(initialData => {
-          fileSystem.root.imgs['b@4x.jpg'] = 'updated data';
-          fileWatcher.emit('all', 'arbitrary', '/root', 'imgs/b@4x.jpg');
+          mockFS.root.imgs['b@4x.jpg'] = 'updated data';
+          server.onFileChange('all', '/root/imgs/b@4x.jpg');
           return server.getAssetData('imgs/b.jpg').then(data =>
             expect(data.hash).not.toEqual(initialData.hash)
           );

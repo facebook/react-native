@@ -9,11 +9,12 @@
 
 #import "RCTTextField.h"
 
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 #import "RCTTextSelection.h"
-#import "UIView+React.h"
 
 @implementation RCTTextField
 {
@@ -147,16 +148,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
   return [self textRectForBounds:bounds];
-}
-
-- (void)setAutoCorrect:(BOOL)autoCorrect
-{
-  self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
-}
-
-- (BOOL)autoCorrect
-{
-  return self.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
 - (void)textFieldDidChange

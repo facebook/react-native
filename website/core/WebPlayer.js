@@ -8,11 +8,12 @@
  *
  * @providesModule WebPlayer
  */
+'use strict';
 
-var React = require('React');
 var Prism = require('Prism');
+var React = require('React');
 
-var WEB_PLAYER_VERSION = '1.2.4';
+var WEB_PLAYER_VERSION = '1.2.6';
 
 /**
  * Use the WebPlayer by including a ```ReactNativeWebPlayer``` block in markdown.
@@ -57,10 +58,10 @@ var WebPlayer = React.createClass({
         <Prism>{this.props.children}</Prism>
         <iframe
           style={{marginTop: 4}}
-          width='880'
+          width="880"
           height={this.parseParams(this.props.params).platform === 'android' ? '425' : '420'}
           data-src={`//cdn.rawgit.com/dabbott/react-native-web-player/gh-v${WEB_PLAYER_VERSION}/index.html${hash}`}
-          frameBorder='0'
+          frameBorder="0"
         />
       </div>
     );

@@ -9,7 +9,28 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSPositionType {
-  RELATIVE,
-  ABSOLUTE,
+  RELATIVE(0),
+  ABSOLUTE(1);
+
+  private int mIntValue;
+
+  CSSPositionType(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static CSSPositionType fromInt(int value) {
+    switch (value) {
+      case 0: return RELATIVE;
+      case 1: return ABSOLUTE;
+      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+    }
+  }
 }

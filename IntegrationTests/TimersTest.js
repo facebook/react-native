@@ -35,7 +35,7 @@ var TimersTest = React.createClass({
   },
 
   componentDidMount() {
-    this.testSetTimeout0();
+    this.setTimeout(this.testSetTimeout0, 1000);
   },
 
   testSetTimeout0() {
@@ -120,7 +120,9 @@ var TimersTest = React.createClass({
   },
 
   done() {
-    this.setState({done: true}, TestModule.markTestCompleted);
+    this.setState({done: true}, () => {
+      TestModule.markTestCompleted();
+    });
   },
 
   render() {

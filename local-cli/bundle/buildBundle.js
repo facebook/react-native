@@ -6,14 +6,17 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 const log = require('../util/log').out('bundle');
+const Server = require('../../packager/react-packager/src/Server');
+
 const outputBundle = require('./output/bundle');
 const path = require('path');
-const Promise = require('promise');
 const saveAssets = require('./saveAssets');
-const Server = require('../../packager/react-packager/src/Server');
-const defaultAssetExts = require('../../packager/defaultAssetExts');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
+
+import type RequestOptions from './types.flow';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -26,7 +29,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-  const requestOpts = {
+  const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,
@@ -38,7 +41,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
-    let assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
 
     const transformModulePath =
       args.transformer ? path.resolve(args.transformer) :
@@ -48,13 +51,12 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
-      assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      getTransformOptions: config.getTransformOptions,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
-      nonPersistent: true,
       resetCache: args.resetCache,
+      watch: false,
     };
 
     packagerInstance = new Server(options);
