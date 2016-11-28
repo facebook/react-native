@@ -150,7 +150,7 @@ $ react-native run-android
 
 > Hint
 >
-> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --config Release`).
 
 <block class="mac windows linux android ios" />
 
@@ -212,7 +212,7 @@ Apps built for `Release` will automatically disable the in-app Developer menu, w
 
 > Hint
 >
-> You can also use the `React Native CLI` to perform this operation using the option `--configuration` with the value `Release` (e.g. `react-native run-ios --configuration Release`).
+> You can also use the `React Native CLI` to perform this operation using the option `--config` with the value `Release` (e.g. `react-native run-ios --config Release`).
 
 Once built for release, you'll be able to distribute the app to beta testers and submit the app to the App Store.
 
