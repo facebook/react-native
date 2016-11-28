@@ -101,7 +101,6 @@ RCT_VIEW_BORDER_PROPERTY(Left)
 #define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                           \
 RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTImageView)   \
 {                                                                       \
-  NSLog(@"SET ##SIDE## RADIUS: %@", json); \
   if ([view respondsToSelector:@selector(setBorder##SIDE##Radius:)]) {  \
     view.border##SIDE##Radius = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Radius; \
   }                                                                     \
