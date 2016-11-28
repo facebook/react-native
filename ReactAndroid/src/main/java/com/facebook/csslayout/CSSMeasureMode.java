@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSMeasureMode {
   UNDEFINED(0),
   EXACTLY(1),

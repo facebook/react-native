@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
+@DoNotStrip
 public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   static {

@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSWrap {
   NO_WRAP(0),
   WRAP(1);

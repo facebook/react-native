@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSDirection {
   INHERIT(0),
   LTR(1),
