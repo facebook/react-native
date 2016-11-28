@@ -98,7 +98,7 @@ class Resolver {
       preferNativePlatform: true,
       watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
+      shouldThrowOnUnresolvedErrors: () => true,
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
