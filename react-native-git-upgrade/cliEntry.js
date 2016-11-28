@@ -37,14 +37,29 @@ log.heading = 'git-upgrade';
  */
 function exec(command, logOutput) {
   return new Promise((resolve, reject) => {
-    shell.exec(command, {silent: !logOutput}, (code, stdout, stderr) => {
+    let stderr, stdout = '';
+    const child = shell.exec(command, {async: true, silent: true});
+
+    child.stdout.on('data', data => {
+      stdout += data;
+      if (logOutput) {
+        process.stdout.write(data);
+      }
+    });
+
+    child.stderr.on('data', data => {
+      stderr += data;
+      process.stderr.write(data);
+    });
+
+    child.on('exit', code => {
       (code === 0)
         ? resolve(stdout)
         : reject(new Error(`Command '${command}' exited with code ${code}:
 stderr: ${stderr}
 stdout: ${stdout}`));
     });
-  });
+  })
 }
 
 function readPackageFiles() {
@@ -220,7 +235,7 @@ async function run(requiredVersion, cliArgs) {
     await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    await exec('npm install --save react-native@' + context.newVersion, verbose);
+    await exec('npm install --save react-native@' + context.newVersion + ' --color=always', verbose);
 
     log.info('Generate new version template');
     await generateTemplates(context.generatorDir, context.appName, verbose);
