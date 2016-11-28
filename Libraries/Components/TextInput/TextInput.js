@@ -353,6 +353,8 @@ const TextInput = React.createClass({
      * `{ nativeEvent: { contentSize: { width, height } } }`.
      *
      * Only called for multiline text inputs.
+     *
+     * @platform ios
      */
     onContentSizeChange: PropTypes.func,
     /**
