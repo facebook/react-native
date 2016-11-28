@@ -32,6 +32,16 @@ function validateAndUpgrade() {
       fs.readFileSync(path.resolve(projectDir, 'package.json'), 'utf8')
   );
 
+  warn(
+    'You should consider using the new upgrade tool based on Git. It ' +
+    'makes upgrades easier by resolving most conflicts automatically.\n' +
+    'To use it:\n' +
+    '- Go back to the old version of React Native\n' +
+    '- Run "npm install -g react-native-git-upgrade"\n' +
+    '- Run "react-native-git-upgrade"\n' +
+    'See https://facebook.github.io/react-native/docs/upgrading.html'
+  );
+
   const projectName = packageJSON.name;
   if (!projectName) {
     warn(
