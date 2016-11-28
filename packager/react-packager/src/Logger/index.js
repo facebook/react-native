@@ -23,6 +23,16 @@ import type {
   LogEntry,
 } from './Types';
 
+const DATE_LOCALE_OPTIONS = {
+  day: '2-digit',
+  hour12: false,
+  hour: '2-digit',
+  minute: '2-digit',
+  month: '2-digit',
+  second: '2-digit',
+  year: 'numeric',
+};
+
 let PRINT_LOG_ENTRIES = true;
 const log_session = `${os.hostname()}-${Date.now()}`;
 const eventEmitter = new EventEmitter();
@@ -95,7 +105,7 @@ function print(
     duration_ms: duration,
   } = logEntry;
 
-  const timeStamp = new Date().toLocaleString();
+  const timeStamp = new Date().toLocaleString(undefined, DATE_LOCALE_OPTIONS);
   let logEntryString;
 
   switch (actionPhase) {
