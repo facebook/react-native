@@ -1078,6 +1078,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+     * deploy of Flow v0.36.0. To see the error, remove this comment and run
+     * Flow */
     return this._interpolation(parentValue);
   }
 

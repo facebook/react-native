@@ -222,7 +222,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.35.0",
+    "flow-bin": "^0.36.0",
     "graphlib-dot": "0.6.2",
     "graphql": "0.8.2",
     "jest": "17.0.3",
