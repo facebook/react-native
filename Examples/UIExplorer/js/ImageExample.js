@@ -351,6 +351,10 @@ exports.examples = [
             style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
             source={fullImage}
           />
+          <Image
+            style={[styles.base, styles.leftMargin, {borderTopLeftRadius: 10}]}
+            source={fullImage}
+          />
         </View>
       );
     },

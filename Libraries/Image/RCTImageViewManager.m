@@ -79,4 +79,43 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
                                           }];
 }
 
+#define RCT_VIEW_BORDER_PROPERTY(SIDE)                                  \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTImageView)      \
+{                                                                       \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Width:)]) {   \
+    view.border##SIDE##Width = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Width; \
+  }                                                                     \
+}                                                                       \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTImageView)    \
+{                                                                       \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Color:)]) {   \
+    view.border##SIDE##Color = json ? [RCTConvert CGColor:json] : defaultView.border##SIDE##Color; \
+  }                                                                     \
+}
+
+RCT_VIEW_BORDER_PROPERTY(Top)
+RCT_VIEW_BORDER_PROPERTY(Right)
+RCT_VIEW_BORDER_PROPERTY(Bottom)
+RCT_VIEW_BORDER_PROPERTY(Left)
+
+#define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                           \
+RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTImageView)   \
+{                                                                       \
+  NSLog(@"SET ##SIDE## RADIUS: %@", json); \
+  if ([view respondsToSelector:@selector(setBorder##SIDE##Radius:)]) {  \
+    view.border##SIDE##Radius = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Radius; \
+  }                                                                     \
+}                                                                       \
+
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopLeft)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
+
+RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderBottomWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderLeftWidth, float)
+RCT_EXPORT_SHADOW_PROPERTY(borderWidth, float)
+
 @end
