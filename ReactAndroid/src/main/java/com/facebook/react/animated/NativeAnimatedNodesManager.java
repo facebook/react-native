@@ -480,7 +480,6 @@ import javax.annotation.Nullable;
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
-      int dest = 0;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
