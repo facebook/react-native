@@ -36,7 +36,7 @@ import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
 import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 
-export type TransformOptionsModule<T> = (
+export type GetTransformOptions<T> = (
   string,
   Object,
   string => Promise<Array<string>>,
@@ -121,6 +121,7 @@ type Options = {
   cacheVersion: string,
   resetCache: boolean,
   transformModulePath: string,
+  getTransformOptions?: GetTransformOptions<*>,
   extraNodeModules: {},
   assetExts: Array<string>,
   watch: boolean,
@@ -138,7 +139,7 @@ class Bundler {
   _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
-  _transformOptionsModule: TransformOptionsModule<*>;
+  _getTransformOptions: void | GetTransformOptions<*>;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
@@ -204,12 +205,7 @@ class Bundler {
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
 
-    if (opts.getTransformOptionsModulePath) {
-      /* $FlowFixMe: dynamic requires prevent static typing :'(  */
-      this._transformOptionsModule = require(
-        opts.getTransformOptionsModulePath
-      );
-    }
+    this._getTransformOptions = opts.getTransformOptions;
   }
 
   end() {
@@ -744,8 +740,8 @@ class Bundler {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
-    const extraOptions = this._transformOptionsModule
-      ? this._transformOptionsModule(mainModuleName, options, getDependencies)
+    const extraOptions = this._getTransformOptions
+      ? this._getTransformOptions(mainModuleName, options, getDependencies)
       : null;
     return Promise.resolve(extraOptions)
       .then(extraOpts => Object.assign(options, extraOpts));

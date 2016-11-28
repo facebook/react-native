@@ -52,7 +52,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      getTransformOptions: config.getTransformOptions,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       resetCache: args.resetCache,

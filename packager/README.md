@@ -110,9 +110,8 @@ Builds a bundle according to the provided options.
 * `nonPersistent` boolean, defaults to false: Whether the server
   should be used as a persistent deamon to watch files and update
   itself
-* `getTransformOptionsModulePath` string: Path to module that exports a function
-  that acts as a middleware for generating options to pass to the transformer
-  based on the bundle being built.
+* `getTransformOptions` function: A function that acts as a middleware for
+  generating options to pass to the transformer based on the bundle being built.
 
 #### `bundleOptions`
 

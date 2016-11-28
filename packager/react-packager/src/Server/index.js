@@ -87,8 +87,8 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
-  getTransformOptionsModulePath: {
-    type: 'string',
+  getTransformOptions: {
+    type: 'function',
     required: false,
   },
   silent: {
