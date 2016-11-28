@@ -20,11 +20,18 @@ Note the latest version of the `react-native` npm package from here (or use `npm
 
 * https://www.npmjs.com/package/react-native
 
-Now install that version of `react-native` in your project with `npm install --save`.
+Now install that version of `react-native` in your project with `npm install --save`:
 
 ```sh
 $ npm install --save react-native@X.Y 
 # where X.Y is the semantic version you are upgrading to
+npm WARN peerDependencies The peer dependency react@~R included from react-native...
+```
+
+If you saw a warning about the peerDependency, also upgrade `react` by running:
+```sh
+$ npm install --save react@R
+# where R is the new version of react from the peerDependency warning you saw
 ```
 
 ## 2. Upgrade your project templates
