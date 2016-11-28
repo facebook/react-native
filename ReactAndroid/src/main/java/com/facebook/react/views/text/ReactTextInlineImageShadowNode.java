@@ -9,10 +9,11 @@
 
 package com.facebook.react.views.text;
 
+import com.facebook.csslayout.CSSNode;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
- * Base class for {@link com.facebook.csslayout.CSSNode}s that represent inline images.
+ * Base class for {@link CSSNode}s that represent inline images.
  */
 public abstract class ReactTextInlineImageShadowNode extends LayoutShadowNode {
 
@@ -21,5 +22,4 @@ public abstract class ReactTextInlineImageShadowNode extends LayoutShadowNode {
    * place of this node.
    */
   public abstract TextInlineImageSpan buildInlineImageSpan();
-
 }

@@ -24,12 +24,14 @@ class Draggable extends React.Component { // eslint-disable-line no-unused-vars
 
   render() {
     const id = this.props.id;
-    function dragStart(e) {
-      e.dataTransfer.setData('text/plain', id);
-    }
     return React.cloneElement(
       this.props.children,
-      { draggable: 'true', onDragStart: dragStart }
+      {
+        draggable: 'true',
+        onDragStart: (e) => {
+          e.dataTransfer.setData('text', id);
+        },
+      }
     );
   }
 }
@@ -45,23 +47,15 @@ class DropTarget extends React.Component { // eslint-disable-line no-unused-vars
 
   render() {
     const thisId = this.props.id;
-    const dropFilter = this.props.dropFilter;
     const dropAction = this.props.dropAction;
     return React.cloneElement(
       this.props.children,
       {
-        onDragOver: (e) => {
-          const sourceId = e.dataTransfer.getData('text/plain');
-          if (dropFilter(sourceId)) {
-            e.preventDefault();
-          }
-        },
+        onDragOver: (e) => e.preventDefault(),
         onDrop: (e) => {
-          const sourceId = e.dataTransfer.getData('text/plain');
-          if (dropFilter(sourceId)) {
-            e.preventDefault();
-            dropAction(sourceId, thisId);
-          }
+          const sourceId = e.dataTransfer.getData('text');
+          e.preventDefault();
+          dropAction(sourceId, thisId);
         },
       }
     );
@@ -71,8 +65,74 @@ class DropTarget extends React.Component { // eslint-disable-line no-unused-vars
 DropTarget.propTypes = {
   children: React.PropTypes.element.isRequired,
   id: React.PropTypes.string.isRequired,
-  dropFilter: React.PropTypes.func.isRequired,
   dropAction: React.PropTypes.func.isRequired,
+};
+
+class ExpanderConfiguration extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    const aggrow = this.props.aggrow;
+    const expander = this.props.expander;
+    return (
+      <Draggable id={'expander:add:' + expander.toString()}>
+        <div
+          style={{
+            width: 'auto',
+            height: '26px',
+            border: '1px solid darkGray',
+            margin: '2px',
+          }}>
+          {aggrow.getExpanderName(expander)}
+        </div>
+      </Draggable>
+    );
+  }
+}
+
+class TableConfiguration extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+  }
+  renderExpander(ex) {
+    return (<ExpanderConfiguration aggrow={this.props.aggrow} expander={ex} />);
+  }
+  render() {
+    const expanderText = this.state.expanded ? '>>' : '<<';
+    const aggrow = this.props.aggrow;
+    let config = [];
+    if (this.state.expanded) {
+      config = aggrow.getExpanders().map((ex) => this.renderExpander(ex));
+    }
+    return (
+      <div style={{
+          width: this.state.expanded ? '512px' : '26px',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          borderLeft: '2px solid black',
+        }}>
+        <div style={{
+            width: '100%',
+            height: '26px',
+            border: '1px solid darkGray',
+          }}
+          onClick={ (e) => this.setState({expanded: !this.state.expanded}) }>
+          { expanderText }
+        </div>
+        { config }
+      </div>
+    );
+  }
+}
+
+TableConfiguration.propTypes = {
+  aggrow: React.PropTypes.object.isRequired,
 };
 
 class TableHeader extends React.Component {
@@ -89,7 +149,6 @@ class TableHeader extends React.Component {
       headers.push((
         <DropTarget
           id={'aggregate:insert:' + i.toString()}
-          dropFilter={(s) => s.startsWith('aggregate')}
           dropAction={this.props.dropAction}
         >
           <div style={{
@@ -106,7 +165,6 @@ class TableHeader extends React.Component {
     headers.push((
       <DropTarget
         id="divider:insert"
-        dropFilter={(s) => s.startsWith('aggregate') || s.startsWith('expander')}
         dropAction={this.props.dropAction}
       >
         <div style={{
@@ -133,7 +191,6 @@ class TableHeader extends React.Component {
       headers.push((
         <DropTarget
           id={'expander:insert:' + (i + 1).toString()}
-          dropFilter={()=>{return true; }}
           dropAction={this.props.dropAction}
         >
           <div style={{
@@ -307,25 +364,42 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
       active.splice(dIndex, 0, dragged);
       aggrow.setActiveExpanders(active);
       this.setState({cursor:0});
+    } else if (s.startsWith('expander:add:')) {
+      let dIndex = -1;
+      const sExpander = parseInt(s.substring(13), 10);
+      if (d.startsWith('expander:insert:')) {
+        dIndex = parseInt(d.substr(16), 10);
+      } else if (d === 'divider:insert') {
+        dIndex = 0;
+      } else {
+        throw 'not allowed to drag ' + s + ' to ' + d;
+      }
+      const active = aggrow.getActiveExpanders();
+      active.splice(dIndex, 0, sExpander);
+      aggrow.setActiveExpanders(active);
+      this.setState({cursor:0});
     }
   }
 
   render() {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <TableHeader aggrow={this.state.aggrow} dropAction={(s, d) => this.dropAction(s, d)} />
-        <div
-          style={{
-            width: '100%',
-            flexGrow: '1',
-            overflow: 'scroll'
-          }}
-          onScroll={ (e) => this.scroll(e) }
-          ref={(div) => { this._scrollDiv = div; } }>
-          <div style={{ position: 'relative' }}>
-            { this.renderVirtualizedRows() }
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'row' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', }}>
+          <TableHeader aggrow={this.state.aggrow} dropAction={(s, d) => this.dropAction(s, d)} />
+          <div
+            style={{
+              width: '100%',
+              flexGrow: '1',
+              overflow: 'scroll'
+            }}
+            onScroll={ (e) => this.scroll(e) }
+            ref={(div) => { this._scrollDiv = div; } }>
+            <div style={{ position: 'relative' }}>
+              { this.renderVirtualizedRows() }
+            </div>
           </div>
         </div>
+        <TableConfiguration aggrow={this.state.aggrow} />
       </div>
     );
   }

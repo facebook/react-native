@@ -25,12 +25,6 @@ module.exports = [
     parse: (val) => val === 'false' ? false : true,
     default: true,
   }, {
-    command: '--prepack',
-    description: 'When passed, the output bundle will use the Prepack format.',
-  }, {
-    command: '--bridge-config [string]',
-    description: 'File name of a a JSON export of __fbBatchedBridgeConfig. Used by Prepack. Ex. ./bridgeconfig.json',
-  }, {
     command: '--bundle-output <string>',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
   }, {
@@ -50,6 +44,10 @@ module.exports = [
   }, {
     command: '--reset-cache',
     description: 'Removes cached files',
+    default: false,
+  }, {
+    command: '--read-global-cache',
+    description: 'Try to fetch transformed JS code from the global cache, if configured.',
     default: false,
   },
 ];

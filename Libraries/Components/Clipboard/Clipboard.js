@@ -12,7 +12,6 @@
 'use strict';
 
 const Clipboard = require('NativeModules').Clipboard;
-const deprecatedCallback = require('deprecatedCallback');
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
@@ -27,12 +26,7 @@ module.exports = {
    * ```
    */
   getString(): Promise<string> {
-    return deprecatedCallback(
-      Clipboard.getString(),
-      Array.prototype.slice.call(arguments),
-      'success-first',
-      'Clipboard.getString(callback) is deprecated. Use the returned Promise instead'
-    );
+    return Clipboard.getString();
   },
   /**
    * Set content of string type. You can use following code to set clipboard content

@@ -1,6 +1,6 @@
 include_defs('//ReactAndroid/DEFS')
 
-robolectric3_test(
+rn_robolectric_test(
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
   name = 'modules',
@@ -20,6 +20,7 @@ robolectric3_test(
     react_native_target('java/com/facebook/react/common/network:network'),
     react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react/devsupport:devsupport'),
+    react_native_target('java/com/facebook/react/jstasks:jstasks'),
     react_native_target('java/com/facebook/react/modules/clipboard:clipboard'),
     react_native_target('java/com/facebook/react/modules/common:common'),
     react_native_target('java/com/facebook/react/modules/core:core'),

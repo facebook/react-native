@@ -9,10 +9,10 @@
 'use strict';
 
 const chalk = require('chalk');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
-const findSymlinksPaths = require('./findSymlinksPaths');
 const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
@@ -91,11 +91,6 @@ module.exports = {
     description: 'override the root(s) to be used by the packager',
     parse: (val) => val.split(','),
     default: (config) => config.getProjectRoots(),
-  }, {
-    command: '--assetRoots [list]',
-    description: 'specify the root directories of app assets',
-    parse: (val) => val.split(',').map(dir => path.resolve(process.cwd(), dir)),
-    default: (config) => config.getAssetRoots(),
   }, {
     command: '--assetExts [list]',
     description: 'Specify any additional asset extentions to be used by the packager',

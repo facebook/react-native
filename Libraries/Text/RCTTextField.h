@@ -9,14 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTComponent.h"
+#import <React/RCTComponent.h>
 
 @class RCTEventDispatcher;
 
 @interface RCTTextField : UITextField
 
 @property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign) BOOL autoCorrect;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) UIEdgeInsets contentInset;

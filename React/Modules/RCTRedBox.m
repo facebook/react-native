@@ -13,8 +13,8 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTErrorInfo.h"
-#import "RCTUtils.h"
 #import "RCTJSStackFrame.h"
+#import "RCTUtils.h"
 
 #if RCT_DEBUG
 
@@ -60,8 +60,10 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
+#if !TARGET_OS_TV
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
@@ -175,9 +177,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-
+#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
+#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
@@ -241,6 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+    cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
     cell.textLabel.numberOfLines = 2;
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
@@ -293,7 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // mechanism instead
 
   return @[
-
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
                        modifierFlags:0

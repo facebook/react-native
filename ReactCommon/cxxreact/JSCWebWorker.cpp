@@ -2,21 +2,19 @@
 
 #include "JSCWebWorker.h"
 
-
 #include <condition_variable>
 #include <mutex>
 #include <unordered_map>
 
 #include <folly/Memory.h>
-
-#include "JSCHelpers.h"
-#include "MessageQueueThread.h"
-#include "Platform.h"
-#include "Value.h"
-
 #include <glog/logging.h>
 
-#include <JavaScriptCore/JSValueRef.h>
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
+#include "MessageQueueThread.h"
+#include "Platform.h"
+#include "JSCUtils.h"
 
 namespace facebook {
 namespace react {
@@ -70,7 +68,7 @@ void JSCWebWorker::terminate() {
 
 void JSCWebWorker::terminateOnWorkerThread() {
   s_globalContextRefToJSCWebWorker.erase(context_);
-  JSGlobalContextRelease(context_);
+  JSC_JSGlobalContextRelease(context_);
   context_ = nullptr;
   workerMessageQueueThread_->quitSynchronous();
 }
@@ -83,7 +81,8 @@ void JSCWebWorker::initJSVMAndLoadScript() {
   CHECK(!isTerminated()) << "Worker was already finished!";
   CHECK(!context_) << "Worker JS VM was already created!";
 
-  context_ = JSGlobalContextCreateInGroup(
+  context_ = JSC_JSGlobalContextCreateInGroup(
+      false, // no support required for custom JSC
       NULL, // use default JS 'global' object
       NULL // create new group (i.e. new VM)
   );
@@ -91,7 +90,7 @@ void JSCWebWorker::initJSVMAndLoadScript() {
 
   // TODO(9604438): Protect against script does not exist
   std::unique_ptr<const JSBigString> script = WebWorkerUtil::loadScriptFromAssets(scriptName_);
-  evaluateScript(context_, jsStringFromBigString(*script), String(scriptName_.c_str()));
+  evaluateScript(context_, jsStringFromBigString(context_, *script), String(context_, scriptName_.c_str()));
 
   installGlobalFunction(context_, "postMessage", nativePostMessage);
 }
@@ -111,24 +110,22 @@ JSValueRef JSCWebWorker::nativePostMessage(
     const JSValueRef arguments[],
     JSValueRef *exception) {
   if (argumentCount != 1) {
-    *exception = makeJSCException(ctx, "postMessage got wrong number of arguments");
-    return JSValueMakeUndefined(ctx);
+    *exception = Value::makeError(ctx, "postMessage got wrong number of arguments");
+    return Value::makeUndefined(ctx);
   }
   JSValueRef msg = arguments[0];
-  JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSContextGetGlobalContext(ctx));
+  JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSC_JSContextGetGlobalContext(ctx));
 
-  if (webWorker->isTerminated()) {
-    return JSValueMakeUndefined(ctx);
+  if (!webWorker->isTerminated()) {
+    webWorker->postMessageToOwner(msg);
   }
 
-  webWorker->postMessageToOwner(msg);
-  
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 /*static*/
 Object JSCWebWorker::createMessageObject(JSContextRef context, const std::string& msgJson) {
-  Value rebornJSMsg = Value::fromJSON(context, String(msgJson.c_str()));
+  Value rebornJSMsg = Value::fromJSON(context, String(context, msgJson.c_str()));
   Object messageObject = Object::create(context);
   messageObject.setProperty("data", rebornJSMsg);
   return messageObject;

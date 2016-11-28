@@ -11,7 +11,7 @@
 
 #import <libkern/OSAtomic.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTLocalAssetImageLoader
 
@@ -71,6 +71,7 @@ static NSBundle *bundleForPath(NSString *key)
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
                                     progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                   completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   __block volatile uint32_t cancelled = 0;

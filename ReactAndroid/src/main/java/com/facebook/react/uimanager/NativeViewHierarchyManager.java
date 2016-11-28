@@ -10,6 +10,7 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -64,6 +65,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public class NativeViewHierarchyManager {
 
+  private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
+
   private final AnimationRegistry mAnimationRegistry;
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
@@ -116,9 +119,13 @@ public class NativeViewHierarchyManager {
   public void updateProperties(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
-    ViewManager viewManager = resolveViewManager(tag);
-    View viewToUpdate = resolveView(tag);
-    viewManager.updateProperties(viewToUpdate, props);
+    try {
+      ViewManager viewManager = resolveViewManager(tag);
+      View viewToUpdate = resolveView(tag);
+      viewManager.updateProperties(viewToUpdate, props);
+    } catch (IllegalViewOperationException e) {
+      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+    }
   }
 
   public void updateViewExtraData(int tag, Object extraData) {

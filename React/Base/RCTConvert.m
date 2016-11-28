@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <CoreText/CoreText.h>
-
 #import "RCTConvert.h"
 
 #import <objc/message.h>
+
+#import <CoreText/CoreText.h>
 
 #import "RCTDefines.h"
 #import "RCTImageSource.h"
@@ -330,6 +330,7 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
+#if !TARGET_OS_TV
 RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
   @"link": @(UIDataDetectorTypeLink),
@@ -338,6 +339,7 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+#endif
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -379,10 +381,12 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
   @"stretch": @(UIViewContentModeScaleToFill),
 }), UIViewContentModeScaleAspectFill, integerValue)
 
+#if !TARGET_OS_TV
 RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),
   @"black": @(UIBarStyleBlack),
 }), UIBarStyleDefault, integerValue)
+#endif
 
 // TODO: normalise the use of w/width so we can do away with the alias values (#6566645)
 static void RCTConvertCGStructValue(const char *type, NSArray *fields, NSDictionary *aliases, CGFloat *result, id json)
@@ -612,7 +616,8 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
 
 RCT_ENUM_CONVERTER(CSSOverflow, (@{
   @"hidden": @(CSSOverflowHidden),
-  @"visible": @(CSSOverflowVisible)
+  @"visible": @(CSSOverflowVisible),
+  @"scroll": @(CSSOverflowScroll),
 }), CSSOverflowVisible, intValue)
 
 RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
@@ -643,10 +648,10 @@ RCT_ENUM_CONVERTER(CSSPositionType, (@{
   @"relative": @(CSSPositionTypeRelative)
 }), CSSPositionTypeRelative, intValue)
 
-RCT_ENUM_CONVERTER(CSSWrapType, (@{
-  @"wrap": @(CSSWrapTypeWrap),
-  @"nowrap": @(CSSWrapTypeNoWrap)
-}), CSSWrapTypeNoWrap, intValue)
+RCT_ENUM_CONVERTER(CSSWrap, (@{
+  @"wrap": @(CSSWrapWrap),
+  @"nowrap": @(CSSWrapNoWrap)
+}), CSSWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),

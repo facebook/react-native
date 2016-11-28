@@ -8,13 +8,7 @@
  */
 'use strict';
 
-jest
-  .disableAutomock()
-  .setMock('Text', {})
-  .setMock('View', {})
-  .setMock('Image', {})
-  .setMock('ScrollView', {})
-  .setMock('React', {Component: class {}});
+jest.disableAutomock();
 
 var Animated = require('Animated');
 describe('Animated tests', () => {

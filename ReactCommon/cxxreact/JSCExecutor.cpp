@@ -9,18 +9,27 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/json.h>
+#include <folly/Exception.h>
 #include <folly/Memory.h>
 #include <folly/String.h>
 #include <folly/Conv.h>
+#include <fcntl.h>
 #include <sys/time.h>
 
-#include "FollySupport.h"
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
+#ifdef WITH_INSPECTOR
+#include <inspector/Inspector.h>
+#endif
+
 #include "Platform.h"
 #include "SystraceSection.h"
-#include "Value.h"
-
+#include "JSCNativeModules.h"
 #include "JSCSamplingProfiler.h"
+#include "JSCUtils.h"
+#include "JSModulesUnbundle.h"
+#include "ModuleRegistry.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -64,12 +73,32 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         const JSValueRef arguments[],
         JSValueRef *exception) {
       try {
-        auto globalObj = JSContextGetGlobalObject(ctx);
-        auto executor = static_cast<JSCExecutor*>(JSObjectGetPrivate(globalObj));
+        auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
         return (executor->*method)(argumentCount, arguments);
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return JSValueMakeUndefined(ctx);
+        return Value::makeUndefined(ctx);
+      }
+    }
+  };
+
+  return &funcWrapper::call;
+}
+
+template<JSValueRef (JSCExecutor::*method)(JSObjectRef object, JSStringRef propertyName)>
+inline JSObjectGetPropertyCallback exceptionWrapMethod() {
+  struct funcWrapper {
+    static JSValueRef call(
+         JSContextRef ctx,
+         JSObjectRef object,
+         JSStringRef propertyName,
+         JSValueRef *exception) {
+      try {
+        auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
+        return (executor->*method)(object, propertyName);
+      } catch (...) {
+        *exception = translatePendingCppExceptionToJSError(ctx, object);
+        return Value::makeUndefined(ctx);
       }
     }
   };
@@ -79,13 +108,20 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
 
 }
 
+#if DEBUG
 static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
     size_t argumentCount,
     const JSValueRef arguments[],
-    JSValueRef *exception);
+    JSValueRef *exception) {
+  String execJSString = Value(ctx, arguments[0]).toString();
+  String jsURL = Value(ctx, arguments[1]).toString();
+  evaluateScript(ctx, execJSString, jsURL);
+  return Value::makeUndefined(ctx);
+}
+#endif
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
@@ -100,30 +136,15 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     m_delegate(delegate),
     m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
     m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
-  SystraceSection s("setBatchedBridgeConfig");
-
-  folly::dynamic nativeModuleConfig = folly::dynamic::array();
-
   {
-    SystraceSection s("collectNativeModuleNames");
-    std::vector<std::string> names = delegate->moduleNames();
-    for (auto& name : delegate->moduleNames()) {
-      nativeModuleConfig.push_back(folly::dynamic::array(std::move(name)));
-    }
+    SystraceSection s("nativeModuleProxy object");
+    installGlobalProxy(m_context, "nativeModuleProxy",
+                       exceptionWrapMethod<&JSCExecutor::getNativeModule>());
   }
-
-  folly::dynamic config =
-    folly::dynamic::object
-      ("remoteModuleConfig", std::move(nativeModuleConfig));
-
-
-  SystraceSection t("setGlobalVariable");
-  setGlobalVariable(
-    "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(detail::toStdString(folly::toJson(config))));
 }
 
 JSCExecutor::JSCExecutor(
@@ -139,6 +160,7 @@ JSCExecutor::JSCExecutor(
     m_owner(owner),
     m_deviceCacheDir(owner->m_deviceCacheDir),
     m_messageQueueThread(messageQueueThread),
+    m_nativeModules(delegate->getModuleRegistry()),
     m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
@@ -177,42 +199,70 @@ JSCExecutor::~JSCExecutor() {
 
 void JSCExecutor::destroy() {
   *m_isDestroyed = true;
-  m_messageQueueThread->runOnQueueSync([this] () {
+  if (m_messageQueueThread.get()) {
+    m_messageQueueThread->runOnQueueSync([this] () {
+      terminateOnJSVMThread();
+    });
+  } else {
     terminateOnJSVMThread();
-  });
+  }
+}
+
+void JSCExecutor::setContextName(const std::string& name) {
+  String jsName = String(m_context, name.c_str());
+  JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
+  #if defined(__APPLE__)
+  const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
+  if (useCustomJSC) {
+    JSC_configureJSCForIOS(true);
+  }
+  #else
+  const bool useCustomJSC = false;
+  #endif
+
   #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
   #endif
 
+  // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
+    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
-    m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+    m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
-  JSClassRelease(globalClass);
+  JSC_JSClassRelease(useCustomJSC, globalClass);
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
-  JSObjectSetPrivate(JSContextGetGlobalObject(m_context), this);
+  Object::getGlobalObject(m_context).setPrivate(this);
 
-  installNativeHook<&JSCExecutor::nativeRequireModuleConfig>("nativeRequireModuleConfig");
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().registerGlobalContext("main", m_context);
+  #endif
+
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
+  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
+
+  // Websorker support
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+
+  #if DEBUG
+  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
+  #endif
 
   #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
   addNativeTracingHooks(m_context);
@@ -250,7 +300,13 @@ void JSCExecutor::terminateOnJSVMThread() {
     terminateOwnedWebWorker(workerId);
   }
 
-  JSGlobalContextRelease(m_context);
+  m_nativeModules.reset();
+
+  #ifdef WITH_INSPECTOR
+  Inspector::instance().unregisterGlobalContext(m_context);
+  #endif
+
+  JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
 
@@ -262,28 +318,49 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  if ((flags & UNPACKED_JS_SOURCE) == 0) {
-    throw std::runtime_error("Optimized bundle with no unpacked js source");
-  }
+  folly::throwOnFail<std::runtime_error>(
+    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
+    "Optimized bundle with no unpacked source or bytecode");
 
-  auto jsScriptBigString = JSBigMmapString::fromOptimizedBundle(bundlePath);
-  if (jsScriptBigString->encoding() != JSBigMmapString::Encoding::Ascii) {
-    LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
-    return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
-  }
+  String jsSourceURL(m_context, sourceURL.c_str());
+  JSSourceCodeRef sourceCode = nullptr;
+  SCOPE_EXIT {
+    if (sourceCode) {
+      JSReleaseSourceCode(sourceCode);
+    }
+  };
 
-  if (flags & UNPACKED_BC_CACHE) {
-    configureJSCBCCache(m_context, bundlePath);
-  }
+  if (flags & UNPACKED_BYTECODE) {
+    int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
+    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    SCOPE_EXIT { close(fd); };
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
 
-  String jsSourceURL(sourceURL.c_str());
-  JSSourceCodeRef sourceCode = JSCreateSourceCode(
+    folly::throwOnFail<std::runtime_error>(
+      sourceCode != nullptr,
+      "Could not create compiled source code"
+    );
+  } else {
+    auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
+    if (!jsScriptBigString->isAscii()) {
+      LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
+      return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
+    }
+
+    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
+    if (flags & UNPACKED_BC_CACHE) {
+      configureJSCBCCache(m_context, bundlePath);
+    }
+    #endif
+
+    sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
-      jsScriptBigString->size(),
       jsSourceURL,
       jsScriptBigString->hash(),
       true);
-  SCOPE_EXIT { JSReleaseSourceCode(sourceCode); };
+  }
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   evaluateSourceCode(m_context, sourceCode, jsSourceURL);
 
@@ -291,6 +368,36 @@ void JSCExecutor::loadApplicationScript(
 
   flush();
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+}
+#endif
+
+#ifdef WITH_FBJSCEXTENSIONS
+void JSCExecutor::loadApplicationScript(
+    int fd,
+    std::string sourceURL)
+{
+  String jsSourceURL(m_context, sourceURL.c_str());
+
+  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+  if (!bcSourceCode) {
+    // Not bytecode, fall through.
+    return JSExecutor::loadApplicationScript(fd, sourceURL);
+  }
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+
+  evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
+
+  // TODO(luk): t13903306 Remove this check once we make native modules
+  // working for java2js
+  if (m_delegate) {
+    bindBridge();
+    flush();
+  }
+
+  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 #endif
 
@@ -304,21 +411,26 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     "JSCExecutor::loadApplicationScript-createExpectingAscii");
   #endif
 
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = jsStringFromBigString(*script);
+  String jsScript = jsStringFromBigString(m_context, *script);
   ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
   #endif
 
-  String jsSourceURL(sourceURL.c_str());
+  String jsSourceURL(m_context, sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
 
-  bindBridge();
-
-  flush();
+  // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
+  if (m_delegate) {
+    bindBridge();
+    flush();
+  }
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
@@ -340,6 +452,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
   m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
   m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
   m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+  m_callFunctionReturnResultAndFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnResultAndFlushedQueue").asObject();
 }
 
 void JSCExecutor::callNativeModules(Value&& value) {
@@ -371,8 +484,8 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
   auto result = [&] {
     try {
       return m_callFunctionReturnFlushedQueueJS->callAsFunction({
-        Value(m_context, String::createExpectingAscii(moduleId)),
-        Value(m_context, String::createExpectingAscii(methodId)),
+        Value(m_context, String::createExpectingAscii(m_context, moduleId)),
+        Value(m_context, String::createExpectingAscii(m_context, methodId)),
         Value::fromDynamic(m_context, std::move(arguments))
       });
     } catch (...) {
@@ -389,7 +502,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   auto result = [&] {
     try {
       return m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
-        JSValueMakeNumber(m_context, callbackId),
+        Value::makeNumber(m_context, callbackId),
         Value::fromDynamic(m_context, std::move(arguments))
       });
     } catch (...) {
@@ -401,18 +514,33 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   callNativeModules(std::move(result));
 }
 
+Value JSCExecutor::callFunctionSyncWithValue(
+    const std::string& module, const std::string& method, Value args) {
+  SystraceSection s("JSCExecutor::callFunction");
+
+  Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
+    Value(m_context, String::createExpectingAscii(m_context, module)),
+    Value(m_context, String::createExpectingAscii(m_context, method)),
+    std::move(args),
+  }).asObject();
+
+  Value length = result.getProperty("length");
+
+  if (!length.isNumber() || length.asInteger() != 2) {
+    std::runtime_error("Return value of a callFunction must be an array of size 2");
+  }
+
+  callNativeModules(result.getPropertyAtIndex(1));
+  return result.getPropertyAtIndex(0);
+}
+
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
     SystraceSection s("JSCExecutor.setGlobalVariable",
                       "propName", propName);
 
-    auto globalObject = JSContextGetGlobalObject(m_context);
-    String jsPropertyName(propName.c_str());
-
-    String jsValueJSON = jsStringFromBigString(*jsonValue);
-    auto valueToInject = JSValueMakeFromJSONString(m_context, jsValueJSON);
-
-    JSObjectSetProperty(m_context, globalObject, jsPropertyName, valueToInject, 0, NULL);
+    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
+    Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
@@ -432,21 +560,19 @@ bool JSCExecutor::supportsProfiling() {
 
 void JSCExecutor::startProfiler(const std::string &titleString) {
   #ifdef WITH_JSC_EXTRA_TRACING
-  JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  String title(m_context, titleString.c_str());
   #if WITH_REACT_INTERNAL_SETTINGS
   JSStartProfiling(m_context, title, false);
   #else
   JSStartProfiling(m_context, title);
   #endif
-  JSStringRelease(title);
   #endif
 }
 
 void JSCExecutor::stopProfiler(const std::string &titleString, const std::string& filename) {
   #ifdef WITH_JSC_EXTRA_TRACING
-  JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  String title(m_context, titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
-  JSStringRelease(title);
   #endif
 }
 
@@ -475,8 +601,8 @@ void JSCExecutor::flushQueueImmediate(Value&& queue) {
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
   auto module = m_unbundle->getModule(moduleId);
-  auto sourceUrl = String::createExpectingAscii(module.name);
-  auto source = String::createExpectingAscii(module.code);
+  auto sourceUrl = String::createExpectingAscii(m_context, module.name);
+  auto source = String::createExpectingAscii(m_context, module.code);
   evaluateScript(m_context, source, sourceUrl);
 }
 
@@ -583,7 +709,7 @@ void JSCExecutor::terminateOwnedWebWorker(int workerId) {
 }
 
 Object JSCExecutor::createMessageObject(const std::string& msgJson) {
-  Value rebornJSMsg = Value::fromJSON(m_context, String(msgJson.c_str()));
+  Value rebornJSMsg = Value::fromJSON(m_context, String(m_context, msgJson.c_str()));
   Object messageObject = Object::create(m_context);
   messageObject.setProperty("data", rebornJSMsg);
   return messageObject;
@@ -595,6 +721,14 @@ void JSCExecutor::installNativeHook(const char* name) {
   installGlobalFunction(m_context, name, exceptionWrapMethod<method>());
 }
 
+JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
+  if (JSC_JSStringIsEqualToUTF8CString(m_context, propertyName, "name")) {
+    return Value(m_context, String(m_context, "NativeModules"));
+  }
+
+  return m_nativeModules.getModule(m_context, propertyName);
+}
+
 JSValueRef JSCExecutor::nativePostMessage(
     size_t argumentCount,
     const JSValueRef arguments[]) {
@@ -604,7 +738,7 @@ JSValueRef JSCExecutor::nativePostMessage(
   JSValueRef msg = arguments[0];
   postMessageToOwner(msg);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeRequire(
@@ -616,28 +750,13 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
-    try {
-      loadModule(moduleId);
-    } catch (const std::exception&) {
-      throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
-    }
-  } else {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", moduleId));
-  }
-  return JSValueMakeUndefined(m_context);
-}
-
-JSValueRef JSCExecutor::nativeRequireModuleConfig(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
+  if (moduleId <= 0) {
+    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
+      Value(m_context, arguments[0]).toString().str()));
   }
 
-  std::string moduleName = Value(m_context, arguments[0]).toString().str();
-  folly::dynamic config = m_delegate->getModuleConfig(moduleName);
-  return Value::fromDynamic(m_context, config);
+  loadModule(moduleId);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeFlushQueueImmediate(
@@ -648,7 +767,7 @@ JSValueRef JSCExecutor::nativeFlushQueueImmediate(
   }
 
   flushQueueImmediate(Value(m_context, arguments[0]));
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeStartWorker(
@@ -665,7 +784,7 @@ JSValueRef JSCExecutor::nativeStartWorker(
 
   int workerId = addWebWorker(scriptFile, worker, globalObj);
 
-  return JSValueMakeNumber(m_context, workerId);
+  return Value::makeNumber(m_context, workerId);
 }
 
 JSValueRef JSCExecutor::nativePostMessageToWorker(
@@ -682,7 +801,7 @@ JSValueRef JSCExecutor::nativePostMessageToWorker(
 
   postMessageToOwnedWebWorker((int) workerDouble, arguments[1]);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeTerminateWorker(
@@ -699,7 +818,7 @@ JSValueRef JSCExecutor::nativeTerminateWorker(
 
   terminateOwnedWebWorker((int) workerDouble);
 
-  return JSValueMakeUndefined(m_context);
+  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeCallSyncHook(
@@ -719,21 +838,9 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
       methodId,
       argsJson);
   if (result.isUndefined) {
-    return JSValueMakeUndefined(m_context);
+    return Value::makeUndefined(m_context);
   }
   return Value::fromDynamic(m_context, result.result);
-}
-
-static JSValueRef nativeInjectHMRUpdate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  String execJSString = Value(ctx, arguments[0]).toString();
-  String jsURL = Value(ctx, arguments[1]).toString();
-  evaluateScript(ctx, execJSString, jsURL);
-  return JSValueMakeUndefined(ctx);
 }
 
 } }

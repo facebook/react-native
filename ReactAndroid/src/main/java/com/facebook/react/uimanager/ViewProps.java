@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.common.SetBuilder;
 
 /**
  * Keys for props that need to be shared across multiple classes.
@@ -26,6 +25,7 @@ public class ViewProps {
   // !!! Keep in sync with LAYOUT_ONLY_PROPS below
   public static final String ALIGN_ITEMS = "alignItems";
   public static final String ALIGN_SELF = "alignSelf";
+  public static final String OVERFLOW = "overflow";
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
   public static final String FLEX = "flex";
@@ -63,6 +63,8 @@ public class ViewProps {
   public static final String MAX_WIDTH = "maxWidth";
   public static final String MIN_HEIGHT = "minHeight";
   public static final String MAX_HEIGHT = "maxHeight";
+
+  public static final String ASPECT_RATIO = "aspectRatio";
 
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
@@ -113,6 +115,7 @@ public class ViewProps {
             FLEX_DIRECTION,
             FLEX_WRAP,
             JUSTIFY_CONTENT,
+            OVERFLOW,
 
             /* position */
             POSITION,

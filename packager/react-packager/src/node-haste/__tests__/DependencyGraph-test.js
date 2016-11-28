@@ -8,13 +8,31 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.disableAutomock();
 jest.useRealTimers();
-jest.mock('fs');
+jest
+  .mock('fs')
+  .mock('../../Logger')
+  .mock('../../lib/TransformCache')
+  // It's noticeably faster to prevent running watchman from FileWatcher.
+  .mock('child_process', () => ({}))
+  ;
 
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
+// This doesn't have state, and it's huge (Babel) so it's much faster to
+// require it only once.
+const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDependencies);
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
+const path = require('path');
+beforeEach(() => {
+  jest.resetModules();
+
+  jest.mock('path', () => path);
+});
 
 describe('DependencyGraph', function() {
   let Module;
@@ -30,7 +48,6 @@ describe('DependencyGraph', function() {
         path: dep.path,
         isJSON: dep.isJSON(),
         isAsset: dep.isAsset(),
-        isAsset_DEPRECATED: dep.isAsset_DEPRECATED(),
         isPolyfill: dep.isPolyfill(),
         resolution: dep.resolution,
         id: name,
@@ -43,12 +60,6 @@ describe('DependencyGraph', function() {
     jest.resetModules();
 
     Module = require('../Module');
-    const fileWatcher = {
-      on: function() {
-        return this;
-      },
-      isWatchman: () => Promise.resolve(false),
-    };
 
     const Cache = jest.genMockFn().mockImplementation(function() {
       this._maps = Object.create(null);
@@ -87,27 +98,37 @@ describe('DependencyGraph', function() {
       });
     Cache.prototype.end = jest.genMockFn();
 
+    const transformCacheKey = 'abcdef';
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
-      fileWatcher,
+      forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
         'haste-fbjs',
         'react-haste',
         'react-native',
-        // Parse requires AsyncStorage. They will
-        // change that to require('react-native') which
-        // should work after this release and we can
-        // remove it from here.
-        'parse',
       ],
       platforms: ['ios', 'android'],
       shouldThrowOnUnresolvedErrors: () => false,
+      useWatchman: false,
+      maxWorkers: 1,
+      resetCache: true,
+      transformCode: (module, sourceCode, transformOptions) => {
+        return new Promise(resolve => {
+          let deps = {dependencies: [], dependencyOffsets: []};
+          if (!module.path.endsWith('.json')) {
+            deps = extractDependencies(sourceCode);
+          }
+          resolve({...deps, code: sourceCode});
+        });
+      },
+      transformCacheKey,
     };
   });
 
   describe('get sync dependencies (posix)', function() {
     let DependencyGraph;
+    const consoleWarn = console.warn;
     const realPlatform = process.platform;
     beforeEach(function() {
       process.platform = 'linux';
@@ -115,10 +136,11 @@ describe('DependencyGraph', function() {
     });
 
     afterEach(function() {
+      console.warn = consoleWarn;
       process.platform = realPlatform;
     });
 
-    pit('should get dependencies', function() {
+    it('should get dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -154,7 +176,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -165,7 +186,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.js',
               dependencies: ['b'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -176,7 +196,6 @@ describe('DependencyGraph', function() {
               path: '/root/b.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -186,7 +205,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve relative entry path', function() {
+    it('should resolve relative entry path', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -210,7 +229,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -219,7 +237,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get shallow dependencies', function() {
+    it('should get shallow dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -255,7 +273,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -265,7 +282,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.js',
               dependencies: ['b'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -274,7 +290,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with the correct extensions', function() {
+    it('should get dependencies with the correct extensions', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -309,7 +325,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -319,7 +334,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -328,7 +342,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get json dependencies', function() {
+    it('should get json dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -359,7 +373,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./a.json', './b'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -370,7 +383,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               resolution: undefined,
             },
@@ -380,7 +392,6 @@ describe('DependencyGraph', function() {
               path: '/root/b.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               resolution: undefined,
             },
@@ -388,7 +399,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get package json as a dep', () => {
+    it('should get package json as a dep', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -416,7 +427,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./package.json'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -427,7 +437,6 @@ describe('DependencyGraph', function() {
               path: '/root/package.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               resolution: undefined,
             },
@@ -435,55 +444,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with deprecated assets', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("image!a")',
-          ].join('\n'),
-          'imgs': {
-            'a.png': '',
-          },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        assetRoots_DEPRECATED: ['/root/imgs'],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['image!a'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'image!a',
-              path: '/root/imgs/a.png',
-              dependencies: [],
-              isAsset_DEPRECATED: true,
-              resolution: 1,
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-            },
-          ]);
-      });
-    });
-
-    pit('should get dependencies with relative assets', function() {
+    it('should get dependencies with relative assets', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -514,7 +475,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./imgs/a.png'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -525,7 +485,6 @@ describe('DependencyGraph', function() {
               dependencies: [],
               isAsset: true,
               resolution: 1,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -533,7 +492,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should get dependencies with assets and resolution', function() {
+    it('should get dependencies with assets and resolution', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -573,7 +532,6 @@ describe('DependencyGraph', function() {
                 './imgs/c.png',
               ],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -584,7 +542,6 @@ describe('DependencyGraph', function() {
               resolution: 1.5,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -594,7 +551,6 @@ describe('DependencyGraph', function() {
               resolution: 0.7,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -604,7 +560,6 @@ describe('DependencyGraph', function() {
               resolution: 1,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -612,7 +567,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should respect platform extension in assets', function() {
+    it('should respect platform extension in assets', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -653,7 +608,6 @@ describe('DependencyGraph', function() {
                 './imgs/c.png',
               ],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -664,7 +618,6 @@ describe('DependencyGraph', function() {
               resolution: 1.5,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -674,7 +627,6 @@ describe('DependencyGraph', function() {
               resolution: 0.7,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -684,7 +636,6 @@ describe('DependencyGraph', function() {
               resolution: 1,
               dependencies: [],
               isAsset: true,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
             },
@@ -692,69 +643,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('Deprecated and relative assets can live together', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("./imgs/a.png")',
-            'require("image!a")',
-          ].join('\n'),
-          'imgs': {
-            'a.png': '',
-          },
-          'package.json': JSON.stringify({
-            name: 'rootPackage',
-          }),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        assetRoots_DEPRECATED: ['/root/imgs'],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['./imgs/a.png', 'image!a'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'rootPackage/imgs/a.png',
-              path: '/root/imgs/a.png',
-              dependencies: [],
-              isAsset: true,
-              resolution: 1,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-            },
-            {
-              id: 'image!a',
-              path: '/root/imgs/a.png',
-              dependencies: [],
-              isAsset_DEPRECATED: true,
-              resolution: 1,
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-            },
-          ]);
-      });
-    });
-
-    pit('should get recursive dependencies', function() {
+    it('should get recursive dependencies', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -785,7 +674,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -795,7 +683,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.js',
               dependencies: ['index'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -804,7 +691,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages', function() {
+    it('should work with packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -836,7 +723,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -846,7 +732,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -855,7 +740,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages', function() {
+    it('should work with packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -887,7 +772,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage/'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -897,7 +781,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -906,7 +789,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with a dot in the name', function() {
+    it('should work with packages with a dot in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -946,7 +829,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['sha.js', 'x.y.z'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -956,7 +838,6 @@ describe('DependencyGraph', function() {
               path: '/root/sha.js/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -966,7 +847,6 @@ describe('DependencyGraph', function() {
               path: '/root/x.y.z/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -975,7 +855,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should default main package to index.js', function() {
+    it('should default main package to index.js', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1001,7 +881,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1011,7 +890,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1020,7 +898,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve using alternative ids', () => {
+    it('should resolve using alternative ids', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1050,7 +928,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1060,7 +937,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1069,7 +945,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should default use index.js if main is a dir', function() {
+    it('should default use index.js if main is a dir', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1098,7 +974,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1108,7 +983,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/lib/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1117,7 +991,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve require to index if it is a dir', function() {
+    it('should resolve require to index if it is a dir', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1143,7 +1017,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./lib/'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1153,7 +1026,6 @@ describe('DependencyGraph', function() {
               path: '/root/lib/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1162,7 +1034,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should resolve require to main if it is a dir w/ a package.json', function() {
+    it('should resolve require to main if it is a dir w/ a package.json', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1192,7 +1064,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./lib/'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1202,7 +1073,6 @@ describe('DependencyGraph', function() {
               path: '/root/lib/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1211,7 +1081,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should ignore malformed packages', function() {
+    it('should ignore malformed packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1239,7 +1109,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1248,8 +1117,9 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should fatal on multiple modules with the same name', function() {
-      var root = '/root';
+    it('should fatal on multiple modules with the same name', function() {
+      const root = '/root';
+      console.warn = jest.fn();
       setMockFileSystem({
         'root': {
           'index.js': [
@@ -1279,10 +1149,11 @@ describe('DependencyGraph', function() {
           'with the same name across two different files.'
         );
         expect(err.type).toEqual('DependencyGraphError');
+        expect(console.warn).toBeCalled();
       });
     });
 
-    pit('should be forgiving with missing requires', function() {
+    it('should be forgiving with missing requires', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1307,7 +1178,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['lolomg'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1317,7 +1187,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with subdirs', function() {
+    it('should work with packages with subdirs', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1352,7 +1222,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage/subdir/lolynot'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1363,7 +1232,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/subdir/lolynot.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1373,7 +1241,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with packages with symlinked subdirs', function() {
+    it('should work with packages with symlinked subdirs', function() {
       var root = '/root';
       setMockFileSystem({
         'symlinkedPackage': {
@@ -1409,7 +1277,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage/subdir/lolynot'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1420,7 +1287,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/subdir/lolynot.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1430,7 +1296,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with relative modules in packages', function() {
+    it('should work with relative modules in packages', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1449,7 +1315,7 @@ describe('DependencyGraph', function() {
             'subdir': {
               'lolynot.js': 'require("../other")',
             },
-            'other.js': 'some code',
+            'other.js': '/* some code */',
           },
         },
       });
@@ -1466,7 +1332,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1477,7 +1342,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/main.js',
               dependencies: ['./subdir/lolynot'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1488,7 +1352,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/subdir/lolynot.js',
               dependencies: ['../other'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1499,7 +1362,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/other.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -1522,7 +1384,7 @@ describe('DependencyGraph', function() {
     }
 
     function testBrowserField(fieldName) {
-      pit('should support simple browser field in packages ("' + fieldName + '")', function() {
+      it('should support simple browser field in packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1539,7 +1401,7 @@ describe('DependencyGraph', function() {
                 browser: 'client.js',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1556,7 +1418,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1567,7 +1428,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/client.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1577,7 +1437,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser field in packages w/o .js ext ("' + fieldName + '")', function() {
+      it('should support browser field in packages w/o .js ext ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1594,7 +1454,7 @@ describe('DependencyGraph', function() {
                 browser: 'client',
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1611,7 +1471,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1621,7 +1480,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/client.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1630,7 +1488,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support mapping main in browser field json ("' + fieldName + '")', function() {
+      it('should support mapping main in browser field json ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1649,7 +1507,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1667,7 +1525,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1676,7 +1533,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/client.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1686,7 +1542,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should work do correct browser mapping w/o js ext ("' + fieldName + '")', function() {
+      it('should work do correct browser mapping w/o js ext ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1705,7 +1561,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'main.js': 'some other code',
-              'client.js': 'some code',
+              'client.js': '/* some code */',
             },
           },
         });
@@ -1723,7 +1579,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1734,7 +1589,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/client.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1744,7 +1598,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping of files ("' + fieldName + '")', function() {
+      it('should support browser mapping of files ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1766,17 +1620,17 @@ describe('DependencyGraph', function() {
                   './hello.js': './bye.js',
                 },
               }, fieldName)),
-              'main.js': 'some other code',
+              'main.js': '/* some other code */',
               'client.js': 'require("./node")\nrequire("./dir/server.js")',
               'not-node.js': 'require("./not-browser")',
               'not-browser.js': 'require("./dir/server")',
-              'browser.js': 'some browser code',
+              'browser.js': '/* some browser code */',
               'dir': {
-                'server.js': 'some node code',
+                'server.js': '/* some node code */',
                 'client.js': 'require("../hello")',
               },
-              'hello.js': 'hello',
-              'bye.js': 'bye',
+              'hello.js': '/* hello */',
+              'bye.js': '/* bye */',
             },
           },
         });
@@ -1792,7 +1646,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1801,7 +1654,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/client.js',
                 dependencies: ['./node', './dir/server.js'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1810,7 +1662,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/not-node.js',
                 dependencies: ['./not-browser'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1819,7 +1670,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/browser.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1829,7 +1679,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/dir/client.js',
                 dependencies: ['../hello'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1839,7 +1688,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/bye.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1848,7 +1696,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping for packages ("' + fieldName + '")', function() {
+      it('should support browser mapping for packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1870,13 +1718,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -1893,7 +1741,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1902,7 +1749,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/index.js',
                 dependencies: ['node-package'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1911,7 +1757,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/browser-package/index.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1920,7 +1765,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping of a package to a file ("' + fieldName + '")', () => {
+      it('should support browser mapping of a package to a file ("' + fieldName + '")', () => {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1940,13 +1785,13 @@ describe('DependencyGraph', function() {
               'index.js': 'require("./dir/ooga")',
               'dir': {
                 'ooga.js': 'require("node-package")',
-                'browser.js': 'some browser code',
+                'browser.js': '/* some browser code */',
               },
               'node-package': {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -1963,7 +1808,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1972,7 +1816,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/index.js',
                 dependencies: ['./dir/ooga'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1981,7 +1824,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/dir/ooga.js',
                 dependencies: ['node-package'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1990,7 +1832,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/dir/browser.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -1999,7 +1840,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser mapping for packages ("' + fieldName + '")', function() {
+      it('should support browser mapping for packages ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2021,13 +1862,13 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'browser-package': {
                 'package.json': JSON.stringify({
                   'name': 'browser-package',
                 }),
-                'index.js': 'some browser code',
+                'index.js': '/* some browser code */',
               },
             },
           },
@@ -2044,7 +1885,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2053,7 +1893,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/index.js',
                 dependencies: ['node-package'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2062,7 +1901,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/browser-package/index.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2071,7 +1909,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser exclude of a package ("' + fieldName + '")', function() {
+      it('should support browser exclude of a package ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2093,7 +1931,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'booga',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
             },
           },
@@ -2110,7 +1948,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2119,7 +1956,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/index.js',
                 dependencies: ['booga'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2128,7 +1964,7 @@ describe('DependencyGraph', function() {
         });
       });
 
-      pit('should support browser exclude of a file ("' + fieldName + '")', function() {
+      it('should support browser exclude of a file ("' + fieldName + '")', function() {
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -2146,7 +1982,7 @@ describe('DependencyGraph', function() {
                 },
               }, fieldName)),
               'index.js': 'require("./booga")',
-              'booga.js': 'some node code',
+              'booga.js': '/* some node code */',
             },
           },
         });
@@ -2162,7 +1998,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2171,7 +2006,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/index.js',
                 dependencies: ['./booga'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2181,7 +2015,7 @@ describe('DependencyGraph', function() {
       });
     }
 
-    pit('should fall back to browser mapping from react-native mapping', function() {
+    it('should fall back to browser mapping from react-native mapping', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2204,7 +2038,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package': {
                 'package.json': JSON.stringify({
@@ -2219,7 +2053,7 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'nested-browser-package',
                 }),
-                'index.js': 'some code',
+                'index.js': '/* some code */',
               },
             },
           },
@@ -2237,7 +2071,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2246,7 +2079,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/index.js',
               dependencies: ['node-package'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2255,7 +2087,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/node_modules/rn-package/index.js',
               dependencies: ['nested-package'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2264,7 +2095,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/node_modules/nested-browser-package/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2273,7 +2103,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with absolute paths', () => {
+    it('should work with absolute paths', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2294,7 +2124,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['/root/arbitrary.js'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2304,7 +2133,6 @@ describe('DependencyGraph', function() {
               path: '/root/arbitrary.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2313,7 +2141,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should merge browser mapping with react-native mapping', function() {
+    it('should merge browser mapping with react-native mapping', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2346,49 +2174,49 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'node-package-a',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-b',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-c',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'node-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'node-package-d',
                 }),
-                'index.js': 'some node code',
+                'index.js': '/* some node code */',
               },
               'rn-package-a': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-a',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-b': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-b',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-c': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-c',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
               'rn-package-d': {
                 'package.json': JSON.stringify({
                   'name': 'rn-package-d',
                 }),
-                'index.js': 'some rn code',
+                'index.js': '/* some rn code */',
               },
             },
           },
@@ -2406,7 +2234,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2415,7 +2242,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/index.js',
               dependencies: ['node-package-a', 'node-package-b', 'node-package-c'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2424,7 +2250,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/node_modules/rn-package-a/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2433,7 +2258,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/node_modules/rn-package-b/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2442,7 +2266,6 @@ describe('DependencyGraph', function() {
               path: '/root/aPackage/node_modules/rn-package-d/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2451,7 +2274,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should fall back to `extraNodeModules`', () => {
+    it('should fall back to `extraNodeModules`', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2484,7 +2307,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./foo'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2494,7 +2316,6 @@ describe('DependencyGraph', function() {
               path: '/root/foo/index.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2504,7 +2325,6 @@ describe('DependencyGraph', function() {
               path: '/root/provides-bar/lib/bar.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2513,7 +2333,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit(
+    it(
       'should only use `extraNodeModules` after checking all possible filesystem locations',
       () => {
         const root = '/root';
@@ -2541,7 +2361,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['bar'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2551,7 +2370,6 @@ describe('DependencyGraph', function() {
                 path: '/root/node_modules/bar.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -2561,7 +2379,7 @@ describe('DependencyGraph', function() {
       }
     );
 
-    pit('should be able to resolve paths within `extraNodeModules`', () => {
+    it('should be able to resolve paths within `extraNodeModules`', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -2589,7 +2407,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['bar/lib/foo'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2599,7 +2416,6 @@ describe('DependencyGraph', function() {
               path: '/root/provides-bar/lib/foo.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2615,8 +2431,9 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'win32';
 
-      // force reload with fastpath
+      // reload path module
       jest.resetModules();
+      jest.mock('path', () => path.win32);
       DependencyGraph = require('../index');
     });
 
@@ -2660,7 +2477,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2671,7 +2487,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\a.js',
               dependencies: ['b'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2682,7 +2497,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\b.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2692,11 +2506,11 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with absolute paths', () => {
+    it('should work with absolute paths', () => {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("C:\\root\\arbitrary.js");',
+          'index.js': 'require("C:\\\\root\\\\arbitrary.js");',
           'arbitrary.js': '',
         },
       });
@@ -2713,7 +2527,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['C:\\root\\arbitrary.js'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2723,7 +2536,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\arbitrary.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2745,7 +2557,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('should work with nested node_modules', function() {
+    it('should work with nested node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2762,14 +2574,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -2778,7 +2590,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -2796,7 +2608,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2806,7 +2617,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/main.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2816,7 +2626,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/node_modules/bar/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2826,7 +2635,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2835,7 +2643,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('platform should work with node_modules', function() {
+    it('platform should work with node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2876,7 +2684,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.ios.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2886,7 +2693,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/index.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2896,7 +2702,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/main.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2905,7 +2710,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with specific paths', function() {
+    it('nested node_modules with specific paths', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -2922,14 +2727,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -2939,7 +2744,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -2957,7 +2762,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo', 'bar/'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2967,7 +2771,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/main.js',
               dependencies: ['bar/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2977,7 +2780,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/node_modules/bar/lol.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2987,7 +2789,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -2996,7 +2797,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with browser field', function() {
+    it('nested node_modules with browser field', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3013,7 +2814,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -3023,7 +2824,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -3034,7 +2835,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -3052,7 +2853,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3062,7 +2862,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/main.js',
               dependencies: ['bar/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3072,7 +2871,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/node_modules/bar/lol.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3082,7 +2880,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/main2.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3091,7 +2888,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('node_modules should support multi level', function() {
+    it('node_modules should support multi level', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3136,7 +2933,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3146,7 +2942,6 @@ describe('DependencyGraph', function() {
               path: '/root/path/to/bar.js',
               dependencies: ['foo'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3156,7 +2951,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3165,7 +2959,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should selectively ignore providesModule in node_modules', function() {
+    it('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
       var otherRoot = '/anotherRoot';
       setMockFileSystem({
@@ -3280,7 +3074,6 @@ describe('DependencyGraph', function() {
                 'anotherIndex',
               ],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3290,7 +3083,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/react-haste/main.js',
               dependencies: ['submodule'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3300,7 +3092,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3310,7 +3101,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/ember/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3320,7 +3110,6 @@ describe('DependencyGraph', function() {
               path: '/root/vendored_modules/a-vendored-package/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3330,7 +3119,6 @@ describe('DependencyGraph', function() {
               path: '/anotherRoot/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3339,7 +3127,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not be confused by prev occuring whitelisted names', function() {
+    it('should not be confused by prev occuring whitelisted names', function() {
       var root = '/react-haste';
       setMockFileSystem({
         'react-haste': {
@@ -3377,7 +3165,6 @@ describe('DependencyGraph', function() {
               path: '/react-haste/index.js',
               dependencies: ['shouldWork'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3387,7 +3174,6 @@ describe('DependencyGraph', function() {
               path: '/react-haste/node_modules/react-haste/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3397,7 +3183,7 @@ describe('DependencyGraph', function() {
     });
 
 
-    pit('should ignore modules it cant find (assumes own require system)', function() {
+    it('should ignore modules it cant find (assumes own require system)', function() {
       // For example SourceMap.js implements it's own require system.
       var root = '/root';
       setMockFileSystem({
@@ -3414,7 +3200,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -3432,7 +3218,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3441,7 +3226,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with node packages with a .js in the name', function() {
+    it('should work with node packages with a .js in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3475,7 +3260,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['sha.js'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3485,7 +3269,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/sha.js/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3494,7 +3277,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (haste)', function() {
+    it('should work with multiple platforms (haste)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3534,7 +3317,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.ios.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3544,7 +3326,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3553,7 +3334,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should pick the generic file', function() {
+    it('should pick the generic file', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3594,7 +3375,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.ios.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3604,7 +3384,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3613,7 +3392,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (node)', function() {
+    it('should work with multiple platforms (node)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3641,7 +3420,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.ios.js',
               dependencies: ['./a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3651,7 +3429,6 @@ describe('DependencyGraph', function() {
               path: '/root/a.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3660,7 +3437,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should require package.json', () => {
+    it('should require package.json', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3701,7 +3478,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo/package.json', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3711,7 +3487,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/package.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: true,
               isPolyfill: false,
               resolution: undefined,
@@ -3721,7 +3496,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/main.js',
               dependencies: ['./package.json'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3731,7 +3505,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/bar/package.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: true,
               isPolyfill: false,
               resolution: undefined,
@@ -3741,7 +3514,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with one-character node_modules', () => {
+    it('should work with one-character node_modules', () => {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
@@ -3767,7 +3540,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['a/index.js'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3777,7 +3549,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/a/index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3796,7 +3567,7 @@ describe('DependencyGraph', function() {
 
     const DependencyGraph = require('../index');
 
-    pit('should work with nested node_modules', function() {
+    it('should work with nested node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3813,14 +3584,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -3829,7 +3600,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -3847,7 +3618,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3857,7 +3627,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\main.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3867,7 +3636,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\node_modules\\bar\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3877,7 +3645,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3886,7 +3653,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('platform should work with node_modules', function() {
+    it('platform should work with node_modules', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3927,7 +3694,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.ios.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3937,7 +3703,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\index.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3947,7 +3712,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\main.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -3956,7 +3720,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with specific paths', function() {
+    it('nested node_modules with specific paths', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -3973,14 +3737,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                 },
               },
@@ -3990,7 +3754,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 main: 'main.js',
               }),
-              'main.js': 'bar 2 module',
+              'main.js': '/* bar 2 module */',
             },
           },
         },
@@ -4008,7 +3772,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['foo', 'bar/'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4018,7 +3781,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\main.js',
               dependencies: ['bar/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4028,7 +3790,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\node_modules\\bar\\lol.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4038,7 +3799,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4047,7 +3807,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('nested node_modules with browser field', function() {
+    it('nested node_modules with browser field', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4064,7 +3824,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar/lol");\nfoo module',
+              'main.js': 'require("bar/lol");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
@@ -4074,7 +3834,7 @@ describe('DependencyGraph', function() {
                       './lol': './wow',
                     },
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                   'lol.js': '',
                   'wow.js': '',
                 },
@@ -4085,7 +3845,7 @@ describe('DependencyGraph', function() {
                 name: 'bar',
                 browser: './main2',
               }),
-              'main2.js': 'bar 2 module',
+              'main2.js': '/* bar 2 module */',
             },
           },
         },
@@ -4103,7 +3863,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['foo', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4113,7 +3872,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\main.js',
               dependencies: ['bar/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4123,7 +3881,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\node_modules\\bar\\lol.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4133,7 +3890,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\main2.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4142,7 +3898,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('node_modules should support multi level', function() {
+    it('node_modules should support multi level', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4187,7 +3943,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4197,7 +3952,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\path\\to\\bar.js',
               dependencies: ['foo'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4207,7 +3961,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4216,7 +3969,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should selectively ignore providesModule in node_modules', function() {
+    it('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
       var otherRoot = '/anotherRoot';
       setMockFileSystem({
@@ -4331,7 +4084,6 @@ describe('DependencyGraph', function() {
                 'anotherIndex',
               ],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4341,7 +4093,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\react-haste\\main.js',
               dependencies: ['submodule'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4351,7 +4102,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\react-haste\\node_modules\\submodule\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4361,7 +4111,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\ember\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4371,7 +4120,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\vendored_modules\\a-vendored-package\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4381,7 +4129,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\anotherRoot\\index.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4390,7 +4137,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not be confused by prev occuring whitelisted names', function() {
+    it('should not be confused by prev occuring whitelisted names', function() {
       var root = '/react-haste';
       setMockFileSystem({
         'react-haste': {
@@ -4428,7 +4175,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\react-haste\\index.js',
               dependencies: ['shouldWork'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4438,7 +4184,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\react-haste\\node_modules\\react-haste\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4447,7 +4192,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should ignore modules it cant find (assumes own require system)', function() {
+    it('should ignore modules it cant find (assumes own require system)', function() {
       // For example SourceMap.js implements it's own require system.
       var root = '/root';
       setMockFileSystem({
@@ -4464,7 +4209,7 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
+              'main.js': '/* foo module */',
             },
           },
         },
@@ -4482,7 +4227,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['foo/lol'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4491,7 +4235,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with node packages with a .js in the name', function() {
+    it('should work with node packages with a .js in the name', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4525,7 +4269,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['sha.js'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4535,7 +4278,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\sha.js\\main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4544,7 +4286,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (haste)', function() {
+    it('should work with multiple platforms (haste)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4584,7 +4326,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.ios.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4594,7 +4335,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\a.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4603,7 +4343,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should pick the generic file', function() {
+    it('should pick the generic file', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4643,7 +4383,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.ios.js',
               dependencies: ['a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4653,7 +4392,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\a.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4662,7 +4400,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should work with multiple platforms (node)', function() {
+    it('should work with multiple platforms (node)', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4690,7 +4428,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.ios.js',
               dependencies: ['./a'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4700,7 +4437,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\a.ios.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4709,7 +4445,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should require package.json', () => {
+    it('should require package.json', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -4750,7 +4486,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\index.js',
               dependencies: ['foo/package.json', 'bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4760,7 +4495,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\foo\\package.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: true,
               isPolyfill: false,
               resolution: undefined,
@@ -4770,7 +4504,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\main.js',
               dependencies: ['./package.json'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -4780,7 +4513,6 @@ describe('DependencyGraph', function() {
               path: 'C:\\root\\node_modules\\bar\\package.json',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: true,
               isPolyfill: false,
               resolution: undefined,
@@ -4792,7 +4524,6 @@ describe('DependencyGraph', function() {
   });
 
   describe('file watch updating', function() {
-    var triggerFileChange;
     var mockStat = {
       isDirectory: () => false,
     };
@@ -4803,28 +4534,13 @@ describe('DependencyGraph', function() {
     beforeEach(function() {
       process.platform = 'linux';
       DependencyGraph = require('../index');
-
-      var callbacks = [];
-      triggerFileChange = (...args) =>
-        callbacks.map(callback => callback(...args));
-
-      defaults.fileWatcher = {
-        on: function(eventType, callback) {
-          if (eventType !== 'all') {
-            throw new Error('Can only handle "all" event in watcher.');
-          }
-          callbacks.push(callback);
-          return this;
-        },
-        isWatchman: () => Promise.resolve(false),
-      };
     });
 
     afterEach(function() {
       process.platform = realPlatform;
     });
 
-    pit('updates module dependencies', function() {
+    it('updates module dependencies', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -4858,7 +4574,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
-        triggerFileChange('change', 'index.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -4867,7 +4583,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -4877,7 +4592,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/main.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -4887,7 +4601,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file change', function() {
+    it('updates module dependencies on file change', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -4921,7 +4635,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         filesystem.root['index.js'] =
           filesystem.root['index.js'].replace('require("foo")', '');
-        triggerFileChange('change', 'index.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -4930,7 +4644,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -4940,7 +4653,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/main.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -4950,7 +4662,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file delete', function() {
+    it('updates module dependencies on file delete', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -4983,7 +4695,7 @@ describe('DependencyGraph', function() {
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         delete filesystem.root.foo;
-        triggerFileChange('delete', 'foo.js', root);
+        dgraph.processFileChange('delete', root + '/foo.js');
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
@@ -4992,7 +4704,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage', 'foo'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5002,7 +4713,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/main.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5012,7 +4722,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on file add', function() {
+    it('updates module dependencies on file add', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5050,10 +4760,10 @@ describe('DependencyGraph', function() {
           ' */',
           'require("foo")',
         ].join('\n');
-        triggerFileChange('add', 'bar.js', root, mockStat);
+        dgraph.processFileChange('add', root + '/bar.js', mockStat);
 
         filesystem.root.aPackage['main.js'] = 'require("bar")';
-        triggerFileChange('change', 'aPackage/main.js', root, mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/main.js', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5063,7 +4773,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage', 'foo'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5073,7 +4782,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/main.js',
                 dependencies: ['bar'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5083,7 +4791,6 @@ describe('DependencyGraph', function() {
                 path: '/root/bar.js',
                 dependencies: ['foo'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5094,7 +4801,6 @@ describe('DependencyGraph', function() {
                 path: '/root/foo.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5105,76 +4811,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('updates module dependencies on deprecated asset add', function() {
-      var root = '/root';
-      var filesystem = setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("image!foo")',
-          ].join('\n'),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        assetRoots_DEPRECATED: [root],
-        assetExts: ['png'],
-      });
-
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['image!foo'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-
-        filesystem.root['foo.png'] = '';
-        triggerFileChange('add', 'foo.png', root, mockStat);
-
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
-          expect(deps2)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['image!foo'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'image!foo',
-                path: '/root/foo.png',
-                dependencies: [],
-                isAsset_DEPRECATED: true,
-                resolution: 1,
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolveDependency: undefined,
-              },
-            ]);
-        });
-      });
-    });
-
-    pit('updates module dependencies on relative asset add', function() {
+    it('updates module dependencies on relative asset add', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5203,7 +4840,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['./foo.png'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -5212,7 +4848,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root['foo.png'] = '';
-        triggerFileChange('add', 'foo.png', root, mockStat);
+        dgraph.processFileChange('add', root + '/foo.png', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5222,7 +4858,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['./foo.png'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5234,7 +4869,6 @@ describe('DependencyGraph', function() {
                 dependencies: [],
                 isAsset: true,
                 resolution: 1,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolveDependency: undefined,
@@ -5244,172 +4878,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('runs changes through ignore filter', function() {
-      var root = '/root';
-      var filesystem = setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage")',
-            'require("foo")',
-          ].join('\n'),
-          'foo.js': [
-            '/**',
-            ' * @providesModule foo',
-            ' */',
-            'require("aPackage")',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js',
-            }),
-            'main.js': 'main',
-          },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        ignoreFilePath: function(filePath) {
-          if (filePath === '/root/bar.js') {
-            return true;
-          }
-          return false;
-        },
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        filesystem.root['bar.js'] = [
-          '/**',
-          ' * @providesModule bar',
-          ' */',
-          'require("foo")',
-        ].join('\n');
-        triggerFileChange('add', 'bar.js', root, mockStat);
-
-        filesystem.root.aPackage['main.js'] = 'require("bar")';
-        triggerFileChange('change', 'aPackage/main.js', root, mockStat);
-
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-          expect(deps)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage', 'foo'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'aPackage/main.js',
-                path: '/root/aPackage/main.js',
-                dependencies: ['bar'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'foo',
-                path: '/root/foo.js',
-                dependencies: ['aPackage'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-            ]);
-        });
-      });
-    });
-
-    pit('should ignore directory updates', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage")',
-            'require("foo")',
-          ].join('\n'),
-          'foo.js': [
-            '/**',
-            ' * @providesModule foo',
-            ' */',
-            'require("aPackage")',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js',
-            }),
-            'main.js': 'main',
-          },
-        },
-      });
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        triggerFileChange('change', 'aPackage', '/root', {
-          isDirectory: () => true,
-        });
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-          expect(deps)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage', 'foo'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'aPackage/main.js',
-                path: '/root/aPackage/main.js',
-                dependencies: [],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-              {
-                id: 'foo',
-                path: '/root/foo.js',
-                dependencies: ['aPackage'],
-                isAsset: false,
-                isAsset_DEPRECATED: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-                resolveDependency: undefined,
-              },
-            ]);
-        });
-      });
-    });
-
-    pit('changes to browser field', function() {
+    it('changes to browser field', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5440,7 +4909,7 @@ describe('DependencyGraph', function() {
           main: 'main.js',
           browser: 'browser.js',
         });
-        triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5450,7 +4919,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5461,7 +4929,6 @@ describe('DependencyGraph', function() {
                 path: '/root/aPackage/browser.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5472,7 +4939,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('removes old package from cache', function() {
+    it('removes old package from cache', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5502,7 +4969,7 @@ describe('DependencyGraph', function() {
           name: 'bPackage',
           main: 'main.js',
         });
-        triggerFileChange('change', 'package.json', '/root/aPackage', mockStat);
+        dgraph.processFileChange('change', root + '/aPackage/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
@@ -5512,7 +4979,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5523,7 +4989,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should update node package changes', function() {
+    it('should update node package changes', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5539,14 +5005,14 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'require("bar");\nfoo module',
+              'main.js': 'require("bar");\n/* foo module */',
               'node_modules': {
                 'bar': {
                   'package.json': JSON.stringify({
                     name: 'bar',
                     main: 'main.js',
                   }),
-                  'main.js': 'bar 1 module',
+                  'main.js': '/* bar 1 module */',
                 },
               },
             },
@@ -5566,7 +5032,6 @@ describe('DependencyGraph', function() {
               path: '/root/index.js',
               dependencies: ['foo'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -5577,7 +5042,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/main.js',
               dependencies: ['bar'],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -5588,7 +5052,6 @@ describe('DependencyGraph', function() {
               path: '/root/node_modules/foo/node_modules/bar/main.js',
               dependencies: [],
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
@@ -5597,7 +5060,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root.node_modules.foo['main.js'] = 'lol';
-        triggerFileChange('change', 'main.js', '/root/node_modules/foo', mockStat);
+        dgraph.processFileChange('change', root + '/node_modules/foo/main.js', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5607,7 +5070,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['foo'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5618,7 +5080,6 @@ describe('DependencyGraph', function() {
                 path: '/root/node_modules/foo/main.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5629,7 +5090,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should update node package main changes', function() {
+    it('should update node package main changes', function() {
       var root = '/root';
       var filesystem = setMockFileSystem({
         'root': {
@@ -5645,8 +5106,8 @@ describe('DependencyGraph', function() {
                 name: 'foo',
                 main: 'main.js',
               }),
-              'main.js': 'foo module',
-              'browser.js': 'foo module',
+              'main.js': '/* foo module */',
+              'browser.js': '/* foo module */',
             },
           },
         },
@@ -5662,7 +5123,7 @@ describe('DependencyGraph', function() {
           main: 'main.js',
           browser: 'browser.js',
         });
-        triggerFileChange('change', 'package.json', '/root/node_modules/foo', mockStat);
+        dgraph.processFileChange('change', root + '/node_modules/foo/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
           expect(deps2)
@@ -5672,7 +5133,6 @@ describe('DependencyGraph', function() {
                 path: '/root/index.js',
                 dependencies: ['foo'],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5683,7 +5143,6 @@ describe('DependencyGraph', function() {
                 path: '/root/node_modules/foo/browser.js',
                 dependencies: [],
                 isAsset: false,
-                isAsset_DEPRECATED: false,
                 isJSON: false,
                 isPolyfill: false,
                 resolution: undefined,
@@ -5694,7 +5153,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('should not error when the watcher reports a known file as added', function() {
+    it('should not error when the watcher reports a known file as added', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5719,7 +5178,7 @@ describe('DependencyGraph', function() {
       });
 
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
-        triggerFileChange('add', 'index.js', root, mockStat);
+        dgraph.processFileChange('add', root + '/index.js', mockStat);
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js');
       });
     });
@@ -5737,7 +5196,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('supports custom file extensions', () => {
+    it('supports custom file extensions', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5775,7 +5234,6 @@ describe('DependencyGraph', function() {
               dependencies: ['a'],
               id: 'index',
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               path: '/root/index.jsx',
@@ -5785,7 +5243,6 @@ describe('DependencyGraph', function() {
               dependencies: [],
               id: 'a',
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isJSON: false,
               isPolyfill: false,
               path: '/root/a.coffee',
@@ -5808,7 +5265,7 @@ describe('DependencyGraph', function() {
       process.platform = realPlatform;
     });
 
-    pit('resolves to null if mocksPattern is not specified', () => {
+    it('resolves to null if mocksPattern is not specified', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5830,7 +5287,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('retrieves a list of all required mocks', () => {
+    it('retrieves a list of all required mocks', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5863,7 +5320,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('adds mocks as a dependency of their actual module', () => {
+    it('adds mocks as a dependency of their actual module', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5900,7 +5357,6 @@ describe('DependencyGraph', function() {
               path: '/root/A.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: 'A',
               dependencies: ['foo', 'A'],
@@ -5909,7 +5365,6 @@ describe('DependencyGraph', function() {
               path: '/root/foo.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: 'foo',
               dependencies: [],
@@ -5918,7 +5373,6 @@ describe('DependencyGraph', function() {
               path: '/root/__mocks__/A.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: '/root/__mocks__/A.js',
               dependencies: ['b'],
@@ -5927,7 +5381,6 @@ describe('DependencyGraph', function() {
               path: '/root/__mocks__/b.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: '/root/__mocks__/b.js',
               dependencies: [],
@@ -5936,7 +5389,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('resolves mocks that do not have a real module associated with them', () => {
+    it('resolves mocks that do not have a real module associated with them', () => {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -5968,7 +5421,6 @@ describe('DependencyGraph', function() {
               path: '/root/A.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: 'A',
               dependencies: ['foo'],
@@ -5977,7 +5429,6 @@ describe('DependencyGraph', function() {
               path: '/root/__mocks__/foo.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: '/root/__mocks__/foo.js',
               dependencies: ['b'],
@@ -5986,7 +5437,6 @@ describe('DependencyGraph', function() {
               path: '/root/__mocks__/b.js',
               isJSON: false,
               isAsset: false,
-              isAsset_DEPRECATED: false,
               isPolyfill: false,
               id: '/root/__mocks__/b.js',
               dependencies: [],
@@ -6035,20 +5485,20 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('calls back for each finished module', () => {
+    it('calls back for each finished module', () => {
       return getDependencies().then(() =>
         expect(onProgress.mock.calls.length).toBe(8)
       );
     });
 
-    pit('increases the number of finished modules in steps of one', () => {
+    it('increases the number of finished modules in steps of one', () => {
       return getDependencies().then(() => {
         const increments = onProgress.mock.calls.map(([finished]) => finished);
         expect(increments).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
       });
     });
 
-    pit('adds the number of discovered modules to the number of total modules', () => {
+    it('adds the number of discovered modules to the number of total modules', () => {
       return getDependencies().then(() => {
         const increments = onProgress.mock.calls.map(([, total]) => total);
         expect(increments).toEqual([3, 5, 6, 6, 7, 7, 8, 8]);
@@ -6062,7 +5512,7 @@ describe('DependencyGraph', function() {
       DependencyGraph = require('../index');
     });
 
-    pit('allows setting dependencies for asset modules', () => {
+    it('allows setting dependencies for asset modules', () => {
       const assetDependencies = ['arbitrary', 'dependencies'];
 
       setMockFileSystem({
@@ -6121,7 +5571,7 @@ describe('DependencyGraph', function() {
         roots: ['/root'],
       });
       moduleReadDeferreds = {};
-      callDeferreds = [defer()/* a.js */, defer()/* b.js */];
+      callDeferreds = [defer(), defer()]; // [a.js, b.js]
 
       Module.prototype.read = jest.genMockFn().mockImplementation(function() {
         const returnValue = moduleRead.apply(this, arguments);
@@ -6143,7 +5593,7 @@ describe('DependencyGraph', function() {
       Module.prototype.read = moduleRead;
     });
 
-    pit('produces a deterministic tree if the "a" module resolves first', () => {
+    it('produces a deterministic tree if the "a" module resolves first', () => {
       const dependenciesPromise = getOrderedDependenciesAsJSON(dependencyGraph, 'index.js');
 
       return Promise.all(callDeferreds.map(deferred => deferred.promise))
@@ -6155,7 +5605,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',
@@ -6168,7 +5618,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    pit('produces a deterministic tree if the "b" module resolves first', () => {
+    it('produces a deterministic tree if the "b" module resolves first', () => {
       const dependenciesPromise = getOrderedDependenciesAsJSON(dependencyGraph, 'index.js');
 
       return Promise.all(callDeferreds.map(deferred => deferred.promise))
@@ -6180,7 +5630,7 @@ describe('DependencyGraph', function() {
           main.resolve();
           return dependenciesPromise;
         }).then(result => {
-          const names = result.map(({path}) => path.split('/').pop());
+          const names = result.map(({path: resultPath}) => resultPath.split('/').pop());
           expect(names).toEqual([
             'index.js',
             'a.js',

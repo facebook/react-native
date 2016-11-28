@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @interface RCTParserUtils : NSObject
 

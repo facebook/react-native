@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 @interface RCTFont : NSObject
 

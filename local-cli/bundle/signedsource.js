@@ -11,7 +11,7 @@
 var TOKEN    = '<<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>',
     OLDTOKEN = '<<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@I>>',
     TOKENS   = [TOKEN, OLDTOKEN],
-    PATTERN  = new RegExp('@'+'generated (?:SignedSource<<([a-f0-9]{32})>>)');
+    PATTERN  = new RegExp('@' + 'generated (?:SignedSource<<([a-f0-9]{32})>>)');
 
 exports.SIGN_OK = {message:'ok'};
 exports.SIGN_UNSIGNED = new Error('unsigned');
@@ -19,13 +19,14 @@ exports.SIGN_INVALID = new Error('invalid');
 
 // Thrown by sign(). Primarily for unit tests.
 exports.TokenNotFoundError = new Error(
-  'Code signing placeholder not found (expected to find \''+TOKEN+'\')');
+  'Code signing placeholder not found (expected to find \'' + TOKEN + '\')');
 
 var md5_hash_hex;
 
 // MD5 hash function for Node.js. To port this to other platforms, provide an
 // alternate code path for defining the md5_hash_hex function.
 var crypto = require('crypto');
+// eslint-disable-next-line no-shadow
 md5_hash_hex = function md5_hash_hex(data, input_encoding) {
   var md5sum = crypto.createHash('md5');
   md5sum.update(data, input_encoding);
@@ -37,7 +38,7 @@ md5_hash_hex = function md5_hash_hex(data, input_encoding) {
 //
 // @return str  to be embedded in to-be-signed file
 function signing_token() {
-  return '@'+'generated '+TOKEN;
+  return '@' + 'generated ' + TOKEN;
 }
 exports.signing_token = signing_token;
 
@@ -59,13 +60,14 @@ exports.is_signed = is_signed;
 function sign(file_data) {
   var first_time = file_data.indexOf(TOKEN) !== -1;
   if (!first_time) {
-    if (is_signed(file_data))
+    if (is_signed(file_data)) {
       file_data = file_data.replace(PATTERN, signing_token());
-    else
+    } else {
       throw exports.TokenNotFoundError;
+    }
   }
   var signature = md5_hash_hex(file_data, 'utf8');
-  var signed_data = file_data.replace(TOKEN, 'SignedSource<<'+signature+'>>');
+  var signed_data = file_data.replace(TOKEN, 'SignedSource<<' + signature + '>>');
   return { first_time: first_time,  signed_data: signed_data };
 }
 exports.sign = sign;
@@ -78,18 +80,20 @@ exports.sign = sign;
 //              it contains an invalid signature.
 function verify_signature(file_data) {
   var match = PATTERN.exec(file_data);
-  if (!match)
+  if (!match) {
     return exports.SIGN_UNSIGNED;
+  }
   // Replace the signature with the TOKEN, then hash and see if it matches
   // the value in the file.  For backwards compatibility, also try with
   // OLDTOKEN if that doesn't match.
   var k, token, with_token, actual_md5, expected_md5 = match[1];
   for (k in TOKENS) {
     token = TOKENS[k];
-    with_token = file_data.replace(PATTERN, '@'+'generated '+token);
+    with_token = file_data.replace(PATTERN, '@' + 'generated ' + token);
     actual_md5 = md5_hash_hex(with_token, 'utf8');
-    if (expected_md5 === actual_md5)
+    if (expected_md5 === actual_md5) {
       return exports.SIGN_OK;
+    }
   }
   return exports.SIGN_INVALID;
 }
