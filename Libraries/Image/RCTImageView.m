@@ -534,8 +534,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-//  RCTUpdateShadowPathForView(self);
-
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColors];
@@ -561,7 +559,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     layer.cornerRadius = cornerRadii.topLeft;
     layer.borderColor = borderColors.left;
     layer.borderWidth = borderInsets.left;
-//    layer.backgroundColor = _backgroundColor.CGColor;
     layer.contents = nil;
     layer.needsDisplayOnBoundsChange = NO;
     layer.mask = nil;
@@ -631,31 +628,6 @@ static BOOL RCTLayerHasShadow(CALayer *layer)
     self.backgroundColor = inheritedBackgroundColor;
   }
 }
-
-//static void RCTUpdateShadowPathForView(RCTView *view)
-//{
-//  if (RCTLayerHasShadow(view.layer)) {
-//    if (CGColorGetAlpha(view.backgroundColor.CGColor) > 0.999) {
-//
-//      // If view has a solid background color, calculate shadow path from border
-//      const RCTCornerRadii cornerRadii = [view cornerRadii];
-//      const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
-//      CGPathRef shadowPath = RCTPathCreateWithRoundedRect(view.bounds, cornerInsets, NULL);
-//      view.layer.shadowPath = shadowPath;
-//      CGPathRelease(shadowPath);
-//
-//    } else {
-//
-//      // Can't accurately calculate box shadow, so fall back to pixel-based shadow
-//      view.layer.shadowPath = nil;
-//
-//      RCTLogWarn(@"View #%@ of type %@ has a shadow set but cannot calculate "
-//                 "shadow efficiently. Consider setting a background color to "
-//                 "fix this, or apply the shadow to a more specific component.",
-//                 view.reactTag, [view class]);
-//    }
-//  }
-//}
 
 - (void)updateClippingForLayer:(CALayer *)layer
 {
