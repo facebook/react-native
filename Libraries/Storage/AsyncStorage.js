@@ -487,12 +487,16 @@ var AsyncStorage = {
    *
    * **Note**: changing this only sets the location for future actions and does not migrate
    * the store from the previous location.
+   *
+   * @platform ios
    */
   setStorageLocation: function(storageLocation: string) {
     RCTAsyncStorage.setStorageLocation(storageLocation);
   },
-  documents: RCTAsyncStorage.documents,
-  applicationSupport: RCTAsyncStorage.applicationSupport
+  StorageLocation: {
+    documents: RCTAsyncStorage.documents,
+    applicationSupport: RCTAsyncStorage.applicationSupport
+  }
 };
 
 // Not all native implementations support merge.
