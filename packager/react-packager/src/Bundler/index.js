@@ -36,6 +36,12 @@ import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
 import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 
+export type TransformOptionsModule<T> = (
+  string,
+  Object,
+  string => Promise<Array<string>>,
+) => T | Promise<T>;
+
 const sizeOf = denodeify(imageSize);
 
 const noop = () => {};
@@ -132,7 +138,7 @@ class Bundler {
   _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
-  _transformOptionsModule: (path: string, options: {}, bunler: Bundler) => {};
+  _transformOptionsModule: TransformOptionsModule<*>;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
@@ -274,7 +280,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options: {platform: mixed}, host: string, port: number) {
+  hmrBundle(options: {platform: ?string}, host: string, port: number) {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -466,7 +472,7 @@ class Bundler {
     generateSourceMaps = false,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -513,7 +519,7 @@ class Bundler {
     onProgress,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -552,7 +558,7 @@ class Bundler {
   getOrderedDependencyPaths({ entryFile, dev, platform }: {
     entryFile: string,
     dev: boolean,
-    platform: mixed,
+    platform: ?string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({ dependencies }) => {
@@ -630,7 +636,7 @@ class Bundler {
     });
   }
 
-  _generateAssetObjAndCode(module, assetPlugins, platform: mixed = null) {
+  _generateAssetObjAndCode(module, assetPlugins, platform: ?string = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
@@ -707,7 +713,7 @@ class Bundler {
     module,
     moduleId,
     assetPlugins: Array<string> = [],
-    platform: mixed = null,
+    platform: ?string = null,
   ) {
     return Promise.all([
       module.getName(),
@@ -726,9 +732,20 @@ class Bundler {
     });
   }
 
-  getTransformOptions(mainModuleName: string, options: {}) {
+  getTransformOptions(
+    mainModuleName: string,
+    options: {
+      dev?: boolean,
+      platform: ?string,
+      hot?: boolean,
+      generateSourceMaps?: boolean,
+    },
+  ) {
+    const getDependencies = (entryFile: string) =>
+      this.getDependencies({...options, entryFile})
+        .then(r => r.dependencies.map(d => d.path));
     const extraOptions = this._transformOptionsModule
-      ? this._transformOptionsModule(mainModuleName, options, this)
+      ? this._transformOptionsModule(mainModuleName, options, getDependencies)
       : null;
     return Promise.resolve(extraOptions)
       .then(extraOpts => Object.assign(options, extraOpts));
