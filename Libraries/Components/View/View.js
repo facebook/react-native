@@ -14,11 +14,19 @@
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
+
+const isTVOS = (Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
+
+var TVViewPropTypes = {};
+if(isTVOS) {
+  TVViewPropTypes = require('../AppleTV/TVViewPropTypes');
+}
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -133,6 +141,8 @@ const View = React.createClass({
   },
 
   propTypes: {
+    ...TVViewPropTypes,
+
     /**
      * When `true`, indicates that the view is an accessibility element. By default,
      * all the touchable elements are accessible.

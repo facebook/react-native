@@ -4,6 +4,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   accessibilityLabel={undefined}
   accessibilityTraits={undefined}
   accessible={true}
+  hasTVPreferredFocus={undefined}
   hitSlop={undefined}
   onLayout={undefined}
   onResponderGrant={[Function]}
@@ -12,6 +13,9 @@ exports[`TouchableHighlight renders correctly 1`] = `
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  onTVBlur={[Function]}
+  onTVFocus={[Function]}
+  onTVSelect={undefined}
   style={
     Array [
       Object {
@@ -20,7 +24,12 @@ exports[`TouchableHighlight renders correctly 1`] = `
       Object {},
     ]
   }
-  testID={undefined}>
+  testID={undefined}
+  tvParallaxDisable={undefined}
+  tvParallaxMagnification={undefined}
+  tvParallaxShiftDistanceX={undefined}
+  tvParallaxShiftDistanceY={undefined}
+  tvParallaxTiltAngle={undefined}>
   <Text
     accessible={true}
     allowFontScaling={true}

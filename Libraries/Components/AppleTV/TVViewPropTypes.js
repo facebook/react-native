@@ -10,41 +10,12 @@
  * @flow
  */
 'use strict';
-
-const React = require('React');
-const View = require('View');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-
-const requireNativeComponent = require('requireNativeComponent');
-
-const PropTypes = React.PropTypes;
+var PropTypes = require('React').PropTypes;
 
 /**
- * Extension of the View component that supports the Apple TV focus engine.
- * Used by Touchable and Navigation components to support user input using the Apple TV remote.
- *
- * @extends View
- * @platform ios
+ * Additional View properties for Apple TV
  */
-class TVView extends React.Component {
-
-  _tvView: ?RCTTVView;
-
-  _saveTVView: (tvRef: ?RCTTVView) => void;
-
-  constructor(props: Object) {
-    super(props);
-    this._saveTVView = this._saveTVView.bind(this);
-  }
-
-  static viewConfig = {
-    uiViewClassName: 'RCTTVView',
-    validAttributes: ReactNativeViewAttributes.RCTView
-  };
-
-  static propTypes = {
-    ...View.propTypes,
-
+var TVViewPropTypes = {
     /**
      * *(Apple TV only)* Optional method.  When implemented, this view will be focusable
      * and navigable using the Apple TV remote.
@@ -112,24 +83,6 @@ class TVView extends React.Component {
      */
     tvParallaxMagnification: PropTypes.number,
 
-  };
+};
 
-  render() {
-    return <RCTTVView
-                ref={this._saveTVView}
-                {...this.props} />;
-  };
-
-  setNativeProps(props: ?any) {
-    this._tvView && this._tvView.setNativeProps(props);
-  };
-
-  _saveTVView(tvRef: ?RCTTVView): void {
-    this._tvView = tvRef;
-  }
-
-}
-
-const RCTTVView = requireNativeComponent('RCTTVView', TVView, { });
-
-module.exports = TVView;
+module.exports = TVViewPropTypes;
