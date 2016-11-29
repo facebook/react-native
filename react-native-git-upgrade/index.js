@@ -10,9 +10,7 @@
  */
 
 var argv = require('minimist')(process.argv.slice(2));
-
 var cli = require('./cli');
-
 
 if (argv._.length === 0 && (argv.h || argv.help)) {
   console.log([
@@ -39,7 +37,6 @@ if (argv._.length === 0 && (argv.v || argv.version)) {
   console.log(require('./package.json').version);
   process.exit(0);
 }
-
 
 cli.run(argv._[0], argv)
   .catch(console.error);
