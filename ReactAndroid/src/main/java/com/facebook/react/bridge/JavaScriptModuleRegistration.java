@@ -10,6 +10,7 @@
 package com.facebook.react.bridge;
 
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
