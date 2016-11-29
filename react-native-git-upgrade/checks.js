@@ -22,8 +22,8 @@ function checkDeclaredVersion(declaredVersion) {
 function checkMatchingVersions(currentVersion, declaredVersion) {
   if (!semver.satisfies(currentVersion, declaredVersion)) {
     throw new Error(
-      'react-native version in "package.json" doesn\'t match ' +
-      'the installed version in "node_modules".\n' +
+      'react-native version in "package.json" (' + declaredVersion + ') doesn\'t match ' +
+      'the installed version in "node_modules" (' + currentVersion + ').\n' +
       'Try running "npm install" to fix this.'
     );
   }
