@@ -18,6 +18,7 @@ const path = require('path');
 const request = require('request');
 const toFixedHex = require('./toFixedHex');
 
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult} from './TransformCache';
 
 const SINGLE_REQUEST_MAX_KEYS = 100;
@@ -32,7 +33,7 @@ type FetchProps = {
   filePath: string,
   sourceCode: string,
   transformCacheKey: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 };
 
 type FetchCallback = (error?: Error, resultURI?: ?CachedResult) => mixed;

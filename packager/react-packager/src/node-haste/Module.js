@@ -23,7 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode} from '../JSTransformer/worker/worker';
+import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
@@ -40,7 +40,7 @@ type ReadResult = {
 export type TransformCode = (
   module: Module,
   sourceCode: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 ) => Promise<TransformedCode>;
 
 export type Options = {
@@ -118,11 +118,11 @@ class Module {
     );
   }
 
-  getCode(transformOptions: Object) {
+  getCode(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: Object) {
+  getMap(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -158,7 +158,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: Object) {
+  getDependencies(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -281,7 +281,7 @@ class Module {
    * dependencies, etc. The overall process is to read the cache first, and if
    * it's a miss, we let the worker write to the cache and read it again.
    */
-  read(transformOptions: Object): Promise<ReadResult> {
+  read(transformOptions: TransformOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
