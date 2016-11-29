@@ -401,83 +401,83 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native float jni_CSSNodeStyleGetWidth(long nativePointer);
   @Override
-  public float getStyleWidth() {
+  public float getWidth() {
     return jni_CSSNodeStyleGetWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetWidth(long nativePointer, float width);
   @Override
-  public void setStyleWidth(float width) {
+  public void setWidth(float width) {
     jni_CSSNodeStyleSetWidth(mNativePointer, width);
   }
 
   private native float jni_CSSNodeStyleGetHeight(long nativePointer);
   @Override
-  public float getStyleHeight() {
+  public float getHeight() {
     return jni_CSSNodeStyleGetHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetHeight(long nativePointer, float height);
   @Override
-  public void setStyleHeight(float height) {
+  public void setHeight(float height) {
     jni_CSSNodeStyleSetHeight(mNativePointer, height);
   }
 
   private native float jni_CSSNodeStyleGetMinWidth(long nativePointer);
   @Override
-  public float getStyleMinWidth() {
+  public float getMinWidth() {
     return jni_CSSNodeStyleGetMinWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMinWidth(long nativePointer, float minWidth);
   @Override
-  public void setStyleMinWidth(float minWidth) {
+  public void setMinWidth(float minWidth) {
     jni_CSSNodeStyleSetMinWidth(mNativePointer, minWidth);
   }
 
   private native float jni_CSSNodeStyleGetMinHeight(long nativePointer);
   @Override
-  public float getStyleMinHeight() {
+  public float getMinHeight() {
     return jni_CSSNodeStyleGetMinHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMinHeight(long nativePointer, float minHeight);
   @Override
-  public void setStyleMinHeight(float minHeight) {
+  public void setMinHeight(float minHeight) {
     jni_CSSNodeStyleSetMinHeight(mNativePointer, minHeight);
   }
 
   private native float jni_CSSNodeStyleGetMaxWidth(long nativePointer);
   @Override
-  public float getStyleMaxWidth() {
+  public float getMaxWidth() {
     return jni_CSSNodeStyleGetMaxWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMaxWidth(long nativePointer, float maxWidth);
   @Override
-  public void setStyleMaxWidth(float maxWidth) {
+  public void setMaxWidth(float maxWidth) {
     jni_CSSNodeStyleSetMaxWidth(mNativePointer, maxWidth);
   }
 
   private native float jni_CSSNodeStyleGetMaxHeight(long nativePointer);
   @Override
-  public float getStyleMaxHeight() {
+  public float getMaxHeight() {
     return jni_CSSNodeStyleGetMaxHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMaxHeight(long nativePointer, float maxheight);
   @Override
-  public void setStyleMaxHeight(float maxheight) {
+  public void setMaxHeight(float maxheight) {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
   }
 
   private native float jni_CSSNodeStyleGetAspectRatio(long nativePointer);
-  public float getStyleAspectRatio() {
+  public float getAspectRatio() {
     return jni_CSSNodeStyleGetAspectRatio(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetAspectRatio(long nativePointer, float aspectRatio);
-  public void setStyleAspectRatio(float aspectRatio) {
+  public void setAspectRatio(float aspectRatio) {
     jni_CSSNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
   }
 

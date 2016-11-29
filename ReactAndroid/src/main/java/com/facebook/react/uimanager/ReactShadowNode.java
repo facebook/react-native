@@ -529,35 +529,35 @@ public class ReactShadowNode {
   }
 
   public final float getStyleWidth() {
-    return mCSSNode.getStyleWidth();
+    return mCSSNode.getWidth();
   }
 
   public void setStyleWidth(float widthPx) {
-    mCSSNode.setStyleWidth(widthPx);
+    mCSSNode.setWidth(widthPx);
   }
 
   public void setStyleMinWidth(float widthPx) {
-    mCSSNode.setStyleMinWidth(widthPx);
+    mCSSNode.setMinWidth(widthPx);
   }
 
   public void setStyleMaxWidth(float widthPx) {
-    mCSSNode.setStyleMaxWidth(widthPx);
+    mCSSNode.setMaxWidth(widthPx);
   }
 
   public final float getStyleHeight() {
-    return mCSSNode.getStyleHeight();
+    return mCSSNode.getHeight();
   }
 
   public void setStyleHeight(float heightPx) {
-    mCSSNode.setStyleHeight(heightPx);
+    mCSSNode.setHeight(heightPx);
   }
 
   public void setStyleMinHeight(float widthPx) {
-    mCSSNode.setStyleMinHeight(widthPx);
+    mCSSNode.setMinHeight(widthPx);
   }
 
   public void setStyleMaxHeight(float widthPx) {
-    mCSSNode.setStyleMaxHeight(widthPx);
+    mCSSNode.setMaxHeight(widthPx);
   }
 
   public void setFlex(float flex) {
@@ -577,7 +577,7 @@ public class ReactShadowNode {
   }
 
   public void setStyleAspectRatio(float aspectRatio) {
-    mCSSNode.setStyleAspectRatio(aspectRatio);
+    mCSSNode.setAspectRatio(aspectRatio);
   }
 
   public void setFlexDirection(CSSFlexDirection flexDirection) {
