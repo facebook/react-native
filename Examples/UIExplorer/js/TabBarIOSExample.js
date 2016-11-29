@@ -73,6 +73,7 @@ class TabBarExample extends React.Component {
         <TabBarIOS.Item
           systemIcon="history"
           badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
+          badgeColor="black"
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => {
             this.setState({
