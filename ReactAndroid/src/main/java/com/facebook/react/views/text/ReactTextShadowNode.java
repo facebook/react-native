@@ -314,6 +314,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
+  protected int mLineHeightInput = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
   private float mTextShadowOffsetDx = 0;
@@ -415,7 +416,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
   public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+    mLineHeightInput = lineHeight;
+    if (mAllowFontScaling) {
+      mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+    } else {
+      mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromDIP(lineHeight);
+    }
+
     markUpdated();
   }
 
@@ -424,6 +431,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
     }
   }
 
