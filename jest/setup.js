@@ -70,6 +70,9 @@ const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
+  AppState: {
+    addEventListener: jest.fn(),
+  },
   AsyncLocalStorage: {
     clear: jest.fn(),
     getItem: jest.fn(),
