@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 import android.util.SparseIntArray;
 
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIViewOperationQueue;

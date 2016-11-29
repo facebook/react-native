@@ -17,7 +17,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 
-import com.facebook.csslayout.Spacing;
+import com.facebook.react.uimanager.Spacing;
 
 /* package */ final class DrawBorder extends AbstractDrawBorder {
 

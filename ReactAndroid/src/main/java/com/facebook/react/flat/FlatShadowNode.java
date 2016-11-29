@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import android.graphics.Rect;
 
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;

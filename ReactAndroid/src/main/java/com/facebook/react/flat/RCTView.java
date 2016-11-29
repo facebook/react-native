@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 import android.graphics.Rect;
 
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
