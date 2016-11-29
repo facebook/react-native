@@ -22,6 +22,7 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
+const path = require('path');
 const version = require('../../../../package.json').version;
 const denodeify = require('denodeify');
 
@@ -156,11 +157,15 @@ class Bundler {
       transformModuleHash = '';
     }
 
+    const stableProjectRoots = opts.projectRoots.map(p => {
+      return path.relative(path.join(__dirname, '../../../..'), p);
+    });
+
     const cacheKeyParts =  [
       'react-packager-cache',
       version,
       opts.cacheVersion,
-      opts.projectRoots.join(',').split(pathSeparator).join('-'),
+      stableProjectRoots.join(',').split(pathSeparator).join('-'),
       transformModuleHash,
     ];
 
@@ -775,12 +780,12 @@ function verifyRootExists(root) {
 function createModuleIdFactory() {
   const fileToIdMap = Object.create(null);
   let nextId = 0;
-  return ({path}) => {
-    if (!(path in fileToIdMap)) {
-      fileToIdMap[path] = nextId;
+  return ({path: modulePath}) => {
+    if (!(modulePath in fileToIdMap)) {
+      fileToIdMap[modulePath] = nextId;
       nextId += 1;
     }
-    return fileToIdMap[path];
+    return fileToIdMap[modulePath];
   };
 }
 
