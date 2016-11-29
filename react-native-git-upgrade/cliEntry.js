@@ -156,6 +156,28 @@ function runYeomanGenerators(generatorDir, appName, verbose) {
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true, force: true}, resolve));
 }
 
+/**
+ * If there's a newer version of react-native-git-upgrade in npm, suggest to the user to upgrade.
+ */
+async function checkForUpdates() {
+  try {
+    log.info('Check for react-native-git-upgrade updates');
+    const lastGitUpgradeVersion = await exec('npm view react-native-git-upgrade@latest version');
+    const current = require('./package').version;
+    const latest = semver.clean(lastGitUpgradeVersion);
+    if (semver.gt(latest, current)) {
+      log.warn(
+        'A more recent version of "react-native-git-upgrade" has been found.\n' +
+        `Current: ${current}\n` +
+        `Latest: ${latest}\n` +
+        'Please run "npm install -g react-native-git-upgrade"'
+      );
+    }
+  } catch (err) {
+    log.warn('Check for latest version failed', err.message);
+  }
+}
+
 async function run(requiredVersion, cliArgs) {
   const context = {
     tmpDir: path.resolve(os.tmpdir(), 'react-native-git-upgrade'),
@@ -165,18 +187,7 @@ async function run(requiredVersion, cliArgs) {
   };
 
   try {
-    log.info('Check for react-native-git-upgrade updates');
-    const lastGitUpgradeVersion = await exec('npm view react-native-git-upgrade@latest version');
-    const current = require('./package').version;
-    const latest = semver.clean(lastGitUpgradeVersion);
-    if (current !== latest) {
-      log.warn(
-        'A more recent version of "react-native-git-upgrade" has been found.\n' +
-        `Current: ${current}\n` +
-        `Latest: ${latest}\n` +
-        'Please run "npm install -g react-native-git-upgrade"'
-      );
-    }
+    await checkForUpdates();
 
     log.info('Read package.json files');
     const {rnPak, pak} = readPackageFiles();
