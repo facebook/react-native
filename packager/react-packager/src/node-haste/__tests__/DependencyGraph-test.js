@@ -18,6 +18,7 @@ jest
   .mock('child_process', () => ({}))
   ;
 
+const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
 const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
 // This doesn't have state, and it's huge (Babel) so it's much faster to
