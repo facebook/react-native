@@ -26,7 +26,6 @@ import android.widget.OverScroller;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -371,9 +370,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   @Override
   public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
     if (mContentView == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "mContentView is not set on call to onContentLayoutChange");
       return;
     }
 
