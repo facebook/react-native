@@ -107,8 +107,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
-    if (editText.getBreakStrategy() != mTextBreakStrategy) {
-      editText.setBreakStrategy(mTextBreakStrategy);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (editText.getBreakStrategy() != mTextBreakStrategy) {
+        editText.setBreakStrategy(mTextBreakStrategy);
+      }
     }
 
     editText.measure(
