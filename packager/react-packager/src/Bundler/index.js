@@ -12,6 +12,7 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
@@ -146,12 +147,13 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
-    let mtime;
+    let transformModuleHash;
     try {
-      ({mtime} = fs.statSync(opts.transformModulePath));
-      mtime = String(mtime.getTime());
+      const transformModuleStr = fs.readFileSync(opts.transformModulePath);
+      transformModuleHash =
+        crypto.createHash('sha1').update(transformModuleStr).digest('hex');
     } catch (error) {
-      mtime = '';
+      transformModuleHash = '';
     }
 
     const cacheKeyParts =  [
@@ -159,7 +161,7 @@ class Bundler {
       version,
       opts.cacheVersion,
       opts.projectRoots.join(',').split(pathSeparator).join('-'),
-      mtime,
+      transformModuleHash,
     ];
 
     this._getModuleId = createModuleIdFactory();
