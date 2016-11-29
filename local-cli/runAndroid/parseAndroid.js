@@ -6,14 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @flow
  */
 const fs = require('fs');
 
 /**
  * Finds the `package=` line in AndroidManifest.xml
  */
-function getPackageNameFromManifest(): string {
+function getPackageNameFromManifest() {
   const packageName = fs.readFileSync(
     'app/src/main/AndroidManifest.xml',
     'utf8'
@@ -24,7 +23,7 @@ function getPackageNameFromManifest(): string {
 /**
  * Looks at app/build.gradle and tries to determine the appIdSuffix for the supplied variant
  */
-function getAppIdFromGradle(variantName: string): string {
+function getAppIdFromGradle(variantName) {
   const gradleFile = fs.readFileSync('app/build.gradle', 'utf8');
 
   const appIdMatch = gradleFile.match(/applicationId "(.+?)"/);
