@@ -157,7 +157,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_CSSNodeCalculateLayout(long nativePointer);
   @Override
-  public void calculateLayout(CSSLayoutContext layoutContext) {
+  public void calculateLayout() {
     jni_CSSNodeCalculateLayout(mNativePointer);
   }
 
@@ -337,66 +337,66 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
   @Override
-  public float getMargin(int spacingType) {
+  public float getMargin(CSSEdge edge) {
     if (!mHasSetMargin) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetMargin(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetMargin(long nativePointer, int edge, float margin);
   @Override
-  public void setMargin(int spacingType, float margin) {
+  public void setMargin(CSSEdge edge, float margin) {
     mHasSetMargin = true;
-    jni_CSSNodeStyleSetMargin(mNativePointer, spacingType, margin);
+    jni_CSSNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   private native float jni_CSSNodeStyleGetPadding(long nativePointer, int edge);
   @Override
-  public float getPadding(int spacingType) {
+  public float getPadding(CSSEdge edge) {
     if (!mHasSetPadding) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetPadding(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPadding(long nativePointer, int edge, float padding);
   @Override
-  public void setPadding(int spacingType, float padding) {
+  public void setPadding(CSSEdge edge, float padding) {
     mHasSetPadding = true;
-    jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
+    jni_CSSNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
   @Override
-  public float getBorder(int spacingType) {
+  public float getBorder(CSSEdge edge) {
     if (!mHasSetBorder) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetBorder(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetBorder(long nativePointer, int edge, float border);
   @Override
-  public void setBorder(int spacingType, float border) {
+  public void setBorder(CSSEdge edge, float border) {
     mHasSetBorder = true;
-    jni_CSSNodeStyleSetBorder(mNativePointer, spacingType, border);
+    jni_CSSNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
   private native float jni_CSSNodeStyleGetPosition(long nativePointer, int edge);
   @Override
-  public float getPosition(int spacingType) {
+  public float getPosition(CSSEdge edge) {
     if (!mHasSetPosition) {
       return CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetPosition(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetPosition(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPosition(long nativePointer, int edge, float position);
   @Override
-  public void setPosition(int spacingType, float position) {
+  public void setPosition(CSSEdge edge, float position) {
     mHasSetPosition = true;
-    jni_CSSNodeStyleSetPosition(mNativePointer, spacingType, position);
+    jni_CSSNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
   }
 
   private native float jni_CSSNodeStyleGetWidth(long nativePointer);
@@ -535,11 +535,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
-  }
-
-  @Override
-  public boolean valuesEqual(float f1, float f2) {
-    return FloatUtil.floatsEqual(f1, f2);
   }
 
   @Override
