@@ -21,13 +21,7 @@ import com.facebook.soloader.SoLoader;
 public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   static {
-    try {
-      SoLoader.loadLibrary("csslayout");
-    } catch (Exception ignored) {
-      // The user probably didn't call SoLoader.init(). Fall back to System.loadLibrary() instead.
-      System.out.println("Falling back to System.loadLibrary()");
-      System.loadLibrary("csslayout");
-    }
+    SoLoader.loadLibrary("csslayout");
   }
 
   /**
