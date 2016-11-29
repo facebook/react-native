@@ -508,8 +508,6 @@ $ react-native run-ios
 
 In your simulator, you should see `Hello World` on the left corner of the simulator. It is overlaid by some text. You can add more styling to your `index.ios.js` file to make it look better.
 
-Here is the *React Native* high score screen:
-
 ![Hello World](img/react-native-add-react-native-integration-example-hello-world.png)
 
 > If you are getting module resolution issues when running your application please see [this GitHub issue](https://github.com/facebook/react-native/issues/4968) for information and possible resolution. [This comment](https://github.com/facebook/react-native/issues/4968#issuecomment-220941717) seemed to be the latest possible resolution.
