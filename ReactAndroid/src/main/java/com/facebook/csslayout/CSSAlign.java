@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSAlign {
   AUTO(0),
   FLEX_START(1),

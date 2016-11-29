@@ -216,7 +216,15 @@ void JSCExecutor::setContextName(const std::string& name) {
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
+  #if defined(__APPLE__)
+  const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
+  if (useCustomJSC) {
+    JSC_configureJSCForIOS(true);
+  }
+  #else
   const bool useCustomJSC = false;
+  #endif
+
   #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
   #endif

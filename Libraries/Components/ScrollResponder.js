@@ -19,6 +19,7 @@ var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
@@ -112,6 +113,15 @@ type State = {
 };
 type Event = Object;
 
+function isTagInstanceOfTextInput(tag) {
+  var instance = getInstanceFromNode(tag);
+  return instance && instance.viewConfig && (
+    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextField'
+  );
+}
+
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
   scrollResponderMixinGetInitialState: function(): State {
@@ -172,7 +182,7 @@ var ScrollResponderMixin = {
    * that *doesn't* give priority to nested views (hence the capture phase):
    *
    * - Currently animating.
-   * - Tapping anywhere that is not the focused input, while the keyboard is
+   * - Tapping anywhere that is not a text input, while the keyboard is
    *   up (which should dismiss the keyboard).
    *
    * Invoke this from an `onStartShouldSetResponderCapture` event.
@@ -182,7 +192,7 @@ var ScrollResponderMixin = {
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target !== currentlyFocusedTextInput) {
+      !isTagInstanceOfTextInput(e.target)) {
       return true;
     }
     return this.scrollResponderIsAnimating();

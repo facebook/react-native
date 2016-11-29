@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSDimension {
   WIDTH(0),
   HEIGHT(1);

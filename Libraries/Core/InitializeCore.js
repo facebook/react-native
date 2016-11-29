@@ -27,6 +27,7 @@
  *   2. Bridged modules.
  *
  */
+'use strict';
 
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
@@ -178,7 +179,9 @@ let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
 }
-navigator.product = 'ReactNative';
+
+// see https://github.com/facebook/react-native/issues/10881
+defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections

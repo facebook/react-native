@@ -491,7 +491,7 @@ var Navigator = React.createClass({
    * Reset every scene with an array of routes.
    *
    * @param {RouteStack} nextRouteStack Next route stack to reinitialize.
-   * All existing route stacks are destroyed an potentially recreated. There
+   * All existing route stacks are destroyed and potentially recreated. There
    * is no accompanying animation and this method immediately replaces and
    * re-renders the navigation bar and the stack items.
    */

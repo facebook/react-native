@@ -15,12 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.facebook.common.logging.FLog;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -122,31 +121,28 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
       return;
     }
 
-    String message = null;
     try {
-      message = response.source().readUtf8();
-    } finally {
-      response.close();
-    }
-
-    try {
-      JsonParser parser = new JsonFactory().createParser(message);
+      JsonReader reader = new JsonReader(response.charStream());
 
       Integer version = null;
       String target = null;
       String action = null;
 
-      while (parser.nextToken() != JsonToken.END_OBJECT) {
-        String field = parser.getCurrentName();
+      reader.beginObject();
+      while (reader.hasNext()) {
+        String field = reader.nextName();
+
+        if (JsonToken.NULL == reader.peek()) {
+          reader.skipValue();
+          continue;
+        }
+
         if ("version".equals(field)) {
-          parser.nextToken();
-          version = parser.getIntValue();
+          version = reader.nextInt();
         } else if ("target".equals(field)) {
-          parser.nextToken();
-          target = parser.getText();
+          target = reader.nextString();
         } else if ("action".equals(field)) {
-          parser.nextToken();
-          action = parser.getText();
+          action = reader.nextString();
         }
       }
       if (version != 1) {
@@ -159,6 +155,8 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
       triggerMessageCallback(target, action);
     } catch (IOException e) {
       abort("Parsing response message from websocket failed", e);
+    } finally {
+      response.close();
     }
   }
 

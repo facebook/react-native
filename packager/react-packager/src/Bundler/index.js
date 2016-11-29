@@ -36,6 +36,12 @@ import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
 import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 
+export type GetTransformOptions<T> = (
+  string,
+  Object,
+  string => Promise<Array<string>>,
+) => T | Promise<T>;
+
 const sizeOf = denodeify(imageSize);
 
 const noop = () => {};
@@ -79,10 +85,6 @@ const validateOpts = declareOpts({
     type: 'object',
     required: false,
   },
-  assetRoots: {
-    type: 'array',
-    required: false,
-  },
   assetExts: {
     type: 'array',
     default: ['png'],
@@ -119,8 +121,8 @@ type Options = {
   cacheVersion: string,
   resetCache: boolean,
   transformModulePath: string,
+  getTransformOptions?: GetTransformOptions<*>,
   extraNodeModules: {},
-  assetRoots: Array<string>,
   assetExts: Array<string>,
   watch: boolean,
   assetServer: AssetServer,
@@ -137,7 +139,7 @@ class Bundler {
   _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
-  _transformOptionsModule: (path: string, options: {}, bunler: Bundler) => {};
+  _getTransformOptions: void | GetTransformOptions<*>;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
@@ -182,7 +184,6 @@ class Bundler {
 
     this._resolver = new Resolver({
       assetExts: opts.assetExts,
-      assetRoots: opts.assetRoots,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
@@ -204,12 +205,7 @@ class Bundler {
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
 
-    if (opts.getTransformOptionsModulePath) {
-      /* $FlowFixMe: dynamic requires prevent static typing :'(  */
-      this._transformOptionsModule = require(
-        opts.getTransformOptionsModulePath
-      );
-    }
+    this._getTransformOptions = opts.getTransformOptions;
   }
 
   end() {
@@ -280,7 +276,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options: {platform: mixed}, host: string, port: number) {
+  hmrBundle(options: {platform: ?string}, host: string, port: number) {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -472,7 +468,7 @@ class Bundler {
     generateSourceMaps = false,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -519,7 +515,7 @@ class Bundler {
     onProgress,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -558,7 +554,7 @@ class Bundler {
   getOrderedDependencyPaths({ entryFile, dev, platform }: {
     entryFile: string,
     dev: boolean,
-    platform: mixed,
+    platform: ?string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({ dependencies }) => {
@@ -603,10 +599,7 @@ class Bundler {
     let moduleTransport;
     const moduleId = getModuleId(module);
 
-    if (module.isAsset_DEPRECATED()) {
-      moduleTransport =
-        this._generateAssetModule_DEPRECATED(bundle, module, moduleId);
-    } else if (module.isAsset()) {
+    if (module.isAsset()) {
       moduleTransport = this._generateAssetModule(
         bundle, module, moduleId, assetPlugins, transformOptions.platform);
     }
@@ -639,39 +632,7 @@ class Bundler {
     });
   }
 
-  _generateAssetModule_DEPRECATED(bundle, module, moduleId) {
-    return Promise.all([
-      sizeOf(module.path),
-      module.getName(),
-    ]).then(([dimensions, id]) => {
-      const img = {
-        __packager_asset: true,
-        path: module.path,
-        uri: id.replace(/^[^!]+!/, ''),
-        width: dimensions.width / module.resolution,
-        height: dimensions.height / module.resolution,
-        deprecated: true,
-      };
-
-      bundle.addAsset(img);
-
-      const code =
-        'module.exports=' +
-        JSON.stringify(filterObject(img, assetPropertyBlacklist))
-        + ';';
-
-      return new ModuleTransport({
-        name: id,
-        id: moduleId,
-        code: code,
-        sourceCode: code,
-        sourcePath: module.path,
-        virtual: true,
-      });
-    });
-  }
-
-  _generateAssetObjAndCode(module, assetPlugins, platform: mixed = null) {
+  _generateAssetObjAndCode(module, assetPlugins, platform: ?string = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
@@ -748,7 +709,7 @@ class Bundler {
     module,
     moduleId,
     assetPlugins: Array<string> = [],
-    platform: mixed = null,
+    platform: ?string = null,
   ) {
     return Promise.all([
       module.getName(),
@@ -767,9 +728,20 @@ class Bundler {
     });
   }
 
-  getTransformOptions(mainModuleName: string, options: {}) {
-    const extraOptions = this._transformOptionsModule
-      ? this._transformOptionsModule(mainModuleName, options, this)
+  getTransformOptions(
+    mainModuleName: string,
+    options: {
+      dev?: boolean,
+      platform: ?string,
+      hot?: boolean,
+      generateSourceMaps?: boolean,
+    },
+  ) {
+    const getDependencies = (entryFile: string) =>
+      this.getDependencies({...options, entryFile})
+        .then(r => r.dependencies.map(d => d.path));
+    const extraOptions = this._getTransformOptions
+      ? this._getTransformOptions(mainModuleName, options, getDependencies)
       : null;
     return Promise.resolve(extraOptions)
       .then(extraOpts => Object.assign(options, extraOpts));

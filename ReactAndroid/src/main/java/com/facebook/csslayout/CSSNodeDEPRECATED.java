@@ -464,12 +464,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's width, as defined in the style.
    */
   @Override
-  public float getStyleWidth() {
+  public float getWidth() {
     return style.dimensions[DIMENSION_WIDTH];
   }
 
   @Override
-  public void setStyleWidth(float width) {
+  public void setWidth(float width) {
     if (!valuesEqual(style.dimensions[DIMENSION_WIDTH], width)) {
       style.dimensions[DIMENSION_WIDTH] = width;
       dirty();
@@ -480,12 +480,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's height, as defined in the style.
    */
   @Override
-  public float getStyleHeight() {
+  public float getHeight() {
     return style.dimensions[DIMENSION_HEIGHT];
   }
 
   @Override
-  public void setStyleHeight(float height) {
+  public void setHeight(float height) {
     if (!valuesEqual(style.dimensions[DIMENSION_HEIGHT], height)) {
       style.dimensions[DIMENSION_HEIGHT] = height;
       dirty();
@@ -496,12 +496,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's max width, as defined in the style
    */
   @Override
-  public float getStyleMaxWidth() {
+  public float getMaxWidth() {
     return style.maxWidth;
   }
 
   @Override
-  public void setStyleMaxWidth(float maxWidth) {
+  public void setMaxWidth(float maxWidth) {
     if (!valuesEqual(style.maxWidth, maxWidth)) {
       style.maxWidth = maxWidth;
       dirty();
@@ -512,12 +512,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's min width, as defined in the style
    */
   @Override
-  public float getStyleMinWidth() {
+  public float getMinWidth() {
     return style.minWidth;
   }
 
   @Override
-  public void setStyleMinWidth(float minWidth) {
+  public void setMinWidth(float minWidth) {
     if (!valuesEqual(style.minWidth, minWidth)) {
       style.minWidth = minWidth;
       dirty();
@@ -528,12 +528,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's max height, as defined in the style
    */
   @Override
-  public float getStyleMaxHeight() {
+  public float getMaxHeight() {
     return style.maxHeight;
   }
 
   @Override
-  public void setStyleMaxHeight(float maxHeight) {
+  public void setMaxHeight(float maxHeight) {
     if (!valuesEqual(style.maxHeight, maxHeight)) {
       style.maxHeight = maxHeight;
       dirty();
@@ -544,12 +544,12 @@ public class CSSNodeDEPRECATED implements CSSNodeAPI<CSSNodeDEPRECATED> {
    * Get this node's min height, as defined in the style
    */
   @Override
-  public float getStyleMinHeight() {
+  public float getMinHeight() {
     return style.minHeight;
   }
 
   @Override
-  public void setStyleMinHeight(float minHeight) {
+  public void setMinHeight(float minHeight) {
     if (!valuesEqual(style.minHeight, minHeight)) {
       style.minHeight = minHeight;
       dirty();

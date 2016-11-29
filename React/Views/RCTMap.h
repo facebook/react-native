@@ -10,8 +10,8 @@
 #import <MapKit/MapKit.h>
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert+MapKit.h"
-#import "RCTComponent.h"
+#import <React/RCTComponent.h>
+#import <React/RCTConvert+MapKit.h>
 
 RCT_EXTERN const CLLocationDegrees RCTMapDefaultSpan;
 RCT_EXTERN const NSTimeInterval RCTMapRegionChangeObserveInterval;

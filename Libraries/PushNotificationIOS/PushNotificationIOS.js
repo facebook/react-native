@@ -96,20 +96,10 @@ export type PushNotificationEventName = $Enum<{
  *    {
  *       [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  *    }
- *    // Optionally implement this method over the previous to receive remote notifications. However
- *    // implement the application:didReceiveRemoteNotification:fetchCompletionHandler: method instead of this one whenever possible.
- *    // If your delegate implements both methods, the app object calls the `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
- *    // Either this method or `application:didReceiveRemoteNotification:fetchCompletionHandler:` is required in order to receive remote notifications.
- *    //
  *    // Required for the registrationError event.
  *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
  *    {
  *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
- *    }
- *    // Required for the notification event.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
  *    }
  *    // Required for the localNotification event.
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification

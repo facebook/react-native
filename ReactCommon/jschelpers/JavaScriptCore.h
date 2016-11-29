@@ -44,6 +44,12 @@
     facebook::react::systemJSCWrapper()   \
   )->prop
 
+// Poison all regular versions of the JSC API in shared code. This prevents accidental
+// mixed usage of regular and custom JSC methods.
+// See https://gcc.gnu.org/onlinedocs/gcc-3.3/cpp/Pragmas.html for details
+#define jsc_pragma(x) _Pragma(#x)
+#define jsc_poison(methods) jsc_pragma(GCC poison methods)
+
 #else
 
 #define __jsc_wrapper(method, ctx, ...) method(ctx, ## __VA_ARGS__)
@@ -52,6 +58,9 @@
   ((void)useCustomJSC, method(__VA_ARGS__))
 #define __jsc_prop_wrapper(prop, ctx) prop
 
+#define jsc_pragma(x)
+#define jsc_poison(methods)
+
 #endif
 
 // JSGlobalContext
@@ -59,13 +68,21 @@
 #define JSC_JSGlobalContextRelease(...) __jsc_wrapper(JSGlobalContextRelease, __VA_ARGS__)
 #define JSC_JSGlobalContextSetName(...) __jsc_wrapper(JSGlobalContextSetName, __VA_ARGS__)
 
+jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
+           JSGlobalContextCreate JSGlobalContextCreateInGroup JSGlobalContextCopyName
+           JSGlobalContextRelease JSGlobalContextRetain JSGlobalContextSetName)
+
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
 
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup)
+
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
 #define JSC_JSEvaluateBytecodeBundle(...) __jsc_wrapper(JSEvaluateBytecodeBundle, __VA_ARGS__)
+
+jsc_poison(JSCheckScriptSyntax JSEvaluateScript JSEvaluateBytecodeBundle JSGarbageCollect)
 
 // JSString
 #define JSC_JSStringCreateWithCFString(...) __jsc_drop_ctx_wrapper(JSStringCreateWithCFString, __VA_ARGS__)
@@ -78,6 +95,12 @@
 #define JSC_JSStringIsEqualToUTF8CString(...) __jsc_drop_ctx_wrapper(JSStringIsEqualToUTF8CString, __VA_ARGS__)
 #define JSC_JSStringRelease(...) __jsc_drop_ctx_wrapper(JSStringRelease, __VA_ARGS__)
 #define JSC_JSStringRetain(...) __jsc_drop_ctx_wrapper(JSStringRetain, __VA_ARGS__)
+
+jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithCFString
+           JSStringCreateWithUTF8CString JSStringCreateWithUTF8CStringExpectAscii
+           JSStringGetCharactersPtr JSStringGetLength JSStringGetMaximumUTF8CStringSize
+           JSStringGetUTF8CString JSStringIsEqual JSStringIsEqualToUTF8CString
+           JSStringRelease JSStringRetain)
 
 // JSValueRef
 #define JSC_JSValueCreateJSONString(...) __jsc_wrapper(JSValueCreateJSONString, __VA_ARGS__)
@@ -95,9 +118,19 @@
 #define JSC_JSValueToStringCopy(...) __jsc_wrapper(JSValueToStringCopy, __VA_ARGS__)
 #define JSC_JSValueUnprotect(...) __jsc_wrapper(JSValueUnprotect, __VA_ARGS__)
 
+jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSValueIsArray
+           JSValueIsBoolean JSValueIsDate JSValueIsEqual JSValueIsInstanceOfConstructor
+           JSValueIsNull JSValueIsNumber JSValueIsObject JSValueIsObjectOfClass
+           JSValueIsStrictEqual JSValueIsString JSValueIsString JSValueIsUndefined
+           JSValueMakeBoolean JSValueMakeFromJSONString JSValueMakeNull JSValueMakeNumber
+           JSValueMakeString JSValueMakeUndefined JSValueProtect JSValueToBoolean
+           JSValueToNumber JSValueToObject JSValueToStringCopy JSValueUnprotect)
+
 // JSClass
 #define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
 #define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
+
+jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 
 // JSObject
 #define JSC_JSObjectCallAsConstructor(...) __jsc_wrapper(JSObjectCallAsConstructor, __VA_ARGS__)
@@ -114,19 +147,48 @@
 #define JSC_JSObjectSetPrivate(...) __jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__)
 #define JSC_JSObjectSetProperty(...) __jsc_wrapper(JSObjectSetProperty, __VA_ARGS__)
 
+jsc_poison(JSObjectCallAsConstructor JSObjectCallAsFunction JSObjectDeleteProperty
+           JSObjectGetPrivate JSObjectGetProperty JSObjectGetPropertyAtIndex
+           JSObjectGetPrototype JSObjectHasProperty JSObjectIsConstructor
+           JSObjectIsFunction JSObjectMake JSObjectMakeArray JSObjectMakeConstructor
+           JSObjectMakeDate JSObjectMakeError JSObjectMakeFunction
+           JSObjectMakeFunctionWithCallback JSObjectMakeRegExp JSObjectSetPrivate
+           JSObjectSetPrototype JSObjectSetProperty JSObjectSetPropertyAtIndex)
+
 // JSPropertyNameArray
 #define JSC_JSObjectCopyPropertyNames(...) __jsc_wrapper(JSObjectCopyPropertyNames, __VA_ARGS__)
 #define JSC_JSPropertyNameArrayGetCount(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayGetCount, __VA_ARGS__)
 #define JSC_JSPropertyNameArrayGetNameAtIndex(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayGetNameAtIndex, __VA_ARGS__)
 #define JSC_JSPropertyNameArrayRelease(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayRelease, __VA_ARGS__)
 
+jsc_poison(JSObjectCopyPropertyNames JSPropertyNameAccumulatorAddName
+           JSPropertyNameArrayGetCount JSPropertyNameArrayGetNameAtIndex
+           JSPropertyNameArrayRelease JSPropertyNameArrayRetain)
+
+// JSTypedArray
+jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
+           JSObjectMakeTypedArrayWithArrayBuffer
+           JSObjectMakeTypedArrayWithArrayBufferAndOffset
+           JSObjectMakeTypedArrayWithBytesNoCopy JSObjectGetTypedArrayByteLength
+           JSObjectGetTypedArrayByteOffset JSObjectGetTypedArrayBytesPtr
+           JSObjectGetTypedArrayBuffer JSObjectGetTypedArrayLength
+           JSObjectGetArrayBufferBytesPtr JSObjectGetArrayBufferByteLength)
+
 // Sampling profiler
 #define JSC_JSSamplingProfilerEnabled(...) __jsc_drop_ctx_wrapper(JSSamplingProfilerEnabled, __VA_ARGS__)
 #define JSC_JSPokeSamplingProfiler(...) __jsc_wrapper(JSPokeSamplingProfiler, __VA_ARGS__)
 #define JSC_JSStartSamplingProfilingOnMainJSCThread(...) __jsc_wrapper(JSStartSamplingProfilingOnMainJSCThread, __VA_ARGS__)
 
+jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
+           JSStartSamplingProfilingOnMainJSCThread)
+
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)
+
+jsc_poison(configureJSCForIOS)
 
 // Objective-C API
 #define JSC_JSContext(ctx) __jsc_prop_wrapper(JSContext, ctx)
 #define JSC_JSValue(ctx) __jsc_prop_wrapper(JSValue, ctx)
+
+#undef jsc_poison
+#undef jsc_pragma
