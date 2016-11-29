@@ -410,16 +410,13 @@ var ScrollResponderMixin = {
     rect: { x: number, y: number, width: number, height: number, animated?: boolean },
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
-    if (Platform.OS === 'android') {
-      invariant('zoomToRect is not implemented');
-    } else {
-      if ('animated' in rect) {
-        var { animated, ...rect } = rect;
-      } else if (typeof animated !== 'undefined') {
-        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
-      }
-      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+    invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
+    if ('animated' in rect) {
+      var { animated, ...rect } = rect;
+    } else if (typeof animated !== 'undefined') {
+      console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
+    ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
   },
 
   /**
