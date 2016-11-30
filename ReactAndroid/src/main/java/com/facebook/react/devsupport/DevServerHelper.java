@@ -52,19 +52,19 @@ public class DevServerHelper {
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
-  private static final String RESOURCE_URL_FORMAT = "http://%s/%s";
+      "%s://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
+  private static final String RESOURCE_URL_FORMAT = "%s://%s/%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s/launch-js-devtools";
+      "%s://%s/launch-js-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
-      "http://%s/onchange";
+      "%s://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
-  private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
-  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
-  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+  private static final String PACKAGER_STATUS_URL_FORMAT = "%s://%s/status";
+  private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "%s://%s/jscheapcaptureupload";
+  private static final String INSPECTOR_DEVICE_URL_FORMAT = "%s://%s/inspector/device?name=%s";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -202,6 +202,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
+        getDebugServerProtocol(),
         getDebugServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName());
   }
@@ -235,6 +236,14 @@ public class DevServerHelper {
   }
 
   /**
+   *
+   * @return
+     */
+  private String getDebugServerProtocol() {
+    return mSettings.useTls() ? "https" : "http";
+  }
+
+  /**
    * @return the host to use when connecting to the bundle server.
    */
   private String getDebugServerHost() {
@@ -258,16 +267,17 @@ public class DevServerHelper {
     return host;
   }
 
-  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
+  private static String createBundleURL(String protocol, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, protocol, host, jsModulePath, devMode, hmr, jsMinify);
   }
 
-  private static String createResourceURL(String host, String resourcePath) {
-    return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
+  private static String createResourceURL(String protocol, String host, String resourcePath) {
+    return String.format(Locale.US, RESOURCE_URL_FORMAT, protocol, host, resourcePath);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
+      getDebugServerProtocol(),
       getDebugServerHost(),
       jsModulePath,
       getDevMode(),
@@ -347,7 +357,7 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String statusURL = createPackagerStatusURL(getDebugServerHost());
+    String statusURL = createPackagerStatusURL(getDebugServerProtocol(), getDebugServerHost());
     Request request = new Request.Builder()
         .url(statusURL)
         .build();
@@ -393,8 +403,8 @@ public class DevServerHelper {
         });
   }
 
-  private static String createPackagerStatusURL(String host) {
-    return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, host);
+  private static String createPackagerStatusURL(String protocol, String host) {
+    return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, protocol, host);
   }
 
   public void stopPollingOnChangeEndpoint() {
@@ -497,14 +507,14 @@ public class DevServerHelper {
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerProtocol(), getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return createBundleURL(getDebugServerProtocol(), getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   /**
@@ -516,7 +526,7 @@ public class DevServerHelper {
   public @Nullable File downloadBundleResourceFromUrlSync(
       final String resourcePath,
       final File outputFile) {
-    final String resourceURL = createResourceURL(getDebugServerHost(), resourcePath);
+    final String resourceURL = createResourceURL(getDebugServerProtocol(), getDebugServerHost(), resourcePath);
     final Request request = new Request.Builder()
         .url(resourceURL)
         .build();
