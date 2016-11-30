@@ -131,6 +131,7 @@ const mockNativeModules = {
   SourceCode: {
     scriptURL: null,
   },
+  StatusBarManager: {},
   Timing: {
     createTimer: jest.fn(),
     deleteTimer: jest.fn(),
