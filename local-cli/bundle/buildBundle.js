@@ -9,13 +9,14 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Promise = require('promise');
 const Server = require('../../packager/react-packager/src/Server');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+
+import type RequestOptions from './types.flow';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -28,7 +29,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-  const requestOpts = {
+  const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,
@@ -50,9 +51,8 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
-      assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      getTransformOptions: config.getTransformOptions,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       resetCache: args.resetCache,

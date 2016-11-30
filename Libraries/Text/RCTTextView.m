@@ -9,13 +9,14 @@
 
 #import "RCTTextView.h"
 
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 #import "RCTShadowText.h"
 #import "RCTText.h"
-#import "RCTUtils.h"
 #import "RCTTextSelection.h"
-#import "UIView+React.h"
 
 @interface RCTUITextView : UITextView
 
@@ -106,6 +107,7 @@
 #if !TARGET_OS_TV
     _scrollView.scrollsToTop = NO;
 #endif
+    _scrollView.delegate = self;
     [_scrollView addSubview:_textView];
 
     [self addSubview:_scrollView];
@@ -139,6 +141,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
     [self performTextUpdate];
   }
+}
+
+- (void)dealloc
+{
+  _scrollView.delegate = nil;
 }
 
 - (void)removeReactSubview:(UIView *)subview
@@ -513,14 +520,24 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (void)setAutoCorrect:(BOOL)autoCorrect
+- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
 {
-  _textView.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
+  _textView.autocorrectionType = autocorrectionType;
 }
 
-- (BOOL)autoCorrect
+- (UITextAutocorrectionType)autocorrectionType
 {
-  return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
+  return _textView.autocorrectionType;
+}
+
+- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
+{
+  _textView.spellCheckingType = spellCheckingType;
+}
+
+- (UITextSpellCheckingType)spellCheckingType
+{
+  return _textView.spellCheckingType;
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
@@ -692,6 +709,33 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 - (UIColor *)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  if (_onScroll) {
+    _onScroll(@{
+      @"contentOffset": @{
+        @"x": @(scrollView.contentOffset.x),
+        @"y": @(scrollView.contentOffset.y)
+      },
+      @"contentInset": @{
+        @"top": @(_scrollView.contentInset.top),
+        @"left": @(_scrollView.contentInset.left),
+        @"bottom": @(_scrollView.contentInset.bottom),
+        @"right": @(_scrollView.contentInset.right)
+      },
+      @"contentSize": @{
+        @"width": @(_scrollView.contentSize.width),
+        @"height": @(_scrollView.contentSize.height)
+      },
+      @"layoutMeasurement": @{
+        @"width": @(_scrollView.frame.size.width),
+        @"height": @(_scrollView.frame.size.height)
+      },
+      @"zoomScale": @(_scrollView.zoomScale ?: 1),
+    });
+  }
 }
 
 @end

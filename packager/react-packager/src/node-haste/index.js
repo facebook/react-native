@@ -13,7 +13,6 @@
 
 const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
-const DeprecatedAssetMap = require('./DependencyGraph/DeprecatedAssetMap');
 const Fastfs = require('./fastfs');
 const HasteMap = require('./DependencyGraph/HasteMap');
 const JestHasteMap = require('jest-haste-map');
@@ -46,18 +45,13 @@ const {
   print,
 } = require('../Logger');
 
-const escapePath = (p: string) => {
-  return (path.sep === '\\')  ? p.replace(/(\/|\\(?!\.))/g, '\\\\') : p;
-};
-
 class DependencyGraph {
 
-  _opts: {
+  _opts: {|
     roots: Array<string>,
     ignoreFilePath: (filePath: string) => boolean,
     watch: boolean,
     forceNodeFilesystemAPI: boolean,
-    assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
     providesModuleNodeModules: Array<string>,
     platforms: Set<mixed>,
@@ -67,17 +61,14 @@ class DependencyGraph {
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
-    enableAssetMap: boolean,
     moduleOptions: ModuleOptions,
     extraNodeModules: mixed,
     useWatchman: boolean,
     maxWorkers: number,
     resetCache: boolean,
-  };
+  |};
   _assetDependencies: mixed;
-  _assetPattern: RegExp;
   _cache: Cache;
-  _deprecatedAssetMap: DeprecatedAssetMap;
   _fastfs: Fastfs;
   _haste: JestHasteMap;
   _hasteMap: HasteMap;
@@ -92,7 +83,6 @@ class DependencyGraph {
     ignoreFilePath,
     watch,
     forceNodeFilesystemAPI,
-    assetRoots_DEPRECATED,
     assetExts,
     providesModuleNodeModules,
     platforms,
@@ -103,7 +93,6 @@ class DependencyGraph {
     transformCode,
     transformCacheKey,
     shouldThrowOnUnresolvedErrors = () => true,
-    enableAssetMap,
     assetDependencies,
     moduleOptions,
     extraNodeModules,
@@ -116,7 +105,6 @@ class DependencyGraph {
     ignoreFilePath: (filePath: string) => boolean,
     watch: boolean,
     forceNodeFilesystemAPI?: boolean,
-    assetRoots_DEPRECATED: Array<string>,
     assetExts: Array<string>,
     providesModuleNodeModules: Array<string>,
     platforms: mixed,
@@ -127,7 +115,6 @@ class DependencyGraph {
     transformCode: TransformCode,
     transformCacheKey: string,
     shouldThrowOnUnresolvedErrors: () => boolean,
-    enableAssetMap: boolean,
     assetDependencies: mixed,
     moduleOptions: ?ModuleOptions,
     extraNodeModules: mixed,
@@ -140,7 +127,6 @@ class DependencyGraph {
       ignoreFilePath: ignoreFilePath || (() => {}),
       watch: !!watch,
       forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
-      assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
       assetExts: assetExts || [],
       providesModuleNodeModules,
       platforms: new Set(platforms || []),
@@ -150,7 +136,6 @@ class DependencyGraph {
       transformCode,
       transformCacheKey,
       shouldThrowOnUnresolvedErrors,
-      enableAssetMap: enableAssetMap || true,
       moduleOptions: moduleOptions || {
         cacheTransformResults: true,
       },
@@ -160,8 +145,6 @@ class DependencyGraph {
       maxWorkers,
       resetCache,
     };
-    this._assetPattern =
-      new RegExp('^' + this._opts.assetRoots_DEPRECATED.map(escapePath).join('|'));
 
     this._cache = cache;
     this._assetDependencies = assetDependencies;
@@ -186,7 +169,7 @@ class DependencyGraph {
       providesModuleNodeModules: this._opts.providesModuleNodeModules,
       resetCache: this._opts.resetCache,
       retainAllFiles: true,
-      roots: this._opts.roots.concat(this._opts.assetRoots_DEPRECATED),
+      roots: this._opts.roots,
       useWatchman: this._opts.useWatchman,
       watch: this._opts.watch,
     });
@@ -223,15 +206,6 @@ class DependencyGraph {
         preferNativePlatform: this._opts.preferNativePlatform,
         helpers: this._helpers,
         platforms: this._opts.platforms,
-      });
-
-      const assetFiles = hasteMap.hasteFS.matchFiles(this._assetPattern);
-
-      this._deprecatedAssetMap = new DeprecatedAssetMap({
-        helpers: this._helpers,
-        assetExts: this._opts.assetExts,
-        platforms: this._opts.platforms,
-        files: assetFiles,
       });
 
       this._haste.on('change', ({eventsQueue}) =>
@@ -314,7 +288,6 @@ class DependencyGraph {
         platforms: this._opts.platforms,
         preferNativePlatform: this._opts.preferNativePlatform,
         entryPath: absPath,
-        deprecatedAssetMap: this._deprecatedAssetMap,
         hasteMap: this._hasteMap,
         helpers: this._helpers,
         moduleCache: this._moduleCache,
@@ -371,9 +344,6 @@ class DependencyGraph {
   processFileChange(type: string, filePath: string, stat: Object) {
     this._fastfs.processFileChange(type, filePath, stat);
     this._moduleCache.processFileChange(type, filePath, stat);
-    if (this._assetPattern.test(filePath)) {
-      this._deprecatedAssetMap.processFileChange(type, filePath, stat);
-    }
 
     // This code reports failures but doesn't block recovery in the dev server
     // mode. When the hasteMap is left in an incorrect state, we'll rebuild when

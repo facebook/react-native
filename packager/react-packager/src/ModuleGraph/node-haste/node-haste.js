@@ -12,7 +12,6 @@
  'use strict';
 
 import type { // eslint-disable-line sort-requires
-  DeprecatedAssetMapT,
   Extensions,
   HasteMapT,
   Path,
@@ -25,7 +24,6 @@ import type {
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
-const DeprecatedAssetMap: Class<DeprecatedAssetMapT> = require('../../node-haste/DependencyGraph/DeprecatedAssetMap');
 const FastFS = require('./FastFS');
 const HasteMap: Class<HasteMapT> = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
@@ -58,12 +56,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     assetExts,
     providesModuleNodeModules: defaults.providesModuleNodeModules,
   });
-  const deprecatedAssetMap = new DeprecatedAssetMap({
-    assetExts,
-    files,
-    helpers,
-    platforms,
-  });
 
   const fastfs = new FastFS(files);
   const moduleCache = new ModuleCache(fastfs, getTransformedFile);
@@ -83,7 +75,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
       resolutionRequest = resolutionRequests[platform] = new ResolutionRequest({
-        deprecatedAssetMap,
         extraNodeModules,
         fastfs,
         hasteMap,

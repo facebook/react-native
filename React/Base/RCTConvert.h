@@ -10,19 +10,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
 #import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
-
-#import "RCTAnimationType.h"
-#import "RCTBorderStyle.h"
-#import "RCTTextDecorationLineType.h"
-#import "RCTDefines.h"
-#import "RCTLog.h"
-#import "RCTPointerEvents.h"
+#import <React/RCTAnimationType.h>
+#import <React/RCTBorderStyle.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTPointerEvents.h>
+#import <React/RCTTextDecorationLineType.h>
 
 /**
  * This class provides a collection of conversion functions for mapping

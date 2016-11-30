@@ -15,6 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Inteface for recieving logs from native layer. Use by setting CSSNode.setLogger(myLogger);
  * See CSSLogLevel for the different log levels.
  */
+@DoNotStrip
 public interface CSSLogger {
   @DoNotStrip
   void log(CSSLogLevel level, String message);

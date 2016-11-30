@@ -14,25 +14,24 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.facebook.csslayout.CSSAlign;
+import com.facebook.csslayout.CSSEdge;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
-import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.CSSNodeDEPRECATED;
 import com.facebook.csslayout.CSSOverflow;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.CSSWrap;
-import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNodeDEPRECATED} to allow that. They also help with handling
- * Common base subclass of {@link CSSNodeDEPRECATED} for all layout nodes for react-based view. It extends
- * {@link CSSNodeDEPRECATED} by adding additional capabilities.
+ * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
+ * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
+ * {@link CSSNode} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -74,7 +73,19 @@ public class ReactShadowNode {
   private float mAbsoluteBottom;
   private final Spacing mDefaultPadding = new Spacing(0);
   private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
-  private final CSSNodeDEPRECATED mCSSNode = new CSSNodeDEPRECATED();
+  private final CSSNode mCSSNode;
+
+  public ReactShadowNode() {
+    if (!isVirtual()) {
+      CSSNode node = CSSNodePool.get().acquire();
+      if (node == null) {
+        node = new CSSNode();
+      }
+      mCSSNode = node;
+    } else {
+      mCSSNode = null;
+    }
+  }
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
@@ -100,7 +111,7 @@ public class ReactShadowNode {
   }
 
   public final boolean hasUpdates() {
-    return mNodeUpdated || hasNewLayout() || mCSSNode.isDirty();
+    return mNodeUpdated || hasNewLayout() || isDirty();
   }
 
   public final void markUpdateSeen() {
@@ -131,6 +142,10 @@ public class ReactShadowNode {
     }
   }
 
+  public final boolean isDirty() {
+    return mCSSNode != null && mCSSNode.isDirty();
+  }
+
   public void addChildAt(ReactShadowNode child, int i) {
     if (child.mParent != null) {
       throw new IllegalViewOperationException(
@@ -144,8 +159,13 @@ public class ReactShadowNode {
 
     // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
     // more, it asserts that you don't add children to nodes with measure functions.
-    if (!mCSSNode.isMeasureDefined()) {
-      mCSSNode.addChildAt(child.mCSSNode, i);
+    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
+      CSSNode childCSSNode = child.mCSSNode;
+      if (childCSSNode == null) {
+        throw new RuntimeException(
+          "Cannot add a child that doesn't have a CSS node to a node without a measure function!");
+      }
+      mCSSNode.addChildAt(childCSSNode, i);
     }
     markUpdated();
 
@@ -163,7 +183,7 @@ public class ReactShadowNode {
     ReactShadowNode removed = mChildren.remove(i);
     removed.mParent = null;
 
-    if (!mCSSNode.isMeasureDefined()) {
+    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
       mCSSNode.removeChildAt(i);
     }
     markUpdated();
@@ -190,18 +210,20 @@ public class ReactShadowNode {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  public void removeAllChildren() {
+  public void removeAndDisposeAllChildren() {
     if (getChildCount() == 0) {
       return;
     }
 
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      if (!mCSSNode.isMeasureDefined()) {
+      if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
         mCSSNode.removeChildAt(i);
       }
       ReactShadowNode toRemove = getChildAt(i);
       toRemove.mParent = null;
+      toRemove.dispose();
+
       decrease += toRemove.mIsLayoutOnly ? toRemove.mTotalNativeChildren : 1;
     }
     Assertions.assertNotNull(mChildren).clear();
@@ -329,16 +351,18 @@ public class ReactShadowNode {
     return mShouldNotifyOnLayout;
   }
 
-  public void calculateLayout(CSSLayoutContext layoutContext) {
-    mCSSNode.calculateLayout(layoutContext);
+  public void calculateLayout() {
+    mCSSNode.calculateLayout();
   }
 
   public final boolean hasNewLayout() {
-    return mCSSNode.hasNewLayout();
+    return mCSSNode == null ? false : mCSSNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
-    mCSSNode.markLayoutSeen();
+    if (mCSSNode != null) {
+      mCSSNode.markLayoutSeen();
+    }
   }
 
   /**
@@ -504,35 +528,35 @@ public class ReactShadowNode {
   }
 
   public final float getStyleWidth() {
-    return mCSSNode.getStyleWidth();
+    return mCSSNode.getWidth();
   }
 
   public void setStyleWidth(float widthPx) {
-    mCSSNode.setStyleWidth(widthPx);
+    mCSSNode.setWidth(widthPx);
   }
 
   public void setStyleMinWidth(float widthPx) {
-    mCSSNode.setStyleMinWidth(widthPx);
+    mCSSNode.setMinWidth(widthPx);
   }
 
   public void setStyleMaxWidth(float widthPx) {
-    mCSSNode.setStyleMaxWidth(widthPx);
+    mCSSNode.setMaxWidth(widthPx);
   }
 
   public final float getStyleHeight() {
-    return mCSSNode.getStyleHeight();
+    return mCSSNode.getHeight();
   }
 
   public void setStyleHeight(float heightPx) {
-    mCSSNode.setStyleHeight(heightPx);
+    mCSSNode.setHeight(heightPx);
   }
 
   public void setStyleMinHeight(float widthPx) {
-    mCSSNode.setStyleMinHeight(widthPx);
+    mCSSNode.setMinHeight(widthPx);
   }
 
   public void setStyleMaxHeight(float widthPx) {
-    mCSSNode.setStyleMaxHeight(widthPx);
+    mCSSNode.setMaxHeight(widthPx);
   }
 
   public void setFlex(float flex) {
@@ -549,6 +573,10 @@ public class ReactShadowNode {
 
   public void setFlexBasis(float flexBasis) {
     mCSSNode.setFlexBasis(flexBasis);
+  }
+
+  public void setStyleAspectRatio(float aspectRatio) {
+    mCSSNode.setAspectRatio(aspectRatio);
   }
 
   public void setFlexDirection(CSSFlexDirection flexDirection) {
@@ -576,11 +604,11 @@ public class ReactShadowNode {
   }
 
   public void setMargin(int spacingType, float margin) {
-    mCSSNode.setMargin(spacingType, margin);
+    mCSSNode.setMargin(CSSEdge.fromInt(spacingType), margin);
   }
 
   public final float getPadding(int spacingType) {
-    return mCSSNode.getPadding(spacingType);
+    return mCSSNode.getPadding(CSSEdge.fromInt(spacingType));
   }
 
   public void setDefaultPadding(int spacingType, float padding) {
@@ -596,40 +624,40 @@ public class ReactShadowNode {
   private void updatePadding() {
     for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
       if (spacingType == Spacing.LEFT ||
-        spacingType == Spacing.RIGHT ||
-        spacingType == Spacing.START ||
-        spacingType == Spacing.END) {
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
         if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
           CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
           CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
         if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
           CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
           CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else {
         if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       }
     }
   }
 
   public void setBorder(int spacingType, float borderWidth) {
-    mCSSNode.setBorder(spacingType, borderWidth);
+    mCSSNode.setBorder(CSSEdge.fromInt(spacingType), borderWidth);
   }
 
   public void setPosition(int spacingType, float position) {
-    mCSSNode.setPosition(spacingType, position);
+    mCSSNode.setPosition(CSSEdge.fromInt(spacingType), position);
   }
 
   public void setPositionType(CSSPositionType positionType) {
@@ -653,5 +681,12 @@ public class ReactShadowNode {
   @Override
   public String toString() {
     return mCSSNode.toString();
+  }
+
+  public void dispose() {
+    if (mCSSNode != null) {
+      mCSSNode.reset();
+      CSSNodePool.get().release(mCSSNode);
+    }
   }
 }

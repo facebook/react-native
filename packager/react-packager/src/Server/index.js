@@ -79,10 +79,6 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
-  assetRoots: {
-    type: 'array',
-    required: false,
-  },
   assetExts: {
     type: 'array',
     default: defaults.assetExts,
@@ -91,8 +87,8 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
-  getTransformOptionsModulePath: {
-    type: 'string',
+  getTransformOptions: {
+    type: 'function',
     required: false,
   },
   silent: {
@@ -473,9 +469,13 @@ class Server {
         data => {
           // Tell clients to cache this for 1 year.
           // This is safe as the asset url contains a hash of the asset.
-          res.setHeader('Cache-Control', 'max-age=31536000');
+          if (process.env.REACT_NATIVE_ENABLE_ASSET_CACHING === true) {
+            res.setHeader('Cache-Control', 'max-age=31536000');
+          }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
-          print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          process.nextTick(() => {
+            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+          });
         },
         error => {
           console.error(error.stack);
@@ -747,7 +747,9 @@ class Server {
     }).then(
       stack => {
         res.end(JSON.stringify({stack: stack}));
-        print(log(createActionEndEntry(symbolicatingLogEntry)));
+        process.nextTick(() => {
+          print(log(createActionEndEntry(symbolicatingLogEntry)));
+        });
       },
       error => {
         console.error(error.stack || error);

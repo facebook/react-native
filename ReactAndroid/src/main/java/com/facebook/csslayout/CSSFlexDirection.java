@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSFlexDirection {
   COLUMN(0),
   COLUMN_REVERSE(1),

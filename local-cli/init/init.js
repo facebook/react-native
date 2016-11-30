@@ -32,7 +32,7 @@ function init(projectDir, argsOrName) {
     : [argsOrName].concat(process.argv.slice(4)); // argsOrName was e.g. 'AwesomeApp'
 
   // args array is e.g. ['AwesomeApp', '--verbose']
-  if (!args || args.lentgh == 0) {
+  if (!args || args.length === 0) {
     console.error('react-native init requires a project name.');
     return;
   }
@@ -63,7 +63,7 @@ function generateProject(destinationRoot, newProjectName, options) {
   }
 
   const yarnVersion =
-    (!options['npm']) &&
+    (!options.npm) &&
     yarn.getYarnVersionIfAvailable() &&
     yarn.isGlobalCliUsingYarn(destinationRoot);
 
@@ -81,7 +81,9 @@ function generateProject(destinationRoot, newProjectName, options) {
     execSync(`npm install react@${reactVersion} --save --save-exact`);
   }
   if (!options['skip-jest']) {
-    const jestDeps = `jest babel-jest jest-react-native babel-preset-react-native react-test-renderer@${reactVersion}`;
+    const jestDeps = (
+      `jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion}`
+    );
     if (yarnVersion) {
       console.log('Adding Jest...');
       execSync(`yarn add ${jestDeps} --dev --exact`);

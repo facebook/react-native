@@ -87,11 +87,10 @@ function getPackagerServer(args, config) {
 
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
-    assetRoots: args.assetRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    getTransformOptions: config.getTransformOptions,
     projectRoots: args.projectRoots,
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
