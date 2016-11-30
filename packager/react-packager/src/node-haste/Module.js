@@ -74,7 +74,7 @@ class Module {
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _useGlobalCache: boolean;
+  static _globalCacheRetries: number;
 
   constructor({
     file,
@@ -235,21 +235,23 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (!Module._useGlobalCache || globalCache == null) {
+    if (Module._globalCacheRetries <= 0 || globalCache == null) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._useGlobalCache) {
+      if (globalCacheError != null && Module._globalCacheRetries > 0) {
         console.log(chalk.red(
           '\nWarning: the global cache failed with error:',
         ));
         console.log(chalk.red(globalCacheError.stack));
-        console.log(chalk.red(
-          'The global cache will be DISABLED for the ' +
-            'remainder of the transformation.',
-        ));
-        Module._useGlobalCache = false;
+        Module._globalCacheRetries--;
+        if (Module._globalCacheRetries <= 0) {
+          console.log(chalk.red(
+            'No more retries, the global cache will be disabled for the ' +
+              'remainder of the transformation.',
+          ));
+        }
       }
       if (globalCacheError != null || globalCachedResult == null) {
         this._transformCodeForCallback(cacheProps, callback);
@@ -353,7 +355,7 @@ class Module {
   }
 }
 
-Module._useGlobalCache = true;
+Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();
