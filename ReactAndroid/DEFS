@@ -109,7 +109,6 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     name = name,
     use_cxx_libraries = True,
     cxx_library_whitelist = [
-      '//ReactCommon/CSSLayout:CSSLayout',
       '//ReactAndroid/src/main/jni/first-party/csslayoutjni:jni',
     ],
     fork_mode = 'per_test',
