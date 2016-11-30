@@ -18,12 +18,12 @@ const path = require('path');
  *
  * @param {String} folder Folder to find C# files
  */
-module.exports = function getPackageClassName(folder) {
+module.exports = function getNamespace(folder) {
   const files = glob.sync('**/*.cs', { cwd: folder });
 
   const packages = files
     .map(filePath => fs.readFileSync(path.join(folder, filePath), 'utf8'))
-    .map(file => file.match(/class (.*) : IReactPackage/))
+    .map(file => file.match(/namespace (.*)\s*/))
     .filter(match => match);
 
   return packages.length ? packages[0][1] : null;

@@ -40,7 +40,7 @@ const linkDependencyAndroid = (androidProject, dependency) => {
   const isInstalled = isInstalledAndroid(androidProject, dependency.name);
 
   if (isInstalled) {
-    log.info(chalk.grey(`Android module ${dependency.name} is already linked`));
+    log.info(chalk.grey(`Android module ${dependency.name} is already linked!!`));
     return null;
   }
 
@@ -59,6 +59,8 @@ const linkDependencyAndroid = (androidProject, dependency) => {
 };
 
 const linkDependencyWindows = (windowsProject, dependency) => {
+  console.log('####', windowsProject, dependency)
+
   if (!windowsProject || !dependency.config.windows) {
     return null;
   }
@@ -66,7 +68,7 @@ const linkDependencyWindows = (windowsProject, dependency) => {
   const isInstalled = isInstalledAndroid(windowsProject, dependency.name);
 
   if (isInstalled) {
-    log.info(chalk.grey(`Windows module ${dependency.name} is already linked`));
+    log.info(chalk.grey(`Windows module ${dependency.name} is already linked!`));
     return null;
   }
 

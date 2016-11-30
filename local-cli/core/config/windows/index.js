@@ -8,10 +8,12 @@
  */
 'use strict';
 
-// const findWindowsSolution = require('./findWindowsSolution');
+const findWindowsSolution = require('./findWindowsSolution');
+const findNamespace = require('./findNamespace');
+const findWindowsAppFolder = require('./findWindowsAppFolder');
 // const findProject = require('./findProject');
-// const findPackageClassName = require('./findPackageClassName');
-// const path = require('path');
+const findPackageClassName = require('./findPackageClassName');
+const path = require('path');
 // const readProject = require('./readProject');
 
 /**
@@ -20,15 +22,86 @@
  */
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
 
-  const sourceDir = null;
+  const sourceDir = '';
   const mainReactPage = null;
-  const csProj = null;
-  csSolution = null;
+  const csProj = '';
+  const csSolution = '';
+
+  return null;
+};
+
+
+/**
+ * Same as projectConfigWindows except it returns
+ * different config that applies to packages only
+ */
+exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) {
+
+  const csSolution = userConfig.csSolution || findWindowsSolution(folder);
+  // expects solutions to be named the same as project folders
+  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
+  const src = userConfig.sourceDir || windowsAppFolder;
+
+  if (!src) {
+    return null;
+  }
+
+  const sourceDir = path.join(folder, src);
+  const packageClassName = findPackageClassName(sourceDir);
+  const namespace = userConfig.namespace || findNamespace(sourceDir);
+
+  /**
+   * This module has no package to export or no namespace
+   */
+  if (!packageClassName || !namespace) {
+    return null;
+  }
+
+
+  const packageUsingPath = userConfig.packageUsingPath ||
+    `using ${namespace};`;
+
+  const packageInstance = userConfig.packageInstance ||
+    `new ${packageClassName}()`;
+
 
   return {
     sourceDir,
-    mainReactPage,
-    csProj,
-    csSolution,
-  };
+    packageUsingPath,
+    packageInstance,
+  }
 };
+
+// exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) {
+//   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
+
+//   if (!src) {
+//     return null;
+//   }
+
+//   const sourceDir = path.join(folder, src);
+//   const manifestPath = findManifest(sourceDir);
+
+//   if (!manifestPath) {
+//     return null;
+//   }
+
+//   const manifest = readManifest(manifestPath);
+//   const packageName = userConfig.packageName || getPackageName(manifest);
+//   const packageClassName = findPackageClassName(sourceDir);
+
+//   /**
+//    * This module has no package to export
+//    */
+//   if (!packageClassName) {
+//     return null;
+//   }
+
+//   const packageImportPath = userConfig.packageImportPath ||
+//     `import ${packageName}.${packageClassName};`;
+
+//   const packageInstance = userConfig.packageInstance ||
+//     `new ${packageClassName}()`;
+
+//   return { sourceDir, folder, manifest, packageImportPath, packageInstance };
+// };

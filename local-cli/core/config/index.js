@@ -48,6 +48,7 @@ exports.getDependencyConfig = function getDependencyConfig(packageName) {
   return Object.assign({}, rnpm, {
     ios: ios.dependencyConfig(folder, rnpm.ios || {}),
     android: android.dependencyConfig(folder, rnpm.android || {}),
+    windows: windows.dependencyConfig(folder, rnpm.windows || {}),
     assets: findAssets(folder, rnpm.assets),
     commands: wrapCommands(rnpm.commands),
     params: rnpm.params || [],
