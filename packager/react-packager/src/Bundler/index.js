@@ -179,7 +179,10 @@ class Bundler {
       }
     }
 
-    const transformCacheKey = cacheKeyParts.join('$');
+    const transformCacheKey = crypto.createHash('sha1').update(
+      cacheKeyParts.join('$'),
+    ).digest('hex');
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
       cacheKey: transformCacheKey,
