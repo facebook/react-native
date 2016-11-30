@@ -14,35 +14,42 @@
 using namespace facebook::jni;
 using namespace std;
 
+static inline weak_ref<jobject> *jobjectContext(CSSNodeRef node) {
+  return reinterpret_cast<weak_ref<jobject> *>(CSSNodeGetContext(node));
+}
+
 static void _jniTransferLayoutDirection(CSSNodeRef node, alias_ref<jobject> javaNode) {
   static auto layoutDirectionField = javaNode->getClass()->getField<jint>("mLayoutDirection");
   javaNode->setFieldValue(layoutDirectionField, static_cast<jint>(CSSNodeLayoutGetDirection(node)));
 }
 
 static void _jniTransferLayoutOutputsRecursive(CSSNodeRef root) {
-  auto javaNode = adopt_local(
-      Environment::current()->NewLocalRef(reinterpret_cast<jweak>(CSSNodeGetContext(root))));
+  if (auto obj = jobjectContext(root)->lockLocal()) {
+    static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
+    static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
+    static auto leftField = obj->getClass()->getField<jfloat>("mLeft");
+    static auto topField = obj->getClass()->getField<jfloat>("mTop");
 
-  static auto widthField = javaNode->getClass()->getField<jfloat>("mWidth");
-  static auto heightField = javaNode->getClass()->getField<jfloat>("mHeight");
-  static auto leftField = javaNode->getClass()->getField<jfloat>("mLeft");
-  static auto topField = javaNode->getClass()->getField<jfloat>("mTop");
+    obj->setFieldValue(widthField, CSSNodeLayoutGetWidth(root));
+    obj->setFieldValue(heightField, CSSNodeLayoutGetHeight(root));
+    obj->setFieldValue(leftField, CSSNodeLayoutGetLeft(root));
+    obj->setFieldValue(topField, CSSNodeLayoutGetTop(root));
+    _jniTransferLayoutDirection(root, obj);
 
-  javaNode->setFieldValue(widthField, CSSNodeLayoutGetWidth(root));
-  javaNode->setFieldValue(heightField, CSSNodeLayoutGetHeight(root));
-  javaNode->setFieldValue(leftField, CSSNodeLayoutGetLeft(root));
-  javaNode->setFieldValue(topField, CSSNodeLayoutGetTop(root));
-  _jniTransferLayoutDirection(root, javaNode);
-
-  for (uint32_t i = 0; i < CSSNodeChildCount(root); i++) {
-    _jniTransferLayoutOutputsRecursive(CSSNodeGetChild(root, i));
+    for (uint32_t i = 0; i < CSSNodeChildCount(root); i++) {
+      _jniTransferLayoutOutputsRecursive(CSSNodeGetChild(root, i));
+    }
+  } else {
+    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
   }
 }
 
 static void _jniPrint(CSSNodeRef node) {
-  auto obj = adopt_local(
-      Environment::current()->NewLocalRef(reinterpret_cast<jweak>(CSSNodeGetContext(node))));
-  cout << obj->toString() << endl;
+  if (auto obj = jobjectContext(node)->lockLocal()) {
+    cout << obj->toString() << endl;
+  } else {
+    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
+  }
 }
 
 static CSSSize _jniMeasureFunc(CSSNodeRef node,
@@ -50,22 +57,27 @@ static CSSSize _jniMeasureFunc(CSSNodeRef node,
                                CSSMeasureMode widthMode,
                                float height,
                                CSSMeasureMode heightMode) {
-  auto obj = adopt_local(
-      Environment::current()->NewLocalRef(reinterpret_cast<jweak>(CSSNodeGetContext(node))));
+  if (auto obj = jobjectContext(node)->lockLocal()) {
+    static auto measureFunc = findClassLocal("com/facebook/csslayout/CSSNode")
+                                  ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
 
-  static auto measureFunc = findClassLocal("com/facebook/csslayout/CSSNode")
-                                ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
+    _jniTransferLayoutDirection(node, obj);
+    const auto measureResult = measureFunc(obj, width, widthMode, height, heightMode);
 
-  _jniTransferLayoutDirection(node, obj);
-  const auto measureResult = measureFunc(obj, width, widthMode, height, heightMode);
+    static_assert(sizeof(measureResult) == 8,
+                  "Expected measureResult to be 8 bytes, or two 32 bit ints");
 
-  static_assert(sizeof(measureResult) == 8,
-                "Expected measureResult to be 8 bytes, or two 32 bit ints");
+    const float measuredWidth = static_cast<float>(0xFFFFFFFF & (measureResult >> 32));
+    const float measuredHeight = static_cast<float>(0xFFFFFFFF & measureResult);
 
-  const float measuredWidth = static_cast<float>(0xFFFFFFFF & (measureResult >> 32));
-  const float measuredHeight = static_cast<float>(0xFFFFFFFF & measureResult);
-
-  return CSSSize{measuredWidth, measuredHeight};
+    return CSSSize{measuredWidth, measuredHeight};
+  } else {
+    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
+    return CSSSize{
+        widthMode == CSSMeasureModeUndefined ? 0 : width,
+        heightMode == CSSMeasureModeUndefined ? 0 : height,
+    };
+  }
 }
 
 struct JCSSLogLevel : public JavaClass<JCSSLogLevel> {
@@ -131,15 +143,15 @@ jint jni_CSSNodeGetInstanceCount(alias_ref<jclass> clazz) {
 
 jlong jni_CSSNodeNew(alias_ref<jobject> thiz) {
   const CSSNodeRef node = CSSNodeNew();
-  CSSNodeSetContext(node, Environment::current()->NewWeakGlobalRef(thiz.get()));
+  CSSNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
   CSSNodeSetPrintFunc(node, _jniPrint);
   return reinterpret_cast<jlong>(node);
 }
 
 void jni_CSSNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
-  Environment::current()->DeleteWeakGlobalRef(
-      reinterpret_cast<jweak>(CSSNodeGetContext(_jlong2CSSNodeRef(nativePointer))));
-  CSSNodeFree(_jlong2CSSNodeRef(nativePointer));
+  const CSSNodeRef node = _jlong2CSSNodeRef(nativePointer);
+  delete jobjectContext(node);
+  CSSNodeFree(node);
 }
 
 void jni_CSSNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {

@@ -543,7 +543,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 
 - (int32_t)bytecodeFileFormatVersion
 {
-  return _tryBytecode
+  return (_useCustomJSCLibrary && _tryBytecode)
     ? facebook::react::customJSCWrapper()->JSBytecodeFileFormatVersion
     : JSNoBytecodeFileFormatVersion;
 }

@@ -16,6 +16,7 @@ var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -29,6 +30,10 @@ class TabBarItemIOS extends React.Component {
       React.PropTypes.string,
       React.PropTypes.number,
     ]),
+    /**
+     * Background color for the badge. Available since iOS 10.
+     */
+    badgeColor: ColorPropType,
     /**
      * Items comes with a few predefined system icons. Note that if you are
      * using them, the title and selectedIcon will be overridden with the

@@ -36,6 +36,7 @@ RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(itemPositioning, UITabBarItemPositioning)
+RCT_EXPORT_VIEW_PROPERTY(unselectedItemTintColor, UIColor)
 
 RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)

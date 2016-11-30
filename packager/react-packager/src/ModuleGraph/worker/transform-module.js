@@ -75,9 +75,9 @@ function transformModule(
     callback(null, {
       code,
       file: filename,
-      isPolyfill: !!options.polyfill,
       hasteID: annotations.providesModule || annotations.provide || null,
       transformed,
+      type: options.polyfill ? 'script' : 'module',
     });
   });
 }
@@ -105,8 +105,8 @@ function transformJSON(json, options, callback) {
     code: json,
     file: filename,
     hasteID: value.name,
-    isPolyfill: false,
     transformed,
+    type: 'module',
   };
 
   if (basename(filename) === 'package.json') {

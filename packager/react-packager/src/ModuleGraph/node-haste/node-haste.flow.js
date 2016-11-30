@@ -8,6 +8,7 @@
  *
  * @flow
  */
+'use strict';
 
 'use strict';
 
@@ -57,7 +58,7 @@ export type FastFS = {
 type HasteMapOptions = {|
   allowRelativePaths: boolean,
   extensions: Extensions,
-  fastfs: FastFS,
+  files: Array<string>,
   helpers: DependencyGraphHelpers,
   moduleCache: ModuleCache,
   platforms: Platforms,
@@ -66,26 +67,6 @@ type HasteMapOptions = {|
 
 declare class HasteMap {
   // node-haste/DependencyGraph/HasteMap.js
-  constructor(options: HasteMapOptions): void,
   build(): Promise<Object>,
+  constructor(options: HasteMapOptions): void,
 }
-export type HasteMapT = HasteMap;
-
-type ResolutionRequestOptions = {|
-  platform: Platform,
-  platforms: Platforms,
-  preferNativePlatform: true,
-  hasteMap: HasteMap,
-  helpers: DependencyGraphHelpers,
-  moduleCache: ModuleCache,
-  fastfs: FastFS,
-  shouldThrowOnUnresolvedErrors: () => true,
-  extraNodeModules: {[id: ModuleID]: Path},
-|};
-
-declare class ResolutionRequest {
-  // node-haste/DependencyGraph/ResolutionRequest.js
-  constructor(options: ResolutionRequestOptions): void,
-  resolveDependency(from: Module, to: ModuleID): Promise<Module>,
-}
-export type ResolutionRequestT = ResolutionRequest;

@@ -28,6 +28,7 @@ const writeFileAtomicSync = require('write-file-atomic').sync;
 const CACHE_NAME = 'react-native-packager-cache';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -62,7 +63,7 @@ function hashSourceCode(props: {
  */
 function getCacheFilePaths(props: {
   filePath: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 }): CacheFilePaths {
   const hasher = imurmurhash()
     .hash(props.filePath)
@@ -117,7 +118,7 @@ function writeSync(props: {
   filePath: string,
   sourceCode: string,
   transformCacheKey: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
   result: CachedResult,
 }): void {
   const cacheFilePath = getCacheFilePaths(props);
@@ -275,7 +276,7 @@ function readMetadataFileSync(
 export type ReadTransformProps = {
   filePath: string,
   sourceCode: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
   transformCacheKey: string,
   cacheOptions: CacheOptions,
 };

@@ -169,6 +169,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public JavaMethod(Method method) {
       mMethod = method;
+      mMethod.setAccessible(true);
       Class[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
       mSignature = buildSignature(parameterTypes);
@@ -354,6 +355,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public SyncJavaHook(Method method) {
       mMethod = method;
+      mMethod.setAccessible(true);
       mSignature = buildSignature(method);
     }
 

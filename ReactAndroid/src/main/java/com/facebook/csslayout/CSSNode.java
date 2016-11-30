@@ -17,16 +17,11 @@ import java.util.ArrayList;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
+@DoNotStrip
 public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   static {
-    try {
-      SoLoader.loadLibrary("csslayout");
-    } catch (Exception ignored) {
-      // The user probably didn't call SoLoader.init(). Fall back to System.loadLibrary() instead.
-      System.out.println("Falling back to System.loadLibrary()");
-      System.loadLibrary("csslayout");
-    }
+    SoLoader.loadLibrary("csslayout");
   }
 
   /**
@@ -162,7 +157,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_CSSNodeCalculateLayout(long nativePointer);
   @Override
-  public void calculateLayout(CSSLayoutContext layoutContext) {
+  public void calculateLayout() {
     jni_CSSNodeCalculateLayout(mNativePointer);
   }
 
@@ -342,147 +337,147 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
   @Override
-  public float getMargin(int spacingType) {
+  public float getMargin(CSSEdge edge) {
     if (!mHasSetMargin) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetMargin(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetMargin(long nativePointer, int edge, float margin);
   @Override
-  public void setMargin(int spacingType, float margin) {
+  public void setMargin(CSSEdge edge, float margin) {
     mHasSetMargin = true;
-    jni_CSSNodeStyleSetMargin(mNativePointer, spacingType, margin);
+    jni_CSSNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   private native float jni_CSSNodeStyleGetPadding(long nativePointer, int edge);
   @Override
-  public float getPadding(int spacingType) {
+  public float getPadding(CSSEdge edge) {
     if (!mHasSetPadding) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetPadding(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPadding(long nativePointer, int edge, float padding);
   @Override
-  public void setPadding(int spacingType, float padding) {
+  public void setPadding(CSSEdge edge, float padding) {
     mHasSetPadding = true;
-    jni_CSSNodeStyleSetPadding(mNativePointer, spacingType, padding);
+    jni_CSSNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
   @Override
-  public float getBorder(int spacingType) {
+  public float getBorder(CSSEdge edge) {
     if (!mHasSetBorder) {
-      return spacingType < Spacing.START ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetBorder(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetBorder(long nativePointer, int edge, float border);
   @Override
-  public void setBorder(int spacingType, float border) {
+  public void setBorder(CSSEdge edge, float border) {
     mHasSetBorder = true;
-    jni_CSSNodeStyleSetBorder(mNativePointer, spacingType, border);
+    jni_CSSNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
   private native float jni_CSSNodeStyleGetPosition(long nativePointer, int edge);
   @Override
-  public float getPosition(int spacingType) {
+  public float getPosition(CSSEdge edge) {
     if (!mHasSetPosition) {
       return CSSConstants.UNDEFINED;
     }
-    return jni_CSSNodeStyleGetPosition(mNativePointer, spacingType);
+    return jni_CSSNodeStyleGetPosition(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPosition(long nativePointer, int edge, float position);
   @Override
-  public void setPosition(int spacingType, float position) {
+  public void setPosition(CSSEdge edge, float position) {
     mHasSetPosition = true;
-    jni_CSSNodeStyleSetPosition(mNativePointer, spacingType, position);
+    jni_CSSNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
   }
 
   private native float jni_CSSNodeStyleGetWidth(long nativePointer);
   @Override
-  public float getStyleWidth() {
+  public float getWidth() {
     return jni_CSSNodeStyleGetWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetWidth(long nativePointer, float width);
   @Override
-  public void setStyleWidth(float width) {
+  public void setWidth(float width) {
     jni_CSSNodeStyleSetWidth(mNativePointer, width);
   }
 
   private native float jni_CSSNodeStyleGetHeight(long nativePointer);
   @Override
-  public float getStyleHeight() {
+  public float getHeight() {
     return jni_CSSNodeStyleGetHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetHeight(long nativePointer, float height);
   @Override
-  public void setStyleHeight(float height) {
+  public void setHeight(float height) {
     jni_CSSNodeStyleSetHeight(mNativePointer, height);
   }
 
   private native float jni_CSSNodeStyleGetMinWidth(long nativePointer);
   @Override
-  public float getStyleMinWidth() {
+  public float getMinWidth() {
     return jni_CSSNodeStyleGetMinWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMinWidth(long nativePointer, float minWidth);
   @Override
-  public void setStyleMinWidth(float minWidth) {
+  public void setMinWidth(float minWidth) {
     jni_CSSNodeStyleSetMinWidth(mNativePointer, minWidth);
   }
 
   private native float jni_CSSNodeStyleGetMinHeight(long nativePointer);
   @Override
-  public float getStyleMinHeight() {
+  public float getMinHeight() {
     return jni_CSSNodeStyleGetMinHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMinHeight(long nativePointer, float minHeight);
   @Override
-  public void setStyleMinHeight(float minHeight) {
+  public void setMinHeight(float minHeight) {
     jni_CSSNodeStyleSetMinHeight(mNativePointer, minHeight);
   }
 
   private native float jni_CSSNodeStyleGetMaxWidth(long nativePointer);
   @Override
-  public float getStyleMaxWidth() {
+  public float getMaxWidth() {
     return jni_CSSNodeStyleGetMaxWidth(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMaxWidth(long nativePointer, float maxWidth);
   @Override
-  public void setStyleMaxWidth(float maxWidth) {
+  public void setMaxWidth(float maxWidth) {
     jni_CSSNodeStyleSetMaxWidth(mNativePointer, maxWidth);
   }
 
   private native float jni_CSSNodeStyleGetMaxHeight(long nativePointer);
   @Override
-  public float getStyleMaxHeight() {
+  public float getMaxHeight() {
     return jni_CSSNodeStyleGetMaxHeight(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetMaxHeight(long nativePointer, float maxheight);
   @Override
-  public void setStyleMaxHeight(float maxheight) {
+  public void setMaxHeight(float maxheight) {
     jni_CSSNodeStyleSetMaxHeight(mNativePointer, maxheight);
   }
 
   private native float jni_CSSNodeStyleGetAspectRatio(long nativePointer);
-  public float getStyleAspectRatio() {
+  public float getAspectRatio() {
     return jni_CSSNodeStyleGetAspectRatio(mNativePointer);
   }
 
   private native void jni_CSSNodeStyleSetAspectRatio(long nativePointer, float aspectRatio);
-  public void setStyleAspectRatio(float aspectRatio) {
+  public void setAspectRatio(float aspectRatio) {
     jni_CSSNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
   }
 
@@ -540,11 +535,6 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   @Override
   public boolean isMeasureDefined() {
     return mMeasureFunction != null;
-  }
-
-  @Override
-  public boolean valuesEqual(float f1, float f2) {
-    return FloatUtil.floatsEqual(f1, f2);
   }
 
   @Override

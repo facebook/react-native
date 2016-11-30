@@ -47,8 +47,6 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
 
 @property (nonatomic, assign, readonly) RCTDevMenuType type;
 @property (nonatomic, copy, readonly) NSString *key;
-@property (nonatomic, copy, readonly) NSString *title;
-@property (nonatomic, copy, readonly) NSString *selectedTitle;
 @property (nonatomic, copy) id value;
 
 @end
@@ -56,6 +54,9 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
 @implementation RCTDevMenuItem
 {
   id _handler; // block
+
+  NSString *_title;
+  NSString *_selectedTitle;
 }
 
 - (instancetype)initWithType:(RCTDevMenuType)type
@@ -73,6 +74,15 @@ typedef NS_ENUM(NSInteger, RCTDevMenuType) {
     _value = nil;
   }
   return self;
+}
+
+- (NSString *)title
+{
+  if (_type == RCTDevMenuTypeToggle && [_value boolValue]) {
+    return _selectedTitle;
+  }
+
+  return _title;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -119,6 +129,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
+typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
+
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketProxyDelegate>
 
 @property (nonatomic, strong) Class executorClass;
@@ -133,7 +145,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
-  NSArray<RCTDevMenuItem *> *_presentedItems;
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
   NSString *_webSocketExecutorName;
   NSString *_executorOverride;
@@ -515,37 +526,40 @@ RCT_EXPORT_METHOD(show)
 
   NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
-    switch (item.type) {
-      case RCTDevMenuTypeButton: {
-        [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(__unused UIAlertAction *action) {
-                                                         [item callHandler];
-                                                       }]];
-        break;
-      }
-      case RCTDevMenuTypeToggle: {
-        BOOL selected = [item.value boolValue];
-        [_actionSheet addAction:[UIAlertAction actionWithTitle:(selected? item.selectedTitle : item.title)
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(__unused UIAlertAction *action) {
-                                                         BOOL value = [self->_settings[item.key] boolValue];
-                                                         [self updateSetting:item.key value:@(!value)]; // will call handler
-                                                       }]];
-        break;
-      }
-    }
+    [_actionSheet addAction:[UIAlertAction actionWithTitle:item.title
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:[self alertActionHandlerForDevItem:item]]];
   }
 
   [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
-                                                 handler:nil]];
+                                                 handler:[self alertActionHandlerForDevItem:nil]]];
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 }
 
+- (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
+{
+  return ^(__unused UIAlertAction *action) {
+    if (item) {
+      switch (item.type) {
+        case RCTDevMenuTypeButton: {
+          [item callHandler];
+          break;
+        }
 
+        case RCTDevMenuTypeToggle: {
+          BOOL value = [self->_settings[item.key] boolValue];
+          [self updateSetting:item.key value:@(!value)]; // will call handler
+          break;
+        }
+      }
+    }
+
+    self->_actionSheet = nil;
+  };
+}
 
 RCT_EXPORT_METHOD(reload)
 {
@@ -675,6 +689,11 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
   [_updateTask resume];
 }
 
+- (BOOL)isActionSheetShown
+{
+  return _actionSheet != nil;
+}
+
 @end
 
 #else // Unavailable when not in dev mode
@@ -685,6 +704,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)reload {}
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
+- (BOOL)isActionSheetShown { return NO; }
 
 @end
 

@@ -98,7 +98,6 @@ class Resolver {
       preferNativePlatform: true,
       watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
@@ -121,10 +120,6 @@ class Resolver {
 
   getShallowDependencies(entryFile, transformOptions) {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
-  }
-
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {

@@ -70,6 +70,9 @@ const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
+  AppState: {
+    addEventListener: jest.fn(),
+  },
   AsyncLocalStorage: {
     clear: jest.fn(),
     getItem: jest.fn(),
@@ -128,6 +131,7 @@ const mockNativeModules = {
   SourceCode: {
     scriptURL: null,
   },
+  StatusBarManager: {},
   Timing: {
     createTimer: jest.fn(),
     deleteTimer: jest.fn(),

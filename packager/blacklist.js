@@ -15,12 +15,12 @@ var path = require('path');
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
 
-  'downstream/core/invariant.js',
-
   /website\/node_modules\/.*/,
 
   // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
   'Libraries/Relay/relay/tools/relayUnstableBatchedUpdates.js',
+
+  /heapCapture\/bundle\.js/,
 ];
 
 function escapeRegExp(pattern) {

@@ -14,13 +14,15 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
+import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
+
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
 export type ConfigT = {
   extraNodeModules?: {[id: string]: string},
   getAssetExts?: () => Array<string>,
   getTransformModulePath?: () => string,
-  getTransformOptionsModulePath?: () => string,
+  getTransformOptions?: GetTransformOptions<*>,
   transformVariants?: () => {[name: string]: Object},
 
   getBlacklistRE(): RegExp,

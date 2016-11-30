@@ -12,6 +12,7 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
@@ -21,6 +22,7 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
+const path = require('path');
 const version = require('../../../../package.json').version;
 const denodeify = require('denodeify');
 
@@ -35,6 +37,12 @@ const {
 import AssetServer from '../AssetServer';
 import Module from '../node-haste/Module';
 import ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+
+export type GetTransformOptions<T> = (
+  string,
+  Object,
+  string => Promise<Array<string>>,
+) => T | Promise<T>;
 
 const sizeOf = denodeify(imageSize);
 
@@ -115,6 +123,7 @@ type Options = {
   cacheVersion: string,
   resetCache: boolean,
   transformModulePath: string,
+  getTransformOptions?: GetTransformOptions<*>,
   extraNodeModules: {},
   assetExts: Array<string>,
   watch: boolean,
@@ -132,27 +141,32 @@ class Bundler {
   _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
-  _transformOptionsModule: (path: string, options: {}, bunler: Bundler) => {};
+  _getTransformOptions: void | GetTransformOptions<*>;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
 
     opts.projectRoots.forEach(verifyRootExists);
 
-    let mtime;
+    let transformModuleHash;
     try {
-      ({mtime} = fs.statSync(opts.transformModulePath));
-      mtime = String(mtime.getTime());
+      const transformModuleStr = fs.readFileSync(opts.transformModulePath);
+      transformModuleHash =
+        crypto.createHash('sha1').update(transformModuleStr).digest('hex');
     } catch (error) {
-      mtime = '';
+      transformModuleHash = '';
     }
+
+    const stableProjectRoots = opts.projectRoots.map(p => {
+      return path.relative(path.join(__dirname, '../../../..'), p);
+    });
 
     const cacheKeyParts =  [
       'react-packager-cache',
       version,
       opts.cacheVersion,
-      opts.projectRoots.join(',').split(pathSeparator).join('-'),
-      mtime,
+      stableProjectRoots.join(',').split(pathSeparator).join('-'),
+      transformModuleHash,
     ];
 
     this._getModuleId = createModuleIdFactory();
@@ -165,7 +179,10 @@ class Bundler {
       }
     }
 
-    const transformCacheKey = cacheKeyParts.join('$');
+    const transformCacheKey = crypto.createHash('sha1').update(
+      cacheKeyParts.join('$'),
+    ).digest('hex');
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
       cacheKey: transformCacheKey,
@@ -198,12 +215,7 @@ class Bundler {
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
 
-    if (opts.getTransformOptionsModulePath) {
-      /* $FlowFixMe: dynamic requires prevent static typing :'(  */
-      this._transformOptionsModule = require(
-        opts.getTransformOptionsModulePath
-      );
-    }
+    this._getTransformOptions = opts.getTransformOptions;
   }
 
   end() {
@@ -274,7 +286,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options: {platform: mixed}, host: string, port: number) {
+  hmrBundle(options: {platform: ?string}, host: string, port: number) {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -466,7 +478,7 @@ class Bundler {
     generateSourceMaps = false,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -493,10 +505,6 @@ class Bundler {
     });
   }
 
-  stat(filePath: string) {
-    return this._resolver.stat(filePath);
-  }
-
   getModuleForPath(entryFile: string) {
     return this._resolver.getModuleForPath(entryFile);
   }
@@ -513,7 +521,7 @@ class Bundler {
     onProgress,
   }: {
     entryFile: string,
-    platform: mixed,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -552,7 +560,7 @@ class Bundler {
   getOrderedDependencyPaths({ entryFile, dev, platform }: {
     entryFile: string,
     dev: boolean,
-    platform: mixed,
+    platform: ?string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({ dependencies }) => {
@@ -630,7 +638,7 @@ class Bundler {
     });
   }
 
-  _generateAssetObjAndCode(module, assetPlugins, platform: mixed = null) {
+  _generateAssetObjAndCode(module, assetPlugins, platform: ?string = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
@@ -707,7 +715,7 @@ class Bundler {
     module,
     moduleId,
     assetPlugins: Array<string> = [],
-    platform: mixed = null,
+    platform: ?string = null,
   ) {
     return Promise.all([
       module.getName(),
@@ -726,9 +734,20 @@ class Bundler {
     });
   }
 
-  getTransformOptions(mainModuleName: string, options: {}) {
-    const extraOptions = this._transformOptionsModule
-      ? this._transformOptionsModule(mainModuleName, options, this)
+  getTransformOptions(
+    mainModuleName: string,
+    options: {
+      dev?: boolean,
+      platform: ?string,
+      hot?: boolean,
+      generateSourceMaps?: boolean,
+    },
+  ) {
+    const getDependencies = (entryFile: string) =>
+      this.getDependencies({...options, entryFile})
+        .then(r => r.dependencies.map(d => d.path));
+    const extraOptions = this._getTransformOptions
+      ? this._getTransformOptions(mainModuleName, options, getDependencies)
       : null;
     return Promise.resolve(extraOptions)
       .then(extraOpts => Object.assign(options, extraOpts));
@@ -760,12 +779,12 @@ function verifyRootExists(root) {
 function createModuleIdFactory() {
   const fileToIdMap = Object.create(null);
   let nextId = 0;
-  return ({path}) => {
-    if (!(path in fileToIdMap)) {
-      fileToIdMap[path] = nextId;
+  return ({path: modulePath}) => {
+    if (!(modulePath in fileToIdMap)) {
+      fileToIdMap[modulePath] = nextId;
       nextId += 1;
     }
-    return fileToIdMap[path];
+    return fileToIdMap[modulePath];
   };
 }
 

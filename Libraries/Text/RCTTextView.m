@@ -530,6 +530,16 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   return _textView.autocorrectionType;
 }
 
+- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
+{
+  _textView.spellCheckingType = spellCheckingType;
+}
+
+- (UITextSpellCheckingType)spellCheckingType
+{
+  return _textView.spellCheckingType;
+}
+
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
   if (_selectTextOnFocus) {

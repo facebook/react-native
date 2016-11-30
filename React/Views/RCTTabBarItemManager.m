@@ -33,6 +33,7 @@ RCT_EXPORT_VIEW_PROPERTY(onTVSelect, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)
 
+RCT_EXPORT_VIEW_PROPERTY(badgeColor, UIColor)
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;

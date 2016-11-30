@@ -9,6 +9,9 @@
 
 package com.facebook.csslayout;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public enum CSSExperimentalFeature {
   ROUNDING(0),
   WEB_FLEX_BASIS(1);

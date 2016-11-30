@@ -17,18 +17,18 @@ const TransformCache = require('../lib/TransformCache');
 const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
+const fs = require('fs');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode} from '../JSTransformer/worker/worker';
+import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
-import type FastFs from './fastfs';
 
 type ReadResult = {
   code?: string,
@@ -40,7 +40,7 @@ type ReadResult = {
 export type TransformCode = (
   module: Module,
   sourceCode: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 ) => Promise<TransformedCode>;
 
 export type Options = {
@@ -50,7 +50,6 @@ export type Options = {
 
 export type ConstructorArgs = {
   file: string,
-  fastfs: FastFs,
   moduleCache: ModuleCache,
   cache: Cache,
   transformCode: ?TransformCode,
@@ -64,7 +63,6 @@ class Module {
   path: string;
   type: string;
 
-  _fastfs: FastFs;
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
@@ -76,11 +74,10 @@ class Module {
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _useGlobalCache: boolean;
+  static _globalCacheRetries: number;
 
   constructor({
     file,
-    fastfs,
     moduleCache,
     cache,
     transformCode,
@@ -95,7 +92,6 @@ class Module {
     this.path = file;
     this.type = 'Module';
 
-    this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
@@ -118,11 +114,11 @@ class Module {
     );
   }
 
-  getCode(transformOptions: Object) {
+  getCode(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: Object) {
+  getMap(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -158,7 +154,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: Object) {
+  getDependencies(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -190,7 +186,9 @@ class Module {
 
   _readSourceCode() {
     if (!this._readSourceCodePromise) {
-      this._readSourceCodePromise = this._fastfs.readFile(this.path);
+      this._readSourceCodePromise = new Promise(
+        resolve => resolve(fs.readFileSync(this.path, 'utf8'))
+      );
     }
     return this._readSourceCodePromise;
   }
@@ -237,21 +235,23 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (!Module._useGlobalCache || globalCache == null) {
+    if (Module._globalCacheRetries <= 0 || globalCache == null) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._useGlobalCache) {
+      if (globalCacheError != null && Module._globalCacheRetries > 0) {
         console.log(chalk.red(
           '\nWarning: the global cache failed with error:',
         ));
         console.log(chalk.red(globalCacheError.stack));
-        console.log(chalk.red(
-          'The global cache will be DISABLED for the ' +
-            'remainder of the transformation.',
-        ));
-        Module._useGlobalCache = false;
+        Module._globalCacheRetries--;
+        if (Module._globalCacheRetries <= 0) {
+          console.log(chalk.red(
+            'No more retries, the global cache will be disabled for the ' +
+              'remainder of the transformation.',
+          ));
+        }
       }
       if (globalCacheError != null || globalCachedResult == null) {
         this._transformCodeForCallback(cacheProps, callback);
@@ -281,7 +281,7 @@ class Module {
    * dependencies, etc. The overall process is to read the cache first, and if
    * it's a miss, we let the worker write to the cache and read it again.
    */
-  read(transformOptions: Object): Promise<ReadResult> {
+  read(transformOptions: TransformOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
@@ -355,7 +355,7 @@ class Module {
   }
 }
 
-Module._useGlobalCache = true;
+Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();

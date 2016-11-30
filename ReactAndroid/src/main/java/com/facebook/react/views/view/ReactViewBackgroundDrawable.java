@@ -27,10 +27,10 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.FloatUtil;
-import com.facebook.csslayout.Spacing;
+import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.uimanager.Spacing;
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports
