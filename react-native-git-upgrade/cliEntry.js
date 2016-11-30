@@ -199,10 +199,9 @@ async function checkForUpdates() {
 async function run(requestedVersion, cliArgs) {
   const tmpDir = path.resolve(os.tmpdir(), 'react-native-git-upgrade');
   const generatorDir = path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator');
+  let projectBackupCreated = false;
 
   try {
-    let projectBackupCreated = false;
-
     await checkForUpdates();
 
     log.info('Read package.json files');
@@ -212,7 +211,6 @@ async function run(requestedVersion, cliArgs) {
     const currentReactVersion = reactNodeModulesPak.version;
     const declaredVersion = pak.dependencies['react-native'];
     const declaredReactVersion = pak.dependencies.react;
-    let newReactVersion = null;
 
     const verbose = cliArgs.verbose;
 
@@ -233,13 +231,6 @@ async function run(requestedVersion, cliArgs) {
     const viewOutput = await exec(viewCommand, verbose).then(JSON.parse);
     const newVersion = viewOutput.version;
     const newReactVersionRange = viewOutput['peerDependencies.react'];
-
-    if (!semver.satisfies(currentReactVersion, newReactVersionRange)) {
-      log.info('Retrieve latest react version satisfying ' + newReactVersionRange);
-      const compatReactVersions = await exec('npm view react@"' + newReactVersionRange + '" version --json').then(JSON.parse);
-      newReactVersion = semver.maxSatisfying(compatReactVersions, newReactVersionRange);
-    }
-    log.info('Upgrading to React Native ' + newVersion);
 
     log.info('Check new version');
     checkNewVersionValid(newVersion, requestedVersion);
@@ -275,8 +266,9 @@ async function run(requestedVersion, cliArgs) {
     log.info('Install the new version');
     let installCommand = 'npm install --save --color=always';
     installCommand += ' react-native@' + newVersion;
-    if (newReactVersion) {
-      installCommand += ' react@' + newReactVersion;
+    if (!semver.satisfies(currentReactVersion, newReactVersionRange)) {
+      // Install React as well to avoid unmet peer dependency
+      installCommand += ' react@' + newReactVersionRange;
     }
     await exec(installCommand, verbose);
 
