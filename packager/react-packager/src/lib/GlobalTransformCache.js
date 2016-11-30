@@ -11,12 +11,12 @@
 
 'use strict';
 
+const crypto = require('crypto');
 const imurmurhash = require('imurmurhash');
 const invariant = require('invariant');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 const request = require('request');
-const toFixedHex = require('./toFixedHex');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult} from './TransformCache';
@@ -174,6 +174,30 @@ function validateCachedResult(cachedResult: mixed): ?CachedResult {
 }
 
 /**
+ * The transform options contain absolute paths. This can contain, for
+ * example, the username if someone works their home directory (very likely).
+ * We need to get rid of this user-and-machine-dependent data for the global
+ * cache, otherwise nobody  would share the same cache keys.
+ */
+function globalizeTransformOptions(
+  options: TransformOptions,
+): TransformOptions {
+  const {transform} = options;
+  if (transform == null) {
+    return options;
+  }
+  return {
+    ...options,
+    transform: {
+      ...transform,
+      projectRoots: transform.projectRoots.map(p => {
+        return path.relative(path.join(__dirname, '../../../../..'), p);
+      }),
+    },
+  };
+}
+
+/**
  * One can enable the global cache by calling configure() from a custom CLI
  * script. Eventually we may make it more flexible.
  */
@@ -190,16 +214,13 @@ class GlobalTransformCache {
    * Return a key for identifying uniquely a source file.
    */
   static keyOf(props: FetchProps) {
-    const sourceDigest = toFixedHex(8, imurmurhash(props.sourceCode).result());
-    const optionsHash = imurmurhash()
-      .hash(jsonStableStringify(props.transformOptions) || '')
-      .hash(props.transformCacheKey)
-      .result();
-    const optionsDigest = toFixedHex(8, optionsHash);
-    return (
-      `${optionsDigest}${sourceDigest}` +
-      `${path.basename(props.filePath)}`
-    );
+    const stableOptions = globalizeTransformOptions(props.transformOptions);
+    const digest = crypto.createHash('sha1').update([
+      jsonStableStringify(stableOptions),
+      props.transformCacheKey,
+      imurmurhash(props.sourceCode).result().toString(),
+    ].join('$')).digest('hex');
+    return `${digest}-${path.basename(props.filePath)}`;
   }
 
   /**
