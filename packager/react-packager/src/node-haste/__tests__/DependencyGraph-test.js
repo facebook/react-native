@@ -26,6 +26,11 @@ jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDepend
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 const path = require('path');
+
+const mockStat = {
+  isDirectory: () => false,
+};
+
 beforeEach(() => {
   jest.resetModules();
 
@@ -34,6 +39,7 @@ beforeEach(() => {
 
 describe('DependencyGraph', function() {
   let Module;
+  let ResolutionRequest;
   let defaults;
 
   function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
@@ -58,6 +64,7 @@ describe('DependencyGraph', function() {
     jest.resetModules();
 
     Module = require('../Module');
+    ResolutionRequest = require('../DependencyGraph/ResolutionRequest');
 
     const Cache = jest.genMockFn().mockImplementation(function() {
       this._maps = Object.create(null);
@@ -107,7 +114,6 @@ describe('DependencyGraph', function() {
         'react-native',
       ],
       platforms: ['ios', 'android'],
-      shouldThrowOnUnresolvedErrors: () => false,
       useWatchman: false,
       maxWorkers: 1,
       resetCache: true,
@@ -1151,7 +1157,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    it('should be forgiving with missing requires', function() {
+    it('throws when a module is missing', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1168,21 +1174,11 @@ describe('DependencyGraph', function() {
         ...defaults,
         roots: [root],
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['lolomg'],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').catch(
+        error => {
+          expect(error.type).toEqual('UnableToResolveError');
+        }
+      );
     });
 
     it('should work with packages with subdirs', function() {
@@ -1908,9 +1904,11 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a package ("' + fieldName + '")', function() {
+        ResolutionRequest.emptyModule = '/root/emptyModule.js';
         var root = '/root';
         setMockFileSystem({
           'root': {
+            'emptyModule.js': '',
             'index.js': [
               '/**',
               ' * @providesModule index',
@@ -1958,14 +1956,26 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
+              {
+                dependencies: [],
+                id: '/root/emptyModule.js',
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                path: '/root/emptyModule.js',
+                resolution: undefined,
+              },
             ]);
         });
       });
 
       it('should support browser exclude of a file ("' + fieldName + '")', function() {
+        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+
         var root = '/root';
         setMockFileSystem({
           'root': {
+            'emptyModule.js': '',
             'index.js': [
               '/**',
               ' * @providesModule index',
@@ -1992,7 +2002,8 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {
+                id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -2000,12 +2011,22 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/index.js',
+              {
+                id: 'aPackage/index.js',
                 path: '/root/aPackage/index.js',
                 dependencies: ['./booga'],
                 isAsset: false,
                 isJSON: false,
                 isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                dependencies: [],
+                id: '/root/emptyModule.js',
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                path: '/root/emptyModule.js',
                 resolution: undefined,
               },
             ]);
@@ -2105,8 +2126,8 @@ describe('DependencyGraph', function() {
       const root = '/root';
       setMockFileSystem({
         [root.slice(1)]: {
-          'index.js': 'require("/root/arbitrary.js");',
-          'arbitrary.js': '',
+          'index.js': 'require("/root/apple.js");',
+          'apple.js': '',
         },
       });
 
@@ -2120,15 +2141,15 @@ describe('DependencyGraph', function() {
             {
               id: '/root/index.js',
               path: '/root/index.js',
-              dependencies: ['/root/arbitrary.js'],
+              dependencies: ['/root/apple.js'],
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
             },
             {
-              id: '/root/arbitrary.js',
-              path: '/root/arbitrary.js',
+              id: '/root/apple.js',
+              path: '/root/apple.js',
               dependencies: [],
               isAsset: false,
               isJSON: false,
@@ -2508,8 +2529,8 @@ describe('DependencyGraph', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("C:\\\\root\\\\arbitrary.js");',
-          'arbitrary.js': '',
+          'index.js': 'require("C:\\\\root\\\\apple.js");',
+          'apple.js': '',
         },
       });
 
@@ -2523,15 +2544,15 @@ describe('DependencyGraph', function() {
             {
               id: 'C:\\root\\index.js',
               path: 'C:\\root\\index.js',
-              dependencies: ['C:\\root\\arbitrary.js'],
+              dependencies: ['C:\\root\\apple.js'],
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
             },
             {
-              id: 'C:\\root\\arbitrary.js',
-              path: 'C:\\root\\arbitrary.js',
+              id: 'C:\\root\\apple.js',
+              path: 'C:\\root\\apple.js',
               dependencies: [],
               isAsset: false,
               isJSON: false,
@@ -2960,7 +2981,7 @@ describe('DependencyGraph', function() {
     it('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
       var otherRoot = '/anotherRoot';
-      setMockFileSystem({
+      const filesystem = {
         'root': {
           'index.js': [
             '/**',
@@ -3051,77 +3072,86 @@ describe('DependencyGraph', function() {
             'wazup()',
           ].join('\n'),
         },
-      });
+      };
+      setMockFileSystem(filesystem);
 
       var dgraph = new DependencyGraph({
         ...defaults,
         roots: [root, otherRoot],
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: [
-                'shouldWork',
-                'dontWork',
-                'wontWork',
-                'ember',
-                'internalVendoredPackage',
-                'anotherIndex',
-              ],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'shouldWork',
-              path: '/root/node_modules/react-haste/main.js',
-              dependencies: ['submodule'],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'submodule/main.js',
-              path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'ember/main.js',
-              path: '/root/node_modules/ember/main.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'internalVendoredPackage',
-              path: '/root/vendored_modules/a-vendored-package/main.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'anotherIndex',
-              path: '/anotherRoot/index.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-          ]);
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').catch(
+        error => {
+          expect(error.type).toEqual('UnableToResolveError');
+        }
+      ).then(() => {
+        filesystem.root['index.js'] = filesystem.root['index.js']
+          .replace('require("dontWork")', '')
+          .replace('require("wontWork")', '');
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
+          .then(deps => {
+            expect(deps).toEqual([
+              {
+                id: 'index',
+                path: '/root/index.js',
+                dependencies: [
+                  'shouldWork',
+                  'ember',
+                  'internalVendoredPackage',
+                  'anotherIndex',
+                ],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: 'shouldWork',
+                path: '/root/node_modules/react-haste/main.js',
+                dependencies: ['submodule'],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: 'submodule/main.js',
+                path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
+                dependencies: [],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: 'ember/main.js',
+                path: '/root/node_modules/ember/main.js',
+                dependencies: [],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: 'internalVendoredPackage',
+                path: '/root/vendored_modules/a-vendored-package/main.js',
+                dependencies: [],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              {
+                id: 'anotherIndex',
+                path: '/anotherRoot/index.js',
+                dependencies: [],
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+            ]);
+        });
       });
     });
 
@@ -3171,50 +3201,6 @@ describe('DependencyGraph', function() {
               id: 'shouldWork',
               path: '/react-haste/node_modules/react-haste/main.js',
               dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-          ]);
-      });
-    });
-
-
-    it('should ignore modules it cant find (assumes own require system)', function() {
-      // For example SourceMap.js implements it's own require system.
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("foo/lol");',
-          ].join('\n'),
-          'node_modules': {
-            'foo': {
-              'package.json': JSON.stringify({
-                name: 'foo',
-                main: 'main.js',
-              }),
-              'main.js': '/* foo module */',
-            },
-          },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['foo/lol'],
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
@@ -4522,10 +4508,6 @@ describe('DependencyGraph', function() {
   });
 
   describe('file watch updating', function() {
-    var mockStat = {
-      isDirectory: () => false,
-    };
-
     const realPlatform = process.platform;
     let DependencyGraph;
 
@@ -4549,7 +4531,7 @@ describe('DependencyGraph', function() {
             'require("aPackage")',
             'require("foo")',
           ].join('\n'),
-          'foo': [
+          'foo.js': [
             '/**',
             ' * @providesModule foo',
             ' */',
@@ -4694,29 +4676,10 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
         delete filesystem.root.foo;
         dgraph.processFileChange('delete', root + '/foo.js');
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-          expect(deps)
-            .toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage', 'foo'],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'aPackage/main.js',
-                path: '/root/aPackage/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-            ]);
-        });
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
+          .catch(error => {
+            expect(error.type).toEqual('UnableToResolveError');
+          });
       });
     });
 
@@ -4831,20 +4794,11 @@ describe('DependencyGraph', function() {
         assetExts: ['png'],
       });
 
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            { id: 'index',
-              path: '/root/index.js',
-              dependencies: ['./foo.png'],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').catch(
+        error => {
+          expect(error.type).toEqual('UnableToResolveError');
+        }
+      ).then(() => {
         filesystem.root['foo.png'] = '';
         dgraph._hasteFS._files[root + '/foo.png'] = ['', 8648460, 1, []];
         dgraph.processFileChange('add', root + '/foo.png', mockStat);
@@ -4964,24 +4918,40 @@ describe('DependencyGraph', function() {
         roots: [root],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
+        filesystem.root['index.js'] = [
+          '/**',
+          ' * @providesModule index',
+          ' */',
+          'require("bPackage")',
+        ].join('\n');
         filesystem.root.aPackage['package.json'] = JSON.stringify({
           name: 'bPackage',
           main: 'main.js',
         });
+        dgraph.processFileChange('change', root + '/index.js', mockStat);
         dgraph.processFileChange('change', root + '/aPackage/package.json', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               {
+                dependencies: ['bPackage'],
                 id: 'index',
-                path: '/root/index.js',
-                dependencies: ['aPackage'],
                 isAsset: false,
                 isJSON: false,
                 isPolyfill: false,
+                path: '/root/index.js',
                 resolution: undefined,
                 resolveDependency: undefined,
+              },
+              {
+                dependencies: [],
+                id: 'aPackage/main.js',
+                isAsset: false,
+                isJSON: false,
+                isPolyfill: false,
+                path: '/root/aPackage/main.js',
+                resolution: undefined,
               },
             ]);
         });
@@ -5319,12 +5289,14 @@ describe('DependencyGraph', function() {
     });
 
     it('allows setting dependencies for asset modules', () => {
-      const assetDependencies = ['arbitrary', 'dependencies'];
+      const assetDependencies = ['/root/apple.png', '/root/banana.png'];
 
       setMockFileSystem({
         'root': {
           'index.js': 'require("./a.png")',
           'a.png' : '',
+          'apple.png': '',
+          'banana.png': '',
         },
       });
 

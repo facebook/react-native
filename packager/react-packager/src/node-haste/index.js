@@ -79,7 +79,6 @@ class DependencyGraph {
   _loading: Promise<mixed>;
 
   constructor({
-    // additional arguments for jest-haste-map
     assetDependencies,
     assetExts,
     cache,
@@ -297,7 +296,6 @@ class DependencyGraph {
         platform,
         platforms: this._opts.platforms,
         preferNativePlatform: this._opts.preferNativePlatform,
-        shouldThrowOnUnresolvedErrors: this._opts.shouldThrowOnUnresolvedErrors,
       });
 
       const response = new ResolutionResponse({transformOptions});

@@ -27,8 +27,6 @@ import type Module from '../Module';
 import type ModuleCache from '../ModuleCache';
 import type ResolutionResponse from './ResolutionResponse';
 
-const emptyModule = require.resolve('./assets/empty-module.js');
-
 type DirExistsFn = (filePath: string) => boolean;
 
 type Options = {
@@ -43,7 +41,6 @@ type Options = {
   platform: string,
   platforms: Set<string>,
   preferNativePlatform: boolean,
-  shouldThrowOnUnresolvedErrors: () => boolean,
 };
 
 class ResolutionRequest {
@@ -58,7 +55,7 @@ class ResolutionRequest {
   _platform: string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
-  _shouldThrowOnUnresolvedErrors: () => boolean;
+  static emptyModule: string;
 
   constructor({
     dirExists,
@@ -71,7 +68,6 @@ class ResolutionRequest {
     platform,
     platforms,
     preferNativePlatform,
-    shouldThrowOnUnresolvedErrors,
   }: Options) {
     this._dirExists = dirExists;
     this._entryPath = entryPath;
@@ -83,7 +79,6 @@ class ResolutionRequest {
     this._platform = platform;
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
-    this._shouldThrowOnUnresolvedErrors = shouldThrowOnUnresolvedErrors;
     this._resetResolutionCache();
   }
 
@@ -109,38 +104,16 @@ class ResolutionRequest {
       return result;
     };
 
-    const forgive = (error) => {
-      if (
-        error.type !== 'UnableToResolveError' ||
-        this._shouldThrowOnUnresolvedErrors(this._entryPath, this._platform)
-      ) {
-        throw error;
-      }
-
-      debug(
-        'Unable to resolve module %s from %s',
-        toModuleName,
-        fromModule.path
-      );
-      return null;
-    };
-
     if (!this._helpers.isNodeModulesDir(fromModule.path)
         && !(isRelativeImport(toModuleName) || isAbsolutePath(toModuleName))) {
       return this._tryResolve(
         () => this._resolveHasteDependency(fromModule, toModuleName),
         () => this._resolveNodeDependency(fromModule, toModuleName)
-      ).then(
-        cacheResult,
-        forgive,
-      );
+      ).then(cacheResult);
     }
 
     return this._resolveNodeDependency(fromModule, toModuleName)
-      .then(
-        cacheResult,
-        forgive,
-      );
+      .then(cacheResult);
   }
 
   getOrderedDependencies({
@@ -311,7 +284,11 @@ class ResolutionRequest {
     return this._redirectRequire(fromModule, potentialModulePath).then(
       realModuleName => {
         if (realModuleName === false) {
-          return this._loadAsFile(emptyModule, fromModule, toModuleName);
+          return this._loadAsFile(
+            ResolutionRequest.emptyModule,
+            fromModule,
+            toModuleName,
+          );
         }
 
         return this._tryResolve(
@@ -330,7 +307,11 @@ class ResolutionRequest {
         realModuleName => {
           // exclude
           if (realModuleName === false) {
-            return this._loadAsFile(emptyModule, fromModule, toModuleName);
+            return this._loadAsFile(
+              ResolutionRequest.emptyModule,
+              fromModule,
+              toModuleName,
+            );
           }
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
@@ -525,5 +506,7 @@ function resolveKeyWithPromise([key, promise]) {
 function isRelativeImport(filePath) {
   return /^[.][.]?(?:[/]|$)/.test(filePath);
 }
+
+ResolutionRequest.emptyModule = require.resolve('./assets/empty-module.js');
 
 module.exports = ResolutionRequest;

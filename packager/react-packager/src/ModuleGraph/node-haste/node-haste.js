@@ -37,7 +37,6 @@ type ResolveOptions = {|
 |};
 
 const platforms = new Set(defaults.platforms);
-const returnTrue = () => true;
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
@@ -87,7 +86,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         platform,
         platforms,
         preferNativePlatform: true,
-        shouldThrowOnUnresolvedErrors: returnTrue,
       });
     }
 

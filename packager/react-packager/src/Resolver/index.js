@@ -98,7 +98,6 @@ class Resolver {
       preferNativePlatform: true,
       watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: () => true,
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
