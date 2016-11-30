@@ -19,6 +19,8 @@ var sharedBlacklist = [
 
   // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
   'Libraries/Relay/relay/tools/relayUnstableBatchedUpdates.js',
+
+  /heapCapture\/bundle\.js/,
 ];
 
 function escapeRegExp(pattern) {
