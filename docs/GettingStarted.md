@@ -260,6 +260,20 @@ Follow the [Watchman installation guide](https://facebook.github.io/watchman/doc
 > [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
 changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
 
+### Inotify watchers (Linux Only)
+
+It's very common a linux system has a limit on the number of files you can monitor. For example, Ubuntu (64bits) has a default value of 8192 for inotify limit. This can cause an error such as `"ERROR A non-recoverable condition has triggered. Watchman needs your help!"` when you run your react-native application. In order to prevent this situation, you should increase the number of inotify watchers by running the following command in a terminal.
+
+For Debian, RedHat based systems:
+
+`echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
+
+For ArchLinux based systems:
+
+`echo fs.inotify.max_user_watches=524288 | sudo tee /etc/sysctl.d/40-max-user-watches.conf && sudo sysctl --system`
+
+for more information check [Inotify](https://linux.die.net/man/7/inotify) web page.
+
 <block class="mac windows linux android" />
 
 ## Starting the Android Virtual Device
