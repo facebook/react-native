@@ -321,7 +321,7 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
 var TouchableMixin = {
 
   componentDidMount: function() {
-    if(isTVOS) {
+    if (isTVOS) {
       this._tvEventHandler = new TVEventHandler();
       this._tvEventHandler.enable(this, function(cmp, evt) {
         var myTag = ReactNative.findNodeHandle(cmp);
