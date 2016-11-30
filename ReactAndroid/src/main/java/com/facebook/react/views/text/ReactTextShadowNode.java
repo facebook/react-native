@@ -432,6 +432,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
+      markUpdated();
     }
   }
 
@@ -457,15 +458,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
-
-    if (fontSize == UNSET) {
-      fontSize = ViewDefaults.FONT_SIZE_SP;
-    }
-
-    if (mAllowFontScaling) {
-      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
-    } else {
-      fontSize = (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+    if (fontSize != UNSET) {
+      if (mAllowFontScaling) {
+        fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+      } else {
+        fontSize = (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+      }
     }
     mFontSize = (int) fontSize;
     markUpdated();
