@@ -19,6 +19,8 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 
+#import "RCTTVNavigationEventEmitter.h"
+
 @implementation RCTTVView
 {
   UITapGestureRecognizer *_selectRecognizer;
@@ -27,12 +29,13 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    
-    _tvParallaxDisable = false;
-    _tvParallaxShiftDistanceX = 2.0f;
-    _tvParallaxShiftDistanceY = 2.0f;
-    _tvParallaxTiltAngle = 0.05f;
-    _tvParallaxMagnification = 1.0f;
+    self.tvParallaxProperties = @{
+                                    @"enabled": @YES,
+                                    @"shiftDistanceX": @2.0f,
+                                    @"shiftDistanceY": @2.0f,
+                                    @"tiltAngle": @0.05f,
+                                    @"magnification": @1.0f
+                                };
     
   }
   
@@ -41,13 +44,9 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
-#pragma mark - Apple TV specific methods
-
-#if TARGET_OS_TV
-
-- (void)setOnTVSelect:(RCTDirectEventBlock)onTVSelect {
-  _onTVSelect = [onTVSelect copy];
-  if(_onTVSelect) {
+- (void)setIsTVSelectable:(BOOL)isTVSelectable {
+  self->_isTVSelectable = isTVSelectable;
+  if(isTVSelectable) {
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelect:)];
     recognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
     _selectRecognizer = recognizer;
@@ -60,10 +59,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 }
 
 - (void)handleSelect:(UIGestureRecognizer*)r {
-  RCTTVView *v = (RCTTVView*)r.view;
-  if(v.onTVSelect) {
-    v.onTVSelect(nil);
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                      object:@{@"eventType":@"select",@"tag":self.reactTag}];
 }
 
 - (BOOL)isUserInteractionEnabled {
@@ -71,13 +68,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 }
 
 - (BOOL)canBecomeFocused {
-  return (self.onTVSelect != nil);
+  return (self.isTVSelectable);
 }
 
-- (void)addParallaxMotionEffectsWithTiltValue:(CGFloat)tiltValue andPanValue:(CGFloat)panValue {
+- (void)addParallaxMotionEffects {
   // Size of shift movements
-  CGFloat const shiftDistanceX = self.tvParallaxShiftDistanceX;
-  CGFloat const shiftDistanceY = self.tvParallaxShiftDistanceY;
+  CGFloat const shiftDistanceX = [self.tvParallaxProperties[@"shiftDistanceX"] floatValue];
+  CGFloat const shiftDistanceY = [self.tvParallaxProperties[@"shiftDistanceY"] floatValue];
   
   // Make horizontal movements shift the centre left and right
   UIInterpolatingMotionEffect *xShift = [[UIInterpolatingMotionEffect alloc]
@@ -94,7 +91,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   yShift.maximumRelativeValue = [NSNumber numberWithFloat: shiftDistanceY];
   
   // Size of tilt movements
-  CGFloat const tiltAngle = self.tvParallaxTiltAngle;
+  CGFloat const tiltAngle = [self.tvParallaxProperties[@"tiltAngle"] floatValue];
   
   // Now make horizontal movements effect a rotation about the Y axis for side-to-side rotation.
   UIInterpolatingMotionEffect *xTilt = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"layer.transform" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
@@ -133,7 +130,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   // Add all of the motion effects to this group
   self.motionEffects = @[xShift, yShift, xTilt, yTilt];
   
-  float magnification = self.tvParallaxMagnification;
+  float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
   
   [UIView animateWithDuration:0.2 animations:^{
     self.transform = CGAffineTransformMakeScale(magnification, magnification);
@@ -143,20 +140,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
-  if(context.nextFocusedView == self && self.onTVSelect != nil ) {
+  if(context.nextFocusedView == self && self.isTVSelectable ) {
     [self becomeFirstResponder];
     [coordinator addCoordinatedAnimations:^(void){
-      if(!self.tvParallaxDisable)
-        [self addParallaxMotionEffectsWithTiltValue:0.25 andPanValue:5.0];
-      if(self.onTVFocus) {
-        self.onTVFocus(nil);
+      if([self.tvParallaxProperties[@"enabled"] boolValue]) {
+        [self addParallaxMotionEffects];
       }
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                          object:@{@"eventType":@"focus",@"tag":self.reactTag}];
     } completion:^(void){}];
   } else {
     [coordinator addCoordinatedAnimations:^(void){
-      if(self.onTVBlur) {
-        self.onTVBlur(nil);
-      }
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                          object:@{@"eventType":@"blur",@"tag":self.reactTag}];
       [UIView animateWithDuration:0.2 animations:^{
         self.transform = CGAffineTransformMakeScale(1, 1);
       }];
@@ -185,8 +181,5 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     });
   }
 }
-
-#endif
-
 
 @end

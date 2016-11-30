@@ -18,18 +18,12 @@
 /**
  * TV event handlers
  */
-@property (nonatomic, copy) RCTDirectEventBlock onTVSelect; // Called if this view is focused and the TV remote select button is pressed
-@property (nonatomic, copy) RCTDirectEventBlock onTVFocus; // Called when this view comes into focus when navigating via TV remote swipes or arrow keys
-@property (nonatomic, copy) RCTDirectEventBlock onTVBlur; // Called when this view leaves focus when navigating via TV remote swipes or arrow keys
+@property (nonatomic, assign) BOOL isTVSelectable; // True if this view is TV-focusable
 
 /**
  *  Properties for Apple TV focus parallax effects
  */
-@property (nonatomic, assign) BOOL tvParallaxDisable;
-@property (nonatomic, assign) float tvParallaxShiftDistanceX;
-@property (nonatomic, assign) float tvParallaxShiftDistanceY;
-@property (nonatomic, assign) float tvParallaxTiltAngle;
-@property (nonatomic, assign) float tvParallaxMagnification;
+@property (nonatomic, strong) NSDictionary *tvParallaxProperties;
 
 /**
  * TV preferred focus

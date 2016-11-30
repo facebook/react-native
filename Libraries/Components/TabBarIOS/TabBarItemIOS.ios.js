@@ -86,10 +86,6 @@ class TabBarItemIOS extends React.Component {
      * is defined.
      */
     title: React.PropTypes.string,
-
-    onTVSelect: React.PropTypes.func,
-    onTVFocus: React.PropTypes.func,
-    onTVBlur: React.PropTypes.func,
   };
 
   state = {
@@ -119,7 +115,7 @@ class TabBarItemIOS extends React.Component {
           {children}
         </StaticContainer>;
     } else {
-      var tabContents = <View />;
+      var tabContents = <View isTVSelectable={true}  />;
     }
 
     return (

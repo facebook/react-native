@@ -15,7 +15,6 @@
 
 var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -23,8 +22,6 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-
-var isTVOS = (Platform && Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -95,42 +92,18 @@ var TouchableHighlight = React.createClass({
      * @platform ios
      */
     hasTVPreferredFocus: React.PropTypes.bool,
-
     /**
-     * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
-     *
+     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+     * 
+     * enabled: If true, parallax effects are enabled.  Defaults to true.
+     * shiftDistanceX: Defaults to 2.0.
+     * shiftDistanceY: Defaults to 2.0.
+     * tiltAngle: Defaults to 0.05.
+     * magnification: Defaults to 1.0.
+     * 
      * @platform ios
      */
-    tvParallaxDisable: React.PropTypes.bool,
-
-    /**
-     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
-     *
-     * @platform ios
-     */
-    tvParallaxShiftDistanceX: React.PropTypes.number,
-
-    /**
-     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
-     *
-     * @platform ios
-     */
-    tvParallaxShiftDistanceY: React.PropTypes.number,
-
-    /**
-     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
-     *
-     * @platform ios
-     */
-    tvParallaxTiltAngle: React.PropTypes.number,
-
-    /**
-     * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
-     *
-     * @platform ios
-     */
-    tvParallaxMagnification: React.PropTypes.number,
-
+    tvParallaxProperties: React.PropTypes.object,
 
   },
 
@@ -281,14 +254,8 @@ var TouchableHighlight = React.createClass({
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
-        onTVSelect={this.props.onPress}
-        onTVFocus={this._showUnderlay}
-        onTVBlur={this._hideUnderlay}
-        tvParallaxDisable={this.props.tvParallaxDisable}
-        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
-        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
-        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
-        tvParallaxMagnification={this.props.tvParallaxMagnification}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
         hasTVPreferredFocus={this.state.hasTVPreferredFocus}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

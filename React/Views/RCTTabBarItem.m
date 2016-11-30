@@ -13,6 +13,8 @@
 #import "RCTLog.h"
 #import "UIView+React.h"
 
+#import "RCTTVNavigationEventEmitter.h"
+
 @implementation RCTConvert (UITabBarSystemItem)
 
 RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
@@ -107,7 +109,7 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 - (void)setBadgeColor:(UIColor *)bagdeColor
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
   _barItem.badgeColor = bagdeColor;
 #endif
 }
@@ -119,9 +121,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 #if TARGET_OS_TV
 
-- (void)setOnTVSelect:(RCTDirectEventBlock)onTVSelect {
-  _onTVSelect = [onTVSelect copy];
-  if(_onTVSelect) {
+- (void)setIsTVSelectable:(BOOL)isTVSelectable {
+  self->_isTVSelectable = isTVSelectable;
+  if(isTVSelectable) {
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelect:)];
     recognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
     _selectRecognizer = recognizer;
@@ -136,9 +138,8 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 - (void)handleSelect:(UIGestureRecognizer*)r {
   RCTTabBarItem *v = (RCTTabBarItem*)r.view;
-  if(v.onTVSelect) {
-    v.onTVSelect(nil);
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                      object:@{@"eventType":@"select",@"tag":v.reactTag}];
 }
 
 - (BOOL)isUserInteractionEnabled {
@@ -146,19 +147,17 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 }
 
 - (BOOL)canBecomeFocused {
-  return (self.onTVSelect != nil);
+  return (self.isTVSelectable);
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
-  if(context.nextFocusedView == self && self.onTVSelect != nil) {
-    if(self.onTVFocus) {
-      self.onTVFocus(nil);
-    }
+  if(context.nextFocusedView == self && self.isTVSelectable) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                        object:@{@"eventType":@"focus",@"tag":self.reactTag}];
     [self becomeFirstResponder];
   } else {
-    if(self.onTVBlur) {
-      self.onTVBlur(nil);
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+                                                        object:@{@"eventType":@"blur",@"tag":self.reactTag}];
     [self resignFirstResponder];
   }
 }

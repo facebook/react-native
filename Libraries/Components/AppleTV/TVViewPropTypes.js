@@ -17,29 +17,12 @@ var PropTypes = require('React').PropTypes;
  */
 var TVViewPropTypes = {
     /**
-     * *(Apple TV only)* Optional method.  When implemented, this view will be focusable
+     * *(Apple TV only)* Optional method.  When set to true, this view will be focusable
      * and navigable using the Apple TV remote.
      *
      * @platform ios
      */
-     onTVSelect: PropTypes.func,
-
-    /**
-     * *(Apple TV only)* Optional method. Will be called if this view comes into focus
-     * during navigation with the TV remote.  May be used to give the view a different
-     * appearance when focused.
-     *
-     * @platform ios
-     */
-    onTVFocus: PropTypes.func,
-
-    /**
-     * *(Apple TV only)* Optional method.  Will be called if this view leaves focus during
-     * navigation with the TV remote.
-     *
-     * @platform ios
-     */
-    onTVBlur: PropTypes.func,
+    isTVSelectable: PropTypes.bool,
 
     /**
      * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
@@ -49,11 +32,17 @@ var TVViewPropTypes = {
     hasTVPreferredFocus: PropTypes.bool,
 
     /**
-     * *(Apple TV only)* Set this to true to disable Apple TV parallax effects when this view goes in or out of focus.
-     *
+     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+     * 
+     * enabled: If true, parallax effects are enabled.  Defaults to true.
+     * shiftDistanceX: Defaults to 2.0.
+     * shiftDistanceY: Defaults to 2.0.
+     * tiltAngle: Defaults to 0.05.
+     * magnification: Defaults to 1.0.
+     * 
      * @platform ios
      */
-    tvParallaxDisable: PropTypes.bool,
+    tvParallaxProperties: PropTypes.object,
 
     /**
      * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.

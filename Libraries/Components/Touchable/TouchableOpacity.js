@@ -15,7 +15,6 @@
 
 var Animated = require('Animated');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -63,11 +62,7 @@ var TouchableOpacity = React.createClass({
     /**
      * Apple TV parallax effects
      */
-    tvParallaxDisable: React.PropTypes.bool,
-    tvParallaxShiftDistanceX: React.PropTypes.number,
-    tvParallaxShiftDistanceY: React.PropTypes.number,
-    tvParallaxTiltAngle: React.PropTypes.number,
-    tvParallaxMagnification: React.PropTypes.number,
+    tvParallaxProperties: React.PropTypes.object,
   },
 
   getDefaultProps: function() {
@@ -187,14 +182,8 @@ var TouchableOpacity = React.createClass({
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
-        onTVSelect={this.props.onPress}
-        onTVFocus={this._opacityFocused}
-        onTVBlur={this._opacityInactive}
-        tvParallaxDisable={this.props.tvParallaxDisable}
-        tvParallaxShiftDistanceX={this.props.tvParallaxShiftDistanceX}
-        tvParallaxShiftDistanceY={this.props.tvParallaxShiftDistanceY}
-        tvParallaxTiltAngle={this.props.tvParallaxTiltAngle}
-        tvParallaxMagnification={this.props.tvParallaxMagnification}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

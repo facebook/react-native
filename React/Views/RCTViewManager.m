@@ -107,15 +107,9 @@ RCT_EXPORT_MODULE()
 
 #if TARGET_OS_TV
 // Apple TV properties
-RCT_EXPORT_VIEW_PROPERTY(onTVSelect, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onTVFocus, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onTVBlur, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxDisable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxShiftDistanceX, float)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxShiftDistanceY, float)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxTiltAngle, float)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxMagnification, float)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
