@@ -123,10 +123,6 @@ class Resolver {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
-  }
-
   getModuleForPath(entryFile) {
     return this._depGraph.getModuleForPath(entryFile);
   }

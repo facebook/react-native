@@ -347,7 +347,7 @@ class Server {
     if (this._hmrFileChangeListener) {
       // Clear cached bundles in case user reloads
       this._clearBundles();
-      this._hmrFileChangeListener(filePath, this._bundler.stat(filePath));
+      this._hmrFileChangeListener(type, filePath);
       return;
     } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files

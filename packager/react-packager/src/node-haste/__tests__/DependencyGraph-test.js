@@ -18,8 +18,6 @@ jest
   .mock('child_process', () => ({}))
   ;
 
-const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
-
 // This doesn't have state, and it's huge (Babel) so it's much faster to
 // require it only once.
 const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
@@ -4848,6 +4846,7 @@ describe('DependencyGraph', function() {
           ]);
 
         filesystem.root['foo.png'] = '';
+        dgraph._hasteFS._files[root + '/foo.png'] = ['', 8648460, 1, []];
         dgraph.processFileChange('add', root + '/foo.png', mockStat);
 
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps2) {
@@ -5247,199 +5246,6 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               path: '/root/a.coffee',
               resolution: undefined,
-            },
-          ]);
-        });
-    });
-  });
-
-  describe('Mocks', () => {
-    const realPlatform = process.platform;
-    let DependencyGraph;
-    beforeEach(function() {
-      process.platform = 'linux';
-      DependencyGraph = require('../index');
-    });
-
-    afterEach(function() {
-      process.platform = realPlatform;
-    });
-
-    it('resolves to null if mocksPattern is not specified', () => {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          '__mocks__': {
-            'A.js': '',
-          },
-          'index.js': '',
-        },
-      });
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-
-      return dgraph.getDependencies({entryPath: '/root/index.js'})
-        .then(response => response.finalize())
-        .then(response => {
-          expect(response.mocks).toEqual({});
-        });
-    });
-
-    it('retrieves a list of all required mocks', () => {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          '__mocks__': {
-            'A.js': '',
-            'b.js': '',
-          },
-          'b.js': [
-            '/**',
-            ' * @providesModule b',
-            ' */',
-            'require("A");',
-          ].join('\n'),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        mocksPattern,
-      });
-
-      return dgraph.getDependencies({entryPath: '/root/b.js'})
-        .then(response => response.finalize())
-        .then(response => {
-          expect(response.mocks).toEqual({
-            A: '/root/__mocks__/A.js',
-            b: '/root/__mocks__/b.js',
-          });
-        });
-    });
-
-    it('adds mocks as a dependency of their actual module', () => {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          '__mocks__': {
-            'A.js': [
-              'require("b");',
-            ].join('\n'),
-            'b.js': '',
-          },
-          'A.js': [
-            '/**',
-            ' * @providesModule A',
-            ' */',
-            'require("foo");',
-          ].join('\n'),
-          'foo.js': [
-            '/**',
-            ' * @providesModule foo',
-            ' */',
-          ].join('\n'),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        mocksPattern,
-      });
-
-      return getOrderedDependenciesAsJSON(dgraph, '/root/A.js')
-        .then(deps => {
-          expect(deps).toEqual([
-            {
-              path: '/root/A.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: 'A',
-              dependencies: ['foo', 'A'],
-            },
-            {
-              path: '/root/foo.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: 'foo',
-              dependencies: [],
-            },
-            {
-              path: '/root/__mocks__/A.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: '/root/__mocks__/A.js',
-              dependencies: ['b'],
-            },
-            {
-              path: '/root/__mocks__/b.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: '/root/__mocks__/b.js',
-              dependencies: [],
-            },
-          ]);
-        });
-    });
-
-    it('resolves mocks that do not have a real module associated with them', () => {
-      var root = '/root';
-      setMockFileSystem({
-        'root': {
-          '__mocks__': {
-            'foo.js': [
-              'require("b");',
-            ].join('\n'),
-            'b.js': '',
-          },
-          'A.js': [
-            '/**',
-            ' * @providesModule A',
-            ' */',
-            'require("foo");',
-          ].join('\n'),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-        mocksPattern,
-      });
-
-      return getOrderedDependenciesAsJSON(dgraph, '/root/A.js')
-        .then(deps => {
-          expect(deps).toEqual([
-            {
-              path: '/root/A.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: 'A',
-              dependencies: ['foo'],
-            },
-            {
-              path: '/root/__mocks__/foo.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: '/root/__mocks__/foo.js',
-              dependencies: ['b'],
-            },
-            {
-              path: '/root/__mocks__/b.js',
-              isJSON: false,
-              isAsset: false,
-              isPolyfill: false,
-              id: '/root/__mocks__/b.js',
-              dependencies: [],
             },
           ]);
         });

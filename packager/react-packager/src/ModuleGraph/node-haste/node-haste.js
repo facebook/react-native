@@ -13,9 +13,7 @@
 
 import type { // eslint-disable-line sort-requires
   Extensions,
-  HasteMapT,
   Path,
-  ResolutionRequestT,
 } from './node-haste.flow';
 
 import type {
@@ -24,11 +22,12 @@ import type {
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
-const FastFS = require('./FastFS');
-const HasteMap: Class<HasteMapT> = require('../../node-haste/DependencyGraph/HasteMap');
+const HasteFS = require('./HasteFS');
+const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
-const ResolutionRequest: Class<ResolutionRequestT> = require('../../node-haste/DependencyGraph/ResolutionRequest');
+const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
+
 const defaults = require('../../../../defaults');
 
 type ResolveOptions = {|
@@ -57,12 +56,15 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     providesModuleNodeModules: defaults.providesModuleNodeModules,
   });
 
-  const fastfs = new FastFS(files);
-  const moduleCache = new ModuleCache(fastfs, getTransformedFile);
+  const hasteFS = new HasteFS(files);
+  const moduleCache = new ModuleCache(
+    filePath => hasteFS.closest(filePath, 'package.json'),
+    getTransformedFile,
+  );
   const hasteMap = new HasteMap({
     allowRelativePaths: true,
     extensions: ['js', 'json'],
-    fastfs,
+    files,
     helpers,
     moduleCache,
     platforms,
@@ -75,8 +77,10 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
       resolutionRequest = resolutionRequests[platform] = new ResolutionRequest({
+        dirExists: filePath => hasteFS.dirExists(filePath),
+        entryPath: '',
         extraNodeModules,
-        fastfs,
+        hasteFS,
         hasteMap,
         helpers,
         moduleCache,

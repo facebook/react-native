@@ -17,6 +17,7 @@ const TransformCache = require('../lib/TransformCache');
 const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
+const fs = require('fs');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
@@ -28,7 +29,6 @@ import type {ReadTransformProps} from '../lib/TransformCache';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
-import type FastFs from './fastfs';
 
 type ReadResult = {
   code?: string,
@@ -50,7 +50,6 @@ export type Options = {
 
 export type ConstructorArgs = {
   file: string,
-  fastfs: FastFs,
   moduleCache: ModuleCache,
   cache: Cache,
   transformCode: ?TransformCode,
@@ -64,7 +63,6 @@ class Module {
   path: string;
   type: string;
 
-  _fastfs: FastFs;
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
@@ -80,7 +78,6 @@ class Module {
 
   constructor({
     file,
-    fastfs,
     moduleCache,
     cache,
     transformCode,
@@ -95,7 +92,6 @@ class Module {
     this.path = file;
     this.type = 'Module';
 
-    this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
@@ -190,7 +186,9 @@ class Module {
 
   _readSourceCode() {
     if (!this._readSourceCodePromise) {
-      this._readSourceCodePromise = this._fastfs.readFile(this.path);
+      this._readSourceCodePromise = new Promise(
+        resolve => resolve(fs.readFileSync(this.path, 'utf8'))
+      );
     }
     return this._readSourceCodePromise;
   }

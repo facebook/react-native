@@ -13,7 +13,7 @@
 
 const {dirname, join, parse} = require('path');
 
-module.exports = class FastFS {
+module.exports = class HasteFS {
   directories: Set<string>;
   directoryEntries: Map<string, Array<string>>;
   files: Set<string>;
@@ -40,7 +40,7 @@ module.exports = class FastFS {
     return this.directories.has(path);
   }
 
-  fileExists(path: string) {
+  exists(path: string) {
     return this.files.has(path);
   }
 

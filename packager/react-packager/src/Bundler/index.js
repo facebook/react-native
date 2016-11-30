@@ -502,10 +502,6 @@ class Bundler {
     });
   }
 
-  stat(filePath: string) {
-    return this._resolver.stat(filePath);
-  }
-
   getModuleForPath(entryFile: string) {
     return this._resolver.getModuleForPath(entryFile);
   }
