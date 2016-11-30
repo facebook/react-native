@@ -40,10 +40,12 @@ type Dependency = {|
 
 export type File = {|
   code: string,
-  isPolyfill: boolean,
   map?: ?Object,
   path: string,
+  type: FileTypes,
 |};
+
+type FileTypes = 'module' | 'script';
 
 export type Module = {|
   dependencies: Array<Dependency>,
@@ -82,9 +84,9 @@ export type TransformedFile = {
   code: string,
   file: string,
   hasteID: ?string,
-  isPolyfill: boolean,
   package?: PackageData,
   transformed: {[variant: string]: TransformResult},
+  type: FileTypes,
 };
 
 export type PackageData = {|

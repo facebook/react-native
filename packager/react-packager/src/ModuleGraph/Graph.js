@@ -50,7 +50,7 @@ type LoadQueue =
   Async$Queue<{id: string, parent: string}, Callback<File, Array<string>>>;
 
 const createParentModule =
-  () => ({file: {code: '', isPolyfill: false, path: ''}, dependencies: []});
+  () => ({file: {code: '', type: 'script', path: ''}, dependencies: []});
 
 const noop = () => {};
 const NO_OPTIONS = {};
