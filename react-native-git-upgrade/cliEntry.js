@@ -18,6 +18,7 @@ const TerminalAdapter = require('yeoman-environment/lib/adapter');
 const log = require('npmlog');
 const rimraf = require('rimraf');
 const semver = require('semver');
+const yarn = require('./yarn');
 
 const {
   checkDeclaredVersion,
@@ -63,11 +64,12 @@ stdout: ${stdout}`));
 }
 
 /**
-+ * Returns two objects:
-+ * - Parsed node_modules/react-native/package.json
-+ * - Parsed package.json
-+ */
-function readPackageFiles() {
+ * Returns three objects:
+ * - Parsed node_modules/react-native/package.json
+ * - Parsed node_modules/react/package.json
+ * - Parsed package.json
+ */
+function readPackageFiles(useYarn) {
   const reactNativeNodeModulesPakPath = path.resolve(
     process.cwd(),
     'node_modules',
@@ -95,9 +97,12 @@ function readPackageFiles() {
     return {reactNativeNodeModulesPak, reactNodeModulesPak, pak};
   } catch (err) {
     throw new Error(
-      'Unable to find one of "' + pakPath + '", "' + rnPakPath + '" or "' + reactPakPath + '". ' +
-      'Make sure you ran "npm install" and that you are inside a React Native project.'
-    )
+      'Unable to find "' + pakPath + '" or "' + nodeModulesPakPath + '". ' +
+      (useYarn ?
+        'Make sure you ran "yarn" and that you are inside a React Native project.' :
+        'Make sure you ran "npm install" and that you are inside a React Native project.'
+      )
+    );
   }
 }
 
@@ -192,6 +197,21 @@ async function checkForUpdates() {
 }
 
 /**
+ * If true, use yarn instead of the npm client to upgrade the project.
+ */
+function shouldUseYarn(cliArgs, projectDir) {
+  if (cliArgs && cliArgs.npm) {
+    return false;
+  }
+  const yarnVersion = yarn.getYarnVersionIfAvailable();
+  if (yarnVersion && yarn.isProjectUsingYarn(projectDir)) {
+    log.info('Using yarn ' + yarnVersion);
+    return true;
+  }
+  return false;
+}
+
+/**
  * @param requestedVersion The version argument, e.g. 'react-native-git-upgrade 0.38'.
  *                         `undefined` if no argument passed.
  * @param cliArgs Additional arguments parsed using minimist.
@@ -204,8 +224,10 @@ async function run(requestedVersion, cliArgs) {
   try {
     await checkForUpdates();
 
+    const useYarn = shouldUseYarn(cliArgs, path.resolve(process.cwd()));
+
     log.info('Read package.json files');
-    const {reactNativeNodeModulesPak, reactNodeModulesPak, pak} = readPackageFiles();
+    const {reactNativeNodeModulesPak, reactNodeModulesPak, pak} = readPackageFiles(useYarn);
     const appName = pak.name;
     const currentVersion = reactNativeNodeModulesPak.version;
     const currentReactVersion = reactNodeModulesPak.version;
@@ -264,10 +286,15 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    let installCommand = 'npm install --save --color=always';
+    let installCommand;
+    if (useYarn) {
+      installCommand = 'yarn add';
+    } else {
+      installCommand = 'npm install --save --color=always';
+    }
     installCommand += ' react-native@' + newVersion;
-    if (!semver.satisfies(currentReactVersion, newReactVersionRange)) {
-      // Install React as well to avoid unmet peer dependency
+    if (newReactVersionRange && !semver.satisfies(currentReactVersion, newReactVersionRange)) {
+      // Install React as well to avoid unmet peer dependency.
       installCommand += ' react@' + newReactVersionRange;
     }
     await exec(installCommand, verbose);

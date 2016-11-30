@@ -19,12 +19,14 @@ function checkDeclaredVersion(declaredVersion) {
   }
 }
 
-function checkMatchingVersions(currentVersion, declaredVersion) {
+function checkMatchingVersions(currentVersion, declaredVersion, useYarn) {
   if (!semver.satisfies(currentVersion, declaredVersion)) {
     throw new Error(
       'react-native version in "package.json" (' + declaredVersion + ') doesn\'t match ' +
       'the installed version in "node_modules" (' + currentVersion + ').\n' +
-      'Try running "npm install" to fix this.'
+      (useYarn ?
+        'Try running "yarn" to fix this.' :
+        'Try running "npm install" to fix this.')
     );
   }
 }
