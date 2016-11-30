@@ -24,7 +24,7 @@ const {
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
-  checkNewVersion
+  checkNewVersionValid
 } = require('./checks');
 
 log.heading = 'git-upgrade';
@@ -62,8 +62,13 @@ stdout: ${stdout}`));
   })
 }
 
+/**
++ * Returns two objects:
++ * - Parsed node_modules/react-native/package.json
++ * - Parsed package.json
++ */
 function readPackageFiles() {
-  const rnPakPath = path.resolve(
+  const nodeModulesPakPath = path.resolve(
     process.cwd(),
     'node_modules',
     'react-native',
@@ -76,14 +81,14 @@ function readPackageFiles() {
   );
 
   try {
-    const rnPak = JSON.parse(fs.readFileSync(rnPakPath, 'utf8'));
+    const nodeModulesPak = JSON.parse(fs.readFileSync(nodeModulesPakPath, 'utf8'));
     const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
 
-    return {rnPak, pak};
+    return {nodeModulesPak, pak};
   } catch (err) {
     throw new Error(
-      'Unable to find "' + pakPath + '" or "' + rnPakPath + '". Make sure that you have run ' +
-      '"npm install" and that you are inside a React Native project.'
+      'Unable to find "' + pakPath + '" or "' + nodeModulesPakPath + '". ' +
+      'Make sure you ran  "npm install" and that you are inside a React Native project.'
     )
   }
 }
@@ -106,8 +111,8 @@ function configureGitEnv(tmpDir) {
   /*
    * The workflow inits a temporary Git repository. We don't want to interfere
    * with an existing user's Git repository.
-   * Thanks to Git env vars, we could address an different directory from the
-   * default ".git". See https://git-scm.com/book/tr/v2/Git-Internals-Environment-Variables
+   * Thanks to Git env vars, we can make Git use a different directory for its ".git" folder.
+   * See https://git-scm.com/book/tr/v2/Git-Internals-Environment-Variables
    */
   process.env.GIT_DIR = path.resolve(tmpDir, '.gitrn');
   process.env.GIT_WORK_TREE = '.';
@@ -161,7 +166,7 @@ function runYeomanGenerators(generatorDir, appName, verbose) {
  */
 async function checkForUpdates() {
   try {
-    log.info('Check for react-native-git-upgrade updates');
+    log.info('Check for updates');
     const lastGitUpgradeVersion = await exec('npm view react-native-git-upgrade@latest version');
     const current = require('./package').version;
     const latest = semver.clean(lastGitUpgradeVersion);
@@ -178,50 +183,54 @@ async function checkForUpdates() {
   }
 }
 
-async function run(requiredVersion, cliArgs) {
-  const context = {
-    tmpDir: path.resolve(os.tmpdir(), 'react-native-git-upgrade'),
-    generatorDir: path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator'),
-    requiredVersion,
-    cliArgs,
-  };
+/**
+ * @param requestedVersion The version argument, e.g. 'react-native-git-upgrade 0.38'.
+ *                         `undefined` if no argument passed.
+ * @param cliArgs Additional arguments parsed using minimist.
+ */
+async function run(requestedVersion, cliArgs) {
+  const tmpDir = path.resolve(os.tmpdir(), 'react-native-git-upgrade');
+  const generatorDir = path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator');
 
   try {
+    let projectBackupCreated = false;
+
     await checkForUpdates();
 
     log.info('Read package.json files');
-    const {rnPak, pak} = readPackageFiles();
-    context.appName = pak.name;
-    context.currentVersion = rnPak.version;
-    context.declaredVersion = pak.dependencies['react-native'];
-    context.declaredReactVersion = pak.dependencies.react;
+    const {nodeModulesPak, pak} = readPackageFiles();
+    const appName = pak.name;
+    const currentVersion = nodeModulesPak.version;
+    const declaredVersion = pak.dependencies['react-native'];
+    const declaredReactVersion = pak.dependencies.react;
 
-    const verbose = context.cliArgs.verbose;
+    const verbose = cliArgs.verbose;
 
     log.info('Check declared version');
-    checkDeclaredVersion(context.declaredVersion);
+    checkDeclaredVersion(declaredVersion);
 
     log.info('Check matching versions');
-    checkMatchingVersions(context.currentVersion, context.declaredVersion);
+    checkMatchingVersions(currentVersion, declaredVersion);
 
     log.info('Check React peer dependency');
-    checkReactPeerDependency(context.currentVersion, context.declaredReactVersion);
+    checkReactPeerDependency(currentVersion, declaredReactVersion);
 
-    log.info('Check Git installation');
+    log.info('Check that Git is installed');
     checkGitAvailable();
 
     log.info('Get react-native version from NPM registry');
-    const versionOutput = await exec('npm view react-native@' + (context.requiredVersion || 'latest') + ' version', verbose);
-    context.newVersion = semver.clean(versionOutput);
+    const versionOutput = await exec('npm view react-native@' + (requestedVersion || 'latest') + ' version', verbose);
+    const newVersion = semver.clean(versionOutput);
+    log.info('Upgrading to React Native ' + newVersion);
 
     log.info('Check new version');
-    checkNewVersion(context.newVersion, context.requiredVersion);
+    checkNewVersionValid(newVersion, requestedVersion);
 
     log.info('Setup temporary working directory');
-    await setupWorkingDir(context.tmpDir);
+    await setupWorkingDir(tmpDir);
 
     log.info('Configure Git environment');
-    configureGitEnv(context.tmpDir);
+    configureGitEnv(tmpDir);
 
     log.info('Init Git repository');
     await exec('git init', verbose);
@@ -229,15 +238,15 @@ async function run(requiredVersion, cliArgs) {
     log.info('Add all files to commit');
     await exec('git add .', verbose);
 
-    log.info('Commit pristine sources');
+    log.info('Commit current project sources');
     await exec('git commit -m "Project snapshot"', verbose);
 
     log.info ('Create a tag before updating sources');
     await exec('git tag project-snapshot', verbose);
-    context.sourcesUpdated = true;
+    projectBackupCreated = true;
 
     log.info('Generate old version template');
-    await generateTemplates(context.generatorDir, context.appName, verbose);
+    await generateTemplates(generatorDir, appName, verbose);
 
     log.info('Add updated files to commit');
     await exec('git add .', verbose);
@@ -246,10 +255,10 @@ async function run(requiredVersion, cliArgs) {
     await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    await exec('npm install --save react-native@' + context.newVersion + ' --color=always', verbose);
+    await exec('npm install --save react-native@' + newVersion + ' --color=always', verbose);
 
     log.info('Generate new version template');
-    await generateTemplates(context.generatorDir, context.appName, verbose);
+    await generateTemplates(generatorDir, appName, verbose);
 
     log.info('Add updated files to commit');
     await exec('git add .', verbose);
@@ -261,28 +270,30 @@ async function run(requiredVersion, cliArgs) {
     const diffOutput = await exec('git diff HEAD~1 HEAD', verbose);
 
     log.info('Save the patch in temp directory');
-    context.patchPath = path.resolve(context.tmpDir, `upgrade_${context.currentVersion}_${context.newVersion}.patch`);
-    fs.writeFileSync(context.patchPath, diffOutput);
+    const patchPath = path.resolve(tmpDir, `upgrade_${currentVersion}_${newVersion}.patch`);
+    fs.writeFileSync(patchPath, diffOutput);
 
     log.info('Reset the 2 temporary commits');
     await exec('git reset HEAD~2 --hard', verbose);
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${context.patchPath}`, true);
+      await exec(`git apply --3way ${patchPath}`, true);
     } catch (err) {
-      log.warn('The upgrade process succeeded but you may have conflicts to solve');
+      log.warn(
+        'The upgrade process succeeded but there might be conflicts to be resolved.\n' + 
+        'See above for the list of files that had merge conflicts.');
     } finally {
       log.info('Upgrade done');
-      if (context.cliArgs.verbose) {
-        log.info(`Temporary working directory: ${context.tmpDir}`);
+      if (cliArgs.verbose) {
+        log.info(`Temporary working directory: ${tmpDir}`);
       }
     }
 
   } catch (err) {
     log.error('An error occurred during upgrade:');
     log.error(err.stack);
-    if (context.sourcesUpdated) {
+    if (projectBackupCreated) {
       log.error('Restore initial sources');
       await exec('git checkout project-snapshot', true);
     }

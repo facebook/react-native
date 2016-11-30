@@ -52,10 +52,10 @@ function checkGitAvailable() {
   }
 }
 
-function checkNewVersion(newVersion, requiredVersion) {
-  if (!semver.valid(newVersion) && requiredVersion) {
+function checkNewVersionValid(newVersion, requestedVersion) {
+  if (!semver.valid(newVersion) && requestedVersion) {
     throw new Error(
-      'The specified version of React Native ' + requiredVersion + ' doesn\'t exist.\n' +
+      'The specified version of React Native ' + requestedVersion + ' doesn\'t exist.\n' +
       'Re-run the react-native-git-upgrade command with an existing version,\n' +
       'for example: "react-native-git-upgrade 0.38.0",\n' +
       'or without arguments to upgrade to the latest: "react-native-git-upgrade".'
@@ -68,5 +68,5 @@ module.exports = {
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
-  checkNewVersion,
+  checkNewVersionValid,
 };
