@@ -39,8 +39,9 @@ type Dependency = {|
 |};
 
 export type File = {|
-  ast: Object,
-  code?: string,
+  code: string,
+  isPolyfill: boolean,
+  map?: ?Object,
   path: string,
 |};
 
@@ -52,7 +53,7 @@ export type Module = {|
 export type GraphFn = (
   entryPoints: Iterable<string>,
   platform: string,
-  options?: GraphOptions,
+  options?: ?GraphOptions,
   callback?: Callback<Array<Module>>,
 ) => void;
 
