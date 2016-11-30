@@ -317,7 +317,7 @@ var styles = StyleSheet.create({
   },
   newGameText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 21,
     fontFamily: 'AvenirNext-DemiBold',
   },
 });
