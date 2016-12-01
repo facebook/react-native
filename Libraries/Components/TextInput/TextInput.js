@@ -575,6 +575,12 @@ const TextInput = createReactClass({
     inlineImagePadding: PropTypes.number,
 
     /**
+     * Allow TextInput to pass touch event to parent.
+     * @platform ios
+     */
+    rejectResponderTermination: PropTypes.bool,
+
+    /**
      * Determines the types of data converted to clickable URLs in the text input.
      * Only valid if `multiline={true}` and `editable={false}`.
      * By default no data types are detected.
@@ -601,11 +607,14 @@ const TextInput = createReactClass({
      */
     caretHidden: PropTypes.bool,
   },
+
   getDefaultProps(): Object {
     return {
+      rejectResponderTermination: false,
       allowFontScaling: true,
     };
   },
+
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -770,7 +779,7 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
-        rejectResponderTermination={true}
+        rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityTraits={props.accessibilityTraits}
@@ -859,9 +868,9 @@ const TextInput = createReactClass({
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
     if (this._inputRef) {
-      this._inputRef.setNativeProps({
-        mostRecentEventCount: event.nativeEvent.eventCount,
-      });
+    this._inputRef.setNativeProps({
+      mostRecentEventCount: event.nativeEvent.eventCount,
+    });
     }
 
     var text = event.nativeEvent.text;
