@@ -19,7 +19,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var merge = require('merge');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 // Diff Helpers
 
