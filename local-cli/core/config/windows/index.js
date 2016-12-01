@@ -17,6 +17,18 @@ const path = require('path');
 const generateGUID = require('./generateGUID');
 // const readProject = require('./readProject');
 
+const relativeProjPath = (fullProjPath) => {
+  const windowsPath = fullProjPath
+                  .substring(fullProjPath.lastIndexOf("node_modules") - 1, fullProjPath.length)
+                  .replace(/\//g, '\\');
+
+  return '..' + windowsPath;
+}
+
+const projectName = (fullProjPath) => {
+  return fullProjPath.split('/').slice(-1)[0].replace(/\.csproj/i, '')
+}
+
 /**
  * Gets windows project config by analyzing given folder and taking some
  * defaults specified by user into consideration
@@ -30,7 +42,6 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
 
   return null;
 };
-
 
 /**
  * Same as projectConfigWindows except it returns
@@ -59,19 +70,16 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
     return null;
   }
 
-
   const packageUsingPath = userConfig.packageUsingPath ||
     `using ${namespace};`;
 
   const packageInstance = userConfig.packageInstance ||
     `new ${packageClassName}()`;
 
-
   const projectGUID = generateGUID();
   const pathGUID = generateGUID();
-  const relativeProj = csProj.substring(csProj.lastIndexOf("node_modules") - 1, csProj.length)
   const solutionEntry = `
-Project("{${projectGUID.toUpperCase()}}") = "RNWinGif", "..${relativeProj}", "{${pathGUID.toUpperCase()}}"
+Project("{${projectGUID.toUpperCase()}}") = "${projectName(csProj)}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
 EndProject
   `
 
