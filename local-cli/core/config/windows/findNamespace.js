@@ -13,8 +13,8 @@ const glob = require('glob');
 const path = require('path');
 
 /**
- * Gets package's class name (class that implements ReactPage)
- * by searching for its declaration in all Java files present in the folder
+ * Gets package's namespace
+ * by searching for its declaration in all C# files present in the folder
  *
  * @param {String} folder Folder to find C# files
  */

@@ -12,7 +12,7 @@ const glob = require('glob');
 const path = require('path');
 
 /**
- * Find an android application path in the folder
+ * Find an C# project file
  *
  * @param {String} folder Name of the folder where to seek
  * @return {String}
