@@ -19,6 +19,9 @@
 @end
 
 @implementation RCTDatePicker
+{
+  BOOL _initialDateSet;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -35,6 +38,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_onChange) {
     _onChange(@{ @"timestamp": @(self.date.timeIntervalSince1970 * 1000.0) });
+  }
+}
+
+- (void)setInitialDate:(NSDate *)initialDate {
+  if (!_initialDateSet) {
+    _initialDateSet = YES;
+    self.date = initialDate;
   }
 }
 
