@@ -20,10 +20,10 @@ import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -41,7 +41,6 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
-    super(false);
     setMeasureFunction(this);
   }
 
@@ -71,13 +70,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void measure(
+  public long measure(
       CSSNodeAPI node,
       float width,
       CSSMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+      CSSMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
@@ -104,8 +102,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
-    measureOutput.width = editText.getMeasuredWidth();
-    measureOutput.height = editText.getMeasuredHeight();
+
+    return MeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override

@@ -16,7 +16,6 @@ import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSPositionType;
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.JavaOnlyMap;
 
 import org.junit.After;

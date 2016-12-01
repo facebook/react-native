@@ -277,6 +277,17 @@ exports.examples = [
     );
   },
 }, {
+  title: 'Selectable',
+  render: function() {
+    return (
+      <View>
+        <Text selectable={true}>
+          This text is <Text style={{fontWeight: 'bold'}}>selectable</Text> if you click-and-hold.
+        </Text>
+      </View>
+    );
+  },
+}, {
   title: 'Text Decoration',
   render: function() {
     return (

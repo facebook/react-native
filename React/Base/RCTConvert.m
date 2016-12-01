@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <CoreText/CoreText.h>
-
 #import "RCTConvert.h"
 
 #import <objc/message.h>
+
+#import <CoreText/CoreText.h>
 
 #import "RCTDefines.h"
 #import "RCTImageSource.h"
@@ -648,10 +648,10 @@ RCT_ENUM_CONVERTER(CSSPositionType, (@{
   @"relative": @(CSSPositionTypeRelative)
 }), CSSPositionTypeRelative, intValue)
 
-RCT_ENUM_CONVERTER(CSSWrapType, (@{
-  @"wrap": @(CSSWrapTypeWrap),
-  @"nowrap": @(CSSWrapTypeNoWrap)
-}), CSSWrapTypeNoWrap, intValue)
+RCT_ENUM_CONVERTER(CSSWrap, (@{
+  @"wrap": @(CSSWrapWrap),
+  @"nowrap": @(CSSWrapNoWrap)
+}), CSSWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),

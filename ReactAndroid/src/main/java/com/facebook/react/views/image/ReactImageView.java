@@ -31,7 +31,6 @@ import android.graphics.drawable.Drawable;
 
 import com.facebook.common.util.UriUtil;
 import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.FloatUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
@@ -51,6 +50,7 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;

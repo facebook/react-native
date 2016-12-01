@@ -9,9 +9,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTComponent.h"
-#import "RCTDefines.h"
-#import "RCTViewManager.h"
+#import <React/RCTComponent.h>
+#import <React/RCTDefines.h>
+#import <React/RCTViewManager.h>
 
 @class RCTBridge;
 @class RCTShadowView;

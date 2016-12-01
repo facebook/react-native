@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const ReactNativeMount = require('react/lib/ReactNativeMount');
+const ReactNativeMount = require('ReactNativeMount');
 const getReactData = require('getReactData');
 
 const INDENTATION_SIZE = 2;

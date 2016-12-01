@@ -12,13 +12,15 @@ package com.facebook.csslayout;
 public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
 
   interface MeasureFunction {
-    void measure(
+    /**
+     * Return a value created by MeasureOutput.make(width, height);
+     */
+    long measure(
         CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput);
+        CSSMeasureMode heightMode);
   }
 
   int getChildCount();
@@ -29,14 +31,12 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   int indexOf(CSSNodeType child);
   void setMeasureFunction(MeasureFunction measureFunction);
   boolean isMeasureDefined();
-  void setIsTextNode(boolean isTextNode);
-  boolean isTextNode();
-  void calculateLayout(CSSLayoutContext layoutContext);
+  void calculateLayout();
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();
   void markLayoutSeen();
-  boolean valuesEqual(float f1, float f2);
+  void copyStyle(CSSNodeType srcNode);
   CSSDirection getStyleDirection();
   void setDirection(CSSDirection direction);
   CSSFlexDirection getFlexDirection();
@@ -59,26 +59,26 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setFlexShrink(float flexShrink);
   float getFlexBasis();
   void setFlexBasis(float flexBasis);
-  float getMargin(int spacingType);
-  void setMargin(int spacingType, float margin);
-  float getPadding(int spacingType);
-  void setPadding(int spacingType, float padding);
-  float getBorder(int spacingType);
-  void setBorder(int spacingType, float border);
-  float getPosition(int spacingType);
-  void setPosition(int spacingType, float position);
-  float getStyleWidth();
-  void setStyleWidth(float width);
-  float getStyleHeight();
-  void setStyleHeight(float height);
-  float getStyleMaxWidth();
-  void setStyleMaxWidth(float maxWidth);
-  float getStyleMinWidth();
-  void setStyleMinWidth(float minWidth);
-  float getStyleMaxHeight();
-  void setStyleMaxHeight(float maxHeight);
-  float getStyleMinHeight();
-  void setStyleMinHeight(float minHeight);
+  float getMargin(CSSEdge edge);
+  void setMargin(CSSEdge edge, float margin);
+  float getPadding(CSSEdge edge);
+  void setPadding(CSSEdge edge, float padding);
+  float getBorder(CSSEdge edge);
+  void setBorder(CSSEdge edge, float border);
+  float getPosition(CSSEdge edge);
+  void setPosition(CSSEdge edge, float position);
+  float getWidth();
+  void setWidth(float width);
+  float getHeight();
+  void setHeight(float height);
+  float getMaxWidth();
+  void setMaxWidth(float maxWidth);
+  float getMinWidth();
+  void setMinWidth(float minWidth);
+  float getMaxHeight();
+  void setMaxHeight(float maxHeight);
+  float getMinHeight();
+  void setMinHeight(float minHeight);
   float getLayoutX();
   float getLayoutY();
   float getLayoutWidth();

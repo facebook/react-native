@@ -6,9 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * This pipes all of our console logging functions to native logging so that
- * JavaScript errors in required modules show up in Xcode via NSLog.
- *
  * @provides console
  * @polyfill
  * @nolint
@@ -16,6 +13,10 @@
 
 /* eslint-disable */
 
+/**
+ * This pipes all of our console logging functions to native logging so that
+ * JavaScript errors in required modules show up in Xcode via NSLog.
+ */
 const inspect = (function() {
   // Copyright Joyent, Inc. and other Node contributors.
   //
@@ -363,6 +364,15 @@ const LOG_LEVELS = {
   warn: 2,
   error: 3
 };
+const INSPECTOR_LEVELS = [];
+INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
+INSPECTOR_LEVELS[LOG_LEVELS.info] = 'log';
+INSPECTOR_LEVELS[LOG_LEVELS.warn] = 'warning';
+INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
+
+// Strip the inner function in getNativeLogFunction(), if in dev also
+// strip method printing to originalConsole.
+const INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
 
 function setupConsole(global) {
   if (!global.nativeLoggingHook) {
@@ -386,6 +396,13 @@ function setupConsole(global) {
         // but we don't (currently) want these to show a redbox
         // (Note: Logic duplicated in ExceptionsManager.js.)
         logLevel = LOG_LEVELS.warn;
+      }
+      if (global.__inspectorLog) {
+        global.__inspectorLog(
+          INSPECTOR_LEVELS[logLevel],
+          str,
+          [].slice.call(arguments),
+          INSPECTOR_FRAMES_TO_SKIP);
       }
       global.nativeLoggingHook(str, logLevel);
     };

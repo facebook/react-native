@@ -20,14 +20,18 @@ import android.os.Build;
 import android.view.View;
 
 import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.*;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
@@ -81,10 +85,10 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setHitSlopRect(null);
     } else {
       view.setHitSlopRect(new Rect(
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
-          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+          hitSlop.hasKey("left") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")) : 0,
+          hitSlop.hasKey("top") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")) : 0,
+          hitSlop.hasKey("right") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")) : 0,
+          hitSlop.hasKey("bottom") ? (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom")) : 0
       ));
     }
   }
