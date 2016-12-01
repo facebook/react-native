@@ -50,8 +50,13 @@ class TreeTransformator {
         line: tree.lineNumber,
         column: tree.columnNumber,
       });
-      tree.functionName = tree.functionName || original.name
+      const functionName = original.name
         || (path.posix.basename(original.source || '') + ':' + original.line);
+      if (tree.functionName === '(unnamed builtin)') {
+        tree.functionName += ':' + functionName;
+      } else {
+        tree.functionName = tree.functionName || functionName;
+      }
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
