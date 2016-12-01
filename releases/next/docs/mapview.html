@@ -270,6 +270,7 @@ class <span class="token class-name">AnnotationExample</span> extends <span clas
 
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;MapView
+        showsAnnotationCallouts<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>showsAnnotationCallouts<span class="token punctuation">}</span>
         style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>map<span class="token punctuation">}</span>
         onRegionChangeComplete<span class="token operator">=</span><span class="token punctuation">{</span>onRegionChangeComplete<span class="token punctuation">}</span>
         region<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>mapRegion<span class="token punctuation">}</span>
@@ -392,6 +393,29 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
           &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
         <span class="token punctuation">)</span><span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Show callouts by default example&#x27;</span><span class="token punctuation">,</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> &lt;AnnotationExample
+        style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>map<span class="token punctuation">}</span>
+        annotation<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+          title<span class="token punctuation">:</span> <span class="token string">&#x27;More Info...&#x27;</span><span class="token punctuation">,</span>
+          rightCalloutView<span class="token punctuation">:</span> <span class="token punctuation">(</span>
+            &lt;TouchableOpacity
+              onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+                <span class="token function">alert<span class="token punctuation">(</span></span><span class="token string">&#x27;You Are Here&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Image
+                style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>width<span class="token punctuation">:</span><span class="token number">30</span><span class="token punctuation">,</span> height<span class="token punctuation">:</span><span class="token number">30</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+                source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./uie_thumb_selected.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
+          <span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">}</span>
+        showsAnnotationCallouts<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
