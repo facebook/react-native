@@ -112,7 +112,7 @@ choco install python2
 
 > You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
 
-<block class="mac linux ios android" />
+<block class="mac ios android" />
 
 ### The React Native CLI
 
@@ -124,21 +124,21 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
-> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
-
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
-<block class="windows android" />
+<block class="windows linux android" />
 
 ### The React Native CLI
 
 Node.js comes with npm, which lets you install the React Native command line interface.
 
-Run the following command in a Command Prompt:
+Run the following command in a Terminal:
 
 ```
 npm install -g react-native-cli
 ```
+
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
 <block class="mac ios" />
 
@@ -158,7 +158,14 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac android" />
 
-> Android Studio requires the [Java Development Kit (JDK)](https://www.java.com/en/download/mac_download.jsp), version 1.8 or higher. You can type `javac -version` in a terminal to see what version you have, if any.
+> Android Studio requires the [Java SE Development Kit(JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), version 8. You can type `javac -version` in a terminal to see what version you have, if any.
+
+```
+$ javac -version
+javac 1.8.0_111
+```
+
+> The version string `1.8.x_xxx` corresponds to JDK 8.
 
 <block class="mac windows android" />
 
