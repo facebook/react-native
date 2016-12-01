@@ -18,10 +18,10 @@ const path = require('path');
  * @return {String}
  */
 module.exports = function findManifest(folder) {
-  const manifestPath = glob.sync(path.join('**', '*.csproj'), {
+  const csprojPath = glob.sync(path.join('**', '*.csproj'), {
     cwd: folder,
     ignore: ['node_modules/**', '**/build/**', 'Examples/**', 'examples/**'],
   })[0];
 
-  return manifestPath ? path.join(folder, manifestPath) : null;
+  return csprojPath ? path.join(folder, csprojPath) : null;
 };

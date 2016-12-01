@@ -11,9 +11,10 @@
 const findWindowsSolution = require('./findWindowsSolution');
 const findNamespace = require('./findNamespace');
 const findWindowsAppFolder = require('./findWindowsAppFolder');
-// const findProject = require('./findProject');
+const findProject = require('./findProject');
 const findPackageClassName = require('./findPackageClassName');
 const path = require('path');
+const generateGUID = require('./generateGUID');
 // const readProject = require('./readProject');
 
 /**
@@ -49,6 +50,7 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
   const sourceDir = path.join(folder, src);
   const packageClassName = findPackageClassName(sourceDir);
   const namespace = userConfig.namespace || findNamespace(sourceDir);
+  const csProj = userConfig.csProj || findProject(folder);
 
   /**
    * This module has no package to export or no namespace
@@ -65,43 +67,19 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
     `new ${packageClassName}()`;
 
 
+  const projectGUID = generateGUID();
+  const pathGUID = generateGUID();
+  const relativeProj = csProj.substring(csProj.lastIndexOf("node_modules") - 1, csProj.length)
+  const solutionEntry = `
+Project("{${projectGUID.toUpperCase()}}") = "RNWinGif", "..${relativeProj}", "{${pathGUID.toUpperCase()}}"
+EndProject
+  `
+
   return {
     sourceDir,
     packageUsingPath,
     packageInstance,
+    solutionEntry,
+    csProj,
   }
 };
-
-// exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) {
-//   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
-
-//   if (!src) {
-//     return null;
-//   }
-
-//   const sourceDir = path.join(folder, src);
-//   const manifestPath = findManifest(sourceDir);
-
-//   if (!manifestPath) {
-//     return null;
-//   }
-
-//   const manifest = readManifest(manifestPath);
-//   const packageName = userConfig.packageName || getPackageName(manifest);
-//   const packageClassName = findPackageClassName(sourceDir);
-
-//   /**
-//    * This module has no package to export
-//    */
-//   if (!packageClassName) {
-//     return null;
-//   }
-
-//   const packageImportPath = userConfig.packageImportPath ||
-//     `import ${packageName}.${packageClassName};`;
-
-//   const packageInstance = userConfig.packageInstance ||
-//     `new ${packageClassName}()`;
-
-//   return { sourceDir, folder, manifest, packageImportPath, packageInstance };
-// };
