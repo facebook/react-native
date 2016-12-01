@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var PropTypes = require('react/lib/ReactPropTypes');
+var {PropTypes} = require('React');
 var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -47,12 +47,12 @@ var animChecker = createStrictShapeTypeChecker({
 });
 
 type Anim = {
-  duration?: number;
-  delay?: number;
-  springDamping?: number;
-  initialVelocity?: number;
-  type?: $Enum<typeof TypesEnum>;
-  property?: $Enum<typeof PropertiesEnum>;
+  duration?: number,
+  delay?: number,
+  springDamping?: number,
+  initialVelocity?: number,
+  type?: $Enum<typeof TypesEnum>,
+  property?: $Enum<typeof PropertiesEnum>,
 }
 
 var configChecker = createStrictShapeTypeChecker({
@@ -63,10 +63,10 @@ var configChecker = createStrictShapeTypeChecker({
 });
 
 type Config = {
-  duration: number;
-  create?: Anim;
-  update?: Anim;
-  delete?: Anim;
+  duration: number,
+  create?: Anim,
+  update?: Anim,
+  delete?: Anim,
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
@@ -121,8 +121,11 @@ var Presets = {
  * Automatically animates views to their new positions when the
  * next layout happens.
  *
- * A common way to use this API is to call `LayoutAnimation.configureNext`
- * before calling `setState`.
+ * A common way to use this API is to call it before calling `setState`.
+ *
+ * Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+ *
+ *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
 var LayoutAnimation = {
   /**

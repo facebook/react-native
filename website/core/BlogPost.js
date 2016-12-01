@@ -13,31 +13,22 @@
 
 var Marked = require('Marked');
 var React = require('React');
+var BlogPostHeader = require('BlogPostHeader');
+var BlogPostFooter = require('BlogPostFooter');
+var ExcerptLink = require('ExcerptLink');
 
 var BlogPost = React.createClass({
   render: function() {
     var post = this.props.post;
-    var content = this.props.content;
-
-    var match = post.path.match(/([0-9]+)\/([0-9]+)\/([0-9]+)/);
-    // Because JavaScript sucks at date handling :(
-    var year = match[1];
-    var month = [
-      'January', 'February', 'March', 'April', 'May', 'June', 'July',
-      'August', 'September', 'October', 'November', 'December'
-    ][parseInt(match[2], 10) - 1];
-    var day = parseInt(match[3], 10);
 
     return (
-      <div>
-        <h1>{post.title}</h1>
-        <p className="meta">
-          {month} {day}, {year} by{' '}
-          <a href={post.authorURL} target="_blank">{post.author}</a>
-        </p>
-        <hr />
-        <Marked>{content}</Marked>
-      </div>
+      <article className="entry-body">
+        <BlogPostHeader post={post} />
+        <div className="entry-content">
+          <Marked>{this.props.content}</Marked>
+        </div>
+        <BlogPostFooter post={post} />
+      </article>
     );
   }
 });

@@ -9,15 +9,15 @@
 
 #import "RCTTestModule.h"
 
-#import "FBSnapshotTestController.h"
-#import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUIManager.h"
+#import <React/RCTAssert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 
-@implementation RCTTestModule
-{
-  NSMutableDictionary<NSString *, NSString *> *_snapshotCounter;
+#import "FBSnapshotTestController.h"
+
+@implementation RCTTestModule {
+  NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
 }
 
 @synthesize bridge = _bridge;
@@ -34,18 +34,23 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-
     NSString *testName = NSStringFromSelector(self->_testSelector);
     if (!self->_snapshotCounter) {
       self->_snapshotCounter = [NSMutableDictionary new];
     }
-    self->_snapshotCounter[testName] = (@([self->_snapshotCounter[testName] integerValue] + 1)).stringValue;
+
+    NSNumber *counter = @([self->_snapshotCounter[testName] integerValue] + 1);
+    self->_snapshotCounter[testName] = counter;
 
     NSError *error = nil;
+    NSString *identifier = [counter stringValue];
+    if (self->_testSuffix) {
+      identifier = [identifier stringByAppendingString:self->_testSuffix];
+    }
     BOOL success = [self->_controller compareSnapshotOfView:self->_view
-                                             selector:self->_testSelector
-                                           identifier:self->_snapshotCounter[testName]
-                                                error:&error];
+                                                   selector:self->_testSelector
+                                                 identifier:identifier
+                                                      error:&error];
     callback(@[@(success)]);
   }];
 }

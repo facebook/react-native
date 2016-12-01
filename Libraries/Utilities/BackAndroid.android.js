@@ -17,7 +17,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = $Enum<{
-  backPress: string;
+  backPress: string,
 }>;
 
 var _backPressSubscriptions = new Set();
@@ -30,7 +30,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
     if (subscriptions[i]()) {
       invokeDefault = false;
       break;
-    };
+    }
   }
 
   if (invokeDefault) {
@@ -41,6 +41,8 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
 /**
  * Detect hardware back button presses, and programmatically invoke the default back button
  * functionality to exit the app if there are no listeners or if none of the listeners return true.
+ * The event subscriptions are called in reverse order (i.e. last registered subscription first),
+ * and if one subscription returns true then subscriptions registered earlier will not be called.
  *
  * Example:
  *

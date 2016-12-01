@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * method parameter.
  *
  * Methods annotated with {@link ReactMethod} that use {@link Promise} as type of the last parameter
- * will be marked as "remoteAsync" and will return a promise when invoked from JavaScript.
+ * will be marked as "promise" and will return a promise when invoked from JavaScript.
  */
 public interface Promise {
 

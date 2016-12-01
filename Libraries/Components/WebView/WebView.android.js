@@ -13,15 +13,13 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ActivityIndicator = require('ActivityIndicator');
 var React = require('React');
-var ReactNative = require('react/lib/ReactNative');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
 
 var deprecatedPropType = require('deprecatedPropType');
 var keyMirror = require('fbjs/lib/keyMirror');
-var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
@@ -58,6 +56,8 @@ class WebView extends React.Component {
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
+    onMessage: PropTypes.func,
+    onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
 
@@ -152,6 +152,14 @@ class WebView extends React.Component {
      * start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Boolean that sets whether JavaScript running in the context of a file
+     * scheme URL should be allowed to access content from any origin.
+     * Including accessing content from other file scheme URLs
+     * @platform android
+     */
+    allowUniversalAccessFromFileURLs: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -217,13 +225,17 @@ class WebView extends React.Component {
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
+        messagingEnabled={typeof this.props.onMessage === 'function'}
+        onMessage={this.onMessage}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        onContentSizeChange={this.props.onContentSizeChange}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
       />;
 
     return (
@@ -266,6 +278,14 @@ class WebView extends React.Component {
     );
   };
 
+  postMessage = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.postMessage,
+      [String(data)]
+    );
+  };
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -291,7 +311,7 @@ class WebView extends React.Component {
     var {onError, onLoadEnd} = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
-    console.error('Encountered an error loading page', event.nativeEvent);
+    console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
@@ -308,9 +328,18 @@ class WebView extends React.Component {
     });
     this.updateNavigationState(event);
   };
+
+  onMessage = (event: Event) => {
+    var {onMessage} = this.props;
+    onMessage && onMessage(event);
+  }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView);
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
+  nativeOnly: {
+    messagingEnabled: PropTypes.bool,
+  },
+});
 
 var styles = StyleSheet.create({
   container: {

@@ -14,11 +14,12 @@
 var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var Keyboard = require('Keyboard');
-var ReactNative = require('react/lib/ReactNative');
+var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
@@ -104,13 +105,22 @@ var invariant = require('fbjs/lib/invariant');
 var IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
 type State = {
-    isTouching: boolean;
-    lastMomentumScrollBeginTime: number;
-    lastMomentumScrollEndTime: number;
-    observedScrollSinceBecomingResponder: boolean;
-    becameResponderWhileAnimating: boolean;
+    isTouching: boolean,
+    lastMomentumScrollBeginTime: number,
+    lastMomentumScrollEndTime: number,
+    observedScrollSinceBecomingResponder: boolean,
+    becameResponderWhileAnimating: boolean,
 };
 type Event = Object;
+
+function isTagInstanceOfTextInput(tag) {
+  var instance = getInstanceFromNode(tag);
+  return instance && instance.viewConfig && (
+    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextField'
+  );
+}
 
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
@@ -172,7 +182,7 @@ var ScrollResponderMixin = {
    * that *doesn't* give priority to nested views (hence the capture phase):
    *
    * - Currently animating.
-   * - Tapping anywhere that is not the focused input, while the keyboard is
+   * - Tapping anywhere that is not a text input, while the keyboard is
    *   up (which should dismiss the keyboard).
    *
    * Invoke this from an `onStartShouldSetResponderCapture` event.
@@ -182,7 +192,7 @@ var ScrollResponderMixin = {
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target !== currentlyFocusedTextInput) {
+      !isTagInstanceOfTextInput(e.target)) {
       return true;
     }
     return this.scrollResponderIsAnimating();
@@ -366,7 +376,7 @@ var ScrollResponderMixin = {
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollResponderScrollTo: function(
-    x?: number | { x?: number; y?: number; animated?: boolean },
+    x?: number | { x?: number, y?: number, animated?: boolean },
     y?: number,
     animated?: boolean
   ) {
@@ -397,19 +407,16 @@ var ScrollResponderMixin = {
    * @platform ios
    */
   scrollResponderZoomTo: function(
-    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    rect: { x: number, y: number, width: number, height: number, animated?: boolean },
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
-    if (Platform.OS === 'android') {
-      invariant('zoomToRect is not implemented');
-    } else {
-      if ('animated' in rect) {
-        var { animated, ...rect } = rect;
-      } else if (typeof animated !== 'undefined') {
-        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
-      }
-      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+    invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
+    if ('animated' in rect) {
+      var { animated, ...rect } = rect;
+    } else if (typeof animated !== 'undefined') {
+      console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
+    ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
   },
 
   /**

@@ -13,8 +13,8 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTErrorInfo.h"
-#import "RCTUtils.h"
 #import "RCTJSStackFrame.h"
+#import "RCTUtils.h"
 
 #if RCT_DEBUG
 
@@ -60,16 +60,28 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
+#if !TARGET_OS_TV
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
+
+  #if TARGET_OS_SIMULATOR
+    NSString *reloadText = @"Reload JS (\u2318R)";
+    NSString *dismissText = @"Dismiss (ESC)";
+    NSString *copyText = @"Copy (\u2325\u2318C)";
+  #else
+    NSString *reloadText = @"Reload JS";
+    NSString *dismissText = @"Dismiss";
+    NSString *copyText = @"Copy";
+  #endif
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
     dismissButton.accessibilityIdentifier = @"redbox-dismiss";
     dismissButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [dismissButton setTitle:@"Dismiss (ESC)" forState:UIControlStateNormal];
+    [dismissButton setTitle:dismissText forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
@@ -78,7 +90,8 @@
     reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     reloadButton.accessibilityIdentifier = @"redbox-reload";
     reloadButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [reloadButton setTitle:@"Reload JS (\u2318R)" forState:UIControlStateNormal];
+
+    [reloadButton setTitle:reloadText forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
@@ -87,7 +100,7 @@
     copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
     copyButton.accessibilityIdentifier = @"redbox-copy";
     copyButton.titleLabel.font = [UIFont systemFontOfSize:14];
-    [copyButton setTitle:@"Copy (\u2325\u2318C)" forState:UIControlStateNormal];
+    [copyButton setTitle:copyText forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
     [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
@@ -164,9 +177,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-
+#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
+#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
@@ -230,6 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+    cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
     cell.textLabel.numberOfLines = 2;
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
@@ -282,7 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // mechanism instead
 
   return @[
-
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
                        modifierFlags:0
@@ -367,32 +381,31 @@ RCT_EXPORT_MODULE()
   if (details) {
     combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
   }
-  [self showErrorMessage:combinedMessage];
+  [self showErrorMessage:combinedMessage withStack:nil isUpdate:NO];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
 {
   NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
-  [self _showErrorMessage:message withStack:stack isUpdate:NO];
+  [self showErrorMessage:message withStack:stack isUpdate:NO];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:NO];
 }
 
-- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray *)stack
 {
   [self showErrorMessage:message withStack:stack isUpdate:YES];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack isUpdate:(BOOL)isUpdate
 {
-  [self _showErrorMessage:message withStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:isUpdate];
-}
+  if (![[stack firstObject] isKindOfClass:[RCTJSStackFrame class]]) {
+    stack = [RCTJSStackFrame stackFramesWithDictionaries:stack];
+  }
 
-- (void)_showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
-{
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_window) {
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -439,7 +452,7 @@ RCT_EXPORT_METHOD(dismiss)
 }
 
 - (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil userInfo:nil];
+  [_bridge requestReload];
 }
 
 @end

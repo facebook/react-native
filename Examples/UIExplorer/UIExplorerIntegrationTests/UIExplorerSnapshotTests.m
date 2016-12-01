@@ -17,10 +17,6 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
-
 @interface UIExplorerSnapshotTests : XCTestCase
 {
   RCTTestRunner *_runner;
@@ -33,6 +29,9 @@
 - (void)setUp
 {
   _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/js/UIExplorerApp.ios", nil);
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
+    _runner.testSuffix = @"-iOS10";
+  }
   _runner.recordMode = NO;
 }
 
@@ -42,12 +41,14 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
+#if !TARGET_OS_TV // None of these will run in tvOS due to StatusBar not existing
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
 RCT_TEST(SwitchExample)
-//RCT_TEST(SliderExample) // Disabled: #8985988
-//RCT_TEST(TabBarExample) // Disabled: #8985988
+RCT_TEST(SliderExample)
+RCT_TEST(TabBarExample)
+#endif
 
 - (void)testZZZNotInRecordMode
 {

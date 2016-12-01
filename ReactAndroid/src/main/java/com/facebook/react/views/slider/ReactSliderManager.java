@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
@@ -39,7 +39,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   private static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
-      CSSNode.MeasureFunction {
+      CSSNodeAPI.MeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -50,13 +50,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
 
     @Override
-    public void measure(
-        CSSNode node,
+    public long measure(
+        CSSNodeAPI node,
         float width,
         CSSMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput) {
+        CSSMeasureMode heightMode) {
       if (!mMeasured) {
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         final int spec = View.MeasureSpec.makeMeasureSpec(
@@ -67,8 +66,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         mHeight = reactSlider.getMeasuredHeight();
         mMeasured = true;
       }
-      measureOutput.width = mWidth;
-      measureOutput.height = mHeight;
+
+      return MeasureOutput.make(mWidth, mHeight);
     }
   }
 

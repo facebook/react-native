@@ -65,7 +65,7 @@ public class RootViewTest {
 
   @Before
   public void setUp() {
-    final long ts = SystemClock.nanoTime();
+    final long ts = SystemClock.uptimeMillis();
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
@@ -80,7 +80,7 @@ public class RootViewTest {
       }
     });
     PowerMockito.mockStatic(SystemClock.class);
-    PowerMockito.when(SystemClock.nanoTime()).thenAnswer(new Answer<Object>() {
+    PowerMockito.when(SystemClock.uptimeMillis()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
         return ts;
@@ -116,7 +116,7 @@ public class RootViewTest {
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
 
-    long ts = SystemClock.nanoTime();
+    long ts = SystemClock.uptimeMillis();
 
     // Test ACTION_DOWN event
     rootView.onTouchEvent(
@@ -149,7 +149,7 @@ public class RootViewTest {
             0.,
             "target",
             rootViewId,
-            "timeStamp",
+            "timestamp",
             (double) ts,
             "identifier",
             0.));
@@ -186,7 +186,7 @@ public class RootViewTest {
             0.,
             "target",
             rootViewId,
-            "timeStamp",
+            "timestamp",
             (double) ts,
             "identifier",
             0.));

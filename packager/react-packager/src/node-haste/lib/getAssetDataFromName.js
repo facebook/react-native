@@ -8,8 +8,8 @@
  */
 'use strict';
 
-const path = require('../fastpath');
 const getPlatformExtension = require('./getPlatformExtension');
+const path = require('path');
 
 function getAssetDataFromName(filename, platforms) {
   const ext = path.extname(filename);
@@ -42,6 +42,7 @@ function getAssetDataFromName(filename, platforms) {
   } else {
     assetName = filename;
   }
+  assetName = decodeURIComponent(assetName);
 
   return {
     resolution: resolution,

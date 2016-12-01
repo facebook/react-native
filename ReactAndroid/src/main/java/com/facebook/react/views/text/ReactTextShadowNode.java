@@ -33,7 +33,7 @@ import android.widget.TextView;
 import com.facebook.csslayout.CSSDirection;
 import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -41,6 +41,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -58,7 +60,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
  * passed as "computedDataFromMeasure" down to shadow and native view.
  * <p/>
- * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used solely
+ * TODO(7255858): Rename *CSSNodeDEPRECATED to *ShadowView (or sth similar) as it's no longer is used solely
  * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
@@ -103,15 +105,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   private static void buildSpannedFromTextCSSNode(
-      ReactTextShadowNode textCSSNode,
+      ReactTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
     int start = sb.length();
-    if (textCSSNode.mText != null) {
-      sb.append(textCSSNode.mText);
+    if (textShadowNode.mText != null) {
+      sb.append(textShadowNode.mText);
     }
-    for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
-      CSSNode child = textCSSNode.getChildAt(i);
+    for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
+      ReactShadowNode child = textShadowNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else if (child instanceof ReactTextInlineImageShadowNode) {
@@ -127,51 +129,57 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         throw new IllegalViewOperationException("Unexpected view type nested under text node: "
                 + child.getClass());
       }
-      ((ReactShadowNode) child).markUpdateSeen();
+      child.markUpdateSeen();
     }
     int end = sb.length();
     if (end >= start) {
-      if (textCSSNode.mIsColorSet) {
-        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textCSSNode.mColor)));
+      if (textShadowNode.mIsColorSet) {
+        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textShadowNode.mColor)));
       }
-      if (textCSSNode.mIsBackgroundColorSet) {
+      if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
-                new BackgroundColorSpan(textCSSNode.mBackgroundColor)));
+                new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (textCSSNode.mFontSize != UNSET) {
-        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textCSSNode.mFontSize)));
+      if (textShadowNode.mFontSize != UNSET) {
+        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textShadowNode.mFontSize)));
       }
-      if (textCSSNode.mFontStyle != UNSET ||
-          textCSSNode.mFontWeight != UNSET ||
-          textCSSNode.mFontFamily != null) {
+      if (textShadowNode.mFontStyle != UNSET ||
+          textShadowNode.mFontWeight != UNSET ||
+          textShadowNode.mFontFamily != null) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
                 new CustomStyleSpan(
-                    textCSSNode.mFontStyle,
-                    textCSSNode.mFontWeight,
-                    textCSSNode.mFontFamily,
-                    textCSSNode.getThemedContext().getAssets())));
+                    textShadowNode.mFontStyle,
+                    textShadowNode.mFontWeight,
+                    textShadowNode.mFontFamily,
+                    textShadowNode.getThemedContext().getAssets())));
       }
-      if (textCSSNode.mIsUnderlineTextDecorationSet) {
+      if (textShadowNode.mIsUnderlineTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
       }
-      if (textCSSNode.mIsLineThroughTextDecorationSet) {
+      if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if (textCSSNode.mTextShadowOffsetDx != 0 || textCSSNode.mTextShadowOffsetDy != 0) {
+      if (textShadowNode.mTextShadowOffsetDx != 0 || textShadowNode.mTextShadowOffsetDy != 0) {
         ops.add(new SetSpanOperation(
                 start,
                 end,
                 new ShadowStyleSpan(
-                    textCSSNode.mTextShadowOffsetDx,
-                    textCSSNode.mTextShadowOffsetDy,
-                    textCSSNode.mTextShadowRadius,
-                    textCSSNode.mTextShadowColor)));
+                    textShadowNode.mTextShadowOffsetDx,
+                    textShadowNode.mTextShadowOffsetDy,
+                    textShadowNode.mTextShadowRadius,
+                    textShadowNode.mTextShadowColor)));
       }
-      ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
+      if (!Float.isNaN(textShadowNode.getEffectiveLineHeight())) {
+        ops.add(new SetSpanOperation(
+                start,
+                end,
+                new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
+      }
+      ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
 
@@ -210,22 +218,20 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
-      new CSSNode.MeasureFunction() {
+  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
+      new CSSNodeAPI.MeasureFunction() {
         @Override
-        public void measure(
-            CSSNode node,
+        public long measure(
+            CSSNodeAPI node,
             float width,
             CSSMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode,
-            MeasureOutput measureOutput) {
+            CSSMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-          ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
           Spanned text = Assertions.assertNotNull(
-              reactCSSNode.mPreparedSpannableText,
+              mPreparedSpannableText,
               "Spannable element has not been prepared in onBeforeLayout");
           BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
           float desiredWidth = boring == null ?
@@ -233,14 +239,6 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
           // technically, width should never be negative, but there is currently a bug in
           boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
-
-          float effectiveLineHeight = reactCSSNode.getEffectiveLineHeight();
-          float lineSpacingExtra = 0;
-          float lineSpacingMultiplier = 1;
-          if (!Float.isNaN(effectiveLineHeight)) {
-            lineSpacingExtra = effectiveLineHeight;
-            lineSpacingMultiplier = 0;
-          }
 
           if (boring == null &&
               (unconstrainedWidth ||
@@ -252,8 +250,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) Math.ceil(desiredWidth),
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 true);
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
@@ -263,8 +261,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 boring.width,
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 boring,
                 true);
           } else {
@@ -274,16 +272,18 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 textPaint,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
-                lineSpacingMultiplier,
-                lineSpacingExtra,
+                1.f,
+                0.f,
                 true);
           }
 
-          measureOutput.height = layout.getHeight();
-          measureOutput.width = layout.getWidth();
-          if (reactCSSNode.mNumberOfLines != UNSET &&
-              reactCSSNode.mNumberOfLines < layout.getLineCount()) {
-            measureOutput.height = layout.getLineBottom(reactCSSNode.mNumberOfLines - 1);
+          if (mNumberOfLines != UNSET &&
+              mNumberOfLines < layout.getLineCount()) {
+            return MeasureOutput.make(
+                layout.getWidth(),
+                layout.getLineBottom(mNumberOfLines - 1));
+          } else {
+            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -347,15 +347,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private @Nullable String mText = null;
 
   private @Nullable Spannable mPreparedSpannableText;
-  private final boolean mIsVirtual;
 
   protected boolean mContainsImages = false;
   private float mHeightOfTallestInlineImage = Float.NaN;
 
-  public ReactTextShadowNode(boolean isVirtual) {
-    mIsVirtual = isVirtual;
-    if (!isVirtual) {
-      setMeasureFunction(TEXT_MEASURE_FUNCTION);
+  public ReactTextShadowNode() {
+    if (!isVirtual()) {
+      setMeasureFunction(mTextMeasureFunction);
     }
   }
 
@@ -383,7 +381,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public void onBeforeLayout() {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     mPreparedSpannableText = fromTextCSSNode(this);
@@ -391,10 +389,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   @Override
-  protected void markUpdated() {
+  public void markUpdated() {
     super.markUpdated();
     // We mark virtual anchor node as dirty as updated text needs to be re-measured
-    if (!mIsVirtual) {
+    if (!isVirtual()) {
       super.dirty();
     }
   }
@@ -407,7 +405,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
   public void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
     markUpdated();
   }
 
@@ -566,17 +564,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public boolean isVirtualAnchor() {
-    return !mIsVirtual;
-  }
-
-  @Override
-  public boolean isVirtual() {
-    return mIsVirtual;
+    return !isVirtual();
   }
 
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     super.onCollectExtraUpdates(uiViewOperationQueue);
@@ -586,8 +579,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           mPreparedSpannableText,
           UNSET,
           mContainsImages,
-          getPadding(),
-          getEffectiveLineHeight(),
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
           getTextAlign()
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);

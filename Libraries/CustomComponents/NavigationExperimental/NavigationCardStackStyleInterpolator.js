@@ -32,6 +32,8 @@
  */
 'use strict';
 
+const I18nManager = require('I18nManager');
+
 import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -85,23 +87,27 @@ function forHorizontal(props: NavigationSceneRendererProps): Object {
   }
 
   const index = scene.index;
-  const inputRange = [index - 1, index, index + 1];
+  const inputRange = [index - 1, index, index + 0.99, index + 1];
   const width = layout.initWidth;
+  const outputRange = I18nManager.isRTL ?
+    ([-width, 0, 10, 10]: Array<number>) :
+    ([width, 0, -10, -10]: Array<number>);
+
 
   const opacity = position.interpolate({
     inputRange,
-    outputRange: ([1, 1, 0.3]: Array<number>),
+    outputRange: ([1, 1, 0.3, 0]: Array<number>),
   });
 
   const scale = position.interpolate({
     inputRange,
-    outputRange: ([1, 1, 0.95]: Array<number>),
+    outputRange: ([1, 1, 0.95, 0.95]: Array<number>),
   });
 
   const translateY = 0;
   const translateX = position.interpolate({
     inputRange,
-    outputRange: ([width, 0, -10]: Array<number>),
+    outputRange,
   });
 
   return {
@@ -126,23 +132,23 @@ function forVertical(props: NavigationSceneRendererProps): Object {
   }
 
   const index = scene.index;
-  const inputRange = [index - 1, index, index + 1];
+  const inputRange = [index - 1, index, index + 0.99, index + 1];
   const height = layout.initHeight;
 
   const opacity = position.interpolate({
     inputRange,
-    outputRange: ([1, 1, 0.3]: Array<number>),
+    outputRange: ([1, 1, 0.3, 0]: Array<number>),
   });
 
   const scale = position.interpolate({
     inputRange,
-    outputRange: ([1, 1, 0.95]: Array<number>),
+    outputRange: ([1, 1, 0.95, 0.95]: Array<number>),
   });
 
   const translateX = 0;
   const translateY = position.interpolate({
     inputRange,
-    outputRange: ([height, 0, -10]: Array<number>),
+    outputRange: ([height, 0, -10, -10]: Array<number>),
   });
 
   return {
@@ -155,7 +161,16 @@ function forVertical(props: NavigationSceneRendererProps): Object {
   };
 }
 
+function canUseNativeDriver(isVertical: boolean): boolean {
+  // The native driver can be enabled for this interpolator because the scale,
+  // translateX, and translateY transforms are supported with the native
+  // animation driver.
+
+  return true;
+}
+
 module.exports = {
   forHorizontal,
   forVertical,
+  canUseNativeDriver,
 };

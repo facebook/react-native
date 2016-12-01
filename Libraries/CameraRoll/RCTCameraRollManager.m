@@ -13,12 +13,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTAssetsLibraryRequestHandler.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTImageLoader.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
 
 @implementation RCTConvert (ALAssetGroup)
 
@@ -147,6 +148,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  checkPhotoLibraryConfig();
+
   NSUInteger first = [RCTConvert NSInteger:params[@"first"]];
   NSString *afterCursor = [RCTConvert NSString:params[@"after"]];
   NSString *groupName = [RCTConvert NSString:params[@"groupName"]];
@@ -183,12 +186,14 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           CGSize dimensions = [result defaultRepresentation].dimensions;
           CLLocation *loc = [result valueForProperty:ALAssetPropertyLocation];
           NSDate *date = [result valueForProperty:ALAssetPropertyDate];
+          NSString *filename = [result defaultRepresentation].filename;
           [assets addObject:@{
             @"node": @{
               @"type": [result valueForProperty:ALAssetPropertyType],
               @"group_name": [group valueForProperty:ALAssetsGroupPropertyName],
               @"image": @{
                 @"uri": uri,
+                @"filename" : filename,
                 @"height": @(dimensions.height),
                 @"width": @(dimensions.width),
                 @"isStored": @YES,
@@ -205,7 +210,9 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           }];
         }
       }];
-    } else {
+    }
+
+    if (!group) {
       // Sometimes the enumeration continues even if we set stop above, so we guard against resolving the promise
       // multiple times here.
       if (!resolvedPromise) {
@@ -219,6 +226,15 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     }
     reject(RCTErrorUnableToLoad, nil, error);
   }];
+}
+
+static void checkPhotoLibraryConfig()
+{
+#if RCT_DEV
+  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"]) {
+    RCTLogError(@"NSPhotoLibraryUsageDescription key must be present in Info.plist to use camera roll.");
+  }
+#endif
 }
 
 @end

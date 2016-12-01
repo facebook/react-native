@@ -159,7 +159,7 @@ class AppState extends NativeEventEmitter {
     this._eventHandlers[type].get(handler).remove();
     this._eventHandlers[type].delete(handler);
   }
-};
+}
 
 AppState = new AppState();
 

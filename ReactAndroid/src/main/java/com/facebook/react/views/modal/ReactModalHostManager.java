@@ -9,16 +9,13 @@
 
 package com.facebook.react.views.modal;
 
-import javax.annotation.Nullable;
-
 import java.util.Map;
 
 import android.content.DialogInterface;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -28,15 +25,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 /**
  * View manager for {@link ReactModalHostView} components.
  */
+@ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
-  private static final String REACT_CLASS = "RCTModalHostView";
-
-  private final ReactApplicationContext mContext;
-
-  public ReactModalHostManager(ReactApplicationContext context) {
-    mContext = context;
-  }
+  protected static final String REACT_CLASS = "RCTModalHostView";
 
   @Override
   public String getName() {
@@ -102,18 +94,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
       .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
       .build();
-  }
-
-  @Override
-  public @Nullable Map<String, Object> getExportedViewConstants() {
-    final int heightResId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-    final float height = heightResId > 0 ?
-      PixelUtil.toDIPFromPixel(mContext.getResources().getDimensionPixelSize(heightResId)) :
-      0;
-
-    return MapBuilder.<String, Object>of(
-      "StatusBarHeight", height
-    );
   }
 
   @Override

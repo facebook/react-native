@@ -118,18 +118,15 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       return;
     }
 
-    // Maintain iOS 7 compatibility which doesn't have JS typed arrays.
-    if (typeof ArrayBuffer !== 'undefined' &&
-        typeof Uint8Array !== 'undefined') {
-      if (ArrayBuffer.isView(data)) {
-        // $FlowFixMe: no way to assert that 'data' is indeed an ArrayBufferView now
-        data = data.buffer;
-      }
-      if (data instanceof ArrayBuffer) {
-        data = base64.fromByteArray(new Uint8Array(data));
-        RCTWebSocketModule.sendBinary(data, this._socketId);
-        return;
-      }
+
+    if (ArrayBuffer.isView(data)) {
+      // $FlowFixMe: no way to assert that 'data' is indeed an ArrayBufferView now
+      data = data.buffer;
+    }
+    if (data instanceof ArrayBuffer) {
+      data = base64.fromByteArray(new Uint8Array(data));
+      RCTWebSocketModule.sendBinary(data, this._socketId);
+      return;
     }
 
     throw new Error('Unsupported data type');
@@ -192,6 +189,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         if (ev.id !== this._socketId) {
           return;
         }
+        this.readyState = this.CLOSED;
         this.dispatchEvent(new WebSocketEvent('error', {
           message: ev.message,
         }));

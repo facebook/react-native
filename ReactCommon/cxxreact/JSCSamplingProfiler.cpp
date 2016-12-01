@@ -7,9 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
-#include "JSCHelpers.h"
-
-#include "Value.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
 namespace facebook {
 namespace react {
@@ -21,12 +20,12 @@ static JSValueRef pokeSamplingProfiler(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return JSPokeSamplingProfiler(ctx);
+  return JSC_JSPokeSamplingProfiler(ctx);
 }
 }
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
-  JSStartSamplingProfilingOnMainJSCThread(ctx);
+  JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
   installGlobalFunction(ctx, "pokeSamplingProfiler", pokeSamplingProfiler);
 }
 
