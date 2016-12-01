@@ -32,13 +32,7 @@ const projectName = (fullProjPath) => {
  * defaults specified by user into consideration
  */
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
-
-  const sourceDir = '';
-  const mainReactPage = null;
-  const csProj = '';
-  const csSolution = '';
-
-  return null;
+  return {projectInfo: true, folder, userConfig};
 };
 
 /**
@@ -48,6 +42,11 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
 exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) {
 
   const csSolution = userConfig.csSolution || findWindowsSolution(folder);
+
+  if (!csSolution) {
+    return null;
+  }
+
   // expects solutions to be named the same as project folders
   const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
   const src = userConfig.sourceDir || windowsAppFolder;
