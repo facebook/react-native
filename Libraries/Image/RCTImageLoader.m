@@ -249,9 +249,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           // Check task isn't "stuck"
           if (task.requestToken == nil) {
             RCTLogWarn(@"Task orphaned for request %@", task.request);
+            [task cancel];
             [self->_pendingTasks removeObject:task];
             self->_activeTasks--;
-            [task cancel];
           }
           break;
       }
