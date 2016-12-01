@@ -48,6 +48,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   /* package */ static final String KEY_BUTTON_NEUTRAL = "buttonNeutral";
   /* package */ static final String KEY_ITEMS = "items";
   /* package */ static final String KEY_CANCELABLE = "cancelable";
+  /* package */ static final String KEY_MODE = "mode";
 
   /* package */ static final Map<String, Object> CONSTANTS = MapBuilder.<String, Object>of(
       ACTION_BUTTON_CLICKED, ACTION_BUTTON_CLICKED,
@@ -251,6 +252,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
     if (options.hasKey(KEY_CANCELABLE)) {
       args.putBoolean(KEY_CANCELABLE, options.getBoolean(KEY_CANCELABLE));
+    }
+    if (options.hasKey(KEY_MODE) && !options.isNull(KEY_MODE)) {
+      args.putString(KEY_MODE, options.getString(KEY_MODE));
     }
 
     fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);

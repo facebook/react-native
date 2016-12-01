@@ -25,6 +25,7 @@ type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
+  mode?: ?string,
 };
 
 /**
@@ -55,6 +56,24 @@ type Options = {
  * Note that by default alerts on Android can be dismissed by clicking outside of their alert box.
  * To prevent this behavior, you can provide
  * an optional `options` parameter `{ cancelable: false }` to the Alert method.
+ *
+ * To support material alert dialog, pass options value with the key 'mode'
+ * `mode` (`enum('material', 'default')`) - To set the appearance of the alert dialog
+ *   - 'material': Show a material alert dialog.
+ *   - 'default': Show a default native alert dialog based on android versions.
+ *
+ * Alert.alert(
+ *   'Alert Title',
+ *   'My Alert Msg',
+ *   [
+ *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+ *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+ *     {text: 'OK', onPress: () => console.log('OK Pressed')},
+ *   ],
+ *   {
+ *    mode: 'material'
+ *   }
+ * )
  *
  * Example usage:
  * ```
@@ -110,7 +129,7 @@ class AlertAndroid {
     };
 
     if (options) {
-      config = {...config, cancelable: options.cancelable};
+      config = {...config, cancelable: options.cancelable, mode: options.mode};
     }
     // At most three buttons (neutral, negative, positive). Ignore rest.
     // The text 'OK' should be probably localized. iOS Alert does that in native.

@@ -18,6 +18,8 @@ import android.content.DialogInterface;
 import android.content.Context;
 import android.os.Bundle;
 
+import java.util.Locale;
+
 /**
  * A fragment used to display the dialog.
  */
@@ -42,29 +44,59 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   }
 
   public static Dialog createDialog(
-      Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext)
+    Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
+    AlertDialogMode mode = AlertDialogMode.DEFAULT;
+    if (arguments.getString(DialogModule.KEY_MODE, null) != null) {
+      mode = AlertDialogMode.valueOf(arguments.getString(DialogModule.KEY_MODE).toUpperCase(Locale.US));
+    }
+
+    if (mode == AlertDialogMode.MATERIAL) {
+      android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(activityContext)
         .setTitle(arguments.getString(ARG_TITLE));
 
-    if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
-      builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);
-    }
-    if (arguments.containsKey(ARG_BUTTON_NEGATIVE)) {
-      builder.setNegativeButton(arguments.getString(ARG_BUTTON_NEGATIVE), fragment);
-    }
-    if (arguments.containsKey(ARG_BUTTON_NEUTRAL)) {
-      builder.setNeutralButton(arguments.getString(ARG_BUTTON_NEUTRAL), fragment);
-    }
-    // if both message and items are set, Android will only show the message
-    // and ignore the items argument entirely
-    if (arguments.containsKey(ARG_MESSAGE)) {
-      builder.setMessage(arguments.getString(ARG_MESSAGE));
-    }
-    if (arguments.containsKey(ARG_ITEMS)) {
-      builder.setItems(arguments.getCharSequenceArray(ARG_ITEMS), fragment);
-    }
+      if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
+        builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);
+      }
+      if (arguments.containsKey(ARG_BUTTON_NEGATIVE)) {
+        builder.setNegativeButton(arguments.getString(ARG_BUTTON_NEGATIVE), fragment);
+      }
+      if (arguments.containsKey(ARG_BUTTON_NEUTRAL)) {
+        builder.setNeutralButton(arguments.getString(ARG_BUTTON_NEUTRAL), fragment);
+      }
+      // if both message and items are set, Android will only show the message
+      // and ignore the items argument entirely
+      if (arguments.containsKey(ARG_MESSAGE)) {
+        builder.setMessage(arguments.getString(ARG_MESSAGE));
+      }
+      if (arguments.containsKey(ARG_ITEMS)) {
+        builder.setItems(arguments.getCharSequenceArray(ARG_ITEMS), fragment);
+      }
 
-    return builder.create();
+      return builder.create();
+    } else {
+      AlertDialog.Builder builder = new AlertDialog.Builder(activityContext)
+        .setTitle(arguments.getString(ARG_TITLE));
+
+      if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
+        builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);
+      }
+      if (arguments.containsKey(ARG_BUTTON_NEGATIVE)) {
+        builder.setNegativeButton(arguments.getString(ARG_BUTTON_NEGATIVE), fragment);
+      }
+      if (arguments.containsKey(ARG_BUTTON_NEUTRAL)) {
+        builder.setNeutralButton(arguments.getString(ARG_BUTTON_NEUTRAL), fragment);
+      }
+      // if both message and items are set, Android will only show the message
+      // and ignore the items argument entirely
+      if (arguments.containsKey(ARG_MESSAGE)) {
+        builder.setMessage(arguments.getString(ARG_MESSAGE));
+      }
+      if (arguments.containsKey(ARG_ITEMS)) {
+        builder.setItems(arguments.getCharSequenceArray(ARG_ITEMS), fragment);
+      }
+
+      return builder.create();
+    }
   }
 
   @Override
