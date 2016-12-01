@@ -523,7 +523,7 @@ const TextInput = React.createClass({
 
   getDefaultProps(): Object {
     return {
-      rejectResponderTermination: false,
+      rejectResponderTermination: true,
     };
   },
 
