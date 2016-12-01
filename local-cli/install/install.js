@@ -11,12 +11,12 @@ log.heading = 'rnpm-install';
 function install(args, config) {
   const name = args[0];
 
-  const projectDir = config.getProjectRoots()[0];
+  const projectDir = process.cwd();
   const isYarnAvailable =
     yarn.getYarnVersionIfAvailable() &&
     yarn.isGlobalCliUsingYarn(projectDir);
 
-  var res;
+  let res;
   if (isYarnAvailable) {
     res = spawnSync('yarn', ['add', name], spawnOpts);
   } else {

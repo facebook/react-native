@@ -11,7 +11,7 @@ log.heading = 'rnpm-install';
 function uninstall(args, config) {
   const name = args[0];
 
-  const projectDir = config.getProjectRoots()[0];
+  const projectDir = process.cwd();
   const isYarnAvailable =
     yarn.getYarnVersionIfAvailable() &&
     yarn.isGlobalCliUsingYarn(projectDir);
