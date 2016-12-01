@@ -492,6 +492,12 @@ const TextInput = React.createClass({
     inlineImagePadding: PropTypes.number,
 
     /**
+     * Allow TextInput to pass touch event to parent.
+     * @platform ios
+     */
+    rejectResponderTermination: PropTypes.bool,
+
+    /**
      * Determines the types of data converted to clickable URLs in the text input.
      * Only valid if `multiline={true}` and `editable={false}`.
      * By default no data types are detected.
@@ -513,6 +519,12 @@ const TextInput = React.createClass({
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+  },
+
+  getDefaultProps(): Object {
+    return {
+      rejectResponderTermination: false,
+    };
   },
 
   /**
@@ -681,7 +693,7 @@ const TextInput = React.createClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
-        rejectResponderTermination={true}
+        rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityTraits={props.accessibilityTraits}
