@@ -42,13 +42,14 @@ var PickerIOS = React.createClass({
 
   // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
+    console.log("\n------ PROPS ------\n", props);
     var selectedIndex = 0;
     var items = [];
     React.Children.toArray(props.children).forEach(function (child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
-      items.push({value: child.props.value, label: child.props.label});
+      items.push({value: child.props.value, label: child.props.label, color: child.props.color});
     });
     return {selectedIndex, items};
   },
@@ -95,6 +96,7 @@ PickerIOS.Item = class extends React.Component {
   static propTypes = {
     value: React.PropTypes.any, // string or integer basically
     label: React.PropTypes.string,
+    color: React.PropTypes.string,
   };
 
   render() {

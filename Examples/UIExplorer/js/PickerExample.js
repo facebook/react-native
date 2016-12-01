@@ -55,8 +55,8 @@ class PickerExample extends React.Component {
             style={styles.picker}
             selectedValue={this.state.selected1}
             onValueChange={this.onValueChange.bind(this, 'selected1')}>
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
+            <Item label="hello" value="key0" color="#ff0000" />
+            <Item label="world" value="key1" color="00ff00" />
           </Picker>
         </UIExplorerBlock>
         <UIExplorerBlock title="Disabled picker">
