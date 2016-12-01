@@ -16,6 +16,7 @@ const chalk = require('chalk');
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
+const registerDependencyWindows = require('./windows/registerNativeModule');
 const registerDependencyIOS = require('./ios/registerNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
 const isInstalledWindows = require('./windows/isInstalled');
@@ -77,12 +78,12 @@ const linkDependencyWindows = (windowsProject, dependency) => {
   return pollParams(dependency.config.params).then(params => {
     log.info(`Linking ${dependency.name} windows dependency`);
 
-    // registerDependencyWindows(
-    //   dependency.name,
-    //   dependency.config.windows,
-    //   params,
-    //   windowsProject
-    // );
+    registerDependencyWindows(
+      dependency.name,
+      dependency.config.windows,
+      params,
+      windowsProject
+    );
 
     log.info(`Windows module ${dependency.name} has been successfully linked`);
   });
