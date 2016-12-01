@@ -32,8 +32,7 @@ log.heading = 'git-upgrade';
 
 /**
  * Promisify the callback-based shelljs function exec
- * @param command
- * @param logOutput
+ * @param logOutput If true, log the stdout of the command.
  * @returns {Promise}
  */
 function exec(command, logOutput) {
@@ -63,46 +62,37 @@ stdout: ${stdout}`));
   })
 }
 
-/**
- * Returns three objects:
- * - Parsed node_modules/react-native/package.json
- * - Parsed node_modules/react/package.json
- * - Parsed package.json
- */
+function parseJsonFile(path, useYarn) {
+  const installHint = useYarn ?
+    'Make sure you ran "yarn" and that you are inside a React Native project.' :
+    'Make sure you ran "npm install" and that you are inside a React Native project.';
+  let fileContents;
+  try {
+    fileContents = fs.readFileSync(path, 'utf8');
+  } catch (err) {
+    throw new Error('Cannot find "' + path + '". ' + installHint);
+  }
+  try {
+    return JSON.parse(fileContents);
+  } catch (err) {
+    throw new Error('Cannot parse "' + path + '": ' + err.message);
+  }
+}
+
 function readPackageFiles(useYarn) {
   const reactNativeNodeModulesPakPath = path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react-native',
-    'package.json'
+    process.cwd(), 'node_modules', 'react-native', 'package.json'
   );
-
   const reactNodeModulesPakPath = path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react',
-    'package.json'
+    process.cwd(), 'node_modules', 'react', 'package.json'
   );
-
   const pakPath = path.resolve(
-    process.cwd(),
-    'package.json'
+    process.cwd(), 'package.json'
   );
-
-  try {
-    const reactNativeNodeModulesPak = JSON.parse(fs.readFileSync(reactNativeNodeModulesPakPath, 'utf8'));
-    const reactNodeModulesPak = JSON.parse(fs.readFileSync(reactNodeModulesPakPath, 'utf8'));
-    const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
-
-    return {reactNativeNodeModulesPak, reactNodeModulesPak, pak};
-  } catch (err) {
-    throw new Error(
-      'Unable to find "' + pakPath + '" or "' + nodeModulesPakPath + '". ' +
-      (useYarn ?
-        'Make sure you ran "yarn" and that you are inside a React Native project.' :
-        'Make sure you ran "npm install" and that you are inside a React Native project.'
-      )
-    );
+  return {
+    reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
+    reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
+    pak: parseJsonFile(pakPath)
   }
 }
 
@@ -240,7 +230,7 @@ async function run(requestedVersion, cliArgs) {
     checkDeclaredVersion(declaredVersion);
 
     log.info('Check matching versions');
-    checkMatchingVersions(currentVersion, declaredVersion);
+    checkMatchingVersions(currentVersion, declaredVersion, useYarn);
 
     log.info('Check React peer dependency');
     checkReactPeerDependency(currentVersion, declaredReactVersion);
@@ -253,6 +243,8 @@ async function run(requestedVersion, cliArgs) {
     const viewOutput = await exec(viewCommand, verbose).then(JSON.parse);
     const newVersion = viewOutput.version;
     const newReactVersionRange = viewOutput['peerDependencies.react'];
+    // Print which versions we're upgrading to
+    log.info('Upgrading to React Native ' + newVersion + (newReactVersionRange ? ', React ' + newReactVersionRange : ''));
 
     log.info('Check new version');
     checkNewVersionValid(newVersion, requestedVersion);
@@ -294,7 +286,7 @@ async function run(requestedVersion, cliArgs) {
     }
     installCommand += ' react-native@' + newVersion;
     if (newReactVersionRange && !semver.satisfies(currentReactVersion, newReactVersionRange)) {
-      // Install React as well to avoid unmet peer dependency.
+      // Install React as well to avoid unmet peer dependency
       installCommand += ' react@' + newReactVersionRange;
     }
     await exec(installCommand, verbose);
@@ -323,8 +315,8 @@ async function run(requestedVersion, cliArgs) {
       await exec(`git apply --3way ${patchPath}`, true);
     } catch (err) {
       log.warn(
-        'The upgrade process succeeded but there might be conflicts to be resolved.\n' + 
-        'See above for the list of files that had merge conflicts.');
+        'The upgrade process succeeded but there might be conflicts to be resolved. ' +
+        'See above for the list of files that have merge conflicts.');
     } finally {
       log.info('Upgrade done');
       if (cliArgs.verbose) {
