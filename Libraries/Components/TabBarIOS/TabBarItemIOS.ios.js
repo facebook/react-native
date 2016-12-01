@@ -115,7 +115,7 @@ class TabBarItemIOS extends React.Component {
           {children}
         </StaticContainer>;
     } else {
-      var tabContents = <View isTVSelectable={true}  />;
+      var tabContents = <View />;
     }
 
     return (
