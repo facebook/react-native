@@ -8,7 +8,7 @@
  */
 
 #import "ARTNode.h"
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 
 @interface ARTNodeManager : RCTViewManager
 

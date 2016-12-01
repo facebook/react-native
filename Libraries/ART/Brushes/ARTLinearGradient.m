@@ -10,7 +10,7 @@
 #import "ARTLinearGradient.h"
 
 #import "RCTConvert+ART.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation ARTLinearGradient
 {

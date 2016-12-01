@@ -12,7 +12,7 @@
 #import "ARTBrush.h"
 #import "ARTCGFloatArray.h"
 #import "ARTTextFrame.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 @interface RCTConvert (ART)
 

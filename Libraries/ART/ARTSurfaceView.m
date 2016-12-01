@@ -10,7 +10,7 @@
 #import "ARTSurfaceView.h"
 
 #import "ARTNode.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation ARTSurfaceView
 
