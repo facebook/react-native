@@ -68,10 +68,17 @@ stdout: ${stdout}`));
 + * - Parsed package.json
 + */
 function readPackageFiles() {
-  const nodeModulesPakPath = path.resolve(
+  const reactNativeNodeModulesPakPath = path.resolve(
     process.cwd(),
     'node_modules',
     'react-native',
+    'package.json'
+  );
+
+  const reactNodeModulesPakPath = path.resolve(
+    process.cwd(),
+    'node_modules',
+    'react',
     'package.json'
   );
 
@@ -81,14 +88,15 @@ function readPackageFiles() {
   );
 
   try {
-    const nodeModulesPak = JSON.parse(fs.readFileSync(nodeModulesPakPath, 'utf8'));
+    const reactNativeNodeModulesPak = JSON.parse(fs.readFileSync(reactNativeNodeModulesPakPath, 'utf8'));
+    const reactNodeModulesPak = JSON.parse(fs.readFileSync(reactNodeModulesPakPath, 'utf8'));
     const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
 
-    return {nodeModulesPak, pak};
+    return {reactNativeNodeModulesPak, reactNodeModulesPak, pak};
   } catch (err) {
     throw new Error(
-      'Unable to find "' + pakPath + '" or "' + nodeModulesPakPath + '". ' +
-      'Make sure you ran  "npm install" and that you are inside a React Native project.'
+      'Unable to find one of "' + pakPath + '", "' + rnPakPath + '" or "' + reactPakPath + '". ' +
+      'Make sure you ran "npm install" and that you are inside a React Native project.'
     )
   }
 }
@@ -191,16 +199,16 @@ async function checkForUpdates() {
 async function run(requestedVersion, cliArgs) {
   const tmpDir = path.resolve(os.tmpdir(), 'react-native-git-upgrade');
   const generatorDir = path.resolve(process.cwd(), 'node_modules', 'react-native', 'local-cli', 'generator');
+  let projectBackupCreated = false;
 
   try {
-    let projectBackupCreated = false;
-
     await checkForUpdates();
 
     log.info('Read package.json files');
-    const {nodeModulesPak, pak} = readPackageFiles();
+    const {reactNativeNodeModulesPak, reactNodeModulesPak, pak} = readPackageFiles();
     const appName = pak.name;
-    const currentVersion = nodeModulesPak.version;
+    const currentVersion = reactNativeNodeModulesPak.version;
+    const currentReactVersion = reactNodeModulesPak.version;
     const declaredVersion = pak.dependencies['react-native'];
     const declaredReactVersion = pak.dependencies.react;
 
@@ -218,10 +226,11 @@ async function run(requestedVersion, cliArgs) {
     log.info('Check that Git is installed');
     checkGitAvailable();
 
-    log.info('Get react-native version from NPM registry');
-    const versionOutput = await exec('npm view react-native@' + (requestedVersion || 'latest') + ' version', verbose);
-    const newVersion = semver.clean(versionOutput);
-    log.info('Upgrading to React Native ' + newVersion);
+    log.info('Get information from NPM registry');
+    const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' peerDependencies.react version --json';
+    const viewOutput = await exec(viewCommand, verbose).then(JSON.parse);
+    const newVersion = viewOutput.version;
+    const newReactVersionRange = viewOutput['peerDependencies.react'];
 
     log.info('Check new version');
     checkNewVersionValid(newVersion, requestedVersion);
@@ -255,7 +264,13 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    await exec('npm install --save react-native@' + newVersion + ' --color=always', verbose);
+    let installCommand = 'npm install --save --color=always';
+    installCommand += ' react-native@' + newVersion;
+    if (!semver.satisfies(currentReactVersion, newReactVersionRange)) {
+      // Install React as well to avoid unmet peer dependency
+      installCommand += ' react@' + newReactVersionRange;
+    }
+    await exec(installCommand, verbose);
 
     log.info('Generate new version template');
     await generateTemplates(generatorDir, appName, verbose);

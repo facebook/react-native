@@ -160,7 +160,14 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac android" />
 
-> Android Studio requires the [Java Development Kit (JDK)](https://www.java.com/en/download/mac_download.jsp), version 1.8 or higher. You can type `javac -version` in a terminal to see what version you have, if any.
+> Android Studio requires the [Java SE Development Kit(JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), version 8. You can type `javac -version` in a terminal to see what version you have, if any.
+
+```
+$ javac -version
+javac 1.8.0_111
+```
+
+> The version string `1.8.x_xxx` corresponds to JDK 8.
 
 <block class="mac windows android" />
 
