@@ -225,10 +225,15 @@ class MessagingTest extends React.Component {
     message: '',
   }
 
-  onMessage = e => this.setState({
-    messagesReceivedFromWebView: this.state.messagesReceivedFromWebView + 1,
-    message: e.nativeEvent.data,
-  })
+  onMessage = e => {
+    this.setState({
+      messagesReceivedFromWebView: this.state.messagesReceivedFromWebView + 1,
+      message: e.nativeEvent.data,
+    })
+    if (this.webview) {
+      this.webview.postMessage('React Native has received!');
+    }
+  }
 
   postMessage = () => {
     if (this.webview) {
