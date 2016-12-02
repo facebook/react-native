@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const AssetServer = require('../AssetServer');
@@ -22,6 +25,12 @@ const path = require('path');
 const url = require('url');
 
 const debug = require('debug')('ReactNativePackager:Server');
+
+import type Module from '../node-haste/Module';
+import type {Stats} from 'fs';
+import type {IncomingMessage, ServerResponse} from 'http';
+import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type Bundle from '../Bundler/Bundle';
 
 const {
   createActionStartEntry,
@@ -197,7 +206,24 @@ const bundleDeps = new WeakMap();
 const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 
 class Server {
-  constructor(options) {
+
+  _opts: {
+    projectRoots: Array<string>,
+    watch: boolean,
+  };
+  _projectRoots: Array<string>;
+  _bundles: {};
+  _changeWatchers: Array<{
+    req: IncomingMessage,
+    res: ServerResponse,
+  }>;
+  _fileChangeListeners: Array<(filePath: string) => mixed>;
+  _assetServer: AssetServer;
+  _bundler: Bundler;
+  _debouncedFileChangeHandler: (filePath: string) => mixed;
+  _hmrFileChangeListener: (type: string, filePath: string) => mixed;
+
+  constructor(options: {watch?: boolean}) {
     const opts = this._opts = validateOpts(options);
     const processFileChange =
       ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
@@ -255,21 +281,26 @@ class Server {
     }, 50);
   }
 
-  end() {
+  end(): mixed {
     return this._bundler.end();
   }
 
-  setHMRFileChangeListener(listener) {
+  setHMRFileChangeListener(
+    listener: (type: string, filePath: string) => mixed,
+  ) {
     this._hmrFileChangeListener = listener;
   }
 
-  addFileChangeListener(listener) {
+  addFileChangeListener(listener: (filePath: string) => mixed) {
     if (this._fileChangeListeners.indexOf(listener) === -1) {
       this._fileChangeListeners.push(listener);
     }
   }
 
-  buildBundle(options) {
+  buildBundle(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<Bundle> {
     return this._bundler.getResolver().getDependencyGraph().load().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -299,16 +330,23 @@ class Server {
     });
   }
 
-  buildBundleFromUrl(reqUrl) {
+  buildBundleFromUrl(reqUrl: string): Promise<mixed> {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules, host, port) {
-    return this._bundler.hmrBundle(modules, host, port);
+  buildBundleForHMR(
+    options: {platform: ?string},
+    host: string,
+    port: number,
+  ): Promise<string> {
+    return this._bundler.hmrBundle(options, host, port);
   }
 
-  getShallowDependencies(options) {
+  getShallowDependencies(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<mixed> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -319,11 +357,14 @@ class Server {
     });
   }
 
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string): Module {
     return this._bundler.getModuleForPath(entryFile);
   }
 
-  getDependencies(options) {
+  getDependencies(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<ResolutionResponse> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -334,14 +375,14 @@ class Server {
     });
   }
 
-  getOrderedDependencyPaths(options) {
+  getOrderedDependencyPaths(options: {}): Promise<mixed> {
     return Promise.resolve().then(() => {
       const opts = dependencyOpts(options);
       return this._bundler.getOrderedDependencyPaths(opts);
     });
   }
 
-  onFileChange(type, filePath, stat) {
+  onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
     this._bundler.invalidateFile(filePath);
 
@@ -367,7 +408,7 @@ class Server {
     );
   }
 
-  _onFileChangeComplete(filePath) {
+  _onFileChangeComplete(filePath: string) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(filePath);
@@ -391,9 +432,10 @@ class Server {
     this._changeWatchers = [];
   }
 
-  _processDebugRequest(reqUrl, res) {
+  _processDebugRequest(reqUrl: string, res: ServerResponse) {
     let ret = '<!doctype html>';
     const pathname = url.parse(reqUrl).pathname;
+    /* $FlowFixMe: pathname would be null for an invalid URL */
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
@@ -414,13 +456,13 @@ class Server {
         }
       );
     } else {
-      res.writeHead('404');
+      res.writeHead(404);
       res.end('Invalid debug request');
       return;
     }
   }
 
-  _processOnChangeRequest(req, res) {
+  _processOnChangeRequest(req: IncomingMessage, res: ServerResponse) {
     const watchers = this._changeWatchers;
 
     watchers.push({
@@ -438,7 +480,12 @@ class Server {
     });
   }
 
-  _rangeRequestMiddleware(req, res, data, assetPath) {
+  _rangeRequestMiddleware(
+    req: IncomingMessage,
+    res: ServerResponse,
+    data: string,
+    assetPath: string,
+  ) {
     if (req.headers && req.headers.range) {
       const [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
       const dataStart = parseInt(rangeStart, 10);
@@ -447,7 +494,7 @@ class Server {
 
       res.writeHead(206, {
         'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
+        'Content-Length': chunksize.toString(),
         'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
         'Content-Type': mime.lookup(path.basename(assetPath[1])),
       });
@@ -458,9 +505,10 @@ class Server {
     return data;
   }
 
-  _processAssetsRequest(req, res) {
+  _processAssetsRequest(req: IncomingMessage, res: ServerResponse) {
     const urlObj = url.parse(decodeURI(req.url), true);
-    const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
+    /* $FlowFixMe: could be empty if the url is invalid */
+    const assetPath: string = urlObj.pathname.match(/^\/assets\/(.+)$/);
 
     const processingAssetRequestLogEntry =
       print(log(createActionStartEntry({
@@ -468,6 +516,7 @@ class Server {
         asset: assetPath[1],
       })), ['asset']);
 
+    /* $FlowFixMe: query may be empty for invalid URLs */
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => {
@@ -483,18 +532,21 @@ class Server {
         },
         error => {
           console.error(error.stack);
-          res.writeHead('404');
+          res.writeHead(404);
           res.end('Asset not found');
         }
       );
   }
 
-  optionsHash(options) {
+  optionsHash(options: {}) {
     // onProgress is a function, can't be serialized
     return JSON.stringify(Object.assign({}, options, { onProgress: null }));
   }
 
-  _useCachedOrUpdateOrCreateBundle(options) {
+  _useCachedOrUpdateOrCreateBundle(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -555,12 +607,17 @@ class Server {
                   const moduleTransport = newModules[i];
                   const {meta, sourcePath} = moduleTransport;
                   if (outdated.has(sourcePath)) {
+                    /* $FlowFixMe: `meta` could be empty */
                     if (!contentsEqual(meta.dependencies, new Set(files.get(sourcePath)))) {
                       // bail out if any dependencies changed
                       return Promise.reject(Error(
                         `Dependencies of ${sourcePath} changed from [${
+                          /* $FlowFixMe: `get` can return empty */
                           files.get(sourcePath).join(', ')
-                        }] to [${meta.dependencies.join(', ')}]`
+                        }] to [${
+                          /* $FlowFixMe: `meta` could be empty */
+                          meta.dependencies.join(', ')
+                        }]`
                       ));
                     }
 
@@ -593,9 +650,14 @@ class Server {
     return bundleFromScratch();
   }
 
-  processRequest(req, res, next) {
+  processRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: () => mixed,
+  ) {
     const urlObj = url.parse(req.url, true);
-    const pathname = urlObj.pathname;
+    /* $FlowFixMe: Could be empty if the URL is invalid. */
+    const pathname: string = urlObj.pathname;
 
     let requestType;
     if (pathname.match(/\.bundle$/)) {
@@ -699,10 +761,12 @@ class Server {
     });
   }
 
-  _symbolicate(req, res) {
+  _symbolicate(req: IncomingMessage, res: ServerResponse) {
     const symbolicatingLogEntry =
       print(log(createActionStartEntry('Symbolicating')));
 
+    /* $FlowFixMe: where is `rowBody` defined? Is it added by
+     * the `connect` framework? */
     Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
@@ -763,7 +827,7 @@ class Server {
     );
   }
 
-  _sourceMapForURL(reqUrl) {
+  _sourceMapForURL(reqUrl: string): Promise<SourceMapConsumer> {
     const options = this._getOptionsFromUrl(reqUrl);
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     return building.then(p => {
@@ -775,7 +839,14 @@ class Server {
     });
   }
 
-  _handleError(res, bundleID, error) {
+  _handleError(res: ServerResponse, bundleID: string, error: {
+    status: number,
+    type: string,
+    description: string,
+    filename: string,
+    lineNumber: number,
+    errors: Array<{description: string, filename: string, lineNumber: number}>,
+  }) {
     res.writeHead(error.status || 500, {
       'Content-Type': 'application/json; charset=UTF-8',
     });
@@ -803,9 +874,23 @@ class Server {
     }
   }
 
-  _getOptionsFromUrl(reqUrl) {
+  _getOptionsFromUrl(reqUrl: string): {
+    sourceMapUrl: string,
+    entryFile: string,
+    dev: boolean,
+    minify: boolean,
+    hot: boolean,
+    runModule: boolean,
+    inlineSourceMap: boolean,
+    platform?: string,
+    entryModuleOnly: boolean,
+    generateSourceMaps: boolean,
+    assetPlugins: Array<string>,
+    onProgress?: () => mixed,
+  } {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
+    /* $FlowFixMe: `pathname` could be empty for an invalid URL */
     const pathname = decodeURIComponent(urlObj.pathname);
 
     // Backwards compatibility. Options used to be as added as '.' to the
@@ -822,9 +907,11 @@ class Server {
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url
+    /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
       getPlatformExtension(pathname);
 
+    /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;
     const assetPlugins = Array.isArray(assetPlugin) ?
       assetPlugin :
@@ -848,12 +935,14 @@ class Server {
         'entryModuleOnly',
         false,
       ),
+      /* $FlowFixMe: missing defaultVal */
       generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
       assetPlugins,
     };
   }
 
-  _getBoolOptionFromQuery(query, opt, defaultVal) {
+  _getBoolOptionFromQuery(query: ?{}, opt: string, defaultVal: boolean): boolean {
+    /* $FlowFixMe: `query` could be empty when it comes from an invalid URL */
     if (query[opt] == null) {
       return defaultVal;
     }
@@ -862,7 +951,7 @@ class Server {
   }
 }
 
-function contentsEqual(array, set) {
+function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
   return array.length === set.size && array.every(set.has, set);
 }
 
