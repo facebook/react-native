@@ -52,7 +52,8 @@ var PickerIOS = React.createClass({
       items.push({
         value: child.props.value,
         label: child.props.label,
-        textColor: processColor(child.props.color)});
+        textColor: processColor(child.props.color),
+      });
     });
     return {selectedIndex, items};
   },
