@@ -66,7 +66,7 @@ const linkDependencyWindows = (windowsProject, dependency) => {
     return null;
   }
 
-  // console.log('####', windowsProject, dependency)
+  console.log('####', windowsProject, dependency)
 
   const isInstalled = isInstalledWindows(windowsProject, dependency.name);
 

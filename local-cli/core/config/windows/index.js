@@ -32,14 +32,26 @@ const projectName = (fullProjPath) => {
  * defaults specified by user into consideration
  */
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
-  const packageClassName = findPackageClassName(folder);
-  const csProj = userConfig.csProj || findProject(folder);
+
+  const csSolution = userConfig.csSolution || findWindowsSolution(folder);
+  const solutionPath = path.join(folder, csSolution);
+
+  if (!csSolution) {
+    return null;
+  }
+
+  // expects solutions to be named the same as project folders
+  const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
+  const src = userConfig.sourceDir || windowsAppFolder;
+  const sourceDir = path.join(folder, src);
+  const mainPage = path.join(sourceDir, 'MainPage.cs')
 
   return {
-    packageClassName,
-    csProj,
+    sourceDir,
+    solutionPath,
+    mainPage,
     folder,
-    userConfig
+    userConfig,
   };
 };
 
