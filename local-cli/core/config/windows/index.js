@@ -32,7 +32,15 @@ const projectName = (fullProjPath) => {
  * defaults specified by user into consideration
  */
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
-  return {projectInfo: true, folder, userConfig};
+  const packageClassName = findPackageClassName(folder);
+  const csProj = userConfig.csProj || findProject(folder);
+
+  return {
+    packageClassName,
+    csProj,
+    folder,
+    userConfig
+  };
 };
 
 /**
@@ -93,5 +101,6 @@ EndProject
     solutionInsert,
     projectInsert,
     csProj,
+    folder,
   }
 };

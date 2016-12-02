@@ -1,4 +1,4 @@
-// const applyPatch = require('./patches/applyPatch');
+const applyPatch = require('./patches/applyPatch');
 // const makeStringsPatch = require('./patches/makeStringsPatch');
 // const makeSettingsPatch = require('./patches/makeSettingsPatch');
 // const makeBuildPatch = require('./patches/makeBuildPatch');
