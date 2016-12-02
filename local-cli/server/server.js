@@ -97,6 +97,11 @@ module.exports = {
     parse: (val) => val.split(','),
     default: (config) => config.getAssetExts(),
   }, {
+    command: '--platforms [list]',
+    description: 'Specify any additional platforms to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getPlatforms(),
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
