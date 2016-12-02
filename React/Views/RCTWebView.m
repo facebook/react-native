@@ -87,6 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)postMessage:(NSString *)message
 {
   NSDictionary *eventInitDict = @{
+    @"origin": @"react-native",
     @"data": message,
   };
   NSString *source = [NSString
@@ -277,8 +278,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (_messagingEnabled) {
     NSString *source = [NSString stringWithFormat:
       @"window.originalPostMessage = window.postMessage;"
-      "window.postMessage = function(data) {"
-        "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+      "window.postMessage = function(data, targetOrigin) {"
+        "if (targetOrigin === 'react-native') {"
+          "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+        "} else {"
+          "window.originalPostMessage.apply(arguments);"
+        "}"
       "};", RCTJSNavigationScheme, RCTJSPostMessageHost
     ];
     [webView stringByEvaluatingJavaScriptFromString:source];

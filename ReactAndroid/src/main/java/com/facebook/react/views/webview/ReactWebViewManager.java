@@ -275,8 +275,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (messagingEnabled) {
         loadUrl("javascript:(" +
           "window.originalPostMessage = window.postMessage," +
-          "window.postMessage = function(data) {" +
-            BRIDGE_NAME + ".postMessage(String(data));" +
+          "window.postMessage = function(data, targetOrigin) {" +
+            "if (targetOrigin === 'react-native') {" +
+              BRIDGE_NAME + ".postMessage(String(data));" +
+            "} else {" +
+              "window.originalPostMessage.apply(arguments);" +
+            "}" +
           "}" +
         ")");
       }
@@ -480,6 +484,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       case COMMAND_POST_MESSAGE:
         try {
           JSONObject eventInitDict = new JSONObject();
+          eventInitDict.put("origin", "react-native");
           eventInitDict.put("data", args.getString(0));
           root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
         } catch (JSONException e) {

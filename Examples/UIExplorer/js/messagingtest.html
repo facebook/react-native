@@ -15,6 +15,7 @@
   <script>
     var messagesReceivedFromReactNative = 0;
     document.addEventListener('message', function(e) {
+      if (e.origin !== 'react-native') return;
       messagesReceivedFromReactNative += 1;
       document.getElementsByTagName('p')[0].innerHTML =
         'Messages recieved from React Native: ' + messagesReceivedFromReactNative;
@@ -22,7 +23,7 @@
     });
 
     document.getElementsByTagName('button')[0].addEventListener('click', function() {
-      window.postMessage('"Hello" from the web view');
+      window.postMessage('"Hello" from the web view', 'react-native');
     });
   </script>
 </html>
