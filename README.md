@@ -2,7 +2,7 @@
 
 React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](https://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
 
-Supported operating systems are >= Android 4.1 (API 16) and >= iOS 7.0.
+Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 - [Getting Started](#getting-started)
 - [Getting Help](#getting-help)

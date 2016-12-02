@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 /**
  * Object containing an image URL and associated metadata.
@@ -33,13 +33,6 @@
  * Create a copy of the image source with the specified size and scale.
  */
 - (instancetype)imageSourceWithSize:(CGSize)size scale:(CGFloat)scale;
-
-@end
-
-@interface RCTImageSource (Deprecated)
-
-@property (nonatomic, strong, readonly) NSURL *imageURL
-__deprecated_msg("Use request.URL instead.");
 
 @end
 

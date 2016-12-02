@@ -8,6 +8,8 @@
  */
 'use strict';
 
+/* global Buffer: true */
+
 const crypto = require('crypto');
 
 const isUTF8 = encoding => /^utf-?8$/i.test(encoding);
@@ -15,13 +17,13 @@ const isUTF8 = encoding => /^utf-?8$/i.test(encoding);
 const constantFor = encoding =>
   /^ascii$/i.test(encoding) ? 1 :
   isUTF8(encoding) ? 2 :
-  /^(?:utf-?16(?:le)?|ucs-?2)$/ ? 3 : 0;
+  /^(?:utf-?16(?:le)?|ucs-?2)$/.test(encoding) ? 3 : 0;
 
 module.exports = function(code, encoding) {
   const hash = crypto.createHash('sha1');
   hash.update(code, encoding);
   const digest = hash.digest('binary');
-  const signature = Buffer(digest.length + 1);
+  const signature = Buffer.alloc ? Buffer.alloc(digest.length + 1) : new Buffer(digest.length + 1); // remove the new Buffer call when RN drops support for Node 4
   signature.write(digest, 'binary');
   signature.writeUInt8(
     constantFor(tryAsciiPromotion(code, encoding)),

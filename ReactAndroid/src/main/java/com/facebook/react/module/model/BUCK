@@ -1,0 +1,16 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'model',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility=[
+    'PUBLIC'
+  ]
+)
+
+project_config(
+  src_target = ':model',
+)

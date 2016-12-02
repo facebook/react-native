@@ -49,6 +49,10 @@ class JInstanceCallback : public InstanceCallback {
   }
 
   void incrementPendingJSCalls() override {
+    // For C++ modules, this can be called from an arbitrary thread
+    // managed by the module, via callJSCallback or callJSFunction.  So,
+    // we ensure that it is registered with the JVM.
+    jni::ThreadScope guard;
     static auto method =
       ReactCallback::javaClassStatic()->getMethod<void()>("incrementPendingJSCalls");
     method(jobj_);
@@ -107,6 +111,7 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
       makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
       makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
       makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
@@ -213,6 +218,10 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+jlong CatalystInstanceImpl::getJavaScriptContext() {
+  return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
 void CatalystInstanceImpl::handleMemoryPressureUiHidden() {

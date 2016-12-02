@@ -23,7 +23,6 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule ListViewDataSource
- * @typechecks
  * @flow
  */
 'use strict';
@@ -50,10 +49,10 @@ function defaultGetSectionHeaderData(
 type differType = (data1: any, data2: any) => bool;
 
 type ParamType = {
-  rowHasChanged: differType;
-  getRowData?: ?typeof defaultGetRowData;
-  sectionHeaderHasChanged?: ?differType;
-  getSectionHeaderData?: ?typeof defaultGetSectionHeaderData;
+  rowHasChanged: differType,
+  getRowData?: ?typeof defaultGetRowData,
+  sectionHeaderHasChanged?: ?differType,
+  getSectionHeaderData?: ?typeof defaultGetSectionHeaderData,
 }
 
 /**

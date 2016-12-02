@@ -3,8 +3,8 @@ package com.facebook.react.uimanager;
 import com.facebook.infer.annotation.Assertions;
 
 /**
- * Provides helper methods from decomposing transform matrix into list of translate, scale and
- * rotate commands.
+ * Provides helper methods for converting transform operations into a matrix and then into a list
+ * of translate, scale and rotate commands.
  */
 public class MatrixMathHelper {
 
@@ -24,6 +24,37 @@ public class MatrixMathHelper {
       return false;
     }
     return Math.abs(d) < EPSILON;
+  }
+
+  public static void multiplyInto(double[] out, double[] a, double[] b) {
+    double a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
+      a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
+      a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
+      a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+
+    double b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
+    out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
+    out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
+    out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
+    out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
   }
 
   /**
@@ -349,5 +380,80 @@ public class MatrixMathHelper {
 
   public static double roundTo3Places(double n) {
     return Math.round(n * 1000d) * 0.001;
+  }
+
+  public static double[] createIdentityMatrix() {
+    double[] res = new double[16];
+    resetIdentityMatrix(res);
+    return res;
+  }
+
+  public static double degreesToRadians(double degrees) {
+    return degrees * Math.PI / 180;
+  }
+
+  public static void resetIdentityMatrix(double[] matrix) {
+    matrix[1] = matrix[2] = matrix[3] = matrix[4] = matrix[6] = matrix[7] = matrix[8] = matrix[9] =
+      matrix[11] = matrix[12] = matrix[13] = matrix[14] = 0;
+    matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1;
+  }
+
+  public static void applyPerspective(double[] m, double perspective) {
+    m[11] = -1 / perspective;
+  }
+
+  public static void applyScaleX(double[] m, double factor) {
+    m[0] = factor;
+  }
+
+  public static void applyScaleY(double[] m, double factor) {
+    m[5] = factor;
+  }
+
+  public static void applyScaleZ(double[] m, double factor) {
+    m[10] = factor;
+  }
+
+  public static void applyTranslate2D(double[] m, double x, double y) {
+    m[12] = x;
+    m[13] = y;
+  }
+
+  public static void applyTranslate3D(double[] m, double x, double y, double z) {
+    m[12] = x;
+    m[13] = y;
+    m[14] = z;
+  }
+
+  public static void applySkewX(double[] m, double radians) {
+    m[4] = Math.sin(radians);
+    m[5] = Math.cos(radians);
+  }
+
+  public static void applySkewY(double[] m, double radians) {
+    m[0] = Math.cos(radians);
+    m[1] = Math.sin(radians);
+  }
+
+  public static void applyRotateX(double[] m, double radians) {
+    m[5] = Math.cos(radians);
+    m[6] = Math.sin(radians);
+    m[9] = -Math.sin(radians);
+    m[10] = Math.cos(radians);
+  }
+
+  public static void applyRotateY(double[] m, double radians) {
+    m[0] = Math.cos(radians);
+    m[2] = -Math.sin(radians);
+    m[8] = Math.sin(radians);
+    m[10] = Math.cos(radians);
+  }
+
+  // http://www.w3.org/TR/css3-transforms/#recomposing-to-a-2d-matrix
+  public static void applyRotateZ(double[] m, double radians) {
+    m[0] = Math.cos(radians);
+    m[1] = Math.sin(radians);
+    m[4] = -Math.sin(radians);
+    m[5] = Math.cos(radians);
   }
 }

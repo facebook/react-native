@@ -15,20 +15,22 @@ import java.util.Map;
 
 import android.view.View;
 
+import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
- * responsible for creating and updating CSSNode subclasses used for calculating position and size
+ * responsible for creating and updating CSSNodeDEPRECATED subclasses used for calculating position and size
  * for the corresponding native view.
  */
 @ReactPropertyHolder
-public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
+public abstract class ViewManager<T extends View, C extends ReactShadowNode>
+  extends BaseJavaModule {
 
   public final void updateProperties(T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);

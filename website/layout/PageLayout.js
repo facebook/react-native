@@ -8,10 +8,11 @@
  *
  * @providesModule PageLayout
  */
+'use strict';
 
+var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
-var Marked = require('Marked');
 
 var support = React.createClass({
   childContextTypes: {
@@ -26,7 +27,9 @@ var support = React.createClass({
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
-      <Site section={metadata.section} title={metadata.title}>
+      <Site
+        section={metadata.section}
+        title={metadata.title} >
         <section className="content wrap documentationContent nosidebar">
           <div className="inner-content">
             <Marked>{content}</Marked>

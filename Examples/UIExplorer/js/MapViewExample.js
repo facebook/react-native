@@ -242,6 +242,7 @@ class AnnotationExample extends React.Component {
 
     return (
       <MapView
+        showsAnnotationCallouts={this.props.showsAnnotationCallouts}
         style={styles.map}
         onRegionChangeComplete={onRegionChangeComplete}
         region={this.state.mapRegion}
@@ -367,6 +368,29 @@ exports.examples = [
     }
   },
   {
+    title: 'Show callouts by default example',
+    render() {
+      return <AnnotationExample
+        style={styles.map}
+        annotation={{
+          title: 'More Info...',
+          rightCalloutView: (
+            <TouchableOpacity
+              onPress={() => {
+                alert('You Are Here');
+              }}>
+              <Image
+                style={{width:30, height:30}}
+                source={require('./uie_thumb_selected.png')}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+        showsAnnotationCallouts={true}
+      />;
+    }
+  },
+  {
     title: 'Annotation focus example',
     render() {
       return <AnnotationExample style={styles.map} annotation={{
@@ -400,7 +424,7 @@ exports.examples = [
     render() {
       return <AnnotationExample style={styles.map} annotation={{
         title: 'Thumbs Up!',
-        image: require('image!uie_thumb_big'),
+        image: require('./uie_thumb_big.png'),
       }}/>;
     }
   },
@@ -417,7 +441,7 @@ exports.examples = [
           </Text>
           <Image
             style={{width: 90, height: 65, resizeMode: 'cover'}}
-            source={require('image!uie_thumb_big')}
+            source={require('./uie_thumb_big.png')}
           />
         </View>,
       }}/>;

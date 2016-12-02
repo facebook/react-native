@@ -9,16 +9,17 @@
 
 #import "RCTTestRunner.h"
 
-#import "FBSnapshotTestController.h"
-#import "RCTAssert.h"
-#import "RCTLog.h"
-#import "RCTRootView.h"
-#import "RCTTestModule.h"
-#import "RCTUtils.h"
-#import "RCTJSCExecutor.h"
-#import "RCTBridge+Private.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTJSCExecutor.h>
+#import <React/RCTLog.h>
+#import <React/RCTRootView.h>
+#import <React/RCTUtils.h>
 
-static const NSTimeInterval kTestTimeoutSeconds = 60;
+#import "FBSnapshotTestController.h"
+#import "RCTTestModule.h"
+
+static const NSTimeInterval kTestTimeoutSeconds = 120;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 
 @implementation RCTTestRunner
@@ -117,6 +118,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     RCTAssert(_testController != nil, @"_testController should not be nil");
     testModule.controller = _testController;
     testModule.testSelector = test;
+    testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
     UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;

@@ -174,7 +174,9 @@ class AsyncStorageTest extends React.Component {
   };
 
   componentDidMount() {
-    done = () => this.setState({done: true}, TestModule.markTestCompleted);
+    done = () => this.setState({done: true}, () => {
+      TestModule.markTestCompleted();
+    });
     updateMessage = (msg) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);

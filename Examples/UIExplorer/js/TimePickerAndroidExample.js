@@ -66,7 +66,7 @@ class TimePickerAndroidExample extends React.Component {
       <UIExplorerPage title="TimePickerAndroid">
         <UIExplorerBlock title="Simple time picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'simple')}>
+            onPress={this.showPicker.bind(this, 'simple', {})}>
             <Text style={styles.text}>{this.state.simpleText}</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>

@@ -16,6 +16,9 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.LifecycleState;
+import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.uimanager.UIImplementationProvider;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -64,6 +67,8 @@ public abstract class ReactNativeHost {
       .setApplication(mApplication)
       .setJSMainModuleName(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())
+      .setRedBoxHandler(getRedBoxHandler())
+      .setUIImplementationProvider(getUIImplementationProvider())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -76,8 +81,28 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-
     return builder.build();
+  }
+
+  /**
+   * Get the {@link RedBoxHandler} to send RedBox-related callbacks to.
+   */
+  protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  protected final Application getApplication() {
+    return mApplication;
+  }
+
+  /**
+   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
+   * custom UI implementation.
+   *
+   * Note: this is very advanced functionality, in 99% of cases you don't need to override this.
+   */
+  protected UIImplementationProvider getUIImplementationProvider() {
+    return new UIImplementationProvider();
   }
 
   /**

@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
@@ -84,10 +84,10 @@ var TouchableOpacity = React.createClass({
   /**
    * Animate the touchable to a new opacity.
    */
-  setOpacityTo: function(value: number) {
+  setOpacityTo: function(value: number, duration: number = 150) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {toValue: value, duration: duration, useNativeDriver: true}
     ).start();
   },
 
@@ -98,7 +98,11 @@ var TouchableOpacity = React.createClass({
   touchableHandleActivePressIn: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
-    this._opacityActive();
+    if (e.dispatchConfig.registrationName === 'onResponderGrant') {
+      this._opacityActive(0);
+    } else {
+      this._opacityActive(150);
+    }
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
@@ -111,7 +115,7 @@ var TouchableOpacity = React.createClass({
 
   touchableHandlePress: function(e: Event) {
     this.clearTimeout(this._hideTimeout);
-    this._opacityActive();
+    this._opacityActive(150);
     this._hideTimeout = this.setTimeout(
       this._opacityInactive,
       this.props.delayPressOut || 100
@@ -144,8 +148,8 @@ var TouchableOpacity = React.createClass({
     return this.props.delayPressOut;
   },
 
-  _opacityActive: function() {
-    this.setOpacityTo(this.props.activeOpacity);
+  _opacityActive: function(duration: number) {
+    this.setOpacityTo(this.props.activeOpacity, duration);
   },
 
   _opacityInactive: function() {
@@ -153,7 +157,8 @@ var TouchableOpacity = React.createClass({
     this._hideTimeout = null;
     var childStyle = flattenStyle(this.props.style) || {};
     this.setOpacityTo(
-      childStyle.opacity === undefined ? 1 : childStyle.opacity
+      childStyle.opacity === undefined ? 1 : childStyle.opacity,
+      150
     );
   },
 

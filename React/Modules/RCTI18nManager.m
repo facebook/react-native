@@ -16,7 +16,12 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(allowRTL:(BOOL)value)
 {
-  [[RCTI18nUtil sharedInstance] setAllowRTL:value];
+  [[RCTI18nUtil sharedInstance] allowRTL:value];
+}
+
+RCT_EXPORT_METHOD(forceRTL:(BOOL)value)
+{
+  [[RCTI18nUtil sharedInstance] forceRTL:value];
 }
 
 - (NSDictionary *)constantsToExport

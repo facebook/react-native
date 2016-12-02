@@ -34,9 +34,10 @@
       @"ScriptExecution",
       @"RAMBundleLoad",
       @"RAMStartupCodeSize",
+      @"RAMStartupNativeRequires",
+      @"RAMStartupNativeRequiresCount",
       @"RAMNativeRequires",
       @"RAMNativeRequiresCount",
-      @"RAMNativeRequiresSize",
       @"NativeModuleInit",
       @"NativeModuleMainThread",
       @"NativeModulePrepareConfig",
@@ -70,7 +71,7 @@
 #if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
     NSString *label =_labelsForTags[tag];
-    RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger", nil);
+    RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger");
   }
 #endif
   if (_data[tag][0] != 0 && _data[tag][1] == 0) {

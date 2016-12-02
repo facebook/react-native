@@ -294,6 +294,93 @@ class BlurOnSubmitExample extends React.Component {
   }
 }
 
+type SelectionExampleState = {
+  selection: {
+    start: number;
+    end?: number;
+  };
+  value: string;
+};
+
+class SelectionExample extends React.Component {
+  state: SelectionExampleState;
+
+  _textInput: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selection: {start: 0, end: 0},
+      value: props.value
+    };
+  }
+
+  onSelectionChange({nativeEvent: {selection}}) {
+    this.setState({selection});
+  }
+
+  getRandomPosition() {
+    var length = this.state.value.length;
+    return Math.round(Math.random() * length);
+  }
+
+  select(start, end) {
+    this._textInput.focus();
+    this.setState({selection: {start, end}});
+  }
+
+  selectRandom() {
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
+    this.select(...positions);
+  }
+
+  placeAt(position) {
+    this.select(position, position);
+  }
+
+  placeAtRandom() {
+    this.placeAt(this.getRandomPosition());
+  }
+
+  render() {
+    var length = this.state.value.length;
+
+    return (
+      <View>
+        <TextInput
+          multiline={this.props.multiline}
+          onChangeText={(value) => this.setState({value})}
+          onSelectionChange={this.onSelectionChange.bind(this)}
+          ref={textInput => (this._textInput = textInput)}
+          selection={this.state.selection}
+          style={this.props.style}
+          value={this.state.value}
+        />
+        <View>
+          <Text>
+            selection = {JSON.stringify(this.state.selection)}
+          </Text>
+          <Text onPress={this.placeAt.bind(this, 0)}>
+            Place at Start (0, 0)
+          </Text>
+          <Text onPress={this.placeAt.bind(this, length)}>
+            Place at End ({length}, {length})
+          </Text>
+          <Text onPress={this.placeAtRandom.bind(this)}>
+            Place at Random
+          </Text>
+          <Text onPress={this.select.bind(this, 0, length)}>
+            Select All
+          </Text>
+          <Text onPress={this.selectRandom.bind(this)}>
+            Select Random
+          </Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   page: {
     paddingBottom: 300,
@@ -540,7 +627,7 @@ exports.examples = [
   },
   {
     title: 'Event handling',
-    render: function(): ReactElement<any> { return <TextEventsExample />; },
+    render: function(): React.Element<any> { return <TextEventsExample />; },
   },
   {
     title: 'Colored input text',
@@ -638,7 +725,7 @@ exports.examples = [
   },
   {
     title: 'Blur on submit',
-    render: function(): ReactElement<any> { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Multiline blur on submit',
@@ -726,6 +813,60 @@ exports.examples = [
     title: 'Attributed text',
     render: function() {
       return <TokenizedTextExample />;
+    }
+  },
+  {
+    title: 'Text selection & cursor placement',
+    render: function() {
+      return (
+        <View>
+          <SelectionExample
+            style={styles.default}
+            value="text selection can be changed"
+          />
+          <SelectionExample
+            multiline
+            style={styles.multiline}
+            value={"multiline text selection\ncan also be changed"}
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'TextInput maxLength',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="maxLength: 5">
+            <TextInput
+              maxLength={5}
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with placeholder">
+            <TextInput
+              maxLength={5}
+              placeholder="ZIP code entry"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="94025"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with very long default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="9402512345"
+              style={styles.default}
+            />
+          </WithLabel>
+        </View>
+      );
     }
   },
 ];

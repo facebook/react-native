@@ -12,41 +12,77 @@
 
 @implementation RCTTransformAnimatedNode
 {
-  NSMutableDictionary<NSString *, NSNumber *> *_updatedPropsDictionary;
+  NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
                      config:(NSDictionary<NSString *, id> *)config;
 {
   if ((self = [super initWithTag:tag config:config])) {
-    _updatedPropsDictionary = [NSMutableDictionary new];
+    _propsDictionary = [NSMutableDictionary new];
   }
   return self;
 }
 
-- (NSDictionary *)updatedPropsDictionary
+- (NSDictionary *)propsDictionary
 {
-  return _updatedPropsDictionary;
+  return _propsDictionary;
 }
 
 - (void)performUpdate
 {
   [super performUpdate];
 
-  NSDictionary<NSString *, NSNumber *> *transforms = self.config[@"transform"];
-  [transforms enumerateKeysAndObjectsUsingBlock:^(NSString *property, NSNumber *nodeTag, __unused BOOL *stop) {
-    RCTAnimatedNode *node = self.parentNodes[nodeTag];
-    if (node.hasUpdated && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
-      RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-      self->_updatedPropsDictionary[property] = @(parentNode.value);
-    }
-  }];
-}
+  CATransform3D transform = CATransform3DIdentity;
 
-- (void)cleanupAnimationUpdate
-{
-  [super cleanupAnimationUpdate];
-  [_updatedPropsDictionary removeAllObjects];
+  NSArray<NSDictionary *> *transformConfigs = self.config[@"transforms"];
+  for (NSDictionary *transformConfig in transformConfigs) {
+    NSString *type = transformConfig[@"type"];
+    NSString *property = transformConfig[@"property"];
+
+    CGFloat value;
+    if ([type isEqualToString: @"animated"]) {
+      NSNumber *nodeTag = transformConfig[@"nodeTag"];
+      RCTAnimatedNode *node = self.parentNodes[nodeTag];
+      if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+        continue;
+      }
+      RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
+      value = parentNode.value;
+    } else {
+      value = [transformConfig[@"value"] floatValue];
+    }
+
+    if ([property isEqualToString:@"scale"]) {
+      transform = CATransform3DScale(transform, value, value, 1);
+
+    } else if ([property isEqualToString:@"scaleX"]) {
+      transform = CATransform3DScale(transform, value, 1, 1);
+
+    } else if ([property isEqualToString:@"scaleY"]) {
+      transform = CATransform3DScale(transform, 1, value, 1);
+
+    } else if ([property isEqualToString:@"translateX"]) {
+      transform = CATransform3DTranslate(transform, value, 0, 0);
+
+    } else if ([property isEqualToString:@"translateY"]) {
+      transform = CATransform3DTranslate(transform, 0, value, 0);
+
+    } else if ([property isEqualToString:@"rotate"]) {
+      transform = CATransform3DRotate(transform, value, 0, 0, 1);
+
+    } else if ([property isEqualToString:@"rotateX"]) {
+      transform = CATransform3DRotate(transform, value, 1, 0, 0);
+
+    } else if ([property isEqualToString:@"rotateY"]) {
+      transform = CATransform3DRotate(transform, value, 0, 1, 0);
+
+    } else if ([property isEqualToString:@"perspective"]) {
+      transform.m34 = 1.0 / -value;
+    }
+  }
+
+  _propsDictionary[@"transform"] = [NSValue valueWithCATransform3D:transform];
 }
 
 @end
