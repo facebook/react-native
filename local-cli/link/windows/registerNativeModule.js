@@ -5,29 +5,34 @@ const applyPatch = require('./patches/applyPatch');
 // const makeImportPatch = require('./patches/makeImportPatch');
 // const makePackagePatch = require('./patches/makePackagePatch');
 
+const makeUsingPatch = require('./patches/makeUsingPatch');
+const makePackagePatch = require('./patches/makePackagePatch');
+
 module.exports = function registerNativeWindowsModule(
   name,
   windowsConfig,
   params,
   projectConfig
 ) {
+
+  // console.log('registerNativeWindowsModule', name, windowsConfig, params, projectConfig);
   // const buildPatch = makeBuildPatch(name);
 
   // applyPatch(
   //   projectConfig.settingsGradlePath,
-  //   makeSettingsPatch(name, androidConfig, projectConfig)
+  //   makeSettingsPatch(name, windowsConfig, projectConfig)
   // );
 
   // applyPatch(projectConfig.buildGradlePath, buildPatch);
   // applyPatch(projectConfig.stringsPath, makeStringsPatch(params, name));
 
-  // applyPatch(
-  //   projectConfig.mainFilePath,
-  //   makePackagePatch(androidConfig.packageInstance, params, name)
-  // );
+  applyPatch(
+    projectConfig.mainPage,
+    makePackagePatch(windowsConfig.packageInstance, params, name)
+  );
 
-  // applyPatch(
-  //   projectConfig.mainFilePath,
-  //   makeImportPatch(androidConfig.packageImportPath)
-  // );
+  applyPatch(
+    projectConfig.mainPage,
+    makeUsingPatch(windowsConfig.packageUsingPath)
+  );
 };

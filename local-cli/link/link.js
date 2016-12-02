@@ -66,12 +66,10 @@ const linkDependencyWindows = (windowsProject, dependency) => {
     return null;
   }
 
-  console.log('####', windowsProject, dependency)
-
-  const isInstalled = isInstalledWindows(windowsProject, dependency.name);
+  const isInstalled = isInstalledWindows(windowsProject, dependency.config.windows);
 
   if (isInstalled) {
-    log.info(chalk.grey(`Windows module ${dependency.name} is already linked!`));
+    log.info(chalk.grey(`Windows module ${dependency.name} is already linked`));
     return null;
   }
 
