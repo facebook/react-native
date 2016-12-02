@@ -94,9 +94,7 @@ export type PushNotificationEventName = $Enum<{
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
  *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
  *    {
- *      {
- *        [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
- *      }
+ *      [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  *    }
  *    // Required for the registrationError event.
  *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
