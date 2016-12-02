@@ -45,10 +45,12 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
   const mainPage = path.join(sourceDir, 'MainPage.cs')
+  const projectPath = userConfig.projectPath || findProject(folder);
 
   return {
     sourceDir,
     solutionPath,
+    projectPath,
     mainPage,
     folder,
     userConfig,
@@ -95,16 +97,14 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
 
   const projectGUID = generateGUID();
   const pathGUID = generateGUID();
-  const solutionInsert = `
-Project("{${projectGUID.toUpperCase()}}") = "${projectName(csProj)}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
+  const solutionInsert = `Project("{${projectGUID.toUpperCase()}}") = "${projectName(csProj)}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
 EndProject
-  `
-  const projectInsert = `
-    <ProjectReference Include="..\\${relativeProjPath(csProj)}">
+`
+  const projectInsert = `<ProjectReference Include="..\\${relativeProjPath(csProj)}">
       <Project>{${pathGUID}}</Project>
       <Name>${projectName(csProj)}</Name>
     </ProjectReference>
-  `
+    `
 
   return {
     sourceDir,
