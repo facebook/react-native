@@ -18,7 +18,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -78,9 +78,9 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   public long measure(
       CSSNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode) {
+      YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 

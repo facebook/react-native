@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.csslayout.CSSDirection;
+import com.facebook.csslayout.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -115,7 +115,7 @@ public class FlatUIImplementation extends UIImplementation {
     ReactShadowNode node = new FlatRootShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      node.setLayoutDirection(CSSDirection.RTL);
+      node.setLayoutDirection(YogaDirection.RTL);
     }
     return node;
   }

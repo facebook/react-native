@@ -16,8 +16,8 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.view.Gravity;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
@@ -76,9 +76,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   public long measure(
       CSSNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode) {
+      YogaMeasureMode heightMode) {
 
     CharSequence text = getText();
     if (TextUtils.isEmpty(text)) {
@@ -155,7 +155,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     if (mDrawCommand == null) {
       mDrawCommand = new DrawTextLayout(createTextLayout(
           (int) Math.ceil(right - left),
-          CSSMeasureMode.EXACTLY,
+          YogaMeasureMode.EXACTLY,
           TextUtils.TruncateAt.END,
           true,
           mNumberOfLines,
@@ -276,7 +276,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   public Layout.Alignment getAlignment() {
-    boolean isRtl = getLayoutDirection() == CSSDirection.RTL;
+    boolean isRtl = getLayoutDirection() == YogaDirection.RTL;
     switch (mAlignment) {
       // Layout.Alignment.RIGHT and Layout.Alignment.LEFT are @hide :(
       case Gravity.LEFT:
@@ -295,7 +295,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   private static Layout createTextLayout(
       int width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       TextUtils.TruncateAt ellipsize,
       boolean shouldIncludeFontPadding,
       int maxLines,

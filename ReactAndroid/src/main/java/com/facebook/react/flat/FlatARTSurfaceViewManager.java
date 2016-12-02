@@ -9,7 +9,7 @@
 
 package com.facebook.react.flat;
 
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -26,9 +26,9 @@ import com.facebook.react.views.art.ARTSurfaceView;
     public long measure(
         CSSNodeAPI node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode) {
+        YogaMeasureMode heightMode) {
       throw new IllegalStateException("SurfaceView should have explicit width and height set");
     }
   };
