@@ -21,7 +21,7 @@ log.heading = 'rnpm-install';
 function install(args, config) {
   const name = args[0];
 
-  let res = PackageManager.add(name)
+  let res = PackageManager.add(name);
 
   if (res.status) {
     process.exit(res.status);

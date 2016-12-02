@@ -27,7 +27,7 @@ function uninstall(args, config) {
     process.exit(res.status);
   }
 
-  res = PackageManager.remove(name)
+  res = PackageManager.remove(name);
 
   if (res.status) {
     process.exit(res.status);
