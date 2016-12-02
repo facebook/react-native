@@ -1,5 +1,5 @@
 ---
-title: Easy upgrades, relying on Git
+title: Easier Upgrades
 author: Nicolas Cuillery
 authorTitle: JavaScript consultant and trainer at Zenika
 authorURL: https://twitter.com/ncuillery
@@ -8,11 +8,54 @@ authorTwitter: ncuillery
 category: announcements
 ---
 
-Each release of React Native may come with changes inside the iOS and Android sub-projects that you have to report in your project. This synchronisation has always been a major pain point because of the poor changes detection within your source files. Today, I'm proud to announce a new upgrading process relying on the most popular version control system: Git.
+Upgrading to each new version of React Native has been painful. You might have seen something like this before:
 
-The key concept in this operation is the generation of a Git patch that contains all the changes required by React Native from your current version to the requested one.
+```
+$ react-native upgrade
+Upgrading project to react-native v0.38.0
+  conflict ios/MyAwesomeApp/AppDelegate.m
+? Overwrite ios/MyAwesomeApp/AppDelegate.m? (Ynaxdh)
+  y) overwrite
+  n) do not overwrite
+  a) overwrite this and all others
+  x) abort
+  d) show the differences between the old and the new
+  h) Help, list all options
+ ```
 
-To obtain this patch, we need to generate the iOS and Android apps from the templates embedded in the `react-native` package inside your `node_modules` directory, exactly like the `init` and `upgrade` commands do. Then, after the native apps have been computed from the templates in both current version and requested versions, Git is be able to produce a patch that is completely adapted to your project (i.e. with your app name):
+None of the options is what we want. By overwriting the file we lose changes we've made locally. What if we tried to resolve the conflicts automatically instead?
+
+Today I am proud to introduce a new tool which makes upgrading easier. The tool is called `react-native-git-upgrade` and uses Git behind the scenes.
+
+## Usage
+
+Requirements: Git has to be available in the `PATH`. Your project doesn't have to be managed by Git.
+
+Install the `react-native-git-upgrade` package globally and run it inside your project:
+
+```shell
+$ npm install -g react-native-git-upgrade
+$ cd MyProject
+$ react-native-git-upgrade 0.38.0
+```
+
+> Note: Do **not** run 'npm install' to install a new version of `react-native`. The tool needs to be able to compare the old and new project template to work correctly. Simply run it inside your app folder as shown above, while still on the old version.
+
+Example output:
+
+![](/react-native/blog/img/git-upgrade-output.png)
+
+You can also run `react-native-git-upgrade` with no arguments to upgrade to the latest version.
+
+Note that this new upgrade tool aims to preserve your changes in native build files, so you don't need to run `react-native link` after an upgrade.
+
+We have designed the implementation to be as little intrusive as possible. It is entirely based on a local Git repository created on-the-fly in a temporary directory. It won't interfere with your project repository (no matter what VCS you use: Git, SVN, Mercurial, ... or none). Your sources are restored in case of unexpected errors.
+
+## How does it work?
+
+The key step of the process is generating a Git patch. The patch contains all the changes made in the React Native templates between the version your app is using and the new one.
+
+To obtain this patch, we need to generate an app from the templates embedded in the `react-native` package inside your `node_modules` directory the same way the `react-native init` and `react-native upgrade` commands do. Then, after the native apps have been generated from the templates in both the current version and the requested version, Git is able to produce a patch that is adapted to your project (i.e. with your app name):
 
 ```
 [...]
@@ -34,7 +77,7 @@ index e98ebb0..2fb6a11 100644
 [...]
 ```
 
-All we need now is to apply this patch on your current source files. While the old process would have prompted you for any difference (even from a single character), Git is able to merge most of the changes automatically, fallback on a 3-way merge and eventually leave familiar conflict delimiters:
+All we need now is to apply this patch to your current source files. While the old `react-native upgrade` process would have prompted you for any difference (even from a single character), Git is able to merge most of the changes automatically using a 3-way merge algorithm and eventually leave us with familiar conflict delimiters:
 
 ```
 		13B07F951A680F5B00A75B9A /* Release */ = {
@@ -59,42 +102,24 @@ All we need now is to apply this patch on your current source files. While the o
 				);
 ```
 
-These conflicts are generally easy to reason about. The delimiter **ours** actually stands for "your team" whereas **their** could be seen as "the React Native team".
+These conflicts are generally easy to reason about. The delimiter **ours** stands for "your team" whereas **theirs** could be seen as "the React Native team".
 
-## Usage
+## Why introduce a new global package?
 
-As I mentioned in the [Upgrading guide](http://facebook.github.io/react-native/releases/next/docs/upgrading.html), the most important change concerns the automatic installation of the new `react-native` package.
+React Native comes with a global CLI (the [react-native-cli](https://www.npmjs.com/package/react-native-cli) package) which delegates commands to the local CLI embedded in the `node_modules/react-native/local-cli` directory.
 
-> You should **not** install the new `react-native` package by yourself, the upgrading process needs to be initiated on your current version of React Native. Otherwise, the current and requested versions would be the same, Git would produce an empty patch and the upgrade would be ineffective.
+As we mentioned above, the process has to be started from your current React Native version. If we had embedded the implementation in the local-cli, you wouldn't have been able to enjoy this feature until when using old versions of React Native. For example, you wouldn't be able to upgrade from 0.29.2 to 0.38.0 if this new upgrade code was only released in 0.38.0.
 
-Install the `react-native-git-upgrade` package globally:
+This Git upgrading feature is a big improvement in developer experience it's important to make it available for any users including those who are using older versions of React Native (e.g. 0.29). By using a separate package [react-native-git-upgrade](https://www.npmjs.com/package/react-native-git-upgrade) installed globally, you can run this new code now no matter what version of React Native your app uses.
 
-```shell
-$ npm install -g react-native-git-upgrade
-```
+One more reason is the recent [Yeoman wipeout](https://twitter.com/martinkonicek/status/800730190141857793) by Martin Konicek. We didn't want to get these Yeoman dependencies back into the `react-native` package to be able to evaluate the old template in order to create the patch.
 
-Then, run the `react-native-git-upgrade` command with an optional version (latest if not specified) inside your project directory:
+## Looking ahead
 
-![](/react-native/blog/img/git-upgrade-output.png)
+The logic behind `react-native-git-upgrade` described above is going to power the standard `react-native upgrade` starting with React Native version 0.40.0.
 
-> Git needs to be available in the `PATH`.
+This means that if you are upgrading __from version 0.40.0 or higher__, you will be able to simply run `react-native upgrade` in your project without having to install anything globally. The `react-native-git-upgrade` is provided so anyone can have this improved experience now while using an older version of React Native.
 
-Note that this new upgrade method aims at preserving your changes in your native files, so you don't need to run `react-native link` after an upgrade.
+## Please try it out and provide feedback
 
-I have designed the implementation to be as less intrusive as possible. It is entirely based on a local Git repository created on-the-fly in the system temporary directory. It won't interfere with your project repository (no matter the VCS you use: Git, SVN, Mercurial, ... or none). Your sources are restored in case of unexpected errors.
-
-## Why a separated package ?
-
-React Native comes with a global CLI (the [react-native-cli](https://www.npmjs.com/package/react-native-cli) package) which delegates the command to the local CLI embedded in the `node_modules/react-native/local-cli` directory.
-
-As I mentioned above, the process has to be started upon your current React Native version. If we had embedded the implementation in the local-cli, you wouldn't have been able to enjoy this feature until the upcoming React Native release was in use on your project.
-
-This Git upgrading feature is a huge improvement in developer experience and I really wanted it to be available for any users including those who are stuck in old versions of React Native (who said 0.28 ?) because of the painful upgrading process. That's why we came with the [react-native-git-upgrade](https://www.npmjs.com/package/react-native-git-upgrade) package, installed globally, no matter the version of React Native being used.
-
-An other reason is the recent [Yeoman wipeout](https://twitter.com/martinkonicek/status/800730190141857793) by Martin Konicek. We didn't want to get these Yeoman dependencies back into the `react-native` package !
-
-## About the future
-
-The standalone package is a temporary situation for a few months, it would probably never see the _1.0.0_ release: when most users will have migrated their projects to the _post-Yeoman era_ using this package, it will replace the actual `react-native upgrade` and the global package `react-native-git-upgrade` will be deprecated.
-
-As a conclusion, I would say, enjoy the feature and feel free [to suggest improvements, report issues and send pull requests](https://github.com/facebook/react-native/issues). Each user has its own runtime environment, each React Native project is different, so we need you to make this process completely reliable and universal !
+As a conclusion, I would say, enjoy the feature and feel free [to suggest improvements, report issues](https://github.com/facebook/react-native/issues) and especially [send pull requests](https://github.com/facebook/react-native/pulls). There are many configurations of operating system and Node version, each React Native project is different, and we need your feedback to make this work well for everyone.
