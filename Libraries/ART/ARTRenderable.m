@@ -45,6 +45,12 @@
   _strokeJoin = strokeJoin;
 }
 
+- (void)setFillRule:(ARTCGFillRule)fillRule
+{
+  [self invalidate];
+  _fillRule = fillRule;
+}
+
 - (void)setStrokeDash:(ARTCGFloatArray)strokeDash
 {
   if (strokeDash.array == _strokeDash.array) {

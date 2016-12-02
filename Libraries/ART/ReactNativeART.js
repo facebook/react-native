@@ -84,6 +84,7 @@ var RenderableAttributes = merge(NodeAttributes, {
   strokeWidth: true,
   strokeCap: true,
   strokeJoin: true,
+  fillRule: true,
   strokeDash: { diff: arrayDiffer },
 });
 
@@ -365,6 +366,13 @@ function extractStrokeJoin(strokeJoin) {
   }
 }
 
+function extractFillRule(fillRule) {
+  switch (fillRule) {
+    case 'evenodd': return 0;
+    default: return 1; // nonzero
+  }
+}
+
 // Shape
 
 // Note: ART has a notion of width and height on Shape but AFAIK it's a noop in
@@ -385,7 +393,7 @@ class Shape extends React.Component {
         strokeJoin={extractStrokeJoin(props.strokeJoin)}
         strokeWidth={extractNumber(props.strokeWidth, 1)}
         transform={extractTransform(props)}
-
+        fillRule={extractFillRule(props.fillRule)}
         d={d}
       />
     );
@@ -482,7 +490,7 @@ class Text extends React.Component {
         strokeJoin={extractStrokeJoin(props.strokeJoin)}
         strokeWidth={extractNumber(props.strokeWidth, 1)}
         transform={extractTransform(props)}
-
+        fillRule={extractFillRule(props.fillRule)}
         alignment={extractAlignment(props.alignment)}
         frame={textFrame}
         path={textPath}

@@ -35,7 +35,7 @@
   CGPathDrawingMode mode = kCGPathStroke;
   if (self.fill) {
     if ([self.fill applyFillColor:context]) {
-      mode = kCGPathFill;
+      mode = self.fillRule == kARTCGFillRuleEvenodd ? kCGPathEOFill : kCGPathFill;
     } else {
       CGContextSaveGState(context);
       CGContextAddPath(context, self.d);
@@ -58,6 +58,8 @@
     }
     if (mode == kCGPathFill) {
       mode = kCGPathFillStroke;
+    } else if (mode == kCGPathEOFill) {
+      mode = kCGPathEOFillStroke;
     }
   }
 

@@ -13,6 +13,7 @@
 #import "ARTPattern.h"
 #import "ARTRadialGradient.h"
 #import "ARTSolidColor.h"
+#import "ARTCGFillRule.h"
 #import "RCTLog.h"
 #import "RCTFont.h"
 
@@ -72,6 +73,11 @@ RCT_ENUM_CONVERTER(CTTextAlignment, (@{
   @"right": @(kCTTextAlignmentRight),
   @"justify": @(kCTTextAlignmentJustified),
 }), kCTTextAlignmentNatural, integerValue)
+
+RCT_ENUM_CONVERTER(ARTCGFillRule, (@{
+  @"evenodd": @(kARTCGFillRuleEvenodd),
+  @"nonzero": @(kARTCGFillRuleNonzero),
+}), kARTCGFillRuleEvenodd, intValue)
 
 // This takes a tuple of text lines and a font to generate a CTLine for each text line.
 // This prepares everything for rendering a frame of text in ARTText.

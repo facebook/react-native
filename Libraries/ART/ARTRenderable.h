@@ -11,6 +11,7 @@
 
 #import "ARTBrush.h"
 #import "ARTCGFloatArray.h"
+#import "ARTCGFillRule.h"
 #import "ARTNode.h"
 
 @interface ARTRenderable : ARTNode
@@ -20,6 +21,7 @@
 @property (nonatomic, assign) CGFloat strokeWidth;
 @property (nonatomic, assign) CGLineCap strokeCap;
 @property (nonatomic, assign) CGLineJoin strokeJoin;
+@property (nonatomic, assign) ARTCGFillRule fillRule;
 @property (nonatomic, assign) ARTCGFloatArray strokeDash;
 
 @end

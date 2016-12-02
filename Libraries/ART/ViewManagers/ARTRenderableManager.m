@@ -8,8 +8,8 @@
  */
 
 #import "ARTRenderableManager.h"
-
 #import "RCTConvert+ART.h"
+#import "ARTCGFillRule.h"
 
 @implementation ARTRenderableManager
 
@@ -26,5 +26,6 @@ RCT_EXPORT_VIEW_PROPERTY(strokeJoin, CGLineJoin)
 RCT_EXPORT_VIEW_PROPERTY(fill, ARTBrush)
 RCT_EXPORT_VIEW_PROPERTY(stroke, CGColor)
 RCT_EXPORT_VIEW_PROPERTY(strokeDash, ARTCGFloatArray)
+RCT_EXPORT_VIEW_PROPERTY(fillRule, ARTCGFillRule)
 
 @end

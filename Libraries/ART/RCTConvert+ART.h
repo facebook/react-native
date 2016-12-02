@@ -12,12 +12,14 @@
 #import "ARTBrush.h"
 #import "ARTCGFloatArray.h"
 #import "ARTTextFrame.h"
+#import "ARTCGFillRule.h"
 #import "RCTConvert.h"
 
 @interface RCTConvert (ART)
 
 + (CGPathRef)CGPath:(id)json;
 + (CTTextAlignment)CTTextAlignment:(id)json;
++ (ARTCGFillRule)ARTCGFillRule:(id)json;
 + (ARTTextFrame)ARTTextFrame:(id)json;
 + (ARTCGFloatArray)ARTCGFloatArray:(id)json;
 + (ARTBrush *)ARTBrush:(id)json;
