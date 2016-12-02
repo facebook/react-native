@@ -39,7 +39,7 @@ CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
   CGFloat _effectiveLetterSpacing;
 }
 
-static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode, float height, CSSMeasureMode heightMode)
+static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)CSSNodeGetContext(node);
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
@@ -114,7 +114,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
 
 
   NSNumber *parentTag = [[self reactSuperview] reactTag];
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:CSSMeasureModeExactly];
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:width widthMode:YGMeasureModeExactly];
   CGRect textFrame = [self calculateTextFrame:textStorage];
   BOOL selectable = _selectable;
   [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -153,7 +153,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
              absolutePosition:(CGPoint)absolutePosition
 {
   // Run layout on subviews.
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width widthMode:CSSMeasureModeExactly];
+  NSTextStorage *textStorage = [self buildTextStorageForWidth:self.frame.size.width widthMode:YGMeasureModeExactly];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
@@ -187,7 +187,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
   }];
 }
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode
 {
   if (_cachedTextStorage && width == _cachedTextStorageWidth && widthMode == _cachedTextStorageWidthMode) {
     return _cachedTextStorage;
@@ -208,7 +208,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
   }
 
   textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){widthMode == CSSMeasureModeUndefined ? CGFLOAT_MAX : width, CGFLOAT_MAX};
+  textContainer.size = (CGSize){widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : width, CGFLOAT_MAX};
 
   [layoutManager addTextContainer:textContainer];
   [layoutManager ensureLayoutForTextContainer:textContainer];
@@ -403,10 +403,10 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, CSSMeasureMode widthMode
   // We will climb up to the first node which style has been setted as non-inherit
   if (newTextAlign == NSTextAlignmentRight || newTextAlign == NSTextAlignmentLeft) {
     RCTShadowView *view = self;
-    while (view != nil && CSSNodeStyleGetDirection(view.cssNode) == CSSDirectionInherit) {
+    while (view != nil && CSSNodeStyleGetDirection(view.cssNode) == YGDirectionInherit) {
       view = [view reactSuperview];
     }
-    if (view != nil && CSSNodeStyleGetDirection(view.cssNode) == CSSDirectionRTL) {
+    if (view != nil && CSSNodeStyleGetDirection(view.cssNode) == YGDirectionRTL) {
       if (newTextAlign == NSTextAlignmentRight) {
         newTextAlign = NSTextAlignmentLeft;
       } else if (newTextAlign == NSTextAlignmentLeft) {

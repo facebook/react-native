@@ -109,13 +109,13 @@ typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
 typedef BOOL css_backface_visibility_t;
-+ (CSSOverflow)CSSOverflow:(id)json;
++ (YGOverflow)YGOverflow:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
-+ (CSSFlexDirection)CSSFlexDirection:(id)json;
-+ (CSSJustify)CSSJustify:(id)json;
-+ (CSSAlign)CSSAlign:(id)json;
-+ (CSSPositionType)CSSPositionType:(id)json;
-+ (CSSWrap)CSSWrap:(id)json;
++ (YGFlexDirection)YGFlexDirection:(id)json;
++ (YGJustify)YGJustify:(id)json;
++ (YGAlign)YGAlign:(id)json;
++ (YGPositionType)YGPositionType:(id)json;
++ (YGWrap)YGWrap:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;

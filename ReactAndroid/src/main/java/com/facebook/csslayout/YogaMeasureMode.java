@@ -12,14 +12,14 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSDirection {
-  INHERIT(0),
-  LTR(1),
-  RTL(2);
+public enum YogaMeasureMode {
+  UNDEFINED(0),
+  EXACTLY(1),
+  AT_MOST(2);
 
   private int mIntValue;
 
-  CSSDirection(int intValue) {
+  YogaMeasureMode(int intValue) {
     mIntValue = intValue;
   }
 
@@ -27,11 +27,11 @@ public enum CSSDirection {
     return mIntValue;
   }
 
-  public static CSSDirection fromInt(int value) {
+  public static YogaMeasureMode fromInt(int value) {
     switch (value) {
-      case 0: return INHERIT;
-      case 1: return LTR;
-      case 2: return RTL;
+      case 0: return UNDEFINED;
+      case 1: return EXACTLY;
+      case 2: return AT_MOST;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

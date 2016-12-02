@@ -18,9 +18,9 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
     long measure(
         CSSNodeAPI node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode);
+        YogaMeasureMode heightMode);
   }
 
   int getChildCount();
@@ -37,21 +37,21 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void dirty();
   void markLayoutSeen();
   void copyStyle(CSSNodeType srcNode);
-  CSSDirection getStyleDirection();
-  void setDirection(CSSDirection direction);
-  CSSFlexDirection getFlexDirection();
-  void setFlexDirection(CSSFlexDirection flexDirection);
-  CSSJustify getJustifyContent();
-  void setJustifyContent(CSSJustify justifyContent);
-  CSSAlign getAlignItems();
-  void setAlignItems(CSSAlign alignItems);
-  CSSAlign getAlignSelf();
-  void setAlignSelf(CSSAlign alignSelf);
-  CSSAlign getAlignContent();
-  void setAlignContent(CSSAlign alignContent);
-  CSSPositionType getPositionType();
-  void setPositionType(CSSPositionType positionType);
-  void setWrap(CSSWrap flexWrap);
+  YogaDirection getStyleDirection();
+  void setDirection(YogaDirection direction);
+  YogaFlexDirection getFlexDirection();
+  void setFlexDirection(YogaFlexDirection flexDirection);
+  YogaJustify getJustifyContent();
+  void setJustifyContent(YogaJustify justifyContent);
+  YogaAlign getAlignItems();
+  void setAlignItems(YogaAlign alignItems);
+  YogaAlign getAlignSelf();
+  void setAlignSelf(YogaAlign alignSelf);
+  YogaAlign getAlignContent();
+  void setAlignContent(YogaAlign alignContent);
+  YogaPositionType getPositionType();
+  void setPositionType(YogaPositionType positionType);
+  void setWrap(YogaWrap flexWrap);
   void setFlex(float flex);
   float getFlexGrow();
   void setFlexGrow(float flexGrow);
@@ -59,14 +59,14 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   void setFlexShrink(float flexShrink);
   float getFlexBasis();
   void setFlexBasis(float flexBasis);
-  float getMargin(CSSEdge edge);
-  void setMargin(CSSEdge edge, float margin);
-  float getPadding(CSSEdge edge);
-  void setPadding(CSSEdge edge, float padding);
-  float getBorder(CSSEdge edge);
-  void setBorder(CSSEdge edge, float border);
-  float getPosition(CSSEdge edge);
-  void setPosition(CSSEdge edge, float position);
+  float getMargin(YogaEdge edge);
+  void setMargin(YogaEdge edge, float margin);
+  float getPadding(YogaEdge edge);
+  void setPadding(YogaEdge edge, float padding);
+  float getBorder(YogaEdge edge);
+  void setBorder(YogaEdge edge, float border);
+  float getPosition(YogaEdge edge);
+  void setPosition(YogaEdge edge, float position);
   float getWidth();
   void setWidth(float width);
   float getHeight();
@@ -83,9 +83,9 @@ public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
   float getLayoutY();
   float getLayoutWidth();
   float getLayoutHeight();
-  CSSDirection getLayoutDirection();
-  CSSOverflow getOverflow();
-  void setOverflow(CSSOverflow overflow);
+  YogaDirection getLayoutDirection();
+  YogaOverflow getOverflow();
+  void setOverflow(YogaOverflow overflow);
   void setData(Object data);
   Object getData();
   void reset();

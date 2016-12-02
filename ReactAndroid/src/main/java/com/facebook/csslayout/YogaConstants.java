@@ -9,7 +9,7 @@
 
 package com.facebook.csslayout;
 
-public class CSSConstants {
+public class YogaConstants {
 
   public static final float UNDEFINED = Float.NaN;
 

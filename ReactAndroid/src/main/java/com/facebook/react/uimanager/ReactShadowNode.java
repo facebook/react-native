@@ -13,17 +13,17 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.CSSAlign;
-import com.facebook.csslayout.CSSEdge;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSFlexDirection;
-import com.facebook.csslayout.CSSJustify;
+import com.facebook.csslayout.YogaAlign;
+import com.facebook.csslayout.YogaEdge;
+import com.facebook.csslayout.YogaConstants;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaFlexDirection;
+import com.facebook.csslayout.YogaJustify;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.CSSOverflow;
-import com.facebook.csslayout.CSSPositionType;
-import com.facebook.csslayout.CSSWrap;
+import com.facebook.csslayout.YogaOverflow;
+import com.facebook.csslayout.YogaPositionType;
+import com.facebook.csslayout.YogaWrap;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
@@ -72,7 +72,7 @@ public class ReactShadowNode {
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
   private final Spacing mDefaultPadding = new Spacing(0);
-  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
+  private final Spacing mPadding = new Spacing(YogaConstants.UNDEFINED);
   private final CSSNode mCSSNode;
 
   public ReactShadowNode() {
@@ -506,11 +506,11 @@ public class ReactShadowNode {
     return Math.round(mAbsoluteBottom - mAbsoluteTop);
   }
 
-  public final CSSDirection getLayoutDirection() {
+  public final YogaDirection getLayoutDirection() {
     return mCSSNode.getLayoutDirection();
   }
 
-  public void setLayoutDirection(CSSDirection direction) {
+  public void setLayoutDirection(YogaDirection direction) {
     mCSSNode.setDirection(direction);
   }
 
@@ -566,36 +566,36 @@ public class ReactShadowNode {
     mCSSNode.setAspectRatio(aspectRatio);
   }
 
-  public void setFlexDirection(CSSFlexDirection flexDirection) {
+  public void setFlexDirection(YogaFlexDirection flexDirection) {
     mCSSNode.setFlexDirection(flexDirection);
   }
 
-  public void setFlexWrap(CSSWrap wrap) {
+  public void setFlexWrap(YogaWrap wrap) {
     mCSSNode.setWrap(wrap);
   }
 
-  public void setAlignSelf(CSSAlign alignSelf) {
+  public void setAlignSelf(YogaAlign alignSelf) {
     mCSSNode.setAlignSelf(alignSelf);
   }
 
-  public void setAlignItems(CSSAlign alignItems) {
+  public void setAlignItems(YogaAlign alignItems) {
     mCSSNode.setAlignItems(alignItems);
   }
 
-  public void setJustifyContent(CSSJustify justifyContent) {
+  public void setJustifyContent(YogaJustify justifyContent) {
     mCSSNode.setJustifyContent(justifyContent);
   }
 
-  public void setOverflow(CSSOverflow overflow) {
+  public void setOverflow(YogaOverflow overflow) {
     mCSSNode.setOverflow(overflow);
   }
 
   public void setMargin(int spacingType, float margin) {
-    mCSSNode.setMargin(CSSEdge.fromInt(spacingType), margin);
+    mCSSNode.setMargin(YogaEdge.fromInt(spacingType), margin);
   }
 
   public final float getPadding(int spacingType) {
-    return mCSSNode.getPadding(CSSEdge.fromInt(spacingType));
+    return mCSSNode.getPadding(YogaEdge.fromInt(spacingType));
   }
 
   public void setDefaultPadding(int spacingType, float padding) {
@@ -614,40 +614,40 @@ public class ReactShadowNode {
           spacingType == Spacing.RIGHT ||
           spacingType == Spacing.START ||
           spacingType == Spacing.END) {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(CSSEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
+          mCSSNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       }
     }
   }
 
   public void setBorder(int spacingType, float borderWidth) {
-    mCSSNode.setBorder(CSSEdge.fromInt(spacingType), borderWidth);
+    mCSSNode.setBorder(YogaEdge.fromInt(spacingType), borderWidth);
   }
 
   public void setPosition(int spacingType, float position) {
-    mCSSNode.setPosition(CSSEdge.fromInt(spacingType), position);
+    mCSSNode.setPosition(YogaEdge.fromInt(spacingType), position);
   }
 
-  public void setPositionType(CSSPositionType positionType) {
+  public void setPositionType(YogaPositionType positionType) {
     mCSSNode.setPositionType(positionType);
   }
 

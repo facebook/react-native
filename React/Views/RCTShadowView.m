@@ -60,43 +60,43 @@ static void RCTPrint(CSSNodeRef node)
 #define DEFINE_PROCESS_META_PROPS(type)                                                            \
 static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], CSSNodeRef node) {   \
   if (!CSSValueIsUndefined(metaProps[META_PROP_LEFT])) {                                           \
-    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_LEFT]);                          \
+    CSSNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_LEFT]);                          \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
-    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_HORIZONTAL]);                    \
+    CSSNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_HORIZONTAL]);                    \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
-    CSSNodeStyleSet##type(node, CSSEdgeStart, metaProps[META_PROP_ALL]);                           \
+    CSSNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_ALL]);                           \
   } else {                                                                                         \
-    CSSNodeStyleSet##type(node, CSSEdgeStart, 0);                                                  \
+    CSSNodeStyleSet##type(node, YGEdgeStart, 0);                                                  \
   }                                                                                                \
                                                                                                    \
   if (!CSSValueIsUndefined(metaProps[META_PROP_RIGHT])) {                                          \
-    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_RIGHT]);                           \
+    CSSNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_RIGHT]);                           \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
-    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_HORIZONTAL]);                      \
+    CSSNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_HORIZONTAL]);                      \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
-    CSSNodeStyleSet##type(node, CSSEdgeEnd, metaProps[META_PROP_ALL]);                             \
+    CSSNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_ALL]);                             \
   } else {                                                                                         \
-    CSSNodeStyleSet##type(node, CSSEdgeEnd, 0);                                                    \
+    CSSNodeStyleSet##type(node, YGEdgeEnd, 0);                                                    \
   }                                                                                                \
                                                                                                    \
   if (!CSSValueIsUndefined(metaProps[META_PROP_TOP])) {                                            \
-    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_TOP]);                             \
+    CSSNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_TOP]);                             \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
-    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_VERTICAL]);                        \
+    CSSNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_VERTICAL]);                        \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
-    CSSNodeStyleSet##type(node, CSSEdgeTop, metaProps[META_PROP_ALL]);                             \
+    CSSNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_ALL]);                             \
   } else {                                                                                         \
-    CSSNodeStyleSet##type(node, CSSEdgeTop, 0);                                                    \
+    CSSNodeStyleSet##type(node, YGEdgeTop, 0);                                                    \
   }                                                                                                \
                                                                                                    \
   if (!CSSValueIsUndefined(metaProps[META_PROP_BOTTOM])) {                                         \
-    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_BOTTOM]);                       \
+    CSSNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_BOTTOM]);                       \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
-    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_VERTICAL]);                     \
+    CSSNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_VERTICAL]);                     \
   } else if (!CSSValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
-    CSSNodeStyleSet##type(node, CSSEdgeBottom, metaProps[META_PROP_ALL]);                          \
+    CSSNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_ALL]);                          \
   } else {                                                                                         \
-    CSSNodeStyleSet##type(node, CSSEdgeBottom, 0);                                                 \
+    CSSNodeStyleSet##type(node, YGEdgeBottom, 0);                                                 \
   }                                                                                                \
 }
 
@@ -261,14 +261,14 @@ DEFINE_PROCESS_META_PROPS(Border);
   }
 
   if (!CGRectEqualToRect(frame, _frame)) {
-    CSSNodeStyleSetPositionType(_cssNode, CSSPositionTypeAbsolute);
+    CSSNodeStyleSetPositionType(_cssNode, YGPositionTypeAbsolute);
     CSSNodeStyleSetWidth(_cssNode, frame.size.width);
     CSSNodeStyleSetHeight(_cssNode, frame.size.height);
-    CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, frame.origin.x);
-    CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, frame.origin.y);
+    CSSNodeStyleSetPosition(_cssNode, YGEdgeLeft, frame.origin.x);
+    CSSNodeStyleSetPosition(_cssNode, YGEdgeTop, frame.origin.y);
   }
 
-  CSSNodeCalculateLayout(_cssNode, frame.size.width, frame.size.height, CSSDirectionInherit);
+  CSSNodeCalculateLayout(_cssNode, frame.size.width, frame.size.height, YGDirectionInherit);
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
 }
 
@@ -304,12 +304,12 @@ DEFINE_PROCESS_META_PROPS(Border);
 {
   if ((self = [super init])) {
 
-    _frame = CGRectMake(0, 0, CSSUndefined, CSSUndefined);
+    _frame = CGRectMake(0, 0, YGUndefined, YGUndefined);
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
-      _paddingMetaProps[ii] = CSSUndefined;
-      _marginMetaProps[ii] = CSSUndefined;
-      _borderMetaProps[ii] = CSSUndefined;
+      _paddingMetaProps[ii] = YGUndefined;
+      _marginMetaProps[ii] = YGUndefined;
+      _borderMetaProps[ii] = YGUndefined;
     }
 
     _newView = YES;
@@ -491,27 +491,27 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 
 - (UIEdgeInsets)paddingAsInsets
 {
-  if (CSSNodeLayoutGetDirection(_cssNode) == CSSDirectionRTL) {
+  if (CSSNodeLayoutGetDirection(_cssNode) == YGDirectionRTL) {
     return (UIEdgeInsets){
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeTop),
-      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd)) ?
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd) :
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeLeft),
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeBottom),
-      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart)) ?
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart) :
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeRight)
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeTop),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, YGEdgeEnd)) ?
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeEnd) :
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeLeft),
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeBottom),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, YGEdgeStart)) ?
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeStart) :
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeRight)
     };
   } else {
     return (UIEdgeInsets){
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeTop),
-      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart)) ?
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeStart) :
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeLeft),
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeBottom),
-      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd)) ?
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeEnd) :
-      CSSNodeStyleGetPadding(_cssNode, CSSEdgeRight)
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeTop),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, YGEdgeStart)) ?
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeStart) :
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeLeft),
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeBottom),
+      !CSSValueIsUndefined(CSSNodeStyleGetPadding(_cssNode, YGEdgeEnd)) ?
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeEnd) :
+      CSSNodeStyleGetPadding(_cssNode, YGEdgeRight)
     };
   }
 }
@@ -569,37 +569,37 @@ RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
   return CSSNodeStyleGetPosition(_cssNode, edge);                   \
 }
 
-RCT_POSITION_PROPERTY(Top, top, CSSEdgeTop)
-RCT_POSITION_PROPERTY(Right, right, CSSEdgeEnd)
-RCT_POSITION_PROPERTY(Bottom, bottom, CSSEdgeBottom)
-RCT_POSITION_PROPERTY(Left, left, CSSEdgeStart)
+RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
+RCT_POSITION_PROPERTY(Right, right, YGEdgeEnd)
+RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
+RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
 
 - (void)setFrame:(CGRect)frame
 {
   if (!CGRectEqualToRect(frame, _frame)) {
     _frame = frame;
-    CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, CGRectGetMinX(frame));
-    CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, CGRectGetMinY(frame));
+    CSSNodeStyleSetPosition(_cssNode, YGEdgeLeft, CGRectGetMinX(frame));
+    CSSNodeStyleSetPosition(_cssNode, YGEdgeTop, CGRectGetMinY(frame));
     CSSNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
     CSSNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
   }
 }
 
-static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension dimension, CGFloat amount)
+static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, YGDimension dimension, CGFloat amount)
 {
   if (amount != UIViewNoIntrinsicMetric) {
     switch (dimension) {
-      case CSSDimensionWidth:
+      case YGDimensionWidth:
         if (isnan(CSSNodeStyleGetWidth(cssNode))) {
           CSSNodeStyleSetWidth(cssNode, amount);
         }
         break;
-      case CSSDimensionHeight:
+      case YGDimensionHeight:
         if (isnan(CSSNodeStyleGetHeight(cssNode))) {
           CSSNodeStyleSetHeight(cssNode, amount);
         }
         break;
-      case CSSDimensionCount:
+      case YGDimensionCount:
         break;
     }
   }
@@ -608,15 +608,15 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 - (void)setIntrinsicContentSize:(CGSize)size
 {
   if (CSSNodeStyleGetFlexGrow(_cssNode) == 0 && CSSNodeStyleGetFlexShrink(_cssNode) == 0) {
-    RCTAssignSuggestedDimension(_cssNode, CSSDimensionHeight, size.height);
-    RCTAssignSuggestedDimension(_cssNode, CSSDimensionWidth, size.width);
+    RCTAssignSuggestedDimension(_cssNode, YGDimensionHeight, size.height);
+    RCTAssignSuggestedDimension(_cssNode, YGDimensionWidth, size.width);
   }
 }
 
 - (void)setTopLeft:(CGPoint)topLeft
 {
-  CSSNodeStyleSetPosition(_cssNode, CSSEdgeLeft, topLeft.x);
-  CSSNodeStyleSetPosition(_cssNode, CSSEdgeTop, topLeft.y);
+  CSSNodeStyleSetPosition(_cssNode, YGEdgeLeft, topLeft.x);
+  CSSNodeStyleSetPosition(_cssNode, YGEdgeTop, topLeft.y);
 }
 
 - (void)setSize:(CGSize)size
@@ -645,13 +645,13 @@ static inline void RCTAssignSuggestedDimension(CSSNodeRef cssNode, CSSDimension 
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
 RCT_STYLE_PROPERTY(FlexBasis, flexBasis, FlexBasis, float)
-RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, CSSFlexDirection)
-RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, CSSJustify)
-RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, CSSAlign)
-RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, CSSAlign)
-RCT_STYLE_PROPERTY(Position, position, PositionType, CSSPositionType)
-RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, CSSWrap)
-RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, CSSOverflow)
+RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)
+RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, YGJustify)
+RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, YGAlign)
+RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, YGAlign)
+RCT_STYLE_PROPERTY(Position, position, PositionType, YGPositionType)
+RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, YGWrap)
+RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, YGOverflow)
 RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 - (void)setBackgroundColor:(UIColor *)color

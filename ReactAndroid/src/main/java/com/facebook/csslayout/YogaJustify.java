@@ -12,20 +12,16 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSEdge {
-  LEFT(0),
-  TOP(1),
-  RIGHT(2),
-  BOTTOM(3),
-  START(4),
-  END(5),
-  HORIZONTAL(6),
-  VERTICAL(7),
-  ALL(8);
+public enum YogaJustify {
+  FLEX_START(0),
+  CENTER(1),
+  FLEX_END(2),
+  SPACE_BETWEEN(3),
+  SPACE_AROUND(4);
 
   private int mIntValue;
 
-  CSSEdge(int intValue) {
+  YogaJustify(int intValue) {
     mIntValue = intValue;
   }
 
@@ -33,17 +29,13 @@ public enum CSSEdge {
     return mIntValue;
   }
 
-  public static CSSEdge fromInt(int value) {
+  public static YogaJustify fromInt(int value) {
     switch (value) {
-      case 0: return LEFT;
-      case 1: return TOP;
-      case 2: return RIGHT;
-      case 3: return BOTTOM;
-      case 4: return START;
-      case 5: return END;
-      case 6: return HORIZONTAL;
-      case 7: return VERTICAL;
-      case 8: return ALL;
+      case 0: return FLEX_START;
+      case 1: return CENTER;
+      case 2: return FLEX_END;
+      case 3: return SPACE_BETWEEN;
+      case 4: return SPACE_AROUND;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

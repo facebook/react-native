@@ -12,13 +12,13 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSWrap {
+public enum YogaWrap {
   NO_WRAP(0),
   WRAP(1);
 
   private int mIntValue;
 
-  CSSWrap(int intValue) {
+  YogaWrap(int intValue) {
     mIntValue = intValue;
   }
 
@@ -26,7 +26,7 @@ public enum CSSWrap {
     return mIntValue;
   }
 
-  public static CSSWrap fromInt(int value) {
+  public static YogaWrap fromInt(int value) {
     switch (value) {
       case 0: return NO_WRAP;
       case 1: return WRAP;

@@ -29,7 +29,7 @@
   [super setUp];
 
   self.parentView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
-    CSSNodeStyleSetFlexDirection(node, CSSFlexDirectionColumn);
+    CSSNodeStyleSetFlexDirection(node, YGFlexDirectionColumn);
     CSSNodeStyleSetWidth(node, 440);
     CSSNodeStyleSetHeight(node, 440);
   }];
@@ -56,8 +56,8 @@
 
   RCTShadowView *centerView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
     CSSNodeStyleSetFlex(node, 2);
-    CSSNodeStyleSetMargin(node, CSSEdgeLeft, 10);
-    CSSNodeStyleSetMargin(node, CSSEdgeRight, 10);
+    CSSNodeStyleSetMargin(node, YGEdgeLeft, 10);
+    CSSNodeStyleSetMargin(node, YGEdgeRight, 10);
   }];
 
   RCTShadowView *rightView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
@@ -65,10 +65,10 @@
   }];
 
   RCTShadowView *mainView = [self _shadowViewWithConfig:^(CSSNodeRef node) {
-    CSSNodeStyleSetFlexDirection(node, CSSFlexDirectionRow);
+    CSSNodeStyleSetFlexDirection(node, YGFlexDirectionRow);
     CSSNodeStyleSetFlex(node, 2);
-    CSSNodeStyleSetMargin(node, CSSEdgeTop, 10);
-    CSSNodeStyleSetMargin(node, CSSEdgeBottom, 10);
+    CSSNodeStyleSetMargin(node, YGEdgeTop, 10);
+    CSSNodeStyleSetMargin(node, YGEdgeBottom, 10);
   }];
 
   [mainView insertReactSubview:leftView atIndex:0];
@@ -83,10 +83,10 @@
     CSSNodeStyleSetFlex(node, 1);
   }];
 
-  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeLeft, 10);
-  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeTop, 10);
-  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeRight, 10);
-  CSSNodeStyleSetPadding(self.parentView.cssNode, CSSEdgeBottom, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, YGEdgeLeft, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, YGEdgeTop, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, YGEdgeRight, 10);
+  CSSNodeStyleSetPadding(self.parentView.cssNode, YGEdgeBottom, 10);
 
   [self.parentView insertReactSubview:headerView atIndex:0];
   [self.parentView insertReactSubview:mainView atIndex:1];
@@ -132,8 +132,8 @@
 - (void)testAssignsSuggestedWidthDimension
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
-                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    CSSNodeStyleSetHeight(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 3, 10)
@@ -143,8 +143,8 @@
 - (void)testAssignsSuggestedHeightDimension
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
-                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    CSSNodeStyleSetWidth(node, 10);
                                  }
             assertRelativeLayout:CGRectMake(0, 0, 10, 4)
@@ -154,8 +154,8 @@
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
   [self _withShadowViewWithStyle:^(CSSNodeRef node) {
-                                   CSSNodeStyleSetPosition(node, CSSEdgeLeft, 0);
-                                   CSSNodeStyleSetPosition(node, CSSEdgeTop, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeLeft, 0);
+                                   CSSNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    CSSNodeStyleSetWidth(node, 10);
                                    CSSNodeStyleSetHeight(node, 10);
                                  }

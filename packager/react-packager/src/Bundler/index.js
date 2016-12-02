@@ -25,6 +25,7 @@ const imageSize = require('image-size');
 const path = require('path');
 const version = require('../../../../package.json').version;
 const denodeify = require('denodeify');
+const defaults = require('../../../defaults');
 
 const {
   sep: pathSeparator,
@@ -91,6 +92,10 @@ const validateOpts = declareOpts({
     type: 'array',
     default: ['png'],
   },
+  platforms: {
+    type: 'array',
+    default: defaults.platforms,
+  },
   watch: {
     type: 'boolean',
     default: false,
@@ -126,6 +131,7 @@ type Options = {
   getTransformOptions?: GetTransformOptions<*>,
   extraNodeModules: {},
   assetExts: Array<string>,
+  platforms: Array<string>,
   watch: boolean,
   assetServer: AssetServer,
   transformTimeoutInterval: ?number,
@@ -200,6 +206,7 @@ class Bundler {
       watch: opts.watch,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
+      platforms: opts.platforms,
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
       resetCache: opts.resetCache,

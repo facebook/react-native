@@ -10,6 +10,7 @@
 
 const fs = require('fs');
 const os = require('os');
+const assert = require('assert');
 const path = require('path');
 const shell = require('shelljs');
 const Promise = require('promise');
@@ -18,21 +19,20 @@ const TerminalAdapter = require('yeoman-environment/lib/adapter');
 const log = require('npmlog');
 const rimraf = require('rimraf');
 const semver = require('semver');
+const yarn = require('./yarn');
 
 const {
   checkDeclaredVersion,
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
-  checkNewVersionValid
 } = require('./checks');
 
 log.heading = 'git-upgrade';
 
 /**
  * Promisify the callback-based shelljs function exec
- * @param command
- * @param logOutput
+ * @param logOutput If true, log the stdout of the command.
  * @returns {Promise}
  */
 function exec(command, logOutput) {
@@ -62,42 +62,56 @@ stdout: ${stdout}`));
   })
 }
 
-/**
-+ * Returns two objects:
-+ * - Parsed node_modules/react-native/package.json
-+ * - Parsed package.json
-+ */
-function readPackageFiles() {
-  const reactNativeNodeModulesPakPath = path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react-native',
-    'package.json'
-  );
-
-  const reactNodeModulesPakPath = path.resolve(
-    process.cwd(),
-    'node_modules',
-    'react',
-    'package.json'
-  );
-
-  const pakPath = path.resolve(
-    process.cwd(),
-    'package.json'
-  );
-
+function parseJsonFile(path, useYarn) {
+  const installHint = useYarn ?
+    'Make sure you ran "yarn" and that you are inside a React Native project.' :
+    'Make sure you ran "npm install" and that you are inside a React Native project.';
+  let fileContents;
   try {
-    const reactNativeNodeModulesPak = JSON.parse(fs.readFileSync(reactNativeNodeModulesPakPath, 'utf8'));
-    const reactNodeModulesPak = JSON.parse(fs.readFileSync(reactNodeModulesPakPath, 'utf8'));
-    const pak = JSON.parse(fs.readFileSync(pakPath, 'utf8'));
+    fileContents = fs.readFileSync(path, 'utf8');
+  } catch (err) {
+    throw new Error('Cannot find "' + path + '". ' + installHint);
+  }
+  try {
+    return JSON.parse(fileContents);
+  } catch (err) {
+    throw new Error('Cannot parse "' + path + '": ' + err.message);
+  }
+}
 
-    return {reactNativeNodeModulesPak, reactNodeModulesPak, pak};
+function readPackageFiles(useYarn) {
+  const reactNativeNodeModulesPakPath = path.resolve(
+    process.cwd(), 'node_modules', 'react-native', 'package.json'
+  );
+  const reactNodeModulesPakPath = path.resolve(
+    process.cwd(), 'node_modules', 'react', 'package.json'
+  );
+  const pakPath = path.resolve(
+    process.cwd(), 'package.json'
+  );
+  return {
+    reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
+    reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
+    pak: parseJsonFile(pakPath)
+  }
+}
+
+function parseInformationJsonOutput(jsonOutput, requestedVersion) {
+  try {
+    const output = JSON.parse(jsonOutput);
+    const newVersion = output.version;
+    const newReactVersionRange = output['peerDependencies.react'];
+
+    assert(semver.valid(newVersion));
+
+    return {newVersion, newReactVersionRange}
   } catch (err) {
     throw new Error(
-      'Unable to find one of "' + pakPath + '", "' + rnPakPath + '" or "' + reactPakPath + '". ' +
-      'Make sure you ran "npm install" and that you are inside a React Native project.'
-    )
+      'The specified version of React Native ' + requestedVersion + ' doesn\'t exist.\n' +
+      'Re-run the react-native-git-upgrade command with an existing version,\n' +
+      'for example: "react-native-git-upgrade 0.38.0",\n' +
+      'or without arguments to upgrade to the latest: "react-native-git-upgrade".'
+    );
   }
 }
 
@@ -192,6 +206,21 @@ async function checkForUpdates() {
 }
 
 /**
+ * If true, use yarn instead of the npm client to upgrade the project.
+ */
+function shouldUseYarn(cliArgs, projectDir) {
+  if (cliArgs && cliArgs.npm) {
+    return false;
+  }
+  const yarnVersion = yarn.getYarnVersionIfAvailable();
+  if (yarnVersion && yarn.isProjectUsingYarn(projectDir)) {
+    log.info('Using yarn ' + yarnVersion);
+    return true;
+  }
+  return false;
+}
+
+/**
  * @param requestedVersion The version argument, e.g. 'react-native-git-upgrade 0.38'.
  *                         `undefined` if no argument passed.
  * @param cliArgs Additional arguments parsed using minimist.
@@ -204,8 +233,10 @@ async function run(requestedVersion, cliArgs) {
   try {
     await checkForUpdates();
 
+    const useYarn = shouldUseYarn(cliArgs, path.resolve(process.cwd()));
+
     log.info('Read package.json files');
-    const {reactNativeNodeModulesPak, reactNodeModulesPak, pak} = readPackageFiles();
+    const {reactNativeNodeModulesPak, reactNodeModulesPak, pak} = readPackageFiles(useYarn);
     const appName = pak.name;
     const currentVersion = reactNativeNodeModulesPak.version;
     const currentReactVersion = reactNodeModulesPak.version;
@@ -218,7 +249,7 @@ async function run(requestedVersion, cliArgs) {
     checkDeclaredVersion(declaredVersion);
 
     log.info('Check matching versions');
-    checkMatchingVersions(currentVersion, declaredVersion);
+    checkMatchingVersions(currentVersion, declaredVersion, useYarn);
 
     log.info('Check React peer dependency');
     checkReactPeerDependency(currentVersion, declaredReactVersion);
@@ -228,12 +259,10 @@ async function run(requestedVersion, cliArgs) {
 
     log.info('Get information from NPM registry');
     const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' peerDependencies.react version --json';
-    const viewOutput = await exec(viewCommand, verbose).then(JSON.parse);
-    const newVersion = viewOutput.version;
-    const newReactVersionRange = viewOutput['peerDependencies.react'];
-
-    log.info('Check new version');
-    checkNewVersionValid(newVersion, requestedVersion);
+    const jsonOutput = await exec(viewCommand, verbose);
+    const {newVersion, newReactVersionRange} = parseInformationJsonOutput(jsonOutput, requestedVersion);
+    // Print which versions we're upgrading to
+    log.info('Upgrading to React Native ' + newVersion + (newReactVersionRange ? ', React ' + newReactVersionRange : ''));
 
     log.info('Setup temporary working directory');
     await setupWorkingDir(tmpDir);
@@ -264,9 +293,14 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "Old version" --allow-empty', verbose);
 
     log.info('Install the new version');
-    let installCommand = 'npm install --save --color=always';
+    let installCommand;
+    if (useYarn) {
+      installCommand = 'yarn add';
+    } else {
+      installCommand = 'npm install --save --color=always';
+    }
     installCommand += ' react-native@' + newVersion;
-    if (!semver.satisfies(currentReactVersion, newReactVersionRange)) {
+    if (newReactVersionRange && !semver.satisfies(currentReactVersion, newReactVersionRange)) {
       // Install React as well to avoid unmet peer dependency
       installCommand += ' react@' + newReactVersionRange;
     }
@@ -296,8 +330,8 @@ async function run(requestedVersion, cliArgs) {
       await exec(`git apply --3way ${patchPath}`, true);
     } catch (err) {
       log.warn(
-        'The upgrade process succeeded but there might be conflicts to be resolved.\n' + 
-        'See above for the list of files that had merge conflicts.');
+        'The upgrade process succeeded but there might be conflicts to be resolved. ' +
+        'See above for the list of files that have merge conflicts.');
     } finally {
       log.info('Upgrade done');
       if (cliArgs.verbose) {

@@ -9,7 +9,7 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.YogaConstants;
 
 import java.util.Arrays;
 
@@ -96,7 +96,7 @@ public class Spacing {
     if (!FloatUtil.floatsEqual(mSpacing[spacingType], value)) {
       mSpacing[spacingType] = value;
 
-      if (CSSConstants.isUndefined(value)) {
+      if (YogaConstants.isUndefined(value)) {
         mValueFlags &= ~sFlagsMap[spacingType];
       } else {
         mValueFlags |= sFlagsMap[spacingType];
@@ -120,7 +120,7 @@ public class Spacing {
    */
   public float get(int spacingType) {
     float defaultValue = (spacingType == START || spacingType == END
-        ? CSSConstants.UNDEFINED
+        ? YogaConstants.UNDEFINED
         : mDefaultValue);
 
     if (mValueFlags == 0) {
@@ -159,7 +159,7 @@ public class Spacing {
    * recycling {@link Spacing} instances.
    */
   public void reset() {
-    Arrays.fill(mSpacing, CSSConstants.UNDEFINED);
+    Arrays.fill(mSpacing, YogaConstants.UNDEFINED);
     mHasAliasesSet = false;
     mValueFlags = 0;
   }
@@ -178,15 +178,15 @@ public class Spacing {
 
   private static float[] newFullSpacingArray() {
     return new float[] {
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
-        CSSConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED,
     };
   }
 }

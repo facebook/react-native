@@ -126,12 +126,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * Flexbox properties. All zero/disabled by default
  */
-@property (nonatomic, assign) CSSFlexDirection flexDirection;
-@property (nonatomic, assign) CSSJustify justifyContent;
-@property (nonatomic, assign) CSSAlign alignSelf;
-@property (nonatomic, assign) CSSAlign alignItems;
-@property (nonatomic, assign) CSSPositionType position;
-@property (nonatomic, assign) CSSWrap flexWrap;
+@property (nonatomic, assign) YGFlexDirection flexDirection;
+@property (nonatomic, assign) YGJustify justifyContent;
+@property (nonatomic, assign) YGAlign alignSelf;
+@property (nonatomic, assign) YGAlign alignItems;
+@property (nonatomic, assign) YGPositionType position;
+@property (nonatomic, assign) YGWrap flexWrap;
 
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
@@ -149,7 +149,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 /**
  * Clipping properties
  */
-@property (nonatomic, assign) CSSOverflow overflow;
+@property (nonatomic, assign) YGOverflow overflow;
 
 /**
  * Calculate property changes that need to be propagated to the view.

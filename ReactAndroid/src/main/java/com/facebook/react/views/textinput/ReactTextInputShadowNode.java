@@ -16,8 +16,8 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -73,9 +73,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   public long measure(
       CSSNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode) {
+      YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
@@ -122,7 +122,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mComputedPadding != null) {
       float[] updatedPadding = mComputedPadding;
-      if (getLayoutDirection() == CSSDirection.RTL) {
+      if (getLayoutDirection() == YogaDirection.RTL) {
         updatedPadding = new float[] {
             getPadding(Spacing.END),
             getPadding(Spacing.TOP),

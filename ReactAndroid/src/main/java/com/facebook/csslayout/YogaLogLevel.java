@@ -12,14 +12,16 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSPrintOptions {
-  LAYOUT(1),
-  STYLE(2),
-  CHILDREN(4);
+public enum YogaLogLevel {
+  ERROR(0),
+  WARN(1),
+  INFO(2),
+  DEBUG(3),
+  VERBOSE(4);
 
   private int mIntValue;
 
-  CSSPrintOptions(int intValue) {
+  YogaLogLevel(int intValue) {
     mIntValue = intValue;
   }
 
@@ -27,11 +29,13 @@ public enum CSSPrintOptions {
     return mIntValue;
   }
 
-  public static CSSPrintOptions fromInt(int value) {
+  public static YogaLogLevel fromInt(int value) {
     switch (value) {
-      case 1: return LAYOUT;
-      case 2: return STYLE;
-      case 4: return CHILDREN;
+      case 0: return ERROR;
+      case 1: return WARN;
+      case 2: return INFO;
+      case 3: return DEBUG;
+      case 4: return VERBOSE;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

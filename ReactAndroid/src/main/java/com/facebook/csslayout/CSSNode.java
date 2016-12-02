@@ -39,13 +39,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
       int feature,
       boolean enabled);
   public static void setExperimentalFeatureEnabled(
-      CSSExperimentalFeature feature,
+      YogaExperimentalFeature feature,
       boolean enabled) {
     jni_CSSLayoutSetExperimentalFeatureEnabled(feature.intValue(), enabled);
   }
 
   private static native boolean jni_CSSLayoutIsExperimentalFeatureEnabled(int feature);
-  public static boolean isExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+  public static boolean isExperimentalFeatureEnabled(YogaExperimentalFeature feature) {
     return jni_CSSLayoutIsExperimentalFeatureEnabled(feature.intValue());
   }
 
@@ -61,13 +61,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private boolean mHasSetPosition = false;
 
   @DoNotStrip
-  private float mWidth = CSSConstants.UNDEFINED;
+  private float mWidth = YogaConstants.UNDEFINED;
   @DoNotStrip
-  private float mHeight = CSSConstants.UNDEFINED;
+  private float mHeight = YogaConstants.UNDEFINED;
   @DoNotStrip
-  private float mTop = CSSConstants.UNDEFINED;
+  private float mTop = YogaConstants.UNDEFINED;
   @DoNotStrip
-  private float mLeft = CSSConstants.UNDEFINED;
+  private float mLeft = YogaConstants.UNDEFINED;
   @DoNotStrip
   private int mLayoutDirection = 0;
 
@@ -97,10 +97,10 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     mHasSetBorder = false;
     mHasSetPosition = false;
 
-    mWidth = CSSConstants.UNDEFINED;
-    mHeight = CSSConstants.UNDEFINED;
-    mTop = CSSConstants.UNDEFINED;
-    mLeft = CSSConstants.UNDEFINED;
+    mWidth = YogaConstants.UNDEFINED;
+    mHeight = YogaConstants.UNDEFINED;
+    mTop = YogaConstants.UNDEFINED;
+    mLeft = YogaConstants.UNDEFINED;
     mLayoutDirection = 0;
 
     mMeasureFunction = null;
@@ -193,103 +193,103 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native int jni_CSSNodeStyleGetDirection(long nativePointer);
   @Override
-  public CSSDirection getStyleDirection() {
-    return CSSDirection.values()[jni_CSSNodeStyleGetDirection(mNativePointer)];
+  public YogaDirection getStyleDirection() {
+    return YogaDirection.values()[jni_CSSNodeStyleGetDirection(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetDirection(long nativePointer, int direction);
   @Override
-  public void setDirection(CSSDirection direction) {
+  public void setDirection(YogaDirection direction) {
     jni_CSSNodeStyleSetDirection(mNativePointer, direction.intValue());
   }
 
   private native int jni_CSSNodeStyleGetFlexDirection(long nativePointer);
   @Override
-  public CSSFlexDirection getFlexDirection() {
-    return CSSFlexDirection.values()[jni_CSSNodeStyleGetFlexDirection(mNativePointer)];
+  public YogaFlexDirection getFlexDirection() {
+    return YogaFlexDirection.values()[jni_CSSNodeStyleGetFlexDirection(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetFlexDirection(long nativePointer, int flexDirection);
   @Override
-  public void setFlexDirection(CSSFlexDirection flexDirection) {
+  public void setFlexDirection(YogaFlexDirection flexDirection) {
     jni_CSSNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
   }
 
   private native int jni_CSSNodeStyleGetJustifyContent(long nativePointer);
   @Override
-  public CSSJustify getJustifyContent() {
-    return CSSJustify.values()[jni_CSSNodeStyleGetJustifyContent(mNativePointer)];
+  public YogaJustify getJustifyContent() {
+    return YogaJustify.values()[jni_CSSNodeStyleGetJustifyContent(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetJustifyContent(long nativePointer, int justifyContent);
   @Override
-  public void setJustifyContent(CSSJustify justifyContent) {
+  public void setJustifyContent(YogaJustify justifyContent) {
     jni_CSSNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignItems(long nativePointer);
   @Override
-  public CSSAlign getAlignItems() {
-    return CSSAlign.values()[jni_CSSNodeStyleGetAlignItems(mNativePointer)];
+  public YogaAlign getAlignItems() {
+    return YogaAlign.values()[jni_CSSNodeStyleGetAlignItems(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetAlignItems(long nativePointer, int alignItems);
   @Override
-  public void setAlignItems(CSSAlign alignItems) {
+  public void setAlignItems(YogaAlign alignItems) {
     jni_CSSNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignSelf(long nativePointer);
   @Override
-  public CSSAlign getAlignSelf() {
-    return CSSAlign.values()[jni_CSSNodeStyleGetAlignSelf(mNativePointer)];
+  public YogaAlign getAlignSelf() {
+    return YogaAlign.values()[jni_CSSNodeStyleGetAlignSelf(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetAlignSelf(long nativePointer, int alignSelf);
   @Override
-  public void setAlignSelf(CSSAlign alignSelf) {
+  public void setAlignSelf(YogaAlign alignSelf) {
     jni_CSSNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
   }
 
   private native int jni_CSSNodeStyleGetAlignContent(long nativePointer);
   @Override
-  public CSSAlign getAlignContent() {
-    return CSSAlign.values()[jni_CSSNodeStyleGetAlignContent(mNativePointer)];
+  public YogaAlign getAlignContent() {
+    return YogaAlign.values()[jni_CSSNodeStyleGetAlignContent(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetAlignContent(long nativePointer, int alignContent);
   @Override
-  public void setAlignContent(CSSAlign alignContent) {
+  public void setAlignContent(YogaAlign alignContent) {
     jni_CSSNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
   }
 
   private native int jni_CSSNodeStyleGetPositionType(long nativePointer);
   @Override
-  public CSSPositionType getPositionType() {
-    return CSSPositionType.values()[jni_CSSNodeStyleGetPositionType(mNativePointer)];
+  public YogaPositionType getPositionType() {
+    return YogaPositionType.values()[jni_CSSNodeStyleGetPositionType(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetPositionType(long nativePointer, int positionType);
   @Override
-  public void setPositionType(CSSPositionType positionType) {
+  public void setPositionType(YogaPositionType positionType) {
     jni_CSSNodeStyleSetPositionType(mNativePointer, positionType.intValue());
   }
 
   private native void jni_CSSNodeStyleSetFlexWrap(long nativePointer, int wrapType);
   @Override
-  public void setWrap(CSSWrap flexWrap) {
+  public void setWrap(YogaWrap flexWrap) {
     jni_CSSNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
   }
 
   private native int jni_CSSNodeStyleGetOverflow(long nativePointer);
   @Override
-  public CSSOverflow getOverflow() {
-    return CSSOverflow.values()[jni_CSSNodeStyleGetOverflow(mNativePointer)];
+  public YogaOverflow getOverflow() {
+    return YogaOverflow.values()[jni_CSSNodeStyleGetOverflow(mNativePointer)];
   }
 
   private native void jni_CSSNodeStyleSetOverflow(long nativePointer, int overflow);
   @Override
-  public void setOverflow(CSSOverflow overflow) {
+  public void setOverflow(YogaOverflow overflow) {
     jni_CSSNodeStyleSetOverflow(mNativePointer, overflow.intValue());
   }
 
@@ -337,64 +337,64 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native float jni_CSSNodeStyleGetMargin(long nativePointer, int edge);
   @Override
-  public float getMargin(CSSEdge edge) {
+  public float getMargin(YogaEdge edge) {
     if (!mHasSetMargin) {
-      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
     }
     return jni_CSSNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetMargin(long nativePointer, int edge, float margin);
   @Override
-  public void setMargin(CSSEdge edge, float margin) {
+  public void setMargin(YogaEdge edge, float margin) {
     mHasSetMargin = true;
     jni_CSSNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   private native float jni_CSSNodeStyleGetPadding(long nativePointer, int edge);
   @Override
-  public float getPadding(CSSEdge edge) {
+  public float getPadding(YogaEdge edge) {
     if (!mHasSetPadding) {
-      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
     }
     return jni_CSSNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPadding(long nativePointer, int edge, float padding);
   @Override
-  public void setPadding(CSSEdge edge, float padding) {
+  public void setPadding(YogaEdge edge, float padding) {
     mHasSetPadding = true;
     jni_CSSNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   private native float jni_CSSNodeStyleGetBorder(long nativePointer, int edge);
   @Override
-  public float getBorder(CSSEdge edge) {
+  public float getBorder(YogaEdge edge) {
     if (!mHasSetBorder) {
-      return edge.intValue() < CSSEdge.START.intValue() ? 0 : CSSConstants.UNDEFINED;
+      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
     }
     return jni_CSSNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetBorder(long nativePointer, int edge, float border);
   @Override
-  public void setBorder(CSSEdge edge, float border) {
+  public void setBorder(YogaEdge edge, float border) {
     mHasSetBorder = true;
     jni_CSSNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
   private native float jni_CSSNodeStyleGetPosition(long nativePointer, int edge);
   @Override
-  public float getPosition(CSSEdge edge) {
+  public float getPosition(YogaEdge edge) {
     if (!mHasSetPosition) {
-      return CSSConstants.UNDEFINED;
+      return YogaConstants.UNDEFINED;
     }
     return jni_CSSNodeStyleGetPosition(mNativePointer, edge.intValue());
   }
 
   private native void jni_CSSNodeStyleSetPosition(long nativePointer, int edge, float position);
   @Override
-  public void setPosition(CSSEdge edge, float position) {
+  public void setPosition(YogaEdge edge, float position) {
     mHasSetPosition = true;
     jni_CSSNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
   }
@@ -502,8 +502,8 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   }
 
   @Override
-  public CSSDirection getLayoutDirection() {
-    return CSSDirection.values()[mLayoutDirection];
+  public YogaDirection getLayoutDirection() {
+    return YogaDirection.values()[mLayoutDirection];
   }
 
   private native void jni_CSSNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
@@ -527,9 +527,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     return mMeasureFunction.measure(
           this,
           width,
-          CSSMeasureMode.values()[widthMode],
+          YogaMeasureMode.values()[widthMode],
           height,
-          CSSMeasureMode.values()[heightMode]);
+          YogaMeasureMode.values()[heightMode]);
   }
 
   @Override

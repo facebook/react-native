@@ -12,13 +12,15 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSDimension {
-  WIDTH(0),
-  HEIGHT(1);
+public enum YogaFlexDirection {
+  COLUMN(0),
+  COLUMN_REVERSE(1),
+  ROW(2),
+  ROW_REVERSE(3);
 
   private int mIntValue;
 
-  CSSDimension(int intValue) {
+  YogaFlexDirection(int intValue) {
     mIntValue = intValue;
   }
 
@@ -26,10 +28,12 @@ public enum CSSDimension {
     return mIntValue;
   }
 
-  public static CSSDimension fromInt(int value) {
+  public static YogaFlexDirection fromInt(int value) {
     switch (value) {
-      case 0: return WIDTH;
-      case 1: return HEIGHT;
+      case 0: return COLUMN;
+      case 1: return COLUMN_REVERSE;
+      case 2: return ROW;
+      case 3: return ROW_REVERSE;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

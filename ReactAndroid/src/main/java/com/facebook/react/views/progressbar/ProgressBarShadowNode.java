@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -55,9 +55,9 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements CSSNodeAP
   public long measure(
       CSSNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode) {
+      YogaMeasureMode heightMode) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
       ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
