@@ -30,9 +30,9 @@ import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSMeasureMode;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaConstants;
+import com.facebook.csslayout.YogaMeasureMode;
 import com.facebook.csslayout.CSSNodeAPI;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
@@ -224,9 +224,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         public long measure(
             CSSNodeAPI node,
             float width,
-            CSSMeasureMode widthMode,
+            YogaMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode) {
+            YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
@@ -238,11 +238,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
+          boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||
-                  (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+                  (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
             layout = new StaticLayout(
@@ -369,7 +369,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
-    if (getLayoutDirection() == CSSDirection.RTL) {
+    if (getLayoutDirection() == YogaDirection.RTL) {
       if (textAlign == Gravity.RIGHT) {
         textAlign = Gravity.LEFT;
       } else if (textAlign == Gravity.LEFT) {

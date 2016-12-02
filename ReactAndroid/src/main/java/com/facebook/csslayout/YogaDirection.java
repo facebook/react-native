@@ -12,13 +12,14 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSExperimentalFeature {
-  ROUNDING(0),
-  WEB_FLEX_BASIS(1);
+public enum YogaDirection {
+  INHERIT(0),
+  LTR(1),
+  RTL(2);
 
   private int mIntValue;
 
-  CSSExperimentalFeature(int intValue) {
+  YogaDirection(int intValue) {
     mIntValue = intValue;
   }
 
@@ -26,10 +27,11 @@ public enum CSSExperimentalFeature {
     return mIntValue;
   }
 
-  public static CSSExperimentalFeature fromInt(int value) {
+  public static YogaDirection fromInt(int value) {
     switch (value) {
-      case 0: return ROUNDING;
-      case 1: return WEB_FLEX_BASIS;
+      case 0: return INHERIT;
+      case 1: return LTR;
+      case 2: return RTL;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

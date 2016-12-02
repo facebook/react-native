@@ -40,7 +40,7 @@ static void _jniTransferLayoutOutputsRecursive(CSSNodeRef root) {
       _jniTransferLayoutOutputsRecursive(CSSNodeGetChild(root, i));
     }
   } else {
-    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
+    CSSLog(YGLogLevelError, "Java CSSNode was GCed during layout calculation\n");
   }
 }
 
@@ -48,15 +48,15 @@ static void _jniPrint(CSSNodeRef node) {
   if (auto obj = jobjectContext(node)->lockLocal()) {
     cout << obj->toString() << endl;
   } else {
-    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
+    CSSLog(YGLogLevelError, "Java CSSNode was GCed during layout calculation\n");
   }
 }
 
 static CSSSize _jniMeasureFunc(CSSNodeRef node,
                                float width,
-                               CSSMeasureMode widthMode,
+                               YGMeasureMode widthMode,
                                float height,
-                               CSSMeasureMode heightMode) {
+                               YGMeasureMode heightMode) {
   if (auto obj = jobjectContext(node)->lockLocal()) {
     static auto measureFunc = findClassLocal("com/facebook/csslayout/CSSNode")
                                   ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
@@ -72,31 +72,31 @@ static CSSSize _jniMeasureFunc(CSSNodeRef node,
 
     return CSSSize{measuredWidth, measuredHeight};
   } else {
-    CSSLog(CSSLogLevelError, "Java CSSNode was GCed during layout calculation\n");
+    CSSLog(YGLogLevelError, "Java CSSNode was GCed during layout calculation\n");
     return CSSSize{
-        widthMode == CSSMeasureModeUndefined ? 0 : width,
-        heightMode == CSSMeasureModeUndefined ? 0 : height,
+        widthMode == YGMeasureModeUndefined ? 0 : width,
+        heightMode == YGMeasureModeUndefined ? 0 : height,
     };
   }
 }
 
-struct JCSSLogLevel : public JavaClass<JCSSLogLevel> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/csslayout/CSSLogLevel;";
+struct JYogaLogLevel : public JavaClass<JYogaLogLevel> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/csslayout/YogaLogLevel;";
 };
 
 static global_ref<jobject> *jLogger;
-static int _jniLog(CSSLogLevel level, const char *format, va_list args) {
+static int _jniLog(YGLogLevel level, const char *format, va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
   static auto logFunc = findClassLocal("com/facebook/csslayout/CSSLogger")
-                            ->getMethod<void(local_ref<JCSSLogLevel>, jstring)>("log");
+                            ->getMethod<void(local_ref<JYogaLogLevel>, jstring)>("log");
 
   static auto logLevelFromInt =
-      JCSSLogLevel::javaClassStatic()->getStaticMethod<JCSSLogLevel::javaobject(jint)>("fromInt");
+      JYogaLogLevel::javaClassStatic()->getStaticMethod<JYogaLogLevel::javaobject(jint)>("fromInt");
 
   logFunc(jLogger->get(),
-          logLevelFromInt(JCSSLogLevel::javaClassStatic(), static_cast<jint>(level)),
+          logLevelFromInt(JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
           Environment::current()->NewStringUTF(buffer));
 
   return result;
@@ -123,18 +123,18 @@ void jni_CSSLayoutSetLogger(alias_ref<jclass> clazz, alias_ref<jobject> logger) 
 
 void jni_CSSLog(alias_ref<jclass> clazz, jint level, jstring message) {
   const char *nMessage = Environment::current()->GetStringUTFChars(message, 0);
-  CSSLog(static_cast<CSSLogLevel>(level), "%s", nMessage);
+  CSSLog(static_cast<YGLogLevel>(level), "%s", nMessage);
   Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
 void jni_CSSLayoutSetExperimentalFeatureEnabled(alias_ref<jclass> clazz,
                                                 jint feature,
                                                 jboolean enabled) {
-  CSSLayoutSetExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature), enabled);
+  CSSLayoutSetExperimentalFeatureEnabled(static_cast<YGExperimentalFeature>(feature), enabled);
 }
 
 jboolean jni_CSSLayoutIsExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature) {
-  return CSSLayoutIsExperimentalFeatureEnabled(static_cast<CSSExperimentalFeature>(feature));
+  return CSSLayoutIsExperimentalFeatureEnabled(static_cast<YGExperimentalFeature>(feature));
 }
 
 jint jni_CSSNodeGetInstanceCount(alias_ref<jclass> clazz) {
@@ -176,8 +176,8 @@ void jni_CSSNodeRemoveChild(alias_ref<jobject>, jlong nativePointer, jlong child
 void jni_CSSNodeCalculateLayout(alias_ref<jobject>, jlong nativePointer) {
   const CSSNodeRef root = _jlong2CSSNodeRef(nativePointer);
   CSSNodeCalculateLayout(root,
-                         CSSUndefined,
-                         CSSUndefined,
+                         YGUndefined,
+                         YGUndefined,
                          CSSNodeStyleGetDirection(_jlong2CSSNodeRef(nativePointer)));
   _jniTransferLayoutOutputsRecursive(root);
 }
@@ -220,7 +220,7 @@ void jni_CSSNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcN
 #define CSS_NODE_JNI_STYLE_EDGE_PROP(javatype, type, name)                                 \
   javatype jni_CSSNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer, jint edge) { \
     return (javatype) CSSNodeStyleGet##name(_jlong2CSSNodeRef(nativePointer),              \
-                                            static_cast<CSSEdge>(edge));                   \
+                                            static_cast<YGEdge>(edge));                    \
   }                                                                                        \
                                                                                            \
   void jni_CSSNodeStyleSet##name(alias_ref<jobject>,                                       \
@@ -228,19 +228,19 @@ void jni_CSSNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcN
                                  jint edge,                                                \
                                  javatype value) {                                         \
     CSSNodeStyleSet##name(_jlong2CSSNodeRef(nativePointer),                                \
-                          static_cast<CSSEdge>(edge),                                      \
+                          static_cast<YGEdge>(edge),                                       \
                           static_cast<type>(value));                                       \
   }
 
-CSS_NODE_JNI_STYLE_PROP(jint, CSSDirection, Direction);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSFlexDirection, FlexDirection);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSJustify, JustifyContent);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignItems);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignSelf);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSAlign, AlignContent);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSPositionType, PositionType);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSWrap, FlexWrap);
-CSS_NODE_JNI_STYLE_PROP(jint, CSSOverflow, Overflow);
+CSS_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
+CSS_NODE_JNI_STYLE_PROP(jint, YGFlexDirection, FlexDirection);
+CSS_NODE_JNI_STYLE_PROP(jint, YGJustify, JustifyContent);
+CSS_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignItems);
+CSS_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignSelf);
+CSS_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignContent);
+CSS_NODE_JNI_STYLE_PROP(jint, YGPositionType, PositionType);
+CSS_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
+CSS_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 
 void jni_CSSNodeStyleSetFlex(alias_ref<jobject>, jlong nativePointer, jfloat value) {
   CSSNodeStyleSetFlex(_jlong2CSSNodeRef(nativePointer), static_cast<float>(value));

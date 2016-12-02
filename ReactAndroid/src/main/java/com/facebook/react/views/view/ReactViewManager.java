@@ -19,7 +19,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 
-import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.YogaConstants;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -61,9 +61,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       ViewProps.BORDER_TOP_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
-    if (!CSSConstants.isUndefined(borderRadius)) {
+    if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -134,9 +134,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
-    if (!CSSConstants.isUndefined(width)) {
+    if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);
@@ -146,8 +146,8 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
-    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
-    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 

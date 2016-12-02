@@ -12,14 +12,13 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSMeasureMode {
-  UNDEFINED(0),
-  EXACTLY(1),
-  AT_MOST(2);
+public enum YogaDimension {
+  WIDTH(0),
+  HEIGHT(1);
 
   private int mIntValue;
 
-  CSSMeasureMode(int intValue) {
+  YogaDimension(int intValue) {
     mIntValue = intValue;
   }
 
@@ -27,11 +26,10 @@ public enum CSSMeasureMode {
     return mIntValue;
   }
 
-  public static CSSMeasureMode fromInt(int value) {
+  public static YogaDimension fromInt(int value) {
     switch (value) {
-      case 0: return UNDEFINED;
-      case 1: return EXACTLY;
-      case 2: return AT_MOST;
+      case 0: return WIDTH;
+      case 1: return HEIGHT;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

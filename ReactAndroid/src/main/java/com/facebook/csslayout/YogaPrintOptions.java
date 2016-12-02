@@ -12,14 +12,14 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSOverflow {
-  VISIBLE(0),
-  HIDDEN(1),
-  SCROLL(2);
+public enum YogaPrintOptions {
+  LAYOUT(1),
+  STYLE(2),
+  CHILDREN(4);
 
   private int mIntValue;
 
-  CSSOverflow(int intValue) {
+  YogaPrintOptions(int intValue) {
     mIntValue = intValue;
   }
 
@@ -27,11 +27,11 @@ public enum CSSOverflow {
     return mIntValue;
   }
 
-  public static CSSOverflow fromInt(int value) {
+  public static YogaPrintOptions fromInt(int value) {
     switch (value) {
-      case 0: return VISIBLE;
-      case 1: return HIDDEN;
-      case 2: return SCROLL;
+      case 1: return LAYOUT;
+      case 2: return STYLE;
+      case 4: return CHILDREN;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }
