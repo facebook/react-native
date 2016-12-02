@@ -43,7 +43,6 @@ var PickerIOS = React.createClass({
 
   // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
-    console.log("\n------ PROPS ------\n", props);
     var selectedIndex = 0;
     var items = [];
     React.Children.toArray(props.children).forEach(function (child, index) {
