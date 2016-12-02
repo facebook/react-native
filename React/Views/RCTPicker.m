@@ -86,7 +86,13 @@ numberOfRowsInComponent:(__unused NSInteger)component
   }
 
   label.font = _font;
-  label.textColor = _color;
+
+  if ([_items[row] objectForKey:@"textColor"] == nil) {
+    label.textColor = _color;
+  } else {
+    label.textColor = [RCTConvert UIColor:_items[row][@"textColor"]];
+  }
+
   label.textAlignment = _textAlign;
   label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
   return label;
