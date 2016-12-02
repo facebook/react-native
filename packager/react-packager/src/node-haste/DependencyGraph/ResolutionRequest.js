@@ -381,7 +381,7 @@ class ResolutionRequest {
   _loadAsFile(potentialModulePath, fromModule, toModule) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
-        const dirname = path.dirname(potentialModulePath);
+        let dirname = path.dirname(potentialModulePath);
         if (!this._dirExists(dirname)) {
           throw new UnableToResolveError(
             fromModule,
@@ -397,6 +397,11 @@ class ResolutionRequest {
           pattern += '(\\.' + this._platform + ')?';
         }
         pattern += '\\.' + type;
+
+        // Escape backslashes in the path to be able to use it in the regex
+        if (path.sep === '\\') {
+          dirname = dirname.replace(/\\/g, '\\\\');
+        }
 
         // We arbitrarly grab the first one, because scale selection
         // will happen somewhere
