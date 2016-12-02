@@ -12,15 +12,14 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSFlexDirection {
-  COLUMN(0),
-  COLUMN_REVERSE(1),
-  ROW(2),
-  ROW_REVERSE(3);
+public enum YogaOverflow {
+  VISIBLE(0),
+  HIDDEN(1),
+  SCROLL(2);
 
   private int mIntValue;
 
-  CSSFlexDirection(int intValue) {
+  YogaOverflow(int intValue) {
     mIntValue = intValue;
   }
 
@@ -28,12 +27,11 @@ public enum CSSFlexDirection {
     return mIntValue;
   }
 
-  public static CSSFlexDirection fromInt(int value) {
+  public static YogaOverflow fromInt(int value) {
     switch (value) {
-      case 0: return COLUMN;
-      case 1: return COLUMN_REVERSE;
-      case 2: return ROW;
-      case 3: return ROW_REVERSE;
+      case 0: return VISIBLE;
+      case 1: return HIDDEN;
+      case 2: return SCROLL;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

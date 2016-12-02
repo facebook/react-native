@@ -35,7 +35,7 @@ static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableA
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode;
 
 @end
 

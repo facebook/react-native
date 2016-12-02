@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.csslayout.CSSDirection;
+import com.facebook.csslayout.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -84,7 +84,7 @@ public class UIImplementation {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setLayoutDirection(CSSDirection.RTL);
+      rootCSSNode.setLayoutDirection(YogaDirection.RTL);
     }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;

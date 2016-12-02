@@ -12,13 +12,13 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public enum CSSPositionType {
+public enum YogaPositionType {
   RELATIVE(0),
   ABSOLUTE(1);
 
   private int mIntValue;
 
-  CSSPositionType(int intValue) {
+  YogaPositionType(int intValue) {
     mIntValue = intValue;
   }
 
@@ -26,7 +26,7 @@ public enum CSSPositionType {
     return mIntValue;
   }
 
-  public static CSSPositionType fromInt(int value) {
+  public static YogaPositionType fromInt(int value) {
     switch (value) {
       case 0: return RELATIVE;
       case 1: return ABSOLUTE;
