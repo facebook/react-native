@@ -92,9 +92,9 @@ export type PushNotificationEventName = $Enum<{
  *    }
  *    // Required for the notification event. You must call the completion handler after handling the remote notification.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
- *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+ *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
  *    {
- *       [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+ *      [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  *    }
  *    // Optionally implement this method over the previous to receive remote notifications. However
  *    // implement the application:didReceiveRemoteNotification:fetchCompletionHandler: method instead of this one whenever possible.
