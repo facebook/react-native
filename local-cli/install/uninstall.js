@@ -10,7 +10,7 @@
 
 const spawnSync = require('child_process').spawnSync;
 const log = require('npmlog');
-const yarn = require('../util/yarn');
+const PackageManager = require('../util/PackageManager');
 const spawnOpts = {
   stdio: 'inherit',
   stdin: 'inherit',
@@ -21,22 +21,13 @@ log.heading = 'rnpm-install';
 function uninstall(args, config) {
   const name = args[0];
 
-  const projectDir = process.cwd();
-  const isYarnAvailable =
-    yarn.getYarnVersionIfAvailable() &&
-    yarn.isGlobalCliUsingYarn(projectDir);
-
   var res = spawnSync('rnpm', ['unlink', name], spawnOpts);
 
   if (res.status) {
     process.exit(res.status);
   }
 
-  if (isYarnAvailable) {
-    res = spawnSync('yarn', ['remove', name], spawnOpts);
-  } else {
-    res = spawnSync('npm', ['uninstall', name], spawnOpts);
-  }
+  res = PackageManager.remove(name)
 
   if (res.status) {
     process.exit(res.status);

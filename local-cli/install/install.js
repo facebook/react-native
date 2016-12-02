@@ -10,7 +10,7 @@
 
 const spawnSync = require('child_process').spawnSync;
 const log = require('npmlog');
-const yarn = require('../util/yarn');
+const PackageManager = require('../util/PackageManager');
 const spawnOpts = {
   stdio: 'inherit',
   stdin: 'inherit',
@@ -21,17 +21,7 @@ log.heading = 'rnpm-install';
 function install(args, config) {
   const name = args[0];
 
-  const projectDir = process.cwd();
-  const isYarnAvailable =
-    yarn.getYarnVersionIfAvailable() &&
-    yarn.isGlobalCliUsingYarn(projectDir);
-
-  let res;
-  if (isYarnAvailable) {
-    res = spawnSync('yarn', ['add', name], spawnOpts);
-  } else {
-    res = spawnSync('npm', ['install', name, '--save'], spawnOpts);
-  }
+  let res = PackageManager.add(name)
 
   if (res.status) {
     process.exit(res.status);
