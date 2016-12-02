@@ -124,21 +124,19 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+
 <block class="windows linux android" />
 
 ### The React Native CLI
 
 Node.js comes with npm, which lets you install the React Native command line interface.
 
-<block class="mac ios android" />
-
 Run the following command in a Terminal:
 
 ```
 npm install -g react-native-cli
 ```
-
-> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
