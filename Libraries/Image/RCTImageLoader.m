@@ -381,9 +381,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad && !cancelled) {
-      cancelLoad();
-      cancelLoad = nil;
+    typeof(self) strongSelf = weakSelf;
+    if (strongSelf && !cancelled) {
+      dispatch_async(strongSelf->_URLRequestQueue, ^{
+        if (cancelLoad) {
+          cancelLoad();
+          cancelLoad = nil;
+        }
+      });
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };
