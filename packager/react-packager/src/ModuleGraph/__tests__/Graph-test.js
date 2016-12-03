@@ -10,6 +10,7 @@
 
 jest
   .disableAutomock()
+  .useRealTimers()
   .mock('console');
 
 const {Console} = require('console');
@@ -94,6 +95,26 @@ describe('Graph:', () => {
       expect(e).toBe(error);
       done();
     });
+  });
+
+  it('only calls back once if two parallel invocations of `resolve` fail', done => {
+    load.stub.yields(null, createFile('with two deps'), ['depA', 'depB']);
+    resolve.stub
+      .withArgs('depA').yieldsAsync(new Error())
+      .withArgs('depB').yieldsAsync(new Error());
+
+    let calls = 0;
+    function callback() {
+      if (calls === 0) {
+        process.nextTick(() => {
+          expect(calls).toEqual(1);
+          done();
+        });
+      }
+      ++calls;
+    }
+
+    graph(['entryA', 'entryB'], anyPlatform, noOpts, callback);
   });
 
   it('passes the files returned by `resolve` on to the `load` function', done => {

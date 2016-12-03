@@ -87,8 +87,8 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 // is set to from js we want to clip drawing or not. This piece of code ensures
 // that css-layout is always treating the contents of a scroll container as
 // overflow: 'scroll'.
-RCT_CUSTOM_SHADOW_PROPERTY(overflow, CSSOverflow, RCTShadowView) {
-  view.overflow = CSSOverflowScroll;
+RCT_CUSTOM_SHADOW_PROPERTY(overflow, YGOverflow, RCTShadowView) {
+  view.overflow = YGOverflowScroll;
 }
 
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag

@@ -12,8 +12,6 @@ package com.facebook.react.uimanager;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.facebook.csslayout.Spacing;
-
 /**
  * Keys for props that need to be shared across multiple classes.
  */

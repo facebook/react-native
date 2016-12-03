@@ -39,6 +39,10 @@ const validateOpts = declareOpts({
     type: 'array',
     required: true,
   },
+  platforms: {
+    type: 'array',
+    required: true,
+  },
   cache: {
     type: 'object',
     required: true,
@@ -94,11 +98,10 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: defaults.platforms,
+      platforms: opts.platforms,
       preferNativePlatform: true,
       watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: () => true,
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
@@ -121,10 +124,6 @@ class Resolver {
 
   getShallowDependencies(entryFile, transformOptions) {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
-  }
-
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {

@@ -11,7 +11,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <CSSLayout/CSSLayout.h>
+#import <CSSLayout/Yoga.h>
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"

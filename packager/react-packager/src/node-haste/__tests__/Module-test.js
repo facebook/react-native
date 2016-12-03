@@ -12,7 +12,6 @@ jest
   .dontMock('absolute-path')
   .dontMock('json-stable-stringify')
   .dontMock('imurmurhash')
-  .dontMock('../fastfs')
   .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
@@ -20,7 +19,6 @@ jest
 jest
   .mock('fs');
 
-const Fastfs = require('../fastfs');
 const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
 const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
@@ -49,7 +47,7 @@ function mockIndexFile(indexJs) {
 describe('Module', () => {
   const fileName = '/root/index.js';
 
-  let cache, fastfs;
+  let cache;
 
   const createCache = () => ({
     get: jest.genMockFn().mockImplementation(
@@ -70,20 +68,11 @@ describe('Module', () => {
       },
       ...options,
       cache,
-      fastfs,
       file: options && options.file || fileName,
       depGraphHelpers: new DependencyGraphHelpers(),
-      moduleCache: new ModuleCache({fastfs, cache}),
+      moduleCache: new ModuleCache({cache}),
       transformCacheKey,
     });
-
-  const createFastFS = () =>
-    new Fastfs(
-      'test',
-      ['/root'],
-      ['/root/index.js', '/root/package.json'],
-      {ignore: []},
-    );
 
   const createJSONModule =
     (options) => createModule({...options, file: '/root/package.json'});
@@ -91,7 +80,6 @@ describe('Module', () => {
   beforeEach(function() {
     process.platform = 'linux';
     cache = createCache();
-    fastfs = createFastFS();
     transformCacheKey = 'abcdef';
     TransformCache.mock.reset();
   });
@@ -425,7 +413,6 @@ describe('Module', () => {
         .then(() => {
           expect(transformCode).toHaveBeenCalledTimes(1);
           cache = createCache();
-          fastfs = createFastFS();
           mockIndexFile('test');
           module = createModule({transformCode});
           return module.read()

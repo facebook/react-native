@@ -17,6 +17,7 @@ const TransformCache = require('../lib/TransformCache');
 const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
+const fs = require('fs');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
@@ -28,7 +29,6 @@ import type {ReadTransformProps} from '../lib/TransformCache';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
-import type FastFs from './fastfs';
 
 type ReadResult = {
   code?: string,
@@ -50,7 +50,6 @@ export type Options = {
 
 export type ConstructorArgs = {
   file: string,
-  fastfs: FastFs,
   moduleCache: ModuleCache,
   cache: Cache,
   transformCode: ?TransformCode,
@@ -64,7 +63,6 @@ class Module {
   path: string;
   type: string;
 
-  _fastfs: FastFs;
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
@@ -76,11 +74,10 @@ class Module {
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _useGlobalCache: boolean;
+  static _globalCacheRetries: number;
 
   constructor({
     file,
-    fastfs,
     moduleCache,
     cache,
     transformCode,
@@ -95,7 +92,6 @@ class Module {
     this.path = file;
     this.type = 'Module';
 
-    this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
@@ -190,7 +186,9 @@ class Module {
 
   _readSourceCode() {
     if (!this._readSourceCodePromise) {
-      this._readSourceCodePromise = this._fastfs.readFile(this.path);
+      this._readSourceCodePromise = new Promise(
+        resolve => resolve(fs.readFileSync(this.path, 'utf8'))
+      );
     }
     return this._readSourceCodePromise;
   }
@@ -232,29 +230,53 @@ class Module {
     );
   }
 
+  _transformAndStoreCodeGlobally(
+    cacheProps: ReadTransformProps,
+    globalCache: GlobalTransformCache,
+    callback: (error: ?Error, result: ?TransformedCode) => void,
+  ) {
+    this._transformCodeForCallback(
+      cacheProps,
+      (transformError, transformResult) => {
+        if (transformError != null) {
+          callback(transformError);
+          return;
+        }
+        invariant(
+          transformResult != null,
+          'Inconsistent state: there is no error, but no results either.',
+        );
+        globalCache.store(cacheProps, transformResult);
+        callback(undefined, transformResult);
+      },
+    );
+  }
+
   _getTransformedCode(
     cacheProps: ReadTransformProps,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (!Module._useGlobalCache || globalCache == null) {
+    if (Module._globalCacheRetries <= 0 || globalCache == null) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._useGlobalCache) {
+      if (globalCacheError != null && Module._globalCacheRetries > 0) {
         console.log(chalk.red(
           '\nWarning: the global cache failed with error:',
         ));
         console.log(chalk.red(globalCacheError.stack));
-        console.log(chalk.red(
-          'The global cache will be DISABLED for the ' +
-            'remainder of the transformation.',
-        ));
-        Module._useGlobalCache = false;
+        Module._globalCacheRetries--;
+        if (Module._globalCacheRetries <= 0) {
+          console.log(chalk.red(
+            'No more retries, the global cache will be disabled for the ' +
+              'remainder of the transformation.',
+          ));
+        }
       }
-      if (globalCacheError != null || globalCachedResult == null) {
-        this._transformCodeForCallback(cacheProps, callback);
+      if (globalCachedResult == null) {
+        this._transformAndStoreCodeGlobally(cacheProps, globalCache, callback);
         return;
       }
       callback(undefined, globalCachedResult);
@@ -355,7 +377,7 @@ class Module {
   }
 }
 
-Module._useGlobalCache = true;
+Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();

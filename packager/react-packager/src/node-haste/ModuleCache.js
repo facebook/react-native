@@ -22,58 +22,58 @@ import type {
   TransformCode,
   Options as ModuleOptions,
 } from './Module';
-import type FastFs from './fastfs';
+
+type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  _moduleCache: {[filePath: string]: Module};
-  _packageCache: {[filePath: string]: Package};
-  _fastfs: FastFs;
-  _cache: Cache;
-  _transformCode: TransformCode;
-  _transformCacheKey: string;
-  _depGraphHelpers: DependencyGraphHelpers;
-  _platforms: mixed;
   _assetDependencies: mixed;
+  _cache: Cache;
+  _depGraphHelpers: DependencyGraphHelpers;
+  _getClosestPackage: GetClosestPackageFn;
+  _moduleCache: {[filePath: string]: Module};
   _moduleOptions: ModuleOptions;
+  _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
+  _platforms: mixed;
+  _transformCacheKey: string;
+  _transformCode: TransformCode;
 
   constructor({
-    fastfs,
-    cache,
-    extractRequires,
-    transformCode,
-    transformCacheKey,
-    depGraphHelpers,
     assetDependencies,
+    cache,
+    depGraphHelpers,
+    extractRequires,
+    getClosestPackage,
     moduleOptions,
+    transformCacheKey,
+    transformCode,
   }: {
-    fastfs: FastFs,
-    cache: Cache,
-    transformCode: TransformCode,
-    transformCacheKey: string,
-    depGraphHelpers: DependencyGraphHelpers,
     assetDependencies: mixed,
+    cache: Cache,
+    depGraphHelpers: DependencyGraphHelpers,
+    getClosestPackage: GetClosestPackageFn,
     moduleOptions: ModuleOptions,
+    transformCacheKey: string,
+    transformCode: TransformCode,
   }, platforms: mixed) {
-    this._moduleCache = Object.create(null);
-    this._packageCache = Object.create(null);
-    this._fastfs = fastfs;
-    this._cache = cache;
-    this._transformCode = transformCode;
-    this._transformCacheKey = transformCacheKey;
-    this._depGraphHelpers = depGraphHelpers;
-    this._platforms = platforms;
     this._assetDependencies = assetDependencies;
+    this._getClosestPackage = getClosestPackage;
+    this._cache = cache;
+    this._depGraphHelpers = depGraphHelpers;
+    this._moduleCache = Object.create(null);
     this._moduleOptions = moduleOptions;
+    this._packageCache = Object.create(null);
     this._packageModuleMap = new WeakMap();
+    this._platforms = platforms;
+    this._transformCacheKey = transformCacheKey;
+    this._transformCode = transformCode;
   }
 
   getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
         transformCode: this._transformCode,
@@ -93,7 +93,6 @@ class ModuleCache {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
         dependencies: this._assetDependencies,
@@ -106,7 +105,6 @@ class ModuleCache {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
-        fastfs: this._fastfs,
         cache: this._cache,
       });
     }
@@ -123,7 +121,7 @@ class ModuleCache {
       }
     }
 
-    const packagePath = this._fastfs.closest(module.path, 'package.json');
+    const packagePath = this._getClosestPackage(module.path);
     if (!packagePath) {
       return null;
     }
@@ -138,7 +136,6 @@ class ModuleCache {
       file,
       cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
-      fastfs: this._fastfs,
       moduleCache: this,
       transformCode: this._transformCode,
       transformCacheKey: this._transformCacheKey,

@@ -16,14 +16,15 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaMeasureMode;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -34,7 +35,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNodeAPI.MeasureFunction {
+    YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
@@ -71,11 +72,11 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
   @Override
   public long measure(
-      CSSNodeAPI node,
+      YogaNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode) {
+      YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
@@ -103,7 +104,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
 
-    return MeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
+    return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override
@@ -122,7 +123,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mComputedPadding != null) {
       float[] updatedPadding = mComputedPadding;
-      if (getLayoutDirection() == CSSDirection.RTL) {
+      if (getLayoutDirection() == YogaDirection.RTL) {
         updatedPadding = new float[] {
             getPadding(Spacing.END),
             getPadding(Spacing.TOP),

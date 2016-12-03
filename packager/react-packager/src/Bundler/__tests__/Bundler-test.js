@@ -267,6 +267,16 @@ describe('Bundler', function() {
     );
   });
 
+  it('allows overriding the platforms array', () => {
+    expect(bundler._opts.platforms).toEqual(['ios', 'android', 'windows', 'web']);
+    const b = new Bundler({
+      projectRoots,
+      assetServer: assetServer,
+      platforms: ['android', 'vr'],
+    });
+    expect(b._opts.platforms).toEqual(['android', 'vr']);
+  });
+
   describe('getOrderedDependencyPaths', () => {
     beforeEach(() => {
       assetServer.getAssetData.mockImpl(function(relPath) {

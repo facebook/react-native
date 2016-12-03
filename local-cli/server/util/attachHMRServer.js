@@ -136,7 +136,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           inverseDependenciesCache,
         };
 
-        packagerServer.setHMRFileChangeListener((filename, stat) => {
+        packagerServer.setHMRFileChangeListener((type, filename) => {
           if (!client) {
             return;
           }
@@ -151,14 +151,14 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           }
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
-          stat.then(() => {
-            return packagerServer.getShallowDependencies({
-              entryFile: filename,
-              platform: client.platform,
-              dev: true,
-              hot: true,
-            })
-              .then(deps => {
+          const promise = type === 'delete'
+            ? Promise.resolve()
+            : packagerServer.getShallowDependencies({
+                entryFile: filename,
+                platform: client.platform,
+                dev: true,
+                hot: true,
+              }).then(deps => {
                 if (!client) {
                   return [];
                 }
@@ -300,11 +300,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 print(createEntry('HMR Server sending update to client'));
                 client.ws.send(update);
               });
-            },
-            () => {
-              // do nothing, file was removed
-            },
-          ).then(() => {
+
+          promise.then(() => {
             client.ws.send(JSON.stringify({type: 'update-done'}));
           });
         });
