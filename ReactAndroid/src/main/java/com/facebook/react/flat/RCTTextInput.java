@@ -19,8 +19,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -35,7 +36,7 @@ import com.facebook.react.views.view.MeasureUtil;
 import static com.facebook.react.views.text.ReactTextShadowNode.PROP_TEXT;
 import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
 
-public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNodeAPI.MeasureFunction {
+public class RCTTextInput extends RCTVirtualText implements AndroidView, YogaMeasureFunction {
 
   @Nullable private String mText;
   private int mJsEventCount = UNSET;
@@ -76,7 +77,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
 
   @Override
   public long measure(
-      CSSNodeAPI node,
+      YogaNodeAPI node,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -102,7 +103,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
-    return MeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
+    return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override

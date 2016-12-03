@@ -11,7 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import com.facebook.csslayout.CSSNodeAPI;
+import com.facebook.csslayout.YogaMeasureFunction;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -28,9 +28,9 @@ import com.facebook.react.uimanager.ViewManager;
 
   /* package */ NativeViewWrapper(ViewManager viewManager) {
     ReactShadowNode reactShadowNode = viewManager.createShadowNodeInstance();
-    if (reactShadowNode instanceof CSSNodeAPI.MeasureFunction) {
+    if (reactShadowNode instanceof YogaMeasureFunction) {
       mReactShadowNode = reactShadowNode;
-      setMeasureFunction((CSSNodeAPI.MeasureFunction) reactShadowNode);
+      setMeasureFunction((YogaMeasureFunction) reactShadowNode);
     } else {
       mReactShadowNode = null;
     }

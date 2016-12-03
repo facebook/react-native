@@ -18,8 +18,9 @@ import android.view.Gravity;
 
 import com.facebook.csslayout.YogaDirection;
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.glyphwarmer.GlyphWarmerImpl;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -36,7 +37,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * a) RCTText is not a virtual node, and can be measured and laid out.
  * b) when no font size is specified, a font size of ViewDefaults#FONT_SIZE_SP is assumed.
  */
-/* package */ final class RCTText extends RCTVirtualText implements CSSNodeAPI.MeasureFunction {
+/* package */ final class RCTText extends RCTVirtualText implements YogaMeasureFunction {
 
   // index of left and right in the Layout.Alignment enum since the base values are @hide
   private static final int ALIGNMENT_LEFT = 3;
@@ -74,7 +75,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   @Override
   public long measure(
-      CSSNodeAPI node,
+      YogaNodeAPI node,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -84,7 +85,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     if (TextUtils.isEmpty(text)) {
       // to indicate that we don't have anything to display
       mText = null;
-      return MeasureOutput.make(0, 0);
+      return YogaMeasureOutput.make(0, 0);
     } else {
       mText = text;
     }
@@ -109,7 +110,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       mDrawCommand = new DrawTextLayout(layout);
     }
 
-    return MeasureOutput.make(mDrawCommand.getLayoutWidth(), mDrawCommand.getLayoutHeight());
+    return YogaMeasureOutput.make(mDrawCommand.getLayoutWidth(), mDrawCommand.getLayoutHeight());
   }
 
   @Override
