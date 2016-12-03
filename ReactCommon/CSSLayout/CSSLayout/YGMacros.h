@@ -10,11 +10,11 @@
 #pragma once
 
 #ifdef __cplusplus
-#define CSS_EXTERN_C_BEGIN extern "C" {
-#define CSS_EXTERN_C_END }
+#define YG_EXTERN_C_BEGIN extern "C" {
+#define YG_EXTERN_C_END }
 #else
-#define CSS_EXTERN_C_BEGIN
-#define CSS_EXTERN_C_END
+#define YG_EXTERN_C_BEGIN
+#define YG_EXTERN_C_END
 #endif
 
 #ifdef _WINDLL
@@ -28,15 +28,15 @@
 #endif
 
 #if FB_ASSERTIONS_ENABLED
-#define CSS_ABORT() abort()
+#define YG_ABORT() abort()
 #else
-#define CSS_ABORT()
+#define YG_ABORT()
 #endif
 
-#ifndef CSS_ASSERT
-#define CSS_ASSERT(X, message)              \
-  if (!(X)) {                               \
-    CSSLog(YGLogLevelError, "%s", message); \
-    CSS_ABORT();                            \
+#ifndef YG_ASSERT
+#define YG_ASSERT(X, message)              \
+  if (!(X)) {                              \
+    YGLog(YGLogLevelError, "%s", message); \
+    YG_ABORT();                            \
   }
 #endif

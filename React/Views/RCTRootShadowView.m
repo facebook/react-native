@@ -21,7 +21,7 @@
   self = [super init];
   if (self) {
     if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      CSSNodeStyleSetDirection(self.cssNode, YGDirectionRTL);
+      YGNodeStyleSetDirection(self.cssNode, YGDirectionRTL);
     }
   }
   return self;
@@ -33,14 +33,14 @@
     case RCTRootViewSizeFlexibilityNone:
       break;
     case RCTRootViewSizeFlexibilityWidth:
-      CSSNodeStyleSetWidth(self.cssNode, YGUndefined);
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityHeight:
-      CSSNodeStyleSetHeight(self.cssNode, YGUndefined);
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityWidthAndHeight:
-      CSSNodeStyleSetWidth(self.cssNode, YGUndefined);
-      CSSNodeStyleSetHeight(self.cssNode, YGUndefined);
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
   }
 }
@@ -49,7 +49,7 @@
 {
   [self applySizeConstraints];
 
-  CSSNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
+  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];

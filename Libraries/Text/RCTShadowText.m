@@ -39,16 +39,16 @@ CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
   CGFloat _effectiveLetterSpacing;
 }
 
-static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
-  RCTShadowText *shadowText = (__bridge RCTShadowText *)CSSNodeGetContext(node);
+  RCTShadowText *shadowText = (__bridge RCTShadowText *)YGNodeGetContext(node);
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
   [shadowText calculateTextFrame:textStorage];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   CGSize computedSize = [layoutManager usedRectForTextContainer:textContainer].size;
 
-  CSSSize result;
+  YGSize result;
   result.width = RCTCeilPixelValue(computedSize.width);
   if (shadowText->_effectiveLetterSpacing < 0) {
     result.width -= shadowText->_effectiveLetterSpacing;
@@ -68,7 +68,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
     _cachedTextStorageWidth = -1;
     _cachedTextStorageWidthMode = -1;
     _fontSizeMultiplier = 1.0;
-    CSSNodeSetMeasureFunc(self.cssNode, RCTMeasure);
+    YGNodeSetMeasureFunc(self.cssNode, RCTMeasure);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
                                                  name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -95,7 +95,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  CSSNodeMarkDirty(self.cssNode);
+  YGNodeMarkDirty(self.cssNode);
   [self dirtyText];
 }
 
@@ -140,7 +140,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
   return parentProperties;
 }
 
-- (void)applyLayoutNode:(CSSNodeRef)node
+- (void)applyLayoutNode:(YGNodeRef)node
       viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
@@ -148,7 +148,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
   [self dirtyPropagation];
 }
 
-- (void)applyLayoutToChildren:(CSSNodeRef)node
+- (void)applyLayoutToChildren:(YGNodeRef)node
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition
 {
@@ -160,10 +160,10 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
-      CSSNodeRef childNode = child.cssNode;
-      float width = CSSNodeStyleGetWidth(childNode);
-      float height = CSSNodeStyleGetHeight(childNode);
-      if (CSSValueIsUndefined(width) || CSSValueIsUndefined(height)) {
+      YGNodeRef childNode = child.cssNode;
+      float width = YGNodeStyleGetWidth(childNode);
+      float height = YGNodeStyleGetHeight(childNode);
+      if (YGValueIsUndefined(width) || YGValueIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
@@ -307,9 +307,9 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
       [child setTextComputed];
     } else {
-      float width = CSSNodeStyleGetWidth(child.cssNode);
-      float height = CSSNodeStyleGetHeight(child.cssNode);
-      if (CSSValueIsUndefined(width) || CSSValueIsUndefined(height)) {
+      float width = YGNodeStyleGetWidth(child.cssNode);
+      float height = YGNodeStyleGetHeight(child.cssNode);
+      if (YGValueIsUndefined(width) || YGValueIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       NSTextAttachment *attachment = [NSTextAttachment new];
@@ -348,7 +348,7 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
 
   // create a non-mutable attributedString for use by the Text system which avoids copies down the line
   _cachedAttributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
-  CSSNodeMarkDirty(self.cssNode);
+  YGNodeMarkDirty(self.cssNode);
 
   return _cachedAttributedString;
 }
@@ -403,10 +403,10 @@ static CSSSize RCTMeasure(CSSNodeRef node, float width, YGMeasureMode widthMode,
   // We will climb up to the first node which style has been setted as non-inherit
   if (newTextAlign == NSTextAlignmentRight || newTextAlign == NSTextAlignmentLeft) {
     RCTShadowView *view = self;
-    while (view != nil && CSSNodeStyleGetDirection(view.cssNode) == YGDirectionInherit) {
+    while (view != nil && YGNodeStyleGetDirection(view.cssNode) == YGDirectionInherit) {
       view = [view reactSuperview];
     }
-    if (view != nil && CSSNodeStyleGetDirection(view.cssNode) == YGDirectionRTL) {
+    if (view != nil && YGNodeStyleGetDirection(view.cssNode) == YGDirectionRTL) {
       if (newTextAlign == NSTextAlignmentRight) {
         newTextAlign = NSTextAlignmentLeft;
       } else if (newTextAlign == NSTextAlignmentLeft) {

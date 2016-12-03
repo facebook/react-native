@@ -9,7 +9,7 @@
 
 #import "RCTTextManager.h"
 
-#import <CSSLayout/CSSLayout.h>
+#import <CSSLayout/Yoga.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
