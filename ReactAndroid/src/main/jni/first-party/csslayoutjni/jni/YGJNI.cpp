@@ -58,7 +58,7 @@ static YGSize YGJNIMeasureFunc(YGNodeRef node,
                                float height,
                                YGMeasureMode heightMode) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
-    static auto measureFunc = findClassLocal("com/facebook/csslayout/CSSNode")
+    static auto measureFunc = findClassLocal("com/facebook/csslayout/YogaNode")
                                   ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
 
     YGTransferLayoutDirection(node, obj);
@@ -89,7 +89,7 @@ static int YGLog(YGLogLevel level, const char *format, va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
-  static auto logFunc = findClassLocal("com/facebook/csslayout/CSSLogger")
+  static auto logFunc = findClassLocal("com/facebook/csslayout/YogaLogger")
                             ->getMethod<void(local_ref<JYogaLogLevel>, jstring)>("log");
 
   static auto logLevelFromInt =
@@ -261,7 +261,7 @@ YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
 jint JNI_OnLoad(JavaVM *vm, void *) {
   return initialize(vm, [] {
-    registerNatives("com/facebook/csslayout/CSSNode",
+    registerNatives("com/facebook/csslayout/YogaNode",
                     {
                         YGMakeNativeMethod(jni_YGNodeNew),
                         YGMakeNativeMethod(jni_YGNodeFree),

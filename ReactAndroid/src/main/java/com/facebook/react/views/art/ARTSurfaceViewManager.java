@@ -10,8 +10,8 @@
 package com.facebook.react.views.art;
 
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -26,10 +26,10 @@ public class ARTSurfaceViewManager extends
 
   protected static final String REACT_CLASS = "ARTSurfaceView";
 
-  private static final CSSNodeAPI.MeasureFunction MEASURE_FUNCTION = new CSSNodeAPI.MeasureFunction() {
+  private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNodeAPI node,
         float width,
         YogaMeasureMode widthMode,
         float height,

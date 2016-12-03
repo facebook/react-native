@@ -18,8 +18,9 @@ import android.widget.EditText;
 
 import com.facebook.csslayout.YogaDirection;
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
@@ -34,7 +35,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNodeAPI.MeasureFunction {
+    YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
@@ -71,7 +72,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
 
   @Override
   public long measure(
-      CSSNodeAPI node,
+      YogaNodeAPI node,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -103,7 +104,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
 
-    return MeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
+    return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override

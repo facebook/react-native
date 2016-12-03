@@ -12,11 +12,11 @@ package com.facebook.csslayout;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
- * Inteface for recieving logs from native layer. Use by setting CSSNode.setLogger(myLogger);
+ * Inteface for recieving logs from native layer. Use by setting YogaNode.setLogger(myLogger);
  * See YogaLogLevel for the different log levels.
  */
 @DoNotStrip
-public interface CSSLogger {
+public interface YogaLogger {
   @DoNotStrip
   void log(YogaLogLevel level, String message);
 }
