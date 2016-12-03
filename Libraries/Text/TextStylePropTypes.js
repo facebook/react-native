@@ -66,6 +66,13 @@ const TextStylePropTypes = {
   textAlignVertical: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'top', 'bottom', 'center']
   ),
+  /**
+   * Set to `false` to remove extra font padding intended to make space for certain ascenders / descenders.
+   * With some fonts, this padding can make text look slightly misaligned when centered vertically.
+   * For best results also set `textAlignVertical` to `center`. Default is true.
+   * @platform android
+   */
+  includeFontPadding: ReactPropTypes.bool,
   textDecorationLine: ReactPropTypes.oneOf(
     ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),

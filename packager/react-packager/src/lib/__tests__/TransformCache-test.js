@@ -12,7 +12,9 @@
 jest
   .dontMock('imurmurhash')
   .dontMock('json-stable-stringify')
-  .dontMock('../TransformCache');
+  .dontMock('../TransformCache')
+  .dontMock('../toFixedHex')
+  .dontMock('left-pad');
 
 const imurmurhash = require('imurmurhash');
 

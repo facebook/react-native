@@ -39,10 +39,13 @@ type Dependency = {|
 |};
 
 export type File = {|
-  ast: Object,
-  code?: string,
+  code: string,
+  map?: ?Object,
   path: string,
+  type: FileTypes,
 |};
+
+type FileTypes = 'module' | 'script';
 
 export type Module = {|
   dependencies: Array<Dependency>,
@@ -52,7 +55,7 @@ export type Module = {|
 export type GraphFn = (
   entryPoints: Iterable<string>,
   platform: string,
-  options?: GraphOptions,
+  options?: ?GraphOptions,
   callback?: Callback<Array<Module>>,
 ) => void;
 
@@ -81,9 +84,9 @@ export type TransformedFile = {
   code: string,
   file: string,
   hasteID: ?string,
-  isPolyfill: boolean,
   package?: PackageData,
   transformed: {[variant: string]: TransformResult},
+  type: FileTypes,
 };
 
 export type PackageData = {|

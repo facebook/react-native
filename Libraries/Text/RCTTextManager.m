@@ -9,17 +9,17 @@
 
 #import "RCTTextManager.h"
 
-#import <CSSLayout/CSSLayout.h>
+#import <CSSLayout/Yoga.h>
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAssert.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/UIView+React.h>
 
-#import "RCTAccessibilityManager.h"
-#import "RCTAssert.h"
-#import "RCTConvert.h"
-#import "RCTLog.h"
 #import "RCTShadowRawText.h"
 #import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTTextView.h"
-#import "UIView+React.h"
 
 static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableArray *nonTextDescendants) {
   for (RCTShadowView *child in shadowView.reactSubviews) {
@@ -35,7 +35,7 @@ static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableA
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode;
 
 @end
 

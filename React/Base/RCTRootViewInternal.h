@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
 
 /**
  * The interface provides a set of functions that allow other internal framework

@@ -31,15 +31,15 @@ const validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
   watch: {
     type: 'boolean',
     default: false,
   },
   assetExts: {
+    type: 'array',
+    required: true,
+  },
+  platforms: {
     type: 'array',
     required: true,
   },
@@ -92,18 +92,16 @@ class Resolver {
 
     this._depGraph = new DependencyGraph({
       roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: defaults.platforms,
+      platforms: opts.platforms,
       preferNativePlatform: true,
       watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
@@ -126,10 +124,6 @@ class Resolver {
 
   getShallowDependencies(entryFile, transformOptions) {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
-  }
-
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {

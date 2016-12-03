@@ -121,8 +121,11 @@ var Presets = {
  * Automatically animates views to their new positions when the
  * next layout happens.
  *
- * A common way to use this API is to call `LayoutAnimation.configureNext`
- * before calling `setState`.
+ * A common way to use this API is to call it before calling `setState`.
+ *
+ * Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+ *
+ *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
 var LayoutAnimation = {
   /**

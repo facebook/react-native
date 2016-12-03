@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTFrameUpdate.h"
+#import <React/RCTFrameUpdate.h>
 
 @class RCTBridge;
 

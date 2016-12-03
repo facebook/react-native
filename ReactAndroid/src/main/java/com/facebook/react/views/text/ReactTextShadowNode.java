@@ -30,12 +30,12 @@ import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
+import com.facebook.csslayout.YogaDirection;
+import com.facebook.csslayout.YogaConstants;
+import com.facebook.csslayout.YogaMeasureMode;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -43,6 +43,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -218,15 +219,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
-      new CSSNodeAPI.MeasureFunction() {
+  private final YogaMeasureFunction mTextMeasureFunction =
+      new YogaMeasureFunction() {
         @Override
         public long measure(
-            CSSNodeAPI node,
+            YogaNodeAPI node,
             float width,
-            CSSMeasureMode widthMode,
+            YogaMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode) {
+            YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
@@ -238,11 +239,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
+          boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||
-                  (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+                  (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
             layout = new StaticLayout(
@@ -279,11 +280,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
           if (mNumberOfLines != UNSET &&
               mNumberOfLines < layout.getLineCount()) {
-            return MeasureOutput.make(
+            return YogaMeasureOutput.make(
                 layout.getWidth(),
                 layout.getLineBottom(mNumberOfLines - 1));
           } else {
-            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -347,14 +348,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private @Nullable String mText = null;
 
   private @Nullable Spannable mPreparedSpannableText;
-  private final boolean mIsVirtual;
 
   protected boolean mContainsImages = false;
   private float mHeightOfTallestInlineImage = Float.NaN;
 
-  public ReactTextShadowNode(boolean isVirtual) {
-    mIsVirtual = isVirtual;
-    if (!isVirtual) {
+  public ReactTextShadowNode() {
+    if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
     }
   }
@@ -371,7 +370,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
-    if (getLayoutDirection() == CSSDirection.RTL) {
+    if (getLayoutDirection() == YogaDirection.RTL) {
       if (textAlign == Gravity.RIGHT) {
         textAlign = Gravity.LEFT;
       } else if (textAlign == Gravity.LEFT) {
@@ -383,7 +382,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public void onBeforeLayout() {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     mPreparedSpannableText = fromTextCSSNode(this);
@@ -394,7 +393,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   public void markUpdated() {
     super.markUpdated();
     // We mark virtual anchor node as dirty as updated text needs to be re-measured
-    if (!mIsVirtual) {
+    if (!isVirtual()) {
       super.dirty();
     }
   }
@@ -566,17 +565,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @Override
   public boolean isVirtualAnchor() {
-    return !mIsVirtual;
-  }
-
-  @Override
-  public boolean isVirtual() {
-    return mIsVirtual;
+    return !isVirtual();
   }
 
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
-    if (mIsVirtual) {
+    if (isVirtual()) {
       return;
     }
     super.onCollectExtraUpdates(uiViewOperationQueue);

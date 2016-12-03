@@ -118,21 +118,25 @@ choco install python2
 
 Node.js comes with npm, which lets you install the React Native command line interface.
 
-<block class="windows linux android" />
-
-### The React Native CLI
-
-Node.js comes with npm, which lets you install the React Native command line interface.
-
-<block class="mac ios android" />
-
 Run the following command in a Terminal:
 
 ```
 npm install -g react-native-cli
 ```
 
-> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+
+<block class="windows linux android" />
+
+### The React Native CLI
+
+Node.js comes with npm, which lets you install the React Native command line interface.
+
+Run the following command in a Terminal:
+
+```
+npm install -g react-native-cli
+```
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
@@ -154,7 +158,14 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac android" />
 
-> Android Studio requires the [Java Development Kit (JDK)](https://www.java.com/en/download/mac_download.jsp), version 1.8 or higher. You can type `javac -version` in a terminal to see what version you have, if any.
+> Android Studio requires the [Java SE Development Kit(JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), version 8. You can type `javac -version` in a terminal to see what version you have, if any.
+
+```
+$ javac -version
+javac 1.8.0_111
+```
+
+> The version string `1.8.x_xxx` corresponds to JDK 8.
 
 <block class="mac windows android" />
 
@@ -240,8 +251,6 @@ Go to **Control Panel** → **System and Security** → **System** → **Change 
 ![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
 Restart the Command Prompt to apply the new environment variable.
-
-<block class="linux windows android" />
 
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 

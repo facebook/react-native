@@ -32,10 +32,22 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |ss|
     ss.dependency      'React/CSSLayout'
+    ss.dependency      'React/cxxreact'
     ss.source_files  = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/CSSLayout/*"
     ss.frameworks    = "JavaScriptCore"
     ss.libraries     = "stdc++"
+  end
+
+  s.subspec 'jschelpers' do |ss|
+    ss.source_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}'
+    ss.header_dir   = 'jschelpers'
+  end
+
+  s.subspec 'cxxreact' do |ss|
+    ss.dependency     'React/jschelpers'
+    ss.source_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}'
+    ss.header_dir   = 'cxxreact'
   end
 
   s.subspec 'CSSLayout' do |ss|

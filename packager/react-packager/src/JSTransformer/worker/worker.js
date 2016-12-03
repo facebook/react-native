@@ -46,7 +46,9 @@ type Transform = (
   ) => mixed,
 ) => void;
 
-export type Options = {transform?: {}};
+export type Options = {
+  transform?: {projectRoots: Array<string>},
+};
 
 export type Data = {
   result: TransformedCode,
