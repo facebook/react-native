@@ -24,7 +24,7 @@ const relativeProjPath = (fullProjPath) => {
 }
 
 const getProjectName = (fullProjPath) => {
-  return fullProjPath.split('/').slice(-1)[0].replace(/\.csproj/i, '')
+  return fullProjPath.split('/').slice(-1)[0].replace(/\.csproj/i, '');
 }
 
 /**
@@ -44,7 +44,7 @@ exports.projectConfig = function projectConfigWindows(folder, userConfig) {
   const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
-  const mainPage = path.join(sourceDir, 'MainPage.cs')
+  const mainPage = path.join(sourceDir, 'MainPage.cs');
   const projectPath = userConfig.projectPath || findProject(folder);
 
   return {
@@ -100,12 +100,12 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
   const projectName = getProjectName(csProj);
   const solutionInsert = `Project("{${projectGUID.toUpperCase()}}") = "${projectName}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
 EndProject
-`
+`;
   const projectInsert = `<ProjectReference Include="..\\${relativeProjPath(csProj)}">
       <Project>{${pathGUID}}</Project>
       <Name>${projectName}</Name>
     </ProjectReference>
-    `
+    `;
 
   return {
     sourceDir,
@@ -116,5 +116,5 @@ EndProject
     projectName,
     csProj,
     folder,
-  }
+  };
 };
