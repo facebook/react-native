@@ -23,7 +23,7 @@ const relativeProjPath = (fullProjPath) => {
   return '..' + windowsPath;
 }
 
-const projectName = (fullProjPath) => {
+const getProjectName = (fullProjPath) => {
   return fullProjPath.split('/').slice(-1)[0].replace(/\.csproj/i, '')
 }
 
@@ -97,12 +97,13 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
 
   const projectGUID = generateGUID();
   const pathGUID = generateGUID();
-  const solutionInsert = `Project("{${projectGUID.toUpperCase()}}") = "${projectName(csProj)}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
+  const projectName = getProjectName(csProj);
+  const solutionInsert = `Project("{${projectGUID.toUpperCase()}}") = "${projectName}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
 EndProject
 `
   const projectInsert = `<ProjectReference Include="..\\${relativeProjPath(csProj)}">
       <Project>{${pathGUID}}</Project>
-      <Name>${projectName(csProj)}</Name>
+      <Name>${projectName}</Name>
     </ProjectReference>
     `
 
@@ -112,6 +113,7 @@ EndProject
     packageInstance,
     solutionInsert,
     projectInsert,
+    projectName,
     csProj,
     folder,
   }
