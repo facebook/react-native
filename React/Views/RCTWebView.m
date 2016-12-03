@@ -91,7 +91,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"data": message,
   };
   NSString *source = [NSString
-    stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+    stringWithFormat:
+      @"document.dispatchEvent(new MessageEvent('message', %@));"
+      "if (window.native && typeof window.native.onmessage === 'function') {"
+        "window.native.onmessage(new MessageEvent('message', %@))"
+      "}",
     RCTJSONStringify(eventInitDict, NULL)
   ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
@@ -277,7 +281,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_messagingEnabled) {
     NSString *source = [NSString stringWithFormat:
-      @"window.originalPostMessage = window.postMessage;"
+      @"window.native = {"
+        "postMessage: function(data) {"
+          "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+        "},"
+        "onmessage: null"
+      "};"
+      "window.originalPostMessage = window.postMessage;"
       "window.postMessage = function(data, targetOrigin) {"
         "if (targetOrigin === 'react-native') {"
           "window.location = '%@://%@?' + encodeURIComponent(String(data));"

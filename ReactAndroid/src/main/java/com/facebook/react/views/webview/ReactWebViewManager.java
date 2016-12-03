@@ -274,6 +274,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public void linkBridge() {
       if (messagingEnabled) {
         loadUrl("javascript:(" +
+          "window.native = {" +
+            "postMessage: function(data) {" +
+              BRIDGE_NAME + ".postMessage(String(data));" +
+            "}," +
+            "onmessage: null" +
+          "}," +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data, targetOrigin) {" +
             "if (targetOrigin === 'react-native') {" +
@@ -486,7 +492,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("origin", "react-native");
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+          root.loadUrl("javascript:(" +
+            "document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + "))," +
+            "window.native && typeof window.native.onmessage === 'function' &&" +
+              "window.native.onmessage(new MessageEvent('message', " + eventInitDict.toString() + "))" +
+          ")");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
