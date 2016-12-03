@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := csslayout
 
 LOCAL_SRC_FILES := \
-  jni/CSSJNI.cpp
+  jni/YGJNI.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
 

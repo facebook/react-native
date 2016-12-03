@@ -180,29 +180,29 @@
 		3D1FA09A1DE4F50100E03CC6 /* RCTPushNotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA08D1DE4F4EE00E03CC6 /* RCTPushNotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D37B5811D522B190042D5B5 /* RCTFont.mm */; };
 		3D3C04AB1DE3337C00C268FA /* RCTAlertManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FE71A69327A00A75B9A /* RCTAlertManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C083B1DE334D900C268FA /* CSSEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C083C1DE334D900C268FA /* CSSLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683451D37ACA10077D0C3 /* CSSLayout.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C083D1DE334D900C268FA /* CSSMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683481D37ACA10077D0C3 /* CSSMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C083E1DE334D900C268FA /* CSSNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 1321C8CF1D3EB50800D58318 /* CSSNodeList.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C083F1DE334DA00C268FA /* CSSEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C08401DE334DA00C268FA /* CSSLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683451D37ACA10077D0C3 /* CSSLayout.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C08411DE334DA00C268FA /* CSSMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683481D37ACA10077D0C3 /* CSSMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C08421DE334DA00C268FA /* CSSNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 1321C8CF1D3EB50800D58318 /* CSSNodeList.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3C085A1DE33E4400C268FA /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3C085C1DE33E4E00C268FA /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3C085E1DE33E6100C268FA /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
-		3D3C085F1DE33E6100C268FA /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3C083B1DE334D900C268FA /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D10A3C81DDF3D16004A0F9D /* YGEnums.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C083C1DE334D900C268FA /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683451D37ACA10077D0C3 /* Yoga.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C083D1DE334D900C268FA /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683481D37ACA10077D0C3 /* YGMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C083E1DE334D900C268FA /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 1321C8CF1D3EB50800D58318 /* YGNodeList.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C083F1DE334DA00C268FA /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D10A3C81DDF3D16004A0F9D /* YGEnums.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C08401DE334DA00C268FA /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683451D37ACA10077D0C3 /* Yoga.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C08411DE334DA00C268FA /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 133683481D37ACA10077D0C3 /* YGMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C08421DE334DA00C268FA /* YGNodeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 1321C8CF1D3EB50800D58318 /* YGNodeList.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3C085A1DE33E4400C268FA /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3C085C1DE33E4E00C268FA /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3C085E1DE33E6100C268FA /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
+		3D3C085F1DE33E6100C268FA /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
 		3D3C08891DE342FB00C268FA /* libCSSLayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libCSSLayout.a */; };
 		3D3C088C1DE3430500C268FA /* libCSSLayout-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libCSSLayout-tvOS.a */; };
 		3D3CD8F81DE5FB2D00167DC4 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
-		3D3CD9061DE5FBD600167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3CD9071DE5FBD600167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
-		3D3CD9131DE5FBD800167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3CD9141DE5FBD800167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
-		3D3CD9201DE5FBEC00167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3CD9211DE5FBEC00167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
-		3D3CD92D1DE5FBEE00167DC4 /* CSSLayout.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* CSSLayout.c */; };
-		3D3CD92E1DE5FBEE00167DC4 /* CSSNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* CSSNodeList.c */; };
+		3D3CD9061DE5FBD600167DC4 /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3CD9071DE5FBD600167DC4 /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
+		3D3CD9131DE5FBD800167DC4 /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3CD9141DE5FBD800167DC4 /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
+		3D3CD9201DE5FBEC00167DC4 /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3CD9211DE5FBEC00167DC4 /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
+		3D3CD92D1DE5FBEE00167DC4 /* Yoga.c in Sources */ = {isa = PBXBuildFile; fileRef = 133683441D37ACA10077D0C3 /* Yoga.c */; };
+		3D3CD92E1DE5FBEE00167DC4 /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 1321C8CE1D3EB50800D58318 /* YGNodeList.c */; };
 		3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D3CD93F1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -543,11 +543,11 @@
 		131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControl.m; sourceTree = "<group>"; };
 		131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSegmentedControlManager.h; sourceTree = "<group>"; };
 		131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControlManager.m; sourceTree = "<group>"; };
-		1321C8CE1D3EB50800D58318 /* CSSNodeList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CSSNodeList.c; sourceTree = "<group>"; };
-		1321C8CF1D3EB50800D58318 /* CSSNodeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSNodeList.h; sourceTree = "<group>"; };
-		133683441D37ACA10077D0C3 /* CSSLayout.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CSSLayout.c; sourceTree = "<group>"; };
-		133683451D37ACA10077D0C3 /* CSSLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSLayout.h; sourceTree = "<group>"; };
-		133683481D37ACA10077D0C3 /* CSSMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSMacros.h; sourceTree = "<group>"; };
+		1321C8CE1D3EB50800D58318 /* YGNodeList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = YGNodeList.c; sourceTree = "<group>"; };
+		1321C8CF1D3EB50800D58318 /* YGNodeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGNodeList.h; sourceTree = "<group>"; };
+		133683441D37ACA10077D0C3 /* Yoga.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Yoga.c; sourceTree = "<group>"; };
+		133683451D37ACA10077D0C3 /* Yoga.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yoga.h; sourceTree = "<group>"; };
+		133683481D37ACA10077D0C3 /* YGMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGMacros.h; sourceTree = "<group>"; };
 		133CAE8C1B8E5CFD00F6AD92 /* RCTDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDatePicker.h; sourceTree = "<group>"; };
 		133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDatePicker.m; sourceTree = "<group>"; };
 		13442BF21AA90E0B0037E5B0 /* RCTAnimationType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimationType.h; sourceTree = "<group>"; };
@@ -693,7 +693,7 @@
 		369123E01DDC75850095B341 /* JSCSamplingProfiler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCSamplingProfiler.m; sourceTree = "<group>"; };
 		391E86A21C623EC800009732 /* RCTTouchEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchEvent.m; sourceTree = "<group>"; };
 		391E86A31C623EC800009732 /* RCTTouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTouchEvent.h; sourceTree = "<group>"; };
-		3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSSEnums.h; sourceTree = "<group>"; };
+		3D10A3C81DDF3D16004A0F9D /* YGEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGEnums.h; sourceTree = "<group>"; };
 		3D1E68D81CABD13900DD7465 /* RCTDisplayLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDisplayLink.h; sourceTree = "<group>"; };
 		3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDisplayLink.m; sourceTree = "<group>"; };
 		3D1FA07A1DE4F2EA00E03CC6 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
@@ -803,12 +803,12 @@
 		133683431D37ACA10077D0C3 /* CSSLayout */ = {
 			isa = PBXGroup;
 			children = (
-				3D10A3C81DDF3D16004A0F9D /* CSSEnums.h */,
-				133683441D37ACA10077D0C3 /* CSSLayout.c */,
-				133683451D37ACA10077D0C3 /* CSSLayout.h */,
-				133683481D37ACA10077D0C3 /* CSSMacros.h */,
-				1321C8CE1D3EB50800D58318 /* CSSNodeList.c */,
-				1321C8CF1D3EB50800D58318 /* CSSNodeList.h */,
+				3D10A3C81DDF3D16004A0F9D /* YGEnums.h */,
+				133683441D37ACA10077D0C3 /* Yoga.c */,
+				133683451D37ACA10077D0C3 /* Yoga.h */,
+				133683481D37ACA10077D0C3 /* YGMacros.h */,
+				1321C8CE1D3EB50800D58318 /* YGNodeList.c */,
+				1321C8CF1D3EB50800D58318 /* YGNodeList.h */,
 			);
 			name = CSSLayout;
 			path = CSSLayout/CSSLayout;
@@ -1188,10 +1188,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3C083D1DE334D900C268FA /* CSSMacros.h in Headers */,
-				3D3C083C1DE334D900C268FA /* CSSLayout.h in Headers */,
-				3D3C083E1DE334D900C268FA /* CSSNodeList.h in Headers */,
-				3D3C083B1DE334D900C268FA /* CSSEnums.h in Headers */,
+				3D3C083D1DE334D900C268FA /* YGMacros.h in Headers */,
+				3D3C083C1DE334D900C268FA /* Yoga.h in Headers */,
+				3D3C083E1DE334D900C268FA /* YGNodeList.h in Headers */,
+				3D3C083B1DE334D900C268FA /* YGEnums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1199,10 +1199,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3C08411DE334DA00C268FA /* CSSMacros.h in Headers */,
-				3D3C08401DE334DA00C268FA /* CSSLayout.h in Headers */,
-				3D3C08421DE334DA00C268FA /* CSSNodeList.h in Headers */,
-				3D3C083F1DE334DA00C268FA /* CSSEnums.h in Headers */,
+				3D3C08411DE334DA00C268FA /* YGMacros.h in Headers */,
+				3D3C08401DE334DA00C268FA /* Yoga.h in Headers */,
+				3D3C08421DE334DA00C268FA /* YGNodeList.h in Headers */,
+				3D3C083F1DE334DA00C268FA /* YGEnums.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1846,8 +1846,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3C085A1DE33E4400C268FA /* CSSLayout.c in Sources */,
-				3D3C085E1DE33E6100C268FA /* CSSNodeList.c in Sources */,
+				3D3C085A1DE33E4400C268FA /* Yoga.c in Sources */,
+				3D3C085E1DE33E6100C268FA /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1855,8 +1855,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3C085C1DE33E4E00C268FA /* CSSLayout.c in Sources */,
-				3D3C085F1DE33E6100C268FA /* CSSNodeList.c in Sources */,
+				3D3C085C1DE33E4E00C268FA /* Yoga.c in Sources */,
+				3D3C085F1DE33E6100C268FA /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1864,8 +1864,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3CD9061DE5FBD600167DC4 /* CSSLayout.c in Sources */,
-				3D3CD9071DE5FBD600167DC4 /* CSSNodeList.c in Sources */,
+				3D3CD9061DE5FBD600167DC4 /* Yoga.c in Sources */,
+				3D3CD9071DE5FBD600167DC4 /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1873,8 +1873,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3CD9131DE5FBD800167DC4 /* CSSLayout.c in Sources */,
-				3D3CD9141DE5FBD800167DC4 /* CSSNodeList.c in Sources */,
+				3D3CD9131DE5FBD800167DC4 /* Yoga.c in Sources */,
+				3D3CD9141DE5FBD800167DC4 /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1882,8 +1882,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3CD9201DE5FBEC00167DC4 /* CSSLayout.c in Sources */,
-				3D3CD9211DE5FBEC00167DC4 /* CSSNodeList.c in Sources */,
+				3D3CD9201DE5FBEC00167DC4 /* Yoga.c in Sources */,
+				3D3CD9211DE5FBEC00167DC4 /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1891,8 +1891,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D3CD92D1DE5FBEE00167DC4 /* CSSLayout.c in Sources */,
-				3D3CD92E1DE5FBEE00167DC4 /* CSSNodeList.c in Sources */,
+				3D3CD92D1DE5FBEE00167DC4 /* Yoga.c in Sources */,
+				3D3CD92E1DE5FBEE00167DC4 /* YGNodeList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
