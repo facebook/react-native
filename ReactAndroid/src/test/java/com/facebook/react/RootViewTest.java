@@ -112,7 +112,7 @@ public class RootViewTest {
     int rootViewId = 7;
 
     ReactRootView rootView = new ReactRootView(mReactContext);
-    rootView.setId(rootViewId);
+    rootView.setTag(rootViewId);
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
 

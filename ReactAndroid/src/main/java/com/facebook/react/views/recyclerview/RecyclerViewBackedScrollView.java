@@ -15,11 +15,14 @@ import android.view.ViewGroup;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
+
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 
 /**
  * Wraps {@link RecyclerView} providing interface similar to `ScrollView.js` where each children
@@ -294,7 +297,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     @Override
     public long getItemId(int position) {
-      return mViews.get(position).getId();
+      return reactTagFor(mViews.get(position));
     }
 
     public View getView(int index) {
@@ -342,7 +345,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
-                getId(),
+                reactTagFor(this),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -356,7 +359,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     if (mSendContentSizeChangeEvents) {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
-                  getId(),
+                  reactTagFor(this),
                   getWidth(),
                   newTotalChildrenHeight));
     }

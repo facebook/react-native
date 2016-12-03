@@ -88,6 +88,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_EN
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
@@ -797,7 +798,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
     // Reset view content as it's going to be populated by the application content from JS
     rootView.removeAllViews();
-    rootView.setId(View.NO_ID);
+    rootView.setTag(View.NO_ID);
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
@@ -818,7 +819,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       CatalystInstance catalystInstance) {
     UiThreadUtil.assertOnUiThread();
     catalystInstance.getJSModule(AppRegistry.class)
-        .unmountApplicationComponentAtRootTag(rootView.getId());
+        .unmountApplicationComponentAtRootTag(reactTagFor(rootView));
   }
 
   private void tearDownReactContext(ReactContext reactContext) {

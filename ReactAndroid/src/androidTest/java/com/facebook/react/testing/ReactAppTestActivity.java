@@ -58,7 +58,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     setContentView(rootView);
 
     mScreenshotingFrameLayout = new ScreenshotingFrameLayout(this);
-    mScreenshotingFrameLayout.setId(ROOT_VIEW_ID);
+    mScreenshotingFrameLayout.setTag(ROOT_VIEW_ID);
     rootView.addView(mScreenshotingFrameLayout);
 
     mReactRootView = new ReactRootView(this);

@@ -30,6 +30,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.picker.events.PickerItemSelectEvent;
 
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
+
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
  * {@link Spinner} doesn't support setting the mode (dropdown/dialog) outside the constructor, so
@@ -156,7 +158,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     @Override
     public void onItemSelected(int position) {
       mEventDispatcher.dispatchEvent( new PickerItemSelectEvent(
-              mReactPicker.getId(), position));
+              reactTagFor(mReactPicker), position));
     }
   }
 }

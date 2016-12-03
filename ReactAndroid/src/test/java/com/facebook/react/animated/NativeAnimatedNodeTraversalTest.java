@@ -9,6 +9,8 @@
 
 package com.facebook.react.animated;
 
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -27,6 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -35,6 +39,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -45,6 +50,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the animated nodes graph traversal algorithm from {@link NativeAnimatedNodesManager}.
@@ -54,6 +60,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class NativeAnimatedNodeTraversalTest {
 
+  @Mock
+  private View view;
+  private final int viewTag = 1000;
   private static long FRAME_LEN_NANOS = 1000000000L / 60L;
   private static long INITIAL_FRAME_TIME_NANOS = 14599233201256L; /* random */
 
@@ -72,6 +81,8 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
+    when(reactTagFor(view)).thenReturn(viewTag);
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
@@ -726,8 +737,8 @@ public class NativeAnimatedNodeTraversalTest {
     verifyNoMoreInteractions(mUIImplementationMock);
   }
 
-  private Event createScrollEvent(final int tag, final double value) {
-    return new Event(tag) {
+  private Event createScrollEvent(final View view, final double value) {
+    return new Event(reactTagFor(view)) {
       @Override
       public String getEventName() {
         return "topScroll";
@@ -735,7 +746,7 @@ public class NativeAnimatedNodeTraversalTest {
 
       @Override
       public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(tag, "topScroll", JavaOnlyMap.of(
+        rctEventEmitter.receiveEvent(getViewTag(), "topScroll", JavaOnlyMap.of(
           "contentOffset", JavaOnlyMap.of("y", value)));
       }
     };
@@ -743,15 +754,13 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testNativeAnimatedEventDoUpdate() {
-    int viewTag = 1000;
-
     createSimpleAnimatedViewWithOpacity(viewTag, 0d);
 
     mNativeAnimatedNodesManager.addAnimatedEventToView(viewTag, "topScroll", JavaOnlyMap.of(
       "animatedValueTag", 1,
       "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
 
-    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(view, 10));
 
     ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
       ArgumentCaptor.forClass(ReactStylesDiffMap.class);
@@ -764,8 +773,6 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testNativeAnimatedEventDoNotUpdate() {
-    int viewTag = 1000;
-
     createSimpleAnimatedViewWithOpacity(viewTag, 0d);
 
     mNativeAnimatedNodesManager.addAnimatedEventToView(viewTag, "otherEvent", JavaOnlyMap.of(
@@ -776,7 +783,7 @@ public class NativeAnimatedNodeTraversalTest {
       "animatedValueTag", 1,
       "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
 
-    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(view, 10));
 
     ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
       ArgumentCaptor.forClass(ReactStylesDiffMap.class);
@@ -789,8 +796,6 @@ public class NativeAnimatedNodeTraversalTest {
 
   @Test
   public void testNativeAnimatedEventCustomMapping() {
-    int viewTag = 1000;
-
     PowerMockito.when(mUIManagerMock.getConstants()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -807,7 +812,7 @@ public class NativeAnimatedNodeTraversalTest {
       "animatedValueTag", 1,
       "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
 
-    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(view, 10));
 
     ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
       ArgumentCaptor.forClass(ReactStylesDiffMap.class);

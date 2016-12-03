@@ -33,6 +33,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
+
 /**
  * Manages instances of ReactToolbar.
  */
@@ -130,7 +132,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), -1));
+                new ToolbarClickEvent(reactTagFor(view), -1));
           }
         });
 
@@ -140,7 +142,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           public boolean onMenuItemClick(MenuItem menuItem) {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
-                    view.getId(),
+                    reactTagFor(view),
                     menuItem.getOrder()));
             return true;
           }

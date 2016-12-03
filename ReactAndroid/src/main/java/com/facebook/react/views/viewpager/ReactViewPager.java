@@ -23,6 +23,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
+import static com.facebook.react.common.ViewMethodsUtil.reactTagFor;
+
 /**
  * Wrapper view for {@link ViewPager}. It's forwarding calls to {@link ViewGroup#addView} to add
  * views to custom {@link PagerAdapter} instance which is used by {@link NativeViewHierarchyManager}
@@ -123,14 +125,14 @@ public class ReactViewPager extends ViewPager {
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), position, positionOffset));
+          new PageScrollEvent(getReactTag(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), position));
+            new PageSelectedEvent(getReactTag(), position));
       }
     }
 
@@ -151,8 +153,12 @@ public class ReactViewPager extends ViewPager {
           throw new IllegalStateException("Unsupported pageScrollState");
       }
       mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getId(), pageScrollState));
+        new PageScrollStateChangedEvent(getReactTag(), pageScrollState));
     }
+  }
+
+  private int getReactTag() {
+    return reactTagFor(this);
   }
 
   private final EventDispatcher mEventDispatcher;
