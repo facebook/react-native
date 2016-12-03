@@ -13,7 +13,7 @@ module.exports = function unregisterNativeWindowsModule(
   projectConfig
 ) {
   revokePatch(projectConfig.projectPath, makeProjectPatch(windowsConfig.projectInsert, windowsConfig.projectName));
-  revokePatch(projectConfig.solutionPath, makeSolutionPatch(windowsConfig.solutionInsert));
+  revokePatch(projectConfig.solutionPath, makeSolutionPatch(windowsConfig.solutionInsert, windowsConfig.projectName));
 
   revokePatch(
     projectConfig.mainPage,
