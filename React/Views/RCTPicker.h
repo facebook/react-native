@@ -13,8 +13,8 @@
 
 @interface RCTPicker : UIPickerView
 
-@property (nonatomic, copy) NSArray<NSDictionary *> *items;
-@property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, copy) NSArray<NSArray *> *components;
+@property (nonatomic, copy) NSArray *selectedIndexes;
 
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIFont *font;

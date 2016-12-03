@@ -22,8 +22,8 @@ RCT_EXPORT_MODULE()
   return [RCTPicker new];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(items, NSArray<NSDictionary *>)
-RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+RCT_EXPORT_VIEW_PROPERTY(components, NSArray<NSArray *>)
+RCT_EXPORT_VIEW_PROPERTY(selectedIndexes, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)

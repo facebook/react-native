@@ -29,7 +29,6 @@ var PickerIOS = React.createClass({
     ...View.propTypes,
     itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
-    selectedValue: React.PropTypes.any, // string or integer basically
   },
 
   getInitialState: function() {
@@ -42,15 +41,29 @@ var PickerIOS = React.createClass({
 
   // Translate PickerIOS prop and children into stuff that RCTPickerIOS understands.
   _stateFromProps: function(props) {
-    var selectedIndex = 0;
-    var items = [];
-    React.Children.toArray(props.children).forEach(function (child, index) {
-      if (child.props.value === props.selectedValue) {
-        selectedIndex = index;
-      }
-      items.push({value: child.props.value, label: child.props.label});
+    var children = React.Children.toArray(props.children);
+    var selectedIndexes = new Array(children.length).fill(0);
+    var components = [];
+
+    children.forEach(function (componentChild, componentIndex) {
+      React.Children
+        .toArray(componentChild.props.children)
+        .forEach(function (child, index) {
+          if (!components[componentIndex]) {
+            components[componentIndex] = [];
+          }
+
+          if (child.props.value === componentChild.props.selectedValue) {
+            selectedIndexes[componentIndex] = index;
+          }
+
+          components[componentIndex].push({
+            value: child.props.value,
+            label: child.props.label
+          });
+        });
     });
-    return {selectedIndex, items};
+    return {selectedIndexes, components};
   },
 
   render: function() {
@@ -59,8 +72,8 @@ var PickerIOS = React.createClass({
         <RCTPickerIOS
           ref={picker => this._picker = picker}
           style={[styles.pickerIOS, this.props.itemStyle]}
-          items={this.state.items}
-          selectedIndex={this.state.selectedIndex}
+          components={this.state.components}
+          selectedIndexes={this.state.selectedIndexes}
           onChange={this._onChange}
           onStartShouldSetResponder={() => true}
           onResponderTerminationRequest={() => false}
@@ -74,7 +87,11 @@ var PickerIOS = React.createClass({
       this.props.onChange(event);
     }
     if (this.props.onValueChange) {
-      this.props.onValueChange(event.nativeEvent.newValue, event.nativeEvent.newIndex);
+      this.props.onValueChange(
+        event.nativeEvent.component,
+        event.nativeEvent.newValue,
+        event.nativeEvent.newIndex
+      );
     }
 
     // The picker is a controlled component. This means we expect the
@@ -83,10 +100,16 @@ var PickerIOS = React.createClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
-      this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex
-      });
+    if (this._picker) {
+      var component = event.nativeEvent.component;
+      var newIndex = event.nativeEvent.newIndex;
+      // object is frozen, we have to create mutable copy
+      var selectedIndexes = this.state.selectedIndexes.slice();
+      if (selectedIndexes[component] !== newIndex) {
+        selectedIndexes[component] = newIndex;
+
+        this._picker.setNativeProps({ selectedIndexes });
+      }
     }
   },
 });
@@ -95,6 +118,17 @@ PickerIOS.Item = class extends React.Component {
   static propTypes = {
     value: React.PropTypes.any, // string or integer basically
     label: React.PropTypes.string,
+  };
+
+  render() {
+    // These items don't get rendered directly.
+    return null;
+  }
+};
+
+PickerIOS.Component = class extends React.Component {
+  static propTypes = {
+    selectedValue: React.PropTypes.any, // string or integer basically
   };
 
   render() {
@@ -118,9 +152,9 @@ var RCTPickerIOS = requireNativeComponent('RCTPicker', {
   },
 }, {
   nativeOnly: {
-    items: true,
+    components: true,
     onChange: true,
-    selectedIndex: true,
+    selectedIndexes: true,
   },
 });
 
