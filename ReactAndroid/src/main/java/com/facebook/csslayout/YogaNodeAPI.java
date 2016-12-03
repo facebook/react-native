@@ -9,34 +9,22 @@
 
 package com.facebook.csslayout;
 
-public interface CSSNodeAPI<CSSNodeType extends CSSNodeAPI> {
-
-  interface MeasureFunction {
-    /**
-     * Return a value created by MeasureOutput.make(width, height);
-     */
-    long measure(
-        CSSNodeAPI node,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode);
-  }
-
+// This only exists for legacy reasons. It will be removed sometime in the near future.
+public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   int getChildCount();
-  CSSNodeType getChildAt(int i);
-  void addChildAt(CSSNodeType child, int i);
-  CSSNodeType removeChildAt(int i);
-  CSSNodeType getParent();
-  int indexOf(CSSNodeType child);
-  void setMeasureFunction(MeasureFunction measureFunction);
+  YogaNodeType getChildAt(int i);
+  void addChildAt(YogaNodeType child, int i);
+  YogaNodeType removeChildAt(int i);
+  YogaNodeType getParent();
+  int indexOf(YogaNodeType child);
+  void setMeasureFunction(YogaMeasureFunction measureFunction);
   boolean isMeasureDefined();
   void calculateLayout();
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();
   void markLayoutSeen();
-  void copyStyle(CSSNodeType srcNode);
+  void copyStyle(YogaNodeType srcNode);
   YogaDirection getStyleDirection();
   void setDirection(YogaDirection direction);
   YogaFlexDirection getFlexDirection();

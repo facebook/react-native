@@ -2,25 +2,25 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.csslayout.YogaNode;
 import com.facebook.react.common.ClearableSynchronizedPool;
 
 /**
- * Static holder for a recycling pool of CSSNodes.
+ * Static holder for a recycling pool of YogaNodes.
  */
-public class CSSNodePool {
+public class YogaNodePool {
 
   private static final Object sInitLock = new Object();
-  private static ClearableSynchronizedPool<CSSNode> sPool;
+  private static ClearableSynchronizedPool<YogaNode> sPool;
 
-  public static ClearableSynchronizedPool<CSSNode> get() {
+  public static ClearableSynchronizedPool<YogaNode> get() {
     if (sPool != null) {
       return sPool;
     }
 
     synchronized (sInitLock) {
       if (sPool == null) {
-        sPool = new ClearableSynchronizedPool<CSSNode>(1024);
+        sPool = new ClearableSynchronizedPool<YogaNode>(1024);
       }
       return sPool;
     }

@@ -33,8 +33,9 @@ import android.widget.TextView;
 import com.facebook.csslayout.YogaDirection;
 import com.facebook.csslayout.YogaConstants;
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -218,11 +219,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
-      new CSSNodeAPI.MeasureFunction() {
+  private final YogaMeasureFunction mTextMeasureFunction =
+      new YogaMeasureFunction() {
         @Override
         public long measure(
-            CSSNodeAPI node,
+            YogaNodeAPI node,
             float width,
             YogaMeasureMode widthMode,
             float height,
@@ -279,11 +280,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
           if (mNumberOfLines != UNSET &&
               mNumberOfLines < layout.getLineCount()) {
-            return MeasureOutput.make(
+            return YogaMeasureOutput.make(
                 layout.getWidth(),
                 layout.getLineBottom(mNumberOfLines - 1));
           } else {
-            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };

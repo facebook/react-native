@@ -18,10 +18,10 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
-public class CSSNode implements CSSNodeAPI<CSSNode> {
+public class YogaNode implements YogaNodeAPI<YogaNode> {
 
   static {
-    SoLoader.loadLibrary("csslayout");
+    SoLoader.loadLibrary("yoga");
   }
 
   /**
@@ -31,7 +31,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   static native void jni_YGLog(int level, String message);
 
   private static native void jni_YGSetLogger(Object logger);
-  public static void setLogger(CSSLogger logger) {
+  public static void setLogger(YogaLogger logger) {
     jni_YGSetLogger(logger);
   }
 
@@ -49,9 +49,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
     return jni_YGIsExperimentalFeatureEnabled(feature.intValue());
   }
 
-  private CSSNode mParent;
-  private List<CSSNode> mChildren;
-  private MeasureFunction mMeasureFunction;
+  private YogaNode mParent;
+  private List<YogaNode> mChildren;
+  private YogaMeasureFunction mMeasureFunction;
   private long mNativePointer;
   private Object mData;
 
@@ -72,7 +72,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
-  public CSSNode() {
+  public YogaNode() {
     mNativePointer = jni_YGNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
@@ -115,13 +115,13 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
   }
 
   @Override
-  public CSSNode getChildAt(int i) {
+  public YogaNode getChildAt(int i) {
     return mChildren.get(i);
   }
 
   private native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
   @Override
-  public void addChildAt(CSSNode child, int i) {
+  public void addChildAt(YogaNode child, int i) {
     if (child.mParent != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
@@ -136,9 +136,9 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
   @Override
-  public CSSNode removeChildAt(int i) {
+  public YogaNode removeChildAt(int i) {
 
-    final CSSNode child = mChildren.remove(i);
+    final YogaNode child = mChildren.remove(i);
     child.mParent = null;
     jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
@@ -146,12 +146,12 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   @Override
   public @Nullable
-  CSSNode getParent() {
+  YogaNode getParent() {
     return mParent;
   }
 
   @Override
-  public int indexOf(CSSNode child) {
+  public int indexOf(YogaNode child) {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
@@ -187,7 +187,7 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_YGNodeCopyStyle(long dstNativePointer, long srcNativePointer);
   @Override
-  public void copyStyle(CSSNode srcNode) {
+  public void copyStyle(YogaNode srcNode) {
     jni_YGNodeCopyStyle(mNativePointer, srcNode.mNativePointer);
   }
 
@@ -508,14 +508,14 @@ public class CSSNode implements CSSNodeAPI<CSSNode> {
 
   private native void jni_YGNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
   @Override
-  public void setMeasureFunction(MeasureFunction measureFunction) {
+  public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
     jni_YGNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
   // Implementation Note: Why this method needs to stay final
   //
-  // We cache the jmethodid for this method in CSSLayout code. This means that even if a subclass
+  // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
   // were to override measure, we'd still call this implementation from layout code since the
   // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip

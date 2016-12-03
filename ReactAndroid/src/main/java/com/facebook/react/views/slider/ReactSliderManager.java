@@ -16,8 +16,9 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -39,7 +40,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   private static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -51,7 +52,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNodeAPI node,
         float width,
         YogaMeasureMode widthMode,
         float height,
@@ -67,7 +68,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         mMeasured = true;
       }
 
-      return MeasureOutput.make(mWidth, mHeight);
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 
@@ -79,7 +80,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(progress),
+                  ((ReactSlider) seekbar).toRealProgress(progress),
                   fromUser));
         }
 
@@ -93,7 +94,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
+                  ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
         }
       };
 

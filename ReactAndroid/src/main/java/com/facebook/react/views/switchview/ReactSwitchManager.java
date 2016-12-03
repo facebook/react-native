@@ -15,8 +15,9 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.csslayout.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -33,7 +34,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   private static final String REACT_CLASS = "AndroidSwitch";
 
   static class ReactSwitchShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -45,7 +46,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNodeAPI node,
         float width,
         YogaMeasureMode widthMode,
         float height,
@@ -64,7 +65,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         mMeasured = true;
       }
 
-      return MeasureOutput.make(mWidth, mHeight);
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 

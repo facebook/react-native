@@ -12,7 +12,7 @@ package com.facebook.csslayout;
 /**
  * Helpers for building measure output value.
  */
-public class MeasureOutput {
+public class YogaMeasureOutput {
 
   public static long make(float width, float height) {
     return make((int) width, (int) height);
