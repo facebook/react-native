@@ -5,10 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const babel = require('babel-core');
+const invariant = require('invariant');
+
+import type {Ast, SourceMap} from 'babel-core';
 const t = babel.types;
 
 const React = {name: 'React'};
@@ -142,10 +148,22 @@ const plugin = () => inlinePlugin;
 function checkRequireArgs(args, dependencyId) {
   const pattern = t.stringLiteral(dependencyId);
   return t.isStringLiteral(args[0], pattern) ||
-         t.isNumericLiteral(args[0]) && t.isStringLiteral(args[1], pattern);
+         t.isMemberExpression(args[0]) &&
+         t.isNumericLiteral(args[0].property) &&
+         t.isStringLiteral(args[1], pattern);
 }
 
-function inline(filename, transformResult, options) {
+type AstResult = {
+  ast: Ast,
+  code: ?string,
+  map: ?SourceMap,
+};
+
+function inline(
+  filename: string,
+  transformResult: {ast?: ?Ast, code: string, map: ?SourceMap},
+  options: {},
+): AstResult {
   const code = transformResult.code;
   const babelOptions = {
     filename,
@@ -158,9 +176,12 @@ function inline(filename, transformResult, options) {
     compact: true,
   };
 
-  return transformResult.ast
-      ? babel.transformFromAst(transformResult.ast, code, babelOptions)
-      : babel.transform(code, babelOptions);
+  const result = transformResult.ast
+    ? babel.transformFromAst(transformResult.ast, code, babelOptions)
+    : babel.transform(code, babelOptions);
+  const {ast} = result;
+  invariant(ast != null, 'Missing AST in babel transform results.');
+  return {ast, code: result.code, map: result.map};
 }
 
 inline.plugin = inlinePlugin;

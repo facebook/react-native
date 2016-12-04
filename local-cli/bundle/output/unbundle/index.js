@@ -5,13 +5,19 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-const asIndexedFile = require('./as-indexed-file');
 const asAssets = require('./as-assets');
+const asIndexedFile = require('./as-indexed-file');
 
-function buildBundle(packagerClient, requestOptions) {
+import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
+import type Server from '../../../../packager/react-packager/src/Server';
+import type {OutputOptions, RequestOptions} from '../../types.flow';
+
+function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {
   return packagerClient.buildBundle({
     ...requestOptions,
     unbundle: true,
@@ -19,11 +25,15 @@ function buildBundle(packagerClient, requestOptions) {
   });
 }
 
-function saveUnbundle(bundle, options, log) {
+function saveUnbundle(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => void,
+): Promise<mixed> {
   // we fork here depending on the platform:
   // while android is pretty good at loading individual assets, ios has a large
   // overhead when reading hundreds pf assets from disk
-  return options.platform === 'android' ?
+  return options.platform === 'android' && !options.indexedUnbundle ?
     asAssets(bundle, options, log) :
     asIndexedFile(bundle, options, log);
 }

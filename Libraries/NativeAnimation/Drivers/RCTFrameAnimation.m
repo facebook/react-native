@@ -11,9 +11,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+
 #import "RCTAnimationUtils.h"
-#import "RCTDefines.h"
 #import "RCTValueAnimatedNode.h"
 
 const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
@@ -147,11 +148,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
-}
-
-- (void)cleanupAnimationUpdate
-{
-  [_valueNode cleanupAnimationUpdate];
 }
 
 @end

@@ -90,10 +90,11 @@ ReactPackager is how you mainly interact with the API.
 var ReactPackager = require('./react-packager');
 ```
 
-### ReactPackager.middleware(options)
+### ReactPackager.buildBundle(serverOptions, bundleOptions)
 
-Returns a function that can be used in a connect-like
-middleware. Takes the following options:
+Builds a bundle according to the provided options.
+
+#### `serverOptions`
 
 * `projectRoots` array (required): Is the roots where your JavaScript
   file will exist
@@ -109,21 +110,24 @@ middleware. Takes the following options:
 * `nonPersistent` boolean, defaults to false: Whether the server
   should be used as a persistent deamon to watch files and update
   itself
-* `assetRoots` array: Where should the packager look for assets
-* `getTransformOptionsModulePath` string: Path to module that exports a function
-  that acts as a middleware for generating options to pass to the transformer
-  based on the bundle and module being transformed.
+* `getTransformOptions` function: A function that acts as a middleware for
+  generating options to pass to the transformer based on the bundle being built.
 
-### ReactPackager.buildPackageFromUrl(options, url)
+#### `bundleOptions`
 
-Build a package from a url (see the `.bundle` endpoint). `options` is
-the same options that is passed to `ReactPackager.middleware`
-
-### ReactPackager.getDependencies(options, main)
-
-Given an entry point module. Recursively collect all the dependent
-modules and return it as an array. `options` is the same options that
-is passed to `ReactPackager.middleware`
+* `entryFile` string (required): the entry file of the bundle, relative to one
+  of the roots.
+* `dev` boolean (defaults to `true`): sets a global `__DEV__` variable
+  which will effect how the React Native core libraries behave.
+* `minify` boolean: Whether to minify code and apply production optimizations.
+* `runModule` boolean (defaults to `true`): whether to require your entry
+  point module.
+* `inlineSourceMap` boolean, defaults to false: whether to inline
+  source maps.
+* `platform` string: The target platform for the build
+* `generateSourceMaps` boolean: Whether to generate source maps.
+* `sourceMapUrl` string: The url of the source map (will be appended to
+  the bundle).
 
 ## Debugging
 

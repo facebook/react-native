@@ -672,7 +672,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause(this);
+        mReactInstanceManager.onHostPause(this);
     }
 }
 
@@ -681,7 +681,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onResume(this, this);
+        mReactInstanceManager.onHostResume(this, this);
     }
 }
 
@@ -690,7 +690,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy(this);
+        mReactInstanceManager.onHostDestroy();
     }
 }
 ```
@@ -809,6 +809,8 @@ if (!foundHash) {
   display('platform', isMac ? 'objc' : 'android');
 }
 </script>
+
+<block class="android" />
 
 ## Creating a release build in Android Studio
 

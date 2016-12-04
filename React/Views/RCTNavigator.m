@@ -499,6 +499,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_bridge.eventDispatcher sendFakeScrollEvent:self.reactTag];
 }
 
+/**
+ * Must be overridden because UIKit removes the view's superview when used
+ * as a navigator - it's considered outside the view hierarchy.
+ */
+- (UIView *)reactSuperview
+{
+  RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
+  UIView *superview = [super reactSuperview];
+  return superview ?: self.reactNavSuperviewLink;
+}
+
 - (void)reactBridgeDidFinishTransaction
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't

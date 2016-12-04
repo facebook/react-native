@@ -5,6 +5,7 @@
 #include "Value.h"
 
 #include "JSCHelpers.h"
+#include "JavaScriptCore.h"
 
 // See the comment under Value::fromDynamic()
 #if !defined(__APPLE__) && defined(WITH_FB_JSC_TUNING)
@@ -24,7 +25,7 @@ Value::Value(JSContextRef context, JSValueRef value) :
 
 Value::Value(JSContextRef context, JSStringRef str) :
   m_context(context),
-  m_value(JSValueMakeString(context, str))
+  m_value(JSC_JSValueMakeString(context, str))
 {
 }
 
@@ -41,17 +42,17 @@ JSContextRef Value::context() const {
 
 std::string Value::toJSONString(unsigned indent) const {
   JSValueRef exn;
-  auto stringToAdopt = JSValueCreateJSONString(m_context, m_value, indent, &exn);
+  auto stringToAdopt = JSC_JSValueCreateJSONString(m_context, m_value, indent, &exn);
   if (stringToAdopt == nullptr) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Exception creating JSON string: %s", exceptionText.c_str());
   }
-  return String::adopt(stringToAdopt).str();
+  return String::adopt(m_context, stringToAdopt).str();
 }
 
 /* static */
 Value Value::fromJSON(JSContextRef ctx, const String& json) {
-  auto result = JSValueMakeFromJSONString(ctx, json);
+  auto result = JSC_JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throwJSExecutionException("Failed to create String from JSON: %s", json.str().c_str());
   }
@@ -77,7 +78,7 @@ JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
   return jsVal;
 #else
   auto json = folly::toJson(value);
-  return fromJSON(ctx, String(json.c_str()));
+  return fromJSON(ctx, String(ctx, json.c_str()));
 #endif
 }
 
@@ -85,19 +86,19 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
   switch (obj.type()) {
     // For premitive types (and strings), just create and return an equivalent JSValue
     case folly::dynamic::Type::NULLT:
-      return JSValueMakeNull(ctx);
+      return JSC_JSValueMakeNull(ctx);
 
     case folly::dynamic::Type::BOOL:
-      return JSValueMakeBoolean(ctx, obj.getBool());
+      return JSC_JSValueMakeBoolean(ctx, obj.getBool());
 
     case folly::dynamic::Type::DOUBLE:
-      return JSValueMakeNumber(ctx, obj.getDouble());
+      return JSC_JSValueMakeNumber(ctx, obj.getDouble());
 
     case folly::dynamic::Type::INT64:
-      return JSValueMakeNumber(ctx, obj.asDouble());
+      return JSC_JSValueMakeNumber(ctx, obj.asDouble());
 
     case folly::dynamic::Type::STRING:
-      return JSValueMakeString(ctx, String(obj.getString().c_str()));
+      return JSC_JSValueMakeString(ctx, String(ctx, obj.getString().c_str()));
 
     case folly::dynamic::Type::ARRAY: {
       // Collect JSValue for every element in the array
@@ -106,19 +107,19 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
         vals[i] = fromDynamicInner(ctx, obj[i]);
       }
       // Create a JSArray with the values
-      JSValueRef arr = JSObjectMakeArray(ctx, obj.size(), vals, nullptr);
+      JSValueRef arr = JSC_JSObjectMakeArray(ctx, obj.size(), vals, nullptr);
       return arr;
     }
 
     case folly::dynamic::Type::OBJECT: {
       // Create an empty object
-      JSObjectRef jsObj = JSObjectMake(ctx, nullptr, nullptr);
+      JSObjectRef jsObj = JSC_JSObjectMake(ctx, nullptr, nullptr);
       // Create a JSValue for each of the object's children and set them in the object
       for (auto it = obj.items().begin(); it != obj.items().end(); ++it) {
-        JSObjectSetProperty(
+        JSC_JSObjectSetProperty(
           ctx,
           jsObj,
-          String(it->first.asString().c_str()),
+          String(ctx, it->first.asString().c_str()),
           fromDynamicInner(ctx, it->second),
           kJSPropertyAttributeNone,
           nullptr);
@@ -128,13 +129,13 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
     default:
       // Assert not reached
       LOG(FATAL) << "Trying to convert a folly object of unsupported type.";
-      return JSValueMakeNull(ctx);
+      return JSC_JSValueMakeNull(ctx);
   }
 }
 
 Object Value::asObject() {
   JSValueRef exn;
-  JSObjectRef jsObj = JSValueToObject(context(), m_value, &exn);
+  JSObjectRef jsObj = JSC_JSValueToObject(context(), m_value, &exn);
   if (!jsObj) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Failed to convert to object: %s", exceptionText.c_str());
@@ -142,6 +143,18 @@ Object Value::asObject() {
   Object ret = Object(context(), jsObj);
   m_value = nullptr;
   return ret;
+}
+
+Value Value::makeError(JSContextRef ctx, const char *error)
+{
+  JSValueRef exn;
+  JSValueRef args[] = { Value(ctx, String(ctx, error)) };
+  JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
+  if (!errorObj) {
+    std::string exceptionText = Value(ctx, exn).toString().str();
+    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
+  }
+  return Value(ctx, errorObj);
 }
 
 Object::operator Value() const {
@@ -153,7 +166,7 @@ Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const {
-  return callAsFunction((JSObjectRef) thisObj, args.size(), args.begin());
+  return callAsFunction((JSObjectRef)thisObj, args.size(), args.begin());
 }
 
 Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
@@ -161,12 +174,12 @@ Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
 }
 
 Value Object::callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const {
-  return callAsFunction((JSObjectRef) thisObj, nArgs, args);
+  return callAsFunction(static_cast<JSObjectRef>(thisObj), nArgs, args);
 }
 
 Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const {
   JSValueRef exn;
-  JSValueRef result = JSObjectCallAsFunction(m_context, m_obj, thisObj, nArgs, args, &exn);
+  JSValueRef result = JSC_JSObjectCallAsFunction(m_context, m_obj, thisObj, nArgs, args, &exn);
   if (!result) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
@@ -176,7 +189,7 @@ Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef ar
 
 Object Object::callAsConstructor(std::initializer_list<JSValueRef> args) const {
   JSValueRef exn;
-  JSObjectRef result = JSObjectCallAsConstructor(m_context, m_obj, args.size(), args.begin(), &exn);
+  JSObjectRef result = JSC_JSObjectCallAsConstructor(m_context, m_obj, args.size(), args.begin(), &exn);
   if (!result) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Exception calling object as constructor: %s", exceptionText.c_str());
@@ -186,7 +199,7 @@ Object Object::callAsConstructor(std::initializer_list<JSValueRef> args) const {
 
 Value Object::getProperty(const String& propName) const {
   JSValueRef exn;
-  JSValueRef property = JSObjectGetProperty(m_context, m_obj, propName, &exn);
+  JSValueRef property = JSC_JSObjectGetProperty(m_context, m_obj, propName, &exn);
   if (!property) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Failed to get property: %s", exceptionText.c_str());
@@ -196,7 +209,7 @@ Value Object::getProperty(const String& propName) const {
 
 Value Object::getPropertyAtIndex(unsigned index) const {
   JSValueRef exn;
-  JSValueRef property = JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
+  JSValueRef property = JSC_JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
   if (!property) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Failed to get property at index %u: %s", index, exceptionText.c_str());
@@ -205,12 +218,12 @@ Value Object::getPropertyAtIndex(unsigned index) const {
 }
 
 Value Object::getProperty(const char *propName) const {
-  return getProperty(String(propName));
+  return getProperty(String(m_context, propName));
 }
 
 void Object::setProperty(const String& propName, const Value& value) const {
   JSValueRef exn = NULL;
-  JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
+  JSC_JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
   if (exn) {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Failed to set property: %s", exceptionText.c_str());
@@ -218,36 +231,38 @@ void Object::setProperty(const String& propName, const Value& value) const {
 }
 
 void Object::setProperty(const char *propName, const Value& value) const {
-  setProperty(String(propName), value);
+  setProperty(String(m_context, propName), value);
 }
 
 std::vector<String> Object::getPropertyNames() const {
-  auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
-  size_t count = JSPropertyNameArrayGetCount(namesRef);
+  auto namesRef = JSC_JSObjectCopyPropertyNames(m_context, m_obj);
+  size_t count = JSC_JSPropertyNameArrayGetCount(m_context, namesRef);
   std::vector<String> names;
   names.reserve(count);
   for (size_t i = 0; i < count; i++) {
-    names.emplace_back(String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i)));
+    names.emplace_back(String::ref(m_context,
+      JSC_JSPropertyNameArrayGetNameAtIndex(m_context, namesRef, i)));
   }
-  JSPropertyNameArrayRelease(namesRef);
+  JSC_JSPropertyNameArrayRelease(m_context, namesRef);
   return names;
 }
 
 std::unordered_map<std::string, std::string> Object::toJSONMap() const {
   std::unordered_map<std::string, std::string> map;
-  auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
-  size_t count = JSPropertyNameArrayGetCount(namesRef);
+  auto namesRef = JSC_JSObjectCopyPropertyNames(m_context, m_obj);
+  size_t count = JSC_JSPropertyNameArrayGetCount(m_context, namesRef);
   for (size_t i = 0; i < count; i++) {
-    auto key = String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i));
+    auto key = String::ref(m_context,
+      JSC_JSPropertyNameArrayGetNameAtIndex(m_context, namesRef, i));
     map.emplace(key.str(), getProperty(key).toJSONString());
   }
-  JSPropertyNameArrayRelease(namesRef);
+  JSC_JSPropertyNameArrayRelease(m_context, namesRef);
   return map;
 }
 
 /* static */
 Object Object::create(JSContextRef ctx) {
-  JSObjectRef newObj = JSObjectMake(
+  JSObjectRef newObj = JSC_JSObjectMake(
       ctx,
       NULL, // create instance of default object class
       NULL); // no private data

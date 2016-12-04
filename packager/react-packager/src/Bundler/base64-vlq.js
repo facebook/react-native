@@ -1,5 +1,4 @@
-/* -*- Mode: js; js-indent-level: 2; -*- */
-/*
+/**
  * Copyright 2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE or:
  * http://opensource.org/licenses/BSD-3-Clause
@@ -33,9 +32,15 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @copyright
+ * @noflow
  */
 
-/*eslint no-bitwise:0,quotes:0,global-strict:0*/
+/* -*- Mode: js; js-indent-level: 2; -*- */
+/* eslint-disable no-bitwise, quotes, global-strict */
+
+'use strict';
 
 var charToIntMap = {};
 var intToCharMap = {};

@@ -22,6 +22,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   Navigator,
   StyleSheet,
@@ -74,7 +76,11 @@ class JumpingNavBar extends React.Component {
       <View style={styles.tabs}>
         <TabBarIOS>
           <TabBarIOS.Item
-            icon={require('image!tabnav_notification')}
+            icon={nativeImageSource({
+              ios: 'tabnav_notification',
+              width: 24,
+              height: 24
+            })}
             selected={this.state.tabIndex === 0}
             onPress={() => {
               this.props.onTabIndex(0);
@@ -83,7 +89,11 @@ class JumpingNavBar extends React.Component {
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
-            icon={require('image!tabnav_list')}
+            icon={nativeImageSource({
+              ios: 'tabnav_list',
+              width: 24,
+              height: 24
+            })}
             selected={this.state.tabIndex === 1}
             onPress={() => {
               this.props.onTabIndex(1);
@@ -92,7 +102,11 @@ class JumpingNavBar extends React.Component {
             <View />
           </TabBarIOS.Item>
           <TabBarIOS.Item
-            icon={require('image!tabnav_settings')}
+            icon={nativeImageSource({
+              ios: 'tabnav_settings',
+              width: 24,
+              height: 24
+            })}
             selected={this.state.tabIndex === 2}
             onPress={() => {
               this.props.onTabIndex(2);

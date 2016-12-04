@@ -40,6 +40,9 @@ class DatePickerAndroidExample extends React.Component {
     presetDate: new Date(2020, 4, 5),
     allDate: new Date(2020, 4, 5),
     simpleText: 'pick a date',
+    spinnerText: 'pick a date',
+    calendarText: 'pick a date',
+    defaultText: 'pick a date',
     minText: 'pick a date, no earlier than today',
     maxText: 'pick a date, no later than today',
     presetText: 'pick a date, preset to 2020/5/5',
@@ -70,6 +73,24 @@ class DatePickerAndroidExample extends React.Component {
           <TouchableWithoutFeedback
             onPress={this.showPicker.bind(this, 'simple', {date: this.state.simpleDate})}>
             <Text style={styles.text}>{this.state.simpleText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple spinner date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'spinner', {date: this.state.spinnerDate, mode: 'spinner'})}>
+            <Text style={styles.text}>{this.state.spinnerText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple calendar date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'calendar', {date: this.state.calendarDate, mode: 'calendar'})}>
+            <Text style={styles.text}>{this.state.calendarText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple default date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'default', {date: this.state.defaultDate, mode: 'default'})}>
+            <Text style={styles.text}>{this.state.defaultText}</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
         <UIExplorerBlock title="Date picker with pre-set date">

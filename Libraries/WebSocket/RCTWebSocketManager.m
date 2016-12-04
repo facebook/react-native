@@ -7,16 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
-
-#if RCT_DEV // Only supported in dev mode
-
 #import "RCTWebSocketManager.h"
 
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTSRWebSocket.h"
+
+#if RCT_DEV // Only supported in dev mode
 
 #pragma mark - RCTWebSocketObserver
 

@@ -9,7 +9,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "RCTJavaScriptExecutor.h"
+#import <React/RCTJavaScriptExecutor.h>
 
 typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
 

@@ -78,7 +78,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
 function getYarnVersionIfAvailable() {
-  let yarnVersion;
+  var yarnVersion;
   try {
     // execSync returns a Buffer -> convert to string
     if (process.platform.startsWith('win')) {
@@ -267,13 +267,13 @@ function getInstallPackage(rnPackage) {
 
 function run(root, projectName, rnPackage, forceNpmClient) {
   const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
-  let installCommand;
+  var installCommand;
   if (yarnVersion) {
     console.log('Using yarn v' + yarnVersion);
     console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
   } else {
-    console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm...');
+    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     if (!forceNpmClient) {
       console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
     }
