@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := csslayoutcore
+LOCAL_MODULE := yogacore
 
 LOCAL_SRC_FILES := \
   CSSLayout/Yoga.c \
