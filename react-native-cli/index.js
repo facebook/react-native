@@ -78,7 +78,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
 function getYarnVersionIfAvailable() {
-  let yarnVersion;
+  var yarnVersion;
   try {
     // execSync returns a Buffer -> convert to string
     if (process.platform.startsWith('win')) {
@@ -115,9 +115,28 @@ var commands = argv._;
 if (cli) {
   cli.run();
 } else {
+  if (argv._.length === 0 && (argv.h || argv.help)) {
+    console.log([
+      '',
+      '  Usage: react-native [command] [options]',
+      '',
+      '',
+      '  Commands:',
+      '',
+      '    init <ProjectName> [options]  generates a new project and installs its dependencies',
+      '',
+      '  Options:',
+      '',
+      '    -h, --help    output usage information',
+      '    -v, --version output the version number',
+      '',
+    ].join('\n'));
+    process.exit(0);
+  }
+
   if (commands.length === 0) {
     console.error(
-      'You did not pass any commands, did you mean to run `react-native init`?'
+      'You did not pass any commands, run `react-native --help` to see a list of all available commands.'
     );
     process.exit(1);
   }
@@ -248,13 +267,13 @@ function getInstallPackage(rnPackage) {
 
 function run(root, projectName, rnPackage, forceNpmClient) {
   const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
-  let installCommand;
+  var installCommand;
   if (yarnVersion) {
     console.log('Using yarn v' + yarnVersion);
     console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
   } else {
-    console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm...');
+    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
     if (!forceNpmClient) {
       console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
     }

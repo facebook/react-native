@@ -24,6 +24,7 @@ class TabBarIOS extends React.Component {
     style?: $FlowFixMe,
     unselectedTintColor?: $FlowFixMe,
     tintColor?: $FlowFixMe,
+    unselectedItemTintColor?: $FlowFixMe,
     barTintColor?: $FlowFixMe,
     barStyle: 'default' | 'black',
     translucent?: boolean,
@@ -43,6 +44,10 @@ class TabBarIOS extends React.Component {
      * Color of the currently selected tab icon
      */
     tintColor: ColorPropType,
+    /**
+     * Color of unselected tab icons. Available since iOS 10.
+     */
+    unselectedItemTintColor: ColorPropType,
     /**
      * Background color of the tab bar
      */
@@ -74,6 +79,7 @@ class TabBarIOS extends React.Component {
       <RCTTabBar
         style={[styles.tabGroup, this.props.style]}
         unselectedTintColor={this.props.unselectedTintColor}
+        unselectedItemTintColor={this.props.unselectedItemTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
         barStyle={this.props.barStyle}

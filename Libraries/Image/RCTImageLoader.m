@@ -7,21 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTImageLoader.h"
+#import <libkern/OSAtomic.h>
+#import <objc/runtime.h>
 
 #import <ImageIO/ImageIO.h>
 
-#import <libkern/OSAtomic.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 
-#import <objc/runtime.h>
-
-#import "RCTConvert.h"
-#import "RCTDefines.h"
 #import "RCTImageCache.h"
 #import "RCTImageUtils.h"
-#import "RCTLog.h"
-#import "RCTNetworking.h"
-#import "RCTUtils.h"
 
 @implementation UIImage (React)
 
@@ -382,9 +381,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad && !cancelled) {
-      cancelLoad();
-      cancelLoad = nil;
+    dispatch_block_t cancelLoadLocal = cancelLoad;
+    cancelLoad = nil;
+    if (cancelLoadLocal && !cancelled) {
+      cancelLoadLocal();
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };
@@ -429,9 +429,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
       if (statusCode != 200) {
+        NSString *errorMessage = [NSString stringWithFormat:@"Failed to load %@", response.URL];
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorMessage};
         completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
                                                      code:statusCode
-                                                 userInfo:nil], nil, nil);
+                                                 userInfo:userInfo], nil, nil);
         return;
       }
 
@@ -514,8 +516,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block volatile uint32_t cancelled = 0;
   __block dispatch_block_t cancelLoad = nil;
   dispatch_block_t cancellationBlock = ^{
-    if (cancelLoad && !cancelled) {
-      cancelLoad();
+    dispatch_block_t cancelLoadLocal = cancelLoad;
+    if (cancelLoadLocal && !cancelled) {
+      cancelLoadLocal();
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };

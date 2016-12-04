@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <CoreText/CoreText.h>
-
 #import "RCTConvert.h"
 
 #import <objc/message.h>
+
+#import <CoreText/CoreText.h>
 
 #import "RCTDefines.h"
 #import "RCTImageSource.h"
@@ -614,44 +614,44 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
   @"visible": @YES
 }), YES, boolValue)
 
-RCT_ENUM_CONVERTER(CSSOverflow, (@{
-  @"hidden": @(CSSOverflowHidden),
-  @"visible": @(CSSOverflowVisible),
-  @"scroll": @(CSSOverflowScroll),
-}), CSSOverflowVisible, intValue)
+RCT_ENUM_CONVERTER(YGOverflow, (@{
+  @"hidden": @(YGOverflowHidden),
+  @"visible": @(YGOverflowVisible),
+  @"scroll": @(YGOverflowScroll),
+}), YGOverflowVisible, intValue)
 
-RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
-  @"row": @(CSSFlexDirectionRow),
-  @"row-reverse": @(CSSFlexDirectionRowReverse),
-  @"column": @(CSSFlexDirectionColumn),
-  @"column-reverse": @(CSSFlexDirectionColumnReverse)
-}), CSSFlexDirectionColumn, intValue)
+RCT_ENUM_CONVERTER(YGFlexDirection, (@{
+  @"row": @(YGFlexDirectionRow),
+  @"row-reverse": @(YGFlexDirectionRowReverse),
+  @"column": @(YGFlexDirectionColumn),
+  @"column-reverse": @(YGFlexDirectionColumnReverse)
+}), YGFlexDirectionColumn, intValue)
 
-RCT_ENUM_CONVERTER(CSSJustify, (@{
-  @"flex-start": @(CSSJustifyFlexStart),
-  @"flex-end": @(CSSJustifyFlexEnd),
-  @"center": @(CSSJustifyCenter),
-  @"space-between": @(CSSJustifySpaceBetween),
-  @"space-around": @(CSSJustifySpaceAround)
-}), CSSJustifyFlexStart, intValue)
+RCT_ENUM_CONVERTER(YGJustify, (@{
+  @"flex-start": @(YGJustifyFlexStart),
+  @"flex-end": @(YGJustifyFlexEnd),
+  @"center": @(YGJustifyCenter),
+  @"space-between": @(YGJustifySpaceBetween),
+  @"space-around": @(YGJustifySpaceAround)
+}), YGJustifyFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(CSSAlign, (@{
-  @"flex-start": @(CSSAlignFlexStart),
-  @"flex-end": @(CSSAlignFlexEnd),
-  @"center": @(CSSAlignCenter),
-  @"auto": @(CSSAlignAuto),
-  @"stretch": @(CSSAlignStretch)
-}), CSSAlignFlexStart, intValue)
+RCT_ENUM_CONVERTER(YGAlign, (@{
+  @"flex-start": @(YGAlignFlexStart),
+  @"flex-end": @(YGAlignFlexEnd),
+  @"center": @(YGAlignCenter),
+  @"auto": @(YGAlignAuto),
+  @"stretch": @(YGAlignStretch)
+}), YGAlignFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(CSSPositionType, (@{
-  @"absolute": @(CSSPositionTypeAbsolute),
-  @"relative": @(CSSPositionTypeRelative)
-}), CSSPositionTypeRelative, intValue)
+RCT_ENUM_CONVERTER(YGPositionType, (@{
+  @"absolute": @(YGPositionTypeAbsolute),
+  @"relative": @(YGPositionTypeRelative)
+}), YGPositionTypeRelative, intValue)
 
-RCT_ENUM_CONVERTER(CSSWrapType, (@{
-  @"wrap": @(CSSWrapTypeWrap),
-  @"nowrap": @(CSSWrapTypeNoWrap)
-}), CSSWrapTypeNoWrap, intValue)
+RCT_ENUM_CONVERTER(YGWrap, (@{
+  @"wrap": @(YGWrapWrap),
+  @"nowrap": @(YGWrapNoWrap)
+}), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),

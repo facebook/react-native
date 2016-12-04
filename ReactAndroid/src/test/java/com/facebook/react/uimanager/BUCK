@@ -1,6 +1,6 @@
 include_defs('//ReactAndroid/DEFS')
 
-robolectric3_test(
+rn_robolectric_test(
   name = 'uimanager',
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],

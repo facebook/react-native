@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const babel = require('babel-core');
@@ -20,7 +23,7 @@ const babylon = require('babylon');
  * dependencies, and an array of offsets to the string literals with module IDs.
  * The index points to the opening quote.
  */
-function extractDependencies(code) {
+function extractDependencies(code: string) {
   const ast = babylon.parse(code);
   const dependencies = new Set();
   const dependencyOffsets = [];

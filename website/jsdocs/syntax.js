@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
  // This Syntax object defines a number of constants that flow-parser uses.
 
@@ -118,4 +119,4 @@ module.exports = {
   JSXText: 'JSXText',
   YieldExpression: 'YieldExpression',
   AwaitExpression: 'AwaitExpression'
-}
+};

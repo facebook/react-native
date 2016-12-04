@@ -164,6 +164,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 #endif
 
+- (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+  if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
+    _tabController.tabBar.unselectedItemTintColor = unselectedItemTintColor;
+  }
+#endif
+}
+
 - (UITabBarItemPositioning)itemPositoning
 {
 #if TARGET_OS_TV

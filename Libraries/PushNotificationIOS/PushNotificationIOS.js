@@ -92,24 +92,14 @@ export type PushNotificationEventName = $Enum<{
  *    }
  *    // Required for the notification event. You must call the completion handler after handling the remote notification.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
- *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+ *                                                           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
  *    {
- *       [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+ *      [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  *    }
- *    // Optionally implement this method over the previous to receive remote notifications. However
- *    // implement the application:didReceiveRemoteNotification:fetchCompletionHandler: method instead of this one whenever possible.
- *    // If your delegate implements both methods, the app object calls the `application:didReceiveRemoteNotification:fetchCompletionHandler:` method
- *    // Either this method or `application:didReceiveRemoteNotification:fetchCompletionHandler:` is required in order to receive remote notifications.
- *    //
  *    // Required for the registrationError event.
  *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
  *    {
  *     [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
- *    }
- *    // Required for the notification event.
- *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
- *    {
- *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
  *    }
  *    // Required for the localNotification event.
  *    - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
@@ -258,7 +248,7 @@ class PushNotificationIOS {
         }
       );
     }
-    _notifHandlers.set(handler, listener);
+    _notifHandlers.set(type, listener);
   }
 
   /**
@@ -270,12 +260,12 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
-    var listener = _notifHandlers.get(handler);
+    var listener = _notifHandlers.get(type);
     if (!listener) {
       return;
     }
     listener.remove();
-    _notifHandlers.delete(handler);
+    _notifHandlers.delete(type);
   }
 
   /**
