@@ -7,6 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#pragma once
+
+#include "YGMacros.h"
+
+YG_EXTERN_C_BEGIN
+
 typedef enum YGFlexDirection {
   YGFlexDirectionColumn,
   YGFlexDirectionColumnReverse,
@@ -106,3 +112,5 @@ typedef enum YGAlign {
   YGAlignStretch,
   YGAlignCount,
 } YGAlign;
+
+YG_EXTERN_C_END
