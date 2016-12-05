@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2016-11-08T00:00:00Z</updated>
+    <updated>2016-12-05T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2016 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[Easier Upgrades Thanks to Git]]></title>
+        <id>https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html">
+        </link>
+        <updated>2016-12-05T00:00:00Z</updated>
+        <summary type="html"><![CDATA[Upgrading to new versions of React Native has been difficult. You might have seen something like this before:]]></summary>
+        <author>
+            <name>Nicolas Cuillery</name>
+            <uri>https://twitter.com/ncuillery</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
         <id>https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</id>
