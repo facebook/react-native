@@ -23,7 +23,7 @@ Today I am proud to introduce a new tool that helps solve this problem. The tool
 Install `react-native-git-upgrade` globally and run it inside your project directory:
 
 ```shell
-$ npm install -g react-native-git-upgrade
+$ npm install -g react-native-git-upgrade # OR yarn add global react-native-git-upgrade
 $ cd MyProject
 $ react-native-git-upgrade 0.38.0
 ```
