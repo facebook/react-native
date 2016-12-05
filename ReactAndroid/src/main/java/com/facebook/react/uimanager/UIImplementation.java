@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.csslayout.YogaDirection;
+import com.facebook.yoga.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
