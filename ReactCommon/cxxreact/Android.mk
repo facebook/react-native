@@ -9,6 +9,7 @@ LOCAL_SRC_FILES := \
   Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
+  JSBundleType.cpp \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
@@ -16,6 +17,7 @@ LOCAL_SRC_FILES := \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
   JSCWebWorker.cpp \
+  JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \
