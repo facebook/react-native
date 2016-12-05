@@ -18,10 +18,10 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNodeAPI;
-import com.facebook.csslayout.YogaMeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;

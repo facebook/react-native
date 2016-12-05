@@ -29,7 +29,7 @@ interface AndroidView {
   void resetPaddingChanged();
 
   /**
-   * Get the padding for a certain spacingType defined in com.facebook.csslayout.Spacing
+   * Get the padding for a certain spacingType defined in com.facebook.yoga.Spacing
    */
   float getPadding(int spacingType);
 }

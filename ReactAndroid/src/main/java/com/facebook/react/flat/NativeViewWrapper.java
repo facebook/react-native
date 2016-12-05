@@ -11,7 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import com.facebook.csslayout.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
