@@ -9,9 +9,9 @@
 
 package com.facebook.react.views.art;
 
-import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
