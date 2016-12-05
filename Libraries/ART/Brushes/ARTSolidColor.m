@@ -10,7 +10,7 @@
 #import "ARTSolidColor.h"
 
 #import "RCTConvert+ART.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation ARTSolidColor
 {
