@@ -2,24 +2,12 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2016-12-05T00:00:00Z</updated>
+    <updated>2016-11-08T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2016 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
-    <entry>
-        <title type="html"><![CDATA[Easy upgrades, relying on Git]]></title>
-        <id>https://facebook.github.io/react-native/blog/2016/12/05/easy-upgrades-processed-by-git.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2016/12/05/easy-upgrades-processed-by-git.html">
-        </link>
-        <updated>2016-12-05T00:00:00Z</updated>
-        <summary type="html"><![CDATA[Each release of React Native may come with changes inside the iOS and Android sub-projects that you have to report in your project. This synchronisation has always been a major pain point because of the poor changes detection within your source files. Today, I'm proud to announce a new upgrading process relying on the most popular version control system: Git.]]></summary>
-        <author>
-            <name>Nicolas Cuillery</name>
-            <uri>https://twitter.com/ncuillery</uri>
-        </author>
-    </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Button, Faster Installs with Yarn, and a Public Roadmap]]></title>
         <id>https://facebook.github.io/react-native/blog/2016/11/08/introducing-button-yarn-and-a-public-roadmap.html</id>
