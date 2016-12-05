@@ -33,6 +33,7 @@ var TESTS = [
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./WebViewTest'),
   require('./WebSocketTest'),
 ];
 
