@@ -4,7 +4,7 @@ include_defs('//ReactAndroid/DEFS')
 if IS_OSS_BUILD:
   cxx_library(
     name = 'jni',
-    soname = 'libcsslayout.$(ext)',
+    soname = 'libyoga.$(ext)',
     srcs = glob(['jni/*.cpp']),
     header_namespace = '',
     compiler_flags = [
