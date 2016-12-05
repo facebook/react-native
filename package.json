@@ -196,30 +196,20 @@
     "yeoman-generator": "0.21.2"
   },
   "devDependencies": {
-    "JSONStream": "1.2.1",
     "babel-eslint": "^7.0.0",
-    "duplexer": "0.1.1",
     "eslint": "^3.8.1",
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.36.0",
-    "graphlib-dot": "0.6.2",
-    "graphql": "0.8.2",
     "jest": "17.0.3",
     "jest-repl": "17.0.3",
     "jest-runtime": "17.0.3",
     "mock-fs": "^3.11.0",
-    "opener": "1.4.2",
-    "portfinder": "0.4.0",
     "react": "~15.4.0-rc.4",
     "react-dom": "~15.4.0-rc.4",
-    "react-redux": "4.4.6",
     "react-test-renderer": "~15.4.0-rc.4",
-    "redux": "3.6.0",
-    "redux-thunk": "2.1.0",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2",
-    "split": "1.0.0"
+    "sinon": "^2.0.0-pre.2"
   }
 }
