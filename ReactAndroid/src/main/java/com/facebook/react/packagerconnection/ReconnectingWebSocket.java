@@ -8,37 +8,35 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
-import java.util.concurrent.TimeUnit;
-
 import android.os.Handler;
 import android.os.Looper;
 
 import com.facebook.common.logging.FLog;
 
+import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
-import okio.Buffer;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 /**
  * A wrapper around WebSocketClient that reconnects automatically
  */
-final public class ReconnectingWebSocket implements WebSocketListener {
+final public class ReconnectingWebSocket extends WebSocketListener {
   private static final String TAG = ReconnectingWebSocket.class.getSimpleName();
 
   private static final int RECONNECT_DELAY_MS = 2000;
 
   public interface MessageCallback {
-    void onMessage(ResponseBody message);
+    void onMessage(String text);
+    void onMessage(ByteString bytes);
   }
 
   public interface ConnectionCallback {
@@ -77,8 +75,7 @@ final public class ReconnectingWebSocket implements WebSocketListener {
       .build();
 
     Request request = new Request.Builder().url(mUrl).build();
-    WebSocketCall call = WebSocketCall.create(httpClient, request);
-    call.enqueue(this);
+    httpClient.newWebSocket(request, this);
   }
 
   private synchronized void delayedReconnect() {
@@ -120,11 +117,7 @@ final public class ReconnectingWebSocket implements WebSocketListener {
 
   private void closeWebSocketQuietly() {
     if (mWebSocket != null) {
-      try {
-        mWebSocket.close(1000, "End of session");
-      } catch (IOException e) {
-        // swallow, no need to handle it here
-      }
+      mWebSocket.close(1000, "End of session");
       mWebSocket = null;
     }
   }
@@ -145,9 +138,9 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   }
 
   @Override
-  public synchronized void onFailure(IOException e, Response response) {
+  public void onFailure(WebSocket webSocket, Throwable t, Response response) {
     if (mWebSocket != null) {
-      abort("Websocket exception", e);
+      abort("Websocket exception", t);
     }
     if (!mClosed) {
       if (mConnectionCallback != null) {
@@ -158,17 +151,21 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   }
 
   @Override
-  public synchronized void onMessage(ResponseBody message) {
+  public synchronized void onMessage(WebSocket webSocket, ByteString bytes) {
     if (mMessageCallback != null) {
-      mMessageCallback.onMessage(message);
+      mMessageCallback.onMessage(bytes);
     }
   }
 
   @Override
-  public synchronized void onPong(Buffer payload) { }
+  public synchronized void onMessage(WebSocket webSocket, String text) {
+    if (mMessageCallback != null) {
+      mMessageCallback.onMessage(text);
+    }
+  }
 
   @Override
-  public synchronized void onClose(int code, String reason) {
+  public synchronized void onClosed(WebSocket webSocket, int code, String reason) {
     mWebSocket = null;
     if (!mClosed) {
       if (mConnectionCallback != null) {
@@ -178,9 +175,9 @@ final public class ReconnectingWebSocket implements WebSocketListener {
     }
   }
 
-  public synchronized void sendMessage(RequestBody message) throws IOException {
+  public synchronized void sendMessage(String text) throws IOException {
     if (mWebSocket != null) {
-      mWebSocket.sendMessage(message);
+      mWebSocket.send(text);
     } else {
       throw new ClosedChannelException();
     }

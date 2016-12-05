@@ -115,7 +115,17 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     throw new Error('Unsupported data type');
   }
 
+  /**
+   * iOS only, Android uses OkHttp which auto pings, you will receive a callback if socket was closed
+   *
+   * @platform ios
+   */
   ping(): void {
+    if (Platform.OS === 'android') {
+      console.warn('"WebSocket.ping" is deprecated on Android. Listen for a closed event instead.');
+      return;
+    }
+
     if (this.readyState === this.CONNECTING) {
         throw new Error('INVALID_STATE_ERR');
     }
