@@ -16,7 +16,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;

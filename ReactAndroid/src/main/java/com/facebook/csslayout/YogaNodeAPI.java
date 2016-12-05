@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.csslayout;
+package com.facebook.yoga;
 
 // This only exists for legacy reasons. It will be removed sometime in the near future.
 public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
