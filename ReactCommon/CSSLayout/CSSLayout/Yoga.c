@@ -2240,7 +2240,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     const bool needsMainTrailingPos =
         mainAxis == YGFlexDirectionRowReverse || mainAxis == YGFlexDirectionColumnReverse;
     const bool needsCrossTrailingPos =
-        YGFlexDirectionRowReverse || crossAxis == YGFlexDirectionColumnReverse;
+        crossAxis == YGFlexDirectionRowReverse || crossAxis == YGFlexDirectionColumnReverse;
 
     // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
