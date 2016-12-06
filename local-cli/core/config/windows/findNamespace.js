@@ -23,7 +23,7 @@ module.exports = function getNamespace(folder) {
 
   const packages = files
     .map(filePath => fs.readFileSync(path.join(folder, filePath), 'utf8'))
-    .map(file => file.match(/namespace (.*)\s*/))
+    .map(file => file.match(/namespace (.*)[\s\S]+IReactPackage/))
     .filter(match => match);
 
   return packages.length ? packages[0][1] : null;
