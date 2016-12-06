@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  */
 public class ReactActivityDelegate {
 
-  private final int REQUEST_OVERLAY_CODE = 1111;
+  private final int REQUEST_OVERLAY_PERMISSION_CODE = 1111;
   private static final String REDBOX_PERMISSION_GRANTED_MESSAGE =
     "Overlay permissions have been granted.";
   private static final String REDBOX_PERMISSION_MESSAGE =
@@ -85,14 +85,14 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     boolean needsOverlayPermission = false;
-    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= 23) {
+    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       // Get permission to show redbox in dev builds.
       if (!Settings.canDrawOverlays(getContext())) {
         needsOverlayPermission = true;
         Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
         FLog.w(ReactConstants.TAG, REDBOX_PERMISSION_MESSAGE);
         Toast.makeText(getContext(), REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
-        ((Activity) getContext()).startActivityForResult(serviceIntent, REQUEST_OVERLAY_CODE);
+        ((Activity) getContext()).startActivityForResult(serviceIntent, REQUEST_OVERLAY_PERMISSION_CODE);
       }
     }
 
@@ -149,7 +149,7 @@ public class ReactActivityDelegate {
         .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
     } else {
       // Did we request overlay permissions?
-      if (requestCode == REQUEST_OVERLAY_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (requestCode == REQUEST_OVERLAY_PERMISSION_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         if (Settings.canDrawOverlays(getContext())) {
           if (mMainComponentName != null) {
             loadApp(mMainComponentName);
