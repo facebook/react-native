@@ -20,10 +20,20 @@ Today I am proud to introduce a new tool that helps solve this problem. The tool
 
 > **Requirement**: Git has to be available in the `PATH`. Your project doesn't have to be managed by Git.
 
-Install `react-native-git-upgrade` globally and run it inside your project directory:
+Install `react-native-git-upgrade` globally:
 
 ```shell
 $ npm install -g react-native-git-upgrade
+```
+or, using [Yarn](https://yarnpkg.com/):
+
+```shell
+$ yarn add global react-native-git-upgrade
+```
+
+Then, run it inside your project directory:
+
+```shell
 $ cd MyProject
 $ react-native-git-upgrade 0.38.0
 ```
