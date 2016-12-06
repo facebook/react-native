@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
@@ -18,6 +19,7 @@ const PointPropType = require('PointPropType');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
+const ScrollViewStickyHeader = require('ScrollViewStickyHeader');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 const View = require('View');
@@ -353,8 +355,31 @@ const ScrollView = React.createClass({
 
   mixins: [ScrollResponder.Mixin],
 
+  _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
+  _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
+  _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
+
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();
+  },
+
+  componentWillMount: function() {
+    this._scrollAnimatedValue = new Animated.Value(0);
+    this._stickyHeaderRefs = new Map();
+  },
+
+  componentDidMount: function() {
+    this._updateAnimatedNodeAttachment();
+  },
+
+  componentDidUpdate: function() {
+    this._updateAnimatedNodeAttachment();
+  },
+
+  componentWillUnmount: function() {
+    if (this._scrollAnimatedValueAttachment) {
+      this._scrollAnimatedValueAttachment.detach();
+    }
   },
 
   setNativeProps: function(props: Object) {
@@ -409,6 +434,40 @@ const ScrollView = React.createClass({
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
     this.scrollTo({x, y, animated: false});
+  },
+
+  _updateAnimatedNodeAttachment: function() {
+    if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
+      if (!this._scrollAnimatedValueAttachment) {
+        this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+          this._scrollViewRef,
+          'onScroll',
+          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
+        );
+      }
+    } else {
+      if (this._scrollAnimatedValueAttachment) {
+        this._scrollAnimatedValueAttachment.detach();
+      }
+    }
+  },
+
+  _setStickyHeaderRef: function(index, ref) {
+    this._stickyHeaderRefs.set(index, ref);
+  },
+
+  _onStickyHeaderLayout: function(index, event) {
+    if (!this.props.stickyHeaderIndices) {
+      return;
+    }
+
+    const previousHeaderIndex = this.props.stickyHeaderIndices[this.props.stickyHeaderIndices.indexOf(index) - 1];
+    if (previousHeaderIndex != null) {
+      const previousHeader = this._stickyHeaderRefs.get(previousHeaderIndex);
+      previousHeader && previousHeader.setNextHeaderY(
+        event.nativeEvent.layout.y - event.nativeEvent.layout.height,
+      );
+    }
   },
 
   _handleScroll: function(e: Object) {
@@ -470,14 +529,38 @@ const ScrollView = React.createClass({
       };
     }
 
+    const {stickyHeaderIndices} = this.props;
+    const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
+
+    const children = stickyHeaderIndices && hasStickyHeaders ?
+      React.Children.toArray(this.props.children).map((child, index) => {
+        const stickyHeaderIndex = stickyHeaderIndices.indexOf(index);
+        if (child && stickyHeaderIndex >= 0) {
+          return (
+            <ScrollViewStickyHeader
+              key={index}
+              ref={(ref) => this._setStickyHeaderRef(index, ref)}
+              onLayout={(event) => this._onStickyHeaderLayout(index, event)}
+              scrollAnimatedValue={this._scrollAnimatedValue}>
+              {child}
+            </ScrollViewStickyHeader>
+          );
+        } else {
+          return child;
+        }
+      }) :
+      this.props.children;
+
     const contentContainer =
       <View
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          hasStickyHeaders && Platform.OS === 'android' ? false : this.props.removeClippedSubviews
+        }
         collapsable={false}>
-        {this.props.children}
+        {children}
       </View>;
 
     const alwaysBounceHorizontal =
@@ -499,23 +582,25 @@ const ScrollView = React.createClass({
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
-      onTouchStart: this.scrollResponderHandleTouchStart,
-      onTouchMove: this.scrollResponderHandleTouchMove,
-      onTouchEnd: this.scrollResponderHandleTouchEnd,
-      onScrollBeginDrag: this.scrollResponderHandleScrollBeginDrag,
-      onScrollEndDrag: this.scrollResponderHandleScrollEndDrag,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
+      onResponderGrant: this.scrollResponderHandleResponderGrant,
+      onResponderReject: this.scrollResponderHandleResponderReject,
+      onResponderRelease: this.scrollResponderHandleResponderRelease,
+      onResponderTerminate: this.scrollResponderHandleTerminate,
+      onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
+      onScroll: this._handleScroll,
+      onScrollBeginDrag: this.scrollResponderHandleScrollBeginDrag,
+      onScrollEndDrag: this.scrollResponderHandleScrollEndDrag,
+      onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
       onStartShouldSetResponder: this.scrollResponderHandleStartShouldSetResponder,
       onStartShouldSetResponderCapture: this.scrollResponderHandleStartShouldSetResponderCapture,
-      onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
-      onScroll: this._handleScroll,
-      onResponderGrant: this.scrollResponderHandleResponderGrant,
-      onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
-      onResponderTerminate: this.scrollResponderHandleTerminate,
-      onResponderRelease: this.scrollResponderHandleResponderRelease,
-      onResponderReject: this.scrollResponderHandleResponderReject,
+      onTouchEnd: this.scrollResponderHandleTouchEnd,
+      onTouchMove: this.scrollResponderHandleTouchMove,
+      onTouchStart: this.scrollResponderHandleTouchStart,
+      scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
+      stickyHeaderIndices: null,
     };
 
     const { decelerationRate } = this.props;
@@ -597,10 +682,10 @@ if (Platform.OS === 'android') {
       sendMomentumEvents: true,
     }
   };
-  AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
+  AndroidScrollView = requireNativeComponent('RCTScrollView', (ScrollView: ReactClass<any>), nativeOnlyProps);
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    ScrollView,
+    (ScrollView: ReactClass<any>),
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
@@ -612,7 +697,7 @@ if (Platform.OS === 'android') {
       onScrollEndDrag: true,
     }
   };
-  RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
+  RCTScrollView = requireNativeComponent('RCTScrollView', (ScrollView: ReactClass<any>), nativeOnlyProps);
 }
 
 module.exports = ScrollView;
