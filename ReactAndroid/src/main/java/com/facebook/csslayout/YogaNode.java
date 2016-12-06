@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.csslayout;
+package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 

@@ -9,7 +9,7 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 
 import java.util.Arrays;
 
