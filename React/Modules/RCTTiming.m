@@ -233,16 +233,18 @@ RCT_EXPORT_MODULE()
     _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
                                            interval:0
                                              target:[_RCTTimingProxy proxyWithTarget:self]
-                                           selector:@selector(timerDidFire)
+                                           selector:@selector(sleepTimerDidFire)
                                            userInfo:nil
                                             repeats:NO];
-    [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
+    });
   } else {
     _sleepTimer.fireDate = [_sleepTimer.fireDate earlierDate:sleepTarget];
   }
 }
 
-- (void)timerDidFire
+- (void)sleepTimerDidFire
 {
   _sleepTimer = nil;
   if (_paused) {
