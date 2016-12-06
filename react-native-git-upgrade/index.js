@@ -27,7 +27,8 @@ if (argv._.length === 0 && (argv.h || argv.help)) {
     '',
     '    -h, --help    output usage information',
     '    -v, --version output the version number',
-    '    --verbose output',
+    '    --verbose output debugging info',
+    '    --npm force using the npm client even if your project uses yarn',
     '',
   ].join('\n'));
   process.exit(0);

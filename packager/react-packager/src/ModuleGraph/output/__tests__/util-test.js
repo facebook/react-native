@@ -40,13 +40,13 @@ describe('`addModuleIdsToModuleWrapper`:', () => {
       .withArgs(match({path: dependencies[1].path})).returns(6);
 
     expect(addModuleIdsToModuleWrapper(module, idForPath))
-      .toEqual('__d(function(){}, 12, [345, 6]);');
+      .toEqual('__d(function(){},12,[345,6]);');
   });
 
   it('omits the array of dependency IDs if it is empty', () => {
     const module = createModule();
     expect(addModuleIdsToModuleWrapper(module, () => 98))
-      .toEqual(`__d(function(){}, ${98});`);
+      .toEqual(`__d(function(){},${98});`);
   });
 });
 

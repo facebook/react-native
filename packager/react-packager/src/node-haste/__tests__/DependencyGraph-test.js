@@ -2562,6 +2562,81 @@ describe('DependencyGraph', function() {
           ]);
       });
     });
+
+    it('should get dependencies with assets and resolution', function() {
+      const root = 'C:\\root';
+      setMockFileSystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./imgs/a.png");',
+            'require("./imgs/b.png");',
+            'require("./imgs/c.png");',
+          ].join('\n'),
+          'imgs': {
+            'a@1.5x.png': '',
+            'b@.7x.png': '',
+            'c.png': '',
+            'c@2x.png': '',
+          },
+          'package.json': JSON.stringify({
+            name: 'rootPackage',
+          }),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, 'C:\\root\\index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: 'C:\\root\\index.js',
+              dependencies: [
+                './imgs/a.png',
+                './imgs/b.png',
+                './imgs/c.png',
+              ],
+              isAsset: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'rootPackage/imgs/a.png',
+              path: 'C:\\root\\imgs\\a@1.5x.png',
+              resolution: 1.5,
+              dependencies: [],
+              isAsset: true,
+              isJSON: false,
+              isPolyfill: false,
+            },
+            {
+              id: 'rootPackage/imgs/b.png',
+              path: 'C:\\root\\imgs\\b@.7x.png',
+              resolution: 0.7,
+              dependencies: [],
+              isAsset: true,
+              isJSON: false,
+              isPolyfill: false,
+            },
+            {
+              id: 'rootPackage/imgs/c.png',
+              path: 'C:\\root\\imgs\\c.png',
+              resolution: 1,
+              dependencies: [],
+              isAsset: true,
+              isJSON: false,
+              isPolyfill: false,
+            },
+          ]);
+      });
+    });
   });
 
   describe('node_modules (posix)', function() {

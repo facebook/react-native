@@ -38,9 +38,9 @@ class ResolutionResponse {
   }
 
   copy(properties: {
-    dependencies: Array<Module>,
-    mainModuleId: number,
-    mocks: mixed,
+    dependencies?: Array<Module>,
+    mainModuleId?: number,
+    mocks?: mixed,
   }): ResolutionResponse {
     const {
       dependencies = this.dependencies,

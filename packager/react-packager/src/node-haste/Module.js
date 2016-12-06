@@ -230,6 +230,28 @@ class Module {
     );
   }
 
+  _transformAndStoreCodeGlobally(
+    cacheProps: ReadTransformProps,
+    globalCache: GlobalTransformCache,
+    callback: (error: ?Error, result: ?TransformedCode) => void,
+  ) {
+    this._transformCodeForCallback(
+      cacheProps,
+      (transformError, transformResult) => {
+        if (transformError != null) {
+          callback(transformError);
+          return;
+        }
+        invariant(
+          transformResult != null,
+          'Inconsistent state: there is no error, but no results either.',
+        );
+        globalCache.store(cacheProps, transformResult);
+        callback(undefined, transformResult);
+      },
+    );
+  }
+
   _getTransformedCode(
     cacheProps: ReadTransformProps,
     callback: (error: ?Error, result: ?TransformedCode) => void,
@@ -253,8 +275,8 @@ class Module {
           ));
         }
       }
-      if (globalCacheError != null || globalCachedResult == null) {
-        this._transformCodeForCallback(cacheProps, callback);
+      if (globalCachedResult == null) {
+        this._transformAndStoreCodeGlobally(cacheProps, globalCache, callback);
         return;
       }
       callback(undefined, globalCachedResult);

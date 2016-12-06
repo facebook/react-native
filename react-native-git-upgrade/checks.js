@@ -19,12 +19,14 @@ function checkDeclaredVersion(declaredVersion) {
   }
 }
 
-function checkMatchingVersions(currentVersion, declaredVersion) {
+function checkMatchingVersions(currentVersion, declaredVersion, useYarn) {
   if (!semver.satisfies(currentVersion, declaredVersion)) {
     throw new Error(
       'react-native version in "package.json" (' + declaredVersion + ') doesn\'t match ' +
       'the installed version in "node_modules" (' + currentVersion + ').\n' +
-      'Try running "npm install" to fix this.'
+      (useYarn ?
+        'Try running "yarn" to fix this.' :
+        'Try running "npm install" to fix this.')
     );
   }
 }
@@ -52,21 +54,9 @@ function checkGitAvailable() {
   }
 }
 
-function checkNewVersionValid(newVersion, requestedVersion) {
-  if (!semver.valid(newVersion) && requestedVersion) {
-    throw new Error(
-      'The specified version of React Native ' + requestedVersion + ' doesn\'t exist.\n' +
-      'Re-run the react-native-git-upgrade command with an existing version,\n' +
-      'for example: "react-native-git-upgrade 0.38.0",\n' +
-      'or without arguments to upgrade to the latest: "react-native-git-upgrade".'
-    );
-  }
-}
-
 module.exports = {
   checkDeclaredVersion,
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
-  checkNewVersionValid,
 };
