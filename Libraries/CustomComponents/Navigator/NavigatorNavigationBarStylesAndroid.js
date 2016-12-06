@@ -31,7 +31,6 @@ var merge = require('merge');
 
 // Android Material Design
 var NAV_BAR_HEIGHT = 56;
-var TITLE_LEFT = 72;
 var BUTTON_SIZE = 24;
 var TOUCH_TARGT_SIZE = 48;
 var BUTTON_HORIZONTAL_MARGIN = 16;
@@ -45,10 +44,9 @@ var BASE_STYLES = {
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     height: NAV_ELEMENT_HEIGHT,
     backgroundColor: 'transparent',
-    marginLeft: TITLE_LEFT,
   },
   LeftButton: {
     position: 'absolute',
