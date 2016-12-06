@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -32,8 +34,6 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // /!\ DO NOT MODIFY THIS FILE /!\
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-'use strict';
 
 var fs = require('fs');
 var path = require('path');
