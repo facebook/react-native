@@ -17,7 +17,7 @@ var PropTypes = require('React').PropTypes;
  */
 var TVViewPropTypes = {
     /**
-     * *(Apple TV only)* Optional method.  When set to true, this view will be focusable
+     * *(Apple TV only)* When set to true, this view will be focusable
      * and navigable using the Apple TV remote.
      *
      * @platform ios

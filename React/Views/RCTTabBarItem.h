@@ -22,9 +22,4 @@
 @property (nonatomic, readonly) UITabBarItem *barItem;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
 
-/**
- * TV event handlers
- */
-@property (nonatomic, assign) BOOL isTVSelectable; // Called if this view is focused and the TV remote select button is pressed
-
 @end

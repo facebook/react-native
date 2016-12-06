@@ -48,6 +48,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
   return self;
 }
 
+- (void)dealloc {
+}
+
 - (UITabBarItem *)barItem
 {
   if (!_barItem) {
@@ -118,50 +121,5 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   return self.superview.reactViewController;
 }
-
-#if TARGET_OS_TV
-
-- (void)setIsTVSelectable:(BOOL)isTVSelectable {
-  self->_isTVSelectable = isTVSelectable;
-  if(isTVSelectable) {
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelect:)];
-    recognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
-    _selectRecognizer = recognizer;
-    [self addGestureRecognizer:_selectRecognizer];
-  } else {
-    if(_selectRecognizer) {
-      [self removeGestureRecognizer:_selectRecognizer];
-    }
-  }
-  
-}
-
-- (void)handleSelect:(UIGestureRecognizer*)r {
-  RCTTabBarItem *v = (RCTTabBarItem*)r.view;
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                      object:@{@"eventType":@"select",@"tag":v.reactTag}];
-}
-
-- (BOOL)isUserInteractionEnabled {
-  return YES;
-}
-
-- (BOOL)canBecomeFocused {
-  return (self.isTVSelectable);
-}
-
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
-  if(context.nextFocusedView == self && self.isTVSelectable) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                        object:@{@"eventType":@"focus",@"tag":self.reactTag}];
-    [self becomeFirstResponder];
-  } else {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                        object:@{@"eventType":@"blur",@"tag":self.reactTag}];
-    [self resignFirstResponder];
-  }
-}
-
-#endif
 
 @end
