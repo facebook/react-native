@@ -114,12 +114,12 @@ var getPhotosReturnChecker = createStrictShapeTypeChecker({
  * You can refer to [Linking](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) for help.
  *
  * ### iOS
- * As of iOS10, permission will be required to access users data using this library. 
+ * As of iOS10, permission will be required to access users data using this library.
  * You can get users permission by either including the key `NSCameraUsageDescription` with a string that describes
- * how your app will use this data in the source code of your info.plist, or by adding the key 
+ * how your app will use this data in the source code of your info.plist, or by adding the key
  * `Privacy - Camera Usage Description` and a string describing how your app will use this data in the `value` section
  * of the Information Property List of your apps info.plist.
- * 
+ *
  */
 class CameraRoll {
 
