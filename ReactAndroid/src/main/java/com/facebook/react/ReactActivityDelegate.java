@@ -37,28 +37,14 @@ public class ReactActivityDelegate {
   private static final String REDBOX_PERMISSION_MESSAGE =
     "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
 
-  private final
-  @Nullable
-  Activity mActivity;
-  private final
-  @Nullable
-  FragmentActivity mFragmentActivity;
-  private final
-  @Nullable
-  String mMainComponentName;
+  private final @Nullable Activity mActivity;
+  private final @Nullable FragmentActivity mFragmentActivity;
+  private final @Nullable String mMainComponentName;
 
-  private
-  @Nullable
-  ReactRootView mReactRootView;
-  private
-  @Nullable
-  DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
-  private
-  @Nullable
-  PermissionListener mPermissionListener;
-  private
-  @Nullable
-  Callback mPermissionsCallback;
+  private @Nullable ReactRootView mReactRootView;
+  private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
+  private @Nullable PermissionListener mPermissionListener;
+  private @Nullable Callback mPermissionsCallback;
 
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
@@ -74,9 +60,7 @@ public class ReactActivityDelegate {
     mActivity = null;
   }
 
-  protected
-  @Nullable
-  Bundle getLaunchOptions() {
+  protected @Nullable Bundle getLaunchOptions() {
     return null;
   }
 
@@ -224,8 +208,7 @@ public class ReactActivityDelegate {
     mPermissionsCallback = new Callback() {
       @Override
       public void invoke(Object... args) {
-        if (mPermissionListener != null &&
-          mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
           mPermissionListener = null;
         }
       }
