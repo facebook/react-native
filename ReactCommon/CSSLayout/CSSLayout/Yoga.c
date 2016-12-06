@@ -185,57 +185,7 @@ static inline float YGComputedEdgeValue(const float edges[YGEdgeCount],
   return defaultValue;
 }
 
-int32_t gNodeInstanceCount = 0;
-
-YGNodeRef YGNodeNew(void) {
-  const YGNodeRef node = gYGCalloc(1, sizeof(YGNode));
-  YG_ASSERT(node, "Could not allocate memory for node");
-  gNodeInstanceCount++;
-
-  YGNodeInit(node);
-  return node;
-}
-
-void YGNodeFree(const YGNodeRef node) {
-  if (node->parent) {
-    YGNodeListDelete(node->parent->children, node);
-    node->parent = NULL;
-  }
-
-  const uint32_t childCount = YGNodeChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef child = YGNodeGetChild(node, i);
-    child->parent = NULL;
-  }
-
-  YGNodeListFree(node->children);
-  gYGFree(node);
-  gNodeInstanceCount--;
-}
-
-void YGNodeFreeRecursive(const YGNodeRef root) {
-  while (YGNodeChildCount(root) > 0) {
-    const YGNodeRef child = YGNodeGetChild(root, 0);
-    YGNodeRemoveChild(root, child);
-    YGNodeFreeRecursive(child);
-  }
-  YGNodeFree(root);
-}
-
-void YGNodeReset(const YGNodeRef node) {
-  YG_ASSERT(YGNodeChildCount(node) == 0, "Cannot reset a node which still has children attached");
-  YG_ASSERT(node->parent == NULL, "Cannot reset a node still attached to a parent");
-
-  YGNodeListFree(node->children);
-  memset(node, 0, sizeof(YGNode));
-  YGNodeInit(node);
-}
-
-int32_t YGNodeGetInstanceCount(void) {
-  return gNodeInstanceCount;
-}
-
-void YGNodeInit(const YGNodeRef node) {
+static void YGNodeInit(const YGNodeRef node) {
   node->parent = NULL;
   node->children = NULL;
   node->hasNewLayout = true;
@@ -287,6 +237,56 @@ void YGNodeInit(const YGNodeRef node) {
   node->layout.cachedLayout.heightMeasureMode = (YGMeasureMode) -1;
   node->layout.cachedLayout.computedWidth = -1;
   node->layout.cachedLayout.computedHeight = -1;
+}
+
+int32_t gNodeInstanceCount = 0;
+
+YGNodeRef YGNodeNew(void) {
+  const YGNodeRef node = gYGCalloc(1, sizeof(YGNode));
+  YG_ASSERT(node, "Could not allocate memory for node");
+  gNodeInstanceCount++;
+
+  YGNodeInit(node);
+  return node;
+}
+
+void YGNodeFree(const YGNodeRef node) {
+  if (node->parent) {
+    YGNodeListDelete(node->parent->children, node);
+    node->parent = NULL;
+  }
+
+  const uint32_t childCount = YGNodeChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
+    const YGNodeRef child = YGNodeGetChild(node, i);
+    child->parent = NULL;
+  }
+
+  YGNodeListFree(node->children);
+  gYGFree(node);
+  gNodeInstanceCount--;
+}
+
+void YGNodeFreeRecursive(const YGNodeRef root) {
+  while (YGNodeChildCount(root) > 0) {
+    const YGNodeRef child = YGNodeGetChild(root, 0);
+    YGNodeRemoveChild(root, child);
+    YGNodeFreeRecursive(child);
+  }
+  YGNodeFree(root);
+}
+
+void YGNodeReset(const YGNodeRef node) {
+  YG_ASSERT(YGNodeChildCount(node) == 0, "Cannot reset a node which still has children attached");
+  YG_ASSERT(node->parent == NULL, "Cannot reset a node still attached to a parent");
+
+  YGNodeListFree(node->children);
+  memset(node, 0, sizeof(YGNode));
+  YGNodeInit(node);
+}
+
+int32_t YGNodeGetInstanceCount(void) {
+  return gNodeInstanceCount;
 }
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
