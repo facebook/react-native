@@ -56,8 +56,13 @@ export type GraphFn = (
   entryPoints: Iterable<string>,
   platform: string,
   options?: ?GraphOptions,
-  callback?: Callback<Array<Module>>,
+  callback?: Callback<GraphResult>,
 ) => void;
+
+type GraphResult = {
+  entryModules: Array<Module>,
+  modules: Array<Module>,
+};
 
 export type ResolveFn = (
   id: string,

@@ -239,7 +239,7 @@ describe('Graph:', () => {
 
     graph(['a'], anyPlatform, noOpts, (error, result) => {
       expect(error).toEqual(null);
-      expect(result).toEqual([
+      expect(result.modules).toEqual([
         createModule('a', ['b', 'e', 'h']),
         createModule('b', ['c', 'd']),
         createModule('c'),
@@ -248,6 +248,46 @@ describe('Graph:', () => {
         createModule('f'),
         createModule('g'),
         createModule('h'),
+      ]);
+      done();
+    });
+  });
+
+  it('calls back with the resolved modules of the entry points', done => {
+    load.stub.reset();
+    resolve.stub.reset();
+
+    load.stub.withArgs(idToPath('a')).yields(null, createFile('a'), ['b']);
+    load.stub.withArgs(idToPath('b')).yields(null, createFile('b'), []);
+    load.stub.withArgs(idToPath('c')).yields(null, createFile('c'), ['d']);
+    load.stub.withArgs(idToPath('d')).yields(null, createFile('d'), []);
+
+    'abcd'.split('')
+      .forEach(id => resolve.stub.withArgs(id).yields(null, idToPath(id)));
+
+    graph(['a', 'c'], anyPlatform, noOpts, (error, result) => {
+      expect(result.entryModules).toEqual([
+        createModule('a', ['b']),
+        createModule('c', ['d']),
+      ]);
+      done();
+    });
+  });
+
+  it('calls back with the resolved modules of the entry points if one entry point is a dependency of another', done => {
+    load.stub.reset();
+    resolve.stub.reset();
+
+    load.stub.withArgs(idToPath('a')).yields(null, createFile('a'), ['b']);
+    load.stub.withArgs(idToPath('b')).yields(null, createFile('b'), []);
+
+    'ab'.split('')
+      .forEach(id => resolve.stub.withArgs(id).yields(null, idToPath(id)));
+
+    graph(['a', 'b'], anyPlatform, noOpts, (error, result) => {
+      expect(result.entryModules).toEqual([
+        createModule('a', ['b']),
+        createModule('b', []),
       ]);
       done();
     });
@@ -266,7 +306,7 @@ describe('Graph:', () => {
 
     graph(['a', 'd', 'b'], anyPlatform, noOpts, (error, result) => {
       expect(error).toEqual(null);
-      expect(result).toEqual([
+      expect(result.modules).toEqual([
         createModule('a', ['b', 'c']),
         createModule('b'),
         createModule('c'),
@@ -287,7 +327,7 @@ describe('Graph:', () => {
       .withArgs(idToPath('c')).yields(null, createFile('c'), ['a']);
 
     graph(['a'], anyPlatform, noOpts, (error, result) => {
-      expect(result).toEqual([
+      expect(result.modules).toEqual([
         createModule('a', ['b']),
         createModule('b', ['c']),
         createModule('c', ['a']),
@@ -307,7 +347,7 @@ describe('Graph:', () => {
     const skip = new Set([idToPath('b'), idToPath('c')]);
 
     graph(['a'], anyPlatform, {skip}, (error, result) => {
-      expect(result).toEqual([
+      expect(result.modules).toEqual([
         createModule('a', ['b', 'c', 'd']),
         createModule('d', []),
       ]);
