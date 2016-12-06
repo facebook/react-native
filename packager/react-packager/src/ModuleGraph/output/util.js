@@ -58,3 +58,12 @@ exports.createIdForPathFn = (): ({path: string} => number) => {
     return id;
   };
 };
+
+exports.virtualModule = (code: string): Module => ({
+  dependencies: [],
+  file: {
+    code,
+    path: '',
+    type: 'script',
+  }
+});

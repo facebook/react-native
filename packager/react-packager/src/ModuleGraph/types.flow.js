@@ -13,8 +13,8 @@
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
-  = ((error: Error) => mixed)
-  & ((error: null | void, a: A, b: B) => mixed);
+  = (Error => mixed)
+  & ((null | void, A, B) => mixed);
 
 type ResolveOptions = {
   log?: Console,
@@ -59,7 +59,7 @@ export type GraphFn = (
   callback?: Callback<GraphResult>,
 ) => void;
 
-type GraphResult = {
+export type GraphResult = {
   entryModules: Array<Module>,
   modules: Array<Module>,
 };
