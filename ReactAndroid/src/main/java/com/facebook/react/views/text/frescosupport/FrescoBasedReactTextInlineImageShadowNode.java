@@ -18,7 +18,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ViewProps;

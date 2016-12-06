@@ -30,12 +30,12 @@ import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.YogaDirection;
-import com.facebook.csslayout.YogaConstants;
-import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNodeAPI;
-import com.facebook.csslayout.YogaMeasureOutput;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;

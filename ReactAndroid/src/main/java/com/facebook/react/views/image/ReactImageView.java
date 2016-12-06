@@ -30,7 +30,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
