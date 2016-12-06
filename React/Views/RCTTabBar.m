@@ -191,14 +191,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
   if(context.nextFocusedView == self) {
-    if(self.onTVFocus) {
-      self.onTVFocus(nil);
-    }
     [self becomeFirstResponder];
   } else {
-    if(self.onTVBlur) {
-      self.onTVBlur(nil);
-    }
     [self resignFirstResponder];
   }
 }
