@@ -152,9 +152,9 @@ function buildAndRun(args) {
 
   try {
     const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+      'app/build.gradle',
       'utf8'
-    ).match(/package="(.+?)"/)[1];
+    ).match(/applicationId "(.+?)"/)[1];
 
     const adbPath = getAdbPath();
 
