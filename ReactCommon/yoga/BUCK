@@ -1,7 +1,7 @@
 cxx_library(
-  name = 'CSSLayout',
+  name = 'yoga',
   force_static = True,
-  srcs = glob(['CSSLayout/*.c']),
+  srcs = glob(['yoga/*.c']),
   header_namespace = '',
   compiler_flags = [
     '-fno-omit-frame-pointer',
@@ -11,7 +11,7 @@ cxx_library(
     '-std=c99',
     '-O3',
   ],
-  exported_headers = glob(['CSSLayout/*.h']),
+  exported_headers = glob(['yoga/*.h']),
   deps = [
   ],
   visibility = ['PUBLIC'],

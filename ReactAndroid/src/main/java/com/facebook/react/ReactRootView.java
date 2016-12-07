@@ -56,10 +56,21 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
+  /**
+   * Listener interface for react root view events
+   */
+  public interface ReactRootViewEventListener {
+    /**
+     * Called when the react context is attached to a ReactRootView.
+     */
+    void onAttachedToReactInstance(ReactRootView rootView);
+  }
+
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
+  private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
   private boolean mWasMeasured = false;
   private boolean mIsAttachedToInstance = false;
@@ -222,6 +233,16 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
     }
+  }
+
+  public void onAttachedToReactInstance() {
+    if (mRootViewEventListener != null) {
+      mRootViewEventListener.onAttachedToReactInstance(this);
+    }
+  }
+
+  public void setEventListener(ReactRootViewEventListener eventListener) {
+    mRootViewEventListener = eventListener;
   }
 
   /* package */ String getJSModuleName() {
