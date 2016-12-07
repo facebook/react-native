@@ -246,11 +246,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)interfaceOrientationDidChange:(NSNotification *)notification
+- (void)interfaceOrientationDidChange
 {
 #if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
-    [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+    [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
   if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
@@ -347,7 +347,7 @@ RCT_EXPORT_MODULE()
                                              object:_bridge.accessibilityManager];
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationDidChange:)
+                                           selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 #endif
