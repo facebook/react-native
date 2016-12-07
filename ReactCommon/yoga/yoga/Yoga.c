@@ -2653,21 +2653,21 @@ inline bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature) {
   return experimentalFeatures[feature];
 }
 
-void YGSetMemoryFuncs(YGMalloc YGMalloc, YGCalloc YGCalloc, YGRealloc YGRealloc, YGFree YGFree) {
+void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
   YG_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
-  YG_ASSERT((YGMalloc == NULL && YGCalloc == NULL && YGRealloc == NULL && YGFree == NULL) ||
-                (YGMalloc != NULL && YGCalloc != NULL && YGRealloc != NULL && YGFree != NULL),
+  YG_ASSERT((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
+                (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
             "Cannot set memory functions: functions must be all NULL or Non-NULL");
 
-  if (YGMalloc == NULL || YGCalloc == NULL || YGRealloc == NULL || YGFree == NULL) {
+  if (ygmalloc == NULL || yccalloc == NULL || ygrealloc == NULL || ygfree == NULL) {
     gYGMalloc = &malloc;
     gYGCalloc = &calloc;
     gYGRealloc = &realloc;
     gYGFree = &free;
   } else {
-    gYGMalloc = YGMalloc;
-    gYGCalloc = YGCalloc;
-    gYGRealloc = YGRealloc;
-    gYGFree = YGFree;
+    gYGMalloc = ygmalloc;
+    gYGCalloc = yccalloc;
+    gYGRealloc = ygrealloc;
+    gYGFree = ygfree;
   }
 }
