@@ -131,7 +131,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     /**
      * Custom style applied to the card.
      */
-    cardStyle: View.propTypes.style,
+    cardStyle: PropTypes.any,
 
     /**
      * Direction of the cards movement. Value could be `horizontal` or

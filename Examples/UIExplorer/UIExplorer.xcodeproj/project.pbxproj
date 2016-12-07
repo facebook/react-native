@@ -337,14 +337,14 @@
 			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3C059A1DE3340900C268FA;
-			remoteInfo = CSSLayout;
+			remoteInfo = yoga;
 		};
 		3D3C08821DE3424E00C268FA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14AADEFF1AC3DB95002390C9 /* React.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3C06751DE3340C00C268FA;
-			remoteInfo = "CSSLayout-tvOS";
+			remoteInfo = "yoga-tvOS";
 		};
 		58005BED1ABA80530062E044 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -726,8 +726,8 @@
 			children = (
 				14AADF041AC3DB95002390C9 /* libReact.a */,
 				2DD323D91DA2DD8B000FE1B8 /* libReact-tvOS.a */,
-				3D3C08811DE3424E00C268FA /* libCSSLayout.a */,
-				3D3C08831DE3424E00C268FA /* libCSSLayout-tvOS.a */,
+				3D3C08811DE3424E00C268FA /* libyoga.a */,
+				3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */,
 				3D05748C1DE6008900184BB4 /* libcxxreact.a */,
 				3D05748E1DE6008900184BB4 /* libcxxreact-tvOS.a */,
 				3D0574901DE6008900184BB4 /* libjschelpers.a */,
@@ -1290,17 +1290,17 @@
 			remoteRef = 3D0574911DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D3C08811DE3424E00C268FA /* libCSSLayout.a */ = {
+		3D3C08811DE3424E00C268FA /* libyoga.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libCSSLayout.a;
+			path = libyoga.a;
 			remoteRef = 3D3C08801DE3424E00C268FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D3C08831DE3424E00C268FA /* libCSSLayout-tvOS.a */ = {
+		3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libCSSLayout-tvOS.a";
+			path = "libyoga-tvOS.a";
 			remoteRef = 3D3C08821DE3424E00C268FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

@@ -4,7 +4,7 @@ package com.facebook.react.views.view;
 
 import android.view.View;
 
-import com.facebook.csslayout.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureMode;
 
 public class MeasureUtil {
 
