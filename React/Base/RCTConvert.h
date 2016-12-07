@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import <CSSLayout/Yoga.h>
+#import <yoga/Yoga.h>
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>

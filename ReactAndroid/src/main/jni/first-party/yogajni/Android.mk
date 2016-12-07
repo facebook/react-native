@@ -20,5 +20,5 @@ LOCAL_SHARED_LIBRARIES := libfb
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,CSSLayout)
+$(call import-module,yoga)
 $(call import-module,fb)
