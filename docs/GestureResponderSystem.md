@@ -8,23 +8,18 @@ next: native-modules-ios
 previous: platform-specific-code
 ---
 
-Touch handling is much more complex than mouse events. A touch can go through several phases as the app determines what the user's intention is. For example, the app needs to determine if the touch is scrolling, sliding on a widget, or tapping. This can even change during the duration of a touch. There can also be multiple simultaneous touches.
+The gesture responder system manages the lifecycle of gestures in your app. A touch can go through several phases as the app determines what the user's intention is. For example, the app needs to determine if the touch is scrolling, sliding on a widget, or tapping. This can even change during the duration of a touch. There can also be multiple simultaneous touches.
 
 The touch responder system is needed to allow components to negotiate these touch interactions without any additional knowledge about their parent or child components. This system is implemented in `ResponderEventPlugin.js`, which contains further details and documentation.
 
 ### Best Practices
 
-Every action should have the following attributes:
+To make your app feel great, every action should have the following attributes:
 
 - Feedback/highlighting- show the user what is handling their touch, and what will happen when they release the gesture
 - Cancel-ability- when making an action, the user should be able to abort it mid-touch by dragging their finger away
 
 These features make users more comfortable while using an app, because it allows people to experiment and interact without fear of making mistakes.
-
-> Poor visual feedback and cancel-ability are leading factors that make some
-> web apps feel less comfortable than native apps. Because mobile browsers do
-> not offer a built-in responder system, these features are tricky to
-> implement.
 
 ### TouchableHighlight and Touchable*
 
