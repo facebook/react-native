@@ -19,15 +19,17 @@
 #import "RCTUtils.h"
 
 typedef NS_ENUM(NSInteger, StorageLocation) {
-    Documents,
-    ApplicationSupport
+  Documents,
+  ApplicationSupport
 };
 
 @implementation RCTConvert (StorageLocation)
-  RCT_ENUM_CONVERTER(StorageLocation, (@{
-    @"documents" : @(Documents),
-    @"applicationSupport" : @(ApplicationSupport)
-  }), Documents, integerValue)
+
+RCT_ENUM_CONVERTER(StorageLocation, (@{
+  @"documents": @(Documents),
+  @"applicationSupport": @(ApplicationSupport),
+}), Documents, integerValue)
+
 @end
 
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
@@ -81,7 +83,7 @@ static NSString *RCTGetStorageDirectory()
   static dispatch_once_t onceToken;
 
   NSSearchPathDirectory searchDir = NSDocumentDirectory;
-  if(storageLocation == ApplicationSupport)
+  if (storageLocation == ApplicationSupport)
     searchDir = NSApplicationSupportDirectory;
 
   dispatch_once(&onceToken, ^{
@@ -190,8 +192,10 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"documents" : @(Documents),
-            @"applicationSupport" : @(ApplicationSupport) };
+  return @{
+    @"documents": @(Documents),
+    @"applicationSupport": @(ApplicationSupport)
+  };
 };
 
 - (void)clearAllData

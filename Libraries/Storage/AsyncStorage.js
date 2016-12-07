@@ -490,10 +490,11 @@ var AsyncStorage = {
    *
    * @platform ios
    */
-  setStorageLocation: function(storageLocation: string) {
+  setStorageLocationIOS: function(storageLocation: string) {
     RCTAsyncStorage.setStorageLocation(storageLocation);
   },
-  StorageLocation: {
+
+  StorageLocationIOS: {
     documents: RCTAsyncStorage.documents,
     applicationSupport: RCTAsyncStorage.applicationSupport
   }
