@@ -100,7 +100,8 @@ function parseInformationJsonOutput(jsonOutput, requestedVersion) {
   try {
     const output = JSON.parse(jsonOutput);
     const newVersion = output.version;
-    const newReactVersionRange = output['peerDependencies.react'];
+    const peerDependencies = output.peerDependencies;
+    const newReactVersionRange = peerDependencies.react;
 
     assert(semver.valid(newVersion));
 
@@ -258,7 +259,7 @@ async function run(requestedVersion, cliArgs) {
     checkGitAvailable();
 
     log.info('Get information from NPM registry');
-    const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' peerDependencies.react version --json';
+    const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' --json';
     const jsonOutput = await exec(viewCommand, verbose);
     const {newVersion, newReactVersionRange} = parseInformationJsonOutput(jsonOutput, requestedVersion);
     // Print which versions we're upgrading to
