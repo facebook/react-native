@@ -268,6 +268,12 @@ var ListView = React.createClass({
     }
   },
 
+  getScrollableNode: function() {
+    if (this._scrollComponent && this._scrollComponent.getScrollableNode) {
+      return this._scrollComponent.getScrollableNode();
+    }
+  },
+
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
    *
