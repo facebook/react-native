@@ -41,15 +41,15 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
-// Apple TV shows warning dialogs for these tests that aren't repeatable, so disabling these for now
-#if !TARGET_OS_TV
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
+#if !TARGET_OS_TV
+// No switch or slider available on tvOS
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
-RCT_TEST(TabBarExample)
 #endif
+RCT_TEST(TabBarExample)
 
 - (void)testZZZNotInRecordMode
 {
