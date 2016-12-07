@@ -252,8 +252,6 @@ Go to **Control Panel** → **System and Security** → **System** → **Change 
 
 Restart the Command Prompt to apply the new environment variable.
 
-<block class="linux windows android" />
-
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 
 <block class="linux android" />

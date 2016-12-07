@@ -56,7 +56,6 @@ export type FastFS = {
 };
 
 type HasteMapOptions = {|
-  allowRelativePaths: boolean,
   extensions: Extensions,
   files: Array<string>,
   helpers: DependencyGraphHelpers,

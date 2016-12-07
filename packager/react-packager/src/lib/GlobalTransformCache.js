@@ -26,6 +26,11 @@ type FetchResultURIs = (
   callback: (error?: Error, results?: Map<string, string>) => void,
 ) => mixed;
 
+type StoreResults = (
+  resultsByKey: Map<string, CachedResult>,
+  callback: (error?: Error) => void,
+) => mixed;
+
 type FetchProps = {
   filePath: string,
   sourceCode: string,
@@ -158,6 +163,38 @@ class KeyURIFetcher {
 
 }
 
+class KeyResultStore {
+
+  _storeResults: StoreResults;
+  _batchProcessor: BatchProcessor<{key: string, result: CachedResult}, void>;
+
+  _processResults(
+    keyResults: Array<{key: string, result: CachedResult}>,
+    callback: (error?: Error) => mixed,
+  ) {
+    const resultsByKey = new Map(
+      keyResults.map(pair => [pair.key, pair.result]),
+    );
+    this._storeResults(resultsByKey, error => {
+      callback(error);
+    });
+  }
+
+  store(key: string, result: CachedResult) {
+    this._batchProcessor.queue({key, result}, () => {});
+  }
+
+  constructor(storeResults: StoreResults) {
+    this._storeResults = storeResults;
+    this._batchProcessor = new BatchProcessor({
+      maximumDelayMs: 1000,
+      maximumItems: 100,
+      concurrency: 10,
+    }, this._processResults.bind(this));
+  }
+
+}
+
 function validateCachedResult(cachedResult: mixed): ?CachedResult {
   if (
     cachedResult != null &&
@@ -204,10 +241,17 @@ function globalizeTransformOptions(
 class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
+  _store: ?KeyResultStore;
   static _global: ?GlobalTransformCache;
 
-  constructor(fetchResultURIs: FetchResultURIs) {
+  constructor(
+    fetchResultURIs: FetchResultURIs,
+    storeResults?: StoreResults,
+  ) {
     this._fetcher = new KeyURIFetcher(fetchResultURIs);
+    if (storeResults != null) {
+      this._store = new KeyResultStore(storeResults);
+    }
   }
 
   /**
@@ -263,6 +307,12 @@ class GlobalTransformCache {
     });
   }
 
+  store(props: FetchProps, result: CachedResult) {
+    if (this._store != null) {
+      this._store.store(GlobalTransformCache.keyOf(props), result);
+    }
+  }
+
   /**
    * For using the global cache one needs to have some kind of central key-value
    * store that gets prefilled using keyOf() and the transformed results. The
@@ -271,8 +321,14 @@ class GlobalTransformCache {
    * of returning the content directly allows for independent fetching of each
    * result.
    */
-  static configure(fetchResultURIs: FetchResultURIs) {
-    GlobalTransformCache._global = new GlobalTransformCache(fetchResultURIs);
+  static configure(
+    fetchResultURIs: FetchResultURIs,
+    storeResults?: StoreResults,
+  ) {
+    GlobalTransformCache._global = new GlobalTransformCache(
+      fetchResultURIs,
+      storeResults,
+    );
   }
 
   static get() {

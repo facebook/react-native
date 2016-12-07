@@ -10,6 +10,7 @@
 
 const fs = require('fs');
 const os = require('os');
+const assert = require('assert');
 const path = require('path');
 const shell = require('shelljs');
 const Promise = require('promise');
@@ -25,7 +26,6 @@ const {
   checkMatchingVersions,
   checkReactPeerDependency,
   checkGitAvailable,
-  checkNewVersionValid
 } = require('./checks');
 
 log.heading = 'git-upgrade';
@@ -93,6 +93,25 @@ function readPackageFiles(useYarn) {
     reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
     reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
     pak: parseJsonFile(pakPath)
+  }
+}
+
+function parseInformationJsonOutput(jsonOutput, requestedVersion) {
+  try {
+    const output = JSON.parse(jsonOutput);
+    const newVersion = output.version;
+    const newReactVersionRange = output['peerDependencies.react'];
+
+    assert(semver.valid(newVersion));
+
+    return {newVersion, newReactVersionRange}
+  } catch (err) {
+    throw new Error(
+      'The specified version of React Native ' + requestedVersion + ' doesn\'t exist.\n' +
+      'Re-run the react-native-git-upgrade command with an existing version,\n' +
+      'for example: "react-native-git-upgrade 0.38.0",\n' +
+      'or without arguments to upgrade to the latest: "react-native-git-upgrade".'
+    );
   }
 }
 
@@ -240,14 +259,10 @@ async function run(requestedVersion, cliArgs) {
 
     log.info('Get information from NPM registry');
     const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' peerDependencies.react version --json';
-    const viewOutput = await exec(viewCommand, verbose).then(JSON.parse);
-    const newVersion = viewOutput.version;
-    const newReactVersionRange = viewOutput['peerDependencies.react'];
+    const jsonOutput = await exec(viewCommand, verbose);
+    const {newVersion, newReactVersionRange} = parseInformationJsonOutput(jsonOutput, requestedVersion);
     // Print which versions we're upgrading to
     log.info('Upgrading to React Native ' + newVersion + (newReactVersionRange ? ', React ' + newReactVersionRange : ''));
-
-    log.info('Check new version');
-    checkNewVersionValid(newVersion, requestedVersion);
 
     log.info('Setup temporary working directory');
     await setupWorkingDir(tmpDir);

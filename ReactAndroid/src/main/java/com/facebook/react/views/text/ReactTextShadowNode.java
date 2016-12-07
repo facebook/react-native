@@ -30,11 +30,12 @@ import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -218,15 +219,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
-      new CSSNodeAPI.MeasureFunction() {
+  private final YogaMeasureFunction mTextMeasureFunction =
+      new YogaMeasureFunction() {
         @Override
         public long measure(
-            CSSNodeAPI node,
+            YogaNodeAPI node,
             float width,
-            CSSMeasureMode widthMode,
+            YogaMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode) {
+            YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
@@ -238,11 +239,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
+          boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||
-                  (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+                  (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
             layout = new StaticLayout(
@@ -279,11 +280,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
           if (mNumberOfLines != UNSET &&
               mNumberOfLines < layout.getLineCount()) {
-            return MeasureOutput.make(
+            return YogaMeasureOutput.make(
                 layout.getWidth(),
                 layout.getLineBottom(mNumberOfLines - 1));
           } else {
-            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -369,7 +370,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
-    if (getLayoutDirection() == CSSDirection.RTL) {
+    if (getLayoutDirection() == YogaDirection.RTL) {
       if (textAlign == Gravity.RIGHT) {
         textAlign = Gravity.LEFT;
       } else if (textAlign == Gravity.LEFT) {
