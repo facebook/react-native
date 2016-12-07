@@ -44,6 +44,21 @@ const requireNativeComponent = require('requireNativeComponent');
  *
  * Doesn't yet support other contained responders from blocking this scroll
  * view from becoming the responder.
+ *
+ *
+ * <ScrollView> vs <ListView> - which one to use?
+ * ScrollView simply renders all it’s react child components at once. That
+ * makes very easy to understand and use.
+ * On the other hand, this has performance downside. Imagine you have a very
+ * long list of items you want to display, worth of couple of your scollview’s
+ * heights. Creating js components and native views upfront for all its items,
+ * which may not even be shown, will contribute to slow rendering of your
+ * screen and increased memory usage.
+ *
+ * This is where ListView comes into play. ListView renders items lazily,
+ * just when they are about to appear. This lazyness comes at cost of more
+ * complicated API, which is worth it, unless you are rendering a small fixed
+ * set of items.
  */
 const ScrollView = React.createClass({
   propTypes: {
