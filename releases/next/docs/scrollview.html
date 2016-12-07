@@ -6,17 +6,7 @@ set the height of the view directly (discouraged) or make sure all parent
 views have bounded height. Forgetting to transfer <code>{flex: 1}</code> down the
 view stack can lead to errors here, which the element inspector makes
 easy to debug.</p><p>Doesn&#x27;t yet support other contained responders from blocking this scroll
-view from becoming the responder.</p><p><code>&lt;ScrollView&gt;</code> vs <code>&lt;ListView&gt;</code> - which one to use?
-ScrollView simply renders all its react child components at once. That
-makes it very easy to understand and use.
-On the other hand, this has a performance downside. Imagine you have a very
-long list of items you want to display, worth of couple of your ScrollView’s
-heights. Creating JS components and native views upfront for all its items,
-which may not even be shown, will contribute to slow rendering of your
-screen and increased memory usage.</p><p>This is where ListView comes into play. ListView renders items lazily,
-just when they are about to appear. This laziness comes at cost of a more
-complicated API, which is worth it unless you are rendering a small fixed
-set of items.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="docs/scrollview.html#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="view"></a><a href="docs/view.html#props">View props...</a> <a class="hash-link" href="docs/scrollview.html#view">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="contentcontainerstyle"></a>contentContainerStyle <span class="propType">StyleSheetPropType(ViewStylePropTypes)</span> <a class="hash-link" href="docs/scrollview.html#contentcontainerstyle">#</a></h4><div><p>These styles will be applied to the scroll view content container which
+view from becoming the responder.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="docs/scrollview.html#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="view"></a><a href="docs/view.html#props">View props...</a> <a class="hash-link" href="docs/scrollview.html#view">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="contentcontainerstyle"></a>contentContainerStyle <span class="propType">StyleSheetPropType(ViewStylePropTypes)</span> <a class="hash-link" href="docs/scrollview.html#contentcontainerstyle">#</a></h4><div><p>These styles will be applied to the scroll view content container which
 wraps all of the child views. Example:</p><p>  return (
     &lt;ScrollView contentContainerStyle={styles.contentContainer}&gt;
     &lt;/ScrollView&gt;
