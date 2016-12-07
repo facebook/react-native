@@ -61,7 +61,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     getTransformedFile,
   );
   const hasteMap = new HasteMap({
-    allowRelativePaths: true,
     extensions: ['js', 'json'],
     files,
     helpers,
