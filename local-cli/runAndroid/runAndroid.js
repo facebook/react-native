@@ -9,6 +9,7 @@
 'use strict';
 
 const adb = require('./adb');
+const parseAndroid = require ('./parseAndroid');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
@@ -151,20 +152,27 @@ function buildAndRun(args) {
   }
 
   try {
-    const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
-
+    const packageName = parseAndroid.getPackageNameFromManifest();
     const adbPath = getAdbPath();
-
     const devices = adb.getDevices();
+
+    let appIdWithSuffix;
+    console.log('Determining appId and package name');
+    if (args.appIdSuffix) {
+      appIdWithSuffix = packageName + '.' + args.appIdSuffix;
+    } else {
+      appIdWithSuffix = parseAndroid.getAppIdFromGradle(args.variant);
+      if (!appIdWithSuffix) {
+        appIdWithSuffix = packageName;
+        console.log('Could not find applicationId in build.gradle');
+      }
+    }
 
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
         const adbArgs =
-          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + args.mainActivity];
+          ['-s', device, 'shell', 'am', 'start', '-n', appIdWithSuffix + '/' + packageName + '.MainActivity'];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -251,6 +259,15 @@ module.exports = {
     default: 'Debug'
   }, {
     command: '--variant [string]',
+    default: 'debug',
+  }, {
+    command: '--appIdSuffix [string]',
+    description:
+      'Specify an applicationIdSuffix to launch after build. ' +
+      'By default the build will try to automatically determine ' +
+      'based on the variant you specify and `buildTypes` ' +
+      'in `app/build.grade`.',
+    default: '',
   }, {
     command: '--main-activity [string]',
     description: 'Name of the activity to start',
