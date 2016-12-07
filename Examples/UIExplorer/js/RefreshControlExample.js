@@ -101,6 +101,7 @@ class RefreshControlExample extends React.Component {
             titleColor="#00ff00"
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
+            progressViewOffset={0}
           />
         }>
         {rows}
