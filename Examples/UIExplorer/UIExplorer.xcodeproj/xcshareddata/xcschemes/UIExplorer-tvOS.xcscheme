@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D2A28121D9B038B00D4039D"
-               BuildableName = "libReact-tvOS.a"
+               BuildableName = "libReact.a"
                BlueprintName = "React-tvOS"
                ReferencedContainer = "container:../../React/React.xcodeproj">
             </BuildableReference>
