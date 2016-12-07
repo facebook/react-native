@@ -89,7 +89,7 @@ test:
 
 deployment:
   stable:
-    branch: [/.*-stable/, /master/]
+    branch: [/.*-stable/, /master/, /fix-navigationBar-androidStyle/]
     commands:
       # generate docs website
       - git config --global user.email "reactjs-bot@users.noreply.github.com"
