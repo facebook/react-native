@@ -18,9 +18,9 @@ var Platform = {
     var constants = require('NativeModules').IOSConstants;
     return constants ? constants.osVersion : '';
   },
-  get SystemName() {
+  get isTVOS() {
     var constants = require('NativeModules').IOSConstants;
-    return constants ? constants.systemName : '';
+    return constants ? (constants.interfaceIdiom === 'tv') : false;
   },
   select: (obj: Object) => obj.ios,
 };

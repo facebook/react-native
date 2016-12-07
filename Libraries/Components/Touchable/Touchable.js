@@ -15,12 +15,10 @@ const BoundingDimensions = require('BoundingDimensions');
 const Platform = require('Platform');
 const Position = require('Position');
 const React = require('React'); // eslint-disable-line no-unused-vars
-const ReactNative = require('ReactNative');
+const { findNodeHandle } = require('ReactNative');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
 const View = require('View');
-
-const isTVOS = (Platform && Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
 
 const TVEventHandler = require('TVEventHandler');
 
@@ -321,10 +319,10 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
 var TouchableMixin = {
 
   componentDidMount: function() {
-    if (isTVOS) {
+    if (Platform.isTVOS) {
       this._tvEventHandler = new TVEventHandler();
       this._tvEventHandler.enable(this, function(cmp, evt) {
-        var myTag = ReactNative.findNodeHandle(cmp);
+        var myTag = findNodeHandle(cmp);
         evt.dispatchConfig = {};
         if (myTag === evt.tag) {
           if (evt.eventType === 'focus') {

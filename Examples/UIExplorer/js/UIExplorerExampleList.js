@@ -32,6 +32,8 @@ const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
 const UIExplorerStatePersister = require('./UIExplorerStatePersister');
 
+const Platform = require('Platform');
+
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios';
@@ -66,7 +68,7 @@ class UIExplorerExampleList extends React.Component {
   render(): ?React.Element<any> {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => filterRegex.test(example.module.title);
+    const filter = (example) => filterRegex.test(example.module.title) && (!Platform.isTVOS || example.supportsTVOS);
 
     const dataSource = ds.cloneWithRowsAndSections({
       components: this.props.list.ComponentExamples.filter(filter),

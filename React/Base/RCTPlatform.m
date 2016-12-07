@@ -39,7 +39,11 @@ RCT_EXPORT_MODULE(IOSConstants)
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),
     @"osVersion": [device systemVersion],
     @"systemName": [device systemName],
+#if TARGET_OS_TV
+    @"interfaceIdiom": interfaceIdiom(UIUserInterfaceIdiomTV),
+#else
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
+#endif
   };
 }
 

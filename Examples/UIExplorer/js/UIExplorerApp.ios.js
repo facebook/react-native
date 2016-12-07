@@ -23,14 +23,11 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const isTVOS = (Platform && Platform.OS === 'ios' && Platform.SystemName === 'tvOS');
-
 const AsyncStorage = require('AsyncStorage');
 const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
-const UIExplorerList = (isTVOS ? require('./UIExplorerListTV.ios') : require('./UIExplorerList.ios'));
+const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
