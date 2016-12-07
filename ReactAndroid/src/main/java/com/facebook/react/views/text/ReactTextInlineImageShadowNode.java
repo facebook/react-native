@@ -9,11 +9,11 @@
 
 package com.facebook.react.views.text;
 
-import com.facebook.csslayout.CSSNode;
+import com.facebook.yoga.YogaNode;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
- * Base class for {@link CSSNode}s that represent inline images.
+ * Base class for {@link YogaNode}s that represent inline images.
  */
 public abstract class ReactTextInlineImageShadowNode extends LayoutShadowNode {
 

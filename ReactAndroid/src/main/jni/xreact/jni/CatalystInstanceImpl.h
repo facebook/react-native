@@ -40,6 +40,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
+  static bool isIndexedRAMBundle(const char *sourcePath);
+
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.

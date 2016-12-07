@@ -13,8 +13,8 @@
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
-  = ((error: Error) => mixed)
-  & ((error: null | void, a: A, b: B) => mixed);
+  = (Error => mixed)
+  & ((null | void, A, B) => mixed);
 
 type ResolveOptions = {
   log?: Console,
@@ -39,10 +39,13 @@ type Dependency = {|
 |};
 
 export type File = {|
-  ast: Object,
-  code?: string,
+  code: string,
+  map?: ?Object,
   path: string,
+  type: FileTypes,
 |};
+
+type FileTypes = 'module' | 'script';
 
 export type Module = {|
   dependencies: Array<Dependency>,
@@ -52,9 +55,14 @@ export type Module = {|
 export type GraphFn = (
   entryPoints: Iterable<string>,
   platform: string,
-  options?: GraphOptions,
-  callback?: Callback<Array<Module>>,
+  options?: ?GraphOptions,
+  callback?: Callback<GraphResult>,
 ) => void;
+
+export type GraphResult = {
+  entryModules: Array<Module>,
+  modules: Array<Module>,
+};
 
 export type ResolveFn = (
   id: string,
@@ -81,9 +89,9 @@ export type TransformedFile = {
   code: string,
   file: string,
   hasteID: ?string,
-  isPolyfill: boolean,
   package?: PackageData,
   transformed: {[variant: string]: TransformResult},
+  type: FileTypes,
 };
 
 export type PackageData = {|
