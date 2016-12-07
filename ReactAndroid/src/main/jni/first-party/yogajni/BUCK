@@ -16,7 +16,7 @@ if IS_OSS_BUILD:
       '-std=c++11',
     ],
     deps = [
-      '//ReactCommon/CSSLayout:CSSLayout',
+      '//ReactCommon/yoga:yoga',
       FBJNI_TARGET,
     ],
     visibility = ['PUBLIC'],

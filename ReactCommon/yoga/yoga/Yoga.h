@@ -54,7 +54,6 @@ typedef void (*YGFree)(void *ptr);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
-WIN_EXPORT void YGNodeInit(const YGNodeRef node);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
@@ -176,6 +175,6 @@ WIN_EXPORT void YGSetExperimentalFeatureEnabled(YGExperimentalFeature feature, b
 WIN_EXPORT bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature);
 
 WIN_EXPORT void
-YGSetMemoryFuncs(YGMalloc cssMalloc, YGCalloc cssCalloc, YGRealloc cssRealloc, YGFree cssFree);
+YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
 
 YG_EXTERN_C_END
