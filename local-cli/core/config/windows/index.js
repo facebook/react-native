@@ -15,7 +15,7 @@ const findPackageClassName = require('./findPackageClassName');
 const path = require('path');
 const generateGUID = require('./generateGUID');
 
-const relativeProjPath = (fullProjPath) => {
+const relativeProjectPath = (fullProjPath) => {
   const windowsPath = fullProjPath
                   .substring(fullProjPath.lastIndexOf("node_modules") - 1, fullProjPath.length)
                   .replace(/\//g, '\\');
@@ -98,23 +98,17 @@ exports.dependencyConfig = function dependencyConfigWindows(folder, userConfig) 
   const projectGUID = generateGUID();
   const pathGUID = generateGUID();
   const projectName = getProjectName(csProj);
-  const solutionInsert = `Project("{${projectGUID.toUpperCase()}}") = "${projectName}", "${relativeProjPath(csProj)}", "{${pathGUID.toUpperCase()}}"
-EndProject
-`;
-  const projectInsert = `<ProjectReference Include="..\\${relativeProjPath(csProj)}">
-      <Project>{${pathGUID}}</Project>
-      <Name>${projectName}</Name>
-    </ProjectReference>
-    `;
+  const relativeProjPath = relativeProjectPath(csProj);
 
   return {
     sourceDir,
     packageUsingPath,
     packageInstance,
-    solutionInsert,
-    projectInsert,
     projectName,
     csProj,
     folder,
+    projectGUID,
+    pathGUID,
+    relativeProjPath,
   };
 };

@@ -11,8 +11,8 @@ module.exports = function registerNativeWindowsModule(
   params,
   projectConfig
 ) {
-  applyPatch(projectConfig.projectPath, makeProjectPatch(windowsConfig.projectInsert), true);
-  applyPatch(projectConfig.solutionPath, makeSolutionPatch(windowsConfig.solutionInsert), true);
+  applyPatch(projectConfig.projectPath, makeProjectPatch(windowsConfig), true);
+  applyPatch(projectConfig.solutionPath, makeSolutionPatch(windowsConfig), true);
 
   applyPatch(
     projectConfig.mainPage,
