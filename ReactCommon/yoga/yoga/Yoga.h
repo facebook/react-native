@@ -175,6 +175,6 @@ WIN_EXPORT void YGSetExperimentalFeatureEnabled(YGExperimentalFeature feature, b
 WIN_EXPORT bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature);
 
 WIN_EXPORT void
-YGSetMemoryFuncs(YGMalloc cssMalloc, YGCalloc cssCalloc, YGRealloc cssRealloc, YGFree cssFree);
+YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
 
 YG_EXTERN_C_END

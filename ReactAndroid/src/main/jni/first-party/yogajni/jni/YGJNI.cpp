@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include <CSSLayout/Yoga.h>
+#include <yoga/Yoga.h>
 #include <fb/fbjni.h>
 #include <iostream>
 

@@ -5,8 +5,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := yogacore
 
 LOCAL_SRC_FILES := \
-  CSSLayout/Yoga.c \
-  CSSLayout/YGNodeList.c
+  yoga/Yoga.c \
+  yoga/YGNodeList.c
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
