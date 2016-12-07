@@ -20,7 +20,6 @@ const PACKAGE_JSON = path.sep + 'package.json';
 
 class HasteMap extends EventEmitter {
   constructor({
-    allowRelativePaths,
     extensions,
     files,
     moduleCache,
@@ -29,7 +28,6 @@ class HasteMap extends EventEmitter {
     platforms,
   }) {
     super();
-    this._allowRelativePaths = allowRelativePaths;
     this._extensions = extensions;
     this._files = files;
     this._helpers = helpers;
@@ -128,9 +126,6 @@ class HasteMap extends EventEmitter {
   }
 
   _processHastePackage(file, previousName) {
-    if (!this._allowRelativePaths) {
-      file = path.resolve(file);
-    }
     const p = this._moduleCache.getPackage(file);
     return p.isHaste()
       .then(isHaste => isHaste && p.getName()
