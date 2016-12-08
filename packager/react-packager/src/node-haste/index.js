@@ -38,6 +38,7 @@ const {
   print,
 } = require('../Logger');
 
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {
   Options as ModuleOptions,
   TransformCode,
@@ -53,7 +54,7 @@ class DependencyGraph {
     extraNodeModules: Object,
     forceNodeFilesystemAPI: boolean,
     ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers: number,
+    maxWorkers: ?number,
     mocksPattern: mixed,
     moduleOptions: ModuleOptions,
     platforms: Set<string>,
@@ -103,22 +104,22 @@ class DependencyGraph {
     assetDependencies: mixed,
     assetExts: Array<string>,
     cache: Cache,
-    extensions: Array<string>,
+    extensions?: ?Array<string>,
     extraNodeModules: Object,
     forceNodeFilesystemAPI?: boolean,
     ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers: number,
-    mocksPattern: mixed,
+    maxWorkers?: ?number,
+    mocksPattern?: mixed,
     moduleOptions: ?ModuleOptions,
     platforms: mixed,
     preferNativePlatform: boolean,
     providesModuleNodeModules: Array<string>,
     resetCache: boolean,
     roots: Array<string>,
-    shouldThrowOnUnresolvedErrors: () => boolean,
+    shouldThrowOnUnresolvedErrors?: () => boolean,
     transformCacheKey: string,
     transformCode: TransformCode,
-    useWatchman: boolean,
+    useWatchman?: ?boolean,
     watch: boolean,
   }) {
     this._opts = {
@@ -272,8 +273,8 @@ class DependencyGraph {
   }: {
     entryPath: string,
     platform: string,
-    transformOptions: {},
-    onProgress: () => void,
+    transformOptions: TransformOptions,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
   }) {
     return this.load().then(() => {

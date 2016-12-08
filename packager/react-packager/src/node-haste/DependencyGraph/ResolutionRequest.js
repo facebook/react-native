@@ -124,7 +124,7 @@ class ResolutionRequest {
   }: {
     response: ResolutionResponse,
     transformOptions: Object,
-    onProgress: () => void,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
   }) {
     const entry = this._moduleCache.getModule(this._entryPath);
