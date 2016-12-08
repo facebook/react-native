@@ -21,7 +21,6 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
@@ -200,7 +199,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
    */
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
 }
 
@@ -216,7 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-    [weakSelf requestReload];
+    [weakSelf reload];
   }];
 #endif
 }
@@ -273,7 +271,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)requestReload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
   [self reload];
 }
 
