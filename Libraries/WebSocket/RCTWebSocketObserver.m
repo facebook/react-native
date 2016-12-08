@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTWebSocketManager.h"
+#import "RCTWebSocketObserver.h"
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
