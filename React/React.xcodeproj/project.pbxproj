@@ -710,6 +710,9 @@
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
+		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
+		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
@@ -1335,6 +1338,8 @@
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTConvert.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
 		83F15A171B7CC46900F10295 /* UIView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+Private.h"; sourceTree = "<group>"; };
+		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
+		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "oss-compat-util.h"; sourceTree = "<group>"; };
@@ -1725,6 +1730,8 @@
 				142014171B32094000CC17BA /* RCTPerformanceLogger.m */,
 				3D7749421DC1065C007EC8D8 /* RCTPlatform.h */,
 				3D7749431DC1065C007EC8D8 /* RCTPlatform.m */,
+				A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */,
+				A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */,
 				830A229C1A66C68A008503DA /* RCTRootView.h */,
 				830A229D1A66C68A008503DA /* RCTRootView.m */,
 				13AFBCA21C07287B00BBAEAA /* RCTRootViewDelegate.h */,
@@ -1856,6 +1863,7 @@
 				3D302F851DF828F800D6DDAE /* RCTProgressViewManager.h in Headers */,
 				3D302F861DF828F800D6DDAE /* RCTRefreshControl.h in Headers */,
 				3D302F871DF828F800D6DDAE /* RCTRefreshControlManager.h in Headers */,
+				A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */,
 				3D302F881DF828F800D6DDAE /* RCTRootShadowView.h in Headers */,
 				3D302F891DF828F800D6DDAE /* RCTScrollableProtocol.h in Headers */,
 				3D302F8A1DF828F800D6DDAE /* RCTScrollView.h in Headers */,
@@ -2042,6 +2050,7 @@
 				3D80DA791DF820620028D040 /* RCTPointerEvents.h in Headers */,
 				3D80DA7A1DF820620028D040 /* RCTProgressViewManager.h in Headers */,
 				3D80DA7B1DF820620028D040 /* RCTRefreshControl.h in Headers */,
+				A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */,
 				3D80DA7C1DF820620028D040 /* RCTRefreshControlManager.h in Headers */,
 				3D80DA7D1DF820620028D040 /* RCTRootShadowView.h in Headers */,
 				3D80DA7E1DF820620028D040 /* RCTScrollableProtocol.h in Headers */,
@@ -2519,6 +2528,7 @@
 				369123E11DDC75850095B341 /* JSCSamplingProfiler.m in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
 				13B080051A6947C200A75B9A /* RCTScrollView.m in Sources */,
+				A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */,
 				E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */,
 				3D7A27E21DE325B7002E3F95 /* RCTJSCErrorHandling.mm in Sources */,
 				13A0C2891B74F71200B29F6F /* RCTDevLoadingView.m in Sources */,

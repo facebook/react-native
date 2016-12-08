@@ -14,11 +14,11 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
+#import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
@@ -119,6 +119,9 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 }
 #endif
 
+@interface RCTBridge () <RCTReloadListener>
+@end
+
 @implementation RCTBridge
 {
   NSURL *_delegateBundleURL;
@@ -207,16 +210,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTAssertMainQueue();
 
 #if TARGET_IPHONE_SIMULATOR
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  // reload in current mode
-  __weak typeof(self) weakSelf = self;
-  [commands registerKeyCommandWithInput:@"r"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-    [weakSelf reload];
-  }];
+  RCTRegisterReloadCommandListener(self);
 #endif
+}
+
+- (void)didReceiveReloadCommand
+{
+  [self reload];
 }
 
 - (NSArray<Class> *)moduleClasses
