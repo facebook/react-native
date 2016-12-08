@@ -28,7 +28,7 @@ $ npm install -g react-native-git-upgrade
 or, using [Yarn](https://yarnpkg.com/):
 
 ```shell
-$ yarn add global react-native-git-upgrade
+$ yarn global add react-native-git-upgrade
 ```
 
 Then, run it inside your project directory:
