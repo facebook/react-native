@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +47,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.Protocol;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -61,6 +63,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
+
+  /**
+  * To disable http2 support for okhttp3(js fetch used okhttp3),
+  * please put code below in your MainApplication.onCreate():
+  *      NetworkingModule.disableHTTP2 = true;
+  */
+  public  static boolean disableHTTP2 = false;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -83,6 +92,20 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       client = clientBuilder.build();
     }
+
+    // Disable http2, There is a bug(https://github.com/square/okhttp/issues/2506) in OKHttp3,
+    // Which lead to crash while communicating(js fetch) with nginx via HTTP2
+    // For how to repro http2 bug in react native, please check this bug(https://github.com/facebook/react-native/issues/11283)
+    if (NetworkingModule.disableHTTP2) {
+       List<Protocol> protocolList = new ArrayList<>();
+       protocolList.add(Protocol.SPDY_3);
+       protocolList.add(Protocol.HTTP_1_1);
+
+       OkHttpClient.Builder clientBuilder = client.newBuilder();
+       clientBuilder = clientBuilder.protocols(protocolList);
+       client = clientBuilder.build();
+    }
+
     mClient = client;
     OkHttpClientProvider.replaceOkHttpClient(client);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
