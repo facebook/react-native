@@ -18,8 +18,6 @@
 
 #if RCT_DEV // Only supported in dev mode
 
-#pragma mark - RCTWebSocketObserver
-
 @interface RCTWebSocketObserver () <RCTSRWebSocketDelegate>
 @end
 
@@ -87,58 +85,6 @@
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
   [self reconnect];
-}
-
-@end
-
-#pragma mark - RCTWebSocketManager
-
-@interface RCTWebSocketManager()
-
-@property (nonatomic, strong) NSMutableDictionary *sockets;
-
-@end
-
-@implementation RCTWebSocketManager
-
-+ (instancetype)sharedInstance
-{
-  static RCTWebSocketManager *sharedInstance = nil;
-  static dispatch_once_t onceToken;
-
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [self new];
-  });
-
-  return sharedInstance;
-}
-
-- (void)setDelegate:(id<RCTWebSocketProxyDelegate>)delegate forURL:(NSURL *)url
-{
-  NSString *key = [url absoluteString];
-  RCTWebSocketObserver *observer = _sockets[key];
-
-  if (observer) {
-    if (!delegate) {
-      [observer stop];
-      [_sockets removeObjectForKey:key];
-    } else {
-      observer.delegate = delegate;
-    }
-  } else {
-    RCTWebSocketObserver *newObserver = [[RCTWebSocketObserver alloc] initWithURL:url];
-    newObserver.delegate = delegate;
-    [newObserver start];
-    _sockets[key] = newObserver;
-  }
-}
-
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _sockets = [NSMutableDictionary new];
-  }
-  return self;
 }
 
 @end

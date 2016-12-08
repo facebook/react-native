@@ -267,13 +267,38 @@ RCT_EXPORT_MODULE()
 // TODO: Move non-UI logic into separate RCTDevSettings module
 - (void)connectPackager
 {
-  Class webSocketManagerClass = objc_lookUpClass("RCTWebSocketManager");
-  id<RCTWebSocketProxy> webSocketManager = (id <RCTWebSocketProxy>)[webSocketManagerClass sharedInstance];
+  RCTAssertMainQueue();
+
   NSURL *url = [self packagerURL];
-  if (url) {
-    [webSocketManager setDelegate:self forURL:url];
+  if (!url) {
+    return;
+  }
+
+  Class webSocketObserverClass = objc_lookUpClass("RCTWebSocketObserver");
+  if (webSocketObserverClass == Nil) {
+    return;
+  }
+
+  // If multiple RCTDevMenus are created, the most recently connected one steals the RCTWebSocketObserver.
+  // (Why this behavior exists is beyond me, as of this writing.)
+  static NSMutableDictionary<NSString *, id<RCTWebSocketObserver>> *observers = nil;
+  if (observers == nil) {
+    observers = [NSMutableDictionary new];
+  }
+
+  NSString *key = [url absoluteString];
+  id<RCTWebSocketObserver> existingObserver = observers[key];
+  if (existingObserver) {
+    existingObserver.delegate = self;
+  } else {
+    id<RCTWebSocketObserver> newObserver = [(id<RCTWebSocketObserver>)[webSocketObserverClass alloc] initWithURL:url];
+    newObserver.delegate = self;
+    [newObserver start];
+    observers[key] = newObserver;
   }
 }
+
+
 
 - (BOOL)isSupportedVersion:(NSNumber *)version
 {

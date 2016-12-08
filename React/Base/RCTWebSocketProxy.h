@@ -17,6 +17,7 @@
 @protocol RCTWebSocketObserver
 - (instancetype)initWithURL:(NSURL *)url;
 @property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
+- (void)start;
 @end
 
 @protocol RCTWebSocketProxy
