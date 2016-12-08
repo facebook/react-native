@@ -101,7 +101,6 @@
 @interface RCTWebSocketManager()
 
 @property (nonatomic, strong) NSMutableDictionary *sockets;
-@property (nonatomic, strong) dispatch_queue_t queue;
 
 @end
 
@@ -142,7 +141,6 @@
 {
   if ((self = [super init])) {
     _sockets = [NSMutableDictionary new];
-    _queue = dispatch_queue_create("com.facebook.react.WebSocketManager", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
