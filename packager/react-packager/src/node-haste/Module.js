@@ -25,16 +25,18 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {SourceMap} from '../lib/SourceMap';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 
 type ReadResult = {
-  code?: string,
+  code: string,
   dependencies?: ?Array<string>,
   dependencyOffsets?: ?Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
+  source: string,
 };
 
 export type TransformCode = (
@@ -122,7 +124,7 @@ class Module {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName(): Promise<string | number> {
+  getName(): Promise<string> {
     return this._cache.get(
       this.path,
       'name',
@@ -209,9 +211,10 @@ class Module {
     id?: string,
     extern: boolean,
     result: TransformedCode,
-  ) {
+  ): ReadResult {
     if (this._options.cacheTransformResults === false) {
       const {dependencies} = result;
+      /* $FlowFixMe: this code path is dead, remove. */
       return {dependencies};
     }
     return {...result, id, source};

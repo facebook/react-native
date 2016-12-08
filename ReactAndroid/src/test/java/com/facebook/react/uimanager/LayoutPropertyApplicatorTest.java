@@ -11,11 +11,11 @@ package com.facebook.react.uimanager;
 
 import android.util.DisplayMetrics;
 
-import com.facebook.csslayout.YogaAlign;
-import com.facebook.csslayout.YogaConstants;
-import com.facebook.csslayout.YogaFlexDirection;
-import com.facebook.csslayout.YogaJustify;
-import com.facebook.csslayout.YogaPositionType;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaPositionType;
 import com.facebook.react.bridge.JavaOnlyMap;
 
 import org.junit.After;

@@ -13,17 +13,17 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.YogaAlign;
-import com.facebook.csslayout.YogaEdge;
-import com.facebook.csslayout.YogaConstants;
-import com.facebook.csslayout.YogaDirection;
-import com.facebook.csslayout.YogaFlexDirection;
-import com.facebook.csslayout.YogaJustify;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNode;
-import com.facebook.csslayout.YogaOverflow;
-import com.facebook.csslayout.YogaPositionType;
-import com.facebook.csslayout.YogaWrap;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaOverflow;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
@@ -659,7 +659,7 @@ public class ReactShadowNode {
     if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) &&
         getChildCount() != 0) {
       throw new RuntimeException(
-        "Since a node with a measure function does not add any native CSSLayout children, it's " +
+        "Since a node with a measure function does not add any native yoga children, it's " +
           "not safe to transition to/from having a measure function unless a node has no children");
     }
     mYogaNode.setMeasureFunction(measureFunction);

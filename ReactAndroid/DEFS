@@ -35,7 +35,7 @@ JSC_DEPS = [
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
 
-CSSLAYOUT_TARGET = '//ReactAndroid/src/main/java/com/facebook:csslayout'
+YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
 FBJNI_TARGET = '//ReactAndroid/src/main/jni/first-party/fb:jni'
 JNI_TARGET = '//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack'
@@ -103,14 +103,14 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
                                                'buck-out/bin'))
 
   # RN tests use  Powermock, which means they get their own ClassLoaders.
-  # Because the csslayout native library (or any native library) can only be loaded into one
+  # Because the yoga native library (or any native library) can only be loaded into one
   # ClassLoader at a time, we need to run each in its own process, hence fork_mode = 'per_test'.
   robolectric_test(
     name = name,
     use_cxx_libraries = True,
     cxx_library_whitelist = [
-      '//ReactCommon/CSSLayout:CSSLayout',
-      '//ReactAndroid/src/main/jni/first-party/csslayoutjni:jni',
+      '//ReactCommon/yoga:yoga',
+      '//ReactAndroid/src/main/jni/first-party/yogajni:jni',
     ],
     fork_mode = 'per_test',
     srcs = srcs,

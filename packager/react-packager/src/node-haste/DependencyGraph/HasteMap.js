@@ -126,7 +126,6 @@ class HasteMap extends EventEmitter {
   }
 
   _processHastePackage(file, previousName) {
-    file = path.resolve(file);
     const p = this._moduleCache.getPackage(file);
     return p.isHaste()
       .then(isHaste => isHaste && p.getName()
