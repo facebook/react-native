@@ -12,6 +12,9 @@
 
 #if RCT_DEV // Only supported in dev mode
 
+@interface RCTWebSocketObserver : NSObject <RCTWebSocketObserver>
+@end
+
 @interface RCTWebSocketManager : NSObject <RCTWebSocketProxy>
 @end
 
