@@ -12,6 +12,13 @@
 
 #if RCT_DEV // Only supported in dev mode
 
+@protocol RCTWebSocketProxyDelegate;
+
+@protocol RCTWebSocketObserver
+- (instancetype)initWithURL:(NSURL *)url;
+@property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
+@end
+
 @protocol RCTWebSocketProxy
 
 + (instancetype)sharedInstance;

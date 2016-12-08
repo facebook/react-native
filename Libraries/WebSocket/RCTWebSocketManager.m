@@ -20,18 +20,15 @@
 
 #pragma mark - RCTWebSocketObserver
 
-@interface RCTWebSocketObserver : NSObject <RCTSRWebSocketDelegate> {
+@interface RCTWebSocketObserver () <RCTSRWebSocketDelegate>
+@end
+
+@implementation RCTWebSocketObserver {
   NSURL *_url;
   RCTSRWebSocket *_socket;
 }
 
-- (instancetype)initWithURL:(NSURL *)url;
-
-@property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
-
-@end
-
-@implementation RCTWebSocketObserver
+@synthesize delegate = _delegate;
 
 - (instancetype)initWithURL:(NSURL *)url
 {
