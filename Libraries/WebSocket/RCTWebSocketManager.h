@@ -15,7 +15,4 @@
 @interface RCTWebSocketObserver : NSObject <RCTWebSocketObserver>
 @end
 
-@interface RCTWebSocketManager : NSObject <RCTWebSocketProxy>
-@end
-
 #endif
