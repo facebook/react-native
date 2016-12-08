@@ -11,8 +11,14 @@
 
 #if RCT_DEV // Only supported in dev mode
 
-@protocol RCTWebSocketProxyDelegate
+@protocol RCTWebSocketObserverDelegate
 - (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message;
+@end
+
+@protocol RCTWebSocketObserver
+- (instancetype)initWithURL:(NSURL *)url;
+@property (nonatomic, weak) id<RCTWebSocketObserverDelegate> delegate;
+- (void)start;
 @end
 
 #endif

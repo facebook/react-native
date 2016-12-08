@@ -20,7 +20,7 @@
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTUtils.h"
-#import "RCTWebSocketProxy.h"
+#import "RCTWebSocketObserverProtocol.h"
 
 #if RCT_DEV
 
@@ -131,7 +131,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketProxyDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketObserverDelegate>
 
 @property (nonatomic, strong) Class executorClass;
 
