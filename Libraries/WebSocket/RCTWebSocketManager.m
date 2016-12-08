@@ -22,23 +22,21 @@
 
 @interface RCTWebSocketObserver : NSObject <RCTSRWebSocketDelegate> {
   NSURL *_url;
+  RCTSRWebSocket *_socket;
 }
 
-@property (nonatomic, strong) RCTSRWebSocket *socket;
-@property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
-@property (nonatomic, strong) dispatch_semaphore_t socketOpenSemaphore;
+- (instancetype)initWithURL:(NSURL *)url;
 
-- (instancetype)initWithURL:(NSURL *)url delegate:(id<RCTWebSocketProxyDelegate>)delegate;
+@property (nonatomic, weak) id<RCTWebSocketProxyDelegate> delegate;
 
 @end
 
 @implementation RCTWebSocketObserver
 
-- (instancetype)initWithURL:(NSURL *)url delegate:(id<RCTWebSocketProxyDelegate>)delegate
+- (instancetype)initWithURL:(NSURL *)url
 {
   if ((self = [self init])) {
     _url = url;
-    _delegate = delegate;
 }
   return self;
 }
@@ -131,7 +129,8 @@
       observer.delegate = delegate;
     }
   } else {
-    RCTWebSocketObserver *newObserver = [[RCTWebSocketObserver alloc] initWithURL:url delegate:delegate];
+    RCTWebSocketObserver *newObserver = [[RCTWebSocketObserver alloc] initWithURL:url];
+    newObserver.delegate = delegate;
     [newObserver start];
     _sockets[key] = newObserver;
   }
