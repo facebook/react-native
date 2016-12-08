@@ -260,7 +260,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(YES)];
+                                                body:RCTExportedDimensions((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? NO : YES)];
 #pragma clang diagnostic pop
   }
 
