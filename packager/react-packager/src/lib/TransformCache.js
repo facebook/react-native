@@ -29,6 +29,7 @@ const CACHE_NAME = 'react-native-packager-cache';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {SourceMap} from './SourceMap';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -79,7 +80,7 @@ export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
 };
 
 /**
@@ -227,7 +228,7 @@ function readMetadataFileSync(
   cachedSourceHash: number,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  sourceMap: ?{},
+  sourceMap: ?SourceMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
   let metadata;
