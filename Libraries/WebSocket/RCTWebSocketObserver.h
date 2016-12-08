@@ -8,18 +8,11 @@
  */
 
 #import <React/RCTDefines.h>
-#import <React/RCTWebSocketProxyDelegate.h>
+#import <React/RCTWebSocketObserverProtocol.h>
 
 #if RCT_DEV // Only supported in dev mode
 
-@protocol RCTWebSocketProxy
-
-+ (instancetype)sharedInstance;
-
-- (void)setDelegate:(id<RCTWebSocketProxyDelegate>)delegate forURL:(NSURL *)url;
-
-- (instancetype)init   __attribute__((unavailable("init not available, call sharedInstance instead")));
-
+@interface RCTWebSocketObserver : NSObject <RCTWebSocketObserver>
 @end
 
 #endif

@@ -379,11 +379,26 @@ void JSCExecutor::loadApplicationScript(
 {
   String jsSourceURL(m_context, sourceURL.c_str());
 
-  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
-  if (!bcSourceCode) {
+  JSCompiledSourceError jsError;
+  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+
+  if (jsError == JSCompiledSourceErrorOnRead ||
+      jsError == JSCompiledSourceErrorNotCompiled) {
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
+  } else if (jsError == JSCompiledSourceErrorVersionMismatch) {
+    throw std::runtime_error("Compiled Source Version Mismatch");
   }
+
+  folly::throwOnFail<std::runtime_error>(
+    jsError == JSCompiledSourceErrorNone,
+    "Unhandled Compiled Source Error"
+  );
+
+  folly::throwOnFail<std::runtime_error>(
+    bcSourceCode != nullptr,
+    "Unexpected error opening compiled bundle"
+  );
 
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
