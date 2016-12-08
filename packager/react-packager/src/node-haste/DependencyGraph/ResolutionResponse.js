@@ -13,21 +13,26 @@
 
 import Module from '../Module';
 
+import type {Options as TransformOptions} from '../../JSTransformer/worker/worker';
+
 const NO_OPTIONS = {};
 
 class ResolutionResponse {
 
-  transformOptions: {};
+  transformOptions: TransformOptions;
   dependencies: Array<Module>;
   mainModuleId: ?(number | string);
   mocks: mixed;
   numPrependedDependencies: number;
 
+  // This is monkey-patched from Resolver.
+  getModuleId: ?() => number;
+
   _mappings: {};
   _finalized: boolean;
   _mainModule: ?Module;
 
-  constructor({transformOptions}: {transformOptions: {}}) {
+  constructor({transformOptions}: {transformOptions: TransformOptions}) {
     this.transformOptions = transformOptions;
     this.dependencies = [];
     this.mainModuleId = null;
@@ -76,7 +81,7 @@ class ResolutionResponse {
     }
   }
 
-  finalize() {
+  finalize(): ResolutionResponse {
     /* $FlowFixMe: _mainModule is not initialized in the constructor. */
     return this._mainModule.getName().then(id => {
       this.mainModuleId = id;

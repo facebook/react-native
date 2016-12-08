@@ -18,7 +18,7 @@ const invariant = require('invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap} from 'babel-core';
+import type {Ast, SourceMap, TransformOptions} from 'babel-core';
 
 function makeTransformParams(filename, sourceCode, options) {
   if (filename.endsWith('.json')) {
@@ -31,7 +31,7 @@ export type TransformedCode = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
 };
 
 type Transform = (
@@ -47,7 +47,13 @@ type Transform = (
 ) => void;
 
 export type Options = {
-  transform?: {projectRoots: Array<string>},
+  transform: {
+    projectRoots: Array<string>,
+    ramGroups: Array<string>,
+    platform: string,
+    preloadedModules: Array<string>,
+  } & TransformOptions,
+  platform: string,
 };
 
 export type Data = {
@@ -132,7 +138,7 @@ exports.transformAndExtractDependencies = (
   transform: string,
   filename: string,
   sourceCode: string,
-  options: ?Options,
+  options: Options,
   callback: Callback,
 ) => {
   /* $FlowFixMe: impossible to type a dynamic require */
