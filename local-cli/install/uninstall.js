@@ -21,7 +21,7 @@ log.heading = 'rnpm-install';
 function uninstall(args, config) {
   const name = args[0];
 
-  var res = spawnSync('rnpm', ['unlink', name], spawnOpts);
+  var res = spawnSync('react-native', ['unlink', name], spawnOpts);
 
   if (res.status) {
     process.exit(res.status);

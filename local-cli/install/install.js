@@ -27,7 +27,7 @@ function install(args, config) {
     process.exit(res.status);
   }
 
-  res = spawnSync('rnpm', ['link', name], spawnOpts);
+  res = spawnSync('react-native', ['link', name], spawnOpts);
 
   if (res.status) {
     process.exit(res.status);
