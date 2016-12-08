@@ -490,9 +490,13 @@ class WebView extends React.Component {
   };
 
   /**
-    * Injects Javascript into the currently
-    * running view.
-     */
+    * Injects a javascript string into the referenced
+    * WebView. Deliberately does not return a response
+    * because using eval() to return a response breaks
+    * this method on pages with a Content Security Policy
+    * that disallows eval(). If you need that functionality,
+    * look into postMessage/onMessage.
+    */
   injectJavaScript = (data) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
