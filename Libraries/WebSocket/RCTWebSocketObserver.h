@@ -8,7 +8,7 @@
  */
 
 #import <React/RCTDefines.h>
-#import <React/RCTWebSocketProxy.h>
+#import <React/RCTWebSocketObserverProtocol.h>
 
 #if RCT_DEV // Only supported in dev mode
 
