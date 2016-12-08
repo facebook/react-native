@@ -11,8 +11,6 @@
 
 #if RCT_DEV // Only supported in dev mode
 
-@protocol RCTWebSocketProxy;
-
 @protocol RCTWebSocketProxyDelegate
 - (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message;
 @end

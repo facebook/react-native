@@ -20,14 +20,4 @@
 - (void)start;
 @end
 
-@protocol RCTWebSocketProxy
-
-+ (instancetype)sharedInstance;
-
-- (void)setDelegate:(id<RCTWebSocketProxyDelegate>)delegate forURL:(NSURL *)url;
-
-- (instancetype)init   __attribute__((unavailable("init not available, call sharedInstance instead")));
-
-@end
-
 #endif
