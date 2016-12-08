@@ -14,7 +14,7 @@
 @protocol RCTWebSocketProxy;
 
 @protocol RCTWebSocketProxyDelegate
-- (void)socketProxy:(id<RCTWebSocketProxy>)sender didReceiveMessage:(NSDictionary<NSString *, id> *)message;
+- (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message;
 @end
 
 #endif

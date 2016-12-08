@@ -66,7 +66,7 @@
     NSDictionary<NSString *, id> *msg = RCTJSONParse(message, &error);
 
     if (!error) {
-      [_delegate socketProxy:[RCTWebSocketManager sharedInstance] didReceiveMessage:msg];
+      [_delegate didReceiveWebSocketMessage:msg];
     } else {
       RCTLogError(@"WebSocketManager failed to parse message with error %@\n<message>\n%@\n</message>", error, message);
     }
