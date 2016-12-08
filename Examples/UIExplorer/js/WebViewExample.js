@@ -264,6 +264,39 @@ class MessagingTest extends React.Component {
   }
 }
 
+class InjectJS extends React.Component {
+  webview = null;
+  injectJS = () => {
+    const script = `
+    var colors = ['green', 'red', 'blue', 'purple', 'yellow'];
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    document.body.style.backgroundColor = color;
+    `;
+    if (this.webview) {
+      this.webview.injectJavaScript(script);
+    }
+  }
+  render() {
+    return (
+      <View>
+        <WebView
+          ref={webview => { this.webview = webview; }}
+          style={{
+            backgroundColor: BGWASH,
+            height: 300,
+          }}
+          source={{uri: 'https://www.google.com'}}
+          scalesPageToFit={true}
+        />
+        <View style={styles.buttons}>
+          <Button text="Inject JS (change bg color of webpage)" enabled onPress={this.injectJS} />
+        </View>
+    </View>
+    );
+  }
+}
+
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -442,5 +475,9 @@ exports.examples = [
   {
     title: 'Mesaging Test',
     render(): ReactElement<any> { return <MessagingTest />; }
-  }
+  },
+  {
+    title: 'Inject JavaScript',
+    render(): React.Element<any> { return <InjectJS/>; }
+  },
 ];
