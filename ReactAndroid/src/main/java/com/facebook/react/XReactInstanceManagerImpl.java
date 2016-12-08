@@ -810,6 +810,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     appParams.putDouble("rootTag", rootTag);
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    rootView.onAttachedToReactInstance();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 

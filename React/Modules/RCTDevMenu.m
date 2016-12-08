@@ -563,7 +563,7 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge requestReload];
+  [_bridge reload];
 }
 
 RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
