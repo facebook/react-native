@@ -19,6 +19,7 @@
 - (instancetype)initWithURL:(NSURL *)url;
 @property (nonatomic, weak) id<RCTWebSocketObserverDelegate> delegate;
 - (void)start;
+- (void)stop;
 @end
 
 #endif
