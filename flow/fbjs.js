@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2013-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -7,12 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTDefines.h>
-#import <React/RCTWebSocketProxy.h>
+declare module 'fbjs/lib/invariant' {
+  declare function exports<T>(condition: any, message: string, ...args: Array<any>): void;
+}
 
-#if RCT_DEV // Only supported in dev mode
-
-@interface RCTWebSocketManager : NSObject <RCTWebSocketProxy>
-@end
-
-#endif
+declare module 'fbjs/lib/nullthrows' {
+  declare function exports<T>(value: ?T): T;
+}
