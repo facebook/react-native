@@ -49,7 +49,7 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 static NSString *RCTGenerateFormBoundary()
 {
   const size_t boundaryLength = 70;
-  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./";
+  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char*)malloc(boundaryLength);
   size_t charCount = strlen(boundaryChars);
@@ -117,7 +117,7 @@ static NSString *RCTGenerateFormBoundary()
   // We've processed the last item. Finish and return.
   [_multipartBody appendData:[[NSString stringWithFormat:@"--%@--\r\n", _boundary]
                               dataUsingEncoding:NSUTF8StringEncoding]];
-  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=\"%@\"", _boundary];
+  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", _boundary];
   return _callback(nil, @{@"body": _multipartBody, @"contentType": contentType});
 }
 
