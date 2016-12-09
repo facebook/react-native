@@ -56,6 +56,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
     case 'sublime':
     case 'wstorm':
     case 'appcode':
+    case 'charm':
     case 'idea':  
       return [fileName + ':' + lineNumber];
     case 'joe':
