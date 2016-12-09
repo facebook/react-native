@@ -21,7 +21,6 @@ import type {
   File,
   GraphFn,
   LoadFn,
-  Module,
   ResolveFn,
 } from './types.flow';
 
@@ -70,17 +69,16 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
       return;
     }
 
-    const modules: Map<string | null, Module> = new Map();
-    modules.set(null, createParentModule());
-
     const loadQueue: LoadQueue = queue(seq(
       ({id, parent}, cb) => resolve(id, parent, platform, options || NO_OPTIONS, cb),
       memoize((file, cb) => load(file, {log, optimize}, cb)),
     ), Number.MAX_SAFE_INTEGER);
 
+    const {collect, loadModule} = createGraphHelpers(loadQueue, cwd, skip);
+
     loadQueue.drain = () => {
       loadQueue.kill();
-      callback(null, collect(null, modules));
+      callback(null, collect());
     };
     loadQueue.error = error => {
       loadQueue.error = noop;
@@ -90,7 +88,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
 
     let i = 0;
     for (const entryPoint of entryPoints) {
-      loadModule(entryPoint, null, i++, loadQueue, modules, skip, cwd, callback);
+      loadModule(entryPoint, null, i++);
     }
 
     if (i === 0) {
@@ -103,19 +101,50 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
   return Graph;
 };
 
-function loadModule(
-  id: string,
-  parent: string | null,
-  parentDependencyIndex: number,
-  loadQueue: LoadQueue,
-  modules: Map<string | null, Module>,
-  skip?: Set<string>,
-  cwd: string,
-) {
+function createGraphHelpers(loadQueue, cwd, skip) {
+  const modules = new Map([[null, createParentModule()]]);
+
+  function collect(
+    path = null,
+    serialized = {entryModules: [], modules: []},
+    seen = new Set(),
+  ) {
+    const module = modules.get(path);
+    if (module == null || seen.has(path)) {
+      return serialized;
+    }
+
+    const {dependencies} = module;
+    if (path === null) {
+      serialized.entryModules =
+        dependencies.map(dep => nullthrows(modules.get(dep.path)));
+    } else {
+      serialized.modules.push(module);
+      seen.add(path);
+    }
+
+    for (const dependency of dependencies) {
+      collect(dependency.path, serialized, seen);
+    }
+
+    return serialized;
+  }
+
+  function loadModule(id, parent, parentDepIndex) {
+    loadQueue.push(
+      {id, parent: parent != null ? parent : cwd},
+      (error, file, dependencyIDs) =>
+        onFileLoaded(error, file, dependencyIDs, id, parent, parentDepIndex),
+    );
+  }
+
   function onFileLoaded(
-    error?: ?Error,
-    file?: File,
-    dependencyIDs?: Array<string>,
+    error,
+    file,
+    dependencyIDs,
+    id,
+    parent,
+    parentDependencyIndex,
   ) {
     if (error) {
       return;
@@ -129,38 +158,16 @@ function loadModule(
     parentModule.dependencies[parentDependencyIndex] = {id, path};
 
     if ((!skip || !skip.has(path)) && !modules.has(path)) {
-      const dependencies = Array(dependencyIDs.length);
-      modules.set(path, {dependencies, file: nullthrows(file)});
+      const module = {
+        dependencies: Array(dependencyIDs.length),
+        file: nullthrows(file),
+      };
+      modules.set(path, module);
       for (let i = 0; i < dependencyIDs.length; ++i) {
-        loadModule(dependencyIDs[i], path, i, loadQueue, modules, skip, cwd);
+        loadModule(dependencyIDs[i], path, i);
       }
     }
   }
 
-  loadQueue.push(
-    {id, parent: parent != null ? parent : cwd},
-    onFileLoaded,
-  );
-}
-
-function collect(
-  path,
-  modules,
-  serialized = [],
-  seen: Set<string | null> = new Set(),
-): Array<Module> {
-  const module = modules.get(path);
-  if (!module || seen.has(path)) { return serialized; }
-
-  if (path !== null) {
-    serialized.push(module);
-    seen.add(path);
-  }
-
-  const {dependencies} = module;
-  for (var i = 0; i < dependencies.length; i++) {
-    collect(dependencies[i].path, modules, serialized, seen);
-  }
-
-  return serialized;
+  return {collect, loadModule};
 }

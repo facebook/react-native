@@ -14,9 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -33,7 +34,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   private static final String REACT_CLASS = "AndroidSwitch";
 
   static class ReactSwitchShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -45,11 +46,11 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNodeAPI node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode) {
+        YogaMeasureMode heightMode) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same
@@ -64,7 +65,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         mMeasured = true;
       }
 
-      return MeasureOutput.make(mWidth, mHeight);
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 

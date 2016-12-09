@@ -197,7 +197,7 @@ class Device {
 
   _handleWrappedEvent(event: WrappedEvent) {
     const payload = nullthrows(event.payload);
-    const socket = this._connections.get(payload.pageId);
+    const socket = this._connections.get(nullthrows(payload.pageId));
     if (!socket) {
       console.error('Invalid pageId from device:', payload.pageId);
       return;

@@ -33,10 +33,9 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
     reinterpret_cast<char *>(m_table.data.get()), m_table.byteLength());
 
   // read the startup code
-  m_startupCode =
-    std::make_unique<facebook::react::JSBigBufferString>(startupCodeSize);
+  m_startupCode = std::unique_ptr<JSBigBufferString>(new JSBigBufferString{startupCodeSize - 1});
 
-  readBundle(m_startupCode->data(), startupCodeSize);
+  readBundle(m_startupCode->data(), startupCodeSize - 1);
 }
 
 JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(uint32_t moduleId) const {
@@ -61,8 +60,8 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
       toString("Error loading module", id, "from RAM Bundle"));
   }
 
-  std::string ret(moduleData->length, '\0');
-  readBundle(&ret.front(), length, m_baseOffset + littleEndianToHost(moduleData->offset));
+  std::string ret(length - 1, '\0');
+  readBundle(&ret.front(), length - 1, m_baseOffset + littleEndianToHost(moduleData->offset));
   return ret;
 }
 

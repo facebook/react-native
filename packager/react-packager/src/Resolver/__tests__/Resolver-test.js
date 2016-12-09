@@ -107,6 +107,15 @@ describe('Resolver', function() {
       });
     });
 
+    it('passes custom platforms to the dependency graph', function() {
+      new Resolver({ // eslint-disable-line no-new
+        projectRoot: '/root',
+        platforms: ['ios', 'windows', 'vr'],
+      });
+      const platforms = DependencyGraph.mock.calls[0][0].platforms;
+      expect(platforms).toEqual(['ios', 'windows', 'vr']);
+    });
+
     pit('should get dependencies with polyfills', function() {
       var module = createModule('index');
       var deps = [module];

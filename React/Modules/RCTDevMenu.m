@@ -20,7 +20,7 @@
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTUtils.h"
-#import "RCTWebSocketProxy.h"
+#import "RCTWebSocketObserverProtocol.h"
 
 #if RCT_DEV
 
@@ -131,7 +131,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketProxyDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketObserverDelegate>
 
 @property (nonatomic, strong) Class executorClass;
 
@@ -267,13 +267,38 @@ RCT_EXPORT_MODULE()
 // TODO: Move non-UI logic into separate RCTDevSettings module
 - (void)connectPackager
 {
-  Class webSocketManagerClass = objc_lookUpClass("RCTWebSocketManager");
-  id<RCTWebSocketProxy> webSocketManager = (id <RCTWebSocketProxy>)[webSocketManagerClass sharedInstance];
+  RCTAssertMainQueue();
+
   NSURL *url = [self packagerURL];
-  if (url) {
-    [webSocketManager setDelegate:self forURL:url];
+  if (!url) {
+    return;
+  }
+
+  Class webSocketObserverClass = objc_lookUpClass("RCTWebSocketObserver");
+  if (webSocketObserverClass == Nil) {
+    return;
+  }
+
+  // If multiple RCTDevMenus are created, the most recently connected one steals the RCTWebSocketObserver.
+  // (Why this behavior exists is beyond me, as of this writing.)
+  static NSMutableDictionary<NSString *, id<RCTWebSocketObserver>> *observers = nil;
+  if (observers == nil) {
+    observers = [NSMutableDictionary new];
+  }
+
+  NSString *key = [url absoluteString];
+  id<RCTWebSocketObserver> existingObserver = observers[key];
+  if (existingObserver) {
+    existingObserver.delegate = self;
+  } else {
+    id<RCTWebSocketObserver> newObserver = [(id<RCTWebSocketObserver>)[webSocketObserverClass alloc] initWithURL:url];
+    newObserver.delegate = self;
+    [newObserver start];
+    observers[key] = newObserver;
   }
 }
+
+
 
 - (BOOL)isSupportedVersion:(NSNumber *)version
 {
@@ -281,7 +306,7 @@ RCT_EXPORT_MODULE()
   return [kSupportedVersions containsObject:version];
 }
 
-- (void)socketProxy:(__unused id<RCTWebSocketProxy>)sender didReceiveMessage:(NSDictionary<NSString *, id> *)message
+- (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message
 {
   if ([self isSupportedVersion:message[@"version"]]) {
     [self processTarget:message[@"target"] action:message[@"action"] options:message[@"options"]];
@@ -563,7 +588,7 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge requestReload];
+  [_bridge reload];
 }
 
 RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)

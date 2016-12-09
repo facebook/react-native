@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		148699CF1ABD045300480536 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
 		3D0574931DE6009C00184BB4 /* RCTPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 148699CE1ABD045300480536 /* RCTPushNotificationManager.m */; };
-		3D5FA66B1DE4B7110058FD77 /* RCTPushNotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 148699CD1ABD045300480536 /* RCTPushNotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -80,17 +79,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		3D5FA66A1DE4B70C0058FD77 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3D5FA66B1DE4B7110058FD77 /* RCTPushNotificationManager.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		3D05745E1DE6004600184BB4 /* RCTPushNotification-tvOS */ = {
 			isa = PBXNativeTarget;
@@ -113,7 +101,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTPushNotification" */;
 			buildPhases = (
-				3D5FA66A1DE4B70C0058FD77 /* Headers */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
@@ -200,7 +187,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
@@ -218,7 +204,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
@@ -255,11 +240,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/usr/local/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -297,10 +282,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/usr/local/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -318,7 +303,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTPushNotification;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -329,7 +313,6 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTPushNotification;
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -343,6 +326,7 @@
 				3D0574661DE6004600184BB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTPushNotification" */ = {
 			isa = XCConfigurationList;

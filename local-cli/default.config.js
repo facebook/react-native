@@ -35,6 +35,15 @@ var config = {
   },
 
   /**
+   * Specify any additional platforms to be used by the packager.
+   * For example, if you want to add a "custom" platform, and use modules
+   * ending in .custom.js, you would return ['custom'] here.
+   */
+  getPlatforms() {
+    return [];
+  },
+
+  /**
    * Returns a regular expression for modules that should be ignored by the
    * packager on a given platform.
    */
