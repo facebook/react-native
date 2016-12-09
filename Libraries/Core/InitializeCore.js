@@ -109,7 +109,7 @@ require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  var handleError = function(e, isFatal) {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
