@@ -64,13 +64,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
-  /**
-  * To disable http2 support for okhttp3(js fetch used okhttp3),
-  * please put code below in your MainApplication.onCreate():
-  *      NetworkingModule.disableHTTP2 = true;
-  */
-  public  static boolean disableHTTP2 = false;
-
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
@@ -82,7 +75,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
       OkHttpClient client,
-      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators,
+      boolean disableHTTP2) {
     super(reactContext);
 
     if (networkInterceptorCreators != null) {
@@ -93,17 +87,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       client = clientBuilder.build();
     }
 
-    // Disable http2, There is a bug(https://github.com/square/okhttp/issues/2506) in OKHttp3,
-    // Which lead to crash while communicating(js fetch) with nginx via HTTP2
-    // For how to repro http2 bug in react native, please check this bug(https://github.com/facebook/react-native/issues/11283)
-    if (NetworkingModule.disableHTTP2) {
-       List<Protocol> protocolList = new ArrayList<>();
-       protocolList.add(Protocol.SPDY_3);
-       protocolList.add(Protocol.HTTP_1_1);
+    if (disableHTTP2){
+      List<Protocol> protocolList = new ArrayList<>();
+      protocolList.add(Protocol.SPDY_3);
+      protocolList.add(Protocol.HTTP_1_1);
 
-       OkHttpClient.Builder clientBuilder = client.newBuilder();
-       clientBuilder = clientBuilder.protocols(protocolList);
-       client = clientBuilder.build();
+      OkHttpClient.Builder clientBuilder = client.newBuilder();
+      clientBuilder = clientBuilder.protocols(protocolList);
+
+      client = clientBuilder.build();
     }
 
     mClient = client;
@@ -113,6 +105,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
     mRequestIds = new HashSet<>();
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
+   * caller does not provide one explicitly
+   * @param client the {@link OkHttpClient} to be used for networking
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
+   * methods would be called to attach the interceptors to the client.
+   */
+  /* package */ NetworkingModule(
+    ReactApplicationContext context,
+    @Nullable String defaultUserAgent,
+    OkHttpClient client,
+    @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    this(context, defaultUserAgent, client, null,false);
   }
 
   /**
@@ -133,6 +141,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    */
   public NetworkingModule(final ReactApplicationContext context) {
     this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param disable HTTP2 support in OkHttp3. Disable HTTP2 for JS fetch in react native by override getNativeModuels() of {@link MainReactPackage}, and provide disableHTTP2 false value to this constructor of NetworkingModule.
+   */
+  public NetworkingModule(final ReactApplicationContext context, boolean disableHTTP2) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null, disableHTTP2);
   }
 
   /**
@@ -556,9 +572,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String headerName = header.getString(0);
       String headerValue = header.getString(1);
-      if (headerName == null || headerValue == null) {
-        return null;
-      }
       headersBuilder.add(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
