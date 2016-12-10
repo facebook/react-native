@@ -87,7 +87,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       client = clientBuilder.build();
     }
 
-    if (disableHTTP2){
+    if (disableHTTP2) {
       List<Protocol> protocolList = new ArrayList<>();
       protocolList.add(Protocol.SPDY_3);
       protocolList.add(Protocol.HTTP_1_1);
@@ -572,6 +572,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String headerName = header.getString(0);
       String headerValue = header.getString(1);
+      if (headerName == null || headerValue == null) {
+        return null;
+      }
       headersBuilder.add(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
