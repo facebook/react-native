@@ -123,6 +123,10 @@ const KeyboardAvoidingView = React.createClass({
 
   onLayout(event: LayoutEvent) {
     this.frame = event.nativeEvent.layout;
+    
+    if (this.props.onLayout) {
+      this.props.onLayout(event);
+    }
   },
 
   componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
@@ -166,7 +170,7 @@ const KeyboardAvoidingView = React.createClass({
           heightStyle = {height: this.frame.height - this.state.bottom, flex: 0};
         }
         return (
-          <View ref={viewRef} style={[style, heightStyle]} onLayout={this.onLayout} {...props}>
+          <View {...props} ref={viewRef} style={[style, heightStyle]} onLayout={this.onLayout}>
             {children}
           </View>
         );
@@ -176,7 +180,7 @@ const KeyboardAvoidingView = React.createClass({
         const { contentContainerStyle } = this.props;
 
         return (
-          <View ref={viewRef} style={style} onLayout={this.onLayout} {...props}>
+          <View {...props} ref={viewRef} style={style} onLayout={this.onLayout}>
             <View style={[contentContainerStyle, positionStyle]}>
               {children}
             </View>
@@ -186,14 +190,14 @@ const KeyboardAvoidingView = React.createClass({
       case 'padding':
         const paddingStyle = {paddingBottom: this.state.bottom};
         return (
-          <View ref={viewRef} style={[style, paddingStyle]} onLayout={this.onLayout} {...props}>
+          <View {...props} ref={viewRef} style={[style, paddingStyle]} onLayout={this.onLayout}>
             {children}
           </View>
         );
 
       default:
         return (
-          <View ref={viewRef} onLayout={this.onLayout} style={style} {...props}>
+          <View {...props} ref={viewRef} style={style} onLayout={this.onLayout}>
             {children}
           </View>
         );
