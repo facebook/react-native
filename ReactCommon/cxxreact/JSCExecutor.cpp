@@ -334,7 +334,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
     folly::throwOnFail<std::runtime_error>(
       sourceCode != nullptr,
