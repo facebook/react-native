@@ -145,7 +145,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   /**
    * @param context the ReactContext of the application
-   * @param disable HTTP2 support in OkHttp3. Disable HTTP2 for JS fetch in react native by override getNativeModuels() of {@link MainReactPackage}, and provide disableHTTP2 false value to this constructor of NetworkingModule.
+   * @param disable HTTP2 support in OkHttp3. Disable HTTP2 for JS fetch in react native by 
+   * override getNativeModuels() of {@link MainReactPackage}, and provide disableHTTP2 false
+   * value to this constructor of NetworkingModule.
    */
   public NetworkingModule(final ReactApplicationContext context, boolean disableHTTP2) {
     this(context, null, OkHttpClientProvider.getOkHttpClient(), null, disableHTTP2);
