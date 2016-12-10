@@ -347,12 +347,6 @@ void JSCExecutor::loadApplicationScript(
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
 
-    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-    if (flags & UNPACKED_BC_CACHE) {
-      configureJSCBCCache(m_context, bundlePath);
-    }
-    #endif
-
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
       jsSourceURL,
