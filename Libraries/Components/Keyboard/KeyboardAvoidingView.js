@@ -123,7 +123,7 @@ const KeyboardAvoidingView = React.createClass({
 
   onLayout(event: LayoutEvent) {
     this.frame = event.nativeEvent.layout;
-    
+
     if (this.props.onLayout) {
       this.props.onLayout(event);
     }
