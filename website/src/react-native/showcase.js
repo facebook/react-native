@@ -418,6 +418,14 @@ var pinned = [
     infoLink: 'http://www.vogue.com/app',
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
+  },
+  {
+    name: 'Blink by Witworks',
+    icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
+    infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
+    infoTitle: 'Learnings after using React Native for a year at Witworks',
+    defaultLink: 'https://play.google.com/store/apps/details?id=com.witapp',
   }
 ];
 
