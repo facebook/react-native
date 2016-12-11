@@ -383,7 +383,8 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 #if !TARGET_OS_TV
       UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:outFile]]
                                                                                            applicationActivities:nil];
-      activityViewController.completionHandler = ^(__unused NSString *activityType, __unused BOOL completed) {
+      
+      activityViewController.completionWithItemsHandler = ^(__unused NSString *activityType, __unused BOOL completed, __unused NSArray *returnedItems, __unused NSError *activityError) {
         RCTProfileControlsWindow.hidden = NO;
       };
       RCTProfileControlsWindow.hidden = YES;

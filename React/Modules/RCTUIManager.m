@@ -105,7 +105,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 #endif
 }
 
-+ (void)keyboardWillChangeFrame:(NSNotification *)notification
++ (void)keyboardWillChangeFrame:(__unused NSNotification *)notification
 {
 #if !TARGET_OS_TV
   NSDictionary *userInfo = notification.userInfo;
@@ -236,8 +236,11 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeMultiplier
 {
   // Report the event across the bridge.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
                                               body:@([_bridge.accessibilityManager multiplier])];
+#pragma clang diagnostic pop
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -246,7 +249,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)interfaceOrientationWillChange:(NSNotification *)notification
+- (void)interfaceOrientationWillChange:(__unused NSNotification *)notification
 {
 #if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =

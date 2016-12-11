@@ -142,7 +142,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
 
   case facebook::react::ScriptTag::BCBundle:
-    if (header.BCVersion != runtimeBCVersion) {
+    if (header.BCVersion != (uint32_t)runtimeBCVersion) {
       if (error) {
         NSString *errDesc =
           [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %d",

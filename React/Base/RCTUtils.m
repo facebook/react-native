@@ -272,9 +272,14 @@ CGFloat RCTScreenScale()
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // Need to leave this here until a proper replacementfor synchronous
+    // main-queue execution is defined
     RCTExecuteOnMainThread(^{
       scale = [UIScreen mainScreen].scale;
     }, YES);
+#pragma GCC diagnostic pop
   });
 
   return scale;
@@ -289,9 +294,14 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // Need to leave this here until a proper replacementfor synchronous
+    // main-queue execution is defined
     RCTExecuteOnMainThread(^{
       size = [UIScreen mainScreen].bounds.size;
     }, YES);
+#pragma GCC diagnostic pop
   });
 
   return size;
