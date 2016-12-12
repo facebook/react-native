@@ -773,13 +773,17 @@ public class UIViewOperationQueue {
                  // regular operations may depend on them
                  if (nonBatchedOperations != null) {
                    for (UIOperation op : nonBatchedOperations) {
-                     op.execute();
+                     if (op != null) {
+                       op.execute();
+                     }
                    }
                  }
 
                  if (operations != null) {
-                   for (int i = 0; i < operations.size(); i++) {
-                     operations.get(i).execute();
+                   for (UIOperation op : operations) {
+                     if (op != null) {
+                       op.execute();
+                     } 
                    }
                  }
 
@@ -887,7 +891,9 @@ public class UIViewOperationQueue {
           nextOperation = mNonBatchedOperations.pollFirst();
         }
 
-        nextOperation.execute();
+        if (nextOperation != null) {
+          nextOperation.execute();
+        }
       }
     }
   }
