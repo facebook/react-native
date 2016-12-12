@@ -342,6 +342,9 @@ static NSThread *newJavaScriptThread(void)
       }
       contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
+      // We release the global context reference here to balance retainCount after JSGlobalContextCreateInGroup.
+      // The global context _is not_ going to be released since the JSContext keeps the strong reference to it.
+      JSC_JSGlobalContextRelease(contextRef);
       self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
                                                           object:context];
