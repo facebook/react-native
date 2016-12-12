@@ -15,7 +15,7 @@ machine:
 
 dependencies:
   override:
-    # BUCK and android
+    # BUCK and android 
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
     - cd /home/ubuntu/buck && ant
     - buck --version
