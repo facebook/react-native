@@ -300,7 +300,7 @@ CGSize RCTScreenSize()
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
-  return round(value * scale) / scale;
+  return roundf(value * scale) / scale;
 }
 
 CGFloat RCTCeilPixelValue(CGFloat value)
