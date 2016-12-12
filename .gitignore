@@ -53,3 +53,6 @@ node_modules
 
 # Test generated files
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+
+# Packager
+*.js.meta
