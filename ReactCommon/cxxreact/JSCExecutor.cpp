@@ -334,7 +334,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
     folly::throwOnFail<std::runtime_error>(
       sourceCode != nullptr,
@@ -346,12 +346,6 @@ void JSCExecutor::loadApplicationScript(
       LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
-
-    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-    if (flags & UNPACKED_BC_CACHE) {
-      configureJSCBCCache(m_context, bundlePath);
-    }
-    #endif
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
@@ -382,23 +376,25 @@ void JSCExecutor::loadApplicationScript(
   JSCompiledSourceError jsError;
   auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
 
-  if (jsError == JSCompiledSourceErrorOnRead ||
-      jsError == JSCompiledSourceErrorNotCompiled) {
+  switch (jsError) {
+  case JSCompiledSourceErrorOnRead:
+  case JSCompiledSourceErrorNotCompiled:
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
-  } else if (jsError == JSCompiledSourceErrorVersionMismatch) {
+
+  case JSCompiledSourceErrorVersionMismatch:
     throw std::runtime_error("Compiled Source Version Mismatch");
+
+  case JSCompiledSourceErrorNone:
+    folly::throwOnFail<std::runtime_error>(
+      bcSourceCode != nullptr,
+      "Unexpected error opening compiled bundle"
+    );
+    break;
+
+  default:
+    throw std::runtime_error("Unhandled Compiled Source Error");
   }
-
-  folly::throwOnFail<std::runtime_error>(
-    jsError == JSCompiledSourceErrorNone,
-    "Unhandled Compiled Source Error"
-  );
-
-  folly::throwOnFail<std::runtime_error>(
-    bcSourceCode != nullptr,
-    "Unexpected error opening compiled bundle"
-  );
 
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
