@@ -373,19 +373,19 @@ void JSCExecutor::loadApplicationScript(
 {
   String jsSourceURL(m_context, sourceURL.c_str());
 
-  JSCompiledSourceError jsError;
+  JSLoadSourceError jsError;
   auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
 
   switch (jsError) {
-  case JSCompiledSourceErrorOnRead:
-  case JSCompiledSourceErrorNotCompiled:
+  case JSLoadSourceErrorOnRead:
+  case JSLoadSourceErrorNotCompiled:
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
 
-  case JSCompiledSourceErrorVersionMismatch:
+  case JSLoadSourceErrorVersionMismatch:
     throw std::runtime_error("Compiled Source Version Mismatch");
 
-  case JSCompiledSourceErrorNone:
+  case JSLoadSourceErrorNone:
     folly::throwOnFail<std::runtime_error>(
       bcSourceCode != nullptr,
       "Unexpected error opening compiled bundle"
