@@ -478,6 +478,6 @@ exports.examples = [
   },
   {
     title: 'Inject JavaScript',
-    render(): React.Element<any> { return <InjectJS/>; }
+    render(): React.Element<any> { return <InjectJS />; }
   },
 ];
