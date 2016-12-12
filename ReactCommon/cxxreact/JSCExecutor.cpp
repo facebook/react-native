@@ -334,7 +334,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
     folly::throwOnFail<std::runtime_error>(
       sourceCode != nullptr,
@@ -346,12 +346,6 @@ void JSCExecutor::loadApplicationScript(
       LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
-
-    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-    if (flags & UNPACKED_BC_CACHE) {
-      configureJSCBCCache(m_context, bundlePath);
-    }
-    #endif
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
