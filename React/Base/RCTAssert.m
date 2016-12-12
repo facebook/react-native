@@ -126,14 +126,10 @@ void RCTFatal(NSError *error)
   if (fatalHandler) {
     fatalHandler(error);
   } else {
-#if DEBUG
-    @try {
-#endif
+#if RCT_DEBUG
       NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, error.localizedDescription];
       NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 75);
       [NSException raise:name format:@"%@", message];
-#if DEBUG
-    } @catch (NSException *e) {}
 #endif
   }
 }
