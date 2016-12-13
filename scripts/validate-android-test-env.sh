@@ -16,12 +16,25 @@ fi
 
 if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
+
   if [ -d "/opt/facebook" ]; then
+    SUGGESTED="ff27d5270ecaa92727cd5a19954e62298fa78f09"
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
-    echo "the open source version of Buck forbids that. Try setting:"
-    echo "export BUCKVERSION=ff27d5270ecaa92727cd5a19954e62298fa78f09"
+    echo "the open source version of Buck forbids that."
+    echo
+    echo "You can try setting:"
+    echo
+    echo "export BUCKVERSION=${SUGGESTED}"
+    echo
     echo "in your .bashrc or .bash_profile to fix this."
+    echo
+    echo "If you don't want to alter BUCKVERSION for other things running on"
+    echo "your machine, you can just scope it to a single script, for example"
+    echo "by running something like:"
+    echo
+    echo "BUCKVERSION=${SUGGESTED} $0"
+    echo
   else
     echo "I don't know what's wrong, but calling 'buck --version' should work."
   fi
