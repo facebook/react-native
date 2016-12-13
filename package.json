@@ -105,8 +105,6 @@
   ],
   "scripts": {
     "test": "jest",
-    "test-android-integration": "scripts/run-android-local-integration-tests.sh",
-    "test-android-unit": "scripts/run-android-local-unit-tests.sh",
     "flow": "flow",
     "lint": "eslint Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
