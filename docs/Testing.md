@@ -10,25 +10,26 @@ previous: debugging
 
 ## Running Tests and Contributing
 
-The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](http://docs.travis-ci.com/) and [CircleCI](https://circleci.com/) continuous integration systems, and will automatically post the results to your PR.
+This document is about running tests on React Native itself. If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
 
-Whenever you are fixing a bug or adding new functionality to React Native, you should add a test that covers it.
+The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](http://docs.travis-ci.com/) and [CircleCI](https://circleci.com/) continuous integration systems, which will automatically annotate pull requests with the test results.
+
+Whenever you are fixing a bug or adding new functionality to React Native, you should add a test that covers it. Depending on the change you're making, there are different types of tests that may be appropriate.
 
 ## Jest Tests
 
-[Jest](http://facebook.github.io/jest/) tests are JS-only tests run on the command line with node.  The tests themselves live in the `__tests__` directories of the files they test, and there is a large emphasis on aggressively mocking out functionality that is not under test for failure isolation and maximum speed.  You can run the existing React Native jest tests with
+Jest tests are JavaScript-only tests run on the command line with node. You can run the existing React Native jest tests with:
 
-```
-npm test
-```
+    $ cd react-native
+    $ npm test
 
-from the react-native root, and we encourage you to add your own tests for any components you want to contribute to.  See [`getImageSource-test.js`](https://github.com/facebook/react-native/blob/master/Examples/Movies/__tests__/getImageSource-test.js) for a basic example.
+It's a good idea to add a Jest test when you are working on a change that only modifies JavaScript code.
 
-To use Jest for your react-native projects we recommend following the [React-Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
+The tests themselves live in the `__tests__` directories of the files they test.  See [`TouchableHighlight-test.js`](https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/__tests__/TouchableHighlight-test.js) for a basic example.
 
 ## Android Unit Tests
 
-The Android unit tests do not run in an emulator. They just use a normal Java installation. You do need to install Java 8, which you might have already. The default OS X Java install is insufficient.
+The Android unit tests do not run in an emulator. They just use a normal Java installation. You do need to install Java 8. In particular, the default OS X Java install is insufficient.
 
 You also need to install the [Buck build tool](https://buckbuild.com/setup/install.html).
 
@@ -36,6 +37,8 @@ To run the Android unit tests:
 
     $ cd react-native
     $ ./scripts/run-android-local-unit-tests.sh
+
+It's a good idea to add an Android unit test whenever you are working on code that can be tested by Java code alone. The Android unit tests live under [`ReactAndroid/src/tests`](https://github.com/facebook/react-native/tree/master/ReactAndroid/src/test/java/com/facebook/react).
 
 ## Android Integration Tests
 
@@ -56,6 +59,8 @@ Once you have an emulator running, to run the integration tests:
     $ ./scripts/run-android-local-integration-tests.sh
 
 The integration tests should only take a few minutes to run on a modern developer machine.
+
+It's a good idea to add an Android integration test whenever you are working on code that needs both JavaScript and Java to be tested in conjunction. 
 
 ## iOS Integration Tests
 
