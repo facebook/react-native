@@ -9,6 +9,7 @@
 
 package com.facebook.react.views.text;
 
+import android.text.Layout;
 import android.text.Spannable;
 
 /**
@@ -27,6 +28,31 @@ public class ReactTextUpdate {
   private final float mPaddingBottom;
   private final int mTextAlign;
   private final int mTextBreakStrategy;
+
+  /**
+   * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
+   * because it's being used by a unit test that isn't currently open source.
+   */
+  @Deprecated
+  public ReactTextUpdate(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
+      float paddingStart,
+      float paddingTop,
+      float paddingEnd,
+      float paddingBottom,
+      int textAlign) {
+    this(text,
+        jsEventCounter,
+        containsImages,
+        paddingStart,
+        paddingTop,
+        paddingEnd,
+        paddingBottom,
+        textAlign,
+        Layout.BREAK_STRATEGY_HIGH_QUALITY);
+  }
 
   public ReactTextUpdate(
     Spannable text,
