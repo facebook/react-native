@@ -20,7 +20,7 @@ if [ -z "$(buck --version)" ]; then
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
     echo "the open source version of Buck forbids that. Try setting:"
-    echo "export BUCKVERSION=99f13808b73d69eb2536cf464f5fc27b2c5fd529"
+    echo "export BUCKVERSION=ff27d5270ecaa92727cd5a19954e62298fa78f09"
     echo "in your .bashrc or .bash_profile to fix this."
   else
     echo "I don't know what's wrong, but calling 'buck --version' should work."
