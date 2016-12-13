@@ -12,7 +12,7 @@ previous: debugging
 
 The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](http://docs.travis-ci.com/) and [CircleCI](https://circleci.com/) continuous integration systems, and will automatically post the results to your PR.
 
-We don't have perfect test coverage of course, especially for complex end-to-end interactions with the user, so many changes will still require significant manual verification, but we would love it if you want to help us increase our test coverage and add more tests and test cases!
+Whenever you are fixing a bug or adding new functionality to React Native, you should add a test that covers it.
 
 ## Jest Tests
 
