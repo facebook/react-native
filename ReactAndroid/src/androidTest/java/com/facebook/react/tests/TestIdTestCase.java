@@ -11,7 +11,6 @@ package com.facebook.react.tests;
 import java.util.Arrays;
 import java.util.List;
 
-import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
