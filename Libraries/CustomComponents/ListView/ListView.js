@@ -271,6 +271,8 @@ var ListView = React.createClass({
   getScrollableNode: function() {
     if (this._scrollComponent && this._scrollComponent.getScrollableNode) {
       return this._scrollComponent.getScrollableNode();
+    } else {
+      return ReactNative.findNodeHandle(this._scrollComponent);
     }
   },
 
