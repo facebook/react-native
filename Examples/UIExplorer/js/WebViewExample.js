@@ -267,11 +267,7 @@ class MessagingTest extends React.Component {
 class InjectJS extends React.Component {
   webview = null;
   injectJS = () => {
-    const script = `
-    var colors = ['green', 'red', 'blue', 'purple', 'yellow'];
-    var color = colors[Math.floor(Math.random() * colors.length)];
-    document.body.style.backgroundColor = color;
-    `;
+    const script = 'document.write("Injected JS ")';
     if (this.webview) {
       this.webview.injectJavaScript(script);
     }
@@ -285,11 +281,11 @@ class InjectJS extends React.Component {
             backgroundColor: BGWASH,
             height: 300,
           }}
-          source={{uri: 'https://www.google.com'}}
+          source={{uri: "https://www.facebook.com"}}
           scalesPageToFit={true}
         />
         <View style={styles.buttons}>
-          <Button text="Inject JS (change bg color of webpage)" enabled onPress={this.injectJS} />
+          <Button text="Inject JS" enabled onPress={this.injectJS} />
         </View>
     </View>
     );
