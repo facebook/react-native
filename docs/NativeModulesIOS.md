@@ -182,6 +182,11 @@ A native module is supposed to invoke its callback only once. It can, however, s
 
 If you want to pass error-like objects to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h).  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript `Error` objects in the future.
 
+
+> **WARNING**
+>
+> The passed callback (or one of two, if both onSuccess and onFail callbacks were passed) must be invoked by the native module, otherwise it will lead to memory leaks.
+
 ## Promises
 
 Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's `async/await` syntax. When the last parameters of a bridged native method are an `RCTPromiseResolveBlock` and `RCTPromiseRejectBlock`, its corresponding JS method will return a JS Promise object.
