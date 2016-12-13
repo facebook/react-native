@@ -30,6 +30,16 @@ const WS_STATES = [
   /* 3 */ 'CLOSED',
 ];
 
+type State = {
+  url: string;
+  fetchStatus: ?string;
+  socket: ?WebSocket;
+  socketState: ?number;
+  lastSocketEvent: ?string;
+  lastMessage: ?string | ?ArrayBuffer;
+  outgoingMessage: string;
+};
+
 class WebSocketTest extends React.Component {
   state: State = {
     url: DEFAULT_WS_URL,
@@ -41,7 +51,7 @@ class WebSocketTest extends React.Component {
     outgoingMessage: '',
   };
 
-  _waitFor = (condition: Function, timeout: Number, callback: Function) => {
+  _waitFor = (condition: function, timeout: any, callback: function) => {
     var remaining = timeout;
     var t;
     var timeoutFunction =  function() {
