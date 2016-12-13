@@ -277,7 +277,7 @@ function run(root, projectName, options) {
         installCommand += ' --verbose';
       }
     } else {
-      console.log('Installing ' + getInstallPackage(rnPackage) + '. This might take a while...');
+      console.log('Installing ' + getInstallPackage(rnPackage) + '...');
       if (!forceNpmClient) {
         console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
       }

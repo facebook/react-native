@@ -7,14 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
 #import <React/RCTDefines.h>
 
-#if RCT_DEV // Only supported in dev mode
-
-@protocol RCTWebSocketProxy;
-
-@protocol RCTWebSocketProxyDelegate
-- (void)socketProxy:(id<RCTWebSocketProxy>)sender didReceiveMessage:(NSDictionary<NSString *, id> *)message;
+@protocol RCTReloadListener
+- (void)didReceiveReloadCommand;
 @end
 
-#endif
+/** Registers a weakly-held observer of the Command+R reload key command. */
+RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener);
