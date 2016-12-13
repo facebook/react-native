@@ -51,7 +51,7 @@ class WebSocketTest extends React.Component {
     outgoingMessage: '',
   };
 
-  _waitFor = (condition: function, timeout: any, callback: function) => {
+  _waitFor = (condition: any, timeout: any, callback: any) => {
     var remaining = timeout;
     var t;
     var timeoutFunction =  function() {

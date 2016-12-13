@@ -13,7 +13,7 @@ clear
 
 THIS_DIR=$(dirname "$0")
 pushd "$THIS_DIR"
-./websocket_integration_test_server.js &
+./websocket_integration_test_server.js
 popd
 
 echo "Process terminated. Press <enter> to close the window"
