@@ -13,6 +13,7 @@
 
 const NativeEventEmitter = require('NativeEventEmitter');
 const Blob = require('Blob');
+const BlobManager = require('BlobManager');
 const Platform = require('Platform');
 const RCTWebSocketModule = require('NativeModules').WebSocketModule;
 const WebSocketEvent = require('WebSocketEvent');
@@ -138,7 +139,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     }
 
     if (data instanceof Blob) {
-      RCTWebSocketModule.sendBlob(data, this._socketId);
+      RCTWebSocketModule.sendBlob(data.data, this._socketId);
       return;
     }
 
@@ -198,7 +199,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
             data = base64.toByteArray(ev.data).buffer;
             break;
           case 'blob':
-            data = Blob.create(ev.data);
+            data = BlobManager.createFromOptions(ev.data);
             break;
         }
         this.dispatchEvent(new WebSocketEvent('message', { data }));

@@ -70,6 +70,7 @@ const ReactNative = {
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); }, // deprecated: use BackHandler instead
   get BackHandler() { return require('BackHandler'); },
+  get BlobManager() { return require('BlobManager'); },
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
   get DatePickerAndroid() { return require('DatePickerAndroid'); },

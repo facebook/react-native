@@ -9,14 +9,18 @@
  * @flow
  */
 
-export type BlobProps = {
+export type BlobData = {
+  /*
+   * Unique id to identify the blob on native side
+   */
   blobId: string;
+  /*
+   * Offset to indicate part of blob, used when sliced
+   */
   offset: number;
+
   size: number;
   type?: string;
-};
-
-export type FileProps = BlobProps & {
-  name: string;
-  lastModified: number;
+  name?: string;
+  lastModified?: number;
 };

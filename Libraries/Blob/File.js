@@ -12,45 +12,23 @@
 'use strict';
 
 const Blob = require('Blob');
-const { BlobModule } = require('react-native').NativeModules;
-
-import type { FileProps } from './BlobTypes';
 
 /**
  * The File interface provides information about files.
  */
 class File extends Blob {
-    /**
-   * Construct file instance from blob data from native.
+  /**
+   * Name of the file.
    */
-  static create(props: FileProps): File {
-    const file = Blob.create(props);
-    // Object.setPrototypeOf is not available
-    file.__proto__ = File.prototype; // eslint-disable-line no-proto
-    Object.defineProperties(file, {
-      name: {
-        enumerable: true,
-        configurable: false,
-        writable: false,
-        value: props.name,
-      },
-      lastModified: {
-        enumerable: true,
-        configurable: false,
-        writable: false,
-        value: props.lastModified,
-      },
-    });
-
-    return file;
+  get name(): string {
+    return this.data.name || '';
   }
 
-  /**
-   * Create file from a local content URI
+  /*
+   * Last modified time of the file.
    */
-  static async fromURI(uri: string): Promise<Blob> {
-    const options = await BlobModule.createFromURI(uri);
-    return File.create(options);
+  get lastModified(): number {
+    return this.data.lastModified || 0;
   }
 }
 

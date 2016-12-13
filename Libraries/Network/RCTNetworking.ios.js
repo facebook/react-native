@@ -18,6 +18,8 @@ const convertRequestBody = require('convertRequestBody');
 
 import type {RequestBody} from 'convertRequestBody';
 
+import type { NativeResponseType } from './XMLHttpRequest';
+
 class RCTNetworking extends NativeEventEmitter {
 
   isAvailable: boolean = true;

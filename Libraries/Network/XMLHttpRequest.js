@@ -17,9 +17,11 @@ const base64 = require('base64-js');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 const Blob = require('Blob');
+const BlobManager = require('BlobManager');
 
-type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
-type Response = ?Object | string;
+export type NativeResponseType = 'base64' | 'blob' | 'text';
+export type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
+export type Response = ?Object | string;
 
 type XHRInterceptor = {
   requestSent(
@@ -236,7 +238,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
         break;
 
       case 'blob':
-        this._cachedResponse = Blob.create(this._response);
+        if (typeof this._response === 'object' && this._response) {
+          this._cachedResponse = BlobManager.createFromOptions(this._response);
+        } else {
+          throw new Error('Invalid response for blob');
+        }
         break;
 
       case 'json':
@@ -482,12 +488,15 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       (args) => this.__didCompleteResponse(...args)
     ));
 
-    let nativeResponseType = 'text';
+    let nativeResponseType: NativeResponseType = 'text';
     if (this._responseType === 'arraybuffer') {
       nativeResponseType = 'base64';
     }
     if (this._responseType === 'blob') {
       nativeResponseType = 'blob';
+    }
+    if (data instanceof Blob) {
+      data = data.data;
     }
 
     invariant(this._method, 'Request method needs to be defined.');
