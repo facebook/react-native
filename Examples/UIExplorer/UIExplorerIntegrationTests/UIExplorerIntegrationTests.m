@@ -62,6 +62,7 @@ RCT_TEST(AppEventsTest)
 //RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(PromiseTest)
+RCT_TEST(WebSocketTest)
 
 
 @end
