@@ -18,5 +18,16 @@ fi
 if [ -z "$(adb get-state)" ]; then
   echo "Error: you must either run an emulator or connect a device."
   echo "You can check what devices are running with 'adb get-state'."
+  echo "You can run scripts/run-android-emulator.sh to get a known-good emulator config."
   exit 1
 fi
+
+while :
+do
+    BOOTANIM=`adb -e shell getprop init.svc.bootanim`
+    if [ -n `echo $BOOTANIM | grep stopped` ]; then
+        break
+    fi
+    echo "Waiting for the emulator to finish booting..."
+    sleep 3
+done

@@ -11,13 +11,13 @@ package com.facebook.react.tests;
 import java.util.Arrays;
 import java.util.List;
 
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.ReactTestHelper;
-
 
 /**
  * Tests that the 'testID' property can be set on various views.
@@ -32,22 +32,13 @@ public class TestIdTestCase extends ReactAppInstrumentationTestCase {
 
   private final List<String> viewTags = Arrays.asList(
       "Image",
-      "ProgressBar",
-      "ScrollView",
-      "Horizontal ScrollView",
-      "Dropdown Picker",
-      "Dialog Picker",
-      "Switch",
       "Text",
       "TouchableBounce",
       "TouchableHighlight",
       "TouchableOpacity",
       "TouchableWithoutFeedback",
-      "Toolbar",
       "TextInput",
-      "View",
-      // "WebView", TODO t11449130
-      "ScrollView Item (same id used for all items)"
+      "View"
       );
 
   public void testPropertyIsSetForViews() {
