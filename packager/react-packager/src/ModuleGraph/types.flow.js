@@ -14,8 +14,8 @@ import type {SourceMap} from './output/source-map';
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
-  = (Error => mixed)
-  & ((null | void, A, B) => mixed);
+  = (Error => void)
+  & ((null | void, A, B) => void);
 
 type Dependency = {|
   id: string,
@@ -109,7 +109,6 @@ export type TransformFn = (
   callback: Callback<TransformFnResult>
 ) => void;
 
-
 export type TransformFnResult = {
   ast: Object,
 };
@@ -120,6 +119,8 @@ export type TransformResult = {|
   dependencyMapName?: string,
   map: ?Object,
 |};
+
+export type TransformVariants = {[key: string]: Object};
 
 export type TransformedFile = {
   code: string,
