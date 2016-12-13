@@ -37,5 +37,6 @@ notifications:
   email:
     recipients:
       - bestander@gmail.com
+      - mkonicek@fb.com
     on_failure: change
     on_success: change
