@@ -76,14 +76,9 @@ gradle.projectsEvaluated {
                 workingDir reactRoot
 
                 // Set up dev mode
-                def devEnabled
-                if (config."devEnabledIn${targetName}" != null) {
-                    devEnabled = config."devEnabledIn${targetName}"
-                } else if(config."devEnabledIn${buildTypeName.capitalize()}" != null) {
-                    devEnabled = config."devEnabledIn${buildTypeName.capitalize()}"
-                } else {
-                    devEnabled = !targetName.toLowerCase().contains("release")
-                }
+                def devEnabled = !(config."devDisabledIn${targetName}"
+                    || config."devDisabledIn${buildTypeName.capitalize()}"
+                || targetName.toLowerCase().contains("release"))
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                     commandLine("cmd", "/c", *nodeExecutableAndArgs, "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
