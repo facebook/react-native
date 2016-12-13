@@ -267,7 +267,7 @@ class MessagingTest extends React.Component {
 class InjectJS extends React.Component {
   webview = null;
   injectJS = () => {
-    const script = `document.write('Injected JS ')`;
+    const script = `document.write("I'm injected! ")`;
     if (this.webview) {
       this.webview.injectJavaScript(script);
     }
