@@ -28,11 +28,11 @@ if [ -z "$(buck --version)" ]; then
   exit 1
 fi
 
-# BTV is something like "23.0.1"
-BTV=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
+# BUILD_TOOLS_VERSION is in a format like "23.0.1"
+BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
 
 # MAJOR is something like "23"
-MAJOR=`echo $BTV | sed 's/\..*//'`
+MAJOR=`echo $BUILD_TOOLS_VERSION | sed 's/\..*//'`
 
 # Check that we have the right major version of the Android SDK.
 PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR"
@@ -45,9 +45,9 @@ if [ ! -e "$PLATFORM_DIR" ]; then
 fi
 
 # Check that we have the right version of the build tools.
-BT_DIR="$ANDROID_HOME/build-tools/$BTV"
+BT_DIR="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION"
 if [ ! -e "$BT_DIR" ]; then
-  echo "Error: could not find version $BTV of the Android build tools."
+  echo "Error: could not find version $BUILD_TOOLS_VERSION of the Android build tools."
   echo "Specifically, the directory $BT_DIR does not exist."
   echo "You probably need to explicitly install the correct version of the Android SDK Build Tools from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
