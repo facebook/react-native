@@ -21,14 +21,6 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    
-  }
-  return self;
-}
-
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
@@ -38,8 +30,6 @@ RCT_EXPORT_MODULE()
     _selectionFeedback = [UISelectionFeedbackGenerator new];
   }
 }
-
-
 
 - (dispatch_queue_t)methodQueue
 {
@@ -59,7 +49,7 @@ RCT_EXPORT_METHOD(generate:(NSString *)type)
 
 RCT_EXPORT_METHOD(prepare)
 {
-  //Only calling prepare on one generator, it's sole purpose is to awake the taptic engine
+  // Only calling prepare on one generator, it's sole purpose is to awake the taptic engine
   [_impactFeedback prepare];
 }
 

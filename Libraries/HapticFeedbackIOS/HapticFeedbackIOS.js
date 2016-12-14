@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule HapticFeedback
+ * @providesModule HapticFeedbackIOS
  * @flow
  * @jsdoc
  */
@@ -28,6 +28,7 @@ class HapticFeedbackIOS {
    * @static
    * @method prepare
    * @description Prepares the Taptic Engine (Awaken state). Usually used seconds before triggering a feedback.
+   * This is optional, mostly used when the feedback needs to be synced with sound.
    *
    */
   static prepare() {
