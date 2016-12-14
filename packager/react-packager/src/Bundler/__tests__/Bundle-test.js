@@ -26,7 +26,7 @@ describe('Bundle', () => {
   });
 
   describe('source bundle', () => {
-    pit('should create a bundle and get the source', () => {
+    it('should create a bundle and get the source', () => {
       return Promise.resolve().then(() => {
         return addModule({
           bundle,
@@ -51,7 +51,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should be ok to leave out the source map url', () => {
+    it('should be ok to leave out the source map url', () => {
       const otherBundle = new Bundle();
       return Promise.resolve().then(() => {
         return addModule({
@@ -76,7 +76,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should create a bundle and add run module code', () => {
+    it('should create a bundle and add run module code', () => {
       return Promise.resolve().then(() => {
         return addModule({
           bundle,
@@ -107,7 +107,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+    it('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
       const moduleTransports = [
         createModuleTransport({name: 'module1'}),
         createModuleTransport({name: 'module2'}),
@@ -137,7 +137,7 @@ describe('Bundle', () => {
   });
 
   describe('sourcemap bundle', () => {
-    pit('should create sourcemap', () => {
+    it('should create sourcemap', () => {
       const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
       return Promise.resolve().then(() => {
@@ -181,7 +181,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should combine sourcemaps', () => {
+    it('should combine sourcemaps', () => {
       const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
       return Promise.resolve().then(() => {
@@ -283,7 +283,7 @@ describe('Bundle', () => {
   });
 
   describe('getJSModulePaths()', () => {
-    pit('should return module paths', () => {
+    it('should return module paths', () => {
       var otherBundle = new Bundle({sourceMapUrl: 'test_url'});
       return Promise.resolve().then(() => {
         return addModule({

@@ -24,9 +24,9 @@ import type {
   TransformFn,
   TransformFnResult,
   TransformResult,
+  TransformVariants,
 } from '../types.flow';
 
-type TransformVariants = {[key: string]: Object};
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
