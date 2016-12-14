@@ -264,7 +264,9 @@ class Server {
           this._bundles[key].then(bundle => {
             const deps = bundleDeps.get(bundle);
             filePaths.forEach(filePath => {
+              // $FlowFixMe(>=0.37.0)
               if (deps.files.has(filePath)) {
+                // $FlowFixMe(>=0.37.0)
                 deps.outdated.add(filePath);
               }
             });
@@ -557,6 +559,7 @@ class Server {
     if (optionsJson in this._bundles) {
       return this._bundles[optionsJson].then(bundle => {
         const deps = bundleDeps.get(bundle);
+        // $FlowFixMe(>=0.37.0)
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
 
@@ -570,6 +573,7 @@ class Server {
 
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
+          // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
           const opts = bundleOpts(options);
