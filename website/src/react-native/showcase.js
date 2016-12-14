@@ -310,6 +310,14 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'Hey Neighburz',
+    icon: 'https://heyneighburz.com/images/HNAvatar.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.realmindr.heyneighburz',
+    linkAppStore: 'https://itunes.apple.com/us/app/hey-neighburz/id1138968512',
+    infoLink: 'https://osedea.com/blog/what-we-learned-on-how-to-create-a-good-react-native-presentational-dumb-component',
+    infoTitle: 'What we learned on how to create good React-Native Presentational Components while developing Hey Neighburz',
   }
 ];
 
