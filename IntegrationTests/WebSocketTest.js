@@ -122,7 +122,6 @@ class WebSocketTest extends React.Component {
   };
 
   componentDidMount() {
-    debugger;
     this.testConnect();
   }
 
