@@ -310,6 +310,13 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'Yeti SmartHome',
+    icon: 'https://lh3.googleusercontent.com/D-TD1zzS0VibQseI5Hra6FMkVkpMdxIlIW-avBMkWlPjpwK5J9m3xqYliOH1FIVABuvZ=w300',
+    linkAppStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
+    infoLink: 'https://getyeti.co',
+    infoTitle: 'Yeti is the first smart home application entirely built on react native'
   }
 ];
 
