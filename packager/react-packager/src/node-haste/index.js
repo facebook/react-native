@@ -133,6 +133,7 @@ class DependencyGraph {
       moduleOptions: moduleOptions || {
         cacheTransformResults: true,
       },
+      //$FlowFixMe
       platforms: new Set(platforms || []),
       preferNativePlatform: preferNativePlatform || false,
       providesModuleNodeModules,
