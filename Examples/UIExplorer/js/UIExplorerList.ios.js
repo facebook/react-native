@@ -291,6 +291,10 @@ const APIExamples: Array<UIExplorerExample> = [
     key: 'XHRExample',
     module: require('./XHRExample.ios'),
   },
+  {
+    key: 'HapticFeedbackIOSExample',
+    module: require('./HapticFeedbackIOSExample'),
+  },
 ];
 
 const Modules = {};
