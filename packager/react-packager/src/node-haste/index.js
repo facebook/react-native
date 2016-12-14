@@ -111,7 +111,7 @@ class DependencyGraph {
     maxWorkers?: ?number,
     mocksPattern?: mixed,
     moduleOptions: ?ModuleOptions,
-    platforms: mixed,
+    platforms: Array<string>,
     preferNativePlatform: boolean,
     providesModuleNodeModules: Array<string>,
     resetCache: boolean,
@@ -133,7 +133,6 @@ class DependencyGraph {
       moduleOptions: moduleOptions || {
         cacheTransformResults: true,
       },
-      //$FlowFixMe
       platforms: new Set(platforms || []),
       preferNativePlatform: preferNativePlatform || false,
       providesModuleNodeModules,
