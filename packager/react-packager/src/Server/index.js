@@ -15,13 +15,14 @@ const AssetServer = require('../AssetServer');
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
-const ProgressBar = require('progress');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const mime = require('mime-types');
 const path = require('path');
+const terminal = require('../lib/terminal');
+const throttle = require('lodash/throttle');
 const url = require('url');
 
 const debug = require('debug')('ReactNativePackager:Server');
@@ -264,7 +265,9 @@ class Server {
           this._bundles[key].then(bundle => {
             const deps = bundleDeps.get(bundle);
             filePaths.forEach(filePath => {
+              // $FlowFixMe(>=0.37.0)
               if (deps.files.has(filePath)) {
+                // $FlowFixMe(>=0.37.0)
                 deps.outdated.add(filePath);
               }
             });
@@ -452,7 +455,7 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack); // eslint-disable-line no-console-disallow
+          terminal.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
     } else {
@@ -557,6 +560,7 @@ class Server {
     if (optionsJson in this._bundles) {
       return this._bundles[optionsJson].then(bundle => {
         const deps = bundleDeps.get(bundle);
+        // $FlowFixMe(>=0.37.0)
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
 
@@ -570,6 +574,7 @@ class Server {
 
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
+          // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
           const opts = bundleOpts(options);
@@ -693,13 +698,15 @@ class Server {
 
     let consoleProgress = () => {};
     if (process.stdout.isTTY && !this._opts.silent) {
-      const bar = new ProgressBar('transformed :current/:total (:percent)', {
-        complete: '=',
-        incomplete: ' ',
-        width: 40,
-        total: 1,
-      });
-      consoleProgress = debouncedTick(bar);
+      const onProgress = (doneCount, totalCount) => {
+        const format = 'transformed %s/%s (%s%)';
+        const percent = Math.floor(100 * doneCount / totalCount);
+        terminal.status(format, doneCount, totalCount, percent);
+        if (doneCount === totalCount) {
+          terminal.persistStatus();
+        }
+      };
+      consoleProgress = throttle(onProgress, 200);
     }
 
     const mres = MultipartResponse.wrap(req, res);
@@ -953,25 +960,6 @@ class Server {
 
 function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
   return array.length === set.size && array.every(set.has, set);
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 module.exports = Server;
