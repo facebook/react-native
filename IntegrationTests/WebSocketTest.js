@@ -37,7 +37,8 @@ type State = {
   socketState: ?number;
   lastSocketEvent: ?string;
   lastMessage: ?string | ?ArrayBuffer;
-  outgoingMessage: string;
+  testMessage: string;
+  testExpectedResponse: string;
 };
 
 class WebSocketTest extends React.Component {
@@ -48,7 +49,8 @@ class WebSocketTest extends React.Component {
     socketState: null,
     lastSocketEvent: null,
     lastMessage: null,
-    outgoingMessage: '',
+    testMessage: 'testMessage',
+    testExpectedResponse: 'testMessage_response'
   };
 
   _waitFor = (condition: any, timeout: any, callback: any) => {
@@ -104,38 +106,55 @@ class WebSocketTest extends React.Component {
     this.setState(state);
   };
 
-  _sendText = () => {
+  _sendText = (text: string) => {
     if (!this.state.socket) {
       return;
     }
-    this.state.socket.send(this.state.outgoingMessage);
-    this.setState({outgoingMessage: ''});
+    this.state.socket.send(text);
+  };
+
+  _sendTestMessage = () => {
+    this._sendText(this.state.testMessage);
+  };
+
+  _receivedTestExpectedResponse = () => {
+    return (this.state.lastMessage === this.state.testExpectedResponse);
   };
 
   componentDidMount() {
     debugger;
-    this.testConnectAndDisconnect();
+    this.testConnect();
   }
 
-  testConnectAndDisconnect = () => {
-    var connectSucceeded = true;
+  testConnect = () => {
     var component = this;
     component._connect();
-    component._waitFor(component._socketIsConnected,5,function(result) {
-
-      connectSucceeded = result;
-      if(!connectSucceeded) {
+    component._waitFor(component._socketIsConnected, 5, function(connectSucceeded) {
+      if (!connectSucceeded) {
         TestModule.markTestPassed(false);
-        TestModule.markTestCompleted();
         return;
       }
-      var disconnectSucceeded = true;
-      component._disconnect();
-      component._waitFor(component._socketIsDisconnected,5,function(result2) {
-        disconnectSucceeded = result2;
-        TestModule.markTestPassed(disconnectSucceeded);
-        TestModule.markTestCompleted();
-      });
+      component.testSendAndReceive();
+    });
+  }
+
+  testSendAndReceive = () => {
+    var component = this;
+    component._sendTestMessage();
+    component._waitFor(component._receivedTestExpectedResponse, 5, function(messageReceived) {
+      if (!messageReceived) {
+        TestModule.markTestPassed(false);
+        return;
+      }
+      component.testDisconnect();
+    });
+  }
+
+  testDisconnect = () => {
+    var component = this;
+    component._disconnect();
+    component._waitFor(component._socketIsDisconnected, 5, function(disconnectSucceeded) {
+      TestModule.markTestPassed(disconnectSucceeded);
     });
   }
 
