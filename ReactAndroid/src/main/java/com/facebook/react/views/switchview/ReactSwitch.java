@@ -91,7 +91,7 @@ import com.facebook.react.R;
             Color.blue(mSwitchColor));
 
     ColorStateList colorStateList = new ColorStateList(states, colors);
-    ((RippleDrawable) getBackground()).setColor(colorStateList);
+    ((RippleDrawable) getBackground().mutate()).setColor(colorStateList);
   }
 
   private void setThumbColor() {
