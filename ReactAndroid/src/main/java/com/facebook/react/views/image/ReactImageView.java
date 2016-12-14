@@ -87,14 +87,13 @@ public class ReactImageView extends GenericDraweeView {
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
     void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
-        ScalingUtils.getTransform(
+      mScaleType.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
             source.getWidth(),
             source.getHeight(),
             0.0f,
-            0.0f,
-            mScaleType);
+            0.0f);
         sMatrix.invert(sInverse);
 
         mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
