@@ -56,7 +56,6 @@ var semver = require('semver');
  */
 
 var options = require('minimist')(process.argv.slice(2));
-checkForVersionArgument(options);
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -75,6 +74,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
     'package.json'
   );
 };
+checkForVersionArgument(options);
 
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
