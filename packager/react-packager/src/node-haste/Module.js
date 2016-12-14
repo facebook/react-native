@@ -21,6 +21,7 @@ const fs = require('fs');
 const invariant = require('invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
+const terminal = require('../lib/terminal');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
@@ -266,13 +267,13 @@ class Module {
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
       if (globalCacheError != null && Module._globalCacheRetries > 0) {
-        console.log(chalk.red(
-          '\nWarning: the global cache failed with error:',
+        terminal.log(chalk.red(
+          'Warning: the global cache failed with error:',
         ));
-        console.log(chalk.red(globalCacheError.stack));
+        terminal.log(chalk.red(globalCacheError.stack));
         Module._globalCacheRetries--;
         if (Module._globalCacheRetries <= 0) {
-          console.log(chalk.red(
+          terminal.log(chalk.red(
             'No more retries, the global cache will be disabled for the ' +
               'remainder of the transformation.',
           ));
