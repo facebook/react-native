@@ -108,8 +108,8 @@ import com.facebook.react.R;
     // Disabled state
     states[0] = new int[]{-android.R.attr.state_enabled};
     colors[0] = ContextCompat.getColor(getContext(), isLightTheme
-            ? R.color.switch_thumb_normal_material_light
-            : R.color.switch_thumb_normal_material_dark);
+            ? R.color.switch_thumb_disabled_material_light
+            : R.color.switch_thumb_disabled_material_dark);
 
     // Checked state
     states[1] = new int[]{android.R.attr.state_checked};
@@ -131,15 +131,15 @@ import com.facebook.react.R;
 
     // Light: #000000, Opacity 38%
     // Dark: #FFFFFF, Opacity 30%
-    int disabledColor = isLightTheme ? Color.BLACK : Color.WHITE;
-    int trackColor = Color.argb(isLightTheme ? 0x61 : 0x4D,
-            Color.red(disabledColor),
-            Color.green(disabledColor),
-            Color.blue(disabledColor));
+    int trackColor = isLightTheme ? Color.BLACK : Color.WHITE;
+
 
     // Disabled state
     states[0] = new int[]{-android.R.attr.state_enabled};
-    colors[0] = trackColor;
+    colors[0] = Color.argb(isLightTheme ? 0x1F : 0x1A,
+            Color.red(trackColor),
+            Color.green(trackColor),
+            Color.blue(trackColor));
 
     // Checked state
     states[1] = new int[]{android.R.attr.state_checked};
@@ -147,7 +147,10 @@ import com.facebook.react.R;
             Color.blue(mSwitchColor));
 
     states[2] = new int[0];
-    colors[2] = trackColor;
+    colors[2] = Color.argb(isLightTheme ? 0x61 : 0x4D,
+            Color.red(trackColor),
+            Color.green(trackColor),
+            Color.blue(trackColor));
 
     ColorStateList colorStateList = new ColorStateList(states, colors);
     DrawableCompat.setTintList(getTrackDrawable(), colorStateList);
