@@ -6,7 +6,7 @@ rn_robolectric_test(
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
   srcs = glob(['*.java']),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('third-party/java/fest:fest'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -27,6 +27,3 @@ rn_robolectric_test(
   ],
 )
 
-project_config(
-  test_target = ':react',
-)

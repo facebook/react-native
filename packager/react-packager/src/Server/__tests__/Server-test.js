@@ -19,7 +19,8 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('../../node-haste')
-    .mock('../../Logger');
+    .mock('../../Logger')
+    .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
   let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
@@ -350,11 +351,10 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -362,12 +362,11 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -376,12 +375,11 @@ describe('processRequest', () => {
       const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve(mockData));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
@@ -389,7 +387,7 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -397,7 +395,6 @@ describe('processRequest', () => {
         'imgs/\u{4E3B}\u{9875}/logo.png',
         undefined
       );
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });

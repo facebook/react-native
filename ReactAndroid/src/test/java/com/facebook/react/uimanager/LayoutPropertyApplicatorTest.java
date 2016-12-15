@@ -11,12 +11,11 @@ package com.facebook.react.uimanager;
 
 import android.util.DisplayMetrics;
 
-import com.facebook.csslayout.CSSAlign;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSFlexDirection;
-import com.facebook.csslayout.CSSJustify;
-import com.facebook.csslayout.CSSPositionType;
-import com.facebook.csslayout.Spacing;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaPositionType;
 import com.facebook.react.bridge.JavaOnlyMap;
 
 import org.junit.After;
@@ -136,7 +135,7 @@ public class LayoutPropertyApplicatorTest {
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPosition(eq(Spacing.BOTTOM), anyFloat());
     verify(reactShadowNode).setPosition(eq(Spacing.END), anyFloat());
-    verify(reactShadowNode).setPositionType(any(CSSPositionType.class));
+    verify(reactShadowNode).setPositionType(any(YogaPositionType.class));
     verify(map).getFloat("bottom", Float.NaN);
     verify(map).getFloat("right", Float.NaN);
 
@@ -146,7 +145,7 @@ public class LayoutPropertyApplicatorTest {
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode, never()).setPosition(eq(Spacing.BOTTOM), anyFloat());
     verify(reactShadowNode, never()).setPosition(eq(Spacing.END), anyFloat());
-    verify(reactShadowNode, never()).setPositionType(any(CSSPositionType.class));
+    verify(reactShadowNode, never()).setPositionType(any(YogaPositionType.class));
     verify(map, never()).getFloat("bottom", Float.NaN);
     verify(map, never()).getFloat("right", Float.NaN);
   }
@@ -159,7 +158,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.ALL), anyFloat());
-    verify(map).getFloat("margin", CSSConstants.UNDEFINED);
+    verify(map).getFloat("margin", YogaConstants.UNDEFINED);
 
     // marginVertical
     reactShadowNode = spy(new LayoutShadowNode());
@@ -167,7 +166,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.VERTICAL), anyFloat());
-    verify(map).getFloat("marginVertical", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginVertical", YogaConstants.UNDEFINED);
 
     // marginHorizontal
     reactShadowNode = spy(new LayoutShadowNode());
@@ -175,7 +174,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.HORIZONTAL), anyFloat());
-    verify(map).getFloat("marginHorizontal", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginHorizontal", YogaConstants.UNDEFINED);
 
     // marginTop
     reactShadowNode = spy(new LayoutShadowNode());
@@ -183,7 +182,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.TOP), anyFloat());
-    verify(map).getFloat("marginTop", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginTop", YogaConstants.UNDEFINED);
 
     // marginBottom
     reactShadowNode = spy(new LayoutShadowNode());
@@ -191,7 +190,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.BOTTOM), anyFloat());
-    verify(map).getFloat("marginBottom", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginBottom", YogaConstants.UNDEFINED);
 
     // marginLeft
     reactShadowNode = spy(new LayoutShadowNode());
@@ -199,7 +198,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.START), anyFloat());
-    verify(map).getFloat("marginLeft", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginLeft", YogaConstants.UNDEFINED);
 
     // marginRight
     reactShadowNode = spy(new LayoutShadowNode());
@@ -207,7 +206,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setMargin(eq(Spacing.END), anyFloat());
-    verify(map).getFloat("marginRight", CSSConstants.UNDEFINED);
+    verify(map).getFloat("marginRight", YogaConstants.UNDEFINED);
 
     // no margin
     reactShadowNode = spy(new LayoutShadowNode());
@@ -215,7 +214,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode, never()).setMargin(anyInt(), anyFloat());
-    verify(map, never()).getFloat("margin", CSSConstants.UNDEFINED);
+    verify(map, never()).getFloat("margin", YogaConstants.UNDEFINED);
   }
 
   @Test
@@ -226,7 +225,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.ALL), anyFloat());
-    verify(map).getFloat("padding", CSSConstants.UNDEFINED);
+    verify(map).getFloat("padding", YogaConstants.UNDEFINED);
 
     // paddingVertical
     reactShadowNode = spy(new LayoutShadowNode());
@@ -234,7 +233,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.VERTICAL), anyFloat());
-    verify(map).getFloat("paddingVertical", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingVertical", YogaConstants.UNDEFINED);
 
     // paddingHorizontal
     reactShadowNode = spy(new LayoutShadowNode());
@@ -242,7 +241,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.HORIZONTAL), anyFloat());
-    verify(map).getFloat("paddingHorizontal", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingHorizontal", YogaConstants.UNDEFINED);
 
     // paddingTop
     reactShadowNode = spy(new LayoutShadowNode());
@@ -250,7 +249,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.TOP), anyFloat());
-    verify(map).getFloat("paddingTop", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingTop", YogaConstants.UNDEFINED);
 
     // paddingBottom
     reactShadowNode = spy(new LayoutShadowNode());
@@ -258,7 +257,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.BOTTOM), anyFloat());
-    verify(map).getFloat("paddingBottom", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingBottom", YogaConstants.UNDEFINED);
 
     // paddingLeft
     reactShadowNode = spy(new LayoutShadowNode());
@@ -266,7 +265,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.START), anyFloat());
-    verify(map).getFloat("paddingLeft", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingLeft", YogaConstants.UNDEFINED);
 
     // paddingRight
     reactShadowNode = spy(new LayoutShadowNode());
@@ -274,7 +273,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPadding(eq(Spacing.END), anyFloat());
-    verify(map).getFloat("paddingRight", CSSConstants.UNDEFINED);
+    verify(map).getFloat("paddingRight", YogaConstants.UNDEFINED);
 
     // no padding
     reactShadowNode = spy(new LayoutShadowNode());
@@ -282,7 +281,7 @@ public class LayoutPropertyApplicatorTest {
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode, never()).setPadding(anyInt(), anyFloat());
-    verify(map, never()).getFloat("padding", CSSConstants.UNDEFINED);
+    verify(map, never()).getFloat("padding", YogaConstants.UNDEFINED);
   }
 
   @Test
@@ -301,21 +300,21 @@ public class LayoutPropertyApplicatorTest {
         "relative");
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setFlexDirection(CSSFlexDirection.COLUMN);
-    verify(reactShadowNode).setAlignSelf(CSSAlign.STRETCH);
-    verify(reactShadowNode).setAlignItems(CSSAlign.CENTER);
-    verify(reactShadowNode).setJustifyContent(CSSJustify.SPACE_BETWEEN);
-    verify(reactShadowNode).setPositionType(CSSPositionType.RELATIVE);
+    verify(reactShadowNode).setFlexDirection(YogaFlexDirection.COLUMN);
+    verify(reactShadowNode).setAlignSelf(YogaAlign.STRETCH);
+    verify(reactShadowNode).setAlignItems(YogaAlign.CENTER);
+    verify(reactShadowNode).setJustifyContent(YogaJustify.SPACE_BETWEEN);
+    verify(reactShadowNode).setPositionType(YogaPositionType.RELATIVE);
 
     reactShadowNode = spy(new LayoutShadowNode());
     map = buildStyles();
     reactShadowNode.updateProperties(map);
 
-    verify(reactShadowNode, never()).setFlexDirection(any(CSSFlexDirection.class));
-    verify(reactShadowNode, never()).setAlignSelf(any(CSSAlign.class));
-    verify(reactShadowNode, never()).setAlignItems(any(CSSAlign.class));
-    verify(reactShadowNode, never()).setJustifyContent(any(CSSJustify.class));
-    verify(reactShadowNode, never()).setPositionType(any(CSSPositionType.class));
+    verify(reactShadowNode, never()).setFlexDirection(any(YogaFlexDirection.class));
+    verify(reactShadowNode, never()).setAlignSelf(any(YogaAlign.class));
+    verify(reactShadowNode, never()).setAlignItems(any(YogaAlign.class));
+    verify(reactShadowNode, never()).setJustifyContent(any(YogaJustify.class));
+    verify(reactShadowNode, never()).setPositionType(any(YogaPositionType.class));
   }
 
   @Test
@@ -362,11 +361,11 @@ public class LayoutPropertyApplicatorTest {
     verify(reactShadowNode).setPadding(Spacing.ALL, 10.f);
     verify(reactShadowNode).setMargin(Spacing.START, 10.f);
     verify(reactShadowNode).setBorder(Spacing.TOP, 10.f);
-    verify(reactShadowNode).setFlexDirection(CSSFlexDirection.ROW);
-    verify(reactShadowNode).setAlignSelf(CSSAlign.STRETCH);
-    verify(reactShadowNode).setAlignItems(CSSAlign.CENTER);
-    verify(reactShadowNode).setJustifyContent(CSSJustify.SPACE_BETWEEN);
-    verify(reactShadowNode).setPositionType(CSSPositionType.ABSOLUTE);
+    verify(reactShadowNode).setFlexDirection(YogaFlexDirection.ROW);
+    verify(reactShadowNode).setAlignSelf(YogaAlign.STRETCH);
+    verify(reactShadowNode).setAlignItems(YogaAlign.CENTER);
+    verify(reactShadowNode).setJustifyContent(YogaJustify.SPACE_BETWEEN);
+    verify(reactShadowNode).setPositionType(YogaPositionType.ABSOLUTE);
 
     map = buildStyles(
         "width",
@@ -398,19 +397,19 @@ public class LayoutPropertyApplicatorTest {
 
     reset(reactShadowNode);
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setStyleWidth(CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setStyleHeight(CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPosition(Spacing.START, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setPosition(Spacing.TOP, CSSConstants.UNDEFINED);
+    verify(reactShadowNode).setStyleWidth(YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setStyleHeight(YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setPosition(Spacing.START, YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setPosition(Spacing.TOP, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setFlex(0.f);
-    verify(reactShadowNode).setPadding(Spacing.ALL, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setMargin(Spacing.START, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setBorder(Spacing.TOP, CSSConstants.UNDEFINED);
-    verify(reactShadowNode).setFlexDirection(CSSFlexDirection.COLUMN);
-    verify(reactShadowNode).setAlignSelf(CSSAlign.AUTO);
-    verify(reactShadowNode).setAlignItems(CSSAlign.STRETCH);
-    verify(reactShadowNode).setJustifyContent(CSSJustify.FLEX_START);
-    verify(reactShadowNode).setPositionType(CSSPositionType.RELATIVE);
+    verify(reactShadowNode).setPadding(Spacing.ALL, YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setMargin(Spacing.START, YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setBorder(Spacing.TOP, YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setFlexDirection(YogaFlexDirection.COLUMN);
+    verify(reactShadowNode).setAlignSelf(YogaAlign.AUTO);
+    verify(reactShadowNode).setAlignItems(YogaAlign.STRETCH);
+    verify(reactShadowNode).setJustifyContent(YogaJustify.FLEX_START);
+    verify(reactShadowNode).setPositionType(YogaPositionType.RELATIVE);
   }
 
   @Test

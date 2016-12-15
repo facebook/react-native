@@ -51,9 +51,8 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
-      assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      getTransformOptions: config.getTransformOptions,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       resetCache: args.resetCache,

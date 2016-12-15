@@ -4,7 +4,7 @@ title: Performance
 layout: docs
 category: Guides
 permalink: docs/performance.html
-next: upgrading
+next: understanding-cli
 previous: navigation
 ---
 

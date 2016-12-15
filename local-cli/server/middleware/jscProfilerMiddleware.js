@@ -17,6 +17,7 @@ const urlLib = require('url');
 class TreeTransformator {
   constructor() {
     this.urlResults = {};
+    this.fakeNodeId = 1073741824;
   }
 
   transform(tree, callback) {
@@ -26,14 +27,36 @@ class TreeTransformator {
   }
 
   // private
+  createFakeNode(name, id) {
+    return {
+      'functionName': name,
+      'scriptId': 0,
+      'url': '',
+      'lineNumber': 0,
+      'columnNumber': 0,
+      'hitCount': 0,
+      'callUID': id,
+      'children': [],
+      'deoptReason': 'fake_node',
+      'id': id,
+      'positionTicks': [],
+    };
+  }
+
+  // private
   transformNode(tree) {
     if (tree.url in this.urlResults) {
       const original = this.urlResults[tree.url].originalPositionFor({
         line: tree.lineNumber,
         column: tree.columnNumber,
       });
-      tree.functionName = original.name
+      const functionName = original.name
         || (path.posix.basename(original.source || '') + ':' + original.line);
+      if (tree.functionName === '(unnamed builtin)') {
+        tree.functionName += ':' + functionName;
+      } else {
+        tree.functionName = tree.functionName || functionName;
+      }
       tree.scriptId = tree.id;
       tree.url = 'file://' + original.source;
       tree.lineNumber = original.line;
@@ -42,12 +65,24 @@ class TreeTransformator {
       tree.functionName = 'OUTSIDE VM';
     }
     tree.children = tree.children.map((t) => this.transformNode(t));
+    if (tree.deoptReason.startsWith('host:')) {
+      // Creating a fake node to mark not doing JS, steal the id and hitCount
+      // of the original node
+      const fakeNode = this.createFakeNode('INSIDE VM', tree.id);
+      tree.id = tree.callUID = this.fakeNodeId++;
+      fakeNode.hitCount = tree.hitCount;
+      tree.hitCount = 0;
+
+      // Append the fake node to the tree
+      fakeNode.children = tree.children;
+      tree.children = [fakeNode];
+    }
     return tree;
   }
 
   // private
   afterUrlsCacheBuild(tree, callback) {
-    let urls = new Set();
+    const urls = new Set();
     this.gatherUrls(tree, urls);
 
     let size = urls.size;
@@ -117,7 +152,7 @@ module.exports = function(req, res, next) {
   }
 
   console.log('Received request from JSC profiler, post processing it...');
-  let profile = JSON.parse(req.rawBody);
+  const profile = JSON.parse(req.rawBody);
   (new TreeTransformator()).transform(profile.head, (newHead) => {
     profile.head = newHead;
 

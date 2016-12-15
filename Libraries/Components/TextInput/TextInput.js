@@ -195,6 +195,12 @@ const TextInput = React.createClass({
      */
     autoCorrect: PropTypes.bool,
     /**
+     * If `false`, disables spell-check style (i.e. red underlines).
+     * The default value is inherited from `autoCorrect`.
+     * @platform ios
+     */
+    spellCheck: PropTypes.bool,
+    /**
      * If `true`, focuses the input on `componentDidMount`.
      * The default value is `false`.
      */
@@ -304,6 +310,15 @@ const TextInput = React.createClass({
      * @platform android
      */
     numberOfLines: PropTypes.number,
+    /**
+     * When `false`, if there is a small amount of space available around a text input
+     * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
+     * the text inside of a full screen text input mode. When `true`, this feature is
+     * disabled and users will always edit the text directly inside of the text input.
+     * Defaults to `false`.
+     * @platform android
+     */
+    disableFullscreenUI: PropTypes.bool,
     /**
      * If `true`, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is `false`.
@@ -708,6 +723,7 @@ const TextInput = React.createClass({
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
+        disableFullscreenUI={this.props.disableFullscreenUI}
       />;
 
     return (

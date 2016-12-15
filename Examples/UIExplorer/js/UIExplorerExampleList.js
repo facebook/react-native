@@ -82,7 +82,7 @@ class UIExplorerExampleList extends React.Component {
           renderRow={this._renderExampleRow.bind(this)}
           renderSectionHeader={this._renderSectionHeader}
           enableEmptySections={true}
-          keyboardShouldPersistTaps={true}
+          keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
         />

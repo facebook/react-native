@@ -45,5 +45,9 @@ module.exports = [
     command: '--reset-cache',
     description: 'Removes cached files',
     default: false,
+  }, {
+    command: '--read-global-cache',
+    description: 'Try to fetch transformed JS code from the global cache, if configured.',
+    default: false,
   },
 ];

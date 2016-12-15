@@ -7,15 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
-
 #import "RCTWebSocketExecutor.h"
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTSRWebSocket.h"
 
 #if RCT_DEV // Debug executors are only supported in dev mode
@@ -141,6 +141,7 @@ RCT_EXPORT_MODULE()
   RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
+    [_callbacks removeObjectForKey:messageID];
   }
 }
 

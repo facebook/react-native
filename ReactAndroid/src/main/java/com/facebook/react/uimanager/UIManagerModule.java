@@ -144,7 +144,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mEventDispatcher.onCatalystInstanceDestroyed();
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
-    CSSNodePool.get().clear();
+    YogaNodePool.get().clear();
   }
 
   private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
@@ -570,7 +570,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     @Override
     public void onTrimMemory(int level) {
       if (level >= TRIM_MEMORY_MODERATE) {
-        CSSNodePool.get().clear();
+        YogaNodePool.get().clear();
       }
     }
 

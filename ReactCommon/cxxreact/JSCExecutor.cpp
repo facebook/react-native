@@ -216,7 +216,15 @@ void JSCExecutor::setContextName(const std::string& name) {
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
+  #if defined(__APPLE__)
+  const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
+  if (useCustomJSC) {
+    JSC_configureJSCForIOS(true);
+  }
+  #else
   const bool useCustomJSC = false;
+  #endif
+
   #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
   #endif
@@ -243,7 +251,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  // Websorker support
+  // Webworker support
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
@@ -326,7 +334,7 @@ void JSCExecutor::loadApplicationScript(
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
     folly::checkUnixError(fd, "Couldn't open compiled bundle");
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
     folly::throwOnFail<std::runtime_error>(
       sourceCode != nullptr,
@@ -338,12 +346,6 @@ void JSCExecutor::loadApplicationScript(
       LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
-
-    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-    if (flags & UNPACKED_BC_CACHE) {
-      configureJSCBCCache(m_context, bundlePath);
-    }
-    #endif
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
@@ -371,10 +373,27 @@ void JSCExecutor::loadApplicationScript(
 {
   String jsSourceURL(m_context, sourceURL.c_str());
 
-  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
-  if (!bcSourceCode) {
+  JSLoadSourceError jsError;
+  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+
+  switch (jsError) {
+  case JSLoadSourceErrorOnRead:
+  case JSLoadSourceErrorNotCompiled:
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
+
+  case JSLoadSourceErrorVersionMismatch:
+    throw std::runtime_error("Compiled Source Version Mismatch");
+
+  case JSLoadSourceErrorNone:
+    folly::throwOnFail<std::runtime_error>(
+      bcSourceCode != nullptr,
+      "Unexpected error opening compiled bundle"
+    );
+    break;
+
+  default:
+    throw std::runtime_error("Unhandled Compiled Source Error");
   }
 
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
