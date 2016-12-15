@@ -42,6 +42,8 @@ const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
 const View = require('View');
 
+const nativeImageSource = require('nativeImageSource');
+
 import type {UIExplorerNavigationState} from './UIExplorerNavigationReducer';
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -152,8 +154,16 @@ class UIExplorerApp extends React.Component {
       return (
         <View style={styles.container}>
           <ToolbarAndroid
-            logo={require('image!launcher_icon')}
-            navIcon={require('image!ic_menu_black_24dp')}
+            logo={nativeImageSource({
+              android: 'launcher_icon',
+              width: 132,
+              height: 144
+            })}
+            navIcon={nativeImageSource({
+              android: 'ic_menu_black_24dp',
+              width: 48,
+              height: 48
+            })}
             onIconClicked={() => this.drawer.openDrawer()}
             style={styles.toolbar}
             title={title}
@@ -168,8 +178,16 @@ class UIExplorerApp extends React.Component {
     return (
       <View style={styles.container}>
         <ToolbarAndroid
-          logo={require('image!launcher_icon')}
-          navIcon={require('image!ic_menu_black_24dp')}
+          logo={nativeImageSource({
+            android: 'launcher_icon',
+            width: 132,
+            height: 144
+          })}
+          navIcon={nativeImageSource({
+            android: 'ic_menu_black_24dp',
+            width: 48,
+            height: 48
+          })}
           onIconClicked={() => this.drawer.openDrawer()}
           style={styles.toolbar}
           title={title}

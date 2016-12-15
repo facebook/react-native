@@ -27,28 +27,9 @@
 		58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CB1A9E6C5C00147676 /* RCTShadowText.m */; };
 		58B511D11A9E6C5C00147676 /* RCTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CD1A9E6C5C00147676 /* RCTTextManager.m */; };
 		58B512161A9E6EFF00147676 /* RCTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512141A9E6EFF00147676 /* RCTText.m */; };
+		AF3225F91DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
+		AF3225FA1DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		2D2A28791D9B048500D4039D /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		58B511991A9E6C1200147676 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		131B6ABC1AF0CD0600FFC3E0 /* RCTTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextView.h; sourceTree = "<group>"; };
@@ -73,29 +54,16 @@
 		58B511CD1A9E6C5C00147676 /* RCTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextManager.m; sourceTree = "<group>"; };
 		58B512141A9E6EFF00147676 /* RCTText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTText.m; sourceTree = "<group>"; };
 		58B512151A9E6EFF00147676 /* RCTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTText.h; sourceTree = "<group>"; };
+		AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Text.h"; sourceTree = "<group>"; };
+		AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Text.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		2D2A28781D9B048500D4039D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		58B511981A9E6C1200147676 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		58B511921A9E6C1200147676 = {
 			isa = PBXGroup;
 			children = (
+				AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */,
+				AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */,
 				19FC5C861D41A4220090108F /* RCTTextSelection.h */,
 				19FC5C841D41A4120090108F /* RCTTextSelection.m */,
 				58B511C61A9E6C5C00147676 /* RCTRawTextManager.h */,
@@ -139,8 +107,6 @@
 			buildConfigurationList = 2D2A28831D9B048500D4039D /* Build configuration list for PBXNativeTarget "RCTText-tvOS" */;
 			buildPhases = (
 				2D2A28771D9B048500D4039D /* Sources */,
-				2D2A28781D9B048500D4039D /* Frameworks */,
-				2D2A28791D9B048500D4039D /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -156,8 +122,6 @@
 			buildConfigurationList = 58B511AF1A9E6C1300147676 /* Build configuration list for PBXNativeTarget "RCTText" */;
 			buildPhases = (
 				58B511971A9E6C1200147676 /* Sources */,
-				58B511981A9E6C1200147676 /* Frameworks */,
-				58B511991A9E6C1200147676 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -216,6 +180,7 @@
 				2D3B5F3B1D9B106F00451313 /* RCTTextView.m in Sources */,
 				2D3B5F3A1D9B106F00451313 /* RCTTextFieldManager.m in Sources */,
 				2D3B5F341D9B103100451313 /* RCTRawTextManager.m in Sources */,
+				AF3225FA1DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */,
 				2D3B5F3C1D9B106F00451313 /* RCTTextViewManager.m in Sources */,
 				2D3B5F331D9B102D00451313 /* RCTTextSelection.m in Sources */,
 				2D3B5F351D9B103300451313 /* RCTShadowRawText.m in Sources */,
@@ -233,6 +198,7 @@
 				1362F1001B4D51F400E06D8C /* RCTTextField.m in Sources */,
 				58B512161A9E6EFF00147676 /* RCTText.m in Sources */,
 				1362F1011B4D51F400E06D8C /* RCTTextFieldManager.m in Sources */,
+				AF3225F91DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */,
 				131B6AC11AF0CD0600FFC3E0 /* RCTTextViewManager.m in Sources */,
 				58B511CF1A9E6C5C00147676 /* RCTShadowRawText.m in Sources */,
 				58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */,
@@ -252,15 +218,9 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -275,15 +235,9 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -327,6 +281,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
@@ -366,6 +321,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
@@ -378,15 +334,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -394,14 +344,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};

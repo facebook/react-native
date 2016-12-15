@@ -14,7 +14,6 @@
 const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -22,6 +21,8 @@ const View = require('View');
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+
+const PropTypes = React.PropTypes;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -35,9 +36,8 @@ const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  *
  * class ModalExample extends Component {
  *
- *   constructor(props) {
- *     super(props);
- *     this.state = {modalVisible: false};
+ *   state = {
+ *     modalVisible: false,
  *   }
  *
  *   setModalVisible(visible) {
@@ -94,13 +94,17 @@ class Modal extends React.Component {
      */
     transparent: PropTypes.bool,
     /**
+     * The `hardwareAccelerated` prop controls whether to force hardware acceleration for the underlying window.
+     * @platform android
+     */
+    hardwareAccelerated: PropTypes.bool,
+    /**
      * The `visible` prop determines whether your modal is visible.
      */
     visible: PropTypes.bool,
     /**
-     * The `onRequestClose` prop allows passing a function that will be called once the modal has been dismissed.
-     *
-     * _On the Android platform, this is a required function._
+     * The `onRequestClose` callback is called when the user taps the hardware back button.
+     * @platform android
      */
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
     /**
@@ -127,9 +131,14 @@ class Modal extends React.Component {
 
   static defaultProps = {
     visible: true,
+    hardwareAccelerated: false,
   };
 
-  render(): ?ReactElement<any> {
+  static contextTypes = {
+    rootTag: React.PropTypes.number,
+  };
+
+  render(): ?React.Element<any> {
     if (this.props.visible === false) {
       return null;
     }
@@ -148,7 +157,7 @@ class Modal extends React.Component {
     }
 
     const innerChildren = __DEV__ ?
-      ( <AppContainer>
+      ( <AppContainer rootTag={this.context.rootTag}>
           {this.props.children}
         </AppContainer>) :
       this.props.children;
@@ -157,6 +166,7 @@ class Modal extends React.Component {
       <RCTModalHostView
         animationType={animationType}
         transparent={this.props.transparent}
+        hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         style={styles.modal}

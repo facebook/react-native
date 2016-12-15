@@ -82,13 +82,13 @@ RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 
-// overflow is used both in css-layout as well as by reac-native. In css-layout
+// overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow
 // is set to from js we want to clip drawing or not. This piece of code ensures
 // that css-layout is always treating the contents of a scroll container as
 // overflow: 'scroll'.
-RCT_CUSTOM_SHADOW_PROPERTY(overflow, CSSOverflow, RCTShadowView) {
-  view.overflow = CSSOverflowScroll;
+RCT_CUSTOM_SHADOW_PROPERTY(overflow, YGOverflow, RCTShadowView) {
+  view.overflow = YGOverflowScroll;
 }
 
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag

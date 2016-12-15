@@ -15,9 +15,8 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ImageResizeMode = require('ImageResizeMode');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -26,6 +25,8 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
+
+const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
@@ -65,7 +66,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
- * import { AppRegistry, View, Image, StyleSheet} from 'react-native';
+ * import { AppRegistry, View, Image, StyleSheet } from 'react-native';
  *
  * const styles = StyleSheet.create({
  *   stretch: {
@@ -254,7 +255,6 @@ const Image = React.createClass({
     onProgress: PropTypes.func,
     /**
      * Invoked on load error with `{nativeEvent: {error}}`.
-     * @platform ios
      */
     onError: PropTypes.func,
     /**
@@ -317,6 +317,12 @@ const Image = React.createClass({
     prefetch(url: string) {
       return ImageViewManager.prefetchImage(url);
     },
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
+     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     */
+    resolveAssetSource: resolveAssetSource,
   },
 
   mixins: [NativeMethodsMixin],

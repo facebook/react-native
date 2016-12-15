@@ -42,7 +42,7 @@ public class ReactViewPager extends ViewPager {
       // We need to do that since {@link ViewPager} relies on layout passes to position those views
       // in a right way (also thanks to {@link ReactViewPagerManager#needsCustomLayoutForChildren}
       // returning {@code true}). Currently we only call {@link View#measure} and
-      // {@link View#layout} after CSSLayout step.
+      // {@link View#layout} after yoga step.
 
       // TODO(7323049): Remove this workaround once we figure out a way to re-layout some views on
       // request

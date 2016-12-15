@@ -5,19 +5,48 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
+
+const BundleBase = require('./BundleBase');
+const ModuleTransport = require('../lib/ModuleTransport');
 
 const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
-const BundleBase = require('./BundleBase');
-const ModuleTransport = require('../lib/ModuleTransport');
 const crypto = require('crypto');
+
+import type {SourceMap, CombinedSourceMap, MixedSourceMap} from '../lib/SourceMap';
+import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
+
+export type Unbundle = {
+  startupModules: Array<*>,
+  lazyModules: Array<*>,
+  groups: Map<number, Set<number>>,
+};
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 class Bundle extends BundleBase {
-  constructor({sourceMapUrl, dev, minify, ramGroups} = {}) {
+
+  _dev: boolean | void;
+  _inlineSourceMap: string | void;
+  _minify: boolean | void;
+  _numRequireCalls: number;
+  _ramBundle: Unbundle | null;
+  _ramGroups: Array<string> | void;
+  _shouldCombineSourceMaps: boolean;
+  _sourceMap: boolean;
+  _sourceMapUrl: string | void;
+
+  constructor({sourceMapUrl, dev, minify, ramGroups}: {
+    sourceMapUrl?: string,
+    dev?: boolean,
+    minify?: boolean,
+    ramGroups?: Array<string>,
+  } = {}) {
     super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
@@ -30,7 +59,20 @@ class Bundle extends BundleBase {
     this._ramBundle = null; // cached RAM Bundle
   }
 
-  addModule(resolver, resolutionResponse, module, moduleTransport) {
+  addModule(
+    /**
+     * $FlowFixMe: this code is inherently incorrect, because it modifies the
+     * signature of the base class function "addModule". That means callsites
+     * using an instance typed as the base class would be broken. This must be
+     * refactored.
+     */
+    resolver: {wrapModule: (options: any) => Promise<{code: any, map: any}>},
+    resolutionResponse: mixed,
+    module: mixed,
+    /* $FlowFixMe: erroneous change of signature. */
+    moduleTransport: ModuleTransport,
+    /* $FlowFixMe: erroneous change of signature. */
+  ): Promise<void> {
     const index = super.addModule(moduleTransport);
     return resolver.wrapModule({
       resolutionResponse,
@@ -53,17 +95,21 @@ class Bundle extends BundleBase {
     });
   }
 
-  finalize(options) {
+  finalize(options: FinalizeOptions) {
     options = options || {};
     if (options.runMainModule) {
+      /* $FlowFixMe: this is unsound, as nothing enforces runBeforeMainModule
+       * to be available if `runMainModule` is true. Refactor. */
       options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      /* $FlowFixMe: this is unsound, as nothing enforces the module ID to have
+       * been set beforehand. */
       this._addRequireCall(super.getMainModuleId());
     }
 
     super.finalize(options);
   }
 
-  _addRequireCall(moduleId) {
+  _addRequireCall(moduleId: string) {
     const code = `;require(${JSON.stringify(moduleId)});`;
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
@@ -88,12 +134,12 @@ class Bundle extends BundleBase {
     return this._inlineSourceMap;
   }
 
-  getSource(options) {
+  getSource(options: GetSourceOptions) {
     super.assertFinalized();
 
     options = options || {};
 
-    let source = super.getSource();
+    let source = super.getSource(options);
 
     if (options.inlineSourceMap) {
       source += SOURCEMAPPING_URL + this._getInlineSourceMap(options.dev);
@@ -104,7 +150,7 @@ class Bundle extends BundleBase {
     return source;
   }
 
-  getUnbundle(type) {
+  getUnbundle(): Unbundle {
     this.assertFinalized();
     if (!this._ramBundle) {
       const modules = this.getModules().slice();
@@ -122,7 +168,7 @@ class Bundle extends BundleBase {
             groups = createGroups(ramGroups || [], lazyModules);
           }
           return groups;
-        }
+        },
       };
     }
 
@@ -135,7 +181,7 @@ class Bundle extends BundleBase {
    * that makes use of of the `sections` field to combine sourcemaps by adding
    * an offset. This is supported only by Chrome for now.
    */
-  _getCombinedSourceMaps(options) {
+  _getCombinedSourceMaps(options): CombinedSourceMap {
     const result = {
       version: 3,
       file: this._getSourceMapFile(),
@@ -151,6 +197,7 @@ class Bundle extends BundleBase {
       }
 
       if (options.excludeSource) {
+        /* $FlowFixMe: assume the map is not empty if we got here. */
         if (map.sourcesContent && map.sourcesContent.length) {
           map = Object.assign({}, map, {sourcesContent: []});
         }
@@ -158,6 +205,7 @@ class Bundle extends BundleBase {
 
       result.sections.push({
         offset: { line: line, column: 0 },
+        /* $FlowFixMe: assume the map is not empty if we got here. */
         map: map,
       });
       line += module.code.split('\n').length;
@@ -166,7 +214,7 @@ class Bundle extends BundleBase {
     return result;
   }
 
-  getSourceMap(options) {
+  getSourceMap(options: {excludeSource?: boolean}): MixedSourceMap {
     super.assertFinalized();
 
     if (this._shouldCombineSourceMaps) {
@@ -182,12 +230,14 @@ class Bundle extends BundleBase {
       names: [],
       mappings: mappings,
       sourcesContent: options.excludeSource
-        ? [] : modules.map(module => module.sourceCode)
+        ? [] : modules.map(module => module.sourceCode),
     };
     return map;
   }
 
   getEtag() {
+    /* $FlowFixMe: we must pass options, or rename the
+     * base `getSource` function, as it does not actually need options. */
     var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
     return eTag;
   }
@@ -254,6 +304,7 @@ class Bundle extends BundleBase {
 
   getDebugInfo() {
     return [
+      /* $FlowFixMe: this is unsound as the module ID could be unset. */
       '<div><h3>Main Module:</h3> ' + super.getMainModuleId() + '</div>',
       '<style>',
       'pre.collapsed {',
@@ -274,7 +325,7 @@ class Bundle extends BundleBase {
     ].join('\n');
   }
 
-  setRamGroups(ramGroups) {
+  setRamGroups(ramGroups: Array<string>) {
     this._ramGroups = ramGroups;
   }
 
@@ -298,11 +349,12 @@ class Bundle extends BundleBase {
 
     BundleBase.fromJSON(bundle, json);
 
+    /* $FlowFixMe: this modifies BundleBase#fromJSON() signature. */
     return bundle;
   }
 }
 
-function generateSourceMapForVirtualModule(module) {
+function generateSourceMapForVirtualModule(module): SourceMap {
   // All lines map 1-to-1
   let mappings = 'AAAA;';
 
@@ -339,8 +391,9 @@ function * filter(iterator, predicate) {
   }
 }
 
-function * subtree(moduleTransport, moduleTransportsByPath, seen = new Set()) {
+function * subtree(moduleTransport: ModuleTransport, moduleTransportsByPath, seen = new Set()) {
   seen.add(moduleTransport.id);
+  /* $FlowFixMe: there may not be a `meta` object */
   for (const [, {path}] of moduleTransport.meta.dependencyPairs || []) {
     const dependency = moduleTransportsByPath.get(path);
     if (dependency && !seen.has(dependency.id)) {
@@ -361,7 +414,7 @@ class ArrayMap extends Map {
   }
 }
 
-function createGroups(ramGroups, lazyModules) {
+function createGroups(ramGroups: Array<string>, lazyModules) {
   // build two maps that allow to lookup module data
   // by path or (numeric) module id;
   const byPath = new Map();
@@ -372,7 +425,7 @@ function createGroups(ramGroups, lazyModules) {
   });
 
   // build a map of group root IDs to an array of module IDs in the group
-  const result = new Map(
+  const result: Map<number, Set<number>> = new Map(
     ramGroups
       .map(modulePath => {
         const root = byPath.get(modulePath);
@@ -382,6 +435,7 @@ function createGroups(ramGroups, lazyModules) {
         return [
           root.id,
           // `subtree` yields the IDs of all transitive dependencies of a module
+          /* $FlowFixMe: assumes the module is always in the Map */
           new Set(subtree(byPath.get(root.sourcePath), byPath)),
         ];
       })
@@ -400,12 +454,14 @@ function createGroups(ramGroups, lazyModules) {
     const doubles = filter(all, ([, parents]) => parents.length > 1);
     for (const [moduleId, parents] of doubles) {
       // remove them from their groups
+      /* $FlowFixMe: this assumes the element exists. */
       parents.forEach(p => result.get(p).delete(moduleId));
 
       // print a warning for each removed module
       const parentNames = parents.map(byId.get, byId);
       const lastName = parentNames.pop();
       console.warn(
+        /* $FlowFixMe: this assumes the element exists. */
         `Module ${byId.get(moduleId)} belongs to groups ${
           parentNames.join(', ')}, and ${lastName
           }. Removing it from all groups.`

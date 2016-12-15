@@ -20,7 +20,7 @@ const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 static std::string executeJSCallWithProxy(
     jobject executor,
     const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
+    const folly::dynamic& arguments) {
   static auto executeJSCall =
     jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<jstring(jstring, jstring)>("executeJSCall");
 
@@ -42,12 +42,13 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
     , m_delegate(delegate) {
 
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
-  auto moduleRegistry = delegate->getModuleRegistry();
 
   {
     SystraceSection s("collectNativeModuleDescriptions");
+    auto moduleRegistry = delegate->getModuleRegistry();
     for (const auto& name : moduleRegistry->moduleNames()) {
-      nativeModuleConfig.push_back(moduleRegistry->getConfig(name));
+      auto config = moduleRegistry->getConfig(name);
+      nativeModuleConfig.push_back(config ? config->config : nullptr);
     }
   }
 
@@ -87,20 +88,14 @@ void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    moduleId,
-    methodId,
-    std::move(arguments),
-  };
+  auto call = folly::dynamic::array(moduleId, methodId, std::move(arguments));
+
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
   m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }
 
 void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments)
-  };
+  auto call = folly::dynamic::array(callbackId, std::move(arguments));
   std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
   m_delegate->callNativeModules(*this, folly::parseJson(result), true);
 }

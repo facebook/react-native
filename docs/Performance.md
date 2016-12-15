@@ -4,7 +4,7 @@ title: Performance
 layout: docs
 category: Guides
 permalink: docs/performance.html
-next: upgrading
+next: understanding-cli
 previous: navigation
 ---
 
@@ -37,7 +37,7 @@ generate that frame within the allotted 16.67ms, then you will "drop a
 frame" and the UI will appear unresponsive.
 
 Now to confuse the matter a little bit, open up the developer menu in
-your app and toggle `Show FPS Monitor`. You will notice that there are
+your app and toggle `Show Perf Monitor`. You will notice that there are
 two different frame rates.
 
 #### JavaScript frame rate
@@ -324,3 +324,7 @@ the JavaScript thread and main thread side-by-side.
 
 For iOS, Instruments are an invaluable tool, and on Android you should
 learn to use systrace.
+
+You can also use [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html) to get insights into where React is spending time when rendering your components.
+
+Another way to profile JavaScript is to use the Chrome profiler while debugging. This won't give you accurate results as the code is running in Chrome but will give you a general idea of where bottlenecks might be.

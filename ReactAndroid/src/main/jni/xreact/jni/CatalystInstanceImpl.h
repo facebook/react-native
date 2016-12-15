@@ -40,6 +40,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
+  static bool isIndexedRAMBundle(const char *sourcePath);
+
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
@@ -55,6 +57,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
+  jlong getJavaScriptContext();
   void handleMemoryPressureUiHidden();
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();

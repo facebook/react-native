@@ -10,19 +10,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
-#import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
-
-#import "RCTAnimationType.h"
-#import "RCTBorderStyle.h"
-#import "RCTTextDecorationLineType.h"
-#import "RCTDefines.h"
-#import "RCTLog.h"
-#import "RCTPointerEvents.h"
+#import <yoga/Yoga.h>
+#import <React/RCTAnimationType.h>
+#import <React/RCTBorderStyle.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTPointerEvents.h>
+#import <React/RCTTextDecorationLineType.h>
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -115,13 +109,13 @@ typedef id NSPropertyList;
 + (NSPropertyList)NSPropertyList:(id)json;
 
 typedef BOOL css_backface_visibility_t;
-+ (CSSOverflow)CSSOverflow:(id)json;
++ (YGOverflow)YGOverflow:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
-+ (CSSFlexDirection)CSSFlexDirection:(id)json;
-+ (CSSJustify)CSSJustify:(id)json;
-+ (CSSAlign)CSSAlign:(id)json;
-+ (CSSPositionType)CSSPositionType:(id)json;
-+ (CSSWrapType)CSSWrapType:(id)json;
++ (YGFlexDirection)YGFlexDirection:(id)json;
++ (YGJustify)YGJustify:(id)json;
++ (YGAlign)YGAlign:(id)json;
++ (YGPositionType)YGPositionType:(id)json;
++ (YGWrap)YGWrap:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;

@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
+#import <React/RCTDefines.h>
 
 /**
  * RCTProfile

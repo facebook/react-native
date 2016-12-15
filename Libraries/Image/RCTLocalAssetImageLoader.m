@@ -11,7 +11,7 @@
 
 #import <libkern/OSAtomic.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTLocalAssetImageLoader
 

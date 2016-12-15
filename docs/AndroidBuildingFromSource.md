@@ -76,7 +76,7 @@ Add `gradle-download-task` as dependency in `android/build.gradle`:
 ...
     dependencies {
         classpath 'com.android.tools.build:gradle:1.3.1'
-        classpath 'de.undercouch:gradle-download-task:2.0.0'
+        classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -116,10 +116,10 @@ dependencies {
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
 
-Modify your `android/app/build.gradle` and replace `compile project(':react-native-custom-module')` with:
+Modify your `android/app/build.gradle`, and add:
 
 ```gradle
-compile(project(':react-native-custom-module')) {
+configurations.all {
     exclude group: 'com.facebook.react', module: 'react-native'
 }
 ```

@@ -56,11 +56,21 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
+  /**
+   * Listener interface for react root view events
+   */
+  public interface ReactRootViewEventListener {
+    /**
+     * Called when the react context is attached to a ReactRootView.
+     */
+    void onAttachedToReactInstance(ReactRootView rootView);
+  }
+
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
-  private @Nullable OnGenericMotionListener mOnGenericMotionListener;
+  private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
   private boolean mWasMeasured = false;
   private boolean mIsAttachedToInstance = false;
@@ -110,10 +120,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
       .getEventDispatcher();
     mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
-    // Hook for containers or fragments to get informed of the on touch events to perform actions.
-    if (mOnGenericMotionListener != null) {
-      mOnGenericMotionListener.onGenericMotion(this, androidEvent);
-    }
   }
 
   @Override
@@ -129,10 +135,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
-  }
-
-  public void setOnGenericMotionListener(OnGenericMotionListener listener) {
-    mOnGenericMotionListener = listener;
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -231,6 +233,16 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
     }
+  }
+
+  public void onAttachedToReactInstance() {
+    if (mRootViewEventListener != null) {
+      mRootViewEventListener.onAttachedToReactInstance(this);
+    }
+  }
+
+  public void setEventListener(ReactRootViewEventListener eventListener) {
+    mRootViewEventListener = eventListener;
   }
 
   /* package */ String getJSModuleName() {

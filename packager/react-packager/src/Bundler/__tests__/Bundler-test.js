@@ -22,9 +22,8 @@ jest
   .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
-  .mock('../PrepackBundle')
   .mock('../HMRBundle')
-  .mock('../../Activity')
+  .mock('../../Logger')
   .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
@@ -39,7 +38,6 @@ describe('Bundler', function() {
     id,
     dependencies,
     isAsset,
-    isAsset_DEPRECATED,
     isJSON,
     isPolyfill,
     resolution,
@@ -51,7 +49,6 @@ describe('Bundler', function() {
       getName: () => Promise.resolve(id),
       isJSON: () => isJSON,
       isAsset: () => isAsset,
-      isAsset_DEPRECATED: () => isAsset_DEPRECATED,
       isPolyfill: () => isPolyfill,
       read: () => ({
         code: 'arbitrary',
@@ -72,20 +69,20 @@ describe('Bundler', function() {
     getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
 
-    Resolver.mockImpl(function() {
+    Resolver.mockImplementation(function() {
       return {
         getDependencies: getDependencies,
         getModuleSystemDependencies: getModuleSystemDependencies,
       };
     });
 
-    fs.statSync.mockImpl(function() {
+    fs.statSync.mockImplementation(function() {
       return {
         isDirectory: () => true
       };
     });
 
-    fs.readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImplementation(function(file, callback) {
       callback(null, '{"json":true}');
     });
 
@@ -102,13 +99,6 @@ describe('Bundler', function() {
       createModule({id: 'foo', path: '/root/foo.js', dependencies: []}),
       createModule({id: 'bar', path: '/root/bar.js', dependencies: []}),
       createModule({
-        path: '/root/img/img.png',
-        id: 'image!img',
-        isAsset_DEPRECATED: true,
-        dependencies: [],
-        resolution: 2,
-      }),
-      createModule({
         id: 'new_image.png',
         path: '/root/img/new_image.png',
         isAsset: true,
@@ -123,7 +113,7 @@ describe('Bundler', function() {
       }),
     ];
 
-    getDependencies.mockImpl((main, options, transformOptions) =>
+    getDependencies.mockImplementation((main, options, transformOptions) =>
       Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules,
@@ -133,17 +123,17 @@ describe('Bundler', function() {
       })
     );
 
-    getModuleSystemDependencies.mockImpl(function() {
+    getModuleSystemDependencies.mockImplementation(function() {
       return [];
     });
 
-    sizeOf.mockImpl(function(path, cb) {
+    sizeOf.mockImplementation(function(path, cb) {
       cb(null, { width: 50, height: 100 });
     });
   });
 
   it('create a bundle', function() {
-    assetServer.getAssetData.mockImpl(() => {
+    assetServer.getAssetData.mockImplementation(() => {
       return {
         scales: [1,2,3],
         files: [
@@ -167,9 +157,8 @@ describe('Bundler', function() {
 
         expect(ithAddedModule(0)).toEqual('/root/foo.js');
         expect(ithAddedModule(1)).toEqual('/root/bar.js');
-        expect(ithAddedModule(2)).toEqual('/root/img/img.png');
-        expect(ithAddedModule(3)).toEqual('/root/img/new_image.png');
-        expect(ithAddedModule(4)).toEqual('/root/file.json');
+        expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(3)).toEqual('/root/file.json');
 
         expect(bundle.finalize.mock.calls[0]).toEqual([{
             runMainModule: true,
@@ -178,15 +167,6 @@ describe('Bundler', function() {
         }]);
 
         expect(bundle.addAsset.mock.calls[0]).toEqual([{
-          __packager_asset: true,
-          path: '/root/img/img.png',
-          uri: 'img',
-          width: 25,
-          height: 50,
-          deprecated: true,
-        }]);
-
-        expect(bundle.addAsset.mock.calls[1]).toEqual([{
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
@@ -237,7 +217,7 @@ describe('Bundler', function() {
       name: 'img',
       type: 'png',
     };
-    assetServer.getAssetData.mockImpl(() => mockAsset);
+    assetServer.getAssetData.mockImplementation(() => mockAsset);
 
     return bundler.bundle({
       entryFile: '/root/foo.js',
@@ -246,7 +226,7 @@ describe('Bundler', function() {
       sourceMapUrl: 'source_map_url',
       assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
     }).then(bundle => {
-      expect(bundle.addAsset.mock.calls[1]).toEqual([{
+      expect(bundle.addAsset.mock.calls[0]).toEqual([{
         __packager_asset: true,
         fileSystemLocation: '/root/img',
         httpServerLocation: '/assets/img',
@@ -267,7 +247,7 @@ describe('Bundler', function() {
     });
   });
 
-  pit('gets the list of dependencies from the resolver', function() {
+  it('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>
       // jest calledWith does not support jasmine.any
@@ -287,9 +267,19 @@ describe('Bundler', function() {
     );
   });
 
+  it('allows overriding the platforms array', () => {
+    expect(bundler._opts.platforms).toEqual(['ios', 'android', 'windows', 'web']);
+    const b = new Bundler({
+      projectRoots,
+      assetServer: assetServer,
+      platforms: ['android', 'vr'],
+    });
+    expect(b._opts.platforms).toEqual(['android', 'vr']);
+  });
+
   describe('getOrderedDependencyPaths', () => {
     beforeEach(() => {
-      assetServer.getAssetData.mockImpl(function(relPath) {
+      assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {
           return {
             scales: [1,2,3],
@@ -320,7 +310,7 @@ describe('Bundler', function() {
       });
     });
 
-    pit('should get the concrete list of all dependency files', () => {
+    it('should get the concrete list of all dependency files', () => {
       modules.push(
         createModule({
           id: 'new_image2.png',
@@ -335,7 +325,6 @@ describe('Bundler', function() {
         .then((paths) => expect(paths).toEqual([
           '/root/foo.js',
           '/root/bar.js',
-          '/root/img/img.png',
           '/root/img/new_image.png',
           '/root/img/new_image@2x.png',
           '/root/img/new_image@3x.png',

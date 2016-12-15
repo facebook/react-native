@@ -25,15 +25,34 @@ Pod::Spec.new do |s|
   s.source              = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
   s.default_subspec     = 'Core'
   s.requires_arc        = true
-  s.platform            = :ios, "7.0"
+  s.platform            = :ios, "8.0"
+  s.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+  s.header_dir          = 'React'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.source_files        = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files       = "**/__tests__/*", "IntegrationTests/*"
-    ss.frameworks          = "JavaScriptCore"
-    ss.libraries           = "stdc++"
-    ss.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+    ss.dependency      'React/yoga'
+    ss.dependency      'React/cxxreact'
+    ss.source_files  = "React/**/*.{c,h,m,mm,S}"
+    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/yoga/*"
+    ss.frameworks    = "JavaScriptCore"
+    ss.libraries     = "stdc++"
+  end
+
+  s.subspec 'jschelpers' do |ss|
+    ss.source_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}'
+    ss.header_dir   = 'jschelpers'
+  end
+
+  s.subspec 'cxxreact' do |ss|
+    ss.dependency     'React/jschelpers'
+    ss.source_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}'
+    ss.header_dir   = 'cxxreact'
+  end
+
+  s.subspec 'yoga' do |ss|
+    ss.source_files = 'ReactCommon/yoga/**/*.{c,h}'
+    ss.header_dir   = 'yoga'
   end
 
   s.subspec 'ART' do |ss|
@@ -56,7 +75,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'RCTAnimation' do |ss|
     ss.dependency       'React/Core'
-    ss.source_files   = "Libraries/NativeAnimation/{Nodes/*,*}.{h,m}"
+    ss.source_files   = "Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h,m}"
   end
 
   s.subspec 'RCTCameraRoll' do |ss|
@@ -118,7 +137,6 @@ Pod::Spec.new do |s|
   s.subspec 'RCTLinkingIOS' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/LinkingIOS/*.{h,m}"
-    ss.preserve_paths = "Libraries/LinkingIOS/*.js"
   end
 
   s.subspec 'RCTTest' do |ss|

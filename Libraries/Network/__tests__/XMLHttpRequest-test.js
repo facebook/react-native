@@ -8,6 +8,16 @@
  */
 
 'use strict';
+jest.unmock('Platform');
+const Platform = require('Platform');
+let requestId = 1;
+
+function setRequestId(id){
+  if (Platform.OS === 'ios') {
+    return;
+  }
+  requestId = id;
+}
 
 jest
   .disableAutomock()
@@ -18,11 +28,11 @@ jest
       removeListeners: function() {},
       sendRequest(options, callback) {
         if (typeof callback === 'function') { // android does not pass a callback
-          callback(1);
+          callback(requestId);
         }
       },
       abortRequest: function() {},
-    }
+    },
   });
 
 const XMLHttpRequest = require('XMLHttpRequest');
@@ -112,15 +122,17 @@ describe('XMLHttpRequest', function() {
 
     xhr.open('GET', 'blabla');
     xhr.send();
-    xhr.__didReceiveData(1, 'Some data');
+    setRequestId(2);
+    xhr.__didReceiveData(requestId, 'Some data');
     expect(xhr.responseText).toBe('Some data');
   });
 
   it('should call ontimeout function when the request times out', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
-    xhr.__didCompleteResponse(1, 'Timeout', true);
-    xhr.__didCompleteResponse(1, 'Timeout', true);
+    setRequestId(3);
+    xhr.__didCompleteResponse(requestId, 'Timeout', true);
+    xhr.__didCompleteResponse(requestId, 'Timeout', true);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -138,7 +150,8 @@ describe('XMLHttpRequest', function() {
   it('should call onerror function when the request times out', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
-    xhr.__didCompleteResponse(1, 'Generic error');
+    setRequestId(4);
+    xhr.__didCompleteResponse(requestId, 'Generic error');
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -158,7 +171,8 @@ describe('XMLHttpRequest', function() {
   it('should call onload function when there is no error', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
-    xhr.__didCompleteResponse(1, null);
+    setRequestId(5);
+    xhr.__didCompleteResponse(requestId, null);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
@@ -182,8 +196,8 @@ describe('XMLHttpRequest', function() {
     xhr.upload.onprogress = jest.fn();
     var handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
-
-    xhr.__didUploadProgress(1, 42, 100);
+    setRequestId(6);
+    xhr.__didUploadProgress(requestId, 42, 100);
 
     expect(xhr.upload.onprogress.mock.calls.length).toBe(1);
     expect(handleProgress.mock.calls.length).toBe(1);
@@ -197,7 +211,8 @@ describe('XMLHttpRequest', function() {
   it('should combine response headers with CRLF', function() {
     xhr.open('GET', 'blabla');
     xhr.send();
-    xhr.__didReceiveResponse(1, 200, {
+    setRequestId(7);
+    xhr.__didReceiveResponse(requestId, 200, {
       'Content-Type': 'text/plain; charset=utf-8',
       'Content-Length': '32',
     });

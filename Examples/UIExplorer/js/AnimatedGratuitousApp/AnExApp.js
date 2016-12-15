@@ -89,7 +89,7 @@ class Circle extends React.Component {
     });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     if (this.state.panResponder) {
       var handlers = this.state.panResponder.panHandlers;
       var dragStyle = {                 //  Used to position while dragging
@@ -190,7 +190,7 @@ class AnExApp extends React.Component {
     this._onMove = this._onMove.bind(this);
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     var circles = this.state.keys.map((key, idx) => {
       if (key === this.state.activeKey) {
         return <Circle key={key + 'd'} dummy={true} />;

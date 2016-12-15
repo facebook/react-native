@@ -41,7 +41,6 @@ const NavigationPointerEventsContainer = require('NavigationPointerEventsContain
 const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const View = require('View');
 
 import type  {
   NavigationPanPanHandlers,
@@ -76,7 +75,7 @@ class NavigationCard extends React.Component<any, Props, any> {
     style: PropTypes.any,
   };
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {
       panHandlers,
       pointerEvents,

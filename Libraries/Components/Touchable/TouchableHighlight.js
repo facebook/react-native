@@ -14,7 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
@@ -27,7 +27,6 @@ var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
 var merge = require('merge');
-var onlyChild = require('react/lib/onlyChild');
 
 type Event = Object;
 
@@ -243,7 +242,7 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
         {React.cloneElement(
-          onlyChild(this.props.children),
+          React.Children.only(this.props.children),
           {
             ref: CHILD_REF,
           }

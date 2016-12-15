@@ -411,6 +411,23 @@ class TextExample extends React.Component {
             This very long text should be truncated with dots in the beginning.
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Include Font Padding">
+          <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10}}>
+            <View style={{alignItems: 'center'}}>
+              <Text style={styles.includeFontPaddingText}>
+                Ey
+              </Text>
+              <Text>Default</Text>
+            </View>
+            <View style={{alignItems: 'center'}}>
+              <Text style={[styles.includeFontPaddingText, {includeFontPadding: false, marginLeft: 10}]}>
+                Ey
+              </Text>
+              <Text>includeFontPadding: false</Text>
+            </View>
+          </View>
+          <Text>By default Android will put extra space above text to allow for upper-case accents or other ascenders. With some fonts, this can make text look slightly misaligned when centered vertically.</Text>
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   }
@@ -421,6 +438,14 @@ var styles = StyleSheet.create({
     left: 5,
     backgroundColor: 'rgba(100, 100, 100, 0.3)'
   },
+  includeFontPaddingText: {
+    fontSize: 120,
+    fontFamily: 'sans-serif',
+    backgroundColor: '#EEEEEE',
+    color: '#000000',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+  }
 });
 
 module.exports = TextExample;

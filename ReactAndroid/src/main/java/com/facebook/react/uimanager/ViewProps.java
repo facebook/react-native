@@ -12,9 +12,6 @@ package com.facebook.react.uimanager;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.facebook.csslayout.Spacing;
-import com.facebook.react.common.SetBuilder;
-
 /**
  * Keys for props that need to be shared across multiple classes.
  */
@@ -64,6 +61,8 @@ public class ViewProps {
   public static final String MAX_WIDTH = "maxWidth";
   public static final String MIN_HEIGHT = "minHeight";
   public static final String MAX_HEIGHT = "maxHeight";
+
+  public static final String ASPECT_RATIO = "aspectRatio";
 
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";

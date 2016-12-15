@@ -11,9 +11,12 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
@@ -56,7 +59,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  * <p>
  * <h2>== CSSNodes ==</h2>
  * In order to allow layout and measurement to occur on a non-UI thread, this module also
- * operates on intermediate CSSNode objects that correspond to a native view. These CSSNode are able
+ * operates on intermediate CSSNodeDEPRECATED objects that correspond to a native view. These CSSNodeDEPRECATED are able
  * to calculate layout according to their styling rules, and then the resulting x/y/width/height of
  * that layout is scheduled as an operation that will be applied to native view hierarchy at the end
  * of current batch.
@@ -78,6 +81,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
+  private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -115,6 +119,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   @Override
+  public void initialize() {
+    getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+  }
+
+  @Override
   public void onHostResume() {
     mUIImplementation.onHostResume();
   }
@@ -133,6 +142,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+
+    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    YogaNodePool.get().clear();
   }
 
   private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
@@ -548,5 +560,26 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+  }
+
+  /**
+   * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
+   */
+  private class MemoryTrimCallback implements ComponentCallbacks2 {
+
+    @Override
+    public void onTrimMemory(int level) {
+      if (level >= TRIM_MEMORY_MODERATE) {
+        YogaNodePool.get().clear();
+      }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    }
+
+    @Override
+    public void onLowMemory() {
+    }
   }
 }

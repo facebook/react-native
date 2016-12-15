@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTJavaScriptLoader.h"
+#import <React/RCTJavaScriptLoader.h>
 
 @class RCTBridge;
 @protocol RCTBridgeModule;
@@ -83,9 +83,26 @@
 - (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
 
 /**
+ * Configure whether the JSCExecutor created should use the system JSC API or
+ * alternative hooks provided. When returning YES from this method, you must have
+ * previously called facebook::react::setCustomJSCWrapper.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
+
+/**
  * The bridge will automatically attempt to load the JS source code from the
  * location specified by the `sourceURLForBridge:` method, however, if you want
  * to handle loading the JS yourself, you can do so by implementing this method.
+ */
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
+ * reporting.
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
