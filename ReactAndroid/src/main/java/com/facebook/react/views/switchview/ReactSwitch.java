@@ -38,6 +38,7 @@ import com.facebook.react.R;
     super(context);
     mAllowChange = true;
     mSwitchColor = getDefaultSwitchColor();
+    isLightTheme = true;
   }
 
   @Override
