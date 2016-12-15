@@ -124,7 +124,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @ReactProp(name = "colorAccent", customType = "Color")
-  public void setColor(ReactSwitch view, @Nullable Integer color) {
+  public void setColor(ReactSwitch view, Integer color) {
     view.setColor(color);
   }
 
