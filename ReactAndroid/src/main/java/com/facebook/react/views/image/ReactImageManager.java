@@ -16,7 +16,7 @@ import java.util.Map;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 
-import com.facebook.csslayout.CSSConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -116,9 +116,9 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       ViewProps.BORDER_TOP_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
-    if (!CSSConstants.isUndefined(borderRadius)) {
+    if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -178,6 +178,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         MapBuilder.of("registrationName", "onLoadStart"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
         MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+        MapBuilder.of("registrationName", "onError"),
       ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
         MapBuilder.of("registrationName", "onLoadEnd"));
   }

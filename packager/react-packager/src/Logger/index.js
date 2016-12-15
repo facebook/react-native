@@ -13,6 +13,8 @@
 
 const chalk = require('chalk');
 const os = require('os');
+const pkgjson = require('../../../package.json');
+const terminal = require('../lib/terminal');
 
 const {EventEmitter} = require('events');
 
@@ -21,6 +23,16 @@ import type {
   ActionStartLogEntry,
   LogEntry,
 } from './Types';
+
+const DATE_LOCALE_OPTIONS = {
+  day: '2-digit',
+  hour12: false,
+  hour: '2-digit',
+  minute: '2-digit',
+  month: '2-digit',
+  second: '2-digit',
+  year: 'numeric',
+};
 
 let PRINT_LOG_ENTRIES = true;
 const log_session = `${os.hostname()}-${Date.now()}`;
@@ -36,6 +48,7 @@ function createEntry(data: LogEntry | string): LogEntry {
   return {
     ...logEntry,
     log_session,
+    packager_version: pkgjson.version,
   };
 }
 
@@ -87,42 +100,42 @@ function print(
   if (!PRINT_LOG_ENTRIES) {
     return logEntry;
   }
+  const {
+    log_entry_label: logEntryLabel,
+    action_phase: actionPhase,
+    duration_ms: duration,
+  } = logEntry;
 
-  const {log_entry_label, action_phase, duration_ms} = logEntry;
-  const timeStamp = new Date().toLocaleString();
-  const logEntryDataList = [];
-  let logEntryString, logEntryDataString;
+  const timeStamp = new Date().toLocaleString(undefined, DATE_LOCALE_OPTIONS);
+  let logEntryString;
 
-  for (let i = 0, len = printFields.length; i < len; i++) {
-    const field = printFields[i];
-    const value = logEntry[field];
-    if (value === undefined) {
-      continue;
-    }
-    logEntryDataList.push(`${field}: ${value.toString()}`);
-  }
-
-  logEntryDataString = logEntryDataList.join(' | ');
-
-  if (logEntryDataString) {
-    logEntryDataString = ` ${logEntryDataString}`;
-  }
-
-  switch (action_phase) {
+  switch (actionPhase) {
     case 'start':
-      logEntryString = chalk.dim(`[${timeStamp}] <START> ${log_entry_label}${logEntryDataString}`);
+      logEntryString = chalk.dim(`[${timeStamp}] <START> ${logEntryLabel}`);
       break;
     case 'end':
-      logEntryString = chalk.dim(`[${timeStamp}] <END>   ${log_entry_label}${logEntryDataString}`) +
-        chalk.cyan(` (${+duration_ms}ms)`);
+      logEntryString = chalk.dim(`[${timeStamp}] <END>   ${logEntryLabel}`) +
+        chalk.cyan(` (${+duration}ms)`);
       break;
     default:
-      logEntryString = chalk.dim(`[${timeStamp}]         ${log_entry_label}${logEntryDataString}`);
+      logEntryString = chalk.dim(`[${timeStamp}]         ${logEntryLabel}`);
       break;
+  }
+
+  if (printFields.length) {
+    const indent = ' '.repeat(timeStamp.length + 11);
+
+    for (const field of printFields) {
+      const value = logEntry[field];
+      if (value === undefined) {
+        continue;
+      }
+      logEntryString += chalk.dim(`\n${indent}${field}: ${value.toString()}`);
+    }
   }
 
   // eslint-disable-next-line no-console-disallow
-  console.log(logEntryString);
+  terminal.log(logEntryString);
 
   return logEntry;
 }

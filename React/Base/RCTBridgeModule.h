@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
@@ -173,7 +173,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  *
  * MyModuleExport.m:
  *
- *   #import "RCTBridgeModule.h"
+ *   #import <React/RCTBridgeModule.h>
  *
  *   @interface RCT_EXTERN_MODULE(MyModule, NSObject)
  *

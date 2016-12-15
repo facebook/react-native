@@ -7,7 +7,6 @@ android_library(
   deps = [
     react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
-    react_native_dep('third-party/java/jackson:core'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
     react_native_dep('third-party/java/okhttp:okhttp3'),
     react_native_dep('third-party/java/okhttp:okhttp3-ws'),
@@ -25,6 +24,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':devsupport',
-)

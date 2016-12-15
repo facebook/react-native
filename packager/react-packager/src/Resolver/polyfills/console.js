@@ -6,9 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * This pipes all of our console logging functions to native logging so that
- * JavaScript errors in required modules show up in Xcode via NSLog.
- *
  * @provides console
  * @polyfill
  * @nolint
@@ -16,6 +13,10 @@
 
 /* eslint-disable */
 
+/**
+ * This pipes all of our console logging functions to native logging so that
+ * JavaScript errors in required modules show up in Xcode via NSLog.
+ */
 const inspect = (function() {
   // Copyright Joyent, Inc. and other Node contributors.
   //

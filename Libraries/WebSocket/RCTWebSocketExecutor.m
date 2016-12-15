@@ -7,17 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTDefines.h"
-
-#if RCT_DEV // Debug executors are only supported in dev mode
-
 #import "RCTWebSocketExecutor.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTSRWebSocket.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id> *reply);
 
@@ -33,6 +34,7 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary<NSString *, NSString *> *_injectedObjects;
   NSURL *_url;
+  NSError *_setupError;
 }
 
 RCT_EXPORT_MODULE()
@@ -81,10 +83,12 @@ RCT_EXPORT_MODULE()
                                               completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){}];
   [dataTask resume];
   if (![self connectToProxy]) {
-    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If "
-                 "you are running on the device, check if you have the right IP "
-                 "address in `RCTWebSocketExecutor.m`.", _url);
     [self invalidate];
+    NSString *error = [NSString stringWithFormat:@"Connection to %@ timed out. Are you "
+                       "running node proxy? If you are running on the device, check if "
+                       "you have the right IP address in `RCTWebSocketExecutor.m`.", _url];
+    _setupError = RCTErrorWithMessage(error);
+    RCTFatal(_setupError);
     return;
   }
 
@@ -95,10 +99,13 @@ RCT_EXPORT_MODULE()
     retries--;
   }
   if (!runtimeIsReady) {
-    RCTLogError(@"Runtime is not ready for debugging.\n "
-                 "- Make sure Packager server is running.\n"
-                 "- Make sure the JavaScript Debugger is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
+    NSString *error = @"Runtime is not ready for debugging.\n "
+                      "- Make sure Packager server is running.\n"
+                      "- Make sure the JavaScript Debugger is running and not paused on a "
+                      "breakpoint or exception and try reloading again.";
+    _setupError = RCTErrorWithMessage(error);
+    RCTFatal(_setupError);
     return;
   }
 }
@@ -108,18 +115,21 @@ RCT_EXPORT_MODULE()
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
   long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
-  return connected == 0;
+  return connected == 0 && _socket.readyState == RCTSR_OPEN;
 }
 
 - (BOOL)prepareJSRuntime
 {
   __block NSError *initError;
   dispatch_semaphore_t s = dispatch_semaphore_create(0);
-  [self sendMessage:@{@"method": @"prepareJSRuntime"} waitForReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
+  [self sendMessage:@{@"method": @"prepareJSRuntime"} onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
     initError = error;
     dispatch_semaphore_signal(s);
   }];
   long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC));
+  if (initError) {
+    RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
+  }
   return runtimeIsReady == 0 && initError == nil;
 }
 
@@ -131,6 +141,7 @@ RCT_EXPORT_MODULE()
   RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
+    [_callbacks removeObjectForKey:messageID];
   }
 }
 
@@ -142,15 +153,17 @@ RCT_EXPORT_MODULE()
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   dispatch_semaphore_signal(_socketOpenSemaphore);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Give the setUp method an opportunity to report an error first
-    RCTLogError(@"WebSocket connection failed with error %@", error);
-  });
+  RCTLogInfo(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)sendMessage:(NSDictionary<NSString *, id> *)message waitForReply:(RCTWSMessageCallback)callback
+- (void)sendMessage:(NSDictionary<NSString *, id> *)message onReply:(RCTWSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
+
+  if (_setupError) {
+    callback(_setupError, nil);
+    return;
+  }
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
@@ -176,7 +189,7 @@ RCT_EXPORT_MODULE()
     @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
-  [self sendMessage:message waitForReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
+  [self sendMessage:message onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
     onComplete(error);
   }];
 }
@@ -208,7 +221,7 @@ RCT_EXPORT_MODULE()
     @"method": method,
     @"arguments": arguments
   };
-  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
     if (socketError) {
       onComplete(nil, socketError);
       return;

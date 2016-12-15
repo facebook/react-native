@@ -59,7 +59,7 @@ Connect your device to your Mac via USB, then open Xcode. In the project navigat
 
 > If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
 
-Finally, select your phone as the build target and press **Build and run(()).
+Finally, select your phone as the build target and press **Build and run**.
 
 
 <block class="mac windows linux android" />
@@ -147,6 +147,10 @@ $ react-native run-android
 ```
 
 > If you get a "bridge configuration isn't available" error, see [Using adb reverse](#using-adb-reverse).
+
+> Hint
+>
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
 
 <block class="mac windows linux android ios" />
 

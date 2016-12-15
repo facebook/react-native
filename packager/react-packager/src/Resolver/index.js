@@ -5,15 +5,22 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
-'use strict';
 
+'use strict';
 
 const DependencyGraph = require('../node-haste');
 
 const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const pathJoin = require('path').join;
+
+import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type Module from '../node-haste/Module';
+import type {SourceMap} from '../lib/SourceMap';
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -31,15 +38,15 @@ const validateOpts = declareOpts({
     type: 'string',
     default: 'haste',
   },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
-  fileWatcher: {
-    type: 'object',
-    required: true,
+  watch: {
+    type: 'boolean',
+    default: false,
   },
   assetExts: {
+    type: 'array',
+    required: true,
+  },
+  platforms: {
     type: 'array',
     required: true,
   },
@@ -87,28 +94,30 @@ const getDependenciesValidateOpts = declareOpts({
 
 class Resolver {
 
-  constructor(options) {
+  _depGraph: DependencyGraph;
+  _minifyCode: (filePath: string, code: string, map: SourceMap) =>
+    Promise<{code: string, map: SourceMap}>;
+  _polyfillModuleNames: Array<string>;
+
+  constructor(options: {resetCache: boolean}) {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
       roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: defaults.platforms,
+      platforms: opts.platforms,
       preferNativePlatform: true,
-      fileWatcher: opts.fileWatcher,
+      watch: opts.watch,
       cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
       transformCode: opts.transformCode,
       transformCacheKey: opts.transformCacheKey,
       extraNodeModules: opts.extraNodeModules,
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      // for jest-haste-map
       resetCache: options.resetCache,
       moduleOptions: {
         cacheTransformResults: true,
@@ -125,19 +134,24 @@ class Resolver {
     });
   }
 
-  getShallowDependencies(entryFile, transformOptions) {
+  getShallowDependencies(
+    entryFile: string,
+    transformOptions: TransformOptions,
+  ): Array<string> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
-  }
-
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string): Module {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(entryPath, options, transformOptions, onProgress, getModuleId) {
+  getDependencies(
+    entryPath: string,
+    options: {},
+    transformOptions: TransformOptions,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
+    getModuleId: mixed,
+  ): Promise<ResolutionResponse> {
     const {platform, recursive} = getDependenciesValidateOpts(options);
     return this._depGraph.getDependencies({
       entryPath,
@@ -155,7 +169,7 @@ class Resolver {
     });
   }
 
-  getModuleSystemDependencies(options) {
+  getModuleSystemDependencies(options: {}): Array<Module> {
     const opts = getDependenciesValidateOpts(options);
 
     const prelude = opts.dev
@@ -174,7 +188,7 @@ class Resolver {
     }));
   }
 
-  _getPolyfillDependencies() {
+  _getPolyfillDependencies(): Array<Module> {
     const polyfillModuleNames = defaults.polyfills.concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
@@ -186,7 +200,12 @@ class Resolver {
     );
   }
 
-  resolveRequires(resolutionResponse, module, code, dependencyOffsets = []) {
+  resolveRequires(
+    resolutionResponse: ResolutionResponse,
+    module: Module,
+    code: string,
+    dependencyOffsets: Array<number> = [],
+  ): string {
     const resolvedDeps = Object.create(null);
 
     // here, we build a map of all require strings (relative and absolute)
@@ -194,6 +213,7 @@ class Resolver {
     resolutionResponse.getResolvedDependencyPairs(module)
       .forEach(([depName, depModule]) => {
         if (depModule) {
+          /* $FlowFixMe: `getModuleId` is monkey-patched so may not exist */
           resolvedDeps[depName] = resolutionResponse.getModuleId(depModule);
         }
       });
@@ -211,7 +231,7 @@ class Resolver {
         ? `${JSON.stringify(resolvedDeps[depName])} /* ${depName} */`
         : codeMatch;
 
-    code = dependencyOffsets.reduceRight((codeBits, offset) => {
+    const codeParts = dependencyOffsets.reduceRight((codeBits, offset) => {
       const first = codeBits.shift();
       codeBits.unshift(
         first.slice(0, offset),
@@ -220,7 +240,7 @@ class Resolver {
       return codeBits;
     }, [code]);
 
-    return code.join('');
+    return codeParts.join('');
   }
 
   wrapModule({
@@ -232,6 +252,17 @@ class Resolver {
     meta = {},
     dev = true,
     minify = false,
+  }: {
+    resolutionResponse: ResolutionResponse,
+    module: Module,
+    name: string,
+    map: SourceMap,
+    code: string,
+    meta?: {
+      dependencyOffsets?: Array<number>,
+    },
+    dev?: boolean,
+    minify?: boolean,
   }) {
     if (module.isJSON()) {
       code = `module.exports = ${code}`;
@@ -240,6 +271,7 @@ class Resolver {
     if (module.isPolyfill()) {
       code = definePolyfillCode(code);
     } else {
+      /* $FlowFixMe: `getModuleId` is monkey-patched so may not exist */
       const moduleId = resolutionResponse.getModuleId(module);
       code = this.resolveRequires(
         resolutionResponse,
@@ -250,17 +282,18 @@ class Resolver {
       code = defineModuleCode(moduleId, code, name, dev);
     }
 
-
     return minify
       ? this._minifyCode(module.path, code, map)
       : Promise.resolve({code, map});
   }
 
-  minifyModule({path, code, map}) {
+  minifyModule(
+    {path, code, map}: {path: string, code: string, map: SourceMap},
+  ): Promise<{code: string, map: SourceMap}> {
     return this._minifyCode(path, code, map);
   }
 
-  getDependecyGraph() {
+  getDependencyGraph(): DependencyGraph {
     return this._depGraph;
   }
 }

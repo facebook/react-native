@@ -317,10 +317,10 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public boolean onEventDispatch(Event event) {
+  public void onEventDispatch(Event event) {
     // Only support events dispatched from the UI thread.
     if (!UiThreadUtil.isOnUiThread()) {
-      return false;
+      return;
     }
 
     if (!mEventDrivers.isEmpty()) {
@@ -335,11 +335,8 @@ import javax.annotation.Nullable;
       if (eventDriver != null) {
         event.dispatch(eventDriver);
         mUpdatedNodes.put(eventDriver.mValueNode.mTag, eventDriver.mValueNode);
-        return true;
       }
     }
-
-    return false;
   }
 
   /**
@@ -496,7 +493,6 @@ import javax.annotation.Nullable;
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
-      int dest = 0;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {

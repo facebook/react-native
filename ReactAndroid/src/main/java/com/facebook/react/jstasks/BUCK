@@ -1,12 +1,12 @@
 include_defs('//ReactAndroid/DEFS')
 
 DEPS = [
-  react_native_target('java/com/facebook/react/bridge:bridge'),
-  react_native_target('java/com/facebook/react/common:common'),
-  react_native_target('java/com/facebook/react/uimanager:uimanager'),
   react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
   react_native_dep('third-party/java/infer-annotations:infer-annotations'),
   react_native_dep('third-party/java/jsr-305:jsr-305'),
+  react_native_target('java/com/facebook/react/bridge:bridge'),
+  react_native_target('java/com/facebook/react/common:common'),
+  react_native_target('java/com/facebook/react/uimanager:uimanager'),
 ]
 
 android_library(
@@ -18,6 +18,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':jstasks',
-)

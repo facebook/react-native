@@ -11,17 +11,16 @@
 
 'use strict';
 
+const fs = require('fs');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 
 import type Cache from './Cache';
-import type FastFs from './fastfs';
 
 class Package {
 
   path: string;
   root: string;
-  _fastfs: FastFs;
   type: string;
   _cache: Cache;
 
@@ -32,14 +31,12 @@ class Package {
     main: ?string,
   }>;
 
-  constructor({ file, fastfs, cache }: {
+  constructor({file, cache}: {
     file: string,
-    fastfs: FastFs,
     cache: Cache,
   }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
-    this._fastfs = fastfs;
     this.type = 'Package';
     this._cache = cache;
   }
@@ -132,8 +129,9 @@ class Package {
 
   read() {
     if (!this._reading) {
-      this._reading = this._fastfs.readFile(this.path)
-        .then(jsonStr => JSON.parse(jsonStr));
+      this._reading = new Promise(
+        resolve => resolve(JSON.parse(fs.readFileSync(this.path, 'utf8')))
+      );
     }
 
     return this._reading;
@@ -165,6 +163,7 @@ function getReplacements(pkg) {
 
   // merge with "browser" as default,
   // "react-native" as override
+  // $FlowFixMe(>=0.35.0) browser and rn should be objects
   return { ...browser, ...rn };
 }
 

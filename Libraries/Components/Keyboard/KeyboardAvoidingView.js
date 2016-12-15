@@ -94,6 +94,9 @@ const KeyboardAvoidingView = React.createClass({
 
     const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
     const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
+    if (frame.y > keyboardFrame.screenY) {
+      return frame.y + frame.height - keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+    }
     return Math.max(y2 - y1, 0);
   },
 

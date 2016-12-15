@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTShadowView.h"
-#import "RCTTextDecorationLineType.h"
+#import <React/RCTShadowView.h>
+#import <React/RCTTextDecorationLineType.h>
 
 typedef NS_ENUM(NSInteger, RCTSizeComparison)
 {
@@ -48,6 +48,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, strong) UIColor *textShadowColor;
 @property (nonatomic, assign) BOOL adjustsFontSizeToFit;
 @property (nonatomic, assign) CGFloat minimumFontScale;
+@property (nonatomic, assign) BOOL selectable;
 
 - (void)recomputeText;
 

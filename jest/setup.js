@@ -70,6 +70,9 @@ const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
+  AppState: {
+    addEventListener: jest.fn(),
+  },
   AsyncLocalStorage: {
     clear: jest.fn(),
     getItem: jest.fn(),
@@ -127,6 +130,13 @@ const mockNativeModules = {
   },
   SourceCode: {
     scriptURL: null,
+  },
+  StatusBarManager: {
+    setStyle: jest.fn(),
+    setHidden: jest.fn(),
+    setNetworkActivityIndicatorVisible: jest.fn(),
+    setBackgroundColor: jest.fn(),
+    setTranslucent: jest.fn(),
   },
   Timing: {
     createTimer: jest.fn(),

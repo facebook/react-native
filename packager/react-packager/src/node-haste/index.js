@@ -13,9 +13,6 @@
 
 const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
-const DeprecatedAssetMap = require('./DependencyGraph/DeprecatedAssetMap');
-const Fastfs = require('./fastfs');
-const FileWatcher = require('./FileWatcher');
 const HasteMap = require('./DependencyGraph/HasteMap');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
@@ -24,6 +21,7 @@ const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
+const fs = require('fs');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
@@ -33,128 +31,120 @@ const path = require('path');
 const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
 
-import type {
-  TransformCode,
-  Options as ModuleOptions,
-} from './Module';
-
-const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
-
 const {
-  createActionStartEntry,
   createActionEndEntry,
+  createActionStartEntry,
   log,
   print,
 } = require('../Logger');
 
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {
+  Options as ModuleOptions,
+  TransformCode,
+} from './Module';
+import type {HasteFS} from './types';
+
+const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
+
 class DependencyGraph {
-
-  _opts: {
-    roots: Array<string>,
-    ignoreFilePath: (filePath: string) => boolean,
-    fileWatcher: FileWatcher,
-    forceNodeFilesystemAPI: boolean,
-    assetRoots_DEPRECATED: Array<string>,
+  _opts: {|
     assetExts: Array<string>,
-    providesModuleNodeModules: mixed,
-    platforms: Set<mixed>,
-    preferNativePlatform: boolean,
     extensions: Array<string>,
+    extraNodeModules: Object,
+    forceNodeFilesystemAPI: boolean,
+    ignoreFilePath: (filePath: string) => boolean,
+    maxWorkers: ?number,
     mocksPattern: mixed,
-    transformCode: TransformCode,
-    transformCacheKey: string,
-    shouldThrowOnUnresolvedErrors: () => boolean,
-    enableAssetMap: boolean,
     moduleOptions: ModuleOptions,
-    extraNodeModules: mixed,
-    useWatchman: boolean,
-    maxWorkers: number,
+    platforms: Set<string>,
+    preferNativePlatform: boolean,
+    providesModuleNodeModules: Array<string>,
     resetCache: boolean,
-  };
-  _cache: Cache;
+    roots: Array<string>,
+    shouldThrowOnUnresolvedErrors: () => boolean,
+    transformCacheKey: string,
+    transformCode: TransformCode,
+    useWatchman: boolean,
+    watch: boolean,
+  |};
   _assetDependencies: mixed;
-  _helpers: DependencyGraphHelpers;
-  _fastfs: Fastfs;
-  _moduleCache: ModuleCache;
+  _cache: Cache;
+  _haste: JestHasteMap;
+  _hasteFS: HasteFS;
   _hasteMap: HasteMap;
-  _deprecatedAssetMap: DeprecatedAssetMap;
   _hasteMapError: ?Error;
+  _helpers: DependencyGraphHelpers;
+  _moduleCache: ModuleCache;
 
-  _loading: ?Promise<mixed>;
+  _loading: Promise<mixed>;
 
   constructor({
-    roots,
-    ignoreFilePath,
-    fileWatcher,
-    forceNodeFilesystemAPI,
-    assetRoots_DEPRECATED,
+    assetDependencies,
     assetExts,
-    providesModuleNodeModules,
-    platforms,
-    preferNativePlatform,
     cache,
     extensions,
-    mocksPattern,
-    transformCode,
-    transformCacheKey,
-    shouldThrowOnUnresolvedErrors = () => true,
-    enableAssetMap,
-    assetDependencies,
-    moduleOptions,
     extraNodeModules,
-    // additional arguments for jest-haste-map
-    useWatchman,
+    forceNodeFilesystemAPI,
+    ignoreFilePath,
     maxWorkers,
+    mocksPattern,
+    moduleOptions,
+    platforms,
+    preferNativePlatform,
+    providesModuleNodeModules,
     resetCache,
+    roots,
+    shouldThrowOnUnresolvedErrors = () => true,
+    transformCacheKey,
+    transformCode,
+    useWatchman,
+    watch,
   }: {
-    roots: Array<string>,
-    ignoreFilePath: (filePath: string) => boolean,
-    fileWatcher: FileWatcher,
-    forceNodeFilesystemAPI?: boolean,
-    assetRoots_DEPRECATED: Array<string>,
-    assetExts: Array<string>,
-    providesModuleNodeModules: mixed,
-    platforms: mixed,
-    preferNativePlatform: boolean,
-    cache: Cache,
-    extensions: Array<string>,
-    mocksPattern: mixed,
-    transformCode: TransformCode,
-    transformCacheKey: string,
-    shouldThrowOnUnresolvedErrors: () => boolean,
-    enableAssetMap: boolean,
     assetDependencies: mixed,
+    assetExts: Array<string>,
+    cache: Cache,
+    extensions?: ?Array<string>,
+    extraNodeModules: Object,
+    forceNodeFilesystemAPI?: boolean,
+    ignoreFilePath: (filePath: string) => boolean,
+    maxWorkers?: ?number,
+    mocksPattern?: mixed,
     moduleOptions: ?ModuleOptions,
-    extraNodeModules: mixed,
-    useWatchman: boolean,
-    maxWorkers: number,
+    platforms: Array<string>,
+    preferNativePlatform: boolean,
+    providesModuleNodeModules: Array<string>,
     resetCache: boolean,
+    roots: Array<string>,
+    shouldThrowOnUnresolvedErrors?: () => boolean,
+    transformCacheKey: string,
+    transformCode: TransformCode,
+    useWatchman?: ?boolean,
+    watch: boolean,
   }) {
     this._opts = {
-      roots,
-      ignoreFilePath: ignoreFilePath || (() => {}),
-      fileWatcher,
-      forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
-      assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
       assetExts: assetExts || [],
-      providesModuleNodeModules,
-      platforms: new Set(platforms || []),
-      preferNativePlatform: preferNativePlatform || false,
       extensions: extensions || ['js', 'json'],
+      extraNodeModules,
+      forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
+      ignoreFilePath: ignoreFilePath || (() => {}),
+      maxWorkers,
       mocksPattern,
-      transformCode,
-      transformCacheKey,
-      shouldThrowOnUnresolvedErrors,
-      enableAssetMap: enableAssetMap || true,
       moduleOptions: moduleOptions || {
         cacheTransformResults: true,
       },
-      extraNodeModules,
-      // additional arguments for jest-haste-map & defaults
-      useWatchman: useWatchman !== false,
-      maxWorkers,
+      platforms: new Set(platforms || []),
+      preferNativePlatform: preferNativePlatform || false,
+      providesModuleNodeModules,
       resetCache,
+      roots,
+      shouldThrowOnUnresolvedErrors,
+      transformCacheKey,
+      transformCode,
+      useWatchman: useWatchman !== false,
+      watch: !!watch,
     };
+
     this._cache = cache;
     this._assetDependencies = assetDependencies;
     this._helpers = new DependencyGraphHelpers(this._opts);
@@ -167,7 +157,7 @@ class DependencyGraph {
     }
 
     const mw = this._opts.maxWorkers;
-    const haste = new JestHasteMap({
+    this._haste = new JestHasteMap({
       extensions: this._opts.extensions.concat(this._opts.assetExts),
       forceNodeFilesystemAPI: this._opts.forceNodeFilesystemAPI,
       ignorePattern: {test: this._opts.ignoreFilePath},
@@ -178,40 +168,39 @@ class DependencyGraph {
       providesModuleNodeModules: this._opts.providesModuleNodeModules,
       resetCache: this._opts.resetCache,
       retainAllFiles: true,
-      roots: this._opts.roots.concat(this._opts.assetRoots_DEPRECATED),
+      roots: this._opts.roots,
       useWatchman: this._opts.useWatchman,
+      watch: this._opts.watch,
     });
 
-    this._loading = haste.build().then(hasteMap => {
-      const initializingPackagerLogEntry =
-        print(log(createActionStartEntry('Initializing Packager')));
-
-      const hasteFSFiles = hasteMap.hasteFS.getAllFiles();
-
-      this._fastfs = new Fastfs(
-        'JavaScript',
-        this._opts.roots,
-        this._opts.fileWatcher,
-        hasteFSFiles,
-        {
-          ignore: this._opts.ignoreFilePath,
-        }
-      );
-
-      this._fastfs.on('change', this._processFileChange.bind(this));
+    const initializingPackagerLogEntry =
+      print(log(createActionStartEntry('Initializing Packager')));
+    this._loading = this._haste.build().then(({hasteFS}) => {
+      this._hasteFS = hasteFS;
+      const hasteFSFiles = hasteFS.getAllFiles();
 
       this._moduleCache = new ModuleCache({
-        fastfs: this._fastfs,
         cache: this._cache,
         transformCode: this._opts.transformCode,
         transformCacheKey: this._opts.transformCacheKey,
         depGraphHelpers: this._helpers,
         assetDependencies: this._assetDependencies,
         moduleOptions: this._opts.moduleOptions,
+        getClosestPackage: filePath => {
+          let {dir, root} = path.parse(filePath);
+          do {
+            const candidate = path.join(dir, 'package.json');
+            if (this._hasteFS.exists(candidate)) {
+              return candidate;
+            }
+            dir = path.dirname(dir);
+          } while (dir !== '.' && dir !== root);
+          return null;
+        }
       }, this._opts.platforms);
 
       this._hasteMap = new HasteMap({
-        fastfs: this._fastfs,
+        files: hasteFSFiles,
         extensions: this._opts.extensions,
         moduleCache: this._moduleCache,
         preferNativePlatform: this._opts.preferNativePlatform,
@@ -219,26 +208,11 @@ class DependencyGraph {
         platforms: this._opts.platforms,
       });
 
-      const escapePath = (p: string) => {
-        return (path.sep === '\\')  ? p.replace(/(\/|\\(?!\.))/g, '\\\\') : p;
-      };
-
-      const assetPattern =
-        new RegExp('^' + this._opts.assetRoots_DEPRECATED.map(escapePath).join('|'));
-
-      const assetFiles = hasteMap.hasteFS.matchFiles(assetPattern);
-
-      this._deprecatedAssetMap = new DeprecatedAssetMap({
-        helpers: this._helpers,
-        assetExts: this._opts.assetExts,
-        platforms: this._opts.platforms,
-        files: assetFiles,
-      });
-
-      this._fastfs.on('change', (type, filePath, root, fstat) => {
-        if (assetPattern.test(path.join(root, filePath))) {
-          this._deprecatedAssetMap.processFileChange(type, filePath, root, fstat);
-        }
+      this._haste.on('change', ({eventsQueue, hasteFS: newHasteFS}) => {
+        this._hasteFS = newHasteFS;
+        eventsQueue.forEach(({type, filePath, stat}) =>
+          this.processFileChange(type, filePath, stat)
+        );
       });
 
       const buildingHasteMapLogEntry =
@@ -275,8 +249,8 @@ class DependencyGraph {
       .getDependencies(transformOptions);
   }
 
-  getFS() {
-    return this._fastfs;
+  getWatcher() {
+    return this._haste;
   }
 
   /**
@@ -299,32 +273,36 @@ class DependencyGraph {
   }: {
     entryPath: string,
     platform: string,
-    transformOptions: {},
-    onProgress: () => void,
+    transformOptions: TransformOptions,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
   }) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);
       const absPath = this._getAbsolutePath(entryPath);
+      const dirExists = filePath => {
+        try {
+          return fs.lstatSync(filePath).isDirectory();
+        } catch (e) {}
+        return false;
+      };
       const req = new ResolutionRequest({
-        platform,
-        platforms: this._opts.platforms,
-        preferNativePlatform: this._opts.preferNativePlatform,
+        dirExists,
         entryPath: absPath,
-        deprecatedAssetMap: this._deprecatedAssetMap,
+        extraNodeModules: this._opts.extraNodeModules,
+        hasteFS: this._hasteFS,
         hasteMap: this._hasteMap,
         helpers: this._helpers,
         moduleCache: this._moduleCache,
-        fastfs: this._fastfs,
-        shouldThrowOnUnresolvedErrors: this._opts.shouldThrowOnUnresolvedErrors,
-        extraNodeModules: this._opts.extraNodeModules,
+        platform,
+        platforms: this._opts.platforms,
+        preferNativePlatform: this._opts.preferNativePlatform,
       });
 
       const response = new ResolutionResponse({transformOptions});
 
       return req.getOrderedDependencies({
         response,
-        mocksPattern: this._opts.mocksPattern,
         transformOptions,
         onProgress,
         recursive,
@@ -333,7 +311,7 @@ class DependencyGraph {
   }
 
   matchFilesByPattern(pattern: RegExp) {
-    return this.load().then(() => this._fastfs.matchFilesByPattern(pattern));
+    return this.load().then(() => this._hasteFS.matchFiles(pattern));
   }
 
   _getRequestPlatform(entryPath: string, platform: string) {
@@ -353,7 +331,7 @@ class DependencyGraph {
     for (let i = 0; i < this._opts.roots.length; i++) {
       const root = this._opts.roots[i];
       const potentialAbsPath = path.join(root, filePath);
-      if (this._fastfs.fileExists(potentialAbsPath)) {
+      if (this._hasteFS.exists(potentialAbsPath)) {
         return path.resolve(potentialAbsPath);
       }
     }
@@ -365,21 +343,12 @@ class DependencyGraph {
     );
   }
 
-  _processFileChange(type, filePath, root, fstat) {
-    const absPath = path.join(root, filePath);
-    if (fstat && fstat.isDirectory() ||
-        this._opts.ignoreFilePath(absPath) ||
-        this._helpers.isNodeModulesDir(absPath)) {
-      return;
-    }
+  processFileChange(type: string, filePath: string, stat: Object) {
+    this._moduleCache.processFileChange(type, filePath, stat);
 
-    // Ok, this is some tricky promise code. Our requirements are:
-    // * we need to report back failures
-    // * failures shouldn't block recovery
-    // * Errors can leave `hasteMap` in an incorrect state, and we need to rebuild
-    // After we process a file change we record any errors which will also be
-    // reported via the next request. On the next file change, we'll see that
-    // we are in an error state and we should decide to do a full rebuild.
+    // This code reports failures but doesn't block recovery in the dev server
+    // mode. When the hasteMap is left in an incorrect state, we'll rebuild when
+    // the next file changes.
     const resolve = () => {
       if (this._hasteMapError) {
         console.warn(
@@ -391,13 +360,14 @@ class DependencyGraph {
         // Rebuild the entire map if last change resulted in an error.
         this._loading = this._hasteMap.build();
       } else {
-        this._loading = this._hasteMap.processFileChange(type, absPath);
-        this._loading.catch((e) => {this._hasteMapError = e;});
+        this._loading = this._hasteMap.processFileChange(type, filePath);
+        this._loading.catch(error => {
+          this._hasteMapError = error;
+        });
       }
       return this._loading;
     };
-    /* $FlowFixMe: there is a risk this happen before we assign that
-     * variable in the load() function. */
+
     this._loading = this._loading.then(resolve, resolve);
   }
 
@@ -410,8 +380,6 @@ class DependencyGraph {
   }
 
   static Cache;
-  static Fastfs;
-  static FileWatcher;
   static Module;
   static Polyfill;
   static getAssetDataFromName;
@@ -423,8 +391,6 @@ class DependencyGraph {
 
 Object.assign(DependencyGraph, {
   Cache,
-  Fastfs,
-  FileWatcher,
   Module,
   Polyfill,
   getAssetDataFromName,
