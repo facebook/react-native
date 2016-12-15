@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+var ReactPropTypes = require('React').PropTypes;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -83,7 +83,7 @@ var LayoutPropTypes = {
    *  use logical pixel units, rather than percents, ems, or any of that.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom
-   *  for more details of how `top` affects layout.
+   *  for more details of how `bottom` affects layout.
    */
   bottom: ReactPropTypes.number,
 
@@ -328,6 +328,19 @@ var LayoutPropTypes = {
     'stretch'
   ]),
 
+  /** `overflow` controls how a children are measured and displayed.
+   *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
+   *  causes views to be measured independently of their parents main axis.`
+   *  It works like `overflow` in CSS (default: visible).
+   *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
+   *  for more details.
+   */
+  overflow: ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+    'scroll',
+  ]),
+
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
    *  according to the `css-layout` library
@@ -344,8 +357,28 @@ var LayoutPropTypes = {
    *  When `flex` is -1, the component is normally sized according
    *  `width` and `height`. However, if there's not enough space,
    *  the component will shrink to its `minWidth` and `minHeight`.
+   *
+   * flexGrow, flexShrink, and flexBasis work the same as in CSS.
    */
   flex: ReactPropTypes.number,
+  flexGrow: ReactPropTypes.number,
+  flexShrink: ReactPropTypes.number,
+  flexBasis: ReactPropTypes.number,
+
+  /**
+   * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
+   * non-standard property only available in react native and not CSS.
+   *
+   * - On a node with a set width/height aspect ratio control the size of the unset dimension
+   * - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis
+   *   if unset
+   * - On a node with a measure function aspect ratio works as though the measure function measures
+   *   the flex basis
+   * - On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis
+   *   if unset
+   * - Aspect ratio takes min/max dimensions into account
+   */
+  aspectRatio: ReactPropTypes.number,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to

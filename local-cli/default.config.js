@@ -1,8 +1,16 @@
-'use strict';
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+ 'use strict';
 
 var blacklist = require('../packager/blacklist');
 var path = require('path');
-var rnpmConfig = require('./rnpm/core/src/config');
+var rnpmConfig = require('./core/config');
 
 /**
  * Default configuration for the CLI.
@@ -12,21 +20,10 @@ var rnpmConfig = require('./rnpm/core/src/config');
  * to tweak.
  */
 var config = {
-  getProjectRoots() {
-    return getRoots();
-  },
+  getProjectRoots,
 
   getProjectConfig: rnpmConfig.getProjectConfig,
   getDependencyConfig: rnpmConfig.getDependencyConfig,
-
-  /**
-   * Specify where to look for assets that are referenced using
-   * `image!<image_name>`. Asset directories for images referenced using
-   * `./<image.extension>` don't require any entry in here.
-   */
-  getAssetRoots() {
-    return getRoots();
-  },
 
   /**
    * Specify any additional asset extentions to be used by the packager.
@@ -38,11 +35,20 @@ var config = {
   },
 
   /**
+   * Specify any additional platforms to be used by the packager.
+   * For example, if you want to add a "custom" platform, and use modules
+   * ending in .custom.js, you would return ['custom'] here.
+   */
+  getPlatforms() {
+    return [];
+  },
+
+  /**
    * Returns a regular expression for modules that should be ignored by the
    * packager on a given platform.
    */
-  getBlacklistRE(platform) {
-    return blacklist(platform);
+  getBlacklistRE() {
+    return blacklist();
   },
 
   /**
@@ -54,7 +60,7 @@ var config = {
   },
 };
 
-function getRoots() {
+function getProjectRoots() {
   var root = process.env.REACT_NATIVE_APP_ROOT;
   if (root) {
     return [path.resolve(root)];

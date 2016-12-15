@@ -9,8 +9,6 @@
 
 package com.facebook.react.modules.network;
 
-import android.util.Base64;
-
 import javax.annotation.Nullable;
 
 import java.io.IOException;
@@ -20,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ExecutorToken;
@@ -31,6 +31,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 import okhttp3.Call;
@@ -49,6 +50,7 @@ import okhttp3.ResponseBody;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
+@ReactModule(name = "RCTNetworking", supportsWebWorkers = true)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
@@ -531,6 +533,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       String headerName = header.getString(0);
       String headerValue = header.getString(1);
+      if (headerName == null || headerValue == null) {
+        return null;
+      }
       headersBuilder.add(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {

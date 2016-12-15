@@ -10,28 +10,21 @@
  */
 'use strict';
 
-const commander = require('commander');
-
 const Config = require('./util/Config');
-const childProcess = require('child_process');
-const Promise = require('promise');
+
+const assertRequiredOptions = require('./util/assertRequiredOptions');
 const chalk = require('chalk');
+const childProcess = require('child_process');
+const commander = require('commander');
+const commands = require('./commands');
+const defaultConfig = require('./default.config');
+const init = require('./init/init');
 const minimist = require('minimist');
 const path = require('path');
-const fs = require('fs');
-const gracefulFs = require('graceful-fs');
-
-const init = require('./init/init');
-const commands = require('./commands');
-const assertRequiredOptions = require('./util/assertRequiredOptions');
 const pkg = require('../package.json');
-const defaultConfig = require('./default.config');
 
-import type { Command } from './commands';
-
-// graceful-fs helps on getting an error when we run out of file
-// descriptors. When that happens it will enqueue the operation and retry it.
-gracefulFs.gracefulify(fs);
+import type {Command} from './commands';
+import type {ConfigT} from './util/Config';
 
 commander.version(pkg.version);
 
@@ -52,11 +45,19 @@ function printHelpInformation() {
     cmdName = cmdName + '|' + this._alias;
   }
 
+  const sourceInformation = this.pkg
+    ? [
+      `  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`,
+      '',
+    ]
+    : [];
+
   let output = [
     '',
     chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
     `  ${this._description}`,
     '',
+    ...sourceInformation,
     `  ${chalk.bold('Options:')}`,
     '',
     this.optionHelp().replace(/^/gm, '    '),
@@ -92,7 +93,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: Command, config: Config) => {
+const addCommand = (command: Command, config: ConfigT) => {
   const options = command.options || [];
 
   const cmd = commander
@@ -114,6 +115,7 @@ const addCommand = (command: Command, config: Config) => {
 
     cmd.helpInformation = printHelpInformation.bind(cmd);
     cmd.examples = command.examples;
+    cmd.pkg = command.pkg;
 
   options
     .forEach(opt => cmd.option(
@@ -131,7 +133,7 @@ const addCommand = (command: Command, config: Config) => {
 function getCliConfig() {
   // Use a lightweight option parser to look up the CLI configuration file,
   // which we need to set up the parser for the other args and options
-  let cliArgs = minimist(process.argv.slice(2));
+  const cliArgs = minimist(process.argv.slice(2));
 
   let cwd;
   let configPath;

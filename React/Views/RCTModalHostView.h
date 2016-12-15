@@ -9,10 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTInvalidating.h"
-#import "RCTView.h"
+#import <React/RCTInvalidating.h>
+#import <React/RCTModalHostViewManager.h>
+#import <React/RCTView.h>
 
 @class RCTBridge;
+@class RCTModalHostViewController;
+
+@protocol RCTModalHostViewInteractor;
 
 @interface RCTModalHostView : UIView <RCTInvalidating>
 
@@ -21,6 +25,18 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
+@property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
+
+@property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
+@property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@protocol RCTModalHostViewInteractor <NSObject>
+
+- (void)presentModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated;
+- (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated;
 
 @end

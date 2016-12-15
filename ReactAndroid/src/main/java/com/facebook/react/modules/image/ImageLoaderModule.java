@@ -20,17 +20,22 @@ import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = "ImageLoader")
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
   LifecycleEventListener {
 
@@ -173,6 +178,28 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     if (request != null) {
       request.close();
     }
+  }
+
+  @ReactMethod
+  public void queryCache(final ReadableArray uris, final Promise promise) {
+    // perform cache interrogation in async task as disk cache checks are expensive
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
+      @Override
+      protected void doInBackgroundGuarded(Void... params) {
+        WritableMap result = Arguments.createMap();
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        for (int i = 0; i < uris.size(); i++) {
+          String uriString = uris.getString(i);
+          final Uri uri = Uri.parse(uriString);
+          if (imagePipeline.isInBitmapMemoryCache(uri)) {
+            result.putString(uriString, "memory");
+          } else if (imagePipeline.isInDiskCacheSync(uri)) {
+            result.putString(uriString, "disk");
+          }
+        }
+        promise.resolve(result);
+      }
+    }.executeOnExecutor(GuardedAsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private void registerRequest(int requestId, DataSource<Void> request) {

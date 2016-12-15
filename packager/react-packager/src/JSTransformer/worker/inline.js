@@ -5,10 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const babel = require('babel-core');
+const invariant = require('invariant');
+
+import type {Ast, SourceMap} from 'babel-core';
 const t = babel.types;
 
 const React = {name: 'React'};
@@ -28,12 +34,15 @@ const importMap = new Map([['ReactNative', 'react-native']]);
 
 const isGlobal = (binding) => !binding;
 
-const isToplevelBinding = (binding) => isGlobal(binding) || !binding.scope.parent;
+const isToplevelBinding = (binding, isWrappedModule) =>
+  isGlobal(binding) ||
+  !binding.scope.parent ||
+  isWrappedModule && !binding.scope.parent.parent;
 
 const isRequireCall = (node, dependencyId, scope) =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee, requirePattern) &&
-  t.isStringLiteral(node.arguments[0], t.stringLiteral(dependencyId));
+  checkRequireArgs(node.arguments, dependencyId);
 
 const isImport = (node, scope, patterns) =>
   patterns.some(pattern => {
@@ -41,21 +50,25 @@ const isImport = (node, scope, patterns) =>
     return isRequireCall(node, importName, scope);
   });
 
-function isImportOrGlobal(node, scope, patterns) {
+function isImportOrGlobal(node, scope, patterns, isWrappedModule) {
   const identifier = patterns.find(pattern => t.isIdentifier(node, pattern));
-  return identifier && isToplevelBinding(scope.getBinding(identifier.name)) ||
-         isImport(node, scope, patterns);
+  return (
+    identifier &&
+    isToplevelBinding(scope.getBinding(identifier.name), isWrappedModule) ||
+    isImport(node, scope, patterns)
+  );
 }
 
-const isPlatformOS = (node, scope) =>
+const isPlatformOS = (node, scope, isWrappedModule) =>
   t.isIdentifier(node.property, os) &&
-  isImportOrGlobal(node.object, scope, [platform]);
+  isImportOrGlobal(node.object, scope, [platform], isWrappedModule);
 
-const isReactPlatformOS = (node, scope) =>
+const isReactPlatformOS = (node, scope, isWrappedModule) =>
   t.isIdentifier(node.property, os) &&
   t.isMemberExpression(node.object) &&
   t.isIdentifier(node.object.property, platform) &&
-  isImportOrGlobal(node.object.object, scope, [React, ReactNative]);
+  isImportOrGlobal(
+    node.object.object, scope, [React, ReactNative], isWrappedModule);
 
 const isProcessEnvNodeEnv = (node, scope) =>
   t.isIdentifier(node.property, nodeEnv) &&
@@ -64,18 +77,19 @@ const isProcessEnvNodeEnv = (node, scope) =>
   t.isIdentifier(node.object.object, processId) &&
   isGlobal(scope.getBinding(processId.name));
 
-const isPlatformSelect = (node, scope) =>
+const isPlatformSelect = (node, scope, isWrappedModule) =>
   t.isMemberExpression(node.callee) &&
   t.isIdentifier(node.callee.object, platform) &&
   t.isIdentifier(node.callee.property, select) &&
-  isImportOrGlobal(node.callee.object, scope, [platform]);
+  isImportOrGlobal(node.callee.object, scope, [platform], isWrappedModule);
 
-const isReactPlatformSelect = (node, scope) =>
+const isReactPlatformSelect = (node, scope, isWrappedModule) =>
   t.isMemberExpression(node.callee) &&
   t.isIdentifier(node.callee.property, select) &&
   t.isMemberExpression(node.callee.object) &&
   t.isIdentifier(node.callee.object.property, platform) &&
-  isImportOrGlobal(node.callee.object.object, scope, [React, ReactNative]);
+  isImportOrGlobal(
+    node.callee.object.object, scope, [React, ReactNative], isWrappedModule);
 
 const isDev = (node, parent, scope) =>
   t.isIdentifier(node, dev) &&
@@ -97,22 +111,30 @@ const inlinePlugin = {
     MemberExpression(path, state) {
       const node = path.node;
       const scope = path.scope;
+      const opts = state.opts;
 
-      if (isPlatformOS(node, scope) || isReactPlatformOS(node, scope)) {
-        path.replaceWith(t.stringLiteral(state.opts.platform));
+      if (
+        isPlatformOS(node, scope, opts.isWrapped) ||
+        isReactPlatformOS(node, scope, opts.isWrapped)
+      ) {
+        path.replaceWith(t.stringLiteral(opts.platform));
       } else if (isProcessEnvNodeEnv(node, scope)) {
         path.replaceWith(
-          t.stringLiteral(state.opts.dev ? 'development' : 'production'));
+          t.stringLiteral(opts.dev ? 'development' : 'production'));
       }
     },
     CallExpression(path, state) {
       const node = path.node;
       const scope = path.scope;
       const arg = node.arguments[0];
+      const opts = state.opts;
 
-      if (isPlatformSelect(node, scope) || isReactPlatformSelect(node, scope)) {
+      if (
+        isPlatformSelect(node, scope, opts.isWrapped) ||
+        isReactPlatformSelect(node, scope, opts.isWrapped)
+      ) {
         const replacement = t.isObjectExpression(arg)
-          ? findProperty(arg, state.opts.platform)
+          ? findProperty(arg, opts.platform)
           : node;
 
         path.replaceWith(replacement);
@@ -123,7 +145,25 @@ const inlinePlugin = {
 
 const plugin = () => inlinePlugin;
 
-function inline(filename, transformResult, options) {
+function checkRequireArgs(args, dependencyId) {
+  const pattern = t.stringLiteral(dependencyId);
+  return t.isStringLiteral(args[0], pattern) ||
+         t.isMemberExpression(args[0]) &&
+         t.isNumericLiteral(args[0].property) &&
+         t.isStringLiteral(args[1], pattern);
+}
+
+type AstResult = {
+  ast: Ast,
+  code: ?string,
+  map: ?SourceMap,
+};
+
+function inline(
+  filename: string,
+  transformResult: {ast?: ?Ast, code: string, map: ?SourceMap},
+  options: {},
+): AstResult {
   const code = transformResult.code;
   const babelOptions = {
     filename,
@@ -136,9 +176,13 @@ function inline(filename, transformResult, options) {
     compact: true,
   };
 
-  return transformResult.ast
-      ? babel.transformFromAst(transformResult.ast, code, babelOptions)
-      : babel.transform(code, babelOptions);
+  const result = transformResult.ast
+    ? babel.transformFromAst(transformResult.ast, code, babelOptions)
+    : babel.transform(code, babelOptions);
+  const {ast} = result;
+  invariant(ast != null, 'Missing AST in babel transform results.');
+  return {ast, code: result.code, map: result.map};
 }
 
+inline.plugin = inlinePlugin;
 module.exports = inline;

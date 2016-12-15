@@ -9,18 +9,17 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.build.ReactBuildConfig;
+
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RobolectricTestRunner;
-
-import com.facebook.react.bridge.annotations.ReactModule;
-import com.facebook.react.common.build.ReactBuildConfig;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -77,20 +76,31 @@ public class ModuleSpecTest {
     assertThat(contextModule.getReactApplicationContext()).isSameAs(context);
   }
 
-  @ReactModule(name = "ComplexModule")
   public static class ComplexModule extends BaseJavaModule {
+
     public ComplexModule(int a, int b) {
+    }
+
+    public String getName() {
+      return "ComplexModule";
     }
   }
 
-  @ReactModule(name = "SimpleModule")
   public static class SimpleModule extends BaseJavaModule {
+
+    public String getName() {
+      return "SimpleModule";
+    }
   }
 
-  @ReactModule(name = "SimpleContextModule")
   public static class SimpleContextModule extends ReactContextBaseJavaModule {
+
     public SimpleContextModule(ReactApplicationContext context) {
       super(context);
+    }
+
+    public String getName() {
+      return "SimpleContextModule";
     }
   }
 }

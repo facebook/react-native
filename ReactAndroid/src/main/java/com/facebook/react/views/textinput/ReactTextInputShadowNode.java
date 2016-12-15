@@ -16,14 +16,15 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -34,14 +35,13 @@ import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNodeAPI.MeasureFunction {
+    YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
-    super(false);
     setMeasureFunction(this);
   }
 
@@ -62,17 +62,21 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
     setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
   }
 
   @Override
-  public void measure(
-      CSSNodeAPI node,
+  public long measure(
+      YogaNodeAPI node,
       float width,
-      CSSMeasureMode widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      CSSMeasureMode heightMode,
-      MeasureOutput measureOutput) {
+      YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
@@ -80,12 +84,17 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
     editText.setPadding(
-        (int) Math.ceil(getPadding().get(Spacing.START)),
-        (int) Math.ceil(getPadding().get(Spacing.TOP)),
-        (int) Math.ceil(getPadding().get(Spacing.END)),
-        (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
+        (int) Math.floor(getPadding(Spacing.START)),
+        (int) Math.floor(getPadding(Spacing.TOP)),
+        (int) Math.floor(getPadding(Spacing.END)),
+        (int) Math.floor(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
@@ -94,8 +103,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
-    measureOutput.width = editText.getMeasuredWidth();
-    measureOutput.height = editText.getMeasuredHeight();
+
+    return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override
@@ -114,8 +123,13 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mComputedPadding != null) {
       float[] updatedPadding = mComputedPadding;
-      if (getLayoutDirection() == CSSDirection.RTL) {
-        updatedPadding = spacingToFloatArrayForRTL(getPadding());
+      if (getLayoutDirection() == YogaDirection.RTL) {
+        updatedPadding = new float[] {
+            getPadding(Spacing.END),
+            getPadding(Spacing.TOP),
+            getPadding(Spacing.START),
+            getPadding(Spacing.BOTTOM),
+        };
       }
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), updatedPadding);
       mComputedPadding = null;
@@ -128,8 +142,10 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           preparedSpannableText,
           mJsEventCount,
           mContainsImages,
-          getPadding(),
-          getEffectiveLineHeight(),
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
           mTextAlign
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
@@ -139,27 +155,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void setPadding(int spacingType, float padding) {
     super.setPadding(spacingType, padding);
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
     markUpdated();
-  }
-
-  private float[] spacingToFloatArray(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.START),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.END),
-        spacing.get(Spacing.BOTTOM),
-    };
-  }
-
-  // Since TextInput communicate with native component but not CSSLayout,
-  // So flip the padding for RTL is necessary when the padding is updated
-  private float[] spacingToFloatArrayForRTL(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.END),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.START),
-        spacing.get(Spacing.BOTTOM),
-    };
   }
 }

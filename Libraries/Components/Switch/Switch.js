@@ -12,7 +12,7 @@
 'use strict';
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
@@ -59,7 +59,7 @@ var Switch = React.createClass({
     testID: React.PropTypes.string,
 
     /**
-     * Background color when the switch is turned off.
+     * Border color when the switch is turned off.
      * @platform ios
      */
     tintColor: ColorPropType,

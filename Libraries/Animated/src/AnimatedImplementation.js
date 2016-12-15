@@ -8,18 +8,19 @@
  *
  * @providesModule AnimatedImplementation
  * @flow
+ * @preventMunge
  */
 'use strict';
 
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
+var NativeAnimatedHelper = require('NativeAnimatedHelper');
 var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-var NativeAnimatedHelper = require('NativeAnimatedHelper');
 
-var findNodeHandle = require('react/lib/findNodeHandle');
+var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -30,6 +31,27 @@ type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
 var NativeAnimatedAPI = NativeAnimatedHelper.API;
+
+var warnedMissingNativeAnimated = false;
+
+function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
+  if (config.useNativeDriver &&
+      !NativeAnimatedHelper.isNativeAnimatedAvailable()) {
+    if (!warnedMissingNativeAnimated) {
+      console.warn(
+        'Animated: `useNativeDriver` is not supported because the native ' +
+        'animated module is missing. Falling back to JS-based animation. To ' +
+        'resolve this, add `RCTAnimation` module to this app, or remove ' +
+        '`useNativeDriver`. ' +
+        'More info: https://github.com/facebook/react-native/issues/11094#issuecomment-263240420'
+      );
+      warnedMissingNativeAnimated = true;
+    }
+    return false;
+  }
+
+  return config.useNativeDriver || false;
+}
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
@@ -250,7 +272,7 @@ class TimingAnimation extends Animation {
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
   }
 
   __getNativeAnimationConfig(): any {
@@ -281,7 +303,10 @@ class TimingAnimation extends Animation {
     this.__onEnd = onEnd;
 
     var start = () => {
-      if (this._duration === 0) {
+      // Animations that sometimes have 0 duration and sometimes do not
+      // still need to use the native driver when duration is 0 so as to
+      // not cause intermixed JS and native animations.
+      if (this._duration === 0 && !this._useNativeDriver) {
         this._onUpdate(this._toValue);
         this.__debouncedOnEnd({finished: true});
       } else {
@@ -359,7 +384,7 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
 
@@ -478,7 +503,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
 
     var springConfig;
@@ -670,7 +695,6 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
-  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -679,7 +703,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._startingValue = this._value = value;
+    this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
@@ -726,6 +750,9 @@ class AnimatedValue extends AnimatedWithChildren {
    */
   setOffset(offset: number): void {
     this._offset = offset;
+    if (this.__isNative) {
+      NativeAnimatedAPI.setAnimatedNodeOffset(this.__getNativeTag(), offset);
+    }
   }
 
   /**
@@ -735,6 +762,21 @@ class AnimatedValue extends AnimatedWithChildren {
   flattenOffset(): void {
     this._value += this._offset;
     this._offset = 0;
+    if (this.__isNative) {
+      NativeAnimatedAPI.flattenAnimatedNodeOffset(this.__getNativeTag());
+    }
+  }
+
+  /**
+   * Sets the offset value to the base value, and resets the base value to zero.
+   * The final output of the value is unchanged.
+   */
+  extractOffset(): void {
+    this._offset += this._value;
+    this._value = 0;
+    if (this.__isNative) {
+      NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
+    }
   }
 
   /**
@@ -788,6 +830,7 @@ class AnimatedValue extends AnimatedWithChildren {
     }
 
     this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
     NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
@@ -871,7 +914,8 @@ class AnimatedValue extends AnimatedWithChildren {
   __getNativeConfig(): Object {
     return {
       type: 'value',
-      value: this._startingValue,
+      value: this._value,
+      offset: this._offset,
     };
   }
 }
@@ -962,7 +1006,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     };
   }
 
-  stopAnimation(callback?: ?() => number): void {
+  stopAnimation(callback?: (value: {x: number, y: number}) => void): void {
     this.x.stopAnimation();
     this.y.stopAnimation();
     callback && callback(this.__getValue());
@@ -1035,6 +1079,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+     * deploy of Flow v0.36.0. To see the error, remove this comment and run
+     * Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1070,11 +1117,16 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    NativeAnimatedHelper.validateInterpolation(this._config);
+    if (__DEV__) {
+      NativeAnimatedHelper.validateInterpolation(this._config);
+    }
+
     return {
-      ...this._config,
+      inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
       outputRange: this.__transformDataType(this._config.outputRange),
+      extrapolateLeft: this._config.extrapolateLeft || this._config.extrapolate || 'extend',
+      extrapolateRight: this._config.extrapolateRight || this._config.extrapolate || 'extend',
       type: 'interpolation',
     };
   }
@@ -1118,6 +1170,54 @@ class AnimatedAddition extends AnimatedWithChildren {
   __getNativeConfig(): any {
     return {
       type: 'addition',
+      input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+    };
+  }
+}
+
+class AnimatedDivision extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated | number, b: Animated | number) {
+    super();
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
+  }
+
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+    this._b.__makeNative();
+  }
+
+  __getValue(): number {
+    const a = this._a.__getValue();
+    const b = this._b.__getValue();
+    if (b === 0) {
+      console.error('Detected division by zero in AnimatedDivision');
+    }
+    return a / b;
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+    super.__detach();
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'division',
       input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
     };
   }
@@ -1176,6 +1276,11 @@ class AnimatedModulo extends AnimatedWithChildren {
     this._modulus = modulus;
   }
 
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
   __getValue(): number {
     return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
   }
@@ -1190,6 +1295,65 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'modulus',
+      input: this._a.__getNativeTag(),
+      modulus: this._modulus,
+    };
+  }
+}
+
+class AnimatedDiffClamp extends AnimatedWithChildren {
+  _a: Animated;
+  _min: number;
+  _max: number;
+  _value: number;
+  _lastValue: number;
+
+  constructor(a: Animated, min: number, max: number) {
+    super();
+
+    this._a = a;
+    this._min = min;
+    this._max = max;
+    this._value = this._lastValue = this._a.__getValue();
+  }
+
+  __makeNative() {
+    super.__makeNative();
+    this._a.__makeNative();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __getValue(): number {
+    const value = this._a.__getValue();
+    const diff = value - this._lastValue;
+    this._lastValue = value;
+    this._value = Math.min(Math.max(this._value + diff, this._min), this._max);
+    return this._value;
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+
+  __getNativeConfig(): any {
+    return {
+      type: 'diffclamp',
+      input: this._a.__getNativeTag(),
+      min: this._min,
+      max: this._max,
+    };
   }
 }
 
@@ -1415,6 +1579,8 @@ class AnimatedProps extends Animated {
           // JS may not be up to date.
           props[key] = value.__getValue();
         }
+      } else if (value instanceof AnimatedEvent) {
+        props[key] = value.__getHandler();
       } else {
         props[key] = value;
       }
@@ -1525,6 +1691,7 @@ function createAnimatedComponent(Component: any): any {
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
+      this._detachNativeEvents(this.props);
     }
 
     setNativeProps(props) {
@@ -1532,14 +1699,50 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentWillMount() {
-      this.attachProps(this.props);
+      this._attachProps(this.props);
     }
 
     componentDidMount() {
       this._propsAnimated.setNativeView(this._component);
+
+      this._attachNativeEvents(this.props);
     }
 
-    attachProps(nextProps) {
+    _attachNativeEvents(newProps) {
+      if (newProps !== this.props) {
+        this._detachNativeEvents(this.props);
+      }
+
+      // Make sure to get the scrollable node for components that implement
+      // `ScrollResponder.Mixin`.
+      const ref = this._component.getScrollableNode ?
+        this._component.getScrollableNode() :
+        this._component;
+
+      for (const key in newProps) {
+        const prop = newProps[key];
+        if (prop instanceof AnimatedEvent && prop.__isNative) {
+          prop.__attach(ref, key);
+        }
+      }
+    }
+
+    _detachNativeEvents(props) {
+      // Make sure to get the scrollable node for components that implement
+      // `ScrollResponder.Mixin`.
+      const ref = this._component.getScrollableNode ?
+        this._component.getScrollableNode() :
+        this._component;
+
+      for (const key in props) {
+        const prop = props[key];
+        if (prop instanceof AnimatedEvent && prop.__isNative) {
+          prop.__detach(ref, key);
+        }
+      }
+    }
+
+    _attachProps(nextProps) {
       var oldPropsAnimated = this._propsAnimated;
 
       // The system is best designed when setNativeProps is implemented. It is
@@ -1569,7 +1772,6 @@ function createAnimatedComponent(Component: any): any {
         callback,
       );
 
-
       if (this._component) {
         this._propsAnimated.setNativeView(this._component);
       }
@@ -1586,7 +1788,8 @@ function createAnimatedComponent(Component: any): any {
     }
 
     componentWillReceiveProps(nextProps) {
-      this.attachProps(nextProps);
+      this._attachProps(nextProps);
+      this._attachNativeEvents(nextProps);
     }
 
     render() {
@@ -1600,6 +1803,12 @@ function createAnimatedComponent(Component: any): any {
 
     _setComponentRef(c) {
       this._component = c;
+    }
+
+    // A third party library can use getNode()
+    // to get the node reference of the decorated component
+    getNode () {
+      return this._component;
     }
   }
   AnimatedComponent.propTypes = {
@@ -1617,7 +1826,7 @@ function createAnimatedComponent(Component: any): any {
           );
         }
       }
-    }
+    },
   };
 
   return AnimatedComponent;
@@ -1673,15 +1882,22 @@ type CompositeAnimation = {
 };
 
 var add = function(
-  a: Animated,
-  b: Animated
+  a: Animated | number,
+  b: Animated | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
 };
 
+var divide = function(
+  a: Animated | number,
+  b: Animated | number,
+): AnimatedDivision {
+  return new AnimatedDivision(a, b);
+};
+
 var multiply = function(
-  a: Animated,
-  b: Animated
+  a: Animated | number,
+  b: Animated | number,
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
 };
@@ -1691,6 +1907,14 @@ var modulo = function(
   modulus: number
 ): AnimatedModulo {
   return new AnimatedModulo(a, modulus);
+};
+
+var diffClamp = function(
+  a: Animated,
+  min: number,
+  max: number,
+): AnimatedDiffClamp {
+  return new AnimatedDiffClamp(a, min, max);
 };
 
 const _combineCallbacks = function(callback: ?EndCallback, config : AnimationConfig) {
@@ -1913,21 +2137,108 @@ var stagger = function(
 };
 
 type Mapping = {[key: string]: Mapping} | AnimatedValue;
+type EventConfig = {
+  listener?: ?Function,
+  useNativeDriver?: bool,
+};
 
-type EventConfig = {listener?: ?Function};
-var event = function(
-  argMapping: Array<?Mapping>,
-  config?: ?EventConfig,
-): () => void {
-  return function(...args): void {
-    var traverse = function(recMapping, recEvt, key) {
+class AnimatedEvent {
+  _argMapping: Array<?Mapping>;
+  _listener: ?Function;
+  __isNative: bool;
+
+  constructor(
+    argMapping: Array<?Mapping>,
+    config?: EventConfig = {}
+  ) {
+    this._argMapping = argMapping;
+    this._listener = config.listener;
+    this.__isNative = shouldUseNativeDriver(config);
+
+    if (this.__isNative) {
+      invariant(!this._listener, 'Listener is not supported for native driven events.');
+    }
+
+    if (__DEV__) {
+      this._validateMapping();
+    }
+  }
+
+  __attach(viewRef, eventName) {
+    invariant(this.__isNative, 'Only native driven events need to be attached.');
+
+    // Find animated values in `argMapping` and create an array representing their
+    // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
+    const eventMappings = [];
+
+    const traverse = (value, path) => {
+      if (value instanceof AnimatedValue) {
+        value.__makeNative();
+
+        eventMappings.push({
+          nativeEventPath: path,
+          animatedValueTag: value.__getNativeTag(),
+        });
+      } else if (typeof value === 'object') {
+        for (const key in value) {
+          traverse(value[key], path.concat(key));
+        }
+      }
+    };
+
+    invariant(
+      this._argMapping[0] && this._argMapping[0].nativeEvent,
+      'Native driven events only support animated values contained inside `nativeEvent`.'
+    );
+
+    // Assume that the event containing `nativeEvent` is always the first argument.
+    traverse(this._argMapping[0].nativeEvent, []);
+
+    const viewTag = findNodeHandle(viewRef);
+
+    eventMappings.forEach((mapping) => {
+      NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
+    });
+  }
+
+  __detach(viewTag, eventName) {
+    invariant(this.__isNative, 'Only native driven events need to be detached.');
+
+    NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+  }
+
+  __getHandler() {
+    return (...args) => {
+      const traverse = (recMapping, recEvt, key) => {
+        if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
+          recMapping.setValue(recEvt);
+        } else if (typeof recMapping === 'object') {
+          for (const mappingKey in recMapping) {
+            traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
+          }
+        }
+      };
+
+      if (!this.__isNative) {
+        this._argMapping.forEach((mapping, idx) => {
+          traverse(mapping, args[idx], 'arg' + idx);
+        });
+      }
+
+      if (this._listener) {
+        this._listener.apply(null, args);
+      }
+    };
+  }
+
+  _validateMapping() {
+    const traverse = (recMapping, recEvt, key) => {
       if (typeof recEvt === 'number') {
         invariant(
           recMapping instanceof AnimatedValue,
           'Bad mapping of type ' + typeof recMapping + ' for key ' + key +
             ', event value must map to AnimatedValue'
         );
-        recMapping.setValue(recEvt);
         return;
       }
       invariant(
@@ -1938,17 +2249,23 @@ var event = function(
         typeof recEvt === 'object',
         'Bad event of type ' + typeof recEvt + ' for key ' + key
       );
-      for (var key in recMapping) {
-        traverse(recMapping[key], recEvt[key], key);
+      for (const mappingKey in recMapping) {
+        traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
       }
     };
-    argMapping.forEach((mapping, idx) => {
-      traverse(mapping, args[idx], 'arg' + idx);
-    });
-    if (config && config.listener) {
-      config.listener.apply(null, args);
-    }
-  };
+  }
+}
+
+var event = function(
+  argMapping: Array<?Mapping>,
+  config?: EventConfig,
+): any {
+  const animatedEvent = new AnimatedEvent(argMapping, config);
+  if (animatedEvent.__isNative) {
+    return animatedEvent;
+  } else {
+    return animatedEvent.__getHandler();
+  }
 };
 
 /**
@@ -2072,6 +2389,13 @@ module.exports = {
    * together.
    */
   add,
+
+  /**
+   * Creates a new Animated value composed by dividing the first Animated value
+   * by the second Animated value.
+   */
+  divide,
+
   /**
    * Creates a new Animated value composed from two Animated values multiplied
    * together.
@@ -2083,6 +2407,17 @@ module.exports = {
    * provided Animated value
    */
   modulo,
+
+  /**
+   * Create a new Animated value that is limited between 2 values. It uses the
+   * difference between the last value so even if the value is far from the bounds
+   * it will start changing when the value starts getting closer again.
+   * (`value = clamp(value + diff, min, max)`).
+   *
+   * This is useful with scroll events, for example, to show the navbar when
+   * scrolling up and to hide it when scrolling down.
+   */
+  diffClamp,
 
   /**
    * Starts an animation after the given delay.

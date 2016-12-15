@@ -18,7 +18,6 @@
 @implementation RCTExceptionsManager
 {
   __weak id<RCTExceptionsManagerDelegate> _delegate;
-  NSUInteger _reloadRetries;
 }
 
 @synthesize bridge = _bridge;
@@ -57,7 +56,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+    [_bridge reload];
   } else {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
     NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };

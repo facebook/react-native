@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -19,14 +19,13 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const createReactNativeComponentClass =
-  require('react/lib/createReactNativeComponentClass');
-const merge = require('merge');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
+const mergeFast = require('mergeFast');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 const viewConfig = {
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
+  validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
     ellipsizeMode: true,
@@ -64,7 +63,7 @@ const viewConfig = {
  *     return (
  *       <Text style={styles.baseText}>
  *         <Text style={styles.titleText} onPress={this.onPressTitle}>
- *           {this.state.titleText}<br /><br />
+ *           {this.state.titleText}{'\n'}{'\n'}
  *         </Text>
  *         <Text numberOfLines={5}>
  *           {this.state.bodyText}
@@ -137,8 +136,6 @@ const Text = React.createClass({
     onLongPress: React.PropTypes.func,
     /**
      * Lets the user select text, to use the native copy and paste functionality.
-     *
-     * @platform android
      */
     selectable: React.PropTypes.bool,
     /**
@@ -189,7 +186,7 @@ const Text = React.createClass({
     };
   },
   getInitialState: function(): Object {
-    return merge(Touchable.Mixin.touchableGetInitialState(), {
+    return mergeFast(Touchable.Mixin.touchableGetInitialState(), {
       isHighlighted: false,
     });
   },
@@ -220,7 +217,7 @@ const Text = React.createClass({
   touchableHandlePress: (null: ?Function),
   touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     let newProps = this.props;
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
@@ -255,12 +252,12 @@ const Text = React.createClass({
                 });
               };
 
-              this.touchableHandlePress = () => {
-                this.props.onPress && this.props.onPress();
+              this.touchableHandlePress = (e: SyntheticEvent) => {
+                this.props.onPress && this.props.onPress(e);
               };
 
-              this.touchableHandleLongPress = () => {
-                this.props.onLongPress && this.props.onLongPress();
+              this.touchableHandleLongPress = (e: SyntheticEvent) => {
+                this.props.onLongPress && this.props.onLongPress(e);
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
@@ -334,7 +331,7 @@ var RCTVirtualText = RCTText;
 
 if (Platform.OS === 'android') {
   RCTVirtualText = createReactNativeComponentClass({
-    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+    validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
     }),
     uiViewClassName: 'RCTVirtualText',

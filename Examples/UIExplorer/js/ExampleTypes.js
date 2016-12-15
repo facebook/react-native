@@ -23,16 +23,18 @@
  */
 'use strict';
 
+import type React from 'react';
+
 export type Example = {
   title: string,
-  render: () => ?ReactElement<any>,
+  render: () => ?React.Element<any>,
   description?: string,
-  platform?: string;
+  platform?: string,
 };
 
 export type ExampleModule = {
-  title: string;
-  description: string;
-  examples: Array<Example>;
-  external?: bool;
+  title: string,
+  description: string,
+  examples: Array<Example>,
+  external?: bool,
 };

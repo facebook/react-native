@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -29,7 +31,7 @@ const WebSocket = require('ws');
 console.log(`\
 Test server for WebSocketExample
 
-This will send each incoming message right back to the other side.a
+This will send each incoming message right back to the other side.
 Restart with the '--binary' command line flag to have it respond with an
 ArrayBuffer instead of a string.
 `);
@@ -39,6 +41,7 @@ const server = new WebSocket.Server({port: 5555});
 server.on('connection', (ws) => {
   ws.on('message', (message) => {
     console.log('Received message:', message);
+    console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
       message = new Buffer(message);
     }

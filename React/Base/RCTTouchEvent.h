@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 
 /**
  * Represents a touch event, which may be composed of several touches (one for every finger).
@@ -18,6 +18,7 @@
 @interface RCTTouchEvent : NSObject <RCTEvent>
 
 - (instancetype)initWithEventName:(NSString *)eventName
+                         reactTag:(NSNumber *)reactTag
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
                    changedIndexes:(NSArray<NSNumber *> *)changedIndexes
                     coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;

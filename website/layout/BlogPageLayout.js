@@ -11,15 +11,16 @@
 
 'use strict';
 
-var BlogPost = require('BlogPost');
-var BlogSidebar = require('BlogSidebar');
-var MetadataBlog = require('MetadataBlog');
 var React = require('React');
 var Site = require('Site');
+var Hero = require('Hero');
+var MetadataBlog = require('MetadataBlog');
+var BlogPost = require('BlogPost');
+var BlogPostExcerpt = require('BlogPostExcerpt');
 
 var BlogPageLayout = React.createClass({
   getPageURL: function(page) {
-    var url = '/jest/blog/';
+    var url = '/react-native/blog/';
     if (page > 0) {
       url += 'page' + (page + 1) + '/';
     }
@@ -32,23 +33,24 @@ var BlogPageLayout = React.createClass({
     return (
       <Site
         section="blog"
-        title="Blog">
+        title="React Native Blog"
+        description="The best place to stay up-to-date with the latest React Native news and events.">
+        <Hero title="React Native Blog" subtitle="Stay up-to-date with the latest React Native news and events." />
         <section className="content wrap documentationContent">
-          <BlogSidebar />
-          <div className="inner-content">
             {MetadataBlog.files
               .slice(page * perPage, (page + 1) * perPage)
               .map((post) => {
-                return <BlogPost post={post} content={post.content} />
+                return (
+                  <BlogPostExcerpt post={post} />
+                )
               })
             }
             <div className="docs-prevnext">
               {page > 0 &&
-                <a className="docs-prev" href={this.getPageURL(page - 1)}>&larr; Prev</a>}
+                <a className="docs-prev" href={this.getPageURL(page - 1)}>&larr; Newer posts</a>}
               {MetadataBlog.files.length > (page + 1) * perPage &&
-                <a className="docs-next" href={this.getPageURL(page + 1)}>Next &rarr;</a>}
+                <a className="docs-next" href={this.getPageURL(page + 1)}>Older posts &rarr;</a>}
             </div>
-          </div>
         </section>
       </Site>
     );

@@ -16,7 +16,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 
+@ReactModule(name = "Vibration")
 public class VibrationModule extends ReactContextBaseJavaModule {
 
   public VibrationModule(ReactApplicationContext reactContext) {

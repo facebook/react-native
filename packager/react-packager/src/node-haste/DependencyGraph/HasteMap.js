@@ -10,8 +10,9 @@
 
 const EventEmitter = require('events');
 
-const path = require('../fastpath');
 const getPlatformExtension = require('../lib/getPlatformExtension');
+const path = require('path');
+const throat = require('throat');
 
 const GENERIC_PLATFORM = 'generic';
 const NATIVE_PLATFORM = 'native';
@@ -20,7 +21,7 @@ const PACKAGE_JSON = path.sep + 'package.json';
 class HasteMap extends EventEmitter {
   constructor({
     extensions,
-    fastfs,
+    files,
     moduleCache,
     preferNativePlatform,
     helpers,
@@ -28,17 +29,20 @@ class HasteMap extends EventEmitter {
   }) {
     super();
     this._extensions = extensions;
-    this._fastfs = fastfs;
-    this._moduleCache = moduleCache;
-    this._preferNativePlatform = preferNativePlatform;
+    this._files = files;
     this._helpers = helpers;
+    this._moduleCache = moduleCache;
     this._platforms = platforms;
+    this._preferNativePlatform = preferNativePlatform;
+
+    this._processHastePackage = throat(1, this._processHastePackage.bind(this));
+    this._processHasteModule = throat(1, this._processHasteModule.bind(this));
   }
 
   build() {
     this._map = Object.create(null);
     const promises = [];
-    this._fastfs.getAllFiles().forEach(filePath => {
+    this._files.forEach(filePath => {
       if (!this._helpers.isNodeModulesDir(filePath)) {
         if (this._extensions.indexOf(path.extname(filePath).substr(1)) !== -1) {
           promises.push(this._processHasteModule(filePath));
@@ -94,7 +98,7 @@ class HasteMap extends EventEmitter {
 
     // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
     // a plain .js file.
-    let module = undefined;
+    let module;
     if (module == null && platform != null) {
       module = modulesMap[platform];
     }
@@ -122,7 +126,6 @@ class HasteMap extends EventEmitter {
   }
 
   _processHastePackage(file, previousName) {
-    file = path.resolve(file);
     const p = this._moduleCache.getPackage(file);
     return p.isHaste()
       .then(isHaste => isHaste && p.getName()

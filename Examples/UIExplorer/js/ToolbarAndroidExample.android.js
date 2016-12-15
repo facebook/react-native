@@ -24,6 +24,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   StyleSheet,
   Text,
@@ -32,7 +34,7 @@ var {
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var SwitchAndroid = require('SwitchAndroid');
+var Switch = require('Switch');
 var ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component {
@@ -54,7 +56,11 @@ class ToolbarAndroidExample extends React.Component {
         <UIExplorerBlock title="Toolbar with title/subtitle and actions">
           <ToolbarAndroid
             actions={toolbarActions}
-            navIcon={require('image!ic_menu_black_24dp')}
+            navIcon={nativeImageSource({
+              android: 'ic_menu_black_24dp',
+              width: 48,
+              height: 48
+            })}
             onActionSelected={this._onActionSelected}
             onIconClicked={() => this.setState({actionText: 'Icon clicked'})}
             style={styles.toolbar}
@@ -64,10 +70,14 @@ class ToolbarAndroidExample extends React.Component {
         </UIExplorerBlock>
         <UIExplorerBlock title="Toolbar with logo & custom title view (a View with Switch+Text)">
           <ToolbarAndroid
-            logo={require('image!launcher_icon')}
+            logo={nativeImageSource({
+              android: 'launcher_icon',
+              width: 132,
+              height: 144
+            })}
             style={styles.toolbar}>
             <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
-              <SwitchAndroid
+              <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={(value) => this.setState({'toolbarSwitch': value})} />
               <Text>{'\'Tis but a switch'}</Text>
@@ -83,13 +93,25 @@ class ToolbarAndroidExample extends React.Component {
         <UIExplorerBlock title="Toolbar with navIcon & logo, no title">
           <ToolbarAndroid
             actions={toolbarActions}
-            logo={require('image!launcher_icon')}
-            navIcon={require('image!ic_menu_black_24dp')}
+            logo={nativeImageSource({
+              android: 'launcher_icon',
+              width: 132,
+              height: 144
+            })}
+            navIcon={nativeImageSource({
+              android: 'ic_menu_black_24dp',
+              width: 48,
+              height: 48
+            })}
             style={styles.toolbar} />
         </UIExplorerBlock>
         <UIExplorerBlock title="Toolbar with custom title colors">
           <ToolbarAndroid
-            navIcon={require('image!ic_menu_black_24dp')}
+            navIcon={nativeImageSource({
+              android: 'ic_menu_black_24dp',
+              width: 48,
+              height: 48
+            })}
             onIconClicked={() => this.setState({colorProps: {}})}
             title="Wow, such toolbar"
             style={styles.toolbar}
@@ -125,9 +147,17 @@ class ToolbarAndroidExample extends React.Component {
 }
 
 var toolbarActions = [
-  {title: 'Create', icon: require('image!ic_create_black_48dp'), show: 'always'},
+  {title: 'Create', icon: nativeImageSource({
+    android: 'ic_create_black_48dp',
+    width: 96,
+    height: 96
+  }), show: 'always'},
   {title: 'Filter'},
-  {title: 'Settings', icon: require('image!ic_settings_black_48dp'), show: 'always'},
+  {title: 'Settings', icon: nativeImageSource({
+    android: 'ic_settings_black_48dp',
+    width: 96,
+    height: 96
+  }), show: 'always'},
 ];
 
 var styles = StyleSheet.create({

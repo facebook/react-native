@@ -16,6 +16,7 @@ import java.util.List;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 
@@ -137,7 +138,7 @@ public abstract class ReactNativeHost {
   /**
    * Returns whether dev mode should be enabled. This enables e.g. the dev menu.
    */
-  protected abstract boolean getUseDeveloperSupport();
+  public abstract boolean getUseDeveloperSupport();
 
   /**
    * Returns a list of {@link ReactPackage} used by the app.

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -22,14 +21,16 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.facebook.react.views.view.ReactClippingViewGroup;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
 
 /**
@@ -39,7 +40,7 @@ import com.facebook.infer.annotation.Assertions;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
   private static Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -58,12 +59,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private View mContentView;
 
-  public ReactScrollView(Context context) {
+  public ReactScrollView(ReactContext context) {
     this(context, null);
   }
 
-  public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
+  public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
 
@@ -82,13 +84,24 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     if (sScrollerField != null) {
       try {
-        mScroller = (OverScroller) sScrollerField.get(this);
+        Object scroller = sScrollerField.get(this);
+        if (scroller instanceof OverScroller) {
+          mScroller = (OverScroller) scroller;
+        } else {
+          Log.w(
+            ReactConstants.TAG,
+            "Failed to cast mScroller field in ScrollView (probably due to OEM changes to AOSP)! " +
+              "This app will exhibit the bounce-back scrolling bug :(");
+          mScroller = null;
+        }
       } catch (IllegalAccessException e) {
         throw new RuntimeException("Failed to get mScroller from ScrollView!", e);
       }
     } else {
       mScroller = null;
     }
+
+    setOnHierarchyChangeListener(this);
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -290,6 +303,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
   }
 
+  private int getMaxScrollY() {
+    int contentHeight = mContentView.getHeight();
+    int viewportHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+    return Math.max(0, contentHeight - viewportHeight);
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
@@ -318,11 +337,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
-        int scrollRange = Math.max(
-          0,
-          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
+        int scrollRange = getMaxScrollY();
         if (scrollY >= scrollRange) {
           mScroller.abortAnimation();
+          scrollY = scrollRange;
         }
       }
 
@@ -331,4 +349,35 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
   }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
+  }
+
+  /**
+   * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
+   * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
+   * position is larger than the ScrollView's max scroll position after the content shrinks.
+   */
+  @Override
+  public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    if (mContentView == null) {
+      return;
+    }
+
+    int currentScrollY = getScrollY();
+    int maxScrollY = getMaxScrollY();
+    if (currentScrollY > maxScrollY) {
+      scrollTo(getScrollX(), maxScrollY);
+    }
+  }
 }
+

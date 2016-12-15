@@ -11,8 +11,7 @@
 
 #import <Photos/Photos.h>
 
-#import "RCTImageUtils.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTPhotoLibraryImageLoader
 
@@ -36,6 +35,7 @@ RCT_EXPORT_MODULE()
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   // Using PhotoKit for iOS 8+
@@ -59,6 +59,9 @@ RCT_EXPORT_MODULE()
 
   PHAsset *asset = [results firstObject];
   PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+
+  // Allow PhotoKit to fetch images from iCloud
+  imageOptions.networkAccessAllowed = YES;
 
   if (progressHandler) {
     imageOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary<NSString *, id> *info) {

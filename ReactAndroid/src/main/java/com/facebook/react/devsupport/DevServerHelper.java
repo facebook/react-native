@@ -9,7 +9,15 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -19,13 +27,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,6 +53,7 @@ public class DevServerHelper {
 
   private static final String BUNDLE_URL_FORMAT =
       "http://%s/%s.bundle?platform=android&dev=%s&hot=%s&minify=%s";
+  private static final String RESOURCE_URL_FORMAT = "http://%s/%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT =
@@ -62,6 +64,7 @@ public class DevServerHelper {
   private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
+  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -79,7 +82,7 @@ public class DevServerHelper {
   }
 
   public interface PackagerCommandListener {
-    void onReload();
+    void onPackagerReloadCommand();
   }
 
   public interface PackagerStatusCallback {
@@ -88,15 +91,16 @@ public class DevServerHelper {
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
-  private final JSPackagerWebSocketClient mPackagerConnection;
   private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
+  private @Nullable JSPackagerWebSocketClient mPackagerConnection;
+  private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
   private @Nullable Call mDownloadBundleFromURLCall;
 
-  public DevServerHelper(DevInternalSettings settings, final PackagerCommandListener commandListener) {
+  public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -105,19 +109,79 @@ public class DevServerHelper {
       .build();
 
     mRestartOnChangePollingHandler = new Handler();
-    mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
-        new JSPackagerWebSocketClient.JSPackagerCallback() {
-          @Override
-          public void onMessage(String target, String action) {
-            if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-              commandListener.onReload();
-            }
-          }
-        });
-    mPackagerConnection.connect();
   }
 
-  /** Intent action for reloading the JS */
+  public void openPackagerConnection(final PackagerCommandListener commandListener) {
+    if (mPackagerConnection != null) {
+      FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
+      return;
+    }
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
+          new JSPackagerWebSocketClient.JSPackagerCallback() {
+            @Override
+            public void onMessage(String target, String action) {
+              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
+                commandListener.onPackagerReloadCommand();
+              }
+            }
+          });
+        mPackagerConnection.connect();
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  public void closePackagerConnection() {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        if (mPackagerConnection != null) {
+          mPackagerConnection.closeQuietly();
+          mPackagerConnection = null;
+        }
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  public void openInspectorConnection() {
+    if (mInspectorPackagerConnection != null) {
+      FLog.w(ReactConstants.TAG, "Inspector connection already open, nooping.");
+      return;
+    }
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl());
+        mInspectorPackagerConnection.connect();
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  public void openInspector(String id) {
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.sendOpenEvent(id);
+    }
+  }
+
+  public void closeInspectorConnection() {
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        if (mInspectorPackagerConnection != null) {
+          mInspectorPackagerConnection.closeQuietly();
+          mInspectorPackagerConnection = null;
+        }
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+    /** Intent action for reloading the JS */
   public static String getReloadAppAction(Context context) {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
   }
@@ -132,6 +196,14 @@ public class DevServerHelper {
 
   public String getHeapCaptureUploadUrl() {
     return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
+  }
+
+  public String getInspectorDeviceUrl() {
+    return String.format(
+        Locale.US,
+        INSPECTOR_DEVICE_URL_FORMAT,
+        getDebugServerHost(),
+        AndroidInfoHelpers.getFriendlyDeviceName());
   }
 
   /**
@@ -190,11 +262,23 @@ public class DevServerHelper {
     return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
   }
 
+  private static String createResourceURL(String host, String resourcePath) {
+    return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
+  }
+
+  public String getDevServerBundleURL(final String jsModulePath) {
+    return createBundleURL(
+      getDebugServerHost(),
+      jsModulePath,
+      getDevMode(),
+      getHMR(),
+      getJSMinifyMode());
+  }
+
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
-      final String jsModulePath,
-      final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR(), getJSMinifyMode());
+      final File outputFile,
+      final String bundleURL) {
     final Request request = new Request.Builder()
         .url(bundleURL)
         .build();
@@ -421,5 +505,47 @@ public class DevServerHelper {
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
     return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+  }
+
+  /**
+   * This is a debug-only utility to allow fetching a file via packager.
+   * It's made synchronous for simplicity, but should only be used if it's absolutely
+   * necessary.
+   * @return the file with the fetched content, or null if there's any failure.
+   */
+  public @Nullable File downloadBundleResourceFromUrlSync(
+      final String resourcePath,
+      final File outputFile) {
+    final String resourceURL = createResourceURL(getDebugServerHost(), resourcePath);
+    final Request request = new Request.Builder()
+        .url(resourceURL)
+        .build();
+
+    try {
+      Response response = mClient.newCall(request).execute();
+      if (!response.isSuccessful()) {
+        return null;
+      }
+      Sink output = null;
+
+      try {
+        output = Okio.sink(outputFile);
+        Okio.buffer(response.body().source()).readAll(output);
+      } finally {
+        if (output != null) {
+          output.close();
+        }
+      }
+
+      return outputFile;
+    } catch (Exception ex) {
+      FLog.e(
+          ReactConstants.TAG,
+          "Failed to fetch resource synchronously - resourcePath: \"%s\", outputFile: \"%s\"",
+          resourcePath,
+          outputFile.getAbsolutePath(),
+          ex);
+      return null;
+    }
   }
 }

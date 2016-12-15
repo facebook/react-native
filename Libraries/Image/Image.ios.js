@@ -15,9 +15,8 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ImageResizeMode = require('ImageResizeMode');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -26,6 +25,8 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
+
+const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
@@ -65,7 +66,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
- * import { AppRegistry, View, Image, StyleSheet} from 'react-native';
+ * import { AppRegistry, View, Image, StyleSheet } from 'react-native';
  *
  * const styles = StyleSheet.create({
  *   stretch: {
@@ -193,6 +194,26 @@ const Image = React.createClass({
      */
     capInsets: EdgeInsetsPropType,
     /**
+     * The mechanism that should be used to resize the image when the image's dimensions
+     * differ from the image view's dimensions. Defaults to `auto`.
+     *
+     * - `auto`: Use heuristics to pick between `resize` and `scale`.
+     *
+     * - `resize`: A software operation which changes the encoded image in memory before it
+     * gets decoded. This should be used instead of `scale` when the image is much larger
+     * than the view.
+     *
+     * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
+     * faster (usually hardware accelerated) and produces higher quality images. This
+     * should be used if the image is smaller than the view. It should also be used if the
+     * image is slightly bigger than the view.
+     *
+     * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
+     *
+     * @platform android
+     */
+    resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
+    /**
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
      *
@@ -234,9 +255,15 @@ const Image = React.createClass({
     onProgress: PropTypes.func,
     /**
      * Invoked on load error with `{nativeEvent: {error}}`.
-     * @platform ios
      */
     onError: PropTypes.func,
+    /**
+     * Invoked when a partial load of the image is complete. The definition of
+     * what constitutes a "partial load" is loader specific though this is meant
+     * for progressive JPEG loads.
+     * @platform ios
+     */
+    onPartialLoad: PropTypes.func,
     /**
      * Invoked when load completes successfully.
      */
@@ -290,6 +317,12 @@ const Image = React.createClass({
     prefetch(url: string) {
       return ImageViewManager.prefetchImage(url);
     },
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
+     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     */
+    resolveAssetSource: resolveAssetSource,
   },
 
   mixins: [NativeMethodsMixin],

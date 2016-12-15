@@ -9,11 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTBridgeModule.h"
-#import "RCTInvalidating.h"
-#import "RCTViewManager.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
+#import <React/RCTRootView.h>
+#import <React/RCTViewManager.h>
 
 /**
  * UIManager queue
@@ -89,6 +89,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Given a reactTag from a component, find its root view, if possible.
+ * Otherwise, this will give back nil.
+ *
+ * @param reactTag the component tag
+ * @param completion the completion block that will hand over the rootView, if any.
+ *
+ */
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
 
 /**
  * The view that is currently first responder, according to the JS context.

@@ -6,16 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * This pipes all of our console logging functions to native logging so that
- * JavaScript errors in required modules show up in Xcode via NSLog.
- *
  * @provides Object.es6
  * @polyfill
  */
 
+/* eslint-disable strict */
+
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
-/* eslint strict:0 */
+// This is only needed for iOS 8 and current Android JSC.
+
 Object.assign = function(target, sources) {
   if (__DEV__) {
     if (target == null) {
@@ -55,7 +55,8 @@ Object.assign = function(target, sources) {
         if (!hasOwnProperty.call(nextSource, key)) {
           throw new TypeError(
             'One of the sources for assign has an enumerable key on the ' +
-            'prototype chain. This is an edge case that we do not support. ' +
+            'prototype chain. Are you trying to assign a prototype property? ' +
+            'We don\'t allow it, as this is an edge case that we do not support. ' +
             'This error is a performance optimization and not spec compliant.'
           );
         }

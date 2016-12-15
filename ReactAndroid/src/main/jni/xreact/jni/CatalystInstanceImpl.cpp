@@ -14,6 +14,8 @@
 #include <jni/LocalReference.h>
 
 #include <cxxreact/Instance.h>
+#include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 
@@ -111,6 +113,7 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
       makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
       makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
       makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
@@ -173,10 +176,32 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
   }
 }
 
+bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  if (!bundle_stream) {
+    return false;
+  }
+  BundleHeader header;
+  bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
+  bundle_stream.close();
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
 void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
                                               const std::string& sourceURL) {
-  return instance_->loadScriptFromFile(fileName ? fileName->toStdString() : "",
-                                       sourceURL);
+
+  std::string file = fileName ? fileName->toStdString() : "";
+
+  if (isIndexedRAMBundle(file.c_str())) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(file.c_str());
+    auto startupScript = bundle->getStartupCode();
+    instance_->loadUnbundle(
+      std::move(bundle),
+      std::move(startupScript),
+      sourceURL);
+  } else {
+    instance_->loadScriptFromFile(file, sourceURL);
+  }
 }
 
 void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
@@ -217,6 +242,10 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+jlong CatalystInstanceImpl::getJavaScriptContext() {
+  return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
 void CatalystInstanceImpl::handleMemoryPressureUiHidden() {

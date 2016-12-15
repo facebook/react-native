@@ -7,21 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTImageLoader.h"
+#import <libkern/OSAtomic.h>
+#import <objc/runtime.h>
 
 #import <ImageIO/ImageIO.h>
 
-#import <libkern/OSAtomic.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 
-#import <objc/runtime.h>
-
-#import "RCTConvert.h"
-#import "RCTDefines.h"
 #import "RCTImageCache.h"
 #import "RCTImageUtils.h"
-#import "RCTLog.h"
-#import "RCTNetworking.h"
-#import "RCTUtils.h"
 
 @implementation UIImage (React)
 
@@ -229,6 +228,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                clipped:YES
                             resizeMode:RCTResizeModeStretch
                          progressBlock:nil
+                      partialLoadBlock:nil
                        completionBlock:callback];
 }
 
@@ -236,10 +236,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 {
   dispatch_async(_URLRequestQueue, ^{
     // Remove completed tasks
+    NSMutableArray *tasksToRemove = nil;
     for (RCTNetworkTask *task in self->_pendingTasks.reverseObjectEnumerator) {
       switch (task.status) {
         case RCTNetworkTaskFinished:
-          [self->_pendingTasks removeObject:task];
+          if (!tasksToRemove) {
+            tasksToRemove = [NSMutableArray new];
+          }
+          [tasksToRemove addObject:task];
           self->_activeTasks--;
           break;
         case RCTNetworkTaskPending:
@@ -248,12 +252,19 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           // Check task isn't "stuck"
           if (task.requestToken == nil) {
             RCTLogWarn(@"Task orphaned for request %@", task.request);
-            [self->_pendingTasks removeObject:task];
+            if (!tasksToRemove) {
+              tasksToRemove = [NSMutableArray new];
+            }
+            [tasksToRemove addObject:task];
             self->_activeTasks--;
             [task cancel];
           }
           break;
       }
+    }
+    
+    if (tasksToRemove) {
+      [self->_pendingTasks removeObjectsInArray:tasksToRemove];
     }
 
     // Start queued decode
@@ -292,6 +303,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                             scale:(CGFloat)scale
                                                        resizeMode:(RCTResizeMode)resizeMode
                                                     progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                                 partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                                   completionBlock:(void (^)(NSError *error, id imageOrData, BOOL cacheResult, NSString *fetchDate))completionBlock
 {
   {
@@ -343,6 +355,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                   scale:scale
                              resizeMode:resizeMode
                         progressHandler:progressHandler
+                     partialLoadHandler:partialLoadHandler
                       completionHandler:^(NSError *error, UIImage *image){
                         completionHandler(error, image, nil);
                       }];
@@ -366,6 +379,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           scale:scale
                                      resizeMode:resizeMode
                                 progressHandler:progressHandler
+                             partialLoadHandler:partialLoadHandler
                               completionHandler:^(NSError *error, UIImage *image) {
                                 completionHandler(error, image, nil);
                               }];
@@ -378,9 +392,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    if (cancelLoad) {
-      cancelLoad();
-      cancelLoad = nil;
+    dispatch_block_t cancelLoadLocal = cancelLoad;
+    cancelLoad = nil;
+    if (cancelLoadLocal && !cancelled) {
+      cancelLoadLocal();
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };
@@ -425,9 +440,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
       if (statusCode != 200) {
+        NSString *errorMessage = [NSString stringWithFormat:@"Failed to load %@", response.URL];
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: errorMessage};
         completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
                                                      code:statusCode
-                                                 userInfo:nil], nil, nil);
+                                                 userInfo:userInfo], nil, nil);
         return;
       }
 
@@ -440,7 +457,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   // Download image
   __weak __typeof(self) weakSelf = self;
-  RCTNetworkTask *task = [networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+  __block RCTNetworkTask *task =
+  [networking networkTaskWithRequest:request
+                     completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
       return;
@@ -469,7 +488,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     });
   }];
 
-  task.downloadProgressBlock = progressHandler;
+  task.downloadProgressBlock = ^(int64_t progress, int64_t total) {
+    if (progressHandler) {
+      progressHandler(progress, total);
+    }
+  };
 
   if (task) {
     if (!_pendingTasks) {
@@ -480,8 +503,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 
   return ^{
-    [task cancel];
-    [weakSelf dequeueTasks];
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf || !task) {
+      return;
+    }
+    dispatch_async(strongSelf->_URLRequestQueue, ^{
+      [task cancel];
+      task = nil;
+    });
+    [strongSelf dequeueTasks];
   };
 }
 
@@ -491,13 +521,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                    clipped:(BOOL)clipped
                                                 resizeMode:(RCTResizeMode)resizeMode
                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                          partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   __block volatile uint32_t cancelled = 0;
   __block dispatch_block_t cancelLoad = nil;
   dispatch_block_t cancellationBlock = ^{
-    if (cancelLoad) {
-      cancelLoad();
+    dispatch_block_t cancelLoadLocal = cancelLoad;
+    if (cancelLoadLocal && !cancelled) {
+      cancelLoadLocal();
     }
     OSAtomicOr32Barrier(1, &cancelled);
   };
@@ -544,7 +576,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       completionBlock(error_, image);
     };
 
-    cancelLoad = [weakSelf decodeImageData:imageOrData
+    cancelLoad = [strongSelf decodeImageData:imageOrData
                                       size:size
                                      scale:scale
                                    clipped:clipped
@@ -557,6 +589,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                               scale:scale
                                          resizeMode:resizeMode
                                       progressBlock:progressBlock
+                                   partialLoadBlock:partialLoadBlock
                                     completionBlock:completionHandler];
   return cancellationBlock;
 }
@@ -693,6 +726,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                         scale:1
                                    resizeMode:RCTResizeModeStretch
                                 progressBlock:NULL
+                             partialLoadBlock:NULL
                               completionBlock:completion];
 }
 

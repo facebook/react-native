@@ -25,7 +25,9 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const ViewExample = require('./ViewExample');
+
 const createExamplePage = require('./createExamplePage');
+const nativeImageSource = require('nativeImageSource');
 const {
   AlertIOS,
   NavigatorIOS,
@@ -90,13 +92,52 @@ class NavigatorIOSExamplePage extends React.Component {
               }
             });
           })}
+          {this._renderRow('Custom Right System Button', () => {
+            this.props.navigator.push({
+              title: NavigatorIOSExample.title,
+              component: EmptyPage,
+              rightButtonSystemIcon: 'bookmarks',
+              onRightButtonPress: () => this.props.navigator.pop(),
+              passProps: {
+                text: 'This page has a right system button in the nav bar',
+              }
+            });
+          })}
           {this._renderRow('Custom Left & Right Icons', () => {
             this.props.navigator.push({
               title: NavigatorIOSExample.title,
               component: EmptyPage,
               leftButtonTitle: 'Custom Left',
               onLeftButtonPress: () => this.props.navigator.pop(),
-              rightButtonIcon: require('image!NavBarButtonPlus'),
+              rightButtonIcon: nativeImageSource({
+                ios: 'NavBarButtonPlus',
+                width: 17,
+                height: 17
+              }),
+              onRightButtonPress: () => {
+                AlertIOS.alert(
+                  'Bar Button Action',
+                  'Recognized a tap on the bar button icon',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => console.log('Tapped OK'),
+                    },
+                  ]
+                );
+              },
+              passProps: {
+                text: 'This page has an icon for the right button in the nav bar',
+              }
+            });
+          })}
+          {this._renderRow('Custom Left & Right System Icons', () => {
+            this.props.navigator.push({
+              title: NavigatorIOSExample.title,
+              component: EmptyPage,
+              leftButtonSystemIcon: 'cancel',
+              onLeftButtonPress: () => this.props.navigator.pop(),
+              rightButtonSystemIcon: 'search',
               onRightButtonPress: () => {
                 AlertIOS.alert(
                   'Bar Button Action',

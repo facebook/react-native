@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @protocol RCTRootViewDelegate;
 
@@ -134,6 +134,18 @@ extern NSString *const RCTContentDidAppearNotification;
  * This is a reason why this API may be soon removed in favor of a better solution.
  */
 - (void)cancelTouches;
+
+/**
+ * When set, any touches on the RCTRootView that are not matched up to any of the child
+ * views will be passed to siblings of the RCTRootView. See -[UIView hitTest:withEvent:]
+ * for details on iOS hit testing.
+ *
+ * Enable this to support a semi-transparent RN view that occupies the whole screen but
+ * has visible content below it that the user can interact with.
+ *
+ * The default value is NO.
+ */
+@property (nonatomic, assign) BOOL passThroughTouches;
 
 /**
  * Timings for hiding the loading view after the content has loaded. Both of

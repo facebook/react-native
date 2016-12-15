@@ -8,10 +8,9 @@
  */
 'use strict';
 
-const Promise = require('promise');
-
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
 const fs = require('fs');
 const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
@@ -21,9 +20,9 @@ const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
 });
 function timeoutableDenodeify(fsFunc, timeout) {
   return function raceWrapper(...args) {
-    return new Promise.race([
+    return Promise.race([
       createTimeoutPromise(timeout),
-      Promise.denodeify(fsFunc).apply(this, args)
+      denodeify(fsFunc).apply(this, args)
     ]);
   };
 }
@@ -50,6 +49,8 @@ class AssetServer {
     const opts = validateOpts(options);
     this._roots = opts.projectRoots;
     this._assetExts = opts.assetExts;
+    this._hashes = new Map();
+    this._files = new Map();
   }
 
   get(assetPath, platform = null) {
@@ -76,19 +77,29 @@ class AssetServer {
       data.scales = record.scales;
       data.files = record.files;
 
-      return Promise.all(
-        record.files.map(file => stat(file))
-      );
-    }).then(stats => {
-      const hash = crypto.createHash('md5');
+      if (this._hashes.has(assetPath)) {
+        data.hash = this._hashes.get(assetPath);
+        return data;
+      }
 
-      stats.forEach(fstat =>
-        hash.update(fstat.mtime.getTime().toString())
-      );
-
-      data.hash = hash.digest('hex');
-      return data;
+      return new Promise((resolve, reject) => {
+        const hash = crypto.createHash('md5');
+        hashFiles(data.files.slice(), hash, error => {
+          if (error) {
+            reject(error);
+          } else {
+            data.hash = hash.digest('hex');
+            this._hashes.set(assetPath, data.hash);
+            data.files.forEach(f => this._files.set(f, assetPath));
+            resolve(data);
+          }
+        });
+      });
     });
+  }
+
+  onFileChange(type, filePath) {
+    this._hashes.delete(this._files.get(filePath));
   }
 
   /**
@@ -167,7 +178,10 @@ class AssetServer {
       }
 
       const rootsString = roots.map(s => `'${s}'`).join(', ');
-      throw new Error(`'${debugInfoFile}' could not be found, because '${dir}' is not a subdirectory of any of the roots  (${rootsString})`);
+      throw new Error(
+        `'${debugInfoFile}' could not be found, because '${dir}' is not a ` +
+        `subdirectory of any of the roots  (${rootsString})`,
+      );
     });
   }
 
@@ -211,6 +225,18 @@ function getAssetKey(assetName, platform) {
   } else {
     return assetName;
   }
+}
+
+function hashFiles(files, hash, callback) {
+  if (!files.length) {
+    callback(null);
+    return;
+  }
+
+  fs.createReadStream(files.shift())
+    .on('data', data => hash.update(data))
+    .once('end', () => hashFiles(files, hash, callback))
+    .once('error', error => callback(error));
 }
 
 module.exports = AssetServer;

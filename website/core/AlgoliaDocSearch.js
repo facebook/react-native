@@ -8,6 +8,9 @@
  *
  * @providesModule AlgoliaDocSearch
  */
+'use strict';
+
+var React = require('React');
 
 var AlgoliaDocSearch = React.createClass({
   render: function() {

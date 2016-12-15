@@ -28,31 +28,42 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import com.facebook.yoga.YogaConstants;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * Manages instances of TextInput.
  */
+@ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
 
-  /* package */ static final String REACT_CLASS = "AndroidTextInput";
+  protected static final String REACT_CLASS = "AndroidTextInput";
+
+  private static final int[] SPACING_TYPES = {
+      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+  };
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
@@ -77,7 +88,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
-    editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+    editText.setReturnKeyType("done");
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
@@ -153,10 +164,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       float[] padding = (float[]) extraData;
 
       view.setPadding(
-          (int) Math.ceil(padding[0]),
-          (int) Math.ceil(padding[1]),
-          (int) Math.ceil(padding[2]),
-          (int) Math.ceil(padding[3]));
+          (int) Math.floor(padding[0]),
+          (int) Math.floor(padding[1]),
+          (int) Math.floor(padding[2]),
+          (int) Math.floor(padding[3]));
     } else if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
       if (update.containsImages()) {
@@ -227,6 +238,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
+    }
+  }
+
+  @ReactProp(name = "selection")
+  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
+    if (selection == null) {
+      return;
+    }
+
+    if (selection.hasKey("start") && selection.hasKey("end")) {
+      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 
@@ -453,29 +475,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "returnKeyType")
   public void setReturnKeyType(ReactEditText view, String returnKeyType) {
-    switch (returnKeyType) {
-      case "done":
-        view.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        break;
-      case "go":
-        view.setImeOptions(EditorInfo.IME_ACTION_GO);
-        break;
-      case "next":
-        view.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        break;
-      case "none":
-        view.setImeOptions(EditorInfo.IME_ACTION_NONE);
-        break;
-      case "previous":
-        view.setImeOptions(EditorInfo.IME_ACTION_PREVIOUS);
-        break;
-      case "search":
-        view.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        break;
-      case "send":
-        view.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        break;
-    }
+    view.setReturnKeyType(returnKeyType);
+  }
+
+  @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
+  public void setDisableFullscreenUI(ReactEditText view, boolean disableFullscreenUI) {
+    view.setDisableFullscreenUI(disableFullscreenUI);
   }
 
   private static final int IME_ACTION_ID = 0x670;
@@ -483,6 +488,53 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "returnKeyLabel")
   public void setReturnKeyLabel(ReactEditText view, String returnKeyLabel) {
     view.setImeActionLabel(returnKeyLabel, IME_ACTION_ID);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = YogaConstants.UNDEFINED)
+  public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
+    if (!YogaConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
+  }
+
+  @ReactProp(name = "borderStyle")
+  public void setBorderStyle(ReactEditText view, @Nullable String borderStyle) {
+    view.setBorderStyle(borderStyle);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_WIDTH,
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_TOP_WIDTH,
+      ViewProps.BORDER_BOTTOM_WIDTH,
+  }, defaultFloat = YogaConstants.UNDEFINED)
+  public void setBorderWidth(ReactEditText view, int index, float width) {
+    if (!YogaConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(SPACING_TYPES[index], width);
+  }
+
+  @ReactPropGroup(names = {
+      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
+  }, customType = "Color")
+  public void setBorderColor(ReactEditText view, int index, Integer color) {
+    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @Override
@@ -578,8 +630,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              (int) PixelUtil.toDIPFromPixel(contentWidth),
-              (int) PixelUtil.toDIPFromPixel(contentHeight),
+              PixelUtil.toDIPFromPixel(contentWidth),
+              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
@@ -671,7 +723,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
           mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingBottom();
       }
 
       if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
@@ -681,8 +733,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
             mEditText.getId(),
-            (int) PixelUtil.toDIPFromPixel(contentWidth),
-            (int) PixelUtil.toDIPFromPixel(contentHeight)));
+            PixelUtil.toDIPFromPixel(contentWidth),
+            PixelUtil.toDIPFromPixel(contentHeight)));
       }
     }
   }
@@ -711,8 +763,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 mReactEditText.getId(),
                 start,
                 end
-            )
-        );
+            ));
 
         mPreviousSelectionStart = start;
         mPreviousSelectionEnd = end;

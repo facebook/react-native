@@ -14,10 +14,11 @@
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
-const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
+
+const PropTypes = React.PropTypes;
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -47,6 +48,10 @@ type LayoutEvent = {
 
 const viewRef = 'VIEW';
 
+/**
+ * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
+ * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
+ */
 const KeyboardAvoidingView = React.createClass({
   mixins: [TimerMixin],
 
@@ -83,12 +88,15 @@ const KeyboardAvoidingView = React.createClass({
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
-    if (!frame) {
+    if (!frame || !keyboardFrame) {
       return 0;
     }
 
     const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
     const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
+    if (frame.y > keyboardFrame.screenY) {
+      return frame.y + frame.height - keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+    }
     return Math.max(y2 - y1, 0);
   },
 
@@ -144,7 +152,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {
