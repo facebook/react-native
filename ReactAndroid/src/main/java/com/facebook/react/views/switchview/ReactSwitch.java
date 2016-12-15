@@ -32,7 +32,7 @@ import com.facebook.react.R;
 
   private boolean mAllowChange;
   private int mSwitchColor;
-  private boolean isDarkTheme;
+  private boolean isLightTheme;
 
   public ReactSwitch(Context context) {
     super(context);
@@ -56,7 +56,7 @@ import com.facebook.react.R;
     mAllowChange = true;
   }
 
-  public void setSwitchColor(int themeColor) {
+  public void setColor(int themeColor) {
     if (themeColor == 0) return;
     this.mSwitchColor = themeColor;
     setThumbColor();
@@ -64,14 +64,21 @@ import com.facebook.react.R;
     setRippleColor();
   }
 
-  public void setDarkTheme(boolean isDarkTheme) {
-    this.isDarkTheme = isDarkTheme;
-    setSwitchColor(mSwitchColor);
+  public void setSwitchStyle(String style) {
+    if (style == null) return;
+
+    if (style.equals("light")) {
+      isLightTheme = true;
+      setColor(mSwitchColor);
+    } else if (style.equals("dark")) {
+      isLightTheme = false;
+      setColor(mSwitchColor);
+    }
+
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void setRippleColor() {
-
     if (getBackground() == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
             || !(getBackground() instanceof RippleDrawable)) {
       return;
@@ -83,7 +90,7 @@ import com.facebook.react.R;
     // Unchecked State
     states[0] = new int[]{-android.R.attr.state_checked};
     colors[0] = ContextCompat.getColor(getContext(),
-            isDarkTheme ? R.color.ripple_material_dark : R.color.ripple_material_light);
+            isLightTheme ? R.color.ripple_material_light : R.color.ripple_material_dark);
 
     // Checked state
     states[1] = new int[]{android.R.attr.state_checked};
@@ -95,15 +102,14 @@ import com.facebook.react.R;
   }
 
   private void setThumbColor() {
-
     final int[][] states = new int[3][];
     final int[] colors = new int[3];
 
     // Disabled state
     states[0] = new int[]{-android.R.attr.state_enabled};
-    colors[0] = ContextCompat.getColor(getContext(), isDarkTheme
-            ? R.color.switch_thumb_normal_material_dark
-            : R.color.switch_thumb_normal_material_light);
+    colors[0] = ContextCompat.getColor(getContext(), isLightTheme
+            ? R.color.switch_thumb_normal_material_light
+            : R.color.switch_thumb_normal_material_dark);
 
     // Checked state
     states[1] = new int[]{android.R.attr.state_checked};
@@ -111,9 +117,9 @@ import com.facebook.react.R;
 
     // Unchecked enabled state state
     states[2] = new int[0];
-    colors[2] = ContextCompat.getColor(getContext(), isDarkTheme
-            ? R.color.switch_thumb_normal_material_dark
-            : R.color.switch_thumb_normal_material_light);
+    colors[2] = ContextCompat.getColor(getContext(), isLightTheme
+            ? R.color.switch_thumb_normal_material_light
+            : R.color.switch_thumb_normal_material_dark);
 
     ColorStateList colorStateList = new ColorStateList(states, colors);
     DrawableCompat.setTintList(getThumbDrawable(), colorStateList);
@@ -125,8 +131,8 @@ import com.facebook.react.R;
 
     // Light: #000000, Opacity 38%
     // Dark: #FFFFFF, Opacity 30%
-    int disabledColor = isDarkTheme ? Color.WHITE : Color.BLACK;
-    int trackColor = Color.argb(isDarkTheme ? 0x1E : 0x61,
+    int disabledColor = isLightTheme ? Color.BLACK : Color.WHITE;
+    int trackColor = Color.argb(isLightTheme ? 0x61 : 0x4D,
             Color.red(disabledColor),
             Color.green(disabledColor),
             Color.blue(disabledColor));

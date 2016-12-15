@@ -10,7 +10,7 @@
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
-import android.support.annotation.Nullable;
+import javax.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -123,14 +123,14 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
   }
 
-  @ReactProp(name = "switchColor", customType = "Color")
+  @ReactProp(name = "colorAccent", customType = "Color")
   public void setColor(ReactSwitch view, @Nullable Integer color) {
-    view.setSwitchColor(color);
+    view.setColor(color);
   }
 
-  @ReactProp(name = "darkTheme")
-  public void darkTheme(ReactSwitch view, boolean isDarkTheme) {
-    view.setDarkTheme(isDarkTheme);
+  @ReactProp(name = "switchStyle")
+  public void setSwitchStyle(ReactSwitch view, @Nullable String style) {
+    view.setSwitchStyle(style);
   }
 
 }

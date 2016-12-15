@@ -75,15 +75,15 @@ var Switch = React.createClass({
     thumbTintColor: ColorPropType,
 
     /**
-     * Tint Color of switch.
+     * Color of switch.
      * @platform android
      */
-    switchColor: ColorPropType,
+    colorAccent: ColorPropType,
     /**
-     * Track and thumb color when switch is turned off.
+     * Color of track and thumb when switch is turned off.
      * @platform android
      */
-    darkTheme: React.PropTypes.bool,
+    switchStyle: React.PropTypes.oneOf(['light', 'dark']),
   },
 
   getDefaultProps: function(): DefaultProps {
