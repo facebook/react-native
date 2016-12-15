@@ -47,6 +47,11 @@ public class ClipboardModule extends ReactContextBaseJavaModule implements Clipb
   }
 
   @Override
+  public void onCatalystInstanceDestroy() {
+    getClipboardService().removePrimaryClipChangedListener(this);
+  }
+
+  @Override
   public void onPrimaryClipChanged() {
     getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).emit("clipboardChanged", null);
   }
