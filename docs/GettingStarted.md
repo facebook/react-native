@@ -224,7 +224,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Library/Android/sdk
+export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
@@ -236,7 +236,7 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Android/Sdk
+export ANDROID_HOME=${HOME}/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
