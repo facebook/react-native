@@ -32,6 +32,7 @@
  */
 'use strict';
 
+const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 const NavigationCard = require('NavigationCard');
 const NavigationCardStackPanResponder = require('NavigationCardStackPanResponder');
 const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
@@ -220,7 +221,16 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _configureTransition = () => {
     const isVertical = this.props.direction === 'vertical';
     const animationConfig = {};
-    if (NavigationCardStackStyleInterpolator.canUseNativeDriver(isVertical)) {
+    if (
+      !!NativeAnimatedModule
+
+      // Gestures do not work with the current iteration of native animation
+      // driving. When gestures are disabled, we can drive natively.
+      && !this.props.enableGestures
+
+      // Native animation support also depends on the transforms used:
+      && NavigationCardStackStyleInterpolator.canUseNativeDriver(isVertical)
+    ) {
       animationConfig.useNativeDriver = true;
     }
     return animationConfig;
