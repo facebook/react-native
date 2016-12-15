@@ -261,7 +261,7 @@ const Text = React.createClass({
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
-                return PRESS_RECT_OFFSET;
+                return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
             return setResponder;
