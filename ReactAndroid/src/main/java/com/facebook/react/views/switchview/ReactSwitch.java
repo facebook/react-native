@@ -116,7 +116,7 @@ import com.facebook.react.R;
     states[1] = new int[]{android.R.attr.state_checked};
     colors[1] = mSwitchColor;
 
-    // Unchecked enabled state state
+    // Unchecked state
     states[2] = new int[0];
     colors[2] = ContextCompat.getColor(getContext(), isLightTheme
             ? R.color.switch_thumb_normal_material_light
@@ -134,7 +134,6 @@ import com.facebook.react.R;
     // Dark: #FFFFFF, Opacity 30%
     int trackColor = isLightTheme ? Color.BLACK : Color.WHITE;
 
-
     // Disabled state
     states[0] = new int[]{-android.R.attr.state_enabled};
     colors[0] = Color.argb(isLightTheme ? 0x1F : 0x1A,
@@ -147,6 +146,7 @@ import com.facebook.react.R;
     colors[1] = Color.argb(0x4D, Color.red(mSwitchColor), Color.green(mSwitchColor),
             Color.blue(mSwitchColor));
 
+    // Unchecked state
     states[2] = new int[0];
     colors[2] = Color.argb(isLightTheme ? 0x61 : 0x4D,
             Color.red(trackColor),
@@ -160,7 +160,8 @@ import com.facebook.react.R;
   private int getDefaultSwitchColor() {
     TypedValue typedValue = new TypedValue();
 
-    TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorAccent });
+    TypedArray a = getContext().obtainStyledAttributes(typedValue.data,
+            new int[] { R.attr.colorAccent });
     int color = a.getColor(0, 0);
 
     a.recycle();
