@@ -418,6 +418,14 @@ var pinned = [
     infoLink: 'http://www.vogue.com/app',
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
+  },
+  {
+    name: 'GamerHUb',
+    icon: 'http://gamerhub.io/wp-content/uploads/2016/09/gamer_hub_logo.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/gamerhub/id1182836102?mt=8',
+    infoLink: 'http://www.gamerhub.io/',
+    infoTitle: '',
+    defaultLink: 'http://www.gamerhub.io/',
   }
 ];
 
