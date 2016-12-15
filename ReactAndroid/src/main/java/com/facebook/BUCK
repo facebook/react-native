@@ -12,6 +12,3 @@ android_library(
   visibility = ['PUBLIC'],
 )
 
-project_config(
-  src_target = ':yoga',
-)
