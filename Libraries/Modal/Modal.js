@@ -94,6 +94,11 @@ class Modal extends React.Component {
      */
     transparent: PropTypes.bool,
     /**
+     * The `hardwareAccelerated` prop controls whether to force hardware acceleration for the underlying window.
+     * @platform android
+     */
+    hardwareAccelerated: PropTypes.bool,
+    /**
      * The `visible` prop determines whether your modal is visible.
      */
     visible: PropTypes.bool,
@@ -126,6 +131,7 @@ class Modal extends React.Component {
 
   static defaultProps = {
     visible: true,
+    hardwareAccelerated: false,
   };
 
   static contextTypes = {
@@ -160,6 +166,7 @@ class Modal extends React.Component {
       <RCTModalHostView
         animationType={animationType}
         transparent={this.props.transparent}
+        hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         style={styles.modal}

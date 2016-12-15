@@ -158,7 +158,7 @@ try {
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'],
+    const packagerProcess = spawn('npm', ['start', '--', '--nonPersistent'],
       {
         stdio: 'inherit',
         env: packagerEnv
