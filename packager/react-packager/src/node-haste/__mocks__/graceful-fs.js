@@ -8,9 +8,11 @@
  */
 'use strict';
 
-const fs = jest.genMockFromModule('fs');
 const {dirname} = require.requireActual('path');
+const fs = jest.genMockFromModule('fs');
+const path = require('path');
 const stream = require.requireActual('stream');
+
 const noop = () => {};
 
 function asyncCallback(cb) {
@@ -178,17 +180,17 @@ fs.lstatSync.mockImpl((filepath) => {
   };
 });
 
-fs.open.mockImpl(function(path) {
+fs.open.mockImpl(function(filepath) {
   const callback = arguments[arguments.length - 1] || noop;
   let data, error, fd;
   try {
-    data = getToNode(path);
+    data = getToNode(filepath);
   } catch (e) {
     error = e;
   }
 
   if (error || data == null) {
-    error = Error(`ENOENT: no such file or directory, open ${path}`);
+    error = Error(`ENOENT: no such file or directory, open ${filepath}`);
   }
   if (data != null) {
     /* global Buffer: true */
@@ -225,12 +227,12 @@ fs.close.mockImpl((fd, callback = noop) => {
 
 let filesystem;
 
-fs.createReadStream.mockImpl(path => {
-  if (!path.startsWith('/')) {
-    throw Error('Cannot open file ' + path);
+fs.createReadStream.mockImpl(filepath => {
+  if (!filepath.startsWith('/')) {
+    throw Error('Cannot open file ' + filepath);
   }
 
-  const parts = path.split('/').slice(1);
+  const parts = filepath.split('/').slice(1);
   let file = filesystem;
 
   for (const part of parts) {
@@ -241,7 +243,7 @@ fs.createReadStream.mockImpl(path => {
   }
 
   if (typeof file !== 'string') {
-    throw Error('Cannot open file ' + path);
+    throw Error('Cannot open file ' + filepath);
   }
 
   return new stream.Readable({
@@ -284,6 +286,9 @@ function getToNode(filepath) {
     filepath = filepath.substring(2);
   }
 
+  if (filepath.endsWith(path.sep)) {
+    filepath = filepath.slice(0, -1);
+  }
   const parts = filepath.split(/[\/\\]/);
   if (parts[0] !== '') {
     throw new Error('Make sure all paths are absolute.');

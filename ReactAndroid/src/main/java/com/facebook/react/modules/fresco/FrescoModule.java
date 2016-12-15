@@ -111,14 +111,23 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
   }
 
   private static ImagePipelineConfig getDefaultConfig(Context context) {
+    return getDefaultConfigBuilder(context).build();
+  }
+
+  /**
+   * Get the default Fresco configuration builder.
+   * Allows adding of configuration options in addition to the default values.
+   *
+   * @return {@link ImagePipelineConfig.Builder} that has been initialized with default values
+   */
+  public static ImagePipelineConfig.Builder getDefaultConfigBuilder(Context context) {
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
 
     return OkHttpImagePipelineConfigFactory
       .newBuilder(context.getApplicationContext(), OkHttpClientProvider.getOkHttpClient())
       .setDownsampleEnabled(false)
-      .setRequestListeners(requestListeners)
-      .build();
+      .setRequestListeners(requestListeners);
   }
 
   private static class FrescoHandler implements SoLoaderShim.Handler {

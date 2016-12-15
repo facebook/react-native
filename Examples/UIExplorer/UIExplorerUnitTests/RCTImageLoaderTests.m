@@ -14,8 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTImageLoader.h"
+#import <React/RCTBridge.h>
+#import <React/RCTImageLoader.h>
+
 #import "RCTImageLoaderHelpers.h"
 
 unsigned char blackGIF[] = {

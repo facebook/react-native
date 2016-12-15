@@ -17,40 +17,40 @@ want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.
 
 <div class="toggler">
-<style>
-.toggler a {
-  display: inline-block;
-  padding: 10px 5px;
-  margin: 2px;
-  border: 1px solid #05A5D1;
-  border-radius: 3px;
-  text-decoration: none !important;
-}
-.display-os-mac .toggler .button-mac,
-.display-os-linux .toggler .button-linux,
-.display-os-windows .toggler .button-windows,
-.display-platform-ios .toggler .button-ios,
-.display-platform-android .toggler .button-android {
-  background-color: #05A5D1;
-  color: white;
-}
-block { display: none; }
-.display-platform-ios.display-os-mac .ios.mac,
-.display-platform-ios.display-os-linux .ios.linux,
-.display-platform-ios.display-os-windows .ios.windows,
-.display-platform-android.display-os-mac .android.mac,
-.display-platform-android.display-os-linux .android.linux,
-.display-platform-android.display-os-windows .android.windows {
-  display: block;
-}
-</style>
-<span>Mobile OS:</span>
-<a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-<a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
-<span>Development OS:</span>
-<a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
-<a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
-<a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
+  <style>
+    .toggler a {
+      display: inline-block;
+      padding: 10px 5px;
+      margin: 2px;
+      border: 1px solid #05A5D1;
+      border-radius: 3px;
+      text-decoration: none !important;
+    }
+    .display-os-mac .toggler .button-mac,
+    .display-os-linux .toggler .button-linux,
+    .display-os-windows .toggler .button-windows,
+    .display-platform-ios .toggler .button-ios,
+    .display-platform-android .toggler .button-android {
+      background-color: #05A5D1;
+      color: white;
+    }
+    block { display: none; }
+    .display-platform-ios.display-os-mac .ios.mac,
+    .display-platform-ios.display-os-linux .ios.linux,
+    .display-platform-ios.display-os-windows .ios.windows,
+    .display-platform-android.display-os-mac .android.mac,
+    .display-platform-android.display-os-linux .android.linux,
+    .display-platform-android.display-os-windows .android.windows {
+      display: block;
+    }
+  </style>
+  <span>Mobile OS:</span>
+  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+  <span>Development OS:</span>
+  <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
+  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
+  <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
 <block class="linux windows ios" />
@@ -118,21 +118,25 @@ choco install python2
 
 Node.js comes with npm, which lets you install the React Native command line interface.
 
-<block class="windows linux android" />
-
-### The React Native CLI
-
-Node.js comes with npm, which lets you install the React Native command line interface.
-
-<block class="mac ios android" />
-
 Run the following command in a Terminal:
 
 ```
 npm install -g react-native-cli
 ```
 
-> If you get a *permission error*, try using sudo: `sudo npm install -g react-native-cli`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+
+<block class="windows linux android" />
+
+### The React Native CLI
+
+Node.js comes with npm, which lets you install the React Native command line interface.
+
+Run the following command in a Terminal:
+
+```
+npm install -g react-native-cli
+```
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
@@ -154,7 +158,14 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac android" />
 
-> Android Studio requires the [Java Development Kit (JDK)](https://www.java.com/en/download/mac_download.jsp), version 1.8 or higher. You can type `javac -version` in a terminal to see what version you have, if any.
+> Android Studio requires the [Java SE Development Kit(JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), version 8. You can type `javac -version` in a terminal to see what version you have, if any.
+
+```
+$ javac -version
+javac 1.8.0_111
+```
+
+> The version string `1.8.x_xxx` corresponds to JDK 8.
 
 <block class="mac windows android" />
 
@@ -213,7 +224,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Library/Android/sdk
+export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
@@ -225,7 +236,7 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Android/Sdk
+export ANDROID_HOME=${HOME}/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
@@ -240,8 +251,6 @@ Go to **Control Panel** → **System and Security** → **System** → **Change 
 ![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
 Restart the Command Prompt to apply the new environment variable.
-
-<block class="linux windows android" />
 
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 
@@ -326,7 +335,25 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-<block class="windows linux android" />
+<block class="windows android" />
+
+## Testing your React Native Installation
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native start` inside the newly created folder to start the packager.
+
+```
+react-native init AwesomeProject
+cd AwesomeProject
+react-native start
+```
+
+Open a new command prompt and run `react-native run-android` inside the same folder to launch the app on your AVD.
+
+```
+react-native run-android
+```
+
+<block class="linux android" />
 
 ## Testing your React Native Installation
 
@@ -338,14 +365,15 @@ cd AwesomeProject
 react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in your Android emulator shortly.
+<block class="windows linux android" />
 
-> A common issue is that the packager is not started automatically when you run
-`react-native run-android`. You can start it manually using `react-native start`.
+If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
 <block class="windows android" />
 
-> If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
+> If you're targeting API level 23, the app might crash on first launch with an error smilar to `Unable to add window android.view.ViewRootImpl$W@c51fa6 -- permission denied for this window type`. To fix this, you need to go to `System settings > Apps > Configure apps > Draw over other apps` and grant the permission for the app.
+
+NOTE: Many React Native modules haven't been tested on Marshmallow and might break. Please thoroughly test the app if you target API level 23 and file a bug report if you find that something is broken.
 
 <block class="windows linux android" />
 
@@ -446,7 +474,7 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
           }
           // We would have broken out if both targetPlatform and devOS hadn't been filled.
           display('os', devOS);
-          display('platform', targetPlatform);      
+          display('platform', targetPlatform);
           foundHash = true;
           break;
         }

@@ -13,8 +13,8 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTErrorInfo.h"
-#import "RCTUtils.h"
 #import "RCTJSStackFrame.h"
+#import "RCTUtils.h"
 
 #if RCT_DEBUG
 
@@ -244,6 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
     cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
+    cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
     cell.textLabel.numberOfLines = 2;
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
     cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
@@ -296,7 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // mechanism instead
 
   return @[
-
     // Dismiss red box
     [UIKeyCommand keyCommandWithInput:UIKeyInputEscape
                        modifierFlags:0
@@ -451,8 +451,9 @@ RCT_EXPORT_METHOD(dismiss)
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
-- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow {
-  [_bridge requestReload];
+- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
+{
+  [_bridge reload];
 }
 
 @end

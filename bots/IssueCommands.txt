@@ -41,3 +41,8 @@ close
 
 @facebook-github-bot cla
 comment Hey {issue_author}! Thanks for sending this pull request! We would love to review your changes however it looks like you haven't signed the CLA yet. You can do so at https://code.facebook.com/cla.
+
+@facebook-github-bot icebox
+comment {author} tells me to close this issue because it has been inactive for a while. If you think it should still be opened let us know why.
+add-label Icebox
+close

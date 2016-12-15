@@ -33,7 +33,7 @@ const {PropTypes} = React;
 type Props = {
   bounceFirstRowOnMount: boolean,
   dataSource: SwipeableListViewDataSource,
-  maxSwipeDistance: number,
+  maxSwipeDistance: number | (rowData: any, sectionID: string, rowID: string) => number,
   onScroll: ?Function,
   renderRow: Function,
   renderQuickActions: Function,
@@ -89,7 +89,10 @@ class SwipeableListView extends React.Component {
      */
     dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
     // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.number.isRequired,
+    maxSwipeDistance: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.func,
+    ]).isRequired,
     // Callback method to render the swipeable view
     renderRow: PropTypes.func.isRequired,
     // Callback method to render the view that will be unveiled on swipe
@@ -163,10 +166,19 @@ class SwipeableListView extends React.Component {
     }
   }
 
+  // This enables rows having variable width slideoutView.
+  _getMaxSwipeDistance = (rowData: Object, sectionID: string, rowID: string): number => {
+    if (typeof this.props.maxSwipeDistance === 'function') {
+      return this.props.maxSwipeDistance(rowData, sectionID, rowID);
+    }
+
+    return this.props.maxSwipeDistance;
+  };
+
   _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
-    // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
+    // If renderQuickActions is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
     }
@@ -181,7 +193,7 @@ class SwipeableListView extends React.Component {
       <SwipeableRow
         slideoutView={slideoutView}
         isOpen={rowData.id === this.props.dataSource.getOpenRowID()}
-        maxSwipeDistance={this.props.maxSwipeDistance}
+        maxSwipeDistance={this._getMaxSwipeDistance(rowData, sectionID, rowID)}
         key={rowID}
         onOpen={() => this._onOpen(rowData.id)}
         onSwipeEnd={() => this._setListViewScrollable(true)}

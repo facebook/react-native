@@ -9,8 +9,8 @@
 
 #import "RCTViewManager.h"
 
-#import "RCTBridge.h"
 #import "RCTBorderStyle.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -109,10 +109,10 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
-RCT_CUSTOM_VIEW_PROPERTY(overflow, CSSOverflow, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
 {
   if (json) {
-    view.clipsToBounds = [RCTConvert CSSOverflow:json] != CSSOverflowVisible;
+    view.clipsToBounds = [RCTConvert YGOverflow:json] != YGOverflowVisible;
   } else {
     view.clipsToBounds = defaultView.clipsToBounds;
   }
@@ -288,14 +288,15 @@ RCT_EXPORT_SHADOW_PROPERTY(flex, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexGrow, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexShrink, float)
 RCT_EXPORT_SHADOW_PROPERTY(flexBasis, float)
-RCT_EXPORT_SHADOW_PROPERTY(flexDirection, CSSFlexDirection)
-RCT_EXPORT_SHADOW_PROPERTY(flexWrap, CSSWrapType)
-RCT_EXPORT_SHADOW_PROPERTY(justifyContent, CSSJustify)
-RCT_EXPORT_SHADOW_PROPERTY(alignItems, CSSAlign)
-RCT_EXPORT_SHADOW_PROPERTY(alignSelf, CSSAlign)
-RCT_EXPORT_SHADOW_PROPERTY(position, CSSPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(flexDirection, YGFlexDirection)
+RCT_EXPORT_SHADOW_PROPERTY(flexWrap, YGWrap)
+RCT_EXPORT_SHADOW_PROPERTY(justifyContent, YGJustify)
+RCT_EXPORT_SHADOW_PROPERTY(alignItems, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(alignSelf, YGAlign)
+RCT_EXPORT_SHADOW_PROPERTY(position, YGPositionType)
+RCT_EXPORT_SHADOW_PROPERTY(aspectRatio, float)
 
-RCT_EXPORT_SHADOW_PROPERTY(overflow, CSSOverflow)
+RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 

@@ -101,7 +101,7 @@ function requireNativeComponent(
   return createReactNativeComponentClass(viewConfig);
 }
 
-var TypeToDifferMap = {
+const TypeToDifferMap = {
   // iOS Types
   CATransform3D: matricesDiffer,
   CGPoint: pointsDiffer,
@@ -115,7 +115,7 @@ function processColorArray(colors: []): [] {
   return colors && colors.map(processColor);
 }
 
-var TypeToProcessorMap = {
+const TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
   CGColorArray: processColorArray,

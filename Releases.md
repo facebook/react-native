@@ -5,11 +5,10 @@ https://github.com/facebook/react-native/releases
 
 | Version | RC release          | Stable release |
 | ------- | ------------------- | -------------- |
-| 0.36.0  | week of October 10  | October 24     |
-| 0.37.0  | week of October 24  | November 7     |
 | 0.38.0  | week of November 7  | November 21    |
-| 0.39.0  | week of November 21 | December 5     |
-| 0.40.0  | week of December 5  | December 19    |
+| 0.39.0  | week of November 21 | December 2     |
+| 0.40.0  | 1st of December     | 1st of January |
+| 0.41.0  | 1st of January      | 1st of February|
 | ...     | ...                 | ...            |
 
 -------------------
@@ -74,15 +73,21 @@ Before posting the list of changes, consider asking one of contributors for thei
 
 **Important**: For release candiate releases, make sure to check "This is a pre-release"
 
+#### Update `Breaking Changes` document
+
+Once the release is cut, go to the [page](https://github.com/facebook/react-native/wiki/Breaking-Changes) where all breaking changes are listed and create section for the release. Don't forget to move all breaking changes from `master` that are now part of the release.
+
+When finished and there are breaking changes, include them in the release notes you just created.
+
 #### Tweet about the rc release
 
 Tweet about it! Link to release notes and say "please report issues" and link to the master issue to track bugs you created.
 
-## IMPORTANT: Track bug reports from the community during the following two weeks, ping owners to get them fixed
+## IMPORTANT: Track bug reports from the community during the following month, ping owners to get them fixed
 
 A good way to do this is to create a github issue and post about it so people can report bugs. Examples: [#6087](https://github.com/facebook/react-native/issues/6087), [#5201](https://github.com/facebook/react-native/issues/5201)
 
-**Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for two weeks and fix the most serious bugs.
+**Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for a month and fix the most serious bugs.
 
 -------------------
 
@@ -115,7 +120,7 @@ node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 
 ## How to do the final release (e.g. 0.22.0, 0.22.1)
 
-Roughly two weeks after the branch cut (see the release schedule above) it's time to promote the last RC to a real release.
+Roughly a month after the branch cut (see the release schedule above) it's time to promote the last RC to a real release.
 
 Once all bugfixes have been cherry-picked and you're sure the release is solid (example: [#6087](https://github.com/facebook/react-native/issues/6087)), do the release:
 

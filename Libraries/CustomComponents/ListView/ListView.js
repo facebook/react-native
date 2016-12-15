@@ -196,6 +196,8 @@ var ListView = React.createClass({
      * section until it reaches the top of the screen, at which point it will
      * stick to the top until it is pushed off the screen by the next section
      * header.
+     *
+     * NOTE: On Android, the header is not sticky.
      */
     renderSectionHeader: PropTypes.func,
     /**
@@ -263,6 +265,14 @@ var ListView = React.createClass({
   getScrollResponder: function() {
     if (this._scrollComponent && this._scrollComponent.getScrollResponder) {
       return this._scrollComponent.getScrollResponder();
+    }
+  },
+
+  getScrollableNode: function() {
+    if (this._scrollComponent && this._scrollComponent.getScrollableNode) {
+      return this._scrollComponent.getScrollableNode();
+    } else {
+      return ReactNative.findNodeHandle(this._scrollComponent);
     }
   },
 

@@ -19,7 +19,7 @@ JSValueRef nativeLoggingHook(
     const JSValueRef arguments[], JSValueRef *exception) {
   android_LogPriority logLevel = ANDROID_LOG_DEBUG;
   if (argumentCount > 1) {
-    int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
+    int level = (int)Value(ctx, arguments[1]).asNumber();
     // The lowest log level we get from JS is 0. We shift and cap it to be
     // in the range the Android logging method expects.
     logLevel = std::min(
@@ -27,11 +27,10 @@ JSValueRef nativeLoggingHook(
         ANDROID_LOG_FATAL);
   }
   if (argumentCount > 0) {
-    JSStringRef jsString = JSValueToStringCopy(ctx, arguments[0], NULL);
-    String message = String::adopt(jsString);
+    String message = Value(ctx, arguments[0]).toString();
     FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
   }
-  return JSValueMakeUndefined(ctx);
+  return Value::makeUndefined(ctx);
 }
 
 }};

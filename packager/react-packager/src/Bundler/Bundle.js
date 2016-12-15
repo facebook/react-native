@@ -18,7 +18,14 @@ const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
 const crypto = require('crypto');
 
+import type {SourceMap, CombinedSourceMap, MixedSourceMap} from '../lib/SourceMap';
 import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
+
+export type Unbundle = {
+  startupModules: Array<*>,
+  lazyModules: Array<*>,
+  groups: Map<number, Set<number>>,
+};
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
@@ -28,7 +35,7 @@ class Bundle extends BundleBase {
   _inlineSourceMap: string | void;
   _minify: boolean | void;
   _numRequireCalls: number;
-  _ramBundle: mixed | void;
+  _ramBundle: Unbundle | null;
   _ramGroups: Array<string> | void;
   _shouldCombineSourceMaps: boolean;
   _sourceMap: boolean;
@@ -53,14 +60,18 @@ class Bundle extends BundleBase {
   }
 
   addModule(
+    /**
+     * $FlowFixMe: this code is inherently incorrect, because it modifies the
+     * signature of the base class function "addModule". That means callsites
+     * using an instance typed as the base class would be broken. This must be
+     * refactored.
+     */
     resolver: {wrapModule: (options: any) => Promise<{code: any, map: any}>},
     resolutionResponse: mixed,
     module: mixed,
+    /* $FlowFixMe: erroneous change of signature. */
     moduleTransport: ModuleTransport,
-    /* $FlowFixMe: this code is inherently incorrect, because it modifies the
-     * signature of the base class function "addModule", originally returning
-     * a number. That means callsites using an instance typed as the base class
-     * would be broken. This must be refactored. */
+    /* $FlowFixMe: erroneous change of signature. */
   ): Promise<void> {
     const index = super.addModule(moduleTransport);
     return resolver.wrapModule({
@@ -139,7 +150,7 @@ class Bundle extends BundleBase {
     return source;
   }
 
-  getUnbundle() {
+  getUnbundle(): Unbundle {
     this.assertFinalized();
     if (!this._ramBundle) {
       const modules = this.getModules().slice();
@@ -170,7 +181,7 @@ class Bundle extends BundleBase {
    * that makes use of of the `sections` field to combine sourcemaps by adding
    * an offset. This is supported only by Chrome for now.
    */
-  _getCombinedSourceMaps(options) {
+  _getCombinedSourceMaps(options): CombinedSourceMap {
     const result = {
       version: 3,
       file: this._getSourceMapFile(),
@@ -186,6 +197,7 @@ class Bundle extends BundleBase {
       }
 
       if (options.excludeSource) {
+        /* $FlowFixMe: assume the map is not empty if we got here. */
         if (map.sourcesContent && map.sourcesContent.length) {
           map = Object.assign({}, map, {sourcesContent: []});
         }
@@ -193,6 +205,7 @@ class Bundle extends BundleBase {
 
       result.sections.push({
         offset: { line: line, column: 0 },
+        /* $FlowFixMe: assume the map is not empty if we got here. */
         map: map,
       });
       line += module.code.split('\n').length;
@@ -201,7 +214,7 @@ class Bundle extends BundleBase {
     return result;
   }
 
-  getSourceMap(options: {excludeSource?: boolean}) {
+  getSourceMap(options: {excludeSource?: boolean}): MixedSourceMap {
     super.assertFinalized();
 
     if (this._shouldCombineSourceMaps) {
@@ -336,11 +349,12 @@ class Bundle extends BundleBase {
 
     BundleBase.fromJSON(bundle, json);
 
+    /* $FlowFixMe: this modifies BundleBase#fromJSON() signature. */
     return bundle;
   }
 }
 
-function generateSourceMapForVirtualModule(module) {
+function generateSourceMapForVirtualModule(module): SourceMap {
   // All lines map 1-to-1
   let mappings = 'AAAA;';
 
@@ -379,6 +393,7 @@ function * filter(iterator, predicate) {
 
 function * subtree(moduleTransport: ModuleTransport, moduleTransportsByPath, seen = new Set()) {
   seen.add(moduleTransport.id);
+  /* $FlowFixMe: there may not be a `meta` object */
   for (const [, {path}] of moduleTransport.meta.dependencyPairs || []) {
     const dependency = moduleTransportsByPath.get(path);
     if (dependency && !seen.has(dependency.id)) {
@@ -410,7 +425,7 @@ function createGroups(ramGroups: Array<string>, lazyModules) {
   });
 
   // build a map of group root IDs to an array of module IDs in the group
-  const result = new Map(
+  const result: Map<number, Set<number>> = new Map(
     ramGroups
       .map(modulePath => {
         const root = byPath.get(modulePath);
@@ -420,6 +435,7 @@ function createGroups(ramGroups: Array<string>, lazyModules) {
         return [
           root.id,
           // `subtree` yields the IDs of all transitive dependencies of a module
+          /* $FlowFixMe: assumes the module is always in the Map */
           new Set(subtree(byPath.get(root.sourcePath), byPath)),
         ];
       })

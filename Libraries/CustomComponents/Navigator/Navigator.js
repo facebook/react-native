@@ -314,6 +314,7 @@ var Navigator = React.createClass({
      *  - Navigator.SceneConfigs.FloatFromBottom
      *  - Navigator.SceneConfigs.FloatFromBottomAndroid
      *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.SwipeFromLeft
      *  - Navigator.SceneConfigs.HorizontalSwipeJump
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft
@@ -490,7 +491,7 @@ var Navigator = React.createClass({
    * Reset every scene with an array of routes.
    *
    * @param {RouteStack} nextRouteStack Next route stack to reinitialize.
-   * All existing route stacks are destroyed an potentially recreated. There
+   * All existing route stacks are destroyed and potentially recreated. There
    * is no accompanying animation and this method immediately replaces and
    * re-renders the navigation bar and the stack items.
    */
@@ -913,7 +914,7 @@ var Navigator = React.createClass({
       }
       return;
     }
-    if (this._doesGestureOverswipe(this.state.activeGesture)) {
+    if (gesture.overswipe && this._doesGestureOverswipe(this.state.activeGesture)) {
       var frictionConstant = gesture.overswipe.frictionConstant;
       var frictionByDistance = gesture.overswipe.frictionByDistance;
       var frictionRatio = 1 / ((frictionConstant) + (Math.abs(nextProgress) * frictionByDistance));

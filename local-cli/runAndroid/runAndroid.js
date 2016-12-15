@@ -8,13 +8,12 @@
  */
 'use strict';
 
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
-const Promise = require('promise');
-const adb = require('./adb');
+const path = require('path');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -77,13 +76,8 @@ function tryRunAdbReverse(device) {
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
-  process.chdir(path.join(args.root, 'android'));
   try {
     adb.getDevices().map((device) => tryRunAdbReverse(device));
-
-    const cmd = process.platform.startsWith('win')
-      ? 'gradlew.bat'
-      : './gradlew';
 
     const gradleArgs = [];
     if (args.variant) {
@@ -98,15 +92,46 @@ function buildAndRun(args) {
         args.flavor[0].toUpperCase() + args.flavor.slice(1)
       );
     } else {
-      gradleArgs.push('installDebug');
+      gradleArgs.push('install');
     }
 
-    if (args.installDebug) {
-      gradleArgs.push(args.installDebug);
+    // Append the build type to the current gradle install configuration.
+    // By default it will generate `installDebug`.
+    gradleArgs[0] =
+      gradleArgs[0] + args.configuration[0].toUpperCase() + args.configuration.slice(1);
+
+    // Get the Android project directory.
+    const androidProjectDir = path.join(args.root, 'android');
+
+    if (args.configuration.toUpperCase() === 'RELEASE') {
+      console.log(chalk.bold(
+        'Generating the bundle for the release build...'
+      ));
+
+      child_process.execSync(
+        'react-native bundle ' +
+        '--platform android ' +
+        '--dev false ' +
+        '--entry-file index.android.js ' +
+        `--bundle-output ${androidProjectDir}/app/src/main/assets/index.android.bundle ` +
+        `--assets-dest ${androidProjectDir}/app/src/main/res/`,
+        {
+          stdio: [process.stdin, process.stdout, process.stderr],
+        }
+      );
     }
+
+    // Change to the Android directory.
+    process.chdir(androidProjectDir);
+
+    // Get the gradle binary for the current platform.
+    const cmd = process.platform.startsWith('win')
+      ? 'gradlew.bat'
+      : './gradlew';
 
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      'Building and installing the app on the device ' +
+      `(cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -116,9 +141,8 @@ function buildAndRun(args) {
     console.log(chalk.red(
       'Could not install the app on the device, read the error above for details.\n' +
       'Make sure you have an Android emulator running or a device connected and have\n' +
-      'set up your Android development environment.\n' +
-      'Go to https://facebook.github.io/react-native/docs/getting-started.html\n' +
-      'and check the Android tab for setup instructions.'
+      'set up your Android development environment:\n' +
+      'https://facebook.github.io/react-native/docs/android-setup.html'
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
@@ -139,7 +163,8 @@ function buildAndRun(args) {
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        const adbArgs =
+          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + args.mainActivity];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -181,7 +206,9 @@ function startServerInNewWindow() {
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
-      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig);
+      return (
+        child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript], procConfig)
+      );
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
 
@@ -206,15 +233,27 @@ module.exports = {
   description: 'builds your app and starts it on a connected Android emulator or device',
   func: runAndroid,
   options: [{
-    command: '--install-debug',
-  }, {
     command: '--root [string]',
-    description: 'Override the root directory for the android build (which contains the android directory)',
+    description:
+      'Override the root directory for the android build ' +
+      '(which contains the android directory)',
     default: '',
   }, {
     command: '--flavor [string]',
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
+    command: '--configuration [string]',
+    description:
+      'You can use `Release` or `Debug`. ' +
+      'This creates a build based on the selected configuration. ' +
+      'If you want to use the `Release` configuration make sure you have the ' +
+      '`signingConfig` configured at `app/build.gradle`.',
+    default: 'Debug'
+  }, {
     command: '--variant [string]',
+  }, {
+    command: '--main-activity [string]',
+    description: 'Name of the activity to start',
+    default: 'MainActivity'
   }],
 };
