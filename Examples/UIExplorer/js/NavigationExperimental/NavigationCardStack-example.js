@@ -77,8 +77,13 @@ class YourApplication extends React.Component {
     let {navigationState} = this.state;
     switch (type) {
       case 'push':
+        // Decide a random direction
+        const direction = Math.random() - 0.5 > 0 ? 'horizontal' : 'vertical';
         // push a new route.
-        const route = {key: 'route-' + Date.now()};
+        const route = {
+          key: `route-${direction}-${Date.now()}`,
+          direction,
+        };
         navigationState = NavigationStateUtils.push(navigationState, route);
         break;
 
@@ -137,6 +142,7 @@ class YourNavigator extends React.Component {
   render(): React.Element {
     return (
       <NavigationCardStack
+        getDirection={props => props.scene.route.direction}
         onNavigateBack={this._onPopRoute}
         navigationState={this.props.navigationState}
         renderScene={this._renderScene}

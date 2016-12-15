@@ -41,6 +41,7 @@ const NavigationTransitioner = require('NavigationTransitioner');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const warning = require('fbjs/lib/warning');
 
 const {PropTypes} = React;
 const {Directions} = NavigationCardStackPanResponder;
@@ -56,8 +57,13 @@ import type {
   NavigationGestureDirection,
 } from 'NavigationCardStackPanResponder';
 
+type CardDirection =  (
+  props: NavigationSceneRendererProps
+) => NavigationGestureDirection;
+
 type Props = {
   direction: NavigationGestureDirection,
+  getDirection: CardDirection,
   navigationState: NavigationState,
   onNavigateBack?: Function,
   renderHeader: ?NavigationSceneRenderer,
@@ -69,7 +75,7 @@ type Props = {
 };
 
 type DefaultProps = {
-  direction: NavigationGestureDirection,
+  getDirection: CardDirection,
   enableGestures: boolean
 };
 
@@ -134,10 +140,19 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     cardStyle: PropTypes.any,
 
     /**
+     * Note: `direction` is being deprecated. Use `getDirection` instead.
+     *
      * Direction of the cards movement. Value could be `horizontal` or
      * `vertical`. Default value is `horizontal`.
      */
     direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+
+    /**
+     * Callback that is called to get the direction of individual card
+     * movement. The callback receives a `NavigationSceneRendererProps`.
+     * Defaults to `direction` if not given.
+     */
+    getDirection: PropTypes.func,
 
     /**
      * The distance from the edge of the card which gesture response can start
@@ -194,7 +209,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   };
 
   static defaultProps: DefaultProps = {
-    direction: Directions.HORIZONTAL,
+    getDirection: () => Directions.HORIZONTAL,
     enableGestures: true,
   };
 
@@ -262,7 +277,17 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   }
 
   _renderScene(props: NavigationSceneRendererProps): React.Element<any> {
-    const isVertical = this.props.direction === 'vertical';
+    let getDirection = this.props.getDirection;
+
+    if (this.props.direction) {
+      warning(
+        false,
+        '`direction` is being deprecated. Use `getDirection` instead.'
+      );
+      getDirection = () => this.props.direction;
+    }
+
+    const isVertical = getDirection(props) === 'vertical';
 
     const style = isVertical ?
       NavigationCardStackStyleInterpolator.forVertical(props) :
