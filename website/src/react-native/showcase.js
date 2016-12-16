@@ -310,6 +310,15 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'AVIPEO',
+    icon: 'http://storage.appwith.us/avipeo/Avipeo-Icon.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/avipeo/id983102160',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.avipeo.avipeo',
+    infoLink: 'http://avipeo.com',
+    infoTitle: 'AVIPEO – the first social network for aviation professionals worldwide',
+    defaultLink: 'https://itunes.apple.com/de/app/avipeo/id983102160',
   }
 ];
 
