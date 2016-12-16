@@ -104,24 +104,17 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  * dependencies {
  *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
- *   compile 'com.facebook.fresco:animated-base-support:0.11.0'
+ *   compile 'com.facebook.fresco:animated-base-support:0.13.0'
  *
  *   // For animated GIF support
- *   compile 'com.facebook.fresco:animated-gif:0.11.0'
+ *   compile 'com.facebook.fresco:animated-gif:0.13.0'
  *
  *   // For WebP support, including animated WebP
- *   compile 'com.facebook.fresco:animated-webp:0.11.0'
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *   compile 'com.facebook.fresco:animated-webp:0.13.0'
+ *   compile 'com.facebook.fresco:webpsupport:0.13.0'
  *
  *   // For WebP support, without animations
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
- * }
- * ```
- *
- * Also, if you use GIF with ProGuard, you will need to add this rule in `proguard-rules.pro` :
- * ```
- * -keep class com.facebook.imagepipeline.animated.factory.AnimatedFactoryImpl {
- *   public AnimatedFactoryImpl(com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory, com.facebook.imagepipeline.core.ExecutorSupplier);
+ *   compile 'com.facebook.fresco:webpsupport:0.13.0'
  * }
  * ```
  *

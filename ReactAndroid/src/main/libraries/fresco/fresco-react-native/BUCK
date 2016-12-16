@@ -6,8 +6,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fresco-binary-aar',
-    url = 'mvn:com.facebook.fresco:fresco:aar:0.11.0',
-    sha1 = '86df1ab4b0074e1aeceb419593d2ea6d97cdc3b4',
+    url = 'mvn:com.facebook.fresco:fresco:aar:0.13.0',
+    sha1 = '3c9fca7292b7df96dc33b4d552c994c135b93ecb',
 )
 
 android_prebuilt_aar(
@@ -18,8 +18,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'drawee-binary-aar',
-    url = 'mvn:com.facebook.fresco:drawee:aar:0.11.0',
-    sha1 = '7c8a4d211b2334b6d52b9de614b52423b16f7704',
+    url = 'mvn:com.facebook.fresco:drawee:aar:0.13.0',
+    sha1 = '3cc1f310eb72e4e281fb90003efaf7a6c31c8c63',
 )
 
 android_library(
@@ -40,8 +40,8 @@ android_prebuilt_aar(
 
 remote_file(
   name = 'imagepipeline-base-aar',
-  url = 'mvn:com.facebook.fresco:imagepipeline-base:aar:0.11.0',
-  sha1 = '0f450cd58350ef5d6734f9772bc780b67cc538c5',
+  url = 'mvn:com.facebook.fresco:imagepipeline-base:aar:0.13.0',
+  sha1 = '36f60f92fab015b9afdda26869addfab51a0b11e',
 )
 
 android_prebuilt_aar(
@@ -52,8 +52,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'imagepipeline-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.11.0',
-    sha1 = 'd57b234db14899af8c36876d7937d63fddca5b12',
+    url = 'mvn:com.facebook.fresco:imagepipeline:aar:0.13.0',
+    sha1 = '2e578af1f34ca0393f3c564973251f92ec666b42',
 )
 
 prebuilt_jar(
@@ -76,8 +76,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'fbcore-aar',
-    url = 'mvn:com.facebook.fresco:fbcore:aar:0.11.0',
-    sha1 = 'e732e63ea19b19d053eebfe46870157ee79ad034',
+    url = 'mvn:com.facebook.fresco:fbcore:aar:0.13.0',
+    sha1 = 'ac10c8dd1161f2a21b6c63b3703a3eceffbf8c4a',
 )
 
 android_prebuilt_aar(
@@ -88,6 +88,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = 'imagepipeline-okhttp3-binary-aar',
-    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.11.0',
-    sha1 = '3d7e6d1a2f2e973a596aae7d523667b5a3d6d8a5',
+    url = 'mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:0.13.0',
+    sha1 = '6b8c6bca5dee86cdbde297af2ec9d63ad89c0bd4',
 )
