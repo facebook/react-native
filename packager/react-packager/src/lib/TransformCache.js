@@ -22,6 +22,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
+const terminal = require('../lib/terminal');
 const toFixedHex = require('./toFixedHex');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
@@ -189,18 +190,18 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     try {
       this._collectSync();
     } catch (error) {
-      console.error(error.stack);
-      console.error(
+      terminal.log(error.stack);
+      terminal.log(
         'Error: Cleaning up the cache folder failed. Continuing anyway.',
       );
-      console.error('The cache folder is: %s', getCacheDirPath());
+      terminal.log('The cache folder is: %s', getCacheDirPath());
     }
     this._lastCollected = Date.now();
   }
 
   _resetCache() {
     rimraf.sync(getCacheDirPath());
-    console.log('Warning: The transform cache was reset.');
+    terminal.log('Warning: The transform cache was reset.');
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
   }

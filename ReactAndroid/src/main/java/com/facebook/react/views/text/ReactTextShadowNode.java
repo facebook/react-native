@@ -195,7 +195,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
     if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
-          new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
+          new AbsoluteSizeSpan(textCSSNode.mAllowFontScaling
+          ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+          : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
           0,
           sb.length(),
           Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -305,12 +307,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
+  private boolean mAllowFontScaling = true;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
+  protected float mFontSizeInput = UNSET;
+  protected int mLineHeightInput = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
   private float mTextShadowOffsetDx = 0;
@@ -412,8 +417,24 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
   public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+    mLineHeightInput = lineHeight;
+    if (lineHeight == UNSET) {
+      mLineHeight = Float.NaN;
+    } else {
+      mLineHeight = mAllowFontScaling ?
+        PixelUtil.toPixelFromSP(lineHeight) : PixelUtil.toPixelFromDIP(lineHeight);
+    }
     markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (allowFontScaling != mAllowFontScaling) {
+      mAllowFontScaling = allowFontScaling;
+      setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
+      markUpdated();
+    }
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
@@ -437,8 +458,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
+    mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
-      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+      fontSize = mAllowFontScaling ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+        : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
     markUpdated();
