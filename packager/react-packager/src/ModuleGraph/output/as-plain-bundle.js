@@ -13,36 +13,32 @@
 const {createIndexMap} = require('./source-map');
 const {addModuleIdsToModuleWrapper} = require('./util');
 
-import type {Module} from '../types.flow';
-import type {SourceMap} from './source-map';
+import type {OutputFn} from '../types.flow';
 
 module.exports = (
-  modules: Iterable<Module>,
-  filename?: string,
-  idForPath: {path: string} => number,
-): {code: string, map: SourceMap} => {
-  let code = '';
-  let line = 0;
-  const sections = [];
+  (modules, filename, idForPath) => {
+    let code = '';
+    let line = 0;
+    const sections = [];
 
-  for (const module of modules) {
-    const {file} = module;
-    const moduleCode = file.type === 'module'
-      ? addModuleIdsToModuleWrapper(module, idForPath)
-      : file.code;
+    for (const module of modules) {
+      const {file} = module;
+      const moduleCode = file.type === 'module'
+        ? addModuleIdsToModuleWrapper(module, idForPath)
+        : file.code;
 
-    code += moduleCode + '\n';
-    if (file.map) {
-      sections.push({
-        map: file.map,
-        offset: {column: 0, line}
-      });
+      code += moduleCode + '\n';
+      if (file.map) {
+        sections.push({
+          map: file.map,
+          offset: {column: 0, line}
+        });
+      }
+      line += countLines(moduleCode);
     }
-    line += countLines(moduleCode);
-  }
 
-  return {code, map: createIndexMap({file: filename, sections})};
-};
+    return {code, map: createIndexMap({file: filename, sections})};
+  }: OutputFn);
 
 const reLine = /^/gm;
 function countLines(string: string): number {

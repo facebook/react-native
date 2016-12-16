@@ -19,6 +19,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':core',
-)
