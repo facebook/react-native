@@ -28,6 +28,8 @@ const invariant = require('fbjs/lib/invariant');
  *
  * <center><img src="img/buttonExample.png"></img></center>
  *
+ * > You can change the style of the button using the props `styles`.
+ *
  * If this button doesn't look right for your app, you can build your own
  * button using [TouchableOpacity](https://facebook.github.io/react-native/docs/touchableopacity.html)
  * or [TouchableNativeFeedback](https://facebook.github.io/react-native/docs/touchablenativefeedback.html).
@@ -45,6 +47,27 @@ const invariant = require('fbjs/lib/invariant');
  * />
  * ```
  *
+ * Example of usage with a custom style.
+ *
+ * ```
+ * <Button
+ *   onPress={onPressLearnMore}
+ *   title="Learn More"
+ *   color="#841584"
+ *   accessibilityLabel="Learn more about this purple button"
+ *   styles={{
+ *     text: Platform.select({
+ *       ios: {
+ *         textDecorationLine: 'underline',
+ *       },
+ *       android: {
+ *        textDecorationLine: 'underline',
+ *       },
+ *     })
+ *   }}
+ * />
+ * ```
+ *
  */
 
 class Button extends React.Component {
@@ -55,6 +78,7 @@ class Button extends React.Component {
     color?: ?string,
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
+    styles: shape,
   };
 
   static propTypes = {
@@ -78,6 +102,16 @@ class Button extends React.Component {
      * Handler to be called when the user taps the button
      */
     onPress: React.PropTypes.func.isRequired,
+    /**
+     * The object with the styles to apply to the button. The styles should follow the
+     * [current button styles format](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js#L141).
+     */
+    styles: React.PropTypes.shape({
+      button: React.PropTypes.object,
+      text: React.PropTypes.object,
+      buttonDisabled: React.PropTypes.object,
+      textDisabled: React.PropTypes.object,
+    }),
   };
 
   render() {
@@ -88,8 +122,8 @@ class Button extends React.Component {
       title,
       disabled,
     } = this.props;
-    const buttonStyles = [styles.button];
-    const textStyles = [styles.text];
+    const buttonStyles = [styles.button, {...this.props.styles.button}];
+    const textStyles = [styles.text, {...this.props.styles.text}];
     const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     if (color && Platform.OS === 'ios') {
       textStyles.push({color: color});
@@ -97,8 +131,8 @@ class Button extends React.Component {
       buttonStyles.push({backgroundColor: color});
     }
     if (disabled) {
-      buttonStyles.push(styles.buttonDisabled);
-      textStyles.push(styles.textDisabled);
+      buttonStyles.push([styles.buttonDisabled, {...this.props.styles.buttonDisabled}]);
+      textStyles.push([styles.textDisabled, {...this.props.styles.textDisabled}]);
     }
     invariant(
       typeof title === 'string',
