@@ -18,7 +18,7 @@ Make sure you have the following installed:
 
 1. Android SDK version 23 (compileSdkVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
 2. SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
-3. Local Maven repository for Support Libraries (formerly `Android Support Repository`) >= 17 (for Android Support Library)
+3. Android Support Repository >= 17 (for Android Support Library)
 4. Android NDK (download links and installation instructions below)
 
 ### Point Gradle to your Android SDK:
