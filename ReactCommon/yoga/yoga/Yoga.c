@@ -333,6 +333,10 @@ YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
   return YGNodeListGet(node->children, index);
 }
 
+YGNodeRef YGNodeGetParent(const YGNodeRef node) {
+  return node->parent;
+}
+
 inline uint32_t YGNodeChildCount(const YGNodeRef node) {
   return YGNodeListCount(node->children);
 }

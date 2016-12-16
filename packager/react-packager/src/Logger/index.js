@@ -14,6 +14,7 @@
 const chalk = require('chalk');
 const os = require('os');
 const pkgjson = require('../../../package.json');
+const terminal = require('../lib/terminal');
 
 const {EventEmitter} = require('events');
 
@@ -134,7 +135,7 @@ function print(
   }
 
   // eslint-disable-next-line no-console-disallow
-  console.log(logEntryString);
+  terminal.log(logEntryString);
 
   return logEntry;
 }
