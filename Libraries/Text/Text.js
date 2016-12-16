@@ -33,6 +33,7 @@ const viewConfig = {
     selectable: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
+    textBreakStrategy: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -116,6 +117,12 @@ const Text = React.createClass({
      * This prop is commonly used with `ellipsizeMode`.
      */
     numberOfLines: React.PropTypes.number,
+    /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `highQuality`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Invoked on mount and layout changes with
      *
