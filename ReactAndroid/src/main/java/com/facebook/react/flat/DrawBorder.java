@@ -407,7 +407,7 @@ import com.facebook.react.uimanager.Spacing;
   }
 
   private static float resolveWidth(float width, float defaultWidth) {
-    return width == 0 ? defaultWidth : width;
+    return (width == 0 || /* check for NaN */ width != width) ? defaultWidth : width;
   }
 
   private static DashPathEffect createDashPathEffect(float borderWidth) {
