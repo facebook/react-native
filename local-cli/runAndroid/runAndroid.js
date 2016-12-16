@@ -151,10 +151,17 @@ function buildAndRun(args) {
   }
 
   try {
-    const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
+    const activityClass = args.mainActivity;
+
+    //Find the generated manifest file corresponding to the provided variant
+    const manifestFile = getManifestFile(args.variant);
+    const content = fs.readFileSync(manifestFile, 'utf8');
+
+    //Find the correct package name from the manifest file
+    const packageName = content.match(/package="(.+?)"/)[1];
+
+    //Find the correct activityName from the manifestFile
+    const activityName = findActivityName(content, activityClass);
 
     const adbPath = getAdbPath();
 
@@ -164,7 +171,7 @@ function buildAndRun(args) {
       devices.forEach((device) => {
 
         const adbArgs =
-          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + args.mainActivity];
+          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + activityName];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -226,6 +233,88 @@ function startServerInNewWindow() {
   } else {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
+}
+
+
+function findActivityName(content, activityClass) {
+  const regex = new RegExp(`android:name="(.+?\.${activityClass})"`);
+  return content.match(regex)[1];
+}
+
+function findPreviousTerm(content, endPos) {
+  while (content[endPos] === ' ') {
+    --endPos;
+  }
+  const regex = new RegExp('\\w');
+  const word = [];
+  while (regex.exec(content[endPos])) {
+    word.push(content[endPos]);
+    --endPos;
+  }
+  return word.reverse().join('');
+}
+
+function findVariants(filePath, variantType, defaultVariants) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const regex = new RegExp(`${variantType}\\s+{`, 'ig');
+  const variants = defaultVariants || [];
+  const match = regex.exec(content);
+  if (!match) {
+    return variants;
+  }
+  const variantStartPos = regex.lastIndex;
+  let counter = 1;
+  let pos = variantStartPos + 1;
+  while (counter > 0) {
+    if (content[pos] === '{') {
+      counter += 1;
+      if (counter === 2) {
+        const previousTerm = findPreviousTerm(content, pos - 1);
+        if (variants.indexOf(previousTerm) === -1) {
+          variants.push(previousTerm);
+        }
+      }
+    } else if (content[pos] === '}') {
+      --counter;
+    }
+    ++pos;
+  }
+  return variants;
+}
+
+function splitVariant(gradleFilePath, variant) {
+  const buildTypes = findVariants(gradleFilePath, 'buildTypes', ['debug', 'release']);
+  const regexp = new RegExp(buildTypes.join('|'), 'gi');
+  const match = regexp.exec(variant);
+  if (match) {
+    return [variant.substring(match.index), variant.substring(0, match.index)];
+  }
+  return [variant, null];
+}
+
+function isSeparateBuildEnabled(gradleFilePath) {
+  const content = fs.readFileSync(gradleFilePath, 'utf8');
+  const separateBuild = content.match(/enableSeparateBuildPerCPUArchitecture\s+=\s+([\w]+)/)[1];
+  return separateBuild.toLowerCase() === 'true';
+}
+
+function getManifestFile(variant) {
+  const gradleFilePath = 'app/build.gradle';
+  const ret = splitVariant(gradleFilePath, variant);
+  const buildType = ret[0];
+  const flavor = ret[1];
+  const paths = ['app/build/intermediates/manifests/full'];
+  if (flavor) {
+    paths.push(flavor);
+  }
+
+  if (isSeparateBuildEnabled(gradleFilePath)) {
+      paths.push('x86');
+  }
+
+  paths.push(buildType);
+  paths.push('AndroidManifest.xml');
+  return paths.join('/');
 }
 
 module.exports = {
