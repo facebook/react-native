@@ -331,6 +331,12 @@ const TextInput = React.createClass({
      */
     multiline: PropTypes.bool,
     /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `simple`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+    /**
      * Callback that is called when the text input is blurred.
      */
     onBlur: PropTypes.func,
@@ -724,6 +730,7 @@ const TextInput = React.createClass({
         text={this._getText()}
         children={children}
         disableFullscreenUI={this.props.disableFullscreenUI}
+        textBreakStrategy={this.props.textBreakStrategy}
       />;
 
     return (

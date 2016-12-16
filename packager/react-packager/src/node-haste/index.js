@@ -111,7 +111,7 @@ class DependencyGraph {
     maxWorkers?: ?number,
     mocksPattern?: mixed,
     moduleOptions: ?ModuleOptions,
-    platforms: mixed,
+    platforms: Array<string>,
     preferNativePlatform: boolean,
     providesModuleNodeModules: Array<string>,
     resetCache: boolean,
