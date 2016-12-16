@@ -185,7 +185,7 @@ DEFINE_PROCESS_META_PROPS(Border);
             viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
              absolutePosition:(CGPoint)absolutePosition
 {
-  for (unsigned int i = 0; i < YGNodeChildCount(node); ++i) {
+  for (unsigned int i = 0; i < YGNodeGetChildCount(node); ++i) {
     RCTShadowView *child = (RCTShadowView *)_reactSubviews[i];
     [child applyLayoutNode:YGNodeGetChild(node, i)
          viewsWithNewFrame:viewsWithNewFrame
