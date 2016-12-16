@@ -86,6 +86,7 @@ RCT_EXPORT_VIEW_PROPERTY(maximumTrackTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(onValueChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSlidingComplete, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(thumbImage, UIImage);
+RCT_EXPORT_VIEW_PROPERTY(trackHeight, NSInteger);
 RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSlider)
 {
   if (json) {

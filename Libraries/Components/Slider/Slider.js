@@ -115,6 +115,12 @@ var Slider = React.createClass({
     thumbImage: Image.propTypes.source,
 
     /**
+     * Sets the height for the track image.
+     * @platform ios
+     */
+    trackHeight: PropTypes.number,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,

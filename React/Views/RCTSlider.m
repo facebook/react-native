@@ -88,4 +88,18 @@
   return [self thumbImageForState:UIControlStateNormal];
 }
 
+
+- (void)setTrackHeight:(NSInteger)trackHeight
+{
+  _trackHeight = trackHeight;
+}
+
+- (CGRect)trackRectForBounds:(CGRect)bounds {
+    CGRect trackBounds = [super trackRectForBounds:bounds];
+    if (_trackHeight != nil) {
+      trackBounds.size.height = _trackHeight;
+    }
+    return trackBounds;
+}
+
 @end
