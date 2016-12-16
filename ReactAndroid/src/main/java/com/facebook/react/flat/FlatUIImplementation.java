@@ -1,0 +1,137 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+package com.facebook.react.flat;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.facebook.csslayout.CSSNode;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventDispatcher;
+
+/**
+ * FlatUIImplementation builds on top of UIImplementation and allows pre-creating everything
+ * required for drawing (DrawCommands) and touching (NodeRegions) views in background thread
+ * for faster drawing and interactions.
+ */
+public class FlatUIImplementation extends UIImplementation {
+
+  public FlatUIImplementation(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagers) {
+    this(reactContext, new ViewManagerRegistry(viewManagers));
+  }
+
+  private FlatUIImplementation(
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagers) {
+    super(
+        viewManagers,
+        new UIViewOperationQueue(
+            reactContext,
+            new NativeViewHierarchyManager(viewManagers)));
+  }
+
+  @Override
+  protected void handleCreateView(
+      ReactShadowNode cssNode,
+      int rootViewTag,
+      CatalystStylesDiffMap styles) {
+    // nothing to do yet.
+  }
+
+  @Override
+  protected void handleUpdateView(
+      ReactShadowNode cssNode,
+      String className,
+      CatalystStylesDiffMap styles) {
+    // nothing to do yet.
+  }
+
+  @Override
+  public void manageChildren(
+      int viewTag,
+      @Nullable ReadableArray moveFrom,
+      @Nullable ReadableArray moveTo,
+      @Nullable ReadableArray addChildTags,
+      @Nullable ReadableArray addAtIndices,
+      @Nullable ReadableArray removeFrom) {
+
+    if (moveFrom != null) {
+      throw new RuntimeException("Not implemented");
+    }
+    if (moveTo != null) {
+      throw new RuntimeException("Not implemented");
+    }
+
+    ReactShadowNode parentNode = resolveShadowNode(viewTag);
+    if (removeFrom != null) {
+      if (moveFrom != null) {
+        // both moveFrom AND removeFrom are present
+        throw new RuntimeException("Not implemented, requires merging");
+      }
+
+      int numToRemove = removeFrom.size();
+      int prevIndex = Integer.MAX_VALUE;
+      for (int i = numToRemove - 1; i >= 0; --i) {
+        int index = removeFrom.getInt(i);
+        if (index >= prevIndex) {
+          throw new RuntimeException(
+              "Invariant failure, needs sorting! prevIndex: " + prevIndex + " index: " + index);
+        }
+
+        ReactShadowNode child = parentNode.removeChildAt(index);
+        prevIndex = index;
+
+        removeShadowNode(child);
+      }
+    }
+
+    if (addChildTags != null) {
+      int numNodesToAdd = addChildTags.size();
+      for (int i = 0; i < numNodesToAdd; ++i) {
+        int childTag = addChildTags.getInt(i);
+        ReactShadowNode child = resolveShadowNode(childTag);
+
+        int addAtIndex = addAtIndices.getInt(i);
+        parentNode.addChildAt(child, addAtIndex);
+      }
+    }
+  }
+
+  @Override
+  protected void applyUpdatesRecursive(
+      ReactShadowNode cssNode,
+      float absoluteX,
+      float absoluteY,
+      EventDispatcher eventDispatcher) {
+    markNodeLayoutSeen(cssNode);
+  }
+
+  private void markNodeLayoutSeen(CSSNode node) {
+    if (node.hasNewLayout()) {
+      node.markLayoutSeen();
+    }
+
+    for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
+      markNodeLayoutSeen(node.getChildAt(i));
+    }
+  }
+}
