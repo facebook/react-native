@@ -47,6 +47,18 @@
 @property (nonatomic, assign) BOOL showFPS;
 
 /**
+ * Presented items in development menu
+ */
+@property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;
+
+
+/**
+ * Detect if actions sheet (development menu) is shown
+ */
+- (BOOL)isActionSheetShown;
+
+
+/**
  * Manually show the dev menu (can be called from JS).
  */
 - (void)show;

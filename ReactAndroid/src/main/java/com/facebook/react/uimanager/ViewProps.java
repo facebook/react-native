@@ -12,8 +12,6 @@ package com.facebook.react.uimanager;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.facebook.csslayout.Spacing;
-
 /**
  * Keys for props that need to be shared across multiple classes.
  */
@@ -84,6 +82,8 @@ public class ViewProps {
   public static final String TEXT_ALIGN = "textAlign";
   public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";
+
+  public static final String ALLOW_FONT_SCALING = "allowFontScaling";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";

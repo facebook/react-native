@@ -13,26 +13,25 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.CSSAlign;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSFlexDirection;
-import com.facebook.csslayout.CSSJustify;
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.csslayout.CSSNode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.CSSOverflow;
-import com.facebook.csslayout.CSSPositionType;
-import com.facebook.csslayout.CSSWrap;
-import com.facebook.csslayout.Spacing;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaOverflow;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
- * for layouting therefore it extends {@link CSSNode} to allow that. They also help with handling
- * Common base subclass of {@link CSSNode} for all layout nodes for react-based view. It extends
- * {@link CSSNode} by adding additional capabilities.
+ * for layouting therefore it extends {@link YogaNode} to allow that. They also help with handling
+ * Common base subclass of {@link YogaNode} for all layout nodes for react-based view. It extends
+ * {@link YogaNode} by adding additional capabilities.
  *
  * Instances of this class receive property updates from JS via @{link UIManagerModule}. Subclasses
  * may use {@link #updateShadowNode} to persist some of the updated fields in the node instance that
@@ -44,7 +43,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
  * custom subclass of it if necessary.
  *
  * The primary use-case for {@link ReactShadowNode} nodes is to calculate layouting. Although this
- * might be extended. For some examples please refer to ARTGroupCSSNode or ReactTextCSSNode.
+ * might be extended. For some examples please refer to ARTGroupYogaNode or ReactTextYogaNode.
  *
  * This class allows for the native view hierarchy to not be an exact copy of the hierarchy received
  * from JS by keeping track of both JS children (e.g. {@link #getChildCount()} and separately native
@@ -73,18 +72,18 @@ public class ReactShadowNode {
   private float mAbsoluteRight;
   private float mAbsoluteBottom;
   private final Spacing mDefaultPadding = new Spacing(0);
-  private final Spacing mPadding = new Spacing(CSSConstants.UNDEFINED);
-  private final CSSNode mCSSNode;
+  private final Spacing mPadding = new Spacing(YogaConstants.UNDEFINED);
+  private final YogaNode mYogaNode;
 
   public ReactShadowNode() {
     if (!isVirtual()) {
-      CSSNode node = CSSNodePool.get().acquire();
+      YogaNode node = YogaNodePool.get().acquire();
       if (node == null) {
-        node = new CSSNode();
+        node = new YogaNode();
       }
-      mCSSNode = node;
+      mYogaNode = node;
     } else {
-      mCSSNode = null;
+      mYogaNode = null;
     }
   }
 
@@ -139,12 +138,12 @@ public class ReactShadowNode {
 
   public void dirty() {
     if (!isVirtual()) {
-      mCSSNode.dirty();
+      mYogaNode.dirty();
     }
   }
 
   public final boolean isDirty() {
-    return mCSSNode != null && mCSSNode.isDirty();
+    return mYogaNode != null && mYogaNode.isDirty();
   }
 
   public void addChildAt(ReactShadowNode child, int i) {
@@ -160,13 +159,13 @@ public class ReactShadowNode {
 
     // If a CSS node has measure defined, the layout algorithm will not visit its children. Even
     // more, it asserts that you don't add children to nodes with measure functions.
-    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
-      CSSNode childCSSNode = child.mCSSNode;
-      if (childCSSNode == null) {
+    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+      YogaNode childYogaNode = child.mYogaNode;
+      if (childYogaNode == null) {
         throw new RuntimeException(
           "Cannot add a child that doesn't have a CSS node to a node without a measure function!");
       }
-      mCSSNode.addChildAt(childCSSNode, i);
+      mYogaNode.addChildAt(childYogaNode, i);
     }
     markUpdated();
 
@@ -184,8 +183,8 @@ public class ReactShadowNode {
     ReactShadowNode removed = mChildren.remove(i);
     removed.mParent = null;
 
-    if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
-      mCSSNode.removeChildAt(i);
+    if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+      mYogaNode.removeChildAt(i);
     }
     markUpdated();
 
@@ -218,8 +217,8 @@ public class ReactShadowNode {
 
     int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      if (mCSSNode != null && !mCSSNode.isMeasureDefined()) {
-        mCSSNode.removeChildAt(i);
+      if (mYogaNode != null && !mYogaNode.isMeasureDefined()) {
+        mYogaNode.removeChildAt(i);
       }
       ReactShadowNode toRemove = getChildAt(i);
       toRemove.mParent = null;
@@ -287,23 +286,10 @@ public class ReactShadowNode {
     }
 
     if (hasNewLayout()) {
-      float newLeft = Math.round(absoluteX + getLayoutX());
-      float newTop = Math.round(absoluteY + getLayoutY());
-      float newRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      float newBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
-
-      if (newLeft == mAbsoluteLeft &&
-          newRight == mAbsoluteRight &&
-          newTop == mAbsoluteTop &&
-          newBottom == mAbsoluteBottom) {
-        return false;
-      }
-
-      mAbsoluteLeft = newLeft;
-      mAbsoluteTop = newTop;
-      mAbsoluteRight = newRight;
-      mAbsoluteBottom = newBottom;
-
+      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
+      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
+      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
       nativeViewHierarchyOptimizer.handleUpdateLayout(this);
       return true;
     } else {
@@ -352,17 +338,17 @@ public class ReactShadowNode {
     return mShouldNotifyOnLayout;
   }
 
-  public void calculateLayout(CSSLayoutContext layoutContext) {
-    mCSSNode.calculateLayout(layoutContext);
+  public void calculateLayout() {
+    mYogaNode.calculateLayout();
   }
 
   public final boolean hasNewLayout() {
-    return mCSSNode == null ? false : mCSSNode.hasNewLayout();
+    return mYogaNode == null ? false : mYogaNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
-    if (mCSSNode != null) {
-      mCSSNode.markLayoutSeen();
+    if (mYogaNode != null) {
+      mYogaNode.markLayoutSeen();
     }
   }
 
@@ -477,19 +463,19 @@ public class ReactShadowNode {
   }
 
   public final float getLayoutX() {
-    return mCSSNode.getLayoutX();
+    return mYogaNode.getLayoutX();
   }
 
   public final float getLayoutY() {
-    return mCSSNode.getLayoutY();
+    return mYogaNode.getLayoutY();
   }
 
   public final float getLayoutWidth() {
-    return mCSSNode.getLayoutWidth();
+    return mYogaNode.getLayoutWidth();
   }
 
   public final float getLayoutHeight() {
-    return mCSSNode.getLayoutHeight();
+    return mYogaNode.getLayoutHeight();
   }
 
   /**
@@ -520,96 +506,96 @@ public class ReactShadowNode {
     return Math.round(mAbsoluteBottom - mAbsoluteTop);
   }
 
-  public final CSSDirection getLayoutDirection() {
-    return mCSSNode.getLayoutDirection();
+  public final YogaDirection getLayoutDirection() {
+    return mYogaNode.getLayoutDirection();
   }
 
-  public void setLayoutDirection(CSSDirection direction) {
-    mCSSNode.setDirection(direction);
+  public void setLayoutDirection(YogaDirection direction) {
+    mYogaNode.setDirection(direction);
   }
 
   public final float getStyleWidth() {
-    return mCSSNode.getStyleWidth();
+    return mYogaNode.getWidth();
   }
 
   public void setStyleWidth(float widthPx) {
-    mCSSNode.setStyleWidth(widthPx);
+    mYogaNode.setWidth(widthPx);
   }
 
   public void setStyleMinWidth(float widthPx) {
-    mCSSNode.setStyleMinWidth(widthPx);
+    mYogaNode.setMinWidth(widthPx);
   }
 
   public void setStyleMaxWidth(float widthPx) {
-    mCSSNode.setStyleMaxWidth(widthPx);
+    mYogaNode.setMaxWidth(widthPx);
   }
 
   public final float getStyleHeight() {
-    return mCSSNode.getStyleHeight();
+    return mYogaNode.getHeight();
   }
 
   public void setStyleHeight(float heightPx) {
-    mCSSNode.setStyleHeight(heightPx);
+    mYogaNode.setHeight(heightPx);
   }
 
   public void setStyleMinHeight(float widthPx) {
-    mCSSNode.setStyleMinHeight(widthPx);
+    mYogaNode.setMinHeight(widthPx);
   }
 
   public void setStyleMaxHeight(float widthPx) {
-    mCSSNode.setStyleMaxHeight(widthPx);
+    mYogaNode.setMaxHeight(widthPx);
   }
 
   public void setFlex(float flex) {
-    mCSSNode.setFlex(flex);
+    mYogaNode.setFlex(flex);
   }
 
   public void setFlexGrow(float flexGrow) {
-    mCSSNode.setFlexGrow(flexGrow);
+    mYogaNode.setFlexGrow(flexGrow);
   }
 
   public void setFlexShrink(float flexShrink) {
-    mCSSNode.setFlexShrink(flexShrink);
+    mYogaNode.setFlexShrink(flexShrink);
   }
 
   public void setFlexBasis(float flexBasis) {
-    mCSSNode.setFlexBasis(flexBasis);
+    mYogaNode.setFlexBasis(flexBasis);
   }
 
   public void setStyleAspectRatio(float aspectRatio) {
-    mCSSNode.setStyleAspectRatio(aspectRatio);
+    mYogaNode.setAspectRatio(aspectRatio);
   }
 
-  public void setFlexDirection(CSSFlexDirection flexDirection) {
-    mCSSNode.setFlexDirection(flexDirection);
+  public void setFlexDirection(YogaFlexDirection flexDirection) {
+    mYogaNode.setFlexDirection(flexDirection);
   }
 
-  public void setFlexWrap(CSSWrap wrap) {
-    mCSSNode.setWrap(wrap);
+  public void setFlexWrap(YogaWrap wrap) {
+    mYogaNode.setWrap(wrap);
   }
 
-  public void setAlignSelf(CSSAlign alignSelf) {
-    mCSSNode.setAlignSelf(alignSelf);
+  public void setAlignSelf(YogaAlign alignSelf) {
+    mYogaNode.setAlignSelf(alignSelf);
   }
 
-  public void setAlignItems(CSSAlign alignItems) {
-    mCSSNode.setAlignItems(alignItems);
+  public void setAlignItems(YogaAlign alignItems) {
+    mYogaNode.setAlignItems(alignItems);
   }
 
-  public void setJustifyContent(CSSJustify justifyContent) {
-    mCSSNode.setJustifyContent(justifyContent);
+  public void setJustifyContent(YogaJustify justifyContent) {
+    mYogaNode.setJustifyContent(justifyContent);
   }
 
-  public void setOverflow(CSSOverflow overflow) {
-    mCSSNode.setOverflow(overflow);
+  public void setOverflow(YogaOverflow overflow) {
+    mYogaNode.setOverflow(overflow);
   }
 
   public void setMargin(int spacingType, float margin) {
-    mCSSNode.setMargin(spacingType, margin);
+    mYogaNode.setMargin(YogaEdge.fromInt(spacingType), margin);
   }
 
   public final float getPadding(int spacingType) {
-    return mCSSNode.getPadding(spacingType);
+    return mYogaNode.getPadding(YogaEdge.fromInt(spacingType));
   }
 
   public void setDefaultPadding(int spacingType, float padding) {
@@ -625,69 +611,69 @@ public class ReactShadowNode {
   private void updatePadding() {
     for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
       if (spacingType == Spacing.LEFT ||
-        spacingType == Spacing.RIGHT ||
-        spacingType == Spacing.START ||
-        spacingType == Spacing.END) {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+          spacingType == Spacing.RIGHT ||
+          spacingType == Spacing.START ||
+          spacingType == Spacing.END) {
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.HORIZONTAL)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
-          CSSConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.VERTICAL)) &&
+          YogaConstants.isUndefined(mPadding.getRaw(Spacing.ALL))) {
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       } else {
-        if (CSSConstants.isUndefined(mPadding.getRaw(spacingType))) {
-          mCSSNode.setPadding(spacingType, mDefaultPadding.getRaw(spacingType));
+        if (YogaConstants.isUndefined(mPadding.getRaw(spacingType))) {
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
         } else {
-          mCSSNode.setPadding(spacingType, mPadding.getRaw(spacingType));
+          mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mPadding.getRaw(spacingType));
         }
       }
     }
   }
 
   public void setBorder(int spacingType, float borderWidth) {
-    mCSSNode.setBorder(spacingType, borderWidth);
+    mYogaNode.setBorder(YogaEdge.fromInt(spacingType), borderWidth);
   }
 
   public void setPosition(int spacingType, float position) {
-    mCSSNode.setPosition(spacingType, position);
+    mYogaNode.setPosition(YogaEdge.fromInt(spacingType), position);
   }
 
-  public void setPositionType(CSSPositionType positionType) {
-    mCSSNode.setPositionType(positionType);
+  public void setPositionType(YogaPositionType positionType) {
+    mYogaNode.setPositionType(positionType);
   }
 
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  public void setMeasureFunction(CSSNodeAPI.MeasureFunction measureFunction) {
-    if ((measureFunction == null ^ mCSSNode.isMeasureDefined()) &&
+  public void setMeasureFunction(YogaMeasureFunction measureFunction) {
+    if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) &&
         getChildCount() != 0) {
       throw new RuntimeException(
-        "Since a node with a measure function does not add any native CSSLayout children, it's " +
+        "Since a node with a measure function does not add any native yoga children, it's " +
           "not safe to transition to/from having a measure function unless a node has no children");
     }
-    mCSSNode.setMeasureFunction(measureFunction);
+    mYogaNode.setMeasureFunction(measureFunction);
   }
 
   @Override
   public String toString() {
-    return mCSSNode.toString();
+    return mYogaNode.toString();
   }
 
   public void dispose() {
-    if (mCSSNode != null) {
-      mCSSNode.reset();
-      CSSNodePool.get().release(mCSSNode);
+    if (mYogaNode != null) {
+      mYogaNode.reset();
+      YogaNodePool.get().release(mYogaNode);
     }
   }
 }

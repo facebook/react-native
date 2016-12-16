@@ -109,7 +109,7 @@ require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  const handleError = (e, isFatal) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
@@ -118,7 +118,7 @@ if (!global.__fbDisableExceptionsManager) {
       /* eslint-enable no-console-disallow */
       throw e;
     }
-  }
+  };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -200,7 +200,6 @@ if (__DEV__) {
   }
 
   require('RCTDebugComponentOwnership');
-  require('react-transform-hmr');
 }
 
 // Set up inspector

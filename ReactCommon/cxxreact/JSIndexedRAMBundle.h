@@ -40,7 +40,7 @@ private:
     ModuleTable() : numEntries(0) {};
     ModuleTable(size_t entries) :
       numEntries(entries),
-      data(std::make_unique<ModuleData[]>(numEntries)) {};
+      data(std::unique_ptr<ModuleData[]>(new ModuleData[numEntries])) {};
     size_t byteLength() const {
       return numEntries * sizeof(ModuleData);
     }

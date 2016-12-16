@@ -178,7 +178,7 @@ class SwipeableListView extends React.Component {
   _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
-    // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
+    // If renderQuickActions is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
     }

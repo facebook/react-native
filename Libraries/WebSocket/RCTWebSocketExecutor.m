@@ -141,6 +141,7 @@ RCT_EXPORT_MODULE()
   RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
+    [_callbacks removeObjectForKey:messageID];
   }
 }
 

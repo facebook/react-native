@@ -30,12 +30,12 @@ import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.CSSDirection;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -43,6 +43,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -194,7 +195,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
     if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
-          new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
+          new AbsoluteSizeSpan(textCSSNode.mAllowFontScaling
+          ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+          : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
           0,
           sb.length(),
           Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -218,15 +221,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     return sb;
   }
 
-  private final CSSNodeAPI.MeasureFunction mTextMeasureFunction =
-      new CSSNodeAPI.MeasureFunction() {
+  private final YogaMeasureFunction mTextMeasureFunction =
+      new YogaMeasureFunction() {
         @Override
         public long measure(
-            CSSNodeAPI node,
+            YogaNodeAPI node,
             float width,
-            CSSMeasureMode widthMode,
+            YogaMeasureMode widthMode,
             float height,
-            CSSMeasureMode heightMode) {
+            YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
           Layout layout;
@@ -238,11 +241,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
           // technically, width should never be negative, but there is currently a bug in
-          boolean unconstrainedWidth = widthMode == CSSMeasureMode.UNDEFINED || width < 0;
+          boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
 
           if (boring == null &&
               (unconstrainedWidth ||
-                  (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+                  (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
             layout = new StaticLayout(
@@ -279,11 +282,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
           if (mNumberOfLines != UNSET &&
               mNumberOfLines < layout.getLineCount()) {
-            return MeasureOutput.make(
+            return YogaMeasureOutput.make(
                 layout.getWidth(),
                 layout.getLineBottom(mNumberOfLines - 1));
           } else {
-            return MeasureOutput.make(layout.getWidth(), layout.getHeight());
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
         }
       };
@@ -304,12 +307,15 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
+  private boolean mAllowFontScaling = true;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
+  protected float mFontSizeInput = UNSET;
+  protected int mLineHeightInput = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
   private float mTextShadowOffsetDx = 0;
@@ -369,7 +375,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   // Return text alignment according to LTR or RTL style
   private int getTextAlign() {
     int textAlign = mTextAlign;
-    if (getLayoutDirection() == CSSDirection.RTL) {
+    if (getLayoutDirection() == YogaDirection.RTL) {
       if (textAlign == Gravity.RIGHT) {
         textAlign = Gravity.LEFT;
       } else if (textAlign == Gravity.LEFT) {
@@ -411,8 +417,24 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
   public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+    mLineHeightInput = lineHeight;
+    if (lineHeight == UNSET) {
+      mLineHeight = Float.NaN;
+    } else {
+      mLineHeight = mAllowFontScaling ?
+        PixelUtil.toPixelFromSP(lineHeight) : PixelUtil.toPixelFromDIP(lineHeight);
+    }
     markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (allowFontScaling != mAllowFontScaling) {
+      mAllowFontScaling = allowFontScaling;
+      setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
+      markUpdated();
+    }
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
@@ -436,8 +458,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
+    mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
-      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+      fontSize = mAllowFontScaling ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+        : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
     markUpdated();

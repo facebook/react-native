@@ -451,8 +451,9 @@ RCT_EXPORT_METHOD(dismiss)
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
-- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow {
-  [_bridge requestReload];
+- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
+{
+  [_bridge reload];
 }
 
 @end

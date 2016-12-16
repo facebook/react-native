@@ -351,7 +351,7 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -362,7 +362,7 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -375,7 +375,7 @@ describe('processRequest', () => {
       const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve(mockData));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -387,7 +387,7 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
