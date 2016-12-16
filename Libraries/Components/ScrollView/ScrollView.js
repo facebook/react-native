@@ -192,12 +192,18 @@ const ScrollView = React.createClass({
       'on-drag',
     ]),
     /**
-     * When false, tapping outside of the focused text input when the keyboard
-     * is up dismisses the keyboard. When true, the keyboard will not dismiss
-     * automatically, and the scroll view will not catch taps, but children of
-     * the scroll view can catch taps. The default value is false.
+     * Determines when the keyboard should stay visible after a tap.
+     *
+     *   - 'never' (the default), tapping outside of the focused text input when the keyboard
+     *     is up dismisses the keyboard. When this happens, children won't receive the tap.
+     *   - 'always', the keyboard will not dismiss automatically, and the scroll view will not
+     *     catch taps, but children of the scroll view can catch taps.
+     *   - 'handled', the keyboard will not dismiss automatically when the tap was handled by
+     *     a children, (or captured by an ancestor).
+     *   - false, deprecated, use 'never' instead
+     *   - true, deprecated, use 'always' instead
      */
-    keyboardShouldPersistTaps: PropTypes.bool,
+    keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios

@@ -52,7 +52,7 @@ type GeneratorOptions = {
 type InlinePlugin = [string | {} | () => {}, any];
 
 // based on https://babeljs.io/docs/usage/options/ -- 2016-11-11
-type _TransformOptions = {
+type __TransformOptions = {
   filename?: string,
   filenameRelative?: string,
   presets?: Array<string | Object>,
@@ -85,8 +85,8 @@ type _TransformOptions = {
   extends?: string,
 };
 
-type TransformOptions =
-  _TransformOptions & {env?: {[key: string]: TransformOptions}};
+type _TransformOptions =
+  __TransformOptions & {env?: {[key: string]: __TransformOptions}};
 declare class _Ast {};
 type TransformResult = {
   ast: _Ast,
@@ -98,9 +98,10 @@ type VisitFn = <State>(path: Object, state: State) => any;
 declare module 'babel-core' {
   declare type SourceMap = _SourceMap;
   declare type Ast = _Ast;
+  declare type TransformOptions = _TransformOptions;
   declare function transform(
     code: string,
-    options?: TransformOptions,
+    options?: _TransformOptions,
   ): TransformResult;
   declare function traverse<State>(
     ast: _Ast,
@@ -114,7 +115,7 @@ declare module 'babel-core' {
   declare function transformFromAst(
     ast: _Ast,
     code?: ?string,
-    babelOptions?: TransformOptions,
+    babelOptions?: _TransformOptions,
   ): TransformResult;
 }
 
