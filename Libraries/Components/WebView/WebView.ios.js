@@ -334,6 +334,12 @@ class WebView extends React.Component {
      * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Boolean that determines whether keyboard display requires the user
+     * to tap on HTML input element. The default value is `true`.
+     */
+    keyboardDisplayRequiresUserAction: PropTypes.bool,
   };
 
   state = {
