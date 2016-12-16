@@ -35,34 +35,17 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://registry.yarnpkg.com/boost-react-native-bundle/-/boost-react-native-bundle-1.57.0.tgz'
+    src 'https://github.com/react-native-community/boost-for-react-native/archive/v1.57.0-0.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost-react-native-bundle-1.57.0.tgz')
+    dest new File(downloadsDir, 'boost-for-react-native-1.57.0.tgz')
 }
 
-task unpackBoost(dependsOn: downloadBoost, type: Copy) {
-    from tarTree(resources.gzip(downloadBoost.dest))
-    include 'package/boost_1_57_0/boost/**/*.hpp'
-    into "$thirdPartyNdkDir/boost"
-    // npm packages are unpacked into folder "package" that we want to strip
-    eachFile { FileCopyDetails fcp ->
-        if (fcp.relativePath.pathString.startsWith("package")) {
-            // remap the file to the root
-            def segments = fcp.relativePath.segments
-            def pathsegments = segments[1..-1] as String[]
-            fcp.relativePath = new RelativePath(!fcp.file.isDirectory(), pathsegments)
-        } else {
-            fcp.exclude()
-        }
-    }
-}
-
-task prepareBoost(dependsOn: boostPath ? [] : [unpackBoost], type: Copy) {
-    from boostPath ?: []
+task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
+    from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
     include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
-    into "$thirdPartyNdkDir/boost"
+    includeEmptyDirs = false
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
