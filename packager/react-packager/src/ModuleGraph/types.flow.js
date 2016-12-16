@@ -10,28 +10,12 @@
  */
 'use strict';
 
+import type {SourceMap} from './output/source-map';
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
-  = (Error => mixed)
-  & ((null | void, A, B) => mixed);
-
-type ResolveOptions = {
-  log?: Console,
-};
-
-type LoadOptions = {|
-  log?: Console,
-  optimize?: boolean,
-  platform?: string,
-|};
-
-type GraphOptions = {|
-  cwd?: string,
-  log?: Console,
-  optimize?: boolean,
-  skip?: Set<string>,
-|};
+  = (Error => void)
+  & ((null | void, A, B) => void);
 
 type Dependency = {|
   id: string,
@@ -47,11 +31,6 @@ export type File = {|
 
 type FileTypes = 'module' | 'script';
 
-export type Module = {|
-  dependencies: Array<Dependency>,
-  file: File,
-|};
-
 export type GraphFn = (
   entryPoints: Iterable<string>,
   platform: string,
@@ -59,18 +38,19 @@ export type GraphFn = (
   callback?: Callback<GraphResult>,
 ) => void;
 
+type GraphOptions = {|
+  cwd?: string,
+  log?: Console,
+  optimize?: boolean,
+  skip?: Set<string>,
+|};
+
 export type GraphResult = {
   entryModules: Array<Module>,
   modules: Array<Module>,
 };
 
-export type ResolveFn = (
-  id: string,
-  source: string,
-  platform: string,
-  options?: ResolveOptions,
-  callback: Callback<string>,
-) => void;
+export type IdForPathFn = {path: string} => number;
 
 export type LoadFn = (
   file: string,
@@ -78,20 +58,26 @@ export type LoadFn = (
   callback: Callback<File, Array<string>>,
 ) => void;
 
-export type TransformResult = {|
-  code: string,
-  dependencies: Array<string>,
-  dependencyMapName?: string,
-  map: ?Object,
+type LoadOptions = {|
+  log?: Console,
+  optimize?: boolean,
+  platform?: string,
 |};
 
-export type TransformedFile = {
+export type Module = {|
+  dependencies: Array<Dependency>,
+  file: File,
+|};
+
+export type OutputFn = (
+  modules: Iterable<Module>,
+  filename?: string,
+  idForPath: IdForPathFn,
+) => OutputResult;
+
+type OutputResult = {
   code: string,
-  file: string,
-  hasteID: ?string,
-  package?: PackageData,
-  transformed: {[variant: string]: TransformResult},
-  type: FileTypes,
+  map: SourceMap,
 };
 
 export type PackageData = {|
@@ -101,8 +87,16 @@ export type PackageData = {|
   'react-native'?: Object | string,
 |};
 
-export type TransformFnResult = {
-  ast: Object,
+export type ResolveFn = (
+  id: string,
+  source: string,
+  platform: string,
+  options?: ResolveOptions,
+  callback: Callback<string>,
+) => void;
+
+type ResolveOptions = {
+  log?: Console,
 };
 
 export type TransformFn = (
@@ -114,3 +108,25 @@ export type TransformFn = (
   |},
   callback: Callback<TransformFnResult>
 ) => void;
+
+export type TransformFnResult = {
+  ast: Object,
+};
+
+export type TransformResult = {|
+  code: string,
+  dependencies: Array<string>,
+  dependencyMapName?: string,
+  map: ?Object,
+|};
+
+export type TransformVariants = {[key: string]: Object};
+
+export type TransformedFile = {
+  code: string,
+  file: string,
+  hasteID: ?string,
+  package?: PackageData,
+  transformed: {[variant: string]: TransformResult},
+  type: FileTypes,
+};
