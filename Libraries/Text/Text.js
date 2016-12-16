@@ -153,8 +153,6 @@ const Text = React.createClass({
     /**
      * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
      * default is `true`.
-     *
-     * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
     /**

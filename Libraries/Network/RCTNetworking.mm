@@ -49,7 +49,7 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 static NSString *RCTGenerateFormBoundary()
 {
   const size_t boundaryLength = 70;
-  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./";
+  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char*)malloc(boundaryLength);
   size_t charCount = strlen(boundaryChars);
