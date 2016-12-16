@@ -166,8 +166,8 @@ public class BlobModule extends ReactContextBaseJavaModule {
     try {
       Uri uri = Uri.parse(path);
       ContentResolver resolver = getReactApplicationContext().getContentResolver();
-
       String type = resolver.getType(uri);
+
       if (type != null) {
         String ext = MimeTypeMap.getFileExtensionFromUrl(path);
         if (ext != null) {
