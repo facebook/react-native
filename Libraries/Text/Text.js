@@ -33,6 +33,7 @@ const viewConfig = {
     selectable: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
+    textBreakStrategy: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -117,6 +118,12 @@ const Text = React.createClass({
      */
     numberOfLines: React.PropTypes.number,
     /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `highQuality`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+    /**
      * Invoked on mount and layout changes with
      *
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
@@ -153,8 +160,6 @@ const Text = React.createClass({
     /**
      * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
      * default is `true`.
-     *
-     * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
     /**

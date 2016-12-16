@@ -56,7 +56,6 @@ var semver = require('semver');
  */
 
 var options = require('minimist')(process.argv.slice(2));
-checkForVersionArgument(options);
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -75,6 +74,10 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
     'package.json'
   );
 };
+
+if (options._.length === 0 && (options.v || options.version)) {
+  printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
+}
 
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
@@ -315,14 +318,12 @@ function checkNodeVersion() {
   }
 }
 
-function checkForVersionArgument(options) {
-  if (options._.length === 0 && (options.v || options.version)) {
-    console.log('react-native-cli: ' + require('./package.json').version);
-    try {
-      console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
-    } catch (e) {
-      console.log('react-native: n/a - not inside a React Native project directory');
-    }
-    process.exit();
+function printVersionsAndExit(reactNativePackageJsonPath) {
+  console.log('react-native-cli: ' + require('./package.json').version);
+  try {
+    console.log('react-native: ' + require(reactNativePackageJsonPath).version);
+  } catch (e) {
+    console.log('react-native: n/a - not inside a React Native project directory');
   }
+  process.exit();
 }
