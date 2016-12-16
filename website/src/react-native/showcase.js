@@ -310,6 +310,14 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'Bloomberg',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple71/v4/31/24/72/312472df-3d53-0acf-fc31-8a25682e528f/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/bloomberg/id281941097?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bloomberg.android.plus&hl=en',
+    infoLink: 'https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/',
+    infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
   }
 ];
 

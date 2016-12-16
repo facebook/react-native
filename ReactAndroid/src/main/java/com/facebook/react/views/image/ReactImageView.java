@@ -30,7 +30,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
@@ -87,14 +87,13 @@ public class ReactImageView extends GenericDraweeView {
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
     void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
-        ScalingUtils.getTransform(
+      mScaleType.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
             source.getWidth(),
             source.getHeight(),
             0.0f,
-            0.0f,
-            mScaleType);
+            0.0f);
         sMatrix.invert(sInverse);
 
         mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);

@@ -124,7 +124,7 @@ class ResolutionRequest {
   }: {
     response: ResolutionResponse,
     transformOptions: Object,
-    onProgress: () => void,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
   }) {
     const entry = this._moduleCache.getModule(this._entryPath);
@@ -480,9 +480,13 @@ function resolutionHash(modulePath, depName) {
 
 class UnableToResolveError extends Error {
   type: string;
+  from: string;
+  to: string;
 
   constructor(fromModule, toModule, message) {
     super();
+    this.from = fromModule.path;
+    this.to = toModule;
     this.message = util.format(
       'Unable to resolve module %s from %s: %s',
       toModule,

@@ -10,24 +10,29 @@
 package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+import android.os.Build;
+import android.text.Layout;
 import android.text.Spannable;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.YogaDirection;
-import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNodeAPI;
-import com.facebook.csslayout.YogaMeasureOutput;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
@@ -42,6 +47,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
+    mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
+        0 : Layout.BREAK_STRATEGY_SIMPLE;
     setMeasureFunction(this);
   }
 
@@ -100,6 +107,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
       editText.setLines(mNumberOfLines);
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (editText.getBreakStrategy() != mTextBreakStrategy) {
+        editText.setBreakStrategy(mTextBreakStrategy);
+      }
+    }
+
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
@@ -116,6 +129,23 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @ReactProp(name = "mostRecentEventCount")
   public void setMostRecentEventCount(int mostRecentEventCount) {
     mJsEventCount = mostRecentEventCount;
+  }
+
+  @Override
+  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+
+    if (textBreakStrategy == null || "simple".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+    } else if ("highQuality".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    } else if ("balanced".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textBreakStrategy: " + textBreakStrategy);
+    }
   }
 
   @Override
@@ -146,7 +176,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
           getPadding(Spacing.TOP),
           getPadding(Spacing.END),
           getPadding(Spacing.BOTTOM),
-          mTextAlign
+          mTextAlign,
+          mTextBreakStrategy
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }

@@ -16,7 +16,7 @@ import java.util.Map;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;

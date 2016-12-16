@@ -139,5 +139,5 @@ exports.forOptimization =
     collectDependencies(
       ast,
       new ProdReplacement(names),
-      dependencyMapName && types.identifier(dependencyMapName),
+      dependencyMapName ? types.identifier(dependencyMapName) : undefined,
     );

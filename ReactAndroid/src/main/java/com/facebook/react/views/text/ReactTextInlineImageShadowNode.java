@@ -9,7 +9,7 @@
 
 package com.facebook.react.views.text;
 
-import com.facebook.csslayout.YogaNode;
+import com.facebook.yoga.YogaNode;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
 /**
