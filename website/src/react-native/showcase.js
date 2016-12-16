@@ -310,6 +310,14 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'Fuzzy Pet Health',
+    icon: 'https://s3-us-west-1.amazonaws.com/fuzzy-static/ios-icon-180.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/fuzzy-pet-health/id1173758720',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.yourfuzzy.fuzzy',
+    infoLink: 'https://medium.com/@stephen.dimmick/why-we-chose-react-native-40f80ff5662e#.uw6smhg6n',
+    infoTitle: 'Why We Chose React Native',
   }
 ];
 
