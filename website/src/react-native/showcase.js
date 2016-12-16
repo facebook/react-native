@@ -310,6 +310,14 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
+  },
+  {
+    name: 'PhotoPub',
+    icon: 'https://sg.veryveryhard.com/1/photo/f9119791c8dd87208bd99fd99677e9bd?resize=154',
+    linkAppStore: 'https://itunes.apple.com/us/app/photopub/id1178151143?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.veryveryhard.ying.photopub',
+    infoLink: 'https://play.google.com/store/apps/details?id=com.veryveryhard.ying.photopub',
+    infoTitle: 'Demo Account: demo@veryveryhard.com password:12345678',
   }
 ];
 
