@@ -127,7 +127,7 @@ Make sure that you replace `22b8` with the identifier you get in the above comma
 
 <block class="mac windows linux android" />
 
-Now check that your device is properly connecting to ADB, the Android Debug Bridge, by running `adb devices`.
+Now check that your device is properly connecting to ADB, the Android Debug Bridge, by running `adb devices` in C:\Users\USERNAME\AppData\Local\Android\Sdk\platform-tools\ .
 
 ```
 $ adb devices
