@@ -186,12 +186,7 @@ const SwipeableRow = React.createClass({
     const swipeableView = (
       <Animated.View
         onLayout={this._onSwipeableViewLayout}
-        style={[
-          styles.swipeableContainer,
-          {
-            transform: [{translateX: this.state.currentLeft}],
-          },
-        ]}>
+        style={{transform: [{translateX: this.state.currentLeft}]}}>
         {this.props.children}
       </Animated.View>
     );
@@ -389,9 +384,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-  },
-  swipeableContainer: {
-    flex: 1,
   },
 });
 
