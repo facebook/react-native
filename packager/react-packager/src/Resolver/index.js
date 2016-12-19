@@ -226,21 +226,13 @@ class Resolver {
     //    require('./c') => require(3);
     // -- in b/index.js:
     //    require('../a/c') => require(3);
-    const replaceModuleId = (codeMatch, quote, depName) =>
-      depName in resolvedDeps
-        ? `${JSON.stringify(resolvedDeps[depName])} /* ${depName} */`
-        : codeMatch;
-
-    const codeParts = dependencyOffsets.reduceRight((codeBits, offset) => {
-      const first = codeBits.shift();
-      codeBits.unshift(
-        first.slice(0, offset),
-        first.slice(offset).replace(/(['"])([^'"']*)\1/, replaceModuleId),
-      );
-      return codeBits;
-    }, [code]);
-
-    return codeParts.join('');
+    return dependencyOffsets.reduceRight(
+      ([unhandled, handled], offset) => [
+        unhandled.slice(0, offset),
+        replaceDependencyID(unhandled.slice(offset) + handled, resolvedDeps),
+      ],
+      [code, ''],
+    ).join('');
   }
 
   wrapModule({
@@ -316,6 +308,30 @@ function definePolyfillCode(code,) {
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
+}
+
+const reDepencencyString = /^(['"])([^'"']*)\1/;
+function replaceDependencyID(stringWithDependencyIDAtStart, resolvedDeps) {
+  const match = reDepencencyString.exec(stringWithDependencyIDAtStart);
+  const dependencyName = match && match[2];
+  if (match != null && dependencyName in resolvedDeps) {
+    const {length} = match[0];
+    const id = String(resolvedDeps[dependencyName]);
+    return (
+      padRight(id, length) +
+      stringWithDependencyIDAtStart
+        .slice(length)
+        .replace(/$/m, ` // ${id} = ${dependencyName}`)
+    );
+  } else {
+    return stringWithDependencyIDAtStart;
+  }
+}
+
+function padRight(string, length) {
+  return string.length < length
+    ? string + Array(length - string.length + 1).join(' ')
+    : string;
 }
 
 module.exports = Resolver;
