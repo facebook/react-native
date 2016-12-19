@@ -10,7 +10,7 @@
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__arm64__)
+#if RCT_PROFILE && defined(__arm64__)
 
   .align 5
   .globl SYMBOL_NAME(RCTProfileTrampoline)

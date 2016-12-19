@@ -8,25 +8,32 @@
  */
 'use strict';
 
+jest.disableAutomock();
+
 jest.setMock('worker-farm', function() { return () => {}; })
-    .dontMock('os')
-    .dontMock('path')
-    .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('crypto');
-
-const Promise = require('promise');
-
-var Bundler = require('../../Bundler');
-var FileWatcher = require('../../DependencyResolver/FileWatcher');
-var Server = require('../');
-var Server = require('../../Server');
-var AssetServer = require('../../AssetServer');
+    .setMock('crypto')
+    .setMock('source-map', { SourceMapConsumer: function(fn) {}})
+    .mock('../../Bundler')
+    .mock('../../AssetServer')
+    .mock('../../lib/declareOpts')
+    .mock('../../node-haste')
+    .mock('../../Logger')
+    .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
-  var server;
+  let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
+  beforeEach(() => {
+    jest.resetModules();
+    SourceMapConsumer = require('source-map').SourceMapConsumer;
+    Bundler = require('../../Bundler');
+    Server = require('../');
+    AssetServer = require('../../AssetServer');
+    Promise = require('promise');
+  });
+
+  let server;
 
   const options = {
      projectRoots: ['root'],
@@ -39,9 +46,11 @@ describe('processRequest', () => {
     reqHandler(
       { url: requrl, headers:{}, ...reqOptions },
       {
+        statusCode: 200,
         headers: {},
         getHeader(header) { return this.headers[header]; },
         setHeader(header, value) { this.headers[header] = value; },
+        writeHead(statusCode) { this.statusCode = statusCode; },
         end(body) {
           this.body = body;
           resolve(this);
@@ -51,36 +60,31 @@ describe('processRequest', () => {
     )
   );
 
-  const invalidatorFunc = jest.genMockFunction();
-  const watcherFunc = jest.genMockFunction();
-  var requestHandler;
-  var triggerFileChange;
+  const invalidatorFunc = jest.fn();
+  let requestHandler;
 
   beforeEach(() => {
-    Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
+    Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
         getSourceMap: () => 'this is the source map',
         getEtag: () => 'this is an etag',
-      })
-    );
-
-    FileWatcher.prototype.on = function(eventType, callback) {
-      if (eventType !== 'all') {
-        throw new Error('Can only handle "all" event in watcher.');
-      }
-      watcherFunc.apply(this, arguments);
-      triggerFileChange = callback;
-      return this;
-    };
+      }));
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
+    Bundler.prototype.getResolver =
+      jest.fn().mockReturnValue({
+        getDependencyGraph: jest.fn().mockReturnValue({
+          getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
+          load: jest.fn(() => Promise.resolve()),
+        }),
+      });
 
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
   });
 
-  pit('returns JS bundle source on request of *.bundle', () => {
+  it('returns JS bundle source on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true',
@@ -90,7 +94,7 @@ describe('processRequest', () => {
     );
   });
 
-  pit('returns JS bundle source on request of *.bundle (compat)', () => {
+  it('returns JS bundle source on request of *.bundle (compat)', () => {
     return makeRequest(
       requestHandler,
       'mybundle.runModule.bundle'
@@ -99,26 +103,26 @@ describe('processRequest', () => {
     );
   });
 
-  pit('returns ETag header on request of *.bundle', () => {
+  it('returns ETag header on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true'
     ).then(response => {
-      expect(response.getHeader('ETag')).toBeDefined()
+      expect(response.getHeader('ETag')).toBeDefined();
     });
   });
 
-  pit('returns 304 on request of *.bundle when if-none-match equals the ETag', () => {
+  it('returns 304 on request of *.bundle when if-none-match equals the ETag', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true',
       { headers : { 'if-none-match' : 'this is an etag' } }
     ).then(response => {
-      expect(response.statusCode).toEqual(304)
+      expect(response.statusCode).toEqual(304);
     });
   });
 
-  pit('returns sourcemap on request of *.map', () => {
+  it('returns sourcemap on request of *.map', () => {
     return makeRequest(
       requestHandler,
       'mybundle.map?runModule=true'
@@ -127,7 +131,7 @@ describe('processRequest', () => {
     );
   });
 
-  pit('works with .ios.js extension', () => {
+  it('works with .ios.js extension', () => {
     return makeRequest(
       requestHandler,
       'index.ios.includeRequire.bundle'
@@ -142,14 +146,17 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.ios.includeRequire.map',
         dev: true,
         platform: undefined,
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
         entryModuleOnly: false,
+        isolateModuleIDs: false,
+        assetPlugins: [],
       });
     });
   });
 
-  pit('passes in the platform param', function() {
+  it('passes in the platform param', function() {
     return makeRequest(
       requestHandler,
       'index.bundle?platform=ios'
@@ -164,37 +171,54 @@ describe('processRequest', () => {
         sourceMapUrl: 'index.map?platform=ios',
         dev: true,
         platform: 'ios',
-        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
         entryModuleOnly: false,
+        isolateModuleIDs: false,
+        assetPlugins: [],
       });
     });
   });
 
-  pit('watches all files in projectRoot', () => {
+  it('passes in the assetPlugin param', function() {
     return makeRequest(
       requestHandler,
-      'mybundle.bundle?runModule=true'
-    ).then(() => {
-      expect(watcherFunc.mock.calls[0][0]).toEqual('all');
-      expect(watcherFunc.mock.calls[0][1]).not.toBe(null);
+      'index.bundle?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2'
+    ).then(function(response) {
+      expect(response.body).toEqual('this is the source');
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.js',
+        inlineSourceMap: false,
+        minify: false,
+        hot: false,
+        runModule: true,
+        sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
+        dev: true,
+        platform: undefined,
+        onProgress: jasmine.any(Function),
+        runBeforeMainModule: ['InitializeCore'],
+        unbundle: false,
+        entryModuleOnly: false,
+        isolateModuleIDs: false,
+        assetPlugins: ['assetPlugin1', 'assetPlugin2'],
+      });
     });
   });
 
   describe('file changes', () => {
-    pit('invalides files in bundle when file is updated', () => {
+    it('invalides files in bundle when file is updated', () => {
       return makeRequest(
         requestHandler,
         'mybundle.bundle?runModule=true'
       ).then(() => {
-        const onFileChange = watcherFunc.mock.calls[0][1];
-        onFileChange('all','path/file.js', options.projectRoots[0]);
+        server.onFileChange('all', options.projectRoots[0] + '/path/file.js');
         expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
       });
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed', () => {
-      const bundleFunc = jest.genMockFunction();
+    it('does not rebuild the bundles that contain a file when that file is changed', () => {
+      const bundleFunc = jest.fn();
       bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
@@ -225,11 +249,11 @@ describe('processRequest', () => {
 
       jest.runAllTicks();
 
-      triggerFileChange('all','path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       jest.runAllTicks();
 
-      expect(bundleFunc.mock.calls.length).toBe(2);
+      expect(bundleFunc.mock.calls.length).toBe(1);
 
       makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .done(response =>
@@ -238,73 +262,76 @@ describe('processRequest', () => {
       jest.runAllTicks();
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
-      const bundleFunc = jest.genMockFunction();
-      bundleFunc
-        .mockReturnValueOnce(
-          Promise.resolve({
-            getSource: () => 'this is the first source',
-            getSourceMap: () => {},
-            getEtag: () => () => 'this is an etag',
-          })
-        )
-        .mockReturnValue(
-          Promise.resolve({
-            getSource: () => 'this is the rebuilt source',
-            getSourceMap: () => {},
-            getEtag: () => () => 'this is an etag',
-          })
-        );
+    it(
+      'does not rebuild the bundles that contain a file ' +
+      'when that file is changed, even when hot loading is enabled',
+      () => {
+        const bundleFunc = jest.fn();
+        bundleFunc
+          .mockReturnValueOnce(
+            Promise.resolve({
+              getSource: () => 'this is the first source',
+              getSourceMap: () => {},
+              getEtag: () => () => 'this is an etag',
+            })
+          )
+          .mockReturnValue(
+            Promise.resolve({
+              getSource: () => 'this is the rebuilt source',
+              getSourceMap: () => {},
+              getEtag: () => () => 'this is an etag',
+            })
+          );
 
-      Bundler.prototype.bundle = bundleFunc;
+        Bundler.prototype.bundle = bundleFunc;
 
-      const server = new Server(options);
-      server.setHMRFileChangeListener(() => {});
+        server = new Server(options);
+        server.setHMRFileChangeListener(() => {});
 
-      requestHandler = server.processRequest.bind(server);
+        requestHandler = server.processRequest.bind(server);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the first source');
-          expect(bundleFunc.mock.calls.length).toBe(1);
-        });
+        makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+          .done(response => {
+            expect(response.body).toEqual('this is the first source');
+            expect(bundleFunc.mock.calls.length).toBe(1);
+          });
 
-      jest.runAllTicks();
+        jest.runAllTicks();
 
-      triggerFileChange('all','path/file.js', options.projectRoots[0]);
-      jest.runAllTimers();
-      jest.runAllTicks();
+        server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
+        jest.runAllTimers();
+        jest.runAllTicks();
 
-      expect(bundleFunc.mock.calls.length).toBe(1);
-      server.setHMRFileChangeListener(null);
+        expect(bundleFunc.mock.calls.length).toBe(1);
+        server.setHMRFileChangeListener(null);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the rebuilt source');
-          expect(bundleFunc.mock.calls.length).toBe(2);
-        });
-      jest.runAllTicks();
+        makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+          .done(response => {
+            expect(response.body).toEqual('this is the rebuilt source');
+            expect(bundleFunc.mock.calls.length).toBe(2);
+          });
+        jest.runAllTicks();
     });
   });
 
   describe('/onchange endpoint', () => {
-    var EventEmitter;
-    var req;
-    var res;
+    let EventEmitter;
+    let req;
+    let res;
 
     beforeEach(() => {
       EventEmitter = require.requireActual('events').EventEmitter;
       req = new EventEmitter();
       req.url = '/onchange';
       res = {
-        writeHead: jest.genMockFn(),
-        end: jest.genMockFn()
+        writeHead: jest.fn(),
+        end: jest.fn()
       };
     });
 
     it('should hold on to request and inform on change', () => {
       server.processRequest(req, res);
-      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       expect(res.end).toBeCalledWith(JSON.stringify({changed: true}));
     });
@@ -313,7 +340,7 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       req.emit('close');
       jest.runAllTimers();
-      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       expect(res.end).not.toBeCalled();
     });
@@ -322,9 +349,9 @@ describe('processRequest', () => {
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
-      const res = {end: jest.genMockFn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -333,19 +360,47 @@ describe('processRequest', () => {
 
     it('should parse the platform option', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
-      const res = {end: jest.genMockFn()};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
       expect(res.end).toBeCalledWith('i am image');
     });
+
+    it('should serve range request', () => {
+      const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
+      const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
+      const mockData = 'i am image';
+
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve(mockData));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.end).toBeCalledWith(mockData.slice(0, 4));
+    });
+
+    it('should serve assets files\'s name contain non-latin letter', () => {
+      const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
+      const res = {end: jest.fn(), setHeader: jest.fn()};
+
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith(
+        'imgs/\u{4E3B}\u{9875}/logo.png',
+        undefined
+      );
+      expect(res.end).toBeCalledWith('i am image');
+    });
   });
 
   describe('buildbundle(options)', () => {
-    pit('Calls the bundler with the correct args', () => {
+    it('Calls the bundler with the correct args', () => {
       return server.buildBundle({
         entryFile: 'foo file'
       }).then(() =>
@@ -357,16 +412,18 @@ describe('processRequest', () => {
           runModule: true,
           dev: true,
           platform: undefined,
-          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          runBeforeMainModule: ['InitializeCore'],
           unbundle: false,
           entryModuleOnly: false,
+          isolateModuleIDs: false,
+          assetPlugins: [],
         })
       );
     });
   });
 
   describe('buildBundleFromUrl(options)', () => {
-    pit('Calls the bundler with the correct args', () => {
+    it('Calls the bundler with the correct args', () => {
       return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
         .then(() =>
           expect(Bundler.prototype.bundle).toBeCalledWith({
@@ -378,11 +435,90 @@ describe('processRequest', () => {
             sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',
             dev: false,
             platform: undefined,
-            runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+            runBeforeMainModule: ['InitializeCore'],
             unbundle: false,
             entryModuleOnly: false,
+            isolateModuleIDs: false,
+            assetPlugins: [],
           })
         );
+    });
+  });
+
+  describe('/symbolicate endpoint', () => {
+    it('should symbolicate given stack trace', () => {
+      const body = JSON.stringify({stack: [{
+        file: 'http://foo.bundle?platform=ios',
+        lineNumber: 2100,
+        column: 44,
+        customPropShouldBeLeftUnchanged: 'foo',
+      }]});
+
+      SourceMapConsumer.prototype.originalPositionFor = jest.fn((frame) => {
+        expect(frame.line).toEqual(2100);
+        expect(frame.column).toEqual(44);
+        return {
+          source: 'foo.js',
+          line: 21,
+          column: 4,
+        };
+      });
+
+      return makeRequest(
+        requestHandler,
+        '/symbolicate',
+        { rawBody: body }
+      ).then(response => {
+        expect(JSON.parse(response.body)).toEqual({
+          stack: [{
+            file: 'foo.js',
+            lineNumber: 21,
+            column: 4,
+            customPropShouldBeLeftUnchanged: 'foo',
+          }]
+        });
+      });
+    });
+
+    it('ignores `/debuggerWorker.js` stack frames', () => {
+      const body = JSON.stringify({stack: [{
+        file: 'http://localhost:8081/debuggerWorker.js',
+        lineNumber: 123,
+        column: 456,
+      }]});
+
+      return makeRequest(
+        requestHandler,
+        '/symbolicate',
+        { rawBody: body }
+      ).then(response => {
+        expect(JSON.parse(response.body)).toEqual({
+          stack: [{
+            file: 'http://localhost:8081/debuggerWorker.js',
+            lineNumber: 123,
+            column: 456,
+          }]
+        });
+      });
+    });
+  });
+
+  describe('/symbolicate handles errors', () => {
+    it('should symbolicate given stack trace', () => {
+      const body = 'clearly-not-json';
+      console.error = jest.fn();
+
+      return makeRequest(
+        requestHandler,
+        '/symbolicate',
+        { rawBody: body }
+      ).then(response => {
+        expect(response.statusCode).toEqual(500);
+        expect(JSON.parse(response.body)).toEqual({
+          error: jasmine.any(String),
+        });
+        expect(console.error).toBeCalled();
+      });
     });
   });
 });

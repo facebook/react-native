@@ -9,10 +9,10 @@
 
 #import "RCTSettingsManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
 
 @implementation RCTSettingsManager
 {
@@ -62,9 +62,12 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher
    sendDeviceEventWithName:@"settingsUpdated"
    body:RCTJSONClean([_defaults dictionaryRepresentation])];
+#pragma clang diagnostic pop
 }
 
 /**
@@ -77,9 +80,9 @@ RCT_EXPORT_METHOD(setValues:(NSDictionary *)values)
   [values enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, BOOL *stop) {
     id plist = [RCTConvert NSPropertyList:json];
     if (plist) {
-      [_defaults setObject:plist forKey:key];
+      [self->_defaults setObject:plist forKey:key];
     } else {
-      [_defaults removeObjectForKey:key];
+      [self->_defaults removeObjectForKey:key];
     }
   }];
 

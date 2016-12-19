@@ -11,19 +11,20 @@
  */
 'use strict';
 
-const ErrorUtils = require('ErrorUtils');
-
-const invariant = require('invariant');
+const infoLog = require('infoLog');
+const invariant = require('fbjs/lib/invariant');
 
 type SimpleTask = {
-  name: string;
-  run: () => void;
+  name: string,
+  run: () => void,
 };
 type PromiseTask = {
-  name: string;
-  gen: () => Promise;
+  name: string,
+  gen: () => Promise<any>,
 };
 export type Task = Function | SimpleTask | PromiseTask;
+
+const DEBUG = false;
 
 /**
  * TaskQueue - A system for queueing and executing a mix of simple callbacks and
@@ -63,6 +64,20 @@ class TaskQueue {
     this._getCurrentQueue().push(task);
   }
 
+  enqueueTasks(tasks: Array<Task>): void {
+    tasks.forEach((task) => this.enqueue(task));
+  }
+
+  cancelTasks(tasksToCancel: Array<Task>): void {
+    // search through all tasks and remove them.
+    this._queueStack = this._queueStack
+      .map((queue) => ({
+        ...queue,
+        tasks: queue.tasks.filter((task) => tasksToCancel.indexOf(task) === -1),
+      }))
+      .filter((queue, idx) => (queue.tasks.length > 0 || idx === 0));
+  }
+
   /**
    * Check to see if `processNext` should be called.
    *
@@ -81,26 +96,29 @@ class TaskQueue {
    * Executes the next task in the queue.
    */
   processNext(): void {
-    let queue = this._getCurrentQueue();
+    const queue = this._getCurrentQueue();
     if (queue.length) {
       const task = queue.shift();
       try {
         if (task.gen) {
+          DEBUG && infoLog('genPromise for task ' + task.name);
           this._genPromise((task: any)); // Rather than annoying tagged union
         } else if (task.run) {
+          DEBUG && infoLog('run task ' + task.name);
           task.run();
         } else {
           invariant(
             typeof task === 'function',
-            'Expected Function, SimpleTask, or PromiseTask, but got: ' +
-              JSON.stringify(task)
+            'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
+              JSON.stringify(task, null, 2)
           );
+          DEBUG && infoLog('run anonymous task');
           task();
         }
       } catch (e) {
-        e.message = 'TaskQueue: Error with task' + (task.name || ' ') + ': ' +
+        e.message = 'TaskQueue: Error with task ' + (task.name || '') + ': ' +
           e.message;
-        ErrorUtils.reportError(e);
+        throw e;
       }
     }
   }
@@ -115,6 +133,7 @@ class TaskQueue {
         queue.tasks.length === 0 &&
         this._queueStack.length > 1) {
       this._queueStack.pop();
+      DEBUG && infoLog('popped queue: ', {stackIdx, queueStackSize: this._queueStack.length});
       return this._getCurrentQueue();
     } else {
       return queue.tasks;
@@ -128,18 +147,22 @@ class TaskQueue {
     // happens once it is fully processed.
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
-    ErrorUtils.applyWithGuard(task.gen)
+    DEBUG && infoLog('push new queue: ', {stackIdx});
+    DEBUG && infoLog('exec gen task ' + task.name);
+    task.gen()
       .then(() => {
+        DEBUG && infoLog(
+          'onThen for gen task ' + task.name,
+          {stackIdx, queueStackSize: this._queueStack.length},
+        );
         this._queueStack[stackIdx].popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch((ex) => {
-        console.warn(
-          'TaskQueue: Error resolving Promise in task ' + task.name,
-          ex
-        );
+        ex.message = `TaskQueue: Error resolving Promise in task ${task.name}: ${ex.message}`;
         throw ex;
-      });
+      })
+      .done();
   }
 }
 

@@ -16,13 +16,13 @@ import java.util.List;
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
-import android.util.DisplayMetrics;
+import android.text.style.StrikethroughSpan;
+import android.text.style.UnderlineSpan;
 import android.view.Choreographer;
 import android.widget.TextView;
 
@@ -32,12 +32,12 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -120,7 +120,7 @@ public class ReactTextTest {
         JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
-        getSingleSpan((TextView)rootView.getChildAt(0), CustomStyleSpan.class);
+        getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
     assertThat(customStyleSpan.getWeight() & Typeface.BOLD).isNotZero();
     assertThat(customStyleSpan.getStyle() & Typeface.ITALIC).isZero();
   }
@@ -280,6 +280,60 @@ public class ReactTextTest {
   }
 
   @Test
+  public void testTextDecorationLineUnderlineApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    Spanned text = (Spanned) textView.getText();
+    UnderlineSpan underlineSpan = getSingleSpan(textView, UnderlineSpan.class);
+    StrikethroughSpan[] strikeThroughSpans =
+        text.getSpans(0, text.length(), StrikethroughSpan.class);
+    assertThat(underlineSpan instanceof UnderlineSpan).isTrue();
+    assertThat(strikeThroughSpans).hasSize(0);
+  }
+
+  @Test
+  public void testTextDecorationLineLineThroughApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "line-through"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    Spanned text = (Spanned) textView.getText();
+    UnderlineSpan[] underlineSpans =
+        text.getSpans(0, text.length(), UnderlineSpan.class);
+    StrikethroughSpan strikeThroughSpan =
+        getSingleSpan(textView, StrikethroughSpan.class);
+    assertThat(underlineSpans).hasSize(0);
+    assertThat(strikeThroughSpan instanceof StrikethroughSpan).isTrue();
+  }
+
+  @Test
+  public void testTextDecorationLineUnderlineLineThroughApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline line-through"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+
+    UnderlineSpan underlineSpan =
+        getSingleSpan((TextView) rootView.getChildAt(0), UnderlineSpan.class);
+    StrikethroughSpan strikeThroughSpan =
+        getSingleSpan((TextView) rootView.getChildAt(0), StrikethroughSpan.class);
+    assertThat(underlineSpan instanceof UnderlineSpan).isTrue();
+    assertThat(strikeThroughSpan instanceof StrikethroughSpan).isTrue();
+  }
+
+  @Test
   public void testBackgroundColorStyleApplied() {
     UIManagerModule uiManager = getUIManagerModule();
 
@@ -289,7 +343,7 @@ public class ReactTextTest {
         JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     Drawable backgroundDrawable = ((TextView) rootView.getChildAt(0)).getBackground();
-    assertThat(((ColorDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
+    assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
   }
 
   // JELLY_BEAN is needed for TextView#getMaxLines(), which is OK, because in the actual code we
@@ -372,8 +426,6 @@ public class ReactTextTest {
 
   public UIManagerModule getUIManagerModule() {
     ReactApplicationContext reactContext = ReactTestHelper.createCatalystContextForTest();
-    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
     List<ViewManager> viewManagers = Arrays.asList(
         new ViewManager[] {
             new ReactTextViewManager(),
@@ -382,7 +434,7 @@ public class ReactTextTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
-        new UIImplementation(reactContext, viewManagers));
+        new UIImplementationProvider());
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

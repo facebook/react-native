@@ -11,7 +11,11 @@ package com.facebook.react.views.progressbar;
 
 import javax.annotation.Nullable;
 
+import android.content.Context;
+import android.widget.ProgressBar;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -23,15 +27,31 @@ import com.facebook.react.uimanager.ViewProps;
  * ProgressBar changes, we have to drop the existing ProgressBar (if there is one) and create a new
  * one with the style given.
  */
+@ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 public class ReactProgressBarViewManager extends
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode> {
+
+  protected static final String REACT_CLASS = "AndroidProgressBar";
 
   /* package */ static final String PROP_STYLE = "styleAttr";
   /* package */ static final String PROP_INDETERMINATE = "indeterminate";
   /* package */ static final String PROP_PROGRESS = "progress";
+  /* package */ static final String PROP_ANIMATING = "animating";
 
-  /* package */ static final String REACT_CLASS = "AndroidProgressBar";
   /* package */ static final String DEFAULT_STYLE = "Normal";
+
+  private static Object sProgressBarCtorLock = new Object();
+
+  /**
+   * We create ProgressBars on both the UI and shadow threads. There is a race condition in the
+   * ProgressBar constructor that may cause crashes when two ProgressBars are constructed at the
+   * same time on two different threads. This static ctor wrapper protects against that.
+   */
+  public static ProgressBar createProgressBar(Context context, int style) {
+    synchronized (sProgressBarCtorLock) {
+      return new ProgressBar(context, null, style);
+    }
+  }
 
   @Override
   public String getName() {
@@ -61,6 +81,11 @@ public class ReactProgressBarViewManager extends
   @ReactProp(name = PROP_PROGRESS)
   public void setProgress(ProgressBarContainerView view, double progress) {
     view.setProgress(progress);
+  }
+
+  @ReactProp(name = PROP_ANIMATING)
+  public void setAnimating(ProgressBarContainerView view, boolean animating) {
+    view.setAnimating(animating);
   }
 
   @Override
@@ -105,5 +130,4 @@ public class ReactProgressBarViewManager extends
       throw new JSApplicationIllegalArgumentException("Unknown ProgressBar style: " + styleStr);
     }
   }
-
 }

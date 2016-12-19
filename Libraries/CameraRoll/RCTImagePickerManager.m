@@ -9,18 +9,17 @@
  */
 
 #import "RCTImagePickerManager.h"
-#import "RCTImageStoreManager.h"
-
-#import "RCTConvert.h"
-#import "RCTRootView.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-
-#import <UIKit/UIKit.h>
 
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <UIKit/UIKit.h>
 
-@interface RCTImagePickerManager ()<UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+#import <React/RCTConvert.h>
+#import <React/RCTImageStoreManager.h>
+#import <React/RCTLog.h>
+#import <React/RCTRootView.h>
+#import <React/RCTUtils.h>
+
+@interface RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end
 
@@ -108,8 +107,15 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   BOOL isMovie = [mediaType isEqualToString:(NSString *)kUTTypeMovie];
   NSString *key = isMovie ? UIImagePickerControllerMediaURL : UIImagePickerControllerReferenceURL;
   NSURL *imageURL = info[key];
+  UIImage *image = info[UIImagePickerControllerOriginalImage];
+  NSNumber *width = 0;
+  NSNumber *height = 0;
+  if (image) {
+    height = @(image.size.height);
+    width = @(image.size.width);
+  }
   if (imageURL) {
-    [self _dismissPicker:picker args:@[imageURL.absoluteString]];
+    [self _dismissPicker:picker args:@[imageURL.absoluteString, RCTNullIfNil(height), RCTNullIfNil(width)]];
     return;
   }
 
@@ -120,7 +126,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   // WARNING: Using ImageStoreManager may cause a memory leak because the
   // image isn't automatically removed from store once we're done using it.
   [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
-    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag] : nil];
+    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, height, width] : nil];
   }];
 }
 
@@ -143,7 +149,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   [_pickerCallbacks addObject:callback];
   [_pickerCancelCallbacks addObject:cancelCallback];
 
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
+  UIViewController *rootViewController = RCTPresentedViewController();
   [rootViewController presentViewController:imagePicker animated:YES completion:nil];
 }
 
@@ -157,7 +163,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
+  UIViewController *rootViewController = RCTPresentedViewController();
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   if (args) {

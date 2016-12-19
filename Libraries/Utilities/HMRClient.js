@@ -7,97 +7,129 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule HMRClient
+ * @flow
  */
 'use strict';
 
-const invariant = require('invariant');
-const processColor = require('processColor');
+const Platform = require('Platform');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable(platform, bundleEntry) {
+  enable(platform: string, bundleEntry: string, host: string, port: number) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-
-    // TODO(martinb) receive host and port as parameters
-    const host = 'localhost';
-    const port = '8081';
+    invariant(host, 'Missing required paramenter `host`');
 
     // need to require WebSocket inside of `enable` function because
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
     const WebSocket = require('WebSocket');
 
-    const activeWS = new WebSocket(
-      `ws://${host}:${port}/hot?platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`
-    );
+    const wsHostPort = port !== null && port !== ''
+      ? `${host}:${port}`
+      : host;
+
+    // Build the websocket url
+    const wsUrl = `ws://${wsHostPort}/hot?` +
+      `platform=${platform}&` +
+      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+
+    const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
-      throw new Error(
+      let error = (
 `Hot loading isn't working because it cannot connect to the development server.
 
-Ensure the following:
-- Node server is running and available on the same network
-- run 'npm start' from react-native root
-- Node server URL is correctly set in AppDelegate
+Try the following to fix the issue:
+- Ensure that the packager server is running and available on the same network`
+      );
+
+      if (Platform.OS === 'ios') {
+        error += (
+`
+- Ensure that the Packager server URL is correctly set in AppDelegate`
+        );
+      } else {
+        error += (
+`
+- Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
+- If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device
+- If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081`
+        );
+      }
+
+      error += (
+`
 
 URL: ${host}:${port}
 
 Error: ${e.message}`
       );
+
+      throw new Error(error);
     };
     activeWS.onmessage = ({data}) => {
-      const DevLoadingView = require('NativeModules').DevLoadingView;
+      // Moving to top gives errors due to NativeModules not being initialized
+      const HMRLoadingView = require('HMRLoadingView');
+
       data = JSON.parse(data);
 
-      switch(data.type) {
+      switch (data.type) {
         case 'update-start': {
-          DevLoadingView.showMessage(
-            'Hot Loading...',
-            processColor('#000000'),
-            processColor('#aaaaaa'),
-          );
+          HMRLoadingView.showMessage('Hot Loading...');
           break;
         }
         case 'update': {
-          const modules = data.body.modules;
-          const sourceMappingURLs = data.body.sourceMappingURLs;
-          const sourceURLs = data.body.sourceURLs;
+          const {
+            modules,
+            sourceMappingURLs,
+            sourceURLs,
+            inverseDependencies,
+          } = data.body;
 
-          const RCTRedBox = require('NativeModules').RedBox;
-          RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          if (Platform.OS === 'ios') {
+            const RCTRedBox = require('NativeModules').RedBox;
+            RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          } else {
+            const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+            RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
+          }
 
-          modules.forEach((code, i) => {
+          modules.forEach(({id, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
-
-            require('SourceMapsCache').fetch({
-              text: code,
-              url: sourceURLs[i],
-              sourceMappingURL: sourceMappingURLs[i],
-            });
 
             // on JSC we need to inject from native for sourcemaps to work
             // (Safari doesn't support `sourceMappingURL` nor any variant when
             // evaluating code) but on Chrome we can simply use eval
-            const injectFunction = typeof __injectHMRUpdate === 'function'
-              ? __injectHMRUpdate
+            const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
+              ? global.nativeInjectHMRUpdate
               : eval;
+
+            code = [
+              '__accept(',
+                `${id},`,
+                'function(global,require,module,exports){',
+                  `${code}`,
+                '\n},',
+                `${JSON.stringify(inverseDependencies)}`,
+              ');',
+            ].join('');
 
             injectFunction(code, sourceURLs[i]);
           });
 
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           break;
         }
         case 'update-done': {
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           break;
         }
         case 'error': {
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           throw new Error(data.body.type + ' ' + data.body.description);
         }
         default: {

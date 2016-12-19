@@ -11,32 +11,40 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTLocationObserver = require('NativeModules').LocationObserver;
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTLocationObserver = require('NativeModules').LocationObserver;
 
-var invariant = require('invariant');
-var logError = require('logError');
-var warning = require('warning');
+const invariant = require('fbjs/lib/invariant');
+const logError = require('logError');
+const warning = require('fbjs/lib/warning');
+
+const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
 
 var subscriptions = [];
-
 var updatesEnabled = false;
 
 type GeoOptions = {
-  timeout: number;
-  maximumAge: number;
-  enableHighAccuracy: bool;
-  distanceFilter: number;
+  timeout: number,
+  maximumAge: number,
+  enableHighAccuracy: bool,
+  distanceFilter: number,
 }
 
 /**
- * The Geolocation API follows the web spec:
+ * The Geolocation API extends the web spec:
  * https://developer.mozilla.org/en-US/docs/Web/API/Geolocation
+ *
+ * As a browser polyfill, this API is available through the `navigator.geolocation`
+ * global - you do not need to `import` it.
  *
  * ### iOS
  * You need to include the `NSLocationWhenInUseUsageDescription` key
- * in Info.plist to enable geolocation. Geolocation is enabled by default
- * when you create a project with `react-native init`.
+ * in Info.plist to enable geolocation when using the app. Geolocation is
+ * enabled by default when you create a project with `react-native init`.
+ *
+ * In order to enable geolocation in the background, you need to include the
+ * 'NSLocationAlwaysUsageDescription' key in Info.plist and add location as
+ * a background mode in the 'Capabilities' tab in Xcode.
  *
  * ### Android
  * To request access to location, you need to add the following line to your
@@ -44,12 +52,17 @@ type GeoOptions = {
  *
  * `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
  *
+ * Android API >= 18 Positions will also contain a `mocked` boolean to indicate if position
+ * was created from a mock provider.
+ *
  */
 var Geolocation = {
 
   /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   * On Android, this can return almost immediately if the location is cached or
+   * request an update, which might take a while.
    */
   getCurrentPosition: function(
     geo_success: Function,
@@ -78,11 +91,11 @@ var Geolocation = {
     }
     var watchID = subscriptions.length;
     subscriptions.push([
-      RCTDeviceEventEmitter.addListener(
+      LocationEventEmitter.addListener(
         'geolocationDidChange',
         success
       ),
-      error ? RCTDeviceEventEmitter.addListener(
+      error ? LocationEventEmitter.addListener(
         'geolocationError',
         error
       ) : null,

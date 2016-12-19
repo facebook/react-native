@@ -14,8 +14,9 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
-#import "RCTUIManager.h"
-#import "UIView+React.h"
+
+#import <React/RCTUIManager.h>
+#import <React/UIView+React.h>
 
 @interface RCTUIManager (Testing)
 
@@ -73,6 +74,8 @@
               removeAtIndices:nil
                      registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_uiManager.viewRegistry];
 
+  [_uiManager.viewRegistry[@20] didUpdateReactSubviews];
+
   XCTAssertTrue([[containerView reactSubviews] count] == 5,
                @"Expect to have 5 react subviews after calling manage children \
                with 5 tags to add, instead have %lu", (unsigned long)[[containerView reactSubviews] count]);
@@ -95,7 +98,7 @@
   }
   for (NSInteger i = 2; i < 20; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   // Remove views 1-5 from view 20
@@ -106,6 +109,8 @@
                  addAtIndices:nil
               removeAtIndices:removeAtIndices
                      registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)_uiManager.viewRegistry];
+
+ [_uiManager.viewRegistry[@20] didUpdateReactSubviews];
 
   XCTAssertEqual(containerView.reactSubviews.count, (NSUInteger)13,
                @"Expect to have 13 react subviews after calling manage children\
@@ -155,7 +160,7 @@
 
   for (NSInteger i = 1; i < 11; i++) {
     UIView *view = _uiManager.viewRegistry[@(i)];
-    [containerView addSubview:view];
+    [containerView insertReactSubview:view atIndex:containerView.reactSubviews.count];
   }
 
   [_uiManager _manageChildren:@20

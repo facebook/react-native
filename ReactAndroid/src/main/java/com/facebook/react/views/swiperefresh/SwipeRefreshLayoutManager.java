@@ -14,23 +14,28 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import android.graphics.Color;
-import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+
+import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
  * child view. Emits an {@code onRefresh} event when this happens.
  */
+@ReactModule(name = REACT_CLASS)
 public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
+
+  protected static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {
@@ -39,7 +44,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
 
   @Override
   public String getName() {
-    return "AndroidSwipeRefreshLayout";
+    return REACT_CLASS;
   }
 
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
@@ -71,15 +76,13 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
   }
 
   @ReactProp(name = "refreshing")
-  public void setRefreshing(final ReactSwipeRefreshLayout view, final boolean refreshing) {
-    // Use `post` otherwise the control won't start refreshing if refreshing is true when
-    // the component gets mounted.
-    view.post(new Runnable() {
-      @Override
-      public void run() {
-        view.setRefreshing(refreshing);
-      }
-    });
+  public void setRefreshing(ReactSwipeRefreshLayout view, boolean refreshing) {
+    view.setRefreshing(refreshing);
+  }
+
+  @ReactProp(name = "progressViewOffset", defaultFloat = 0)
+  public void setProgressViewOffset(final ReactSwipeRefreshLayout view, final float offset) {
+    view.setProgressViewOffset(offset);
   }
 
   @Override
@@ -91,7 +94,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
           @Override
           public void onRefresh() {
             reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
-                .dispatchEvent(new RefreshEvent(view.getId(), SystemClock.uptimeMillis()));
+                .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });
   }

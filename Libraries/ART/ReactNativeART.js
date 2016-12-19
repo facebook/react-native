@@ -19,11 +19,12 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var merge = require('merge');
+var invariant = require('fbjs/lib/invariant');
 
 // Diff Helpers
 
 function arrayDiffer(a, b) {
-  if (a == null) {
+  if (a == null || b == null) {
     return true;
   }
   if (a.length !== b.length) {
@@ -136,9 +137,16 @@ function childrenAsString(children) {
 
 // Surface - Root node of all ART
 
-var Surface = React.createClass({
+class Surface extends React.Component {
+  static childContextTypes = {
+    isInSurface: React.PropTypes.bool,
+  };
 
-  render: function() {
+  getChildContext() {
+    return { isInSurface: true };
+  }
+
+  render() {
     var props = this.props;
     var w = extractNumber(props.width, 0);
     var h = extractNumber(props.height, 0);
@@ -148,8 +156,7 @@ var Surface = React.createClass({
       </NativeSurfaceView>
     );
   }
-
-});
+}
 
 // Node Props
 
@@ -204,10 +211,17 @@ function extractOpacity(props) {
 // Note: ART has a notion of width and height on Group but AFAIK it's a noop in
 // ReactART.
 
-var Group = React.createClass({
+class Group extends React.Component {
+  static contextTypes = {
+    isInSurface: React.PropTypes.bool.isRequired,
+  };
 
-  render: function() {
+  render() {
     var props = this.props;
+    invariant(
+      this.context.isInSurface,
+      'ART: <Group /> must be a child of a <Surface />'
+    );
     return (
       <NativeGroup
         opacity={extractOpacity(props)}
@@ -216,24 +230,16 @@ var Group = React.createClass({
       </NativeGroup>
     );
   }
+}
 
-});
-
-var ClippingRectangle = React.createClass({
-
-  render: function() {
+class ClippingRectangle extends React.Component {
+  render() {
     var props = this.props;
     var x = extractNumber(props.x, 0);
     var y = extractNumber(props.y, 0);
     var w = extractNumber(props.width, 0);
     var h = extractNumber(props.height, 0);
-    var clipping = new Path()
-      .moveTo(x, y)
-      .line(w, 0)
-      .line(0, h)
-      .line(w, 0)
-      .close()
-      .toJSON();
+    var clipping = [x, y, w, h];
     // The current clipping API requires x and y to be ignored in the transform
     var propsExcludingXAndY = merge(props);
     delete propsExcludingXAndY.x;
@@ -247,8 +253,7 @@ var ClippingRectangle = React.createClass({
       </NativeGroup>
     );
   }
-
-});
+}
 
 // Renderables
 
@@ -382,9 +387,8 @@ function extractStrokeJoin(strokeJoin) {
 // Note: ART has a notion of width and height on Shape but AFAIK it's a noop in
 // ReactART.
 
-var Shape = React.createClass({
-
-  render: function() {
+class Shape extends React.Component {
+  render() {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
     var d = new Path(path).toJSON();
@@ -403,8 +407,7 @@ var Shape = React.createClass({
       />
     );
   }
-
-});
+}
 
 // Text
 
@@ -478,9 +481,8 @@ function extractAlignment(alignment) {
   }
 }
 
-var Text = React.createClass({
-
-  render: function() {
+class Text extends React.Component {
+  render() {
     var props = this.props;
     var textPath = props.path ? new Path(props.path).toJSON() : null;
     var textFrame = extractFontAndLines(
@@ -504,8 +506,7 @@ var Text = React.createClass({
       />
     );
   }
-
-});
+}
 
 // Declarative fill type objects - API design not finalized
 
@@ -566,13 +567,6 @@ function Pattern(url, width, height, left, top) {
   this._brush = [PATTERN, url, +left || 0, +top || 0, +width, +height];
 }
 
-// This doesn't work on iOS and is just a placeholder to get Spectrum running.
-// I will try to eliminate this dependency in Spectrum and remove it from
-// ReactART proper.
-function CSSBackgroundPattern() {
-  return new Color('rgba(0,0,0,0)');
-}
-
 var ReactART = {
   LinearGradient: LinearGradient,
   RadialGradient: RadialGradient,
@@ -584,7 +578,6 @@ var ReactART = {
   ClippingRectangle: ClippingRectangle,
   Shape: Shape,
   Text: Text,
-  CSSBackgroundPattern: CSSBackgroundPattern
 };
 
 module.exports = ReactART;

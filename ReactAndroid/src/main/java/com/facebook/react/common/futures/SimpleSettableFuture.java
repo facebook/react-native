@@ -30,7 +30,7 @@ public class SimpleSettableFuture<T> implements Future<T> {
    * Sets the result. If another thread has called {@link #get}, they will immediately receive the
    * value. set or setException must only be called once.
    */
-  public void set(T result) {
+  public void set(@Nullable T result) {
     checkNotSet();
     mResult = result;
     mReadyLatch.countDown();

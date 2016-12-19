@@ -5,13 +5,35 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-const _ = require('underscore');
 const ModuleTransport = require('../lib/ModuleTransport');
 
+export type FinalizeOptions = {
+  allowUpdates?: boolean,
+  /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+   * deploy of Flow v0.36.0. To see the error, remove this comment and run Flow
+   */
+  runBeforeMainModule?: Array<mixed>,
+  runMainModule?: boolean,
+};
+
+export type GetSourceOptions = {
+  inlineSourceMap?: boolean,
+  dev: boolean,
+};
+
 class BundleBase {
+
+  _assets: Array<mixed>;
+  _finalized: boolean;
+  _mainModuleId: number | void;
+  _modules: Array<ModuleTransport>;
+  _source: ?string;
+
   constructor() {
     this._finalized = false;
     this._modules = [];
@@ -27,16 +49,24 @@ class BundleBase {
     return this._mainModuleId;
   }
 
-  setMainModuleId(moduleId) {
+  setMainModuleId(moduleId: number) {
     this._mainModuleId = moduleId;
   }
 
-  addModule(module) {
-    if (!module instanceof ModuleTransport) {
+  addModule(module: ModuleTransport) {
+    if (!(module instanceof ModuleTransport)) {
+      throw new Error('Expected a ModuleTransport object');
+    }
+
+    return this._modules.push(module) - 1;
+  }
+
+  replaceModuleAt(index: number, module: ModuleTransport) {
+    if (!(module instanceof ModuleTransport)) {
       throw new Error('Expeceted a ModuleTransport object');
     }
 
-    this._modules.push(module);
+    this._modules[index] = module;
   }
 
   getModules() {
@@ -47,36 +77,47 @@ class BundleBase {
     return this._assets;
   }
 
-  addAsset(asset) {
+  addAsset(asset: mixed) {
     this._assets.push(asset);
   }
 
-  finalize(options) {
-    Object.freeze(this._modules);
-    Object.seal(this._modules);
-    Object.freeze(this._assets);
-    Object.seal(this._assets);
+  finalize(options: FinalizeOptions) {
+    if (!options.allowUpdates) {
+      Object.freeze(this._modules);
+      Object.freeze(this._assets);
+    }
+
     this._finalized = true;
   }
 
-  getSource(options) {
+  getSource(options: GetSourceOptions) {
     this.assertFinalized();
 
     if (this._source) {
       return this._source;
     }
 
-    this._source = _.pluck(this._modules, 'code').join('\n');
+    this._source = this._modules.map((module) => module.code).join('\n');
     return this._source;
   }
 
-  assertFinalized(message) {
+  invalidateSource() {
+    this._source = null;
+  }
+
+  assertFinalized(message?: string) {
     if (!this._finalized) {
       throw new Error(message || 'Bundle needs to be finalized before getting any source');
     }
   }
 
-  toJSON() {
+  setRamGroups(ramGroups: Array<string>) {}
+
+  toJSON(): {
+    modules: Array<ModuleTransport>,
+    assets: Array<mixed>,
+    mainModuleId: number | void,
+  } {
     return {
       modules: this._modules,
       assets: this._assets,
@@ -90,9 +131,8 @@ class BundleBase {
     bundle.setMainModuleId(json.mainModuleId);
 
     Object.freeze(bundle._modules);
-    Object.seal(bundle._modules);
     Object.freeze(bundle._assets);
-    Object.seal(bundle._assets);
+
     bundle._finalized = true;
   }
 }

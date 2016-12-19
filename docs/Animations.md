@@ -5,6 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/animations.html
 next: accessibility
+previous: handling-touches
 ---
 
 Fluid, meaningful animations are essential to the mobile user experience. Like
@@ -24,13 +25,13 @@ component with a simple spring bounce on mount looks like this:
 
 ```javascript
 class Playground extends React.Component {
-  constructor(props: any) {
+  constructor(props) {
     super(props);
     this.state = {
       bounceValue: new Animated.Value(0),
     };
   }
-  render(): ReactElement {
+  render() {
     return (
       <Animated.Image                         // Base: Image, Text, View
         source={{uri: 'http://i.imgur.com/XMKOH81.jpg'}}
@@ -164,6 +165,15 @@ Input | Output
    101|      0
    200|      0
 
+`interpolate` also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:
+
+```javascript
+value.interpolate({
+  inputRange: [0, 360],
+  outputRange: ['0deg', '360deg']
+})
+```
+
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
@@ -247,7 +257,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -267,26 +277,34 @@ it provides much less control than `Animated` and other animation libraries, so
 you may need to use another approach if you can't get `LayoutAnimation` to do
 what you want.
 
-![](/react-native/img/LayoutAnimationExample.gif)
+Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
 ```javascript
-var App = React.createClass({
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+```
+
+![](img/LayoutAnimationExample.gif)
+
+```javascript
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { w: 100, h: 100 };
+    this._onPress = this._onPress.bind(this);
+  }
+
   componentWillMount() {
     // Animate creation
     LayoutAnimation.spring();
-  },
-
-  getInitialState() {
-    return { w: 100, h: 100 }
-  },
+  }
 
   _onPress() {
     // Animate the update
     LayoutAnimation.spring();
     this.setState({w: this.state.w + 15, h: this.state.h + 15})
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <View style={styles.container}>
         <View style={[styles.box, {width: this.state.w, height: this.state.h}]} />
@@ -298,7 +316,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
@@ -315,7 +333,7 @@ animations that underlies all of the JavaScript-based animation APIs.  In
 general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
-### react-tween-state (Not recommended - use [Animated](#animated) instead)
+### react-tween-state (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [react-tween-state](https://github.com/chenglou/react-tween-state) is a
 minimal library that does exactly what its name suggests: it *tweens* a
@@ -344,14 +362,15 @@ your project, you will need to install it with `npm i react-tween-state
 --save` from your project directory.
 
 ```javascript
-var tweenState = require('react-tween-state');
+import tweenState from 'react-tween-state';
+import reactMixin from 'react-mixin'; // https://github.com/brigand/react-mixin
 
-var App = React.createClass({
-  mixins: [tweenState.Mixin],
-
-  getInitialState() {
-    return { opacity: 1 }
-  },
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { opacity: 1 };
+    this._animateOpacity = this._animateOpacity.bind(this);
+  }
 
   _animateOpacity() {
     this.tweenState('opacity', {
@@ -359,7 +378,7 @@ var App = React.createClass({
       duration: 1000,
       endValue: this.state.opacity === 0.2 ? 1 : 0.2,
     });
-  },
+  }
 
   render() {
     return (
@@ -371,18 +390,20 @@ var App = React.createClass({
         </TouchableWithoutFeedback>
       </View>
     )
-  },
-});
+  }
+}
+
+reactMixin.onClass(App, tweenState.Mixin);
 ```
 [Run this example](https://rnplay.org/apps/4FUQ-A)
 
-![](/react-native/img/TweenState.gif)
+![](img/TweenState.gif)
 
 Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](#animated) instead)
+### Rebound (Not recommended - use [Animated](docs/animations.html#animated) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is
@@ -395,16 +416,21 @@ value and end value.  Rebound [is used
 internally](https://github.com/facebook/react-native/search?utf8=%E2%9C%93&q=rebound)
 by React Native on `Navigator` and `WarningBox`.
 
-![](/react-native/img/ReboundImage.gif)
+![](img/ReboundImage.gif)
 
 Notice that Rebound animations can be interrupted - if you release in
 the middle of a press, it will animate back from the current state to
 the original value.
 
 ```javascript
-var rebound = require('rebound');
+import rebound from 'rebound';
 
-var App = React.createClass({
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this._onPressIn = this._onPressIn.bind(this);
+    this._onPressOut = this._onPressOut.bind(this);
+  }
   // First we initialize the spring and add a listener, which calls
   // setState whenever it updates
   componentWillMount() {
@@ -423,24 +449,24 @@ var App = React.createClass({
 
     // Initialize the spring value at 1
     this._scrollSpring.setCurrentValue(1);
-  },
+  }
 
   _onPressIn() {
     this._scrollSpring.setEndValue(0.5);
-  },
+  }
 
   _onPressOut() {
     this._scrollSpring.setEndValue(1);
-  },
+  }
 
-  render: function() {
+  render() {
     var imageStyle = {
       width: 250,
       height: 200,
       transform: [{scaleX: this.state.scale}, {scaleY: this.state.scale}],
     };
 
-    var imageUri = "https://facebook.github.io/react-native/img/ReboundExample.png";
+    var imageUri = "img/ReboundExample.png";
 
     return (
       <View style={styles.container}>
@@ -451,7 +477,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 ```
 [Run this example](https://rnplay.org/apps/NNI5eA)
 
@@ -461,13 +487,13 @@ oscillate around the end value. In the above example, we would add
 See the below gif for an example of where in your interface you might
 use this.
 
-![](/react-native/img/Rebound.gif) Screenshot from
+![](img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
 You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
-As mentioned [in the Direction Manipulation section](/react-native/docs/direct-manipulation.html),
+As mentioned [in the Direction Manipulation section](docs/direct-manipulation.html),
 `setNativeProps` allows us to modify properties of native-backed
 components (components that are actually backed by native views, unlike
 composite components) directly, without having to `setState` and
@@ -492,12 +518,12 @@ this._scrollSpring.addListener({
 // Lastly, we update the render function to no longer pass in the
 // transform via style (avoid clashes when re-rendering) and to set the
 // photo ref
-render: function() {
+render() {
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPressIn={this._onPressIn} onPressOut={this._onPressOut}>
         <Image ref={component => this._photo = component}
-               source={{uri: "https://facebook.github.io/react-native/img/ReboundExample.png"}}
+               source={{uri: "img/ReboundExample.png"}}
                style={{width: 250, height: 200}} />
       </TouchableWithoutFeedback>
     </View>
@@ -516,24 +542,23 @@ frames per second), look into using `setNativeProps` or
 `shouldComponentUpdate` to optimize them. You may also want to defer any
 computationally intensive work until after animations are complete,
 using the
-[InteractionManager](/react-native/docs/interactionmanager.html). You
+[InteractionManager](docs/interactionmanager.html). You
 can monitor the frame rate by using the In-App Developer Menu "FPS
 Monitor" tool.
 
 ### Navigator Scene Transitions
 
 As mentioned in the [Navigator
-Comparison](https://facebook.github.io/react-native/docs/navigator-comparison.html#content),
+Comparison](docs/navigator-comparison.html#content),
 `Navigator` is implemented in JavaScript and `NavigatorIOS` is a wrapper
 around native functionality provided by `UINavigationController`, so
 these scene transitions apply only to `Navigator`. In order to re-create
 the various animations provided by `UINavigationController` and also
 make them customizable, React Native exposes a
-[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
+[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API which is then handed over to the [Navigator](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/Navigator.js) `configureScene` prop.
 
 ```javascript
-var React = require('react-native');
-var { Dimensions } = React;
+import { Dimensions } from 'react-native';
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 

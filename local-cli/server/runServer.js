@@ -8,31 +8,48 @@
  */
 'use strict';
 
+const InspectorProxy = require('./util/inspectorProxy.js');
+const ReactPackager = require('../../packager/react-packager');
+
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
+const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
+const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
+const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
-const isAbsolutePath = require('absolute-path');
+const indexPageMiddleware = require('./middleware/indexPage');
+const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
+const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
-const ReactPackager = require('../../packager/react-packager');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
+const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
+  var ms = null;
   const packagerServer = getPackagerServer(args, config);
+  const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
+    .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
+    .use(openStackFrameInEditorMiddleware(args))
+    .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
+    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
+    .use(jscProfilerMiddleware)
+    .use(indexPageMiddleware)
+    .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -51,7 +68,9 @@ function runServer(args, config, readyCallback) {
       });
 
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+      ms = messageSocket.attachToServer(serverInstance, '/message');
       webSocketProxy.attachToServer(serverInstance, '/devtools');
+      inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
   );
@@ -62,27 +81,23 @@ function runServer(args, config, readyCallback) {
 }
 
 function getPackagerServer(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
-  }
+  const transformModulePath =
+    args.transformer ? path.resolve(args.transformer) :
+    typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
+    undefined;
 
   return ReactPackager.createServer({
-    nonPersistent: args.nonPersistent,
-    projectRoots: args.projectRoots,
+    assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformerPath,
-    assetRoots: args.assetRoots,
-    assetExts: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', // Document formats
-    ],
-    resetCache: args.resetCache || args['reset-cache'],
+    extraNodeModules: config.extraNodeModules,
+    getTransformOptions: config.getTransformOptions,
+    platforms: defaultPlatforms.concat(args.platforms),
+    projectRoots: args.projectRoots,
+    resetCache: args.resetCache,
+    transformModulePath: transformModulePath,
     verbose: args.verbose,
+    watch: !args.nonPersistent,
   });
 }
 

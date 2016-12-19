@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,14 +23,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = React;
+} = ReactNative;
 
 class Board {
   grid: Array<Array<number>>;
@@ -93,7 +101,7 @@ class Board {
   }
 }
 
-var Cell = React.createClass({
+class Cell extends React.Component {
   cellStyle() {
     switch (this.props.player) {
       case 1:
@@ -103,7 +111,7 @@ var Cell = React.createClass({
       default:
         return null;
     }
-  },
+  }
 
   textStyle() {
     switch (this.props.player) {
@@ -114,7 +122,7 @@ var Cell = React.createClass({
       default:
         return {};
     }
-  },
+  }
 
   textContents() {
     switch (this.props.player) {
@@ -125,7 +133,7 @@ var Cell = React.createClass({
       default:
         return '';
     }
-  },
+  }
 
   render() {
     return (
@@ -141,9 +149,9 @@ var Cell = React.createClass({
       </TouchableHighlight>
     );
   }
-});
+}
 
-var GameEndOverlay = React.createClass({
+class GameEndOverlay extends React.Component {
   render() {
     var board = this.props.board;
 
@@ -174,7 +182,7 @@ var GameEndOverlay = React.createClass({
       </View>
     );
   }
-});
+}
 
 var TicTacToeApp = React.createClass({
   getInitialState() {
@@ -257,7 +265,6 @@ var styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#7b8994',
     margin: 5,
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -271,7 +278,6 @@ var styles = StyleSheet.create({
   // CELL TEXT
 
   cellText: {
-    borderRadius: 5,
     fontSize: 50,
     fontFamily: 'AvenirNext-Bold',
   },
@@ -305,7 +311,7 @@ var styles = StyleSheet.create({
     textAlign: 'center',
   },
   newGame: {
-    backgroundColor: '#887766',
+    backgroundColor: '#887765',
     padding: 20,
     borderRadius: 5,
   },

@@ -10,33 +10,43 @@ package com.facebook.react.testing;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.app.Instrumentation;
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.react.EagerModuleProvider;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.CatalystInstanceImpl;
-import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutor;
-import com.facebook.react.bridge.JavaScriptModulesConfig;
+import com.facebook.react.bridge.JavaScriptModuleRegistry;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.NativeModuleRegistry;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.cxxbridge.CatalystInstanceImpl;
+import com.facebook.react.cxxbridge.JSBundleLoader;
+import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
+import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.cxxbridge.NativeModuleRegistry;
+import com.facebook.react.module.model.ReactModuleInfo;
 
-import android.support.test.InstrumentationRegistry;
 import com.android.internal.util.Predicate;
 
 public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {
     private static class ReactInstanceEasyBuilderImpl implements ReactInstanceEasyBuilder {
+
+      private final List<ModuleSpec> mModuleSpecList = new ArrayList<>();
+      private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
+        new JavaScriptModuleRegistry.Builder();
+
       private @Nullable Context mContext;
-      private final NativeModuleRegistry.Builder mNativeModuleRegistryBuilder =
-        new NativeModuleRegistry.Builder();
-      private final JavaScriptModulesConfig.Builder mJSModulesConfigBuilder =
-        new JavaScriptModulesConfig.Builder();
 
       @Override
       public ReactInstanceEasyBuilder setContext(Context context) {
@@ -45,25 +55,35 @@ public class ReactTestHelper {
       }
 
       @Override
-      public ReactInstanceEasyBuilder addNativeModule(NativeModule module) {
-        mNativeModuleRegistryBuilder.add(module);
+      public ReactInstanceEasyBuilder addNativeModule(NativeModule nativeModule) {
+        mModuleSpecList.add(
+          new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
         return this;
       }
 
       @Override
       public ReactInstanceEasyBuilder addJSModule(Class moduleInterfaceClass) {
-        mJSModulesConfigBuilder.add(moduleInterfaceClass);
+        mJSModuleRegistryBuilder.add(moduleInterfaceClass);
         return this;
       }
 
       @Override
       public CatalystInstance build() {
+        JavaScriptExecutor executor = null;
+        try {
+          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
         return new CatalystInstanceImpl.Builder()
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-          .setJSExecutor(new JSCJavaScriptExecutor())
-          .setRegistry(mNativeModuleRegistryBuilder.build())
-          .setJSModulesConfig(mJSModulesConfigBuilder.build())
-          .setJSBundleLoader(JSBundleLoader.createFileLoader(
+          .setJSExecutor(executor)
+          .setRegistry(new NativeModuleRegistry(
+            mModuleSpecList,
+            Collections.<Class, ReactModuleInfo>emptyMap(),
+            false))
+          .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
+          .setJSBundleLoader(JSBundleLoader.createAssetLoader(
                                mContext,
                                "assets://AndroidTestBundle.js"))
           .setNativeModuleCallExceptionHandler(
@@ -123,9 +143,15 @@ public class ReactTestHelper {
 
         @Override
         public CatalystInstance build() {
-          CatalystInstance instance = builder.build();
+          final CatalystInstance instance = builder.build();
           testCase.initializeWithInstance(instance);
           instance.runJSBundle();
+          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+              instance.initialize();
+            }
+          });
           testCase.waitForBridgeAndUIIdle();
           return instance;
         }

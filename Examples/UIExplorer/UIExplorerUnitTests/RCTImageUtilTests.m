@@ -16,7 +16,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIView.h>
 #import <XCTest/XCTest.h>
-#import "RCTImageUtils.h"
+
+#import <RCTImage/RCTImageUtils.h>
 
 #define RCTAssertEqualPoints(a, b) { \
 XCTAssertEqual(a.x, b.x); \
@@ -131,54 +132,6 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGRect expected = {CGPointZero, {3, 3}};
   CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeStretch);
   RCTAssertEqualRects(expected, result);
-}
-
-- (void)testPlaceholderImage
-{
-  CGSize size = {45, 22};
-  CGFloat expectedScale = 1.0;
-  UIImage *image = RCTGetPlaceholderImage(size, nil);
-  RCTAssertEqualSizes(size, image.size);
-  XCTAssertEqual(expectedScale, image.scale);
-}
-
-- (void)testPlaceholderNonintegralSize
-{
-  CGSize size = {3.0/2, 7.0/3};
-  CGFloat expectedScale = 6;
-  CGSize pixelSize = {
-    round(size.width * expectedScale),
-    round(size.height * expectedScale)
-  };
-  UIImage *image = RCTGetPlaceholderImage(size, nil);
-  RCTAssertEqualSizes(size, image.size);
-  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
-  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
-  XCTAssertEqual(expectedScale, image.scale);
-}
-
-- (void)testPlaceholderSquareImage
-{
-  CGSize size = {333, 333};
-  CGFloat expectedScale = 1.0/333;
-  CGSize pixelSize = {1, 1};
-  UIImage *image = RCTGetPlaceholderImage(size, nil);
-  RCTAssertEqualSizes(size, image.size);
-  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
-  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
-  XCTAssertEqual(expectedScale, image.scale);
-}
-
-- (void)testPlaceholderNonsquareImage
-{
-  CGSize size = {640, 480};
-  CGFloat expectedScale = 1.0/160;
-  CGSize pixelSize = {4, 3};
-  UIImage *image = RCTGetPlaceholderImage(size, nil);
-  RCTAssertEqualSizes(size, image.size);
-  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
-  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
-  XCTAssertEqual(expectedScale, image.scale);
 }
 
 @end

@@ -12,13 +12,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#import "AppDelegate.h"
-
 #import "UpdatePropertiesExampleView.h"
-#import "RCTJavaScriptLoader.h"
-#import "RCTBridge.h"
-#import "RCTRootView.h"
-#import "RCTViewManager.h"
+
+#import <React/RCTRootView.h>
+#import <React/RCTViewManager.h>
+
+#import "AppDelegate.h"
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 
@@ -89,6 +88,7 @@ RCT_EXPORT_MODULE();
 - (NSArray<UIView<RCTComponent> *> *)reactSubviews
 {
   // this is to avoid unregistering our RCTRootView when the component is removed from RN hierarchy
+  (void)[super reactSubviews];
   return @[];
 }
 

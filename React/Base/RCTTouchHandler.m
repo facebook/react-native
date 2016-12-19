@@ -39,6 +39,7 @@
   BOOL _dispatchedInitialTouches;
   BOOL _recordingInteractionTiming;
   CFTimeInterval _mostRecentEnqueueJS;
+  uint16_t _coalescingKey;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -198,8 +199,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   }
 
   RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                         reactTag:self.view.reactTag
                                                      reactTouches:reactTouches
-                                                   changedIndexes:changedIndexes];
+                                                   changedIndexes:changedIndexes
+                                                    coalescingKey:_coalescingKey];
   [_eventDispatcher sendEvent:event];
 }
 
@@ -250,6 +253,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesBegan:touches withEvent:event];
 
+  _coalescingKey++;
   // "start" has to record new touches before extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
   [self _recordNewTouches:touches];
@@ -275,6 +279,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesEnded:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchEnd" originatingTime:event.timestamp];
 
@@ -291,6 +296,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   [super touchesCancelled:touches withEvent:event];
 
+  _coalescingKey++;
   if (_dispatchedInitialTouches) {
     [self _updateAndDispatchTouches:touches eventName:@"touchCancel" originatingTime:event.timestamp];
 

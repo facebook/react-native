@@ -10,7 +10,8 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   AppRegistry,
   ScrollView,
@@ -18,7 +19,7 @@ var {
   Text,
   TouchableOpacity,
   View,
-} = React;
+} = ReactNative;
 
 // Keep this list in sync with UIExplorerIntegrationTests.m
 var TESTS = [
@@ -41,13 +42,12 @@ require('LoggingTestModule');
 
 type Test = any;
 
-var IntegrationTestsApp = React.createClass({
-  getInitialState: function() {
-    return {
-      test: (null: ?Test),
-    };
-  },
-  render: function() {
+class IntegrationTestsApp extends React.Component {
+  state = {
+    test: (null: ?Test),
+  };
+
+  render() {
     if (this.state.test) {
       return (
         <ScrollView>
@@ -78,7 +78,7 @@ var IntegrationTestsApp = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

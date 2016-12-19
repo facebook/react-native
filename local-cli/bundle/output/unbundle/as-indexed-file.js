@@ -5,15 +5,23 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
+const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
+
+const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');
-const Promise = require('promise');
 const writeSourceMap = require('./write-sourcemap');
 
-const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
-const MAGIC_STARTUP_MODULE_ID = '';
+const {joinModules} = require('./util');
+
+import type ModuleTransport from '../../../../packager/react-packager/src/lib/ModuleTransport';
+import type {Bundle, ModuleGroups, OutputOptions} from '../../types.flow';
+
+const SIZEOF_UINT32 = 4;
 
 /**
  * Saves all JS modules of an app as a single file, separated with null bytes.
@@ -22,36 +30,50 @@ const MAGIC_STARTUP_MODULE_ID = '';
  * The module id for the startup code (prelude, polyfills etc.) is the
  * empty string.
  */
-function saveAsIndexedFile(bundle, options, log) {
+function saveAsIndexedFile(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => void,
+): Promise<> {
   const {
-    'bundle-output': bundleOutput,
-    'bundle-encoding': encoding,
-    dev,
-    'sourcemap-output': sourcemapOutput,
+    bundleOutput,
+    bundleEncoding: encoding,
+    sourcemapOutput,
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle({minify: !dev});
+  const {startupModules, lazyModules, groups} = bundle.getUnbundle();
   log('finish');
+
+  const moduleGroups = createModuleGroups(groups, lazyModules);
+  const startupCode = joinModules(startupModules);
 
   log('Writing unbundle output to:', bundleOutput);
   const writeUnbundle = writeBuffers(
     fs.createWriteStream(bundleOutput),
-    buildTableAndContents(startupCode, modules, encoding)
-  );
+    buildTableAndContents(startupCode, lazyModules, moduleGroups, encoding)
+  ).then(() => log('Done writing unbundle output'));
 
-  writeUnbundle.then(() => log('Done writing unbundle output'));
+  const sourceMap =
+    buildSourceMapWithMetaData({
+      startupModules: startupModules.concat(),
+      lazyModules: lazyModules.concat(),
+      moduleGroups,
+    });
 
-  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
+  return Promise.all([
+    writeUnbundle,
+    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log),
+  ]);
 }
 
 /* global Buffer: true */
 
-const fileHeader = Buffer(4);
-fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER);
-const nullByteBuffer = Buffer(1).fill(0);
+const fileHeader = new Buffer(4);
+fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER, 0);
+const nullByteBuffer: Buffer = new Buffer(1).fill(0);
 
-function writeBuffers(stream, buffers) {
+function writeBuffers(stream, buffers: Array<Buffer>) {
   buffers.forEach(buffer => stream.write(buffer));
   return new Promise((resolve, reject) => {
     stream.on('error', reject);
@@ -60,65 +82,122 @@ function writeBuffers(stream, buffers) {
   });
 }
 
-const moduleToBuffer = ({name, code}, encoding) => ({
-  name,
-  buffer: Buffer.concat([
-    Buffer(code, encoding),
-    nullByteBuffer // create \0-terminated strings
-  ])
-});
-
-function uInt32Buffer(n) {
-  const buffer = Buffer(4);
-  buffer.writeUInt32LE(n, 0);
-  return buffer;
+function nullTerminatedBuffer(contents, encoding) {
+  return Buffer.concat([new Buffer(contents, encoding), nullByteBuffer]);
 }
 
-function buildModuleTable(buffers) {
+function moduleToBuffer(id, code, encoding) {
+  return {
+    id,
+    buffer: nullTerminatedBuffer(code, encoding),
+  };
+}
+
+function entryOffset(n) {
+  // 2: num_entries + startup_code_len
+  // n * 2: each entry consists of two uint32s
+  return (2 + n * 2) * SIZEOF_UINT32;
+}
+
+function buildModuleTable(startupCode, buffers, moduleGroups) {
   // table format:
-  //  - table_length: uint_32 length of all table entries in bytes + the table length itself
-  //  - entries: entry...
+  // - num_entries:      uint_32  number of entries
+  // - startup_code_len: uint_32  length of the startup section
+  // - entries:          entry...
   //
   // entry:
-  //  - module_id: NUL terminated utf8 string
-  //  - module_offset: uint_32 offset into the module string
-  //  - module_length: uint_32 length of the module string, including terminating NUL byte
+  //  - module_offset:   uint_32  offset into the modules blob
+  //  - module_length:   uint_32  length of the module code in bytes
 
-  const numBuffers = buffers.length;
+  const moduleIds = Array.from(moduleGroups.modulesById.keys());
+  const maxId = moduleIds.reduce((max, id) => Math.max(max, id));
+  const numEntries = maxId + 1;
+  const table: Buffer = new Buffer(entryOffset(numEntries)).fill(0);
 
-  const tableLengthBuffer = uInt32Buffer(0);
-  let tableLength = 4; // the table length itself, 4 == tableLengthBuffer.length
-  let currentOffset = 0;
+  // num_entries
+  table.writeUInt32LE(numEntries, 0);
 
-  const offsetTable = [tableLengthBuffer];
-  for (let i = 0; i < numBuffers; i++) {
-    const {name, buffer: {length}} = buffers[i];
-    const entry = Buffer.concat([
-      Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : name, 'utf8'),
-      nullByteBuffer,
-      uInt32Buffer(currentOffset),
-      uInt32Buffer(length)
-    ]);
-    currentOffset += length;
-    tableLength += entry.length;
-    offsetTable.push(entry);
+  // startup_code_len
+  table.writeUInt32LE(startupCode.length, SIZEOF_UINT32);
+
+  // entries
+  let codeOffset = startupCode.length;
+  buffers.forEach(({id, buffer}) => {
+    const group = moduleGroups.groups.get(id);
+    const idsInGroup = group ? [id].concat(Array.from(group)) : [id];
+
+    idsInGroup.forEach(moduleId => {
+      const offset = entryOffset(moduleId);
+      // module_offset
+      table.writeUInt32LE(codeOffset, offset);
+      // module_length
+      table.writeUInt32LE(buffer.length, offset + SIZEOF_UINT32);
+    });
+    codeOffset += buffer.length;
+  });
+
+  return table;
+}
+
+function groupCode(rootCode, moduleGroup, modulesById) {
+  if (!moduleGroup || !moduleGroup.size) {
+    return rootCode;
+  }
+  const code = [rootCode];
+  for (const id of moduleGroup) {
+    code.push((modulesById.get(id) || {}).code);
   }
 
-  tableLengthBuffer.writeUInt32LE(tableLength, 0);
-  return Buffer.concat(offsetTable);
+  return code.join('\n');
 }
 
-function buildModuleBuffers(startupCode, modules, encoding) {
-  return (
-    [moduleToBuffer({name: '', code: startupCode}, encoding)]
-      .concat(modules.map(module => moduleToBuffer(module, encoding)))
-  );
+function buildModuleBuffers(modules, moduleGroups, encoding) {
+  return modules
+    .filter(m => !moduleGroups.modulesInGroups.has(m.id))
+    .map(({id, code}) => moduleToBuffer(
+      id,
+      groupCode(
+        code,
+        moduleGroups.groups.get(id),
+        moduleGroups.modulesById,
+      ),
+      encoding
+    ));
 }
 
-function buildTableAndContents(startupCode, modules, encoding) {
-  const buffers = buildModuleBuffers(startupCode, modules, encoding);
-  const table = buildModuleTable(buffers, encoding);
-  return [fileHeader, table].concat(buffers.map(({buffer}) => buffer));
+function buildTableAndContents(startupCode, modules, moduleGroups, encoding) {
+  // file contents layout:
+  // - magic number      char[4]  0xE5 0xD1 0x0B 0xFB (0xFB0BD1E5 uint32 LE)
+  // - offset table      table    see `buildModuleTables`
+  // - code blob         char[]   null-terminated code strings, starting with
+  //                              the startup code
+
+  const startupCodeBuffer = nullTerminatedBuffer(startupCode, encoding);
+  const moduleBuffers = buildModuleBuffers(modules, moduleGroups, encoding);
+  const table = buildModuleTable(startupCodeBuffer, moduleBuffers, moduleGroups);
+
+  return [
+    fileHeader,
+    table,
+    startupCodeBuffer
+  ].concat(moduleBuffers.map(({buffer}) => buffer));
+}
+
+function createModuleGroups(
+  groups: Map<number, Set<number>>,
+  modules: Array<ModuleTransport>,
+): ModuleGroups {
+  return {
+    groups,
+    modulesById: new Map(modules.map(m => [m.id, m])),
+    modulesInGroups: new Set(concat(groups.values())),
+  };
+}
+
+function * concat(iterators) {
+  for (const it of iterators) {
+    yield * it;
+  }
 }
 
 module.exports = saveAsIndexedFile;

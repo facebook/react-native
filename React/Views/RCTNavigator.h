@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTFrameUpdate.h"
+#import <React/RCTFrameUpdate.h>
 
 @class RCTBridge;
 
@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) UIView *reactNavSuperviewLink;
 @property (nonatomic, assign) NSInteger requestedTopOfStack;
+@property (nonatomic, assign) BOOL interactivePopGestureEnabled;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

@@ -11,34 +11,12 @@
  */
 'use strict';
 
-var RCTStatusBarManager = require('NativeModules').StatusBarManager;
+const NativeEventEmitter = require('NativeEventEmitter');
+const { StatusBarManager } = require('NativeModules');
 
-type StatusBarStyle = $Enum<{
-  'default': string,
-  'light-content': string,
-}>;
+/**
+ * Use `StatusBar` for mutating the status bar.
+ */
+class StatusBarIOS extends NativeEventEmitter {}
 
-type StatusBarAnimation = $Enum<{
-  'none': string,
-  'fade': string,
-  'slide': string,
-}>;
-
-var StatusBarIOS = {
-
-  setStyle(style: StatusBarStyle, animated?: boolean) {
-    animated = animated || false;
-    RCTStatusBarManager.setStyle(style, animated);
-  },
-
-  setHidden(hidden: boolean, animation?: StatusBarAnimation) {
-    animation = animation || 'none';
-    RCTStatusBarManager.setHidden(hidden, animation);
-  },
-
-  setNetworkActivityIndicatorVisible(visible: boolean) {
-    RCTStatusBarManager.setNetworkActivityIndicatorVisible(visible);
-  },
-};
-
-module.exports = StatusBarIOS;
+module.exports = new StatusBarIOS(StatusBarManager);

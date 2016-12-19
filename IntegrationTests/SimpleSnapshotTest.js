@@ -10,26 +10,27 @@
  */
 'use strict';
 
-var React = require('react-native');
-var requestAnimationFrame = require('requestAnimationFrame');
+var React = require('react');
+var ReactNative = require('react-native');
+var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 var {
   StyleSheet,
   View,
-} = React;
-var { TestModule } = React.NativeModules;
+} = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
-var SimpleSnapshotTest = React.createClass({
+class SimpleSnapshotTest extends React.Component {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
-  },
+  }
 
-  done(success : boolean) {
+  done = (success : boolean) => {
     TestModule.markTestPassed(success);
-  },
+  };
 
   render() {
     return (
@@ -39,7 +40,7 @@ var SimpleSnapshotTest = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   box1: {

@@ -26,13 +26,10 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTAssert.h"
-
-#import "RCTEventDispatcher.h"
-#import "RCTRootView.h"
-#import "RCTRootViewDelegate.h"
-
 #import <RCTTest/RCTTestRunner.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTRootView.h>
+#import <React/RCTRootViewDelegate.h>
 
 #define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
 - (void)test##appName##_##testType##_##input                               \
@@ -66,9 +63,13 @@ typedef void (^ControlBlock)(RCTRootView*);
 
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   [rootView.bridge.eventDispatcher sendAppEventWithName:@"rootViewDidChangeIntrinsicSize"
                                                    body:@{@"width": @(rootView.intrinsicSize.width),
                                                           @"height": @(rootView.intrinsicSize.height)}];
+#pragma clang diagnostic pop
 }
 
 @end
@@ -138,12 +139,6 @@ static ControlBlock propertiesUpdateBlock()
 
 - (void)setUp
 {
-#if __LP64__
-  RCTAssert(NO, @"Tests should be run on 32-bit device simulators (e.g. iPhone 5)");
-#endif
-
-  NSOperatingSystemVersion version = [NSProcessInfo processInfo].operatingSystemVersion;
-  RCTAssert((version.majorVersion == 8 && version.minorVersion >= 3) || version.majorVersion >= 9, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
   _runner = RCTInitRunnerForApp(@"IntegrationTests/RCTRootViewIntegrationTestApp", nil);
 }
 

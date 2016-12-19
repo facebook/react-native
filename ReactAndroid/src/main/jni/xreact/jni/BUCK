@@ -1,0 +1,51 @@
+include_defs('//ReactAndroid/DEFS')
+
+EXPORTED_HEADERS = [
+  'CxxModuleWrapper.h',
+  'JSLoader.h',
+  'NativeArray.h',
+  'NativeCommon.h',
+  'NativeMap.h',
+  'ReadableNativeArray.h',
+  'ReadableNativeMap.h',
+  'WritableNativeArray.h',
+  'WritableNativeMap.h',
+]
+
+cxx_library(
+  name='jni',
+  soname = 'libreactnativejnifb.$(ext)',
+  header_namespace = 'xreact/jni',
+  deps = JSC_DEPS + [
+    '//native/fb:fb',
+    '//native/third-party/android-ndk:android',
+    '//xplat/folly:molly',
+    '//xplat/fbsystrace:fbsystrace',
+    react_native_xplat_target('cxxreact:bridge'),
+    react_native_xplat_target('cxxreact:module'),
+    react_native_xplat_target('inspector:inspector'),
+  ],
+  srcs = glob(['*.cpp']),
+  xcode_public_headers_symlinks = True,
+  exported_headers = EXPORTED_HEADERS,
+  headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNativeJNI"',
+    '-DWITH_FBSYSTRACE=1',
+    '-DWITH_INSPECTOR=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-Werror',
+    '-fexceptions',
+    '-std=c++1y',
+    '-fvisibility=hidden',
+    '-frtti',
+    '-Wno-pessimizing-move',
+    '-Wno-inconsistent-missing-override',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

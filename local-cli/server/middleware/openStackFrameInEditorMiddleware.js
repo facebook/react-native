@@ -10,12 +10,14 @@
 
 const launchEditor = require('../util/launchEditor');
 
-module.exports = function(req, res, next) {
-  if (req.url === '/open-stack-frame') {
-    var frame = JSON.parse(req.rawBody);
-    launchEditor(frame.file, frame.lineNumber);
-    res.end('OK');
-  } else {
-    next();
-  }
+module.exports = function({projectRoots}) {
+  return function(req, res, next) {
+    if (req.url === '/open-stack-frame') {
+      const frame = JSON.parse(req.rawBody);
+      launchEditor(frame.file, frame.lineNumber, projectRoots);
+      res.end('OK');
+    } else {
+      next();
+    }
+  };
 };

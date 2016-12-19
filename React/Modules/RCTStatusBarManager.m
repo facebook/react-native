@@ -13,11 +13,13 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+#if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
   @"default": @(UIStatusBarStyleDefault),
   @"light-content": @(UIStatusBarStyleLightContent),
+  @"dark-content": @(UIStatusBarStyleDefault),
 }), UIStatusBarStyleDefault, integerValue);
 
 RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
@@ -27,6 +29,7 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 }), UIStatusBarAnimationNone, integerValue);
 
 @end
+#endif
 
 @implementation RCTStatusBarManager
 
@@ -44,18 +47,22 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
-
-- (void)setBridge:(RCTBridge *)bridge
+- (NSArray<NSString *> *)supportedEvents
 {
-  _bridge = bridge;
+  return @[@"statusBarFrameDidChange",
+           @"statusBarFrameWillChange"];
+}
 
+#if !TARGET_OS_TV
+
+- (void)startObserving
+{
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
   [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
-- (void)dealloc
+- (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -76,7 +83,7 @@ RCT_EXPORT_MODULE()
       @"height": @(frame.size.height),
     },
   };
-  [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
+  [self sendEventWithName:eventName body:event];
 }
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
@@ -124,5 +131,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
+
+#endif //TARGET_OS_TV
 
 @end

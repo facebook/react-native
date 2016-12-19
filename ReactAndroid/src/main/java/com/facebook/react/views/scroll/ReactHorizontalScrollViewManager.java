@@ -11,11 +11,14 @@ package com.facebook.react.views.scroll;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Color;
+
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -23,11 +26,22 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@ReactModule(name = ReactHorizontalScrollViewManager.REACT_CLASS)
 public class ReactHorizontalScrollViewManager
     extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
-  private static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  protected static final String REACT_CLASS = "AndroidHorizontalScrollView";
+
+  private @Nullable FpsListener mFpsListener = null;
+
+  public ReactHorizontalScrollViewManager() {
+    this(null);
+  }
+
+  public ReactHorizontalScrollViewManager(@Nullable FpsListener fpsListener) {
+    mFpsListener = fpsListener;
+  }
 
   @Override
   public String getName() {
@@ -36,7 +50,7 @@ public class ReactHorizontalScrollViewManager
 
   @Override
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactHorizontalScrollView(context);
+    return new ReactHorizontalScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
@@ -67,6 +81,23 @@ public class ReactHorizontalScrollViewManager
     view.setSendMomentumEvents(sendMomentumEvents);
   }
 
+  /**
+   * Tag used for logging scroll performance on this scroll view. Will force momentum events to be
+   * turned on (see setSendMomentumEvents).
+   *
+   * @param view
+   * @param scrollPerfTag
+   */
+  @ReactProp(name = "scrollPerfTag")
+  public void setScrollPerfTag(ReactHorizontalScrollView view, String scrollPerfTag) {
+    view.setScrollPerfTag(scrollPerfTag);
+  }
+
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
@@ -84,5 +115,16 @@ public class ReactHorizontalScrollViewManager
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
+  }
+
+  /**
+   * When set, fills the rest of the scrollview with a color to avoid setting a background and
+   * creating unnecessary overdraw.
+   * @param view
+   * @param color
+   */
+  @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
+  public void setBottomFillColor(ReactHorizontalScrollView view, int color) {
+    view.setEndFillColor(color);
   }
 }

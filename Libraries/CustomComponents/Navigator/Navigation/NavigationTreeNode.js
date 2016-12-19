@@ -3,12 +3,11 @@
  *
  * @providesModule NavigationTreeNode
  * @flow
- * @typechecks
  */
 
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var immutable = require('immutable');
 
 var {List} = immutable;

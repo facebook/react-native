@@ -11,8 +11,7 @@
 
 #import <Photos/Photos.h>
 
-#import "RCTImageUtils.h"
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTPhotoLibraryImageLoader
 
@@ -24,7 +23,11 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [requestURL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame;
+  if (![PHAsset class]) {
+    return NO;
+  }
+  return [requestURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame ||
+    [requestURL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame;
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
@@ -32,22 +35,33 @@ RCT_EXPORT_MODULE()
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   // Using PhotoKit for iOS 8+
   // The 'ph://' prefix is used by FBMediaKit to differentiate between
   // assets-library. It is prepended to the local ID so that it is in the
   // form of an, NSURL which is what assets-library uses.
-  NSString *phAssetID = [imageURL.absoluteString substringFromIndex:@"ph://".length];
-  PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
+  NSString *assetID = @"";
+  PHFetchResult *results;
+  if ([imageURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+    assetID = [imageURL absoluteString];
+    results = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+  } else {
+    assetID = [imageURL.absoluteString substringFromIndex:@"ph://".length];
+    results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];
+  }
   if (results.count == 0) {
-    NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
+    NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", assetID];
     completionHandler(RCTErrorWithMessage(errorText), nil);
     return ^{};
   }
 
   PHAsset *asset = [results firstObject];
   PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+
+  // Allow PhotoKit to fetch images from iCloud
+  imageOptions.networkAccessAllowed = YES;
 
   if (progressHandler) {
     imageOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary<NSString *, id> *info) {
@@ -66,7 +80,7 @@ RCT_EXPORT_MODULE()
     targetSize = PHImageManagerMaximumSize;
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
   } else {
-    targetSize = size;
+    targetSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(scale, scale));
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
   }
 

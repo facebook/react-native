@@ -25,14 +25,13 @@ var View = require('View');
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var keyOf = require('keyOf');
+var keyOf = require('fbjs/lib/keyOf');
 var merge = require('merge');
-var onlyChild = require('onlyChild');
 
 type Event = Object;
 
 var DEFAULT_PROPS = {
-  activeOpacity: 0.8,
+  activeOpacity: 0.85,
   underlayColor: 'black',
 };
 
@@ -54,13 +53,13 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *     <TouchableHighlight onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableHighlight>
  *   );
  * },
  * ```
- * > **NOTE**: TouchableHighlight supports only one child
+ * > **NOTE**: TouchableHighlight must have one child (not zero or more than one)
  * >
  * > If you wish to have several child components, wrap them in a View.
  */
@@ -87,6 +86,25 @@ var TouchableHighlight = React.createClass({
      * Called immediately after the underlay is hidden
      */
     onHideUnderlay: React.PropTypes.func,
+    /**
+     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     *
+     * @platform ios
+     */
+    hasTVPreferredFocus: React.PropTypes.bool,
+    /**
+     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+     *
+     * enabled: If true, parallax effects are enabled.  Defaults to true.
+     * shiftDistanceX: Defaults to 2.0.
+     * shiftDistanceY: Defaults to 2.0.
+     * tiltAngle: Defaults to 0.05.
+     * magnification: Defaults to 1.0.
+     *
+     * @platform ios
+     */
+    tvParallaxProperties: React.PropTypes.object,
+
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -94,7 +112,7 @@ var TouchableHighlight = React.createClass({
   getDefaultProps: () => DEFAULT_PROPS,
 
   // Performance optimization to avoid constantly re-generating these objects.
-  computeSyntheticState: function(props) {
+  _computeSyntheticState: function(props) {
     return {
       activeProps: {
         style: {
@@ -109,13 +127,14 @@ var TouchableHighlight = React.createClass({
       underlayStyle: [
         INACTIVE_UNDERLAY_PROPS.style,
         props.style,
-      ]
+      ],
+      hasTVPreferredFocus: props.hasTVPreferredFocus
     };
   },
 
   getInitialState: function() {
     return merge(
-      this.touchableGetInitialState(), this.computeSyntheticState(this.props)
+      this.touchableGetInitialState(), this._computeSyntheticState(this.props)
     );
   },
 
@@ -133,7 +152,7 @@ var TouchableHighlight = React.createClass({
     if (nextProps.activeOpacity !== this.props.activeOpacity ||
         nextProps.underlayColor !== this.props.underlayColor ||
         nextProps.style !== this.props.style) {
-      this.setState(this.computeSyntheticState(nextProps));
+      this.setState(this._computeSyntheticState(nextProps));
     }
   },
 
@@ -176,6 +195,10 @@ var TouchableHighlight = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function() {
     return this.props.delayPressIn;
   },
@@ -189,7 +212,7 @@ var TouchableHighlight = React.createClass({
   },
 
   _showUnderlay: function() {
-    if (!this.isMounted()) {
+    if (!this.isMounted() || !this._hasPressHandler()) {
       return;
     }
 
@@ -201,7 +224,7 @@ var TouchableHighlight = React.createClass({
   _hideUnderlay: function() {
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
-    if (this.refs[UNDERLAY_REF]) {
+    if (this._hasPressHandler() && this.refs[UNDERLAY_REF]) {
       this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
       this.refs[UNDERLAY_REF].setNativeProps({
         ...INACTIVE_UNDERLAY_PROPS,
@@ -211,16 +234,29 @@ var TouchableHighlight = React.createClass({
     }
   },
 
+  _hasPressHandler: function() {
+    return !!(
+      this.props.onPress ||
+      this.props.onPressIn ||
+      this.props.onPressOut ||
+      this.props.onLongPress
+    );
+  },
+
   render: function() {
     return (
       <View
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         ref={UNDERLAY_REF}
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
+        hitSlop={this.props.hitSlop}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
+        hasTVPreferredFocus={this.state.hasTVPreferredFocus}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
@@ -229,11 +265,12 @@ var TouchableHighlight = React.createClass({
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
         {React.cloneElement(
-          onlyChild(this.props.children),
+          React.Children.only(this.props.children),
           {
             ref: CHILD_REF,
           }
         )}
+        {Touchable.renderDebugView({color: 'green', hitSlop: this.props.hitSlop})}
       </View>
     );
   }

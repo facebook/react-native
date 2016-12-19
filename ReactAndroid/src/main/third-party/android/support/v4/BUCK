@@ -1,7 +1,7 @@
 android_prebuilt_aar(
     name = 'lib-support-v4',
     aar = ':lib-support-v4-binary-aar',
-    visibility = ['//ReactAndroid/...',],
+    visibility = ['PUBLIC',],
 )
 
 remote_file(

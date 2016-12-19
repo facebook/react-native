@@ -15,19 +15,27 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTBridge+Private.h"
-#import "RCTBridgeModule.h"
-#import "RCTJavaScriptExecutor.h"
-#import "RCTUtils.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTJavaScriptExecutor.h>
+#import <React/RCTUtils.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
   NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+  while ((CONDITION)) { \
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) { \
+      XCTFail(@"Runloop timed out before condition was met"); \
+      break; \
+    } \
   } \
 }
+
+static const NSUInteger kNameIndex = 0;
+static const NSUInteger kConstantsIndex = 1;
+static const NSUInteger kMethodsIndex = 2;
 
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
@@ -36,6 +44,8 @@
 @end
 
 @implementation TestExecutor
+
+@synthesize valid = _valid;
 
 RCT_EXPORT_MODULE()
 
@@ -51,7 +61,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isValid
 {
-  return YES;
+  return _valid;
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
@@ -86,6 +96,11 @@ RCT_EXPORT_MODULE()
   block();
 }
 
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+{
+  block();
+}
+
 - (void)injectJSONText:(NSString *)script
    asGlobalObjectNamed:(NSString *)objectName
               callback:(RCTJavaScriptCompleteBlock)onComplete
@@ -94,7 +109,33 @@ RCT_EXPORT_MODULE()
   onComplete(nil);
 }
 
-- (void)invalidate {}
+- (void)invalidate
+{
+  _valid = NO;
+}
+
+@end
+
+// Define a module that is not explicitly registered with RCT_EXPORT_MODULE
+@interface UnregisteredTestModule : NSObject <RCTBridgeModule>
+
+@property (nonatomic, assign) BOOL testMethodCalled;
+
+@end
+
+@implementation UnregisteredTestModule
+
+@synthesize methodQueue = _methodQueue;
+
++ (NSString *)moduleName
+{
+  return @"UnregisteredTestModule";
+}
+
+RCT_EXPORT_METHOD(testMethod)
+{
+  _testMethodCalled = YES;
+}
 
 @end
 
@@ -104,6 +145,7 @@ RCT_EXPORT_MODULE()
   __weak TestExecutor *_jsExecutor;
 
   BOOL _testMethodCalled;
+  UnregisteredTestModule *_unregisteredTestModule;
 }
 @end
 
@@ -117,8 +159,10 @@ RCT_EXPORT_MODULE(TestModule)
 {
   [super setUp];
 
-  _bridge = [[RCTBridge alloc] initWithBundleURL:nil
-                                  moduleProvider:^{ return @[self]; }
+  _unregisteredTestModule = [UnregisteredTestModule new];
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+                                  moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
@@ -128,7 +172,7 @@ RCT_EXPORT_MODULE(TestModule)
   [_bridge invalidate];
   [_bridge setUp];
 
-  _jsExecutor = [_bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
+  _jsExecutor = _bridge.batchedBridge.javaScriptExecutor;
   XCTAssertNotNil(_jsExecutor);
 }
 
@@ -139,10 +183,8 @@ RCT_EXPORT_MODULE(TestModule)
   _testMethodCalled = NO;
 
   [_bridge invalidate];
+  RUN_RUNLOOP_WHILE(_jsExecutor.isValid);
   _bridge = nil;
-
-  RUN_RUNLOOP_WHILE(_jsExecutor != nil);
-  XCTAssertNotNil(_jsExecutor);
 }
 
 - (void)testHookRegistration
@@ -157,10 +199,10 @@ RCT_EXPORT_MODULE(TestModule)
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, BOOL *stop) {
-    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testConstants = moduleConfig[1];
-      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      testConstants = moduleConfig[kConstantsIndex];
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
@@ -183,9 +225,9 @@ RCT_EXPORT_MODULE(TestModule)
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
-    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
@@ -196,11 +238,42 @@ RCT_EXPORT_MODULE(TestModule)
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
   NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
 
-  [_bridge.batchedBridge handleBuffer:buffer];
+  [_bridge.batchedBridge handleBuffer:buffer batchEnded:YES];
 
   dispatch_sync(_methodQueue, ^{
     // clear the queue
-    XCTAssertTrue(_testMethodCalled);
+    XCTAssertTrue(self->_testMethodCalled);
+  });
+}
+
+- (void)testCallUnregisteredModuleMethod
+{
+  NSString *injectedStuff;
+  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  XCTAssertNotNil(injectedStuff);
+
+  __block NSNumber *testModuleID = nil;
+  __block NSNumber *testMethodID = nil;
+
+  NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
+  [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
+    if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[kNameIndex] isEqualToString:@"UnregisteredTestModule"]) {
+      testModuleID = @(i);
+      testMethodID = @([moduleConfig[kMethodsIndex] indexOfObject:@"testMethod"]);
+      *stop = YES;
+    }
+  }];
+
+  XCTAssertNotNil(testModuleID);
+  XCTAssertNotNil(testMethodID);
+
+  NSArray *args = @[];
+  NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
+
+  [_bridge.batchedBridge handleBuffer:buffer batchEnded:YES];
+
+  dispatch_sync(_unregisteredTestModule.methodQueue, ^{
+    XCTAssertTrue(self->_unregisteredTestModule.testMethodCalled);
   });
 }
 

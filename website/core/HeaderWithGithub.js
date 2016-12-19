@@ -8,11 +8,21 @@
  *
  * @providesModule HeaderWithGithub
  */
+'use strict';
 
 var H = require('Header');
 var React = require('React');
 
+function getGitHubPath(path) {
+  return  'https://github.com/facebook/react-native/blob/master/' + path;
+}
+
 var HeaderWithGithub = React.createClass({
+
+  contextTypes: {
+    version: React.PropTypes.string
+  },
+
   render: function() {
     return (
       <table width="100%">
@@ -26,7 +36,7 @@ var HeaderWithGithub = React.createClass({
             <td style={{textAlign: 'right'}}>
               <a
                 target="_blank"
-                href={'https://github.com/facebook/react-native/blob/master/' + this.props.path}>
+                href={getGitHubPath(this.props.path)}>
                 Edit on GitHub
               </a>
             </td>

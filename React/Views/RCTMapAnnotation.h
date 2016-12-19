@@ -17,10 +17,10 @@
 @property (nonatomic, assign) BOOL animateDrop;
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIImage *image;
-@property (nonatomic, assign) NSInteger viewIndex;
-@property (nonatomic, assign) NSInteger leftCalloutViewIndex;
-@property (nonatomic, assign) NSInteger rightCalloutViewIndex;
-@property (nonatomic, assign) NSInteger detailCalloutViewIndex;
+@property (nonatomic, assign) NSUInteger viewIndex;
+@property (nonatomic, assign) NSUInteger leftCalloutViewIndex;
+@property (nonatomic, assign) NSUInteger rightCalloutViewIndex;
+@property (nonatomic, assign) NSUInteger detailCalloutViewIndex;
 @property (nonatomic, assign) BOOL draggable;
 
 @end

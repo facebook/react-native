@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -16,32 +23,24 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
+
+var nativeImageSource = require('nativeImageSource');
 var {
   Image,
   Platform,
-  ProgressBarAndroid,
+  ActivityIndicator,
   TextInput,
   StyleSheet,
   TouchableNativeFeedback,
   View,
-} = React;
+} = ReactNative;
 
 var IS_RIPPLE_EFFECT_SUPPORTED = Platform.Version >= 21;
 
-var SearchBar = React.createClass({
-  render: function() {
-    var loadingView;
-    if (this.props.isLoading) {
-      loadingView = (
-        <ProgressBarAndroid
-          styleAttr="Large"
-          style={styles.spinner}
-        />
-      );
-    } else {
-      loadingView = <View style={styles.spinner} />;
-    }
+class SearchBar extends React.Component {
+  render() {
     var background = IS_RIPPLE_EFFECT_SUPPORTED ?
       TouchableNativeFeedback.SelectableBackgroundBorderless() :
       TouchableNativeFeedback.SelectableBackground();
@@ -52,7 +51,11 @@ var SearchBar = React.createClass({
             onPress={() => this.refs.input && this.refs.input.focus()}>
           <View>
             <Image
-              source={require('image!android_search_white')}
+              source={nativeImageSource({
+                android: 'android_search_white',
+                width: 96,
+                height: 96
+              })}
               style={styles.icon}
             />
           </View>
@@ -68,11 +71,16 @@ var SearchBar = React.createClass({
           onFocus={this.props.onFocus}
           style={styles.searchBarInput}
         />
-        {loadingView}
+        <ActivityIndicator
+          animating={this.props.isLoading}
+          color="white"
+          size="large"
+          style={styles.spinner}
+        />
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {
@@ -93,6 +101,7 @@ var styles = StyleSheet.create({
   spinner: {
     width: 30,
     height: 30,
+    marginRight: 16,
   },
   icon: {
     width: 24,

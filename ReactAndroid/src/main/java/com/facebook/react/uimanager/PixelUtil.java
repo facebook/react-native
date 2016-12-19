@@ -23,7 +23,7 @@ public class PixelUtil {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         value,
-        DisplayMetricsHolder.getDisplayMetrics());
+        DisplayMetricsHolder.getWindowDisplayMetrics());
   }
 
   /**
@@ -40,7 +40,7 @@ public class PixelUtil {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_SP,
         value,
-        DisplayMetricsHolder.getDisplayMetrics());
+        DisplayMetricsHolder.getWindowDisplayMetrics());
   }
 
   /**
@@ -54,7 +54,7 @@ public class PixelUtil {
    * Convert from PX to DP
    */
   public static float toDIPFromPixel(float value) {
-    return value / DisplayMetricsHolder.getDisplayMetrics().density;
+    return value / DisplayMetricsHolder.getWindowDisplayMetrics().density;
   }
 
 }

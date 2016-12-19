@@ -10,7 +10,11 @@ Because `react-native init` calls `npm install react-native`, simply linking you
 
     $ npm install -g sinopia
 
-Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
+Now you can run sinopia by simply doing:
+
+    $ sinopia
+
+Running it for the first time creates a default config file. Open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
 
     storage: ./storage
 
@@ -40,9 +44,7 @@ Then, open `~/.config/sinopia/config.yaml` and configure it like this (note the 
 
     max_body_size: '50mb'
 
-Now you can run sinopia by simply doing:
-
-    $ sinopia
+Remember to restart sinopia afterwards.
 
 ### Publishing to sinopia
 
@@ -99,12 +101,12 @@ This usually happens when you install a package using one version of Node and th
 
     $ npm uninstall -g sinopia
     $ npm install -g sinopia
-    
+
 After upgrading to Node 4 you might also need to reinstall npm. What worked for me was:
 
     $ npm uninstall -g npm
     $ nvm install npm
-    
+
  See the [nvm guide](https://github.com/creationix/nvm#usage) for more info.
 
 ### Alternative workflow

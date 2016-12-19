@@ -16,14 +16,17 @@ const EventEmitter = require('EventEmitter');
 const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
-const invariant = require('invariant');
-const keyMirror = require('keyMirror');
-const setImmediate = require('setImmediate');
+const infoLog = require('infoLog');
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
 
 type Handle = number;
 import type {Task} from 'TaskQueue';
 
 const _emitter = new EventEmitter();
+
+const DEBUG_DELAY = 0;
+const DEBUG = false;
 
 /**
  * InteractionManager allows long-running work to be scheduled after any
@@ -81,23 +84,39 @@ var InteractionManager = {
   }),
 
   /**
-   * Schedule a function to run after all interactions have completed.
+   * Schedule a function to run after all interactions have completed. Returns a cancellable
+   * "promise".
    */
-  runAfterInteractions(task: ?Task): Promise {
-    return new Promise(resolve => {
+  runAfterInteractions(task: ?Task): {then: Function, done: Function, cancel: Function} {
+    const tasks = [];
+    const promise = new Promise(resolve => {
       _scheduleUpdate();
       if (task) {
-        _taskQueue.enqueue(task);
+        tasks.push(task);
       }
-      const name = task && task.name || '?';
-      _taskQueue.enqueue({run: resolve, name: 'resolve ' + name});
+      tasks.push({run: resolve, name: 'resolve ' + (task && task.name || '?')});
+      _taskQueue.enqueueTasks(tasks);
     });
+    return {
+      then: promise.then.bind(promise),
+      done: (...args) => {
+        if (promise.done) {
+          return promise.done(...args);
+        } else {
+          console.warn('Tried to call done when not supported by current Promise implementation.');
+        }
+      },
+      cancel: function() {
+        _taskQueue.cancelTasks(tasks);
+      },
+    };
   },
 
   /**
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
+    DEBUG && infoLog('create interaction handle');
     _scheduleUpdate();
     var handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -108,6 +127,7 @@ var InteractionManager = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
+    DEBUG && infoLog('clear interaction handle');
     invariant(
       !!handle,
       'Must provide a handle to clear.'
@@ -137,13 +157,15 @@ let _nextUpdateHandle = 0;
 let _inc = 0;
 let _deadline = -1;
 
+declare function setImmediate(callback: any, ...args: Array<any>): number;
+
 /**
  * Schedule an asynchronous update to the interaction state.
  */
 function _scheduleUpdate() {
   if (!_nextUpdateHandle) {
     if (_deadline > 0) {
-      _nextUpdateHandle = setTimeout(_processUpdate, 0);
+      _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
     } else {
       _nextUpdateHandle = setImmediate(_processUpdate);
     }

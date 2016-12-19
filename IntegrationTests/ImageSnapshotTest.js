@@ -10,33 +10,34 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   View,
-} = React;
-var { TestModule } = React.NativeModules;
+} = ReactNative;
+var { TestModule } = ReactNative.NativeModules;
 
-var ImageSnapshotTest = React.createClass({
+class ImageSnapshotTest extends React.Component {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
-  },
+  }
 
-  done(success : boolean) {
+  done = (success : boolean) => {
     TestModule.markTestPassed(success);
-  },
+  };
 
   render() {
     return (
       <Image
-        source={require('image!blue_square')}
-        defaultSource={require('image!red_square')}
+        source={require('./blue_square.png')}
+        defaultSource={require('./red_square.png')}
         onLoad={() => TestModule.verifySnapshot(this.done)} />
     );
   }
-});
+}
 
 ImageSnapshotTest.displayName = 'ImageSnapshotTest';
 

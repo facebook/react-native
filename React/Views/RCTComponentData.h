@@ -9,12 +9,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTComponent.h"
-#import "RCTDefines.h"
+#import <React/RCTComponent.h>
+#import <React/RCTDefines.h>
+#import <React/RCTViewManager.h>
 
 @class RCTBridge;
 @class RCTShadowView;
-@class RCTViewManager;
 @class UIView;
 
 @interface RCTComponentData : NSObject
@@ -32,5 +32,7 @@
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
 
 - (NSDictionary<NSString *, id> *)viewConfig;
+
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry;
 
 @end

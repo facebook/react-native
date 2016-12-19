@@ -9,7 +9,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -57,7 +56,6 @@ public class ReactScrollViewHelper {
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
             scrollView.getId(),
-            SystemClock.uptimeMillis(),
             scrollEventType,
             scrollView.getScrollX(),
             scrollView.getScrollY(),

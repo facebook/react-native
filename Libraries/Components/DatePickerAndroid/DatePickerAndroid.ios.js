@@ -11,14 +11,12 @@
  */
 'use strict';
 
-var warning = require('warning');
-
 const DatePickerAndroid = {
   async open(options: Object): Promise<Object> {
     return Promise.reject({
       message: 'DatePickerAndroid is not supported on this platform.'
     });
   },
-}
+};
 
 module.exports = DatePickerAndroid;

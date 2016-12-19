@@ -8,17 +8,25 @@
  */
 'use strict';
 
+jest.disableAutomock();
+
 jest
   .setMock('worker-farm', () => () => undefined)
-  .dontMock('underscore')
-  .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../');
-
-jest.mock('fs');
+  .mock('image-size')
+  .mock('fs')
+  .mock('assert')
+  .mock('progress')
+  .mock('../../node-haste')
+  .mock('../../JSTransformer')
+  .mock('../../lib/declareOpts')
+  .mock('../../Resolver')
+  .mock('../Bundle')
+  .mock('../HMRBundle')
+  .mock('../../Logger')
+  .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
-var JSTransformer = require('../../JSTransformer');
 var Resolver = require('../../Resolver');
 var sizeOf = require('image-size');
 var fs = require('fs');
@@ -30,69 +38,66 @@ describe('Bundler', function() {
     id,
     dependencies,
     isAsset,
-    isAsset_DEPRECATED,
     isJSON,
+    isPolyfill,
     resolution,
   }) {
     return {
       path,
       resolution,
-      getDependencies() { return Promise.resolve(dependencies); },
-      getName() { return Promise.resolve(id); },
-      isJSON() { return isJSON; },
-      isAsset() { return isAsset; },
-      isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      getDependencies: () => Promise.resolve(dependencies),
+      getName: () => Promise.resolve(id),
+      isJSON: () => isJSON,
+      isAsset: () => isAsset,
+      isPolyfill: () => isPolyfill,
+      read: () => ({
+        code: 'arbitrary',
+        source: 'arbitrary',
+      }),
     };
   }
 
   var getDependencies;
   var getModuleSystemDependencies;
-  var wrapModule;
   var bundler;
   var assetServer;
   var modules;
+  var projectRoots;
 
   beforeEach(function() {
-    getDependencies = jest.genMockFn();
-    getModuleSystemDependencies = jest.genMockFn();
-    wrapModule = jest.genMockFn();
-    Resolver.mockImpl(function() {
+    getDependencies = jest.fn();
+    getModuleSystemDependencies = jest.fn();
+    projectRoots = ['/root'];
+
+    Resolver.mockImplementation(function() {
       return {
         getDependencies: getDependencies,
         getModuleSystemDependencies: getModuleSystemDependencies,
-        wrapModule: wrapModule,
       };
     });
 
-    fs.statSync.mockImpl(function() {
+    fs.statSync.mockImplementation(function() {
       return {
         isDirectory: () => true
       };
     });
 
-    fs.readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImplementation(function(file, callback) {
       callback(null, '{"json":true}');
     });
 
     assetServer = {
-      getAssetData: jest.genMockFn(),
+      getAssetData: jest.fn(),
     };
 
     bundler = new Bundler({
-      projectRoots: ['/root'],
+      projectRoots,
       assetServer: assetServer,
     });
 
     modules = [
       createModule({id: 'foo', path: '/root/foo.js', dependencies: []}),
       createModule({id: 'bar', path: '/root/bar.js', dependencies: []}),
-      createModule({
-        path: '/root/img/img.png',
-        id: 'image!img',
-        isAsset_DEPRECATED: true,
-        dependencies: [],
-        resolution: 2,
-      }),
       createModule({
         id: 'new_image.png',
         path: '/root/img/new_image.png',
@@ -108,41 +113,27 @@ describe('Bundler', function() {
       }),
     ];
 
-    getDependencies.mockImpl(function() {
-      return Promise.resolve({
+    getDependencies.mockImplementation((main, options, transformOptions) =>
+      Promise.resolve({
         mainModuleId: 'foo',
-        dependencies: modules
-      });
-    });
+        dependencies: modules,
+        transformOptions,
+        getModuleId: () => 123,
+        getResolvedDependencyPairs: () => [],
+      })
+    );
 
-    getModuleSystemDependencies.mockImpl(function() {
+    getModuleSystemDependencies.mockImplementation(function() {
       return [];
     });
 
-    JSTransformer.prototype.loadFileAndTransform
-      .mockImpl(function(path) {
-        return Promise.resolve({
-          code: 'transformed ' + path,
-          map: 'sourcemap ' + path,
-          sourceCode: 'source ' + path,
-          sourcePath: path
-        });
-      });
-
-    wrapModule.mockImpl(function(response, module, code) {
-      return module.getName().then(name => ({
-        name,
-        code: 'lol ' + code + ' lol'
-      }));
-    });
-
-    sizeOf.mockImpl(function(path, cb) {
+    sizeOf.mockImplementation(function(path, cb) {
       cb(null, { width: 50, height: 100 });
     });
   });
 
-  pit('create a bundle', function() {
-    assetServer.getAssetData.mockImpl(() => {
+  it('create a bundle', function() {
+    assetServer.getAssetData.mockImplementation(() => {
       return {
         scales: [1,2,3],
         files: [
@@ -166,24 +157,16 @@ describe('Bundler', function() {
 
         expect(ithAddedModule(0)).toEqual('/root/foo.js');
         expect(ithAddedModule(1)).toEqual('/root/bar.js');
-        expect(ithAddedModule(2)).toEqual('/root/img/img.png');
-        expect(ithAddedModule(3)).toEqual('/root/img/new_image.png');
-        expect(ithAddedModule(4)).toEqual('/root/file.json');
+        expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(3)).toEqual('/root/file.json');
 
-        expect(bundle.finalize.mock.calls[0]).toEqual([
-          {runMainModule: true, runBeforeMainModule: []}
-        ]);
-
-        expect(bundle.addAsset.mock.calls).toContain([{
-          __packager_asset: true,
-          path: '/root/img/img.png',
-          uri: 'img',
-          width: 25,
-          height: 50,
-          deprecated: true,
+        expect(bundle.finalize.mock.calls[0]).toEqual([{
+            runMainModule: true,
+            runBeforeMainModule: [],
+            allowUpdates: false,
         }]);
 
-        expect(bundle.addAsset.mock.calls).toContain([{
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
@@ -205,18 +188,98 @@ describe('Bundler', function() {
       });
   });
 
-  pit('gets the list of dependencies from the resolver', function() {
-    return bundler.getDependencies('/root/foo.js', true).then(() =>
-      expect(getDependencies).toBeCalledWith(
+  it('loads and runs asset plugins', function() {
+    jest.mock('mockPlugin1', () => {
+      return asset => {
+        asset.extraReverseHash = asset.hash.split('').reverse().join('');
+        return asset;
+      };
+    }, {virtual: true});
+
+    jest.mock('asyncMockPlugin2', () => {
+      return asset => {
+        expect(asset.extraReverseHash).toBeDefined();
+        return new Promise((resolve) => {
+          asset.extraPixelCount = asset.width * asset.height;
+          resolve(asset);
+        });
+      };
+    }, {virtual: true});
+
+    const mockAsset = {
+      scales: [1,2,3],
+      files: [
+        '/root/img/img.png',
+        '/root/img/img@2x.png',
+        '/root/img/img@3x.png',
+      ],
+      hash: 'i am a hash',
+      name: 'img',
+      type: 'png',
+    };
+    assetServer.getAssetData.mockImplementation(() => mockAsset);
+
+    return bundler.bundle({
+      entryFile: '/root/foo.js',
+      runBeforeMainModule: [],
+      runModule: true,
+      sourceMapUrl: 'source_map_url',
+      assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
+    }).then(bundle => {
+      expect(bundle.addAsset.mock.calls[0]).toEqual([{
+        __packager_asset: true,
+        fileSystemLocation: '/root/img',
+        httpServerLocation: '/assets/img',
+        width: 25,
+        height: 50,
+        scales: [1, 2, 3],
+        files: [
+          '/root/img/img.png',
+          '/root/img/img@2x.png',
+          '/root/img/img@3x.png',
+        ],
+        hash: 'i am a hash',
+        name: 'img',
+        type: 'png',
+        extraReverseHash: 'hsah a ma i',
+        extraPixelCount: 1250,
+      }]);
+    });
+  });
+
+  it('gets the list of dependencies from the resolver', function() {
+    const entryFile = '/root/foo.js';
+    return bundler.getDependencies({entryFile, recursive: true}).then(() =>
+      // jest calledWith does not support jasmine.any
+      expect(getDependencies.mock.calls[0].slice(0, -2)).toEqual([
         '/root/foo.js',
         { dev: true, recursive: true },
-      )
+        { minify: false,
+          dev: true,
+          transform: {
+            dev: true,
+            hot: false,
+            generateSourceMaps: false,
+            projectRoots,
+          }
+        },
+      ])
     );
+  });
+
+  it('allows overriding the platforms array', () => {
+    expect(bundler._opts.platforms).toEqual(['ios', 'android', 'windows', 'web']);
+    const b = new Bundler({
+      projectRoots,
+      assetServer: assetServer,
+      platforms: ['android', 'vr'],
+    });
+    expect(b._opts.platforms).toEqual(['android', 'vr']);
   });
 
   describe('getOrderedDependencyPaths', () => {
     beforeEach(() => {
-      assetServer.getAssetData.mockImpl(function(relPath) {
+      assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {
           return {
             scales: [1,2,3],
@@ -247,7 +310,7 @@ describe('Bundler', function() {
       });
     });
 
-    pit('should get the concrete list of all dependency files', () => {
+    it('should get the concrete list of all dependency files', () => {
       modules.push(
         createModule({
           id: 'new_image2.png',
@@ -262,7 +325,6 @@ describe('Bundler', function() {
         .then((paths) => expect(paths).toEqual([
           '/root/foo.js',
           '/root/bar.js',
-          '/root/img/img.png',
           '/root/img/new_image.png',
           '/root/img/new_image@2x.png',
           '/root/img/new_image@3x.png',

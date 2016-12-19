@@ -12,8 +12,8 @@
 #import "RCTUtils.h"
 
 @implementation RCTRefreshControl {
-  BOOL _initialRefreshingState;
   BOOL _isInitialRender;
+  BOOL _currentRefreshingState;
 }
 
 - (instancetype)init
@@ -21,6 +21,7 @@
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _isInitialRender = true;
+    _currentRefreshingState = false;
   }
   return self;
 }
@@ -30,10 +31,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  
+
+  // Fix for bug #7976
+  // TODO: Remove when updating to use iOS 10 refreshControl UIScrollView prop.
+  if (self.backgroundColor == nil) {
+    self.backgroundColor = [UIColor clearColor];
+  }
+
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
-  if (_isInitialRender && _initialRefreshingState) {
+  if (_currentRefreshingState && _isInitialRender) {
     [self beginRefreshing];
   }
   _isInitialRender = false;
@@ -44,16 +51,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
-  // Don't animate when the prop is set initialy.
-  if (_isInitialRender) {
-    // Must use `[scrollView setContentOffset:offset animated:NO]` instead of just setting
-    // `scrollview.contentOffset` or it doesn't work, don't ask me why!
-    [scrollView setContentOffset:offset animated:NO];
-    [super beginRefreshing];
-  } else {
-    // `beginRefreshing` must be called after the animation is done. This is why it is impossible
-    // to use `setContentOffset` with `animated:YES`.
-    [UIView animateWithDuration:0.25
+
+  // `beginRefreshing` must be called after the animation is done. This is why it is impossible
+  // to use `setContentOffset` with `animated:YES`.
+  [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^(void) {
@@ -61,6 +62,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      } completion:^(__unused BOOL finished) {
                        [super beginRefreshing];
                      }];
+}
+
+- (void)endRefreshing
+{
+  // The contentOffset of the scrollview MUST be greater than 0 before calling
+  // endRefreshing otherwise the next pull to refresh will not work properly.
+  UIScrollView *scrollView = (UIScrollView *)self.superview;
+  if (scrollView.contentOffset.y < 0) {
+    CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^(void) {
+                       [scrollView setContentOffset:offset];
+                     } completion:^(__unused BOOL finished) {
+                       [super endRefreshing];
+                     }];
+  } else {
+    [super endRefreshing];
   }
 }
 
@@ -71,18 +91,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setTitle:(NSString *)title
 {
-  self.attributedTitle = [[NSAttributedString alloc] initWithString:title];
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrs];
+}
+
+- (void)setTitleColor:(UIColor *)color
+{
+  NSRange range = NSMakeRange(0, self.attributedTitle.length);
+  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
+  NSMutableDictionary *attrsMutable = [attrs mutableCopy];
+  [attrsMutable setObject:color forKey:NSForegroundColorAttributeName];
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:self.attributedTitle.string attributes:attrsMutable];
 }
 
 - (void)setRefreshing:(BOOL)refreshing
 {
-  if (self.refreshing != refreshing) {
+  if (_currentRefreshingState != refreshing) {
+    _currentRefreshingState = refreshing;
+
     if (refreshing) {
-      // If it is the initial render, beginRefreshing will get called
-      // in layoutSubviews.
-      if (_isInitialRender) {
-        _initialRefreshingState = refreshing;
-      } else {
+      if (!_isInitialRender) {
         [self beginRefreshing];
       }
     } else {
@@ -93,6 +122,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)refreshControlValueChanged
 {
+  _currentRefreshingState = super.refreshing;
+
   if (_onRefresh) {
     _onRefresh(nil);
   }

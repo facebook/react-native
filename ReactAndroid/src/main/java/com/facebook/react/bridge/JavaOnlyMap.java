@@ -90,7 +90,23 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public ReadableType getType(String name) {
-    throw new UnsupportedOperationException("Method not implemented");
+    Object value = mBackingMap.get(name);
+    if (value == null) {
+      return ReadableType.Null;
+    } else if (value instanceof Number) {
+      return ReadableType.Number;
+    } else if (value instanceof String) {
+      return ReadableType.String;
+    } else if (value instanceof Boolean) {
+      return ReadableType.Boolean;
+    } else if (value instanceof ReadableMap) {
+      return ReadableType.Map;
+    } else if (value instanceof ReadableArray) {
+      return ReadableType.Array;
+    } else {
+      throw new IllegalArgumentException("Invalid value " + value.toString() + " for key " + name +
+        "contained in JavaOnlyMap");
+    }
   }
 
   @Override

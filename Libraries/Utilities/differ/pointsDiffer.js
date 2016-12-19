@@ -12,8 +12,8 @@
 'use strict';
 
 type Point = {
-  x: ?number;
-  y: ?number;
+  x: ?number,
+  y: ?number,
 }
 
 var dummyPoint = {x: undefined, y: undefined};

@@ -9,13 +9,23 @@
 'use strict';
 
 const bundleWithOutput = require('./bundle').withOutput;
+const bundleCommandLineArgs = require('./bundleCommandLineArgs');
 const outputUnbundle = require('./output/unbundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function unbundle(argv, config) {
-  return bundleWithOutput(argv, config, outputUnbundle);
+function unbundle(argv, config, args, packagerInstance) {
+  return bundleWithOutput(argv, config, args, outputUnbundle, packagerInstance);
 }
 
-module.exports = unbundle;
+module.exports = {
+  name: 'unbundle',
+  description: 'builds javascript as "unbundle" for offline use',
+  func: unbundle,
+  options: bundleCommandLineArgs.concat({
+    command: '--indexed-unbundle',
+    description: 'Force indexed unbundle file format, even when building for android',
+    default: false,
+  }),
+};

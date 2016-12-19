@@ -38,9 +38,20 @@ public class ReactChoreographer {
     DISPATCH_UI(1),
 
     /**
+     * For use by {@link com.facebook.react.animated.NativeAnimatedModule}
+     */
+    NATIVE_ANIMATED_MODULE(2),
+
+    /**
      * Events that make JS do things.
      */
-    TIMERS_EVENTS(2),
+    TIMERS_EVENTS(3),
+
+    /**
+     * Event used to trigger the idle callback. Called after all UI work has been
+     * dispatched to JS.
+     */
+    IDLE_EVENT(4),
     ;
 
     private final int mOrder;

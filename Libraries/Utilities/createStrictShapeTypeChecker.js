@@ -11,9 +11,10 @@
  */
 'use strict';
 
-var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
+var ReactPropTypeLocationNames = require('react/lib/ReactPropTypeLocationNames');
+var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
 
 function createStrictShapeTypeChecker(
@@ -54,7 +55,7 @@ function createStrictShapeTypeChecker(
             `\nValid keys: ` + JSON.stringify(Object.keys(shapeTypes), null, '  ')
         );
       }
-      var error = checker(propValue, key, componentName, location);
+      var error = checker(propValue, key, componentName, location, null, ReactPropTypesSecret);
       if (error) {
         invariant(
           false,

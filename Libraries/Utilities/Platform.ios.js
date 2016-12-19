@@ -12,8 +12,17 @@
 
 'use strict';
 
-var Platform = {
+const Platform = {
   OS: 'ios',
+  get Version() {
+    const constants = require('NativeModules').IOSConstants;
+    return constants ? constants.osVersion : '';
+  },
+  get isTVOS() {
+    const constants = require('NativeModules').IOSConstants;
+    return constants ? (constants.interfaceIdiom === 'tv') : false;
+  },
+  select: (obj: Object) => obj.ios,
 };
 
 module.exports = Platform;

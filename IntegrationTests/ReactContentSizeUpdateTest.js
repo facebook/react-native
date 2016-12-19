@@ -8,14 +8,15 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
 
-var { View } = React;
+var { View } = ReactNative;
 
-var { TestModule } = React.addons;
+var { TestModule } = ReactNative.NativeModules;
 
 var reactViewWidth = 101;
 var reactViewHeight = 102;

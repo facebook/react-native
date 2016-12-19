@@ -10,25 +10,28 @@
 
 const buildBundle = require('./buildBundle');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const parseCommandLine = require('../util/parseCommandLine');
 const outputBundle = require('./output/bundle');
-const outputPrepack = require('./output/prepack');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundleWithOutput(argv, config, output) {
-  const args = parseCommandLine(bundleCommandLineArgs, argv);
+function bundleWithOutput(argv, config, args, output, packagerInstance) {
   if (!output) {
-    output = args.prepack ? outputPrepack : outputBundle;
+    output = outputBundle;
   }
-  return buildBundle(args, config, output);
-
+  return buildBundle(args, config, output, packagerInstance);
 }
 
-function bundle(argv, config) {
-  return bundleWithOutput(argv, config);
+function bundle(argv, config, args, packagerInstance) {
+  return bundleWithOutput(argv, config, args, undefined, packagerInstance);
 }
 
-module.exports = bundle;
-module.exports.withOutput = bundleWithOutput;
+module.exports = {
+  name: 'bundle',
+  description: 'builds the javascript bundle for offline use',
+  func: bundle,
+  options: bundleCommandLineArgs,
+
+  // not used by the CLI itself
+  withOutput: bundleWithOutput,
+};

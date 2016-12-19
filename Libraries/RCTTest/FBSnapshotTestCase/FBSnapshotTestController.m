@@ -247,6 +247,9 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   if ([[UIScreen mainScreen] scale] > 1.0) {
     fileName = [fileName stringByAppendingFormat:@"@%.fx", [[UIScreen mainScreen] scale]];
   }
+#if TARGET_OS_TV
+  fileName = [fileName stringByAppendingString:@"_tvOS"];
+#endif
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
 }
@@ -347,7 +350,7 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
 - (UIImage *)_snapshotViewOrLayer:(id)viewOrLayer
 {
   CALayer *layer = nil;
-  
+
   if ([viewOrLayer isKindOfClass:[UIView class]]) {
     return [self _renderView:viewOrLayer];
   } else if ([viewOrLayer isKindOfClass:[CALayer class]]) {
@@ -370,19 +373,21 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
   CGContextRef context = UIGraphicsGetCurrentContext();
   NSAssert1(context, @"Could not generate context for layer %@", layer);
-  
+
+  UIGraphicsPushContext(context);
   CGContextSaveGState(context);
   {
     [layer renderInContext:context];
   }
   CGContextRestoreGState(context);
-  
+  UIGraphicsPopContext();
+
   UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-  
+
   return snapshot;
 }
-        
+
 - (UIImage *)_renderView:(UIView *)view
 {
   [view layoutIfNeeded];

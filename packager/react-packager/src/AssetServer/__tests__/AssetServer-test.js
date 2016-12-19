@@ -1,23 +1,33 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 
-jest
-  .dontMock('../../DependencyResolver/lib/getPlatformExtension')
-  .dontMock('../../DependencyResolver/lib/getAssetDataFromName')
-  .dontMock('../');
+jest.disableAutomock();
 
-jest
-  .mock('crypto')
-  .mock('fs');
+jest.mock('fs');
 
-const Promise = require('promise');
+const AssetServer = require('../');
+const crypto = require('crypto');
+const fs = require('fs');
 
-var AssetServer = require('../');
-var crypto = require('crypto');
-var fs = require('fs');
+const {objectContaining} = jasmine;
 
 describe('AssetServer', () => {
+  beforeEach(() => {
+    const NodeHaste = require('../../node-haste');
+    NodeHaste.getAssetDataFromName =
+      require.requireActual('../../node-haste/lib/getAssetDataFromName');
+  });
+
   describe('assetServer.get', () => {
-    pit('should work for the simple case', () => {
+    it('should work for the simple case', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
@@ -42,7 +52,7 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should work for the simple case with platform ext', () => {
+    it('should work for the simple case with platform ext', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
@@ -79,7 +89,7 @@ describe('AssetServer', () => {
     });
 
 
-    pit('should work for the simple case with jpg', () => {
+    it('should work for the simple case with jpg', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpg'],
@@ -105,7 +115,7 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should pick the bigger one', () => {
+    it('should pick the bigger one', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
@@ -127,7 +137,7 @@ describe('AssetServer', () => {
       );
     });
 
-    pit('should pick the bigger one with platform ext', () => {
+    it('should pick the bigger one with platform ext', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
@@ -158,7 +168,7 @@ describe('AssetServer', () => {
       ]);
     });
 
-    pit('should support multiple project roots', () => {
+    it('should support multiple project roots', () => {
       const server = new AssetServer({
         projectRoots: ['/root', '/root2'],
         assetExts: ['png'],
@@ -186,15 +196,7 @@ describe('AssetServer', () => {
   });
 
   describe('assetServer.getAssetData', () => {
-    pit('should get assetData', () => {
-      const hash = {
-        update: jest.genMockFn(),
-        digest: jest.genMockFn(),
-      };
-
-      hash.digest.mockImpl(() => 'wow such hash');
-      crypto.createHash.mockImpl(() => hash);
-
+    it('should get assetData', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png'],
@@ -212,8 +214,7 @@ describe('AssetServer', () => {
       });
 
       return server.getAssetData('imgs/b.png').then(data => {
-        expect(hash.update.mock.calls.length).toBe(4);
-        expect(data).toEqual({
+        expect(data).toEqual(objectContaining({
           type: 'png',
           name: 'b',
           scales: [1, 2, 4, 4.5],
@@ -223,20 +224,11 @@ describe('AssetServer', () => {
             '/root/imgs/b@4x.png',
             '/root/imgs/b@4.5x.png',
           ],
-          hash: 'wow such hash',
-        });
+        }));
       });
     });
 
-    pit('should get assetData for non-png images', () => {
-      const hash = {
-        update: jest.genMockFn(),
-        digest: jest.genMockFn(),
-      };
-
-      hash.digest.mockImpl(() => 'wow such hash');
-      crypto.createHash.mockImpl(() => hash);
-
+    it('should get assetData for non-png images', () => {
       const server = new AssetServer({
         projectRoots: ['/root'],
         assetExts: ['png', 'jpeg'],
@@ -254,8 +246,7 @@ describe('AssetServer', () => {
       });
 
       return server.getAssetData('imgs/b.jpg').then(data => {
-        expect(hash.update.mock.calls.length).toBe(4);
-        expect(data).toEqual({
+        expect(data).toEqual(objectContaining({
           type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
@@ -265,7 +256,50 @@ describe('AssetServer', () => {
             '/root/imgs/b@4x.jpg',
             '/root/imgs/b@4.5x.jpg',
           ],
-          hash: 'wow such hash',
+        }));
+      });
+    });
+
+    describe('hash:', () => {
+      let server, mockFS;
+      beforeEach(() => {
+        server = new AssetServer({
+          projectRoots: ['/root'],
+          assetExts: ['jpg'],
+        });
+
+        mockFS = {
+          'root': {
+            imgs: {
+              'b@1x.jpg': 'b1 image',
+              'b@2x.jpg': 'b2 image',
+              'b@4x.jpg': 'b4 image',
+              'b@4.5x.jpg': 'b4.5 image',
+            }
+          }
+        };
+
+       fs.__setMockFilesystem(mockFS);
+      });
+
+      it('uses the file contents to build the hash', () => {
+        const hash = crypto.createHash('md5');
+        for (const name in mockFS.root.imgs) {
+          hash.update(mockFS.root.imgs[name]);
+        }
+
+        return server.getAssetData('imgs/b.jpg').then(data =>
+          expect(data).toEqual(objectContaining({hash: hash.digest('hex')}))
+        );
+      });
+
+      it('changes the hash when the passed-in file watcher emits an `all` event', () => {
+        return server.getAssetData('imgs/b.jpg').then(initialData => {
+          mockFS.root.imgs['b@4x.jpg'] = 'updated data';
+          server.onFileChange('all', '/root/imgs/b@4x.jpg');
+          return server.getAssetData('imgs/b.jpg').then(data =>
+            expect(data.hash).not.toEqual(initialData.hash)
+          );
         });
       });
     });

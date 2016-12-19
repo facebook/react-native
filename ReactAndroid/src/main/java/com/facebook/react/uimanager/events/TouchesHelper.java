@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.PixelUtil;
   private static final String PAGE_X_KEY = "pageX";
   private static final String PAGE_Y_KEY = "pageY";
   private static final String TARGET_KEY = "target";
-  private static final String TIMESTAMP_KEY = "timeStamp";
+  private static final String TIMESTAMP_KEY = "timestamp";
   private static final String POINTER_IDENTIFIER_KEY = "identifier";
 
   private static final String LOCATION_X_KEY = "locationX";
@@ -62,7 +62,7 @@ import com.facebook.react.uimanager.PixelUtil;
       touch.putDouble(LOCATION_X_KEY, PixelUtil.toDIPFromPixel(locationX));
       touch.putDouble(LOCATION_Y_KEY, PixelUtil.toDIPFromPixel(locationY));
       touch.putInt(TARGET_KEY, reactTarget);
-      touch.putDouble(TIMESTAMP_KEY, motionEvent.getEventTime());
+      touch.putDouble(TIMESTAMP_KEY, event.getTimestampMs());
       touch.putDouble(POINTER_IDENTIFIER_KEY, motionEvent.getPointerId(index));
       touches.pushMap(touch);
     }
@@ -106,5 +106,4 @@ import com.facebook.react.uimanager.PixelUtil;
         pointers,
         changedIndices);
   }
-
 }

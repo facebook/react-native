@@ -6,4 +6,13 @@
 // problem go away.
 
 'use strict';
-module.exports = function() {};
+
+function EventTarget() {
+  // Support both EventTarget and EventTarget(...)
+  // as a super class, just like the original module does.
+  if (arguments.length > 0) {
+    return EventTarget;
+  }
+}
+
+module.exports = EventTarget;

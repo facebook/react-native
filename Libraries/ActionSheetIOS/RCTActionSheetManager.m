@@ -9,11 +9,11 @@
 
 #import "RCTActionSheetManager.h"
 
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTBridge.h"
-#import "RCTUIManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 @end
@@ -26,6 +26,8 @@
 }
 
 RCT_EXPORT_MODULE()
+
+@synthesize bridge = _bridge;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -61,15 +63,13 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSString *title = [RCTConvert NSString:options[@"title"]];
+  NSString *message = [RCTConvert NSString:options[@"message"]];
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
-  }
-    
+  UIViewController *controller = RCTPresentedViewController();
+
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -84,67 +84,39 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   UIView *sourceView = controller.view;
   CGRect sourceRect = [self sourceRectInView:sourceView anchorViewTag:anchorViewTag];
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+  UIAlertController *alertController =
+  [UIAlertController alertControllerWithTitle:title
+                                      message:message
+                               preferredStyle:UIAlertControllerStyleActionSheet];
 
-  if ([UIAlertController class] == nil) {
-
-    UIActionSheet *actionSheet = [UIActionSheet new];
-
-    actionSheet.title = title;
-    for (NSString *option in buttons) {
-      [actionSheet addButtonWithTitle:option];
-    }
-    actionSheet.destructiveButtonIndex = destructiveButtonIndex;
-    actionSheet.cancelButtonIndex = cancelButtonIndex;
-    actionSheet.delegate = self;
-
-    [_callbacks setObject:callback forKey:actionSheet];
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      [actionSheet showFromRect:sourceRect inView:sourceView animated:YES];
-    } else {
-      [actionSheet showInView:sourceView];
+  NSInteger index = 0;
+  for (NSString *option in buttons) {
+    UIAlertActionStyle style = UIAlertActionStyleDefault;
+    if (index == destructiveButtonIndex) {
+      style = UIAlertActionStyleDestructive;
+    } else if (index == cancelButtonIndex) {
+      style = UIAlertActionStyleCancel;
     }
 
-  } else
+    NSInteger localIndex = index;
+    [alertController addAction:[UIAlertAction actionWithTitle:option
+                                                        style:style
+                                                      handler:^(__unused UIAlertAction *action){
+      callback(@[@(localIndex)]);
+    }]];
 
-#endif
-
-  {
-    UIAlertController *alertController =
-    [UIAlertController alertControllerWithTitle:title
-                                        message:nil
-                                 preferredStyle:UIAlertControllerStyleActionSheet];
-
-    NSInteger index = 0;
-    for (NSString *option in buttons) {
-      UIAlertActionStyle style = UIAlertActionStyleDefault;
-      if (index == destructiveButtonIndex) {
-        style = UIAlertActionStyleDestructive;
-      } else if (index == cancelButtonIndex) {
-        style = UIAlertActionStyleCancel;
-      }
-
-      NSInteger localIndex = index;
-      [alertController addAction:[UIAlertAction actionWithTitle:option
-                                                          style:style
-                                                        handler:^(__unused UIAlertAction *action){
-        callback(@[@(localIndex)]);
-      }]];
-
-      index++;
-    }
-
-    alertController.modalPresentationStyle = UIModalPresentationPopover;
-    alertController.popoverPresentationController.sourceView = sourceView;
-    alertController.popoverPresentationController.sourceRect = sourceRect;
-    if (!anchorViewTag) {
-      alertController.popoverPresentationController.permittedArrowDirections = 0;
-    }
-    [controller presentViewController:alertController animated:YES completion:nil];
-
-    alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+    index++;
   }
+
+  alertController.modalPresentationStyle = UIModalPresentationPopover;
+  alertController.popoverPresentationController.sourceView = sourceView;
+  alertController.popoverPresentationController.sourceRect = sourceRect;
+  if (!anchorViewTag) {
+    alertController.popoverPresentationController.permittedArrowDirections = 0;
+  }
+  [controller presentViewController:alertController animated:YES completion:nil];
+
+  alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
@@ -156,14 +128,26 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     return;
   }
 
-  NSMutableArray<id /* NSString or NSURL */> *items = [NSMutableArray array];
+  NSMutableArray<id> *items = [NSMutableArray array];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   if (message) {
     [items addObject:message];
   }
   NSURL *URL = [RCTConvert NSURL:options[@"url"]];
   if (URL) {
-    [items addObject:URL];
+    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
+      NSError *error;
+      NSData *data = [NSData dataWithContentsOfURL:URL
+                                           options:(NSDataReadingOptions)0
+                                             error:&error];
+      if (!data) {
+        failureCallback(error);
+        return;
+      }
+      [items addObject:data];
+    } else {
+      [items addObject:URL];
+    }
   }
   if (items.count == 0) {
     RCTLogError(@"No `url` or `message` to share");
@@ -182,37 +166,22 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-  if (![UIActivityViewController instancesRespondToSelector:@selector(setCompletionWithItemsHandler:)]) {
-    // Legacy iOS 7 implementation
-    shareController.completionHandler = ^(NSString *activityType, BOOL completed) {
+  UIViewController *controller = RCTPresentedViewController();
+  shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+    if (activityError) {
+      failureCallback(activityError);
+    } else {
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
-    };
-  } else
-
-#endif
-
-  {
-    // iOS 8 version
-    shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
-      if (activityError) {
-        failureCallback(activityError);
-      } else {
-        successCallback(@[@(completed), RCTNullIfNil(activityType)]);
-      }
-    };
-
-    shareController.modalPresentationStyle = UIModalPresentationPopover;
-    NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-    if (!anchorViewTag) {
-      shareController.popoverPresentationController.permittedArrowDirections = 0;
     }
-    shareController.popoverPresentationController.sourceView = controller.view;
-    shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
+  };
+
+  shareController.modalPresentationStyle = UIModalPresentationPopover;
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+  if (!anchorViewTag) {
+    shareController.popoverPresentationController.permittedArrowDirections = 0;
   }
+  shareController.popoverPresentationController.sourceView = controller.view;
+  shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
 
   [controller presentViewController:shareController animated:YES completion:nil];
 

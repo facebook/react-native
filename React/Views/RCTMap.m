@@ -14,6 +14,7 @@
 #import "RCTMapAnnotation.h"
 #import "RCTMapOverlay.h"
 #import "RCTUtils.h"
+#import "UIView+React.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
 const NSTimeInterval RCTMapRegionChangeObserveInterval = 0.1;
@@ -23,7 +24,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   UIView *_legalLabel;
   CLLocationManager *_locationManager;
-  NSMutableArray<UIView *> *_reactSubviews;
 }
 
 - (instancetype)init
@@ -31,7 +31,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   if ((self = [super init])) {
 
     _hasStartedRendering = NO;
-    _reactSubviews = [NSMutableArray new];
 
     // Find Apple link label
     for (UIView *subview in self.subviews) {
@@ -51,19 +50,9 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)didUpdateReactSubviews
 {
-  [_reactSubviews insertObject:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(UIView *)subview
-{
-  [_reactSubviews removeObject:subview];
-}
-
-- (NSArray<UIView *> *)reactSubviews
-{
-  return _reactSubviews;
+  // Do nothing, as annotation views are managed by `setAnnotations:` method
 }
 
 - (void)layoutSubviews
@@ -72,18 +61,18 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
   if (_legalLabel) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      CGRect frame = _legalLabel.frame;
-      if (_legalLabelInsets.left) {
-        frame.origin.x = _legalLabelInsets.left;
-      } else if (_legalLabelInsets.right) {
-        frame.origin.x = self.frame.size.width - _legalLabelInsets.right - frame.size.width;
+      CGRect frame = self->_legalLabel.frame;
+      if (self->_legalLabelInsets.left) {
+        frame.origin.x = self->_legalLabelInsets.left;
+      } else if (self->_legalLabelInsets.right) {
+        frame.origin.x = self.frame.size.width - self->_legalLabelInsets.right - frame.size.width;
       }
-      if (_legalLabelInsets.top) {
-        frame.origin.y = _legalLabelInsets.top;
-      } else if (_legalLabelInsets.bottom) {
-        frame.origin.y = self.frame.size.height - _legalLabelInsets.bottom - frame.size.height;
+      if (self->_legalLabelInsets.top) {
+        frame.origin.y = self->_legalLabelInsets.top;
+      } else if (self->_legalLabelInsets.bottom) {
+        frame.origin.y = self.frame.size.height - self->_legalLabelInsets.bottom - frame.size.height;
       }
-      _legalLabel.frame = frame;
+      self->_legalLabel.frame = frame;
     });
   }
 }

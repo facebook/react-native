@@ -7,10 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Clipboard
+ * @flow
  */
 'use strict';
 
-var Clipboard = require('NativeModules').Clipboard;
+const Clipboard = require('NativeModules').Clipboard;
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
@@ -24,13 +25,7 @@ module.exports = {
    * }
    * ```
    */
-  getString() {
-    if (arguments.length > 0) {
-      let callback = arguments[0];
-      console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
-      Clipboard.getString().then(callback);
-      return;
-    }
+  getString(): Promise<string> {
     return Clipboard.getString();
   },
   /**
@@ -42,7 +37,7 @@ module.exports = {
    * ```
    * @param the content to be stored in the clipboard.
    */
-  setString(content) {
+  setString(content: string) {
     Clipboard.setString(content);
   }
 };

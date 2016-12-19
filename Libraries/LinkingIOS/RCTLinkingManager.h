@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
+#import <React/RCTEventEmitter.h>
 
-@interface RCTLinkingManager : NSObject <RCTBridgeModule>
+@interface RCTLinkingManager : RCTEventEmitter
 
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL

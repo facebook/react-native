@@ -15,7 +15,9 @@
 
 RCT_ENUM_CONVERTER(UIProgressViewStyle, (@{
   @"default": @(UIProgressViewStyleDefault),
+#if !TARGET_OS_TV
   @"bar": @(UIProgressViewStyleBar),
+#endif
 }), UIProgressViewStyleDefault, integerValue)
 
 @end
@@ -35,13 +37,5 @@ RCT_EXPORT_VIEW_PROPERTY(progressTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(trackTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(progressImage, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(trackImage, UIImage)
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  UIProgressView *view = [UIProgressView new];
-  return @{
-    @"ComponentHeight": @(view.intrinsicContentSize.height),
-  };
-}
 
 @end

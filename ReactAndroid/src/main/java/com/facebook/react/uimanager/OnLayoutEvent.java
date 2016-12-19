@@ -9,7 +9,6 @@
 
 package com.facebook.react.uimanager;
 
-import android.os.SystemClock;
 import android.support.v4.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
@@ -45,7 +44,7 @@ public class OnLayoutEvent extends Event<OnLayoutEvent> {
   }
 
   protected void init(int viewTag, int x, int y, int width, int height) {
-    super.init(viewTag, SystemClock.uptimeMillis());
+    super.init(viewTag);
     mX = x;
     mY = y;
     mWidth = width;

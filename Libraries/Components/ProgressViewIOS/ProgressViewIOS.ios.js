@@ -13,13 +13,13 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+
+var PropTypes = React.PropTypes;
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
@@ -72,7 +72,7 @@ var ProgressViewIOS = React.createClass({
 
 var styles = StyleSheet.create({
   progressView: {
-    height: NativeModules.ProgressViewManager.ComponentHeight
+    height: 2,
   },
 });
 

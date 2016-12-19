@@ -12,12 +12,17 @@
 
 var BatchedBridge = require('BatchedBridge');
 
-var warning = require('warning');
-var invariant = require('invariant');
+var warning = require('fbjs/lib/warning');
+var invariant = require('fbjs/lib/invariant');
 
 var LoggingTestModule = {
   logToConsole: function(str) {
     console.log(str);
+  },
+  logToConsoleAfterWait: function(str,timeout_ms) {
+    setTimeout(function() {
+      console.log(str);
+    }, timeout_ms);
   },
   warning: function(str) {
     warning(false, str);

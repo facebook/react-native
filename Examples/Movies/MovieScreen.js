@@ -15,27 +15,25 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
-} = React;
+} = ReactNative;
 
 var getImageSource = require('./getImageSource');
 var getStyleFromScore = require('./getStyleFromScore');
 var getTextFromScore = require('./getTextFromScore');
 
-var MovieScreen = React.createClass({
-  render: function() {
+class MovieScreen extends React.Component {
+  render() {
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.mainSection}>
-          {/* $FlowIssue #7363964 - There's a bug in Flow where you cannot
-            * omit a property or set it to undefined if it's inside a shape,
-            * even if it isn't required */}
           <Image
             source={getImageSource(this.props.movie, 'det')}
             style={styles.detailsImage}
@@ -59,11 +57,11 @@ var MovieScreen = React.createClass({
         <Cast actors={this.props.movie.abridged_cast} />
       </ScrollView>
     );
-  },
-});
+  }
+}
 
-var Ratings = React.createClass({
-  render: function() {
+class Ratings extends React.Component {
+  render() {
     var criticsScore = this.props.ratings.critics_score;
     var audienceScore = this.props.ratings.audience_score;
 
@@ -83,11 +81,11 @@ var Ratings = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
-var Cast = React.createClass({
-  render: function() {
+class Cast extends React.Component {
+  render() {
     if (!this.props.actors) {
       return null;
     }
@@ -102,8 +100,8 @@ var Cast = React.createClass({
         )}
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   contentContainer: {

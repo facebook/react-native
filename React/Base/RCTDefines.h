@@ -50,16 +50,16 @@
 #define RCT_IF_DEV(...)
 #endif
 
+#ifndef RCT_PROFILE
+#define RCT_PROFILE RCT_DEV
+#endif
+
 /**
  * By default, only raise an NSAssertion in debug mode
  * (custom assert functions will still be called).
  */
 #ifndef RCT_NSASSERT
-#if RCT_DEBUG
-#define RCT_NSASSERT 1
-#else
-#define RCT_NSASSERT 0
-#endif
+#define RCT_NSASSERT RCT_DEBUG
 #endif
 
 /**

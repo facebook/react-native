@@ -10,9 +10,12 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
-var ReactPropTypes = require('ReactPropTypes');
+var ReactNative = require('ReactNative');
+var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -22,13 +25,10 @@ var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
 
+var ReactPropTypes = React.PropTypes;
+
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';
-
-var DrawerLayoutValidAttributes = {
-  drawerWidth: true,
-  drawerPosition: true,
-};
 
 var DRAWER_STATES = [
   'Idle',
@@ -84,6 +84,18 @@ var DrawerLayoutAndroid = React.createClass({
       'on-drag',
     ]),
     /**
+     * Specifies the background color of the drawer. The default value is white.
+     * If you want to set the opacity of the drawer, use rgba. Example:
+     *
+     * ```
+     * return (
+     *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+     *   </DrawerLayoutAndroid>
+     * );
+     * ```
+     */
+    drawerBackgroundColor: ColorPropType,
+    /**
      * Specifies the side of the screen from which the drawer will slide in.
      */
     drawerPosition: ReactPropTypes.oneOf([
@@ -96,6 +108,18 @@ var DrawerLayoutAndroid = React.createClass({
      */
     drawerWidth: ReactPropTypes.number,
     /**
+     * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+     * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
+     * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+     * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
+     * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+     */
+    drawerLockMode: ReactPropTypes.oneOf([
+      'unlocked',
+      'locked-closed',
+      'locked-open'
+    ]),
+    /**
      * Function called whenever there is an interaction with the navigation view.
      */
     onDrawerSlide: ReactPropTypes.func,
@@ -104,7 +128,7 @@ var DrawerLayoutAndroid = React.createClass({
      * - idle, meaning there is no interaction with the navigation view happening at the time
      * - dragging, meaning there is currently an interaction with the navigation view
      * - settling, meaning that there was an interaction with the navigation view, and the
-     * navigation view is now finishing it's closing or opening animation
+     * navigation view is now finishing its closing or opening animation
      */
     onDrawerStateChanged: ReactPropTypes.func,
     /**
@@ -119,21 +143,63 @@ var DrawerLayoutAndroid = React.createClass({
      * The navigation view that will be rendered to the side of the screen and can be pulled in.
      */
     renderNavigationView: ReactPropTypes.func.isRequired,
+
+    /**
+     * Make the drawer take the entire screen and draw the background of the
+     * status bar to allow it to open over the status bar. It will only have an
+     * effect on API 21+.
+     */
+    statusBarBackgroundColor: ColorPropType,
   },
 
   mixins: [NativeMethodsMixin],
+
+  getDefaultProps: function(): Object {
+    return {
+      drawerBackgroundColor: 'white',
+    };
+  },
+
+  getInitialState: function() {
+    return {statusBarBackgroundColor: undefined};
+  },
 
   getInnerViewNode: function() {
     return this.refs[INNERVIEW_REF].getInnerViewNode();
   },
 
+  componentDidMount: function() {
+    this._updateStatusBarBackground();
+  },
+
+  componentDidReceiveProps: function() {
+    this._updateStatusBarBackground();
+  },
+
   render: function() {
+    var drawStatusBar = Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     var drawerViewWrapper =
-      <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
+      <View
+        style={[
+          styles.drawerSubview,
+          {width: this.props.drawerWidth, backgroundColor: this.props.drawerBackgroundColor}
+        ]}
+        collapsable={false}>
         {this.props.renderNavigationView()}
+        {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>;
     var childrenWrapper =
       <View ref={INNERVIEW_REF} style={styles.mainSubview} collapsable={false}>
+        {drawStatusBar &&
+        <StatusBar
+          translucent
+          backgroundColor={this.state.statusBarBackgroundColor}
+        />}
+        {drawStatusBar &&
+        <View style={[
+          styles.statusBar,
+          {backgroundColor: this.props.statusBarBackgroundColor}
+        ]} />}
         {this.props.children}
       </View>;
     return (
@@ -142,7 +208,8 @@ var DrawerLayoutAndroid = React.createClass({
         ref={RK_DRAWER_REF}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
-        style={styles.base}
+        drawerLockMode={this.props.drawerLockMode}
+        style={[styles.base, this.props.style]}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
         onDrawerClose={this._onDrawerClose}
@@ -180,6 +247,9 @@ var DrawerLayoutAndroid = React.createClass({
     }
   },
 
+  /**
+   * Opens the drawer.
+   */
   openDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
@@ -188,6 +258,9 @@ var DrawerLayoutAndroid = React.createClass({
     );
   },
 
+  /**
+   * Closes the drawer.
+   */
   closeDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
@@ -197,13 +270,31 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   _getDrawerLayoutHandle: function() {
-    return React.findNodeHandle(this.refs[RK_DRAWER_REF]);
+    return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
+  },
+
+  // Update the StatusBar component background color one frame after creating the
+  // status bar background View to avoid a white flicker that happens because
+  // the StatusBar background becomes transparent before the status bar View
+  // from this component has rendered.
+  _updateStatusBarBackground: function() {
+    if (Platform.Version >= 21 && this.props.statusBarBackgroundColor) {
+      // Check if the value is not already transparent to avoid an extra render.
+      if (this.state.statusBarBackgroundColor !== 'transparent') {
+        requestAnimationFrame(() => {
+          this.setState({statusBarBackgroundColor: 'transparent'});
+        });
+      }
+    } else {
+      this.setState({statusBarBackgroundColor: undefined});
+    }
   },
 });
 
 var styles = StyleSheet.create({
   base: {
     flex: 1,
+    elevation: 16,
   },
   mainSubview: {
     position: 'absolute',
@@ -216,6 +307,17 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
+  },
+  statusBar: {
+    height: StatusBar.currentHeight,
+  },
+  drawerStatusBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: StatusBar.currentHeight,
+    backgroundColor: 'rgba(0, 0, 0, 0.251)',
   },
 });
 

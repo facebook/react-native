@@ -1,87 +1,42 @@
 language: objective-c
 
-osx_image: xcode7.2
-
-cache:
-    directories:
-        - node_modules
-        - .nvm
+osx_image: xcode8
 
 install:
-  - brew reinstall nvm
-  - mkdir -p .nvm
-  - export NVM_DIR="$PWD/.nvm"
+  - mkdir -p /Users/travis/build/facebook/.nvm
+  - export NVM_DIR="/Users/travis/build/facebook/.nvm"
+  - brew install nvm
   - source $(brew --prefix nvm)/nvm.sh
+  # TODO npm 2 started stalling on Travis, t11852928
   - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
-  - npm config set spin=false
-  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
-  - npm install
+  - wget https://github.com/yarnpkg/yarn/releases/download/v0.16.0/yarn-0.16.0.js
+  - export yarn="node $(pwd)/yarn-0.16.0.js"
+  - $yarn install
 
 script:
-- |
-  if [ "$TEST_TYPE" = objc ]
-  then
-
-    ./scripts/objc-test.sh
-
-  elif [ "$TEST_TYPE" = js ]
-  then
-
-    npm install github@0.2.4
-    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    flow check && npm test -- '\/Libraries\/'
-
-  elif [ "$TEST_TYPE" = packager ]
-  then
-
-    npm test -- '\/packager\/'
-
-  elif [ "$TEST_TYPE" = cli ]
-  then
-
-    npm test -- '\/(local|private|react-native)-cli\/'
-
-  elif [ "$TEST_TYPE" = build_website ]
-  then
-
-    cd website
-    $(which npm) install
-    ./setup.sh
-    if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
-      # Automatically publish the website
-      echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" >~/.netrc
-      ./publish.sh
-    else
-      # Make sure the website builds without error
-      node server/generate.js
-    fi
-
-  elif [ "$TEST_TYPE" = e2e ]
-  then
-    ./scripts/e2e-test.sh
-  else
-    echo "Unknown test type: $TEST_TYPE"
-    exit 1
-  fi
+  - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh; fi
+  - if [[ "$TEST_TYPE" = objc-tvos ]]; then travis_retry travis_wait ./scripts/objc-test-tvos.sh; fi
+  - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
+  - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
+  - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
 env:
   matrix:
-    - TEST_TYPE=objc
+    - TEST_TYPE=e2e-objc
+    - TEST_TYPE=objc-ios
+    - TEST_TYPE=objc-tvos
     - TEST_TYPE=js
-    - TEST_TYPE=packager
-    - TEST_TYPE=cli
-    - TEST_TYPE=build_website
-    - TEST_TYPE=e2e
-  global:
-    # $GITHUB_TOKEN
-    - secure: "HlmG8M2DmBUSBh6KH1yVIe/8gR4iibg4WfcHq1x/xYQxGbvleq7NOo04V6eFHnl9cvZCu+PKH0841WLnGR7c4BBf47GVu/o16nXzggPumHKy++lDzxFPlJ1faMDfjg/5vjbAxRUe7D3y98hQSeGHH4tedc8LvTaFLVu7iiGqvjU="
-    # $APPETIZE_TOKEN
-    - secure: "egsvVSpszTzrNd6bN62DsVAzMiSZI/OHgdizfPryqvqWBf655ztE6XFQSEFNpuIAzSKDDF25ioT8iPfVsbC1iK6HDWHfmqYxML0L+OoU0gi+hV2oKUBFZDZ1fwSnFoWuBdNdMDpLlUxvJp6N1WyfNOB2dxuZUt8eTt48Hi3+Hpc="
-    # $S3_TOKEN
-    - secure: "lY8JZPA0A7zT7L5KF9BBg34XYWIeR/RJiEvE7l7oVr88KnEPtyd//79eHhhVKnUnav7zsk5QJwkcX0MxKTp/dp4G0Am+zOX+sfA8kQrJ+2/+FzFW7AEsW/kHByfaIEIly9DQvUFt4I4oMm8nQZysJLahDgNWglyI3RTuJp//hcY="
 
 branches:
   only:
     - master
     - /^.*-stable$/
+
+notifications:
+  email:
+    recipients:
+      - bestander@gmail.com
+      - mkonicek@fb.com
+    on_failure: change
+    on_success: change

@@ -11,14 +11,12 @@
  */
 'use strict';
 
-var warning = require('warning');
-
 const TimePickerAndroid = {
   async open(options: Object): Promise<Object> {
     return Promise.reject({
       message: 'TimePickerAndroid is not supported on this platform.'
     });
   },
-}
+};
 
 module.exports = TimePickerAndroid;

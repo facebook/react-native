@@ -45,14 +45,14 @@ var app = connect()
   .use(function(req, res, next) {
     // convert all the md files on every request. This is not optimal
     // but fast enough that we don't really need to care right now.
-    if (!server.noconvert && req.url.match(/\.html$/)) {
+    if (!server.noconvert && req.url.match(/\.html|\/$/)) {
       convert();
     }
     next();
   })
   .use(reactMiddleware.provide(buildOptions))
   .use(connect['static'](FILE_SERVE_ROOT))
-  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'elements', 'favicon', 'favicon.ico')))
+  .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'react-native', 'img', 'favicon.png')))
   .use(connect.logger())
   .use(connect.compress())
   .use(connect.errorHandler());

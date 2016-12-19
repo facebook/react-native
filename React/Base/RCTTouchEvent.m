@@ -14,19 +14,24 @@
 {
   NSArray<NSDictionary *> *_reactTouches;
   NSArray<NSNumber *> *_changedIndexes;
+  uint16_t _coalescingKey;
 }
 
 @synthesize eventName = _eventName;
 @synthesize viewTag = _viewTag;
 
 - (instancetype)initWithEventName:(NSString *)eventName
+                         reactTag:(NSNumber *)reactTag
                      reactTouches:(NSArray<NSDictionary *> *)reactTouches
                    changedIndexes:(NSArray<NSNumber *> *)changedIndexes
+                    coalescingKey:(uint16_t)coalescingKey
 {
   if (self = [super init]) {
+    _viewTag = reactTag;
     _eventName = eventName;
     _reactTouches = reactTouches;
     _changedIndexes = changedIndexes;
+    _coalescingKey = coalescingKey;
   }
   return self;
 }
@@ -72,6 +77,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSArray *)arguments
 {
   return @[RCTNormalizeInputEventName(_eventName), _reactTouches, _changedIndexes];
+}
+
+- (uint16_t)coalescingKey
+{
+  return _coalescingKey;
+}
+
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<%@: %p; name = %@; coalescing key = %hu>", [self class], self, _eventName, _coalescingKey];
 }
 
 @end

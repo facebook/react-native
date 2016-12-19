@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.dontMock('Easing');
+jest.unmock('Easing');
 
 var Easing = require('Easing');
 describe('Easing', () => {

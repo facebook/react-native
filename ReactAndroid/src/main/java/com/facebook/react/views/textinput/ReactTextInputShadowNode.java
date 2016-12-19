@@ -10,40 +10,45 @@
 package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+import android.os.Build;
+import android.text.Layout;
 import android.text.Spannable;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.csslayout.CSSNode;
-import com.facebook.csslayout.MeasureOutput;
-import com.facebook.csslayout.Spacing;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
-    CSSNode.MeasureFunction {
-
-  private static final int MEASURE_SPEC = View.MeasureSpec.makeMeasureSpec(
-      ViewGroup.LayoutParams.WRAP_CONTENT,
-      View.MeasureSpec.UNSPECIFIED);
+    YogaMeasureFunction {
 
   private @Nullable EditText mEditText;
   private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
 
   public ReactTextInputShadowNode() {
-    super(false);
+    mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
+        0 : Layout.BREAK_STRATEGY_SIMPLE;
     setMeasureFunction(this);
   }
 
@@ -60,36 +65,59 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-    setDefaultPadding(Spacing.LEFT, mEditText.getPaddingLeft());
+    setDefaultPadding(Spacing.START, mEditText.getPaddingStart());
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
-    setDefaultPadding(Spacing.RIGHT, mEditText.getPaddingRight());
+    setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
   }
 
   @Override
-  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
+  public long measure(
+      YogaNodeAPI node,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 
-    measureOutput.width = width;
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         mFontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
-    mComputedPadding = spacingToFloatArray(getPadding());
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
+    };
     editText.setPadding(
-        (int) Math.ceil(getPadding().get(Spacing.LEFT)),
-        (int) Math.ceil(getPadding().get(Spacing.TOP)),
-        (int) Math.ceil(getPadding().get(Spacing.RIGHT)),
-        (int) Math.ceil(getPadding().get(Spacing.BOTTOM)));
+        (int) Math.floor(getPadding(Spacing.START)),
+        (int) Math.floor(getPadding(Spacing.TOP)),
+        (int) Math.floor(getPadding(Spacing.END)),
+        (int) Math.floor(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);
     }
 
-    editText.measure(MEASURE_SPEC, MEASURE_SPEC);
-    measureOutput.height = editText.getMeasuredHeight();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (editText.getBreakStrategy() != mTextBreakStrategy) {
+        editText.setBreakStrategy(mTextBreakStrategy);
+      }
+    }
+
+    editText.measure(
+        MeasureUtil.getMeasureSpec(width, widthMode),
+        MeasureUtil.getMeasureSpec(height, heightMode));
+
+    return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
   }
 
   @Override
@@ -104,17 +132,53 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
+  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+
+    if (textBreakStrategy == null || "simple".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+    } else if ("highQuality".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    } else if ("balanced".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textBreakStrategy: " + textBreakStrategy);
+    }
+  }
+
+  @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mComputedPadding != null) {
-      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), mComputedPadding);
+      float[] updatedPadding = mComputedPadding;
+      if (getLayoutDirection() == YogaDirection.RTL) {
+        updatedPadding = new float[] {
+            getPadding(Spacing.END),
+            getPadding(Spacing.TOP),
+            getPadding(Spacing.START),
+            getPadding(Spacing.BOTTOM),
+        };
+      }
+      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), updatedPadding);
       mComputedPadding = null;
     }
 
     if (mJsEventCount != UNSET) {
       Spannable preparedSpannableText = fromTextCSSNode(this);
       ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages);
+        new ReactTextUpdate(
+          preparedSpannableText,
+          mJsEventCount,
+          mContainsImages,
+          getPadding(Spacing.START),
+          getPadding(Spacing.TOP),
+          getPadding(Spacing.END),
+          getPadding(Spacing.BOTTOM),
+          mTextAlign,
+          mTextBreakStrategy
+        );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
@@ -122,16 +186,12 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   @Override
   public void setPadding(int spacingType, float padding) {
     super.setPadding(spacingType, padding);
-    mComputedPadding = spacingToFloatArray(getPadding());
-    markUpdated();
-  }
-
-  private static float[] spacingToFloatArray(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.LEFT),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.RIGHT),
-        spacing.get(Spacing.BOTTOM),
+    mComputedPadding = new float[] {
+        getPadding(Spacing.START),
+        getPadding(Spacing.TOP),
+        getPadding(Spacing.END),
+        getPadding(Spacing.BOTTOM),
     };
+    markUpdated();
   }
 }

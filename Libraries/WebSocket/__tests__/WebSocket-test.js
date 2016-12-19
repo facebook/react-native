@@ -3,8 +3,7 @@
  */
 'use strict';
 
-jest.dontMock('WebSocket');
-jest.dontMock('WebSocketBase');
+jest.unmock('WebSocket');
 jest.setMock('NativeModules', {
   WebSocketModule: {
     connect: () => {}
@@ -13,7 +12,7 @@ jest.setMock('NativeModules', {
 
 var WebSocket = require('WebSocket');
 
-describe('WebSocketBase', function() {
+describe('WebSocket', function() {
 
   it('should have connection lifecycle constants defined on the class', () => {
     expect(WebSocket.CONNECTING).toEqual(0);

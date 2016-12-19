@@ -11,7 +11,7 @@
 /*jslint node:true*/
 'use strict';
 
-var Syntax = require('esprima-fb').Syntax;
+var Syntax = require('./syntax');
 
 /**
  * Executes visitor on the object and its children (recursively).

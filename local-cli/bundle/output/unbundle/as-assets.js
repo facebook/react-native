@@ -5,17 +5,26 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
+const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
+
+const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const Promise = require('promise');
-
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
-const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
-const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE'; // must not start with a dot, as that won't go into the apk
+
+const {joinModules} = require('./util');
+
+import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
+import type {OutputOptions} from '../../types.flow';
+
+// must not start with a dot, as that won't go into the apk
+const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE';
 const MODULES_DIR = 'js-modules';
 
 /**
@@ -25,31 +34,44 @@ const MODULES_DIR = 'js-modules';
  * All other modules go into a 'js-modules' folder that in the same parent
  * directory as the startup file.
  */
-function saveAsAssets(bundle, options, log) {
+function saveAsAssets(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => void,
+): Promise<mixed> {
   const {
-    'bundle-output': bundleOutput,
-    'bundle-encoding': encoding,
-    dev,
-    'sourcemap-output': sourcemapOutput,
+    bundleOutput,
+    bundleEncoding: encoding,
+    sourcemapOutput
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle({minify: !dev});
+  const {startupModules, lazyModules} = bundle.getUnbundle();
   log('finish');
+  const startupCode = joinModules(startupModules);
 
   log('Writing bundle output to:', bundleOutput);
   const modulesDir = path.join(path.dirname(bundleOutput), MODULES_DIR);
   const writeUnbundle =
     createDir(modulesDir).then( // create the modules directory first
-      Promise.all([
-        writeModules(modulesDir, modules, encoding),
+      () => Promise.all([
+        writeModules(lazyModules, modulesDir, encoding),
         writeFile(bundleOutput, startupCode, encoding),
         writeMagicFlagFile(modulesDir),
       ])
     );
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
-  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
+  const sourceMap =
+    buildSourceMapWithMetaData({
+      startupModules: startupModules.concat(),
+      lazyModules: lazyModules.concat(),
+    });
+
+  return Promise.all([
+    writeUnbundle,
+    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
+  ]);
 }
 
 function createDir(dirName) {
@@ -57,49 +79,21 @@ function createDir(dirName) {
     mkdirp(dirName, error => error ? reject(error) : resolve()));
 }
 
-function createDirectoriesForModules(modulesDir, modules) {
-  const dirNames =
-    modules.map(name => {
-      // get all needed directory names
-      const dir = path.dirname(name);
-      return dir === '.' || dir === '' ? null : path.join(modulesDir, dir);
-    })
-    .filter(Boolean) // remove empty directories
-    .sort()
-    .filter((dir, i, dirs) => {
-      // remove parent directories and dedupe.
-      // After sorting, parent directories are located before child directories
-      const next = dirs[i + 1];
-      return !next || next !== dir && !next.startsWith(dir + path.sep);
-    });
-
-  return dirNames.reduce(
-    (promise, dirName) =>
-      promise.then(() => createDir(dirName)), Promise.resolve());
-}
-
 function writeModuleFile(module, modulesDir, encoding) {
-  const {name, code} = module;
-  return writeFile(path.join(modulesDir, name + '.js'), code, encoding);
+  const {code, id} = module;
+  return writeFile(path.join(modulesDir, id + '.js'), code, encoding);
 }
 
-function writeModuleFiles(modules, modulesDir, encoding) {
+function writeModules(modules, modulesDir, encoding) {
   const writeFiles =
     modules.map(module => writeModuleFile(module, modulesDir, encoding));
   return Promise.all(writeFiles);
 }
 
-function writeModules(modulesDir, modules, encoding) {
-  return (
-    createDirectoriesForModules(modulesDir, modules.map(({name}) => name))
-      .then(() => writeModuleFiles(modules, modulesDir, encoding))
-  );
-}
-
 function writeMagicFlagFile(outputDir) {
   /* global Buffer: true */
-  const buffer = Buffer(4);
-  buffer.writeUInt32LE(MAGIC_UNBUNDLE_NUMBER);
+  const buffer = new Buffer(4);
+  buffer.writeUInt32LE(MAGIC_UNBUNDLE_NUMBER, 0);
   return writeFile(path.join(outputDir, MAGIC_UNBUNDLE_FILENAME), buffer);
 }
 

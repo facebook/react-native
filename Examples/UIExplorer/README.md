@@ -17,7 +17,7 @@ Mac OS and Xcode are required.
 - Open `Examples/UIExplorer/UIExplorer.xcodeproj` in Xcode
 - Hit the Run button
 
-See [Running on device](https://facebook.github.io/react-native/docs/running-on-device-ios.html) if you want to use a physical device.
+See [Running on device](https://facebook.github.io/react-native/docs/running-on-device.html) if you want to use a physical device.
 
 ### Running on Android
 
@@ -33,7 +33,22 @@ _Note: Building for the first time can take a while._
 
 Open the UIExplorer app in your emulator.
 
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device-android.html) in case you want to use a physical device.
+See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) in case you want to use a physical device.
+
+### Running with Buck
+
+Follow the same setup as running with gradle.
+
+Install Buck from [here](https://buckbuild.com/setup/install.html).
+
+Run the following commands from the react-native folder:
+
+    ./gradlew :ReactAndroid:packageReactNdkLibsForBuck
+    buck fetch uiexplorer
+    buck install -r uiexplorer
+    ./packager/packager.sh
+
+_Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
 
 ## Built from source
 

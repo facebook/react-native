@@ -67,7 +67,11 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+#if TARGET_OS_TV
+    storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+#else
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+#endif
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
   return storageDirectory;
@@ -117,7 +121,7 @@ static dispatch_queue_t RCTGetMethodQueue()
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.React.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
+    queue = dispatch_queue_create("com.facebook.react.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
   });
   return queue;
 }
@@ -169,7 +173,7 @@ RCT_EXPORT_MODULE()
 - (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
-    [_manifest removeAllObjects];
+    [self->_manifest removeAllObjects];
     [RCTGetCache() removeAllObjects];
     RCTDeleteStorageDirectory();
   });
@@ -213,6 +217,10 @@ RCT_EXPORT_MODULE()
 - (NSDictionary *)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
+
+#if TARGET_OS_TV
+  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.");
+#endif
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {

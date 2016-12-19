@@ -9,15 +9,15 @@
 
 #import "RCTTestModule.h"
 
-#import "FBSnapshotTestController.h"
-#import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUIManager.h"
+#import <React/RCTAssert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 
-@implementation RCTTestModule
-{
-  NSMutableDictionary<NSString *, NSString *> *_snapshotCounter;
+#import "FBSnapshotTestController.h"
+
+@implementation RCTTestModule {
+  NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
 }
 
 @synthesize bridge = _bridge;
@@ -34,25 +34,33 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
   RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
   [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-
-    NSString *testName = NSStringFromSelector(_testSelector);
-    if (!_snapshotCounter) {
-      _snapshotCounter = [NSMutableDictionary new];
+    NSString *testName = NSStringFromSelector(self->_testSelector);
+    if (!self->_snapshotCounter) {
+      self->_snapshotCounter = [NSMutableDictionary new];
     }
-    _snapshotCounter[testName] = (@([_snapshotCounter[testName] integerValue] + 1)).stringValue;
+
+    NSNumber *counter = @([self->_snapshotCounter[testName] integerValue] + 1);
+    self->_snapshotCounter[testName] = counter;
 
     NSError *error = nil;
-    BOOL success = [_controller compareSnapshotOfView:_view
-                                             selector:_testSelector
-                                           identifier:_snapshotCounter[testName]
-                                                error:&error];
+    NSString *identifier = [counter stringValue];
+    if (self->_testSuffix) {
+      identifier = [identifier stringByAppendingString:self->_testSuffix];
+    }
+    BOOL success = [self->_controller compareSnapshotOfView:self->_view
+                                                   selector:self->_testSelector
+                                                 identifier:identifier
+                                                      error:&error];
     callback(@[@(success)]);
   }];
 }
 
 RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendAppEventWithName:name body:body];
+#pragma clang diagnostic pop
 }
 
 RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
@@ -73,7 +81,7 @@ RCT_EXPORT_METHOD(markTestCompleted)
 RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
 {
   [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    _status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+    self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
   }];
 }
 

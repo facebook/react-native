@@ -16,13 +16,14 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var TimerMixin = require('react-timer-mixin');
 var {
   NativeModules,
   StyleSheet,
   Text,
-} = React;
+} = ReactNative;
 
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
@@ -33,10 +34,9 @@ var TextUpdateTest = React.createClass({
   },
   componentDidMount: function() {
     this.requestAnimationFrame(
-      () => this.setState(
-        {seeMore: false},
-        TestManager.markTestCompleted
-      )
+      () => this.setState({seeMore: false}, () => {
+        TestManager.markTestCompleted();
+      })
     );
   },
   render: function() {

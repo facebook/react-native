@@ -13,7 +13,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTGIFImageDecoder
 
@@ -91,6 +91,7 @@ RCT_EXPORT_MODULE()
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
+    animation.removedOnCompletion = NO;
     image.reactKeyframeAnimation = animation;
 
   } else {

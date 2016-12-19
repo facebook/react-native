@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -17,6 +16,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
@@ -26,7 +26,7 @@ import com.facebook.react.views.scroll.ScrollEventType;
  * will be rendered as a separate {@link RecyclerView} row.
  *
  * Currently supports only vertically positioned item. Views will not be automatically recycled but
- * they will be detache from native view hierarchy when scrolled offscreen.
+ * they will be detached from native view hierarchy when scrolled offscreen.
  *
  * It works by storing all child views in an array within adapter and binding appropriate views to
  * rows when requested.
@@ -175,7 +175,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       }
       return mOffsetForLastPosition;
     }
-
   }
 
   /*package*/ static class ReactListAdapter extends Adapter<ConcreteViewHolder> {
@@ -344,7 +343,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
         .dispatchEvent(ScrollEvent.obtain(
                 getId(),
-                SystemClock.uptimeMillis(),
                 ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
@@ -359,7 +357,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
           .dispatchEvent(new ContentSizeChangeEvent(
                   getId(),
-                  SystemClock.uptimeMillis(),
                   getWidth(),
                   newTotalChildrenHeight));
     }

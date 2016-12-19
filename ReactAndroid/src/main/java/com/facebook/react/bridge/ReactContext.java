@@ -11,6 +11,9 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
@@ -21,19 +24,31 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
+import com.facebook.react.common.LifecycleState;
+
+import static com.facebook.react.common.LifecycleState.BEFORE_CREATE;
+import static com.facebook.react.common.LifecycleState.BEFORE_RESUME;
+import static com.facebook.react.common.LifecycleState.RESUMED;
 
 /**
- * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
+ * Abstract ContextWrapper for Android application or activity {@link Context} and
  * {@link CatalystInstance}
  */
 public class ReactContext extends ContextWrapper {
+
+  private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
+    "Tried to access a JS module before the React instance was fully set up. Calls to " +
+      "ReactContext#getJSModule should only happen once initialize() has been called on your " +
+      "native module.";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
+
+  private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
@@ -41,7 +56,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private @Nullable Activity mCurrentActivity;
+  private @Nullable WeakReference<Activity> mCurrentActivity;
 
   public ReactContext(Context base) {
     super(base);
@@ -91,9 +106,26 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
     return mCatalystInstance.getJSModule(jsInterface);
+  }
+
+  public <T extends JavaScriptModule> T getJSModule(
+    ExecutorToken executorToken,
+    Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
+    }
+    return mCatalystInstance.getJSModule(executorToken, jsInterface);
+  }
+
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
 
   /**
@@ -101,7 +133,8 @@ public class ReactContext extends ContextWrapper {
    */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
-      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+      throw new RuntimeException(
+        "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
@@ -114,12 +147,47 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
-  public void addLifecycleEventListener(LifecycleEventListener listener) {
+  public LifecycleState getLifecycleState() {
+    return mLifecycleState;
+  }
+
+  public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
+    if (hasActiveCatalystInstance()) {
+      switch (mLifecycleState) {
+        case BEFORE_CREATE:
+        case BEFORE_RESUME:
+          break;
+        case RESUMED:
+          runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+              listener.onHostResume();
+            }
+          });
+          break;
+        default:
+          throw new RuntimeException("Unhandled lifecycle state.");
+      }
+    }
   }
 
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
     mLifecycleEventListeners.remove(listener);
+  }
+
+  public Map<String, Map<String,Double>> getAllPerformanceCounters() {
+    Map<String, Map<String,Double>> totalPerfMap =
+      new HashMap<>();
+    if (mCatalystInstance != null) {
+      for (NativeModule nativeModule : mCatalystInstance.getNativeModules()) {
+        if (nativeModule instanceof PerformanceCounter) {
+          PerformanceCounter perfCounterModule = (PerformanceCounter) nativeModule;
+          totalPerfMap.put(nativeModule.getName(), perfCounterModule.getPerformanceCounters());
+        }
+      }
+    }
+    return totalPerfMap;
   }
 
   public void addActivityEventListener(ActivityEventListener listener) {
@@ -133,19 +201,30 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume(@Nullable Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
-    mCurrentActivity = activity;
+    mLifecycleState = LifecycleState.RESUMED;
+    mCurrentActivity = new WeakReference(activity);
+    mLifecycleState = LifecycleState.RESUMED;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostResume();
+    }
+  }
+
+  public void onNewIntent(@Nullable Activity activity, Intent intent) {
+    UiThreadUtil.assertOnUiThread();
+    mCurrentActivity = new WeakReference(activity);
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      listener.onNewIntent(intent);
     }
   }
 
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
+    mLifecycleState = LifecycleState.BEFORE_RESUME;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
@@ -154,23 +233,32 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
    */
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+    mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
-    }
-    if (mCatalystInstance != null) {
-      mCatalystInstance.destroy();
     }
     mCurrentActivity = null;
   }
 
   /**
+   * Destroy this instance, making it unusable.
+   */
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mCatalystInstance != null) {
+      mCatalystInstance.destroy();
+    }
+  }
+
+  /**
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onActivityResult(requestCode, resultCode, data);
+      listener.onActivityResult(activity, requestCode, resultCode, data);
     }
   }
 
@@ -226,7 +314,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public boolean hasCurrentActivity() {
-    return mCurrentActivity != null;
+    return mCurrentActivity != null && mCurrentActivity.get() != null;
   }
 
   /**
@@ -235,8 +323,9 @@ public class ReactContext extends ContextWrapper {
    * was called before the context is in the right state.
    */
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
-    Assertions.assertNotNull(mCurrentActivity);
-    mCurrentActivity.startActivityForResult(intent, code, bundle);
+    Activity activity = getCurrentActivity();
+    Assertions.assertNotNull(activity);
+    activity.startActivityForResult(intent, code, bundle);
     return true;
   }
 
@@ -245,7 +334,17 @@ public class ReactContext extends ContextWrapper {
    * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
    */
-  /* package */ @Nullable Activity getCurrentActivity() {
-    return mCurrentActivity;
+  public @Nullable Activity getCurrentActivity() {
+    if (mCurrentActivity == null) {
+      return null;
+    }
+    return mCurrentActivity.get();
+  }
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
+  public long getJavaScriptContext() {
+    return mCatalystInstance.getJavaScriptContext();
   }
 }

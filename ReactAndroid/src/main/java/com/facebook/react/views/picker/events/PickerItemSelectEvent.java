@@ -19,8 +19,8 @@ public class PickerItemSelectEvent extends Event<PickerItemSelectEvent> {
 
   private final int mPosition;
 
-  public PickerItemSelectEvent(int id, long uptimeMillis, int position) {
-    super(id, uptimeMillis);
+  public PickerItemSelectEvent(int id, int position) {
+    super(id);
     mPosition = position;
   }
 
