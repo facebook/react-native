@@ -13,6 +13,8 @@
 #import "RCTLog.h"
 #import "UIView+React.h"
 
+#import "RCTTVNavigationEventEmitter.h"
+
 @implementation RCTConvert (UITabBarSystemItem)
 
 RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
@@ -44,6 +46,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _systemIcon = NSNotFound;
   }
   return self;
+}
+
+- (void)dealloc {
 }
 
 - (UITabBarItem *)barItem
@@ -107,7 +112,7 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 
 - (void)setBadgeColor:(UIColor *)bagdeColor
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
   _barItem.badgeColor = bagdeColor;
 #endif
 }

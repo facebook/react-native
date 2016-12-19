@@ -18,6 +18,9 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
+#if TARGET_OS_TV
+#import "RCTTVView.h"
+#endif
 #import "UIView+React.h"
 
 @implementation RCTConvert(UIAccessibilityTraits)
@@ -57,7 +60,11 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
+#if TARGET_OS_TV
+  return [RCTTVView new];
+#else
   return [RCTView new];
+#endif
 }
 
 - (RCTShadowView *)shadowView
@@ -97,6 +104,13 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - View properties
+
+#if TARGET_OS_TV
+// Apple TV properties
+RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
+#endif
 
 RCT_EXPORT_VIEW_PROPERTY(accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(accessibilityTraits, UIAccessibilityTraits)

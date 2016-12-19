@@ -68,7 +68,10 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
+
+#if !TARGET_OS_TV
 RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDetectorTypes)
+#endif
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

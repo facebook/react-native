@@ -9,13 +9,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTComponent.h"
+@class RCTBridge;
 
-@interface RCTTabBar : UIView
+@interface RCTTVRemoteHandler : NSObject
 
-@property (nonatomic, strong) UIColor *unselectedTintColor;
-@property (nonatomic, strong) UIColor *tintColor;
-@property (nonatomic, strong) UIColor *barTintColor;
-@property (nonatomic, assign) BOOL translucent;
+@property(nonatomic, nonnull, strong) NSArray *tvRemoteGestureRecognizers;
+
+- (void)cancel;
 
 @end

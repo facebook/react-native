@@ -39,6 +39,7 @@ const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
 const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+const TVEventHandler = require('TVEventHandler');
 
 const {
   Animated,
@@ -126,6 +127,24 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       nextProps,
       nextState
     );
+  }
+
+  _tvEventHandler: TVEventHandler;
+
+  componentDidMount(): void {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.props.onNavigateBack && cmp.props.onNavigateBack();
+      }
+    });
+  }
+
+  componentWillUnmount(): void {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
   }
 
   render(): React.Element<any> {
