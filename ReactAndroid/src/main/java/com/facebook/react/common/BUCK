@@ -7,13 +7,14 @@ SUB_PROJECTS = [
 android_library(
   name = 'common',
   srcs = glob(['**/*.java'], excludes=SUB_PROJECTS),
-  deps = [
-    ':build_config',
-    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
-    react_native_dep('third-party/java/jsr-305:jsr-305'),
-  ],
   exported_deps = [
     react_native_dep('java/com/facebook/proguard/annotations:annotations'),
+  ],
+  deps = [
+    ':build_config',
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
   ],
   visibility = [
     'PUBLIC',
@@ -31,6 +32,3 @@ android_build_config(
   ],
 )
 
-project_config(
-  src_target = ':common',
-)

@@ -20,12 +20,12 @@ static JSValueRef pokeSamplingProfiler(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return JSPokeSamplingProfiler(ctx);
+  return JSC_JSPokeSamplingProfiler(ctx);
 }
 }
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
-  JSStartSamplingProfilingOnMainJSCThread(ctx);
+  JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
   installGlobalFunction(ctx, "pokeSamplingProfiler", pokeSamplingProfiler);
 }
 

@@ -14,12 +14,15 @@ const ModuleTransport = require('../lib/ModuleTransport');
 
 export type FinalizeOptions = {
   allowUpdates?: boolean,
+  /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+   * deploy of Flow v0.36.0. To see the error, remove this comment and run Flow
+   */
   runBeforeMainModule?: Array<mixed>,
   runMainModule?: boolean,
 };
 
 export type GetSourceOptions = {
-  inlineSourceMap: boolean,
+  inlineSourceMap?: boolean,
   dev: boolean,
 };
 

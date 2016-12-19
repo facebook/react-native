@@ -15,6 +15,16 @@ const Logger = require('./src/Logger');
 
 exports.createServer = createServer;
 exports.Logger = Logger;
+
+exports.buildBundle = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.buildBundle(bundleOptions)
+    .then(p => {
+      server.end();
+      return p;
+    });
+};
+
 exports.getOrderedDependencyPaths = function(options, bundleOptions) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(bundleOptions)

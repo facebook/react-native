@@ -62,16 +62,16 @@ describe('transforming JS modules:', () => {
     });
   });
 
-  it('sets `isPolyfill` to `false` by default', done => {
+  it('sets `type` to `"module"` by default', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      expect(result).toEqual(objectContaining({isPolyfill: false}));
+      expect(result).toEqual(objectContaining({type: 'module'}));
       done();
     });
   });
 
-  it('sets `isPolyfill` to `true` if the input is a polyfill', done => {
+  it('sets `type` to `"script"` if the input is a polyfill', done => {
     transformModule(sourceCode, {...options(), polyfill: true}, (error, result) => {
-      expect(result).toEqual(objectContaining({isPolyfill: true}));
+      expect(result).toEqual(objectContaining({type: 'script'}));
       done();
     });
   });

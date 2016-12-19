@@ -78,7 +78,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
 
     const selectedSimulator = findMatchingSimulator(simulators, args.simulator);
     if (!selectedSimulator) {
-      throw new Error(`Cound't find ${args.simulator} simulator`);
+      throw new Error(`Could not find ${args.simulator} simulator`);
     }
 
     const simulatorFullName = formattedDeviceName(selectedSimulator);

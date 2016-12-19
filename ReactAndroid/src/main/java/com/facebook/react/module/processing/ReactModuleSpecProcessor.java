@@ -87,7 +87,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       List<String> nativeModules = new ArrayList<>();
       try {
-        reactModuleList.value(); // throws MirroredTypesException
+        reactModuleList.javaModules(); // throws MirroredTypesException
       } catch (MirroredTypesException mirroredTypesException) {
         List<? extends TypeMirror> typeMirrors = mirroredTypesException.getTypeMirrors();
         for (TypeMirror typeMirror : typeMirrors) {

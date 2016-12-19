@@ -19,8 +19,14 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public @interface ReactModuleList {
 
   /**
-   * The native modules in this list should be annotated with {@link ReactModule}.
-   * @return List of native modules.
+   * The Java modules in this list should be annotated with {@link ReactModule}.
+   * @return List of Java modules in the package.
    */
-  Class<? extends NativeModule>[] value();
+  Class<? extends NativeModule>[] javaModules();
+
+  /**
+   * The View Managers in this list should be annotated with {@link ReactModule}.
+   * @return List of view manager in the package.
+   */
+  Class<? extends NativeModule>[] viewManagers() default {};
 }

@@ -1,15 +1,18 @@
- /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
+
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
 const path = require('path');
@@ -17,33 +20,65 @@ const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
-const emptyModule = require.resolve('./assets/empty-module.js');
+import type {HasteFS} from '../types';
+import type DependencyGraphHelpers from './DependencyGraphHelpers';
+import type HasteMap from './HasteMap';
+import type Module from '../Module';
+import type ModuleCache from '../ModuleCache';
+import type ResolutionResponse from './ResolutionResponse';
+
+type DirExistsFn = (filePath: string) => boolean;
+
+type Options = {
+  dirExists: DirExistsFn,
+  entryPath: string,
+  extraNodeModules: Object,
+  hasteFS: HasteFS,
+  hasteMap: HasteMap,
+  helpers: DependencyGraphHelpers,
+  // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
+  moduleCache: ModuleCache | any,
+  platform: string,
+  platforms: Set<string>,
+  preferNativePlatform: boolean,
+};
 
 class ResolutionRequest {
+  _dirExists: DirExistsFn;
+  _entryPath: string;
+  _extraNodeModules: Object;
+  _hasteFS: HasteFS;
+  _hasteMap: HasteMap;
+  _helpers: DependencyGraphHelpers;
+  _immediateResolutionCache: {[key: string]: string};
+  _moduleCache: ModuleCache;
+  _platform: string;
+  _platforms: Set<string>;
+  _preferNativePlatform: boolean;
+  static emptyModule: string;
+
   constructor({
+    dirExists,
+    entryPath,
+    extraNodeModules,
+    hasteFS,
+    hasteMap,
+    helpers,
+    moduleCache,
     platform,
     platforms,
     preferNativePlatform,
-    entryPath,
-    hasteMap,
-    deprecatedAssetMap,
-    helpers,
-    moduleCache,
-    fastfs,
-    shouldThrowOnUnresolvedErrors,
-    extraNodeModules,
-  }) {
+  }: Options) {
+    this._dirExists = dirExists;
+    this._entryPath = entryPath;
+    this._extraNodeModules = extraNodeModules;
+    this._hasteFS = hasteFS;
+    this._hasteMap = hasteMap;
+    this._helpers = helpers;
+    this._moduleCache = moduleCache;
     this._platform = platform;
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
-    this._entryPath = entryPath;
-    this._hasteMap = hasteMap;
-    this._deprecatedAssetMap = deprecatedAssetMap;
-    this._helpers = helpers;
-    this._moduleCache = moduleCache;
-    this._fastfs = fastfs;
-    this._shouldThrowOnUnresolvedErrors = shouldThrowOnUnresolvedErrors;
-    this._extraNodeModules = extraNodeModules;
     this._resetResolutionCache();
   }
 
@@ -56,19 +91,12 @@ class ResolutionRequest {
     });
   }
 
-  resolveDependency(fromModule, toModuleName) {
+  // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
+  resolveDependency(fromModule: Module | any, toModuleName: string) {
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
     if (this._immediateResolutionCache[resHash]) {
       return Promise.resolve(this._immediateResolutionCache[resHash]);
-    }
-
-    const asset_DEPRECATED = this._deprecatedAssetMap.resolve(
-      fromModule,
-      toModuleName
-    );
-    if (asset_DEPRECATED) {
-      return Promise.resolve(asset_DEPRECATED);
     }
 
     const cacheResult = (result) => {
@@ -76,187 +104,119 @@ class ResolutionRequest {
       return result;
     };
 
-    const forgive = (error) => {
-      if (
-        error.type !== 'UnableToResolveError' ||
-        this._shouldThrowOnUnresolvedErrors(this._entryPath, this._platform)
-      ) {
-        throw error;
-      }
-
-      debug(
-        'Unable to resolve module %s from %s',
-        toModuleName,
-        fromModule.path
-      );
-      return null;
-    };
-
     if (!this._helpers.isNodeModulesDir(fromModule.path)
         && !(isRelativeImport(toModuleName) || isAbsolutePath(toModuleName))) {
       return this._tryResolve(
         () => this._resolveHasteDependency(fromModule, toModuleName),
         () => this._resolveNodeDependency(fromModule, toModuleName)
-      ).then(
-        cacheResult,
-        forgive,
-      );
+      ).then(cacheResult);
     }
 
     return this._resolveNodeDependency(fromModule, toModuleName)
-      .then(
-        cacheResult,
-        forgive,
-      );
+      .then(cacheResult);
   }
 
   getOrderedDependencies({
     response,
-    mocksPattern,
     transformOptions,
     onProgress,
     recursive = true,
+  }: {
+    response: ResolutionResponse,
+    transformOptions: Object,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
+    recursive: boolean,
   }) {
-    return this._getAllMocks(mocksPattern).then(allMocks => {
-      const entry = this._moduleCache.getModule(this._entryPath);
-      const mocks = Object.create(null);
+    const entry = this._moduleCache.getModule(this._entryPath);
 
-      response.pushDependency(entry);
-      let totalModules = 1;
-      let finishedModules = 0;
+    response.pushDependency(entry);
+    let totalModules = 1;
+    let finishedModules = 0;
 
-      const resolveDependencies = module =>
-        module.getDependencies(transformOptions)
-          .then(dependencyNames =>
-            Promise.all(
-              dependencyNames.map(name => this.resolveDependency(module, name))
-            ).then(dependencies => [dependencyNames, dependencies])
+    const resolveDependencies = module =>
+      module.getDependencies(transformOptions)
+        .then(dependencyNames =>
+          Promise.all(
+            dependencyNames.map(name => this.resolveDependency(module, name))
+          ).then(dependencies => [dependencyNames, dependencies])
+        );
+
+    const collectedDependencies = new MapWithDefaults(module => collect(module));
+    const crawlDependencies = (mod, [depNames, dependencies]) => {
+      const filteredPairs = [];
+
+      dependencies.forEach((modDep, i) => {
+        const name = depNames[i];
+        if (modDep == null) {
+          debug(
+            'WARNING: Cannot find required module `%s` from module `%s`',
+            name,
+            mod.path
           );
-
-      const addMockDependencies = !allMocks
-        ? (module, result) => result
-        : (module, [dependencyNames, dependencies]) => {
-          const list = [module.getName()];
-          const pkg = module.getPackage();
-          if (pkg) {
-            list.push(pkg.getName());
-          }
-          return Promise.all(list).then(names => {
-            names.forEach(name => {
-              if (allMocks[name] && !mocks[name]) {
-                const mockModule = this._moduleCache.getModule(allMocks[name]);
-                dependencyNames.push(name);
-                dependencies.push(mockModule);
-                mocks[name] = allMocks[name];
-              }
-            });
-            return [dependencyNames, dependencies];
-          });
-        };
-
-      const collectedDependencies = new MapWithDefaults(module => collect(module));
-      const crawlDependencies = (mod, [depNames, dependencies]) => {
-        const filteredPairs = [];
-
-        dependencies.forEach((modDep, i) => {
-          const name = depNames[i];
-          if (modDep == null) {
-            // It is possible to require mocks that don't have a real
-            // module backing them. If a dependency cannot be found but there
-            // exists a mock with the desired ID, resolve it and add it as
-            // a dependency.
-            if (allMocks && allMocks[name] && !mocks[name]) {
-              const mockModule = this._moduleCache.getModule(allMocks[name]);
-              mocks[name] = allMocks[name];
-              return filteredPairs.push([name, mockModule]);
-            }
-
-            debug(
-              'WARNING: Cannot find required module `%s` from module `%s`',
-              name,
-              mod.path
-            );
-            return false;
-          }
-          return filteredPairs.push([name, modDep]);
-        });
-
-        response.setResolvedDependencyPairs(mod, filteredPairs);
-
-        const dependencyModules = filteredPairs.map(([, m]) => m);
-        const newDependencies =
-          dependencyModules.filter(m => !collectedDependencies.has(m));
-
-        if (onProgress) {
-          finishedModules += 1;
-          totalModules += newDependencies.length;
-          onProgress(finishedModules, totalModules);
+          return false;
         }
+        return filteredPairs.push([name, modDep]);
+      });
 
-        if (recursive) {
-          // doesn't block the return of this function invocation, but defers
-          // the resulution of collectionsInProgress.done.then(...)
-          dependencyModules
-            .forEach(dependency => collectedDependencies.get(dependency));
-        }
-        return dependencyModules;
-      };
+      response.setResolvedDependencyPairs(mod, filteredPairs);
 
-      const collectionsInProgress = new AsyncTaskGroup();
-      function collect(module) {
-        collectionsInProgress.start(module);
-        const result = resolveDependencies(module)
-          .then(result => addMockDependencies(module, result))
-          .then(result => crawlDependencies(module, result));
-        const end = () => collectionsInProgress.end(module);
-        result.then(end, end);
-        return result;
+      const dependencyModules = filteredPairs.map(([, m]) => m);
+      const newDependencies =
+        dependencyModules.filter(m => !collectedDependencies.has(m));
+
+      if (onProgress) {
+        finishedModules += 1;
+        totalModules += newDependencies.length;
+        onProgress(finishedModules, totalModules);
       }
 
-      return Promise.all([
-        // kicks off recursive dependency discovery, but doesn't block until it's done
-        collectedDependencies.get(entry),
+      if (recursive) {
+        // doesn't block the return of this function invocation, but defers
+        // the resulution of collectionsInProgress.done.then(...)
+        dependencyModules
+          .forEach(dependency => collectedDependencies.get(dependency));
+      }
+      return dependencyModules;
+    };
 
-        // resolves when there are no more modules resolving dependencies
-        collectionsInProgress.done,
-      ]).then(([rootDependencies]) => {
-        return Promise.all(
-          Array.from(collectedDependencies, resolveKeyWithPromise)
-        ).then(moduleToDependenciesPairs =>
-          [rootDependencies, new MapWithDefaults(() => [], moduleToDependenciesPairs)]
-        );
-      }).then(([rootDependencies, moduleDependencies]) => {
-        // serialize dependencies, and make sure that every single one is only
-        // included once
-        const seen = new Set([entry]);
-        function traverse(dependencies) {
-          dependencies.forEach(dependency => {
-            if (seen.has(dependency)) { return; }
-
-            seen.add(dependency);
-            response.pushDependency(dependency);
-            traverse(moduleDependencies.get(dependency));
-          });
-        }
-
-        traverse(rootDependencies);
-        response.setMocks(mocks);
-      });
-    });
-  }
-
-  _getAllMocks(pattern) {
-    // Take all mocks in all the roots into account. This is necessary
-    // because currently mocks are global: any module can be mocked by
-    // any mock in the system.
-    let mocks = null;
-    if (pattern) {
-      mocks = Object.create(null);
-      this._fastfs.matchFilesByPattern(pattern).forEach(file =>
-        mocks[path.basename(file, path.extname(file))] = file
-      );
+    const collectionsInProgress = new AsyncTaskGroup();
+    function collect(module) {
+      collectionsInProgress.start(module);
+      const result = resolveDependencies(module)
+        .then(deps => crawlDependencies(module, deps));
+      const end = () => collectionsInProgress.end(module);
+      result.then(end, end);
+      return result;
     }
-    return Promise.resolve(mocks);
+
+    return Promise.all([
+      // kicks off recursive dependency discovery, but doesn't block until it's done
+      collectedDependencies.get(entry),
+
+      // resolves when there are no more modules resolving dependencies
+      collectionsInProgress.done,
+    ]).then(([rootDependencies]) => {
+      return Promise.all(
+        Array.from(collectedDependencies, resolveKeyWithPromise)
+      ).then(moduleToDependenciesPairs =>
+        [rootDependencies, new MapWithDefaults(() => [], moduleToDependenciesPairs)]
+      );
+    }).then(([rootDependencies, moduleDependencies]) => {
+      // serialize dependencies, and make sure that every single one is only
+      // included once
+      const seen = new Set([entry]);
+      function traverse(dependencies) {
+        dependencies.forEach(dependency => {
+          if (seen.has(dependency)) { return; }
+
+          seen.add(dependency);
+          response.pushDependency(dependency);
+          traverse(moduleDependencies.get(dependency));
+        });
+      }
+
+      traverse(rootDependencies);
+    });
   }
 
   _resolveHasteDependency(fromModule, toModuleName) {
@@ -324,7 +284,11 @@ class ResolutionRequest {
     return this._redirectRequire(fromModule, potentialModulePath).then(
       realModuleName => {
         if (realModuleName === false) {
-          return this._loadAsFile(emptyModule, fromModule, toModuleName);
+          return this._loadAsFile(
+            ResolutionRequest.emptyModule,
+            fromModule,
+            toModuleName,
+          );
         }
 
         return this._tryResolve(
@@ -343,13 +307,20 @@ class ResolutionRequest {
         realModuleName => {
           // exclude
           if (realModuleName === false) {
-            return this._loadAsFile(emptyModule, fromModule, toModuleName);
+            return this._loadAsFile(
+              ResolutionRequest.emptyModule,
+              fromModule,
+              toModuleName,
+            );
           }
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
             // derive absolute path /.../node_modules/fromModuleDir/realModuleName
             const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules/') + 13;
-            const fromModuleDir = fromModule.path.slice(0, fromModule.path.indexOf('/', fromModuleParentIdx));
+            const fromModuleDir = fromModule.path.slice(
+              0,
+              fromModule.path.indexOf('/', fromModuleParentIdx),
+            );
             const absPath = path.join(fromModuleDir, realModuleName);
             return this._resolveFileOrDir(fromModule, absPath);
           }
@@ -359,7 +330,7 @@ class ResolutionRequest {
                currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
             const searchPath = path.join(currDir, 'node_modules');
-            if (this._fastfs.dirExists(searchPath)) {
+            if (this._dirExists(searchPath)) {
               searchQueue.push(
                 path.join(searchPath, realModuleName)
               );
@@ -390,11 +361,12 @@ class ResolutionRequest {
             if (error.type !== 'UnableToResolveError') {
               throw error;
             }
+            const hint = searchQueue.length ? ' or in these directories:' : '';
             throw new UnableToResolveError(
               fromModule,
               toModuleName,
-              `Module does not exist in the module map ${searchQueue.length ? 'or in these directories:' : ''}\n` +
-                searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`) + '\n' +
+              `Module does not exist in the module map${hint}\n` +
+                searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
               `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
@@ -409,8 +381,8 @@ class ResolutionRequest {
   _loadAsFile(potentialModulePath, fromModule, toModule) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
-        const dirname = path.dirname(potentialModulePath);
-        if (!this._fastfs.dirExists(dirname)) {
+        let dirname = path.dirname(potentialModulePath);
+        if (!this._dirExists(dirname)) {
           throw new UnableToResolveError(
             fromModule,
             toModule,
@@ -420,42 +392,45 @@ class ResolutionRequest {
 
         const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms);
 
-        let pattern = '^' + name + '(@[\\d\\.]+x)?';
+        let pattern = name + '(@[\\d\\.]+x)?';
         if (this._platform != null) {
           pattern += '(\\.' + this._platform + ')?';
         }
         pattern += '\\.' + type;
 
+        // Escape backslashes in the path to be able to use it in the regex
+        if (path.sep === '\\') {
+          dirname = dirname.replace(/\\/g, '\\\\');
+        }
+
         // We arbitrarly grab the first one, because scale selection
         // will happen somewhere
-        const [assetFile] = this._fastfs.matches(
-          dirname,
-          new RegExp(pattern)
+        const [assetFile] = this._hasteFS.matchFiles(
+          new RegExp(dirname + '(\/|\\\\)' + pattern)
         );
-
         if (assetFile) {
           return this._moduleCache.getAssetModule(assetFile);
         }
       }
 
       let file;
-      if (this._fastfs.fileExists(potentialModulePath)) {
+      if (this._hasteFS.exists(potentialModulePath)) {
         file = potentialModulePath;
       } else if (this._platform != null &&
-                 this._fastfs.fileExists(potentialModulePath + '.' + this._platform + '.js')) {
+                 this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.js')) {
         file = potentialModulePath + '.' + this._platform + '.js';
       } else if (this._preferNativePlatform &&
-                 this._fastfs.fileExists(potentialModulePath + '.native.js')) {
+                 this._hasteFS.exists(potentialModulePath + '.native.js')) {
         file = potentialModulePath + '.native.js';
-      } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
+      } else if (this._hasteFS.exists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
-      } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
+      } else if (this._hasteFS.exists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
       } else {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `File ${potentialModulePath} doesnt exist`,
+          `File ${potentialModulePath} doesn't exist`,
         );
       }
 
@@ -465,16 +440,16 @@ class ResolutionRequest {
 
   _loadAsDir(potentialDirPath, fromModule, toModule) {
     return Promise.resolve().then(() => {
-      if (!this._fastfs.dirExists(potentialDirPath)) {
+      if (!this._dirExists(potentialDirPath)) {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `Directory ${potentialDirPath} doesnt exist`,
+          `Directory ${potentialDirPath} doesn't exist`,
         );
       }
 
       const packageJsonPath = path.join(potentialDirPath, 'package.json');
-      if (this._fastfs.fileExists(packageJsonPath)) {
+      if (this._hasteFS.exists(packageJsonPath)) {
         return this._moduleCache.getPackage(packageJsonPath)
           .getMain().then(
             (main) => this._tryResolve(
@@ -503,20 +478,25 @@ function resolutionHash(modulePath, depName) {
   return `${path.resolve(modulePath)}:${depName}`;
 }
 
+class UnableToResolveError extends Error {
+  type: string;
+  from: string;
+  to: string;
 
-function UnableToResolveError(fromModule, toModule, message) {
-  Error.call(this);
-  Error.captureStackTrace(this, this.constructor);
-  this.message = util.format(
-    'Unable to resolve module %s from %s: %s',
-    toModule,
-    fromModule.path,
-    message,
-  );
-  this.type = this.name = 'UnableToResolveError';
+  constructor(fromModule, toModule, message) {
+    super();
+    this.from = fromModule.path;
+    this.to = toModule;
+    this.message = util.format(
+      'Unable to resolve module %s from %s: %s',
+      toModule,
+      fromModule.path,
+      message,
+    );
+    this.type = this.name = 'UnableToResolveError';
+  }
+
 }
-
-util.inherits(UnableToResolveError, Error);
 
 function normalizePath(modulePath) {
   if (path.sep === '/') {
@@ -532,8 +512,10 @@ function resolveKeyWithPromise([key, promise]) {
   return promise.then(value => [key, value]);
 }
 
-function isRelativeImport(path) {
-  return /^[.][.]?(?:[/]|$)/.test(path);
+function isRelativeImport(filePath) {
+  return /^[.][.]?(?:[/]|$)/.test(filePath);
 }
+
+ResolutionRequest.emptyModule = require.resolve('./assets/empty-module.js');
 
 module.exports = ResolutionRequest;

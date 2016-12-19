@@ -80,7 +80,8 @@ public class ReactTestHelper {
           .setJSExecutor(executor)
           .setRegistry(new NativeModuleRegistry(
             mModuleSpecList,
-            Collections.<Class, ReactModuleInfo>emptyMap()))
+            Collections.<Class, ReactModuleInfo>emptyMap(),
+            false))
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createAssetLoader(
                                mContext,

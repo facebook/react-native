@@ -8,6 +8,7 @@
  *
  * @providesModule Hero
  */
+'use strict';
 
 var React = require('React');
 

@@ -1,15 +1,15 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-
+  
 #include "JSCHelpers.h"
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 #endif
 
-#include <JavaScriptCore/JSStringRef.h>
 #include <folly/String.h>
 #include <glog/logging.h>
 
+#include "JavaScriptCore.h"
 #include "Value.h"
 
 namespace facebook {
@@ -24,27 +24,44 @@ JSValueRef functionCaller(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  auto* f = static_cast<JSFunction*>(JSObjectGetPrivate(function));
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  auto* f = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(isCustomJSC, function));
   return (*f)(ctx, thisObject, argumentCount, arguments);
 }
 
-JSClassRef createFuncClass() {
+JSClassRef createFuncClass(JSContextRef ctx) {
   auto definition = kJSClassDefinitionEmpty;
-  definition.finalize = [](JSObjectRef object) {
-    auto* function = static_cast<JSFunction*>(JSObjectGetPrivate(object));
-    delete function;
-  };
+  // Need to duplicate the two different finalizer blocks, since there's no way
+  // for it to capture this static information.
+  if (isCustomJSCPtr(ctx)) {
+    definition.finalize = [](JSObjectRef object) {
+      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(true, object));
+      delete function;
+    };
+  } else {
+    definition.finalize = [](JSObjectRef object) {
+      auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(false, object));
+      delete function;
+    };
+  }
   definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
 
-  return JSClassCreate(&definition);
+  return JSC_JSClassCreate(ctx, &definition);
 }
 
 JSObjectRef makeFunction(
     JSContextRef ctx,
     JSStringRef name,
     JSFunction function) {
-  static auto kClassDef = createFuncClass();
-  auto functionObject = Object(ctx, JSObjectMake(ctx, kClassDef, new JSFunction(std::move(function))));
+  static JSClassRef kClassDef = NULL, kCustomJSCClassDef = NULL;
+  JSClassRef *classRef = isCustomJSCPtr(ctx) ? &kCustomJSCClassDef : &kClassDef;
+  if (!*classRef) {
+    *classRef = createFuncClass(ctx);
+  }
+
+  // dealloc in kClassDef.finalize
+  JSFunction *functionPtr = new JSFunction(std::move(function));
+  auto functionObject = Object(ctx, JSC_JSObjectMake(ctx, *classRef, functionPtr));
   functionObject.setProperty("name", Value(ctx, name));
   return functionObject;
 }
@@ -55,38 +72,34 @@ JSObjectRef makeFunction(
     JSContextRef ctx,
     const char* name,
     JSFunction function) {
-  return makeFunction(ctx, JSStringCreateWithUTF8CString(name), std::move(function));
+  return makeFunction(ctx, String(ctx, name), std::move(function));
 }
 
 void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSFunction function) {
-  auto jsName = JSStringCreateWithUTF8CString(name);
+  auto jsName = String(ctx, name);
   auto functionObj = makeFunction(ctx, jsName, std::move(function));
-  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
-  JSObjectSetProperty(ctx, globalObject, jsName, functionObj, 0, NULL);
-  JSStringRelease(jsName);
+  Object::getGlobalObject(ctx).setProperty(jsName, Value(ctx, functionObj));
 }
 
 JSObjectRef makeFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
-  auto jsName = String(name);
-  return JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
+  auto jsName = String(ctx, name);
+  return JSC_JSObjectMakeFunctionWithCallback(ctx, jsName, callback);
 }
 
 void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback) {
-  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
-  JSObjectRef functionObj = JSObjectMakeFunctionWithCallback(
-      ctx, jsName, callback);
-  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
-  JSObjectSetProperty(ctx, globalObject, jsName, functionObj, 0, NULL);
-  JSStringRelease(jsName);
+  String jsName(ctx, name);
+  JSObjectRef functionObj = JSC_JSObjectMakeFunctionWithCallback(
+    ctx, jsName, callback);
+  Object::getGlobalObject(ctx).setProperty(jsName, Value(ctx, functionObj));
 }
 
 void installGlobalProxy(
@@ -96,40 +109,25 @@ void installGlobalProxy(
   JSClassDefinition proxyClassDefintion = kJSClassDefinitionEmpty;
   proxyClassDefintion.className = "_FBProxyClass";
   proxyClassDefintion.getProperty = callback;
-  JSClassRef proxyClass = JSClassCreate(&proxyClassDefintion);
 
-  JSObjectRef proxyObj = JSObjectMake(ctx, proxyClass, nullptr);
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  JSClassRef proxyClass = JSC_JSClassCreate(isCustomJSC, &proxyClassDefintion);
+  JSObjectRef proxyObj = JSC_JSObjectMake(ctx, proxyClass, nullptr);
+  JSC_JSClassRelease(isCustomJSC, proxyClass);
 
-  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
-  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
-  JSObjectSetProperty(ctx, globalObject, jsName, proxyObj, 0, NULL);
-
-  JSStringRelease(jsName);
-  JSClassRelease(proxyClass);
+  Object::getGlobalObject(ctx).setProperty(name, Value(ctx, proxyObj));
 }
 
 void removeGlobal(JSGlobalContextRef ctx, const char* name) {
-  JSStringRef jsName = JSStringCreateWithUTF8CString(name);
-  JSObjectRef globalObject = JSContextGetGlobalObject(ctx);
-  JSObjectSetProperty(ctx, globalObject, jsName, nullptr, 0, nullptr);
-  JSStringRelease(jsName);
-}
-
-JSValueRef makeJSCException(
-    JSContextRef ctx,
-    const char* exception_text) {
-  JSStringRef message = JSStringCreateWithUTF8CString(exception_text);
-  JSValueRef exceptionString = JSValueMakeString(ctx, message);
-  JSStringRelease(message);
-  return JSValueToObject(ctx, exceptionString, NULL);
+  Object::getGlobalObject(ctx).setProperty(name, Value::makeUndefined(ctx));
 }
 
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
-#ifdef WITH_FBSYSTRACE
+  #ifdef WITH_FBSYSTRACE
   fbsystrace::FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "evaluateScript");
-#endif
+  #endif
   JSValueRef exn, result;
-  result = JSEvaluateScript(context, script, NULL, source, 0, &exn);
+  result = JSC_JSEvaluateScript(context, script, NULL, source, 0, &exn);
   if (result == nullptr) {
     formatAndThrowJSException(context, exn, source);
   }
@@ -149,13 +147,12 @@ JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSSt
 
 void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef source) {
   Value exception = Value(context, exn);
-
   std::string exceptionText = exception.toString().str();
 
   // The null/empty-ness of source tells us if the JS came from a
   // file/resource, or was a constructed statement.  The location
   // info will include that source, if any.
-  std::string locationInfo = source != nullptr ? String::ref(source).str() : "";
+  std::string locationInfo = source != nullptr ? String::ref(context, source).str() : "";
   Object exObject = exception.asObject();
   auto line = exObject.getProperty("line");
   if (line != nullptr && line.isNumber()) {
@@ -187,17 +184,6 @@ void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef
   }
 }
 
-
-JSValueRef makeJSError(JSContextRef ctx, const char *error) {
-  JSValueRef nestedException = nullptr;
-  JSValueRef args[] = { Value(ctx, String(error)) };
-  JSObjectRef errorObj = JSObjectMakeError(ctx, 1, args, &nestedException);
-  if (nestedException != nullptr) {
-    return std::move(args[0]);
-  }
-  return errorObj;
-}
-
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
   std::ostringstream msg;
   try {
@@ -206,13 +192,13 @@ JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *e
     throw; // We probably shouldn't try to handle this in JS
   } catch (const std::exception& ex) {
     msg << "C++ Exception in '" << exceptionLocation << "': " << ex.what();
-    return makeJSError(ctx, msg.str().c_str());
+    return Value::makeError(ctx, msg.str().c_str());
   } catch (const char* ex) {
     msg << "C++ Exception (thrown as a char*) in '" << exceptionLocation << "': " << ex;
-    return makeJSError(ctx, msg.str().c_str());
+    return Value::makeError(ctx, msg.str().c_str());
   } catch (...) {
     msg << "Unknown C++ Exception in '" << exceptionLocation << "'";
-    return makeJSError(ctx, msg.str().c_str());
+    return Value::makeError(ctx, msg.str().c_str());
   }
 }
 
@@ -221,7 +207,7 @@ JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef j
     auto functionName = Object(ctx, jsFunctionCause).getProperty("name").toString().str();
     return translatePendingCppExceptionToJSError(ctx, functionName.c_str());
   } catch (...) {
-    return makeJSError(ctx, "Failed to get function name while handling exception");
+    return Value::makeError(ctx, "Failed to get function name while handling exception");
   }
 }
 

@@ -44,6 +44,21 @@ const requireNativeComponent = require('requireNativeComponent');
  *
  * Doesn't yet support other contained responders from blocking this scroll
  * view from becoming the responder.
+ *
+ *
+ * `<ScrollView>` vs `<ListView>` - which one to use?
+ * ScrollView simply renders all its react child components at once. That
+ * makes it very easy to understand and use.
+ * On the other hand, this has a performance downside. Imagine you have a very
+ * long list of items you want to display, worth of couple of your ScrollView’s
+ * heights. Creating JS components and native views upfront for all its items,
+ * which may not even be shown, will contribute to slow rendering of your
+ * screen and increased memory usage.
+ *
+ * This is where ListView comes into play. ListView renders items lazily,
+ * just when they are about to appear. This laziness comes at cost of a more
+ * complicated API, which is worth it unless you are rendering a small fixed
+ * set of items.
  */
 const ScrollView = React.createClass({
   propTypes: {
@@ -177,12 +192,18 @@ const ScrollView = React.createClass({
       'on-drag',
     ]),
     /**
-     * When false, tapping outside of the focused text input when the keyboard
-     * is up dismisses the keyboard. When true, the keyboard will not dismiss
-     * automatically, and the scroll view will not catch taps, but children of
-     * the scroll view can catch taps. The default value is false.
+     * Determines when the keyboard should stay visible after a tap.
+     *
+     *   - 'never' (the default), tapping outside of the focused text input when the keyboard
+     *     is up dismisses the keyboard. When this happens, children won't receive the tap.
+     *   - 'always', the keyboard will not dismiss automatically, and the scroll view will not
+     *     catch taps, but children of the scroll view can catch taps.
+     *   - 'handled', the keyboard will not dismiss automatically when the tap was handled by
+     *     a children, (or captured by an ancestor).
+     *   - false, deprecated, use 'never' instead
+     *   - true, deprecated, use 'always' instead
      */
-    keyboardShouldPersistTaps: PropTypes.bool,
+    keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios
