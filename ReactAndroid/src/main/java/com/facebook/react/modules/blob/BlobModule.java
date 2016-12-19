@@ -168,11 +168,15 @@ public class BlobModule extends ReactContextBaseJavaModule {
       ContentResolver resolver = getReactApplicationContext().getContentResolver();
       String type = resolver.getType(uri);
 
-      if (type != null) {
+      if (type == null) {
         String ext = MimeTypeMap.getFileExtensionFromUrl(path);
         if (ext != null) {
           type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
         }
+      }
+
+      if (type == null) {
+        type = "";
       }
 
       InputStream is = resolver.openInputStream(uri);
