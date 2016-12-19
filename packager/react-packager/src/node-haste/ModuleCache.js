@@ -16,6 +16,7 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type {
@@ -38,6 +39,7 @@ class ModuleCache {
   _platforms: mixed;
   _transformCacheKey: string;
   _transformCode: TransformCode;
+  _reporter: Reporter;
 
   constructor({
     assetDependencies,
@@ -48,6 +50,7 @@ class ModuleCache {
     moduleOptions,
     transformCacheKey,
     transformCode,
+    reporter,
   }: {
     assetDependencies: mixed,
     cache: Cache,
@@ -56,6 +59,7 @@ class ModuleCache {
     moduleOptions: ModuleOptions,
     transformCacheKey: string,
     transformCode: TransformCode,
+    reporter: Reporter,
   }, platforms: mixed) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
@@ -68,6 +72,7 @@ class ModuleCache {
     this._platforms = platforms;
     this._transformCacheKey = transformCacheKey;
     this._transformCode = transformCode;
+    this._reporter = reporter;
   }
 
   getModule(filePath: string) {
@@ -80,6 +85,7 @@ class ModuleCache {
         transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
+        reporter: this._reporter,
       });
     }
     return this._moduleCache[filePath];
