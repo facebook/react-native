@@ -276,6 +276,7 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:0.11.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
     compile 'com.facebook.soloader:soloader:0.1.0'
