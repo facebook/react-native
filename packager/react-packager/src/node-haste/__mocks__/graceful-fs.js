@@ -25,7 +25,7 @@ const mtime = {
   getTime: () => Math.ceil(Math.random() * 10000000),
 };
 
-fs.realpath.mockImpl((filepath, callback) => {
+fs.realpath.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -39,9 +39,9 @@ fs.realpath.mockImpl((filepath, callback) => {
   callback(null, filepath);
 });
 
-fs.readdirSync.mockImpl((filepath) => Object.keys(getToNode(filepath)));
+fs.readdirSync.mockImplementation((filepath) => Object.keys(getToNode(filepath)));
 
-fs.readdir.mockImpl((filepath, callback) => {
+fs.readdir.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -60,7 +60,7 @@ fs.readdir.mockImpl((filepath, callback) => {
   callback(null, Object.keys(node));
 });
 
-fs.readFile.mockImpl(function(filepath, encoding, callback) {
+fs.readFile.mockImplementation(function(filepath, encoding, callback) {
   callback = asyncCallback(callback);
   if (arguments.length === 2) {
     callback = encoding;
@@ -84,7 +84,7 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
   }
 });
 
-fs.readFileSync.mockImpl(function(filepath, encoding) {
+fs.readFileSync.mockImplementation(function(filepath, encoding) {
   const node = getToNode(filepath);
   // dir check
   if (node && typeof node === 'object' && node.SYMLINK == null) {
@@ -93,7 +93,7 @@ fs.readFileSync.mockImpl(function(filepath, encoding) {
   return node;
 });
 
-fs.stat.mockImpl((filepath, callback) => {
+fs.stat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -123,7 +123,7 @@ fs.stat.mockImpl((filepath, callback) => {
   }
 });
 
-fs.statSync.mockImpl((filepath) => {
+fs.statSync.mockImplementation((filepath) => {
   const node = getToNode(filepath);
 
   if (node.SYMLINK) {
@@ -137,7 +137,7 @@ fs.statSync.mockImpl((filepath) => {
   };
 });
 
-fs.lstat.mockImpl((filepath, callback) => {
+fs.lstat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -162,7 +162,7 @@ fs.lstat.mockImpl((filepath, callback) => {
   }
 });
 
-fs.lstatSync.mockImpl((filepath) => {
+fs.lstatSync.mockImplementation((filepath) => {
   const node = getToNode(filepath);
 
   if (node.SYMLINK) {
@@ -180,7 +180,7 @@ fs.lstatSync.mockImpl((filepath) => {
   };
 });
 
-fs.open.mockImpl(function(filepath) {
+fs.open.mockImplementation(function(filepath) {
   const callback = arguments[arguments.length - 1] || noop;
   let data, error, fd;
   try {
@@ -200,7 +200,7 @@ fs.open.mockImpl(function(filepath) {
   callback(error, fd);
 });
 
-fs.read.mockImpl((fd, buffer, writeOffset, length, position, callback = noop) => {
+fs.read.mockImplementation((fd, buffer, writeOffset, length, position, callback = noop) => {
   let bytesWritten;
   try {
     if (position == null || position < 0) {
@@ -215,7 +215,7 @@ fs.read.mockImpl((fd, buffer, writeOffset, length, position, callback = noop) =>
   callback(null, bytesWritten, buffer);
 });
 
-fs.close.mockImpl((fd, callback = noop) => {
+fs.close.mockImplementation((fd, callback = noop) => {
   try {
     fd.buffer = fs.position = undefined;
   } catch (e) {
@@ -227,7 +227,7 @@ fs.close.mockImpl((fd, callback = noop) => {
 
 let filesystem;
 
-fs.createReadStream.mockImpl(filepath => {
+fs.createReadStream.mockImplementation(filepath => {
   if (!filepath.startsWith('/')) {
     throw Error('Cannot open file ' + filepath);
   }
@@ -254,7 +254,7 @@ fs.createReadStream.mockImpl(filepath => {
   });
 });
 
-fs.createWriteStream.mockImpl(file => {
+fs.createWriteStream.mockImplementation(file => {
   let node;
   try {
     node = getToNode(dirname(file));

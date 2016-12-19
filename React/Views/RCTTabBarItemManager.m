@@ -29,6 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectedIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(systemIcon, UITabBarSystemItem)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(badgeColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;

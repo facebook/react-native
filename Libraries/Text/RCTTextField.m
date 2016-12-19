@@ -57,6 +57,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+  if(context.nextFocusedView == self) {
+    _jsRequestingFirstResponder = YES;
+  } else {
+    _jsRequestingFirstResponder = NO;
+  }
+}
+
 // This method is overridden for `onKeyPress`. The manager
 // will not send a keyPress for text that was pasted.
 - (void)paste:(id)sender
