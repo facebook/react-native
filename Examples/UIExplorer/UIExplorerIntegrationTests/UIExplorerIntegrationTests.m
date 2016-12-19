@@ -30,6 +30,7 @@
 - (void)setUp
 {
   _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp", nil);
+  _runner.recordMode = NO;
 }
 
 #pragma mark - Test harness

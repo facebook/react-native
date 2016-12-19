@@ -11,12 +11,12 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var Image = require('Image');
 var React = require('React');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -86,6 +86,13 @@ class TabBarItemIOS extends React.Component {
      * is defined.
      */
     title: React.PropTypes.string,
+    /**
+     *(Apple TV only)* When set to true, this view will be focusable
+     * and navigable using the Apple TV remote.
+     *
+     * @platform ios
+     */
+    isTVSelectable: React.PropTypes.bool,
   };
 
   state = {

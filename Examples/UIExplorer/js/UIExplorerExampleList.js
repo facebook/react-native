@@ -23,23 +23,22 @@
 'use strict';
 
 const ListView = require('ListView');
+const Platform = require('Platform');
 const React = require('react');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInput = require('TextInput');
 const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
 const UIExplorerStatePersister = require('./UIExplorerStatePersister');
+const View = require('View');
 
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios';
-
 import type {
   PassProps,
 } from './UIExplorerStatePersister';
-
 import type {
   StyleObj,
 } from 'StyleSheetTypes';
@@ -66,7 +65,7 @@ class UIExplorerExampleList extends React.Component {
   render(): ?React.Element<any> {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => filterRegex.test(example.module.title);
+    const filter = (example) => filterRegex.test(example.module.title) && (!Platform.isTVOS || example.supportsTVOS);
 
     const dataSource = ds.cloneWithRowsAndSections({
       components: this.props.list.ComponentExamples.filter(filter),
