@@ -126,9 +126,9 @@ class GlobalTerminal extends Terminal {
   Terminal: Class<Terminal>;
 
   constructor() {
-    /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stderr is an
+    /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
      * instance of a net.Socket (a local socket, not network). */
-    super(process.stderr);
+    super(process.stdout);
     this.Terminal = Terminal;
   }
 

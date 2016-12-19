@@ -10,6 +10,7 @@
 
 const log = require('../util/log').out('bundle');
 const Server = require('../../packager/react-packager/src/Server');
+const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
@@ -57,6 +58,7 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
       extraNodeModules: config.extraNodeModules,
       resetCache: args.resetCache,
       watch: false,
+      reporter: new TerminalReporter(),
     };
 
     packagerInstance = new Server(options);
