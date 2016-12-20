@@ -45,13 +45,14 @@ const {
 type Props = {
   children?: React.Element<any>,
   style?: any,
+  textProps?: any,
   textStyle?: any,
   viewProps?: any,
 }
 
-const NavigationHeaderTitle = ({ children, style, textStyle, viewProps }: Props) => (
+const NavigationHeaderTitle = ({ children, style, textProps, textStyle, viewProps }: Props) => (
   <View style={[ styles.title, style ]} {...viewProps}>
-    <Text style={[ styles.titleText, textStyle ]}>{children}</Text>
+    <Text style={[ styles.titleText, textStyle ]} {...textProps}>{children}</Text>
   </View>
 );
 
