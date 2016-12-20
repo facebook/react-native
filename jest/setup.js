@@ -45,7 +45,6 @@ jest
     return ListView;
   })
   .mock('ListViewDataSource', () => {
-    var immutable = require('immutable');
     const DataSource = require.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
       function ListViewDataSource(dataBlob) {
@@ -53,9 +52,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            const isImmutableMap = immutable.Map.isMap(dataBlob[key]);
-            this.items += isImmutableMap ?
-              (dataBlob[key] && !dataBlob[key].size) : (dataBlob[key] && dataBlob[key].length);
+            this.items += object[key] && (
+              object[key].length || object[key].size || 0
+            )
           });
         } catch (e) {
           this.items = 'unknown';
