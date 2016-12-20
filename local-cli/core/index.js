@@ -17,19 +17,54 @@ const minimist = require('minimist');
 import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
 import type {Command} from '../commands';
 
+/**
+ * Configuration file of the CLI.
+ */
 export type ConfigT = {
-  extraNodeModules?: {[id: string]: string},
+  extraNodeModules?: { [id: string]: string },
+  /**
+   * Specify any additional asset extentions to be used by the packager.
+   * For example, if you want to include a .ttf file, you would return ['ttf']
+   * from here and use `require('./fonts/example.ttf')` inside your app.
+   */
   getAssetExts?: () => Array<string>,
+  /**
+   * Specify any additional platforms to be used by the packager.
+   * For example, if you want to add a "custom" platform, and use modules
+   * ending in .custom.js, you would return ['custom'] here.
+   */
+  getPlatforms() {
+    return [];
+  },
+  /**
+   * Returns the path to a custom transformer. This can also be overridden
+   * with the --transformer commandline argument.
+   */
   getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions<*>,
+  getTransformOptions ?: GetTransformOptions <*>,
   transformVariants?: () => {[name: string]: Object},
-
+  /**
+   * Returns a regular expression for modules that should be ignored by the
+   * packager on a given platform.
+   */
   getBlacklistRE(): RegExp,
   getProjectRoots(): Array<string>,
+  getAssetExts(): Array<string>,
+  /**
+   * Returns an array of project commands used by the CLI to load
+   */
   getProjectCommands(): Array<Command>,
+  /**
+   * Returns project config from the current working directory
+   */
+  getProjectConfig(): Object,
+  /**
+   * Returns dependency config from <node_modules>/packageName
+   */
+  getDependencyConfig(pkgName: string): Object,
 };
 
-function getCliConfig() {
+function getCliConfig(): ConfigT {
   // Use a lightweight option parser to look up the CLI configuration file,
   // which we need to set up the parser for the other args and options
   const cliArgs = minimist(process.argv.slice(2));

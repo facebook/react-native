@@ -21,8 +21,8 @@ const init = require('./init/init');
 const path = require('path');
 const pkg = require('../package.json');
 
-import type {Command} from './commands';
-import type {ConfigT} from './config';
+import type {CommandT} from './commands';
+import type {ConfigT} from './core';
 
 commander.version(pkg.version);
 
@@ -91,7 +91,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: Command, cfg: ConfigT) => {
+const addCommand = (command: CommandT, cfg: ConfigT) => {
   const options = command.options || [];
 
   const cmd = commander
