@@ -32,6 +32,3 @@ android_build_config(
   ],
 )
 
-project_config(
-  src_target = ':common',
-)

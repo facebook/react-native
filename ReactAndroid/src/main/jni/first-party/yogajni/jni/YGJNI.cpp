@@ -36,7 +36,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
     obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
     YGTransferLayoutDirection(root, obj);
 
-    for (uint32_t i = 0; i < YGNodeChildCount(root); i++) {
+    for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
       YGTransferLayoutOutputsRecursive(YGNodeGetChild(root, i));
     }
   } else {

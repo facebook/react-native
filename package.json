@@ -13,10 +13,10 @@
   "jest": {
     "automock": true,
     "transform": {
-      ".*": "jest/preprocessor.js"
+      ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
-      "jest/setup.js"
+      "./jest/setup.js"
     ],
     "timers": "fake",
     "moduleNameMapper": {
@@ -152,7 +152,7 @@
     "immutable": "~3.7.6",
     "imurmurhash": "^0.1.4",
     "inquirer": "^0.12.0",
-    "jest-haste-map": "17.0.3",
+    "jest-haste-map": "18.0.0",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
@@ -199,9 +199,9 @@
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.37.0",
-    "jest": "17.0.3",
-    "jest-repl": "17.0.3",
-    "jest-runtime": "17.0.3",
+    "jest": "18.0.0",
+    "jest-repl": "18.0.0",
+    "jest-runtime": "18.0.0",
     "mock-fs": "^3.11.0",
     "react": "~15.4.0-rc.4",
     "react-dom": "~15.4.0-rc.4",
