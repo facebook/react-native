@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
+import type {Command} from '../commands.js';
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
@@ -27,6 +28,7 @@ export type ConfigT = {
 
   getBlacklistRE(): RegExp,
   getProjectRoots(): Array<string>,
+  getProjectCommands(): Array<Command>,
 };
 
 /**

@@ -156,11 +156,17 @@ function run() {
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
   const config = getCliConfig();
-  commands.forEach(cmd => addCommand(cmd, config));
+
+  const allCommands = [
+    ...commands,
+    ...config.getProjectCommands(),
+  ];
+
+  allCommands.forEach(cmd => addCommand(cmd, config));
 
   commander.parse(process.argv);
 
-  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
+  const isValidCommand = allCommands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
 
   if (!isValidCommand) {
     printUnknownCommand(process.argv[2]);

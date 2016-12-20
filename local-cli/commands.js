@@ -10,8 +10,6 @@
  */
 'use strict';
 
-const getUserCommands = require('./core/getCommands');
-
 import type {ConfigT} from './util/Config';
 
 export type Command = {
@@ -69,7 +67,6 @@ const undocumentedCommands = [
 const commands: Array<Command> = [
   ...documentedCommands,
   ...undocumentedCommands,
-  ...getUserCommands(),
 ];
 
 module.exports = commands;
