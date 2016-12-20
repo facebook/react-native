@@ -16,9 +16,9 @@ const uuid = require('uuid');
 const invariant = require('fbjs/lib/invariant');
 const Blob = require('Blob');
 const File = require('File');
-const { BlobModule } = require('react-native').NativeModules;
+const { BlobModule } = require('NativeModules');
 
-import type { BlobData } from './BlobTypes';
+import type { BlobData, BlobOptions } from './BlobTypes';
 
 /**
  * Module to manage blobs
@@ -28,7 +28,7 @@ class BlobManager {
   /**
    * Create blob from existing array of blobs.
    */
-  static createFromParts(parts: Array<Blob>): Blob {
+  static createFromParts(parts: Array<Blob>, options: BlobOptions): Blob {
     let blobId = uuid.v4();
     let size = 0;
     parts.forEach((part) => {
@@ -40,6 +40,7 @@ class BlobManager {
       blobId,
       offset: 0,
       size,
+      type: options ? options.type : '',
     });
   }
 

@@ -24,3 +24,9 @@ export type BlobData = {
   name?: string;
   lastModified?: number;
 };
+
+
+export type BlobOptions = {
+  type: string;
+  endings: "transparent" | "native";
+}

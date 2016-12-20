@@ -15,7 +15,7 @@
 const EventTarget = require('event-target-shim');
 const Platform = require('Platform');
 const Blob = require('Blob');
-const { FileReaderModule } = require('react-native').NativeModules;
+const { FileReaderModule } = require('NativeModules');
 
 type ReadyState =
   | 0 // EMPTY
