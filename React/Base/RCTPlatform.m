@@ -39,8 +39,6 @@ RCT_EXPORT_MODULE(IOSConstants)
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),
     @"osVersion": [device systemVersion],
     @"systemName": [device systemName],
-    // userInterfaceIdiom should return UIUserInterfaceIdiomTV if and only if we are running on Apple TV.
-    // If this ever changes, we may need to adjust this code to avoid breakage when running on tvOS.
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
   };
 }
