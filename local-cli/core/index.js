@@ -14,17 +14,23 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-const cliArgs = minimist(process.argv.slice(2));
+function getCliConfig() {
+  // Use a lightweight option parser to look up the CLI configuration file,
+  // which we need to set up the parser for the other args and options
+  const cliArgs = minimist(process.argv.slice(2));
 
-let cwd;
-let configPath;
+  let cwd;
+  let configPath;
+    
+  if (cliArgs.config != null) {
+    cwd = process.cwd();
+    configPath = cliArgs.config;
+  } else {
+    cwd = __dirname;
+    configPath = Config.findConfigPath(cwd);
+  }
 
-if (cliArgs.config != null) {
-  cwd = process.cwd();
-  configPath = cliArgs.config;
-} else {
-  cwd = __dirname;
-  configPath = Config.findConfigPath(cwd);
+  return Config.get(cwd, defaultConfig, configPath);
 }
 
-module.exports = Config.get(cwd, defaultConfig, configPath);
+module.exports = getCliConfig();
