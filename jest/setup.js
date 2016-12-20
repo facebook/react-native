@@ -8,8 +8,6 @@
  */
 'use strict';
 
-var immutable = require('immutable');
-
 const mockComponent = require.requireActual('./mockComponent');
 
 require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
@@ -47,6 +45,7 @@ jest
     return ListView;
   })
   .mock('ListViewDataSource', () => {
+    var immutable = require('immutable');
     const DataSource = require.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
       function ListViewDataSource(dataBlob) {
