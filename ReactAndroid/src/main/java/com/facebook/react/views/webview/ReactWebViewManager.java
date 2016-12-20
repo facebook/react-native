@@ -510,7 +510,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             "}" +
             "document.dispatchEvent(event);" +
           "})();");
-          // root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
