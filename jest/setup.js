@@ -8,6 +8,9 @@
  */
 'use strict';
 
+var immutable = require('immutable');
+var {Map} = immutable;
+
 const mockComponent = require.requireActual('./mockComponent');
 
 require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
@@ -52,7 +55,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items += dataBlob[key] && dataBlob[key].length;
+            const isImmutableMap = Map.isMap(dataBlob[key]);
+            this.items += isImmutableMap ?
+              (dataBlob[key] && !dataBlob[key].isEmpty()) : (dataBlob[key] && dataBlob[key].length);
           });
         } catch (e) {
           this.items = 'unknown';
