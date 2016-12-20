@@ -57,12 +57,22 @@ function createServer(options) {
 
   options = Object.assign({}, options);
   delete options.verbose;
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    var TerminalReporter = require('./src/lib/TerminalReporter');
+    options.reporter = new TerminalReporter();
+  }
   var Server = require('./src/Server');
   return new Server(options);
 }
 
 function createNonPersistentServer(options) {
-  Logger.disablePrinting();
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    options.reporter = require('./src/lib/reporting').nullReporter;
+  }
   options.watch = !options.nonPersistent;
   return createServer(options);
 }

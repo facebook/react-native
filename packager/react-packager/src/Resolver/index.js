@@ -21,6 +21,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type Module from '../node-haste/Module';
 import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Reporter} from '../lib/reporting';
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -71,6 +72,9 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  reporter: {
+    type: 'object',
+  },
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -99,30 +103,34 @@ class Resolver {
     Promise<{code: string, map: SourceMap}>;
   _polyfillModuleNames: Array<string>;
 
-  constructor(options: {resetCache: boolean}) {
+  constructor(options: {
+    reporter: Reporter,
+    resetCache: boolean,
+  }) {
     const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
-      roots: opts.projectRoots,
+      assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       assetExts: opts.assetExts,
+      cache: opts.cache,
+      extraNodeModules: opts.extraNodeModules,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
-      providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: opts.platforms,
-      preferNativePlatform: true,
-      watch: opts.watch,
-      cache: opts.cache,
-      transformCode: opts.transformCode,
-      transformCacheKey: opts.transformCacheKey,
-      extraNodeModules: opts.extraNodeModules,
-      assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      resetCache: options.resetCache,
       moduleOptions: {
         cacheTransformResults: true,
         resetCache: options.resetCache,
       },
+      platforms: opts.platforms,
+      preferNativePlatform: true,
+      providesModuleNodeModules: defaults.providesModuleNodeModules,
+      reporter: options.reporter,
+      resetCache: options.resetCache,
+      roots: opts.projectRoots,
+      transformCacheKey: opts.transformCacheKey,
+      transformCode: opts.transformCode,
+      watch: opts.watch,
     });
 
     this._minifyCode = opts.minifyCode;
