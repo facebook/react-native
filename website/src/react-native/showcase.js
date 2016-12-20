@@ -320,12 +320,11 @@ var featured = [
     infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
   },
 	{
-		name: 'Blink by Witworks',
+		name: 'Blink',
 		icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
-		infoTitle: 'Learnings after using React Native for a year at Witworks',
-		defaultLink: 'https://play.google.com/store/apps/details?id=com.witapp'
+		infoTitle: 'What we learned after using React Native for a year',
 	}
 ];
 
