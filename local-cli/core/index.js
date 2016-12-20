@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
-import type {Command} from '../commands.js';
+import type {Command} from '../commands';
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
