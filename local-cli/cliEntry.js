@@ -10,21 +10,19 @@
  */
 'use strict';
 
-const Config = require('./util/Config');
+const Config = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
 const chalk = require('chalk');
 const childProcess = require('child_process');
 const commander = require('commander');
 const commands = require('./commands');
-const defaultConfig = require('./default.config');
 const init = require('./init/init');
-const minimist = require('minimist');
 const path = require('path');
 const pkg = require('../package.json');
 
 import type {Command} from './commands';
-import type {ConfigT} from './util/Config';
+import type {ConfigT} from './config';
 
 commander.version(pkg.version);
 
@@ -130,24 +128,6 @@ const addCommand = (command: Command, config: ConfigT) => {
   cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
 
-function getCliConfig() {
-  // Use a lightweight option parser to look up the CLI configuration file,
-  // which we need to set up the parser for the other args and options
-  const cliArgs = minimist(process.argv.slice(2));
-
-  let cwd;
-  let configPath;
-  if (cliArgs.config != null) {
-    cwd = process.cwd();
-    configPath = cliArgs.config;
-  } else {
-    cwd = __dirname;
-    configPath = Config.findConfigPath(cwd);
-  }
-
-  return Config.get(cwd, defaultConfig, configPath);
-}
-
 function run() {
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
@@ -155,14 +135,12 @@ function run() {
 
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  const config = getCliConfig();
-
   const allCommands = [
     ...commands,
-    ...config.getProjectCommands(),
+    ...Config.getProjectCommands(),
   ];
 
-  allCommands.forEach(cmd => addCommand(cmd, config));
+  allCommands.forEach(cmd => addCommand(cmd, Config));
 
   commander.parse(process.argv);
 

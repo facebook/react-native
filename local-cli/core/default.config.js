@@ -11,7 +11,7 @@
 const path = require('path');
 const flatten = require('lodash').flatten;
 
-const blacklist = require('../packager/blacklist');
+const blacklist = require('../../packager/blacklist');
 
 const android = require('./android');
 const findAssets = require('./findAssets');
