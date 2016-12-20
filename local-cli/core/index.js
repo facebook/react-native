@@ -14,6 +14,21 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
+import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
+import type {Command} from '../commands';
+
+export type ConfigT = {
+  extraNodeModules?: {[id: string]: string},
+  getAssetExts?: () => Array<string>,
+  getTransformModulePath?: () => string,
+  getTransformOptions?: GetTransformOptions<*>,
+  transformVariants?: () => {[name: string]: Object},
+
+  getBlacklistRE(): RegExp,
+  getProjectRoots(): Array<string>,
+  getProjectCommands(): Array<Command>,
+};
+
 function getCliConfig() {
   // Use a lightweight option parser to look up the CLI configuration file,
   // which we need to set up the parser for the other args and options
@@ -21,7 +36,7 @@ function getCliConfig() {
 
   let cwd;
   let configPath;
-    
+
   if (cliArgs.config != null) {
     cwd = process.cwd();
     configPath = cliArgs.config;

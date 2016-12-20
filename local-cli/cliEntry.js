@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const Config = require('./core');
+const config = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
 const chalk = require('chalk');
@@ -91,7 +91,7 @@ function printUnknownCommand(cmdName) {
   ].join('\n'));
 }
 
-const addCommand = (command: Command, config: ConfigT) => {
+const addCommand = (command: Command, cfg: ConfigT) => {
   const options = command.options || [];
 
   const cmd = commander
@@ -106,7 +106,7 @@ const addCommand = (command: Command, config: ConfigT) => {
       Promise.resolve()
         .then(() => {
           assertRequiredOptions(options, passedOptions);
-          return command.func(argv, config, passedOptions);
+          return command.func(argv, cfg, passedOptions);
         })
         .catch(handleError);
     });
@@ -120,7 +120,7 @@ const addCommand = (command: Command, config: ConfigT) => {
       opt.command,
       opt.description,
       opt.parse || defaultOptParser,
-      typeof opt.default === 'function' ? opt.default(config) : opt.default,
+      typeof opt.default === 'function' ? opt.default(cfg) : opt.default,
     ));
 
   // Placeholder option for --config, which is parsed before any other option,
@@ -135,16 +135,11 @@ function run() {
 
   childProcess.execFileSync(path.join(__dirname, setupEnvScript));
 
-  const allCommands = [
-    ...commands,
-    ...Config.getProjectCommands(),
-  ];
-
-  allCommands.forEach(cmd => addCommand(cmd, Config));
+  commands.forEach(cmd => addCommand(cmd, config));
 
   commander.parse(process.argv);
 
-  const isValidCommand = allCommands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
+  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
 
   if (!isValidCommand) {
     printUnknownCommand(process.argv[2]);

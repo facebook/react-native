@@ -119,7 +119,7 @@ const config = {
    * with the --transformer commandline argument.
    */
   getTransformModulePath() {
-    return require.resolve('../packager/transformer');
+    return require.resolve('../../packager/transformer');
   },
 
   getProjectRoots() {
@@ -139,7 +139,6 @@ const config = {
     }
   },
 
-  extraNodeModules: {},
 };
 
 module.exports = config;

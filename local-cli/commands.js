@@ -10,6 +10,8 @@
  */
 'use strict';
 
+import { getProjectCommands } from '../core';
+
 import type {ConfigT} from './util/Config';
 
 export type Command = {
@@ -67,6 +69,7 @@ const undocumentedCommands = [
 const commands: Array<Command> = [
   ...documentedCommands,
   ...undocumentedCommands,
+  ...getProjectCommands(),
 ];
 
 module.exports = commands;
