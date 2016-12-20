@@ -41,7 +41,7 @@ export type ConfigT = {
    * with the --transformer commandline argument.
    */
   getTransformModulePath?: () => string,
-  getTransformOptions ?: GetTransformOptions <*>,
+  getTransformOptions ?: GetTransformOptions<*>,
   transformVariants?: () => {[name: string]: Object},
   /**
    * Returns a regular expression for modules that should be ignored by the
