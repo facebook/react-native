@@ -137,7 +137,9 @@ const config = {
     } else {
       return [path.resolve(__dirname, '../..')];
     }
-  }
+  },
+
+  extraNodeModules: {},
 };
 
 module.exports = config;
