@@ -56,7 +56,7 @@ jest
           Object.keys(dataBlob).forEach(key => {
             const isImmutableMap = immutable.Map.isMap(dataBlob[key]);
             this.items += isImmutableMap ?
-              (dataBlob[key] && !dataBlob[key].isEmpty()) : (dataBlob[key] && dataBlob[key].length);
+              (dataBlob[key] && !dataBlob[key].size) : (dataBlob[key] && dataBlob[key].length);
           });
         } catch (e) {
           this.items = 'unknown';
