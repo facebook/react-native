@@ -39,7 +39,8 @@ describe('processRequest', () => {
      projectRoots: ['root'],
      blacklistRE: null,
      cacheVersion: null,
-     polyfillModuleNames: null
+     polyfillModuleNames: null,
+     reporter: require('../../lib/reporting').nullReporter,
   };
 
   const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>

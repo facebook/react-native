@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
@@ -33,6 +34,7 @@ const viewConfig = {
     selectable: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
+    textBreakStrategy: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -117,6 +119,12 @@ const Text = React.createClass({
      */
     numberOfLines: React.PropTypes.number,
     /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `highQuality`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+    /**
      * Invoked on mount and layout changes with
      *
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
@@ -134,6 +142,14 @@ const Text = React.createClass({
      * e.g., `onLongPress={this.increaseSize}>``
      */
     onLongPress: React.PropTypes.func,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
     /**
      * Lets the user select text, to use the native copy and paste functionality.
      */
@@ -153,8 +169,6 @@ const Text = React.createClass({
     /**
      * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
      * default is `true`.
-     *
-     * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
     /**
@@ -261,7 +275,7 @@ const Text = React.createClass({
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
-                return PRESS_RECT_OFFSET;
+                return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
             return setResponder;

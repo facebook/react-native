@@ -26,7 +26,7 @@ function expectResolvesAsset(input, expectedSource) {
 
 describe('resolveAssetSource', () => {
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
 
   it('returns same source for simple static and network images', () => {
