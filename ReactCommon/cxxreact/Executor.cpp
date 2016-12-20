@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include <folly/Memory.h>
+#include <folly/ScopeGuard.h>
 
 namespace facebook {
 namespace react {
@@ -51,7 +52,7 @@ std::unique_ptr<const JSBigOptimizedBundleString> JSBigOptimizedBundleString::fr
   uint8_t encoding;
   struct stat fileInfo;
   int fd = -1;
-  SCOPE_FAIL { CHECK(fd == -1 || ::close(fd) == 0); };
+  SCOPE_EXIT { CHECK(fd == -1 || ::close(fd) == 0); };
 
   {
     auto metaPath = bundlePath + UNPACKED_META_PATH_SUFFIX;

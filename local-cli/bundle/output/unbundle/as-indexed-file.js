@@ -71,7 +71,6 @@ function saveAsIndexedFile(
 
 const fileHeader = new Buffer(4);
 fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER, 0);
-//$FlowIssue #14640206
 const nullByteBuffer: Buffer = new Buffer(1).fill(0);
 
 function writeBuffers(stream, buffers: Array<Buffer>) {
@@ -113,7 +112,6 @@ function buildModuleTable(startupCode, buffers, moduleGroups) {
   const moduleIds = Array.from(moduleGroups.modulesById.keys());
   const maxId = moduleIds.reduce((max, id) => Math.max(max, id));
   const numEntries = maxId + 1;
-  //$FlowIssue #14640206
   const table: Buffer = new Buffer(entryOffset(numEntries)).fill(0);
 
   // num_entries

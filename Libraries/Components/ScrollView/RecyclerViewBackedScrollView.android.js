@@ -16,7 +16,13 @@ var requireNativeComponent = require('requireNativeComponent');
 var INNERVIEW = 'InnerView';
 
 /**
- * Wrapper around android native recycler view.
+ * RecyclerViewBackedScrollView is DEPRECATED and will be removed from
+ * React Native.
+ * Please use a `ListView` which has `removeClippedSubviews` enabled by
+ * default so that rows that are out of sight are automatically
+ * detached from the view hierarchy.
+ *
+ * Wrapper around Android native recycler view.
  *
  * It simply renders rows passed as children in a separate recycler view cells
  * similarly to how `ScrollView` is doing it. Thanks to the fact that it uses
@@ -57,6 +63,13 @@ var RecyclerViewBackedScrollView = React.createClass({
   },
 
   mixins: [ScrollResponder.Mixin],
+
+  componentWillMount: function() {
+    console.warn(
+      'RecyclerViewBackedScrollView is DEPRECATED and will be removed from React Native. ' +
+      'Please use a ListView which has removeClippedSubviews enabled by default so that ' +
+      'rows that are out of sight are automatically detached from the view hierarchy.')
+  },
 
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();

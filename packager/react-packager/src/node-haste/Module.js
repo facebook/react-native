@@ -14,7 +14,6 @@
 const GlobalTransformCache = require('../lib/GlobalTransformCache');
 const TransformCache = require('../lib/TransformCache');
 
-const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const fs = require('fs');
@@ -27,9 +26,16 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {SourceMap} from '../lib/SourceMap';
 import type {ReadTransformProps} from '../lib/TransformCache';
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
+
+/**
+ * If the global cache returns empty that many times, we give up using the
+ * global cache for that instance. This speeds up the build.
+ */
+const GLOBAL_CACHE_MAX_MISSES = 250;
 
 type ReadResult = {
   code: string,
@@ -58,6 +64,7 @@ export type ConstructorArgs = {
   transformCacheKey: ?string,
   depGraphHelpers: DependencyGraphHelpers,
   options: Options,
+  reporter: Reporter,
 };
 
 class Module {
@@ -71,12 +78,14 @@ class Module {
   _transformCacheKey: ?string;
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
+  _reporter: Reporter;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
   static _globalCacheRetries: number;
+  static _globalCacheMaxMisses: number;
 
   constructor({
     file,
@@ -85,6 +94,7 @@ class Module {
     transformCode,
     transformCacheKey,
     depGraphHelpers,
+    reporter,
     options,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
@@ -104,6 +114,7 @@ class Module {
     );
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
+    this._reporter = reporter;
 
     this._readPromises = new Map();
   }
@@ -260,27 +271,39 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (Module._globalCacheRetries <= 0 || globalCache == null) {
+    const noMoreRetries = Module._globalCacheRetries <= 0;
+    const tooManyMisses = Module._globalCacheMaxMisses <= 0;
+    if (globalCache == null || noMoreRetries || tooManyMisses) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
       if (globalCacheError != null && Module._globalCacheRetries > 0) {
-        console.log(chalk.red(
-          '\nWarning: the global cache failed with error:',
-        ));
-        console.log(chalk.red(globalCacheError.stack));
+        this._reporter.update({
+          type: 'global_cache_error',
+          error: globalCacheError,
+        });
         Module._globalCacheRetries--;
         if (Module._globalCacheRetries <= 0) {
-          console.log(chalk.red(
-            'No more retries, the global cache will be disabled for the ' +
-              'remainder of the transformation.',
-          ));
+          this._reporter.update({
+            type: 'global_cache_disabled',
+            reason: 'too_many_errors',
+          });
         }
       }
       if (globalCachedResult == null) {
+        --Module._globalCacheMaxMisses;
+        if (Module._globalCacheMaxMisses === 0) {
+          this._reporter.update({
+            type: 'global_cache_disabled',
+            reason: 'too_many_misses',
+          });
+        }
         this._transformAndStoreCodeGlobally(cacheProps, globalCache, callback);
         return;
+      }
+      if (Module._globalCacheMaxMisses < GLOBAL_CACHE_MAX_MISSES) {
+        ++Module._globalCacheMaxMisses;
       }
       callback(undefined, globalCachedResult);
     });
@@ -381,6 +404,7 @@ class Module {
 }
 
 Module._globalCacheRetries = 4;
+Module._globalCacheMaxMisses = GLOBAL_CACHE_MAX_MISSES;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();
