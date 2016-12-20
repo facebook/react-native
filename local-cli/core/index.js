@@ -14,8 +14,8 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
-import type {Command} from '../commands';
+import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler';
+import type {CommandT} from '../commands';
 
 /**
  * Configuration file of the CLI.
@@ -33,15 +33,13 @@ export type ConfigT = {
    * For example, if you want to add a "custom" platform, and use modules
    * ending in .custom.js, you would return ['custom'] here.
    */
-  getPlatforms() {
-    return [];
-  },
+  getPlatforms: () => Array<string>,
   /**
    * Returns the path to a custom transformer. This can also be overridden
    * with the --transformer commandline argument.
    */
   getTransformModulePath?: () => string,
-  getTransformOptions ?: GetTransformOptions<*>,
+  getTransformOptions?: GetTransformOptions<*>,
   transformVariants?: () => {[name: string]: Object},
   /**
    * Returns a regular expression for modules that should be ignored by the
@@ -53,7 +51,7 @@ export type ConfigT = {
   /**
    * Returns an array of project commands used by the CLI to load
    */
-  getProjectCommands(): Array<Command>,
+  getProjectCommands(): Array<CommandT>,
   /**
    * Returns project config from the current working directory
    */
@@ -64,9 +62,10 @@ export type ConfigT = {
   getDependencyConfig(pkgName: string): Object,
 };
 
+/**
+ * Loads the CLI configuration
+ */
 function getCliConfig(): ConfigT {
-  // Use a lightweight option parser to look up the CLI configuration file,
-  // which we need to set up the parser for the other args and options
   const cliArgs = minimist(process.argv.slice(2));
 
   let cwd;

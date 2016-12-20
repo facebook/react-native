@@ -25,6 +25,7 @@ const findPlugins = require('./findPlugins');
 import type {ConfigT} from './index';
 
 const getRNPMConfig = (folder) =>
+  // $FlowFixMe non-literal require
   require(path.join(folder, './package.json')).rnpm || {};
 
 const attachPackage = (command, pkg) => Array.isArray(command)
@@ -46,7 +47,9 @@ const config: ConfigT = {
         const name = pathToCommands.split(path.sep)[0];
 
         return attachPackage(
+          // $FlowFixMe non-literal require
           require(path.join(appRoot, 'node_modules', pathToCommands)),
+          // $FlowFixMe non-literal require
           require(path.join(appRoot, 'node_modules', name, 'package.json'))
         );
       });

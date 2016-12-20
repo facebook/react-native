@@ -52,6 +52,7 @@ const Config = {
         require(path.join(cwd, pathToConfig));
     }
 
+    // $FlowFixMe we return `at least` T + extras
     return {
       ...defaultConfig,
       ...baseConfig,

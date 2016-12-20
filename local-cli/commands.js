@@ -10,11 +10,11 @@
  */
 'use strict';
 
-import { getProjectCommands } from '../core';
+const { getProjectCommands } = require('./core');
 
-import type {ConfigT} from './util/Config';
+import type {ConfigT} from './core';
 
-export type Command = {
+export type CommandT = {
   name: string,
   description?: string,
   usage?: string,
@@ -66,7 +66,7 @@ const undocumentedCommands = [
   },
 ];
 
-const commands: Array<Command> = [
+const commands: Array<CommandT> = [
   ...documentedCommands,
   ...undocumentedCommands,
   ...getProjectCommands(),
