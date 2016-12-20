@@ -9,7 +9,6 @@
 'use strict';
 
 var immutable = require('immutable');
-var {Map} = immutable;
 
 const mockComponent = require.requireActual('./mockComponent');
 
@@ -55,7 +54,7 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            const isImmutableMap = Map.isMap(dataBlob[key]);
+            const isImmutableMap = immutable.Map.isMap(dataBlob[key]);
             this.items += isImmutableMap ?
               (dataBlob[key] && !dataBlob[key].isEmpty()) : (dataBlob[key] && dataBlob[key].length);
           });
