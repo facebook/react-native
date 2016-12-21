@@ -13,7 +13,6 @@
 
 const DependencyGraph = require('../node-haste');
 
-const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const pathJoin = require('path').join;
 
@@ -43,25 +42,6 @@ type Options = {
   transformCode: TransformCode,
   watch?: boolean,
 };
-
-const getDependenciesValidateOpts = declareOpts({
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
-  platform: {
-    type: 'string',
-    required: false,
-  },
-  unbundle: {
-    type: 'boolean',
-    default: false,
-  },
-  recursive: {
-    type: 'boolean',
-    default: true,
-  },
-});
 
 class Resolver {
 
@@ -116,12 +96,12 @@ class Resolver {
 
   getDependencies(
     entryPath: string,
-    options: {},
+    options: {platform: string, recursive?: boolean},
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
   ): Promise<ResolutionResponse> {
-    const {platform, recursive} = getDependenciesValidateOpts(options);
+    const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
       platform,
@@ -138,10 +118,9 @@ class Resolver {
     });
   }
 
-  getModuleSystemDependencies(options: {}): Array<Module> {
-    const opts = getDependenciesValidateOpts(options);
+  getModuleSystemDependencies({dev = true}: {dev?: boolean}): Array<Module> {
 
-    const prelude = opts.dev
+    const prelude = dev
         ? pathJoin(__dirname, 'polyfills/prelude_dev.js')
         : pathJoin(__dirname, 'polyfills/prelude.js');
 
