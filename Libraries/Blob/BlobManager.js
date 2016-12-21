@@ -18,11 +18,21 @@ const File = require('File');
 const { BlobModule } = require('NativeModules');
 
 import type { BlobData, BlobOptions } from './BlobTypes';
+import {map} from 'async';
 
-function countUTF8Bytes(s: string){
-    let b = 0;
-    for (let i = 0, c; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1) {}
-    return b;
+function countUTF8Bytes(text: string) {
+  let length = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    if (c < 128) {
+      length++;
+    } else if ((c > 127) && (c < 2048)) {
+      length += 2;
+    } else {
+      length += 3;
+    }
+  }
+  return length;
 }
 
 /**
@@ -34,28 +44,33 @@ class BlobManager {
    * Create blob from existing array of blobs.
    */
   static createFromParts(parts: Array<Blob | string>, options: BlobOptions): Blob {
-    let blobId = uuid.v4();
-    let size = 0;
-    parts.forEach((part) => {
-      if (typeof part === 'string') {
-        size += countUTF8Bytes(part);
-      } else if (part instanceof Blob) {
-        size += part.size;
+    const blobId = uuid.v4();
+    const items = parts.map(part => {
+      if (part instanceof ArrayBuffer || global.ArrayBufferView && part instanceof global.ArrayBufferView) {
+        throw new Error('Creating blobs from \'ArrayBuffer\' and \'ArrayBufferView\' are not supported');
+      }
+      if (part instanceof Blob) {
+        return {
+          data: part.data,
+          type: 'blob',
+        };
       } else {
-        throw new Error('Can currently only create a Blob from other Blobs or strings');
+        return {
+          data: String(part),
+          type: 'string',
+        };
       }
     });
-    BlobModule.createFromParts(parts.map(part => {
-      let type, data;
-      if (part instanceof Blob) {
-        type = 'blob';
-        data = part.data;
+    const size = items.reduce((acc, curr) => {
+      if (curr.type === 'string') {
+        return acc + countUTF8Bytes(curr.data);
       } else {
-        type = typeof part;
-        data = part;
+        return acc + curr.data.size;
       }
-      return { type, data };
-    }), blobId);
+    }, 0);
+
+    BlobModule.createFromParts(items, blobId);
+
     return BlobManager.createFromOptions({
       blobId,
       offset: 0,
@@ -77,9 +92,11 @@ class BlobManager {
    */
   static async createFromURI(uri: string, options?: { type: string }): Promise<File> {
     const blob = await BlobModule.createFromURI(uri);
+
     if (options && typeof options.type === 'string') {
       blob.type = options.type;
     }
+
     return Object.assign(Object.create(File.prototype), { data: blob });
   }
 
