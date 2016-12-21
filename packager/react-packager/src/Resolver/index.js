@@ -22,60 +22,27 @@ import type Module from '../node-haste/Module';
 import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
+import type {TransformCode} from '../node-haste/Module';
+import type Cache from '../node-haste/Cache';
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  watch: {
-    type: 'boolean',
-    default: false,
-  },
-  assetExts: {
-    type: 'array',
-    required: true,
-  },
-  platforms: {
-    type: 'array',
-    required: true,
-  },
-  cache: {
-    type: 'object',
-    required: true,
-  },
-  transformCode: {
-    type: 'function',
-  },
-  transformCacheKey: {
-    type: 'string',
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  minifyCode: {
-    type: 'function',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  reporter: {
-    type: 'object',
-  },
-});
+type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
+  Promise<{code: string, map: SourceMap}>;
+
+type Options = {
+  assetExts: Array<string>,
+  blacklistRE?: RegExp,
+  cache: Cache,
+  extraNodeModules?: {},
+  minifyCode: MinifyCode,
+  platforms: Array<string>,
+  polyfillModuleNames?: Array<string>,
+  projectRoots: Array<string>,
+  reporter: Reporter,
+  resetCache: boolean,
+  transformCacheKey: string,
+  transformCode: TransformCode,
+  watch?: boolean,
+};
 
 const getDependenciesValidateOpts = declareOpts({
   dev: {
@@ -99,16 +66,10 @@ const getDependenciesValidateOpts = declareOpts({
 class Resolver {
 
   _depGraph: DependencyGraph;
-  _minifyCode: (filePath: string, code: string, map: SourceMap) =>
-    Promise<{code: string, map: SourceMap}>;
+  _minifyCode: MinifyCode;
   _polyfillModuleNames: Array<string>;
 
-  constructor(options: {
-    reporter: Reporter,
-    resetCache: boolean,
-  }) {
-    const opts = validateOpts(options);
-
+  constructor(opts: Options) {
     this._depGraph = new DependencyGraph({
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       assetExts: opts.assetExts,
@@ -116,21 +77,21 @@ class Resolver {
       extraNodeModules: opts.extraNodeModules,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
-          (opts.blacklistRE && opts.blacklistRE.test(filepath));
+          (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
       moduleOptions: {
         cacheTransformResults: true,
-        resetCache: options.resetCache,
+        resetCache: opts.resetCache,
       },
       platforms: opts.platforms,
       preferNativePlatform: true,
       providesModuleNodeModules: defaults.providesModuleNodeModules,
-      reporter: options.reporter,
-      resetCache: options.resetCache,
+      reporter: opts.reporter,
+      resetCache: opts.resetCache,
       roots: opts.projectRoots,
       transformCacheKey: opts.transformCacheKey,
       transformCode: opts.transformCode,
-      watch: opts.watch,
+      watch: opts.watch || false,
     });
 
     this._minifyCode = opts.minifyCode;

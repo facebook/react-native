@@ -51,7 +51,7 @@ class DependencyGraph {
   _opts: {|
     assetExts: Array<string>,
     extensions: Array<string>,
-    extraNodeModules: Object,
+    extraNodeModules: ?Object,
     forceNodeFilesystemAPI: boolean,
     ignoreFilePath: (filePath: string) => boolean,
     maxWorkers: ?number,
@@ -107,7 +107,7 @@ class DependencyGraph {
     assetExts: Array<string>,
     cache: Cache,
     extensions?: ?Array<string>,
-    extraNodeModules: Object,
+    extraNodeModules: ?Object,
     forceNodeFilesystemAPI?: boolean,
     ignoreFilePath: (filePath: string) => boolean,
     maxWorkers?: ?number,
