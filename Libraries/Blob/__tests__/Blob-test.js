@@ -27,13 +27,22 @@ describe('Blob', function() {
   it('should create blob from other blobs and strings', () => {
     const blobA = new Blob();
     const blobB = new Blob();
+    const textA = 'i ♥ dogs';
+    const textB = '𐀀';
+    const textC = 'Z͑ͫ̓ͪ̂ͫ̽͏̴̙̤̞͉͚̯̞̠͍A̴̵̜̰͔ͫ͗͢L̠ͨͧͩ͘G̴̻͈͍͔̹̑͗̎̅͛́Ǫ̵̹̻̝̳͂̌̌͘!͖̬̰̙̗̿̋ͥͥ̂ͣ̐́́͜͞';
 
     blobA.data.size = 34540;
     blobB.data.size = 65452;
 
-    const blob = new Blob([ blobA, blobB, 'i ♥ u' ]);
+    const blob = new Blob([ blobA, blobB, textA, textB, textC ]);
 
-    expect(blob.size).toBe(99999);
+    expect(blob.size).toBe(
+      blobA.size +
+      blobB.size +
+      global.Buffer.byteLength(textA, 'UTF-8') +
+      global.Buffer.byteLength(textB, 'UTF-8') +
+      global.Buffer.byteLength(textC, 'UTF-8')
+    );
     expect(blob.type).toBe('');
   });
 

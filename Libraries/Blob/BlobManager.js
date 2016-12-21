@@ -20,21 +20,6 @@ const { BlobModule } = require('NativeModules');
 import type { BlobData, BlobOptions } from './BlobTypes';
 import {map} from 'async';
 
-function countUTF8Bytes(text: string) {
-  let length = 0;
-  for (let i = 0; i < text.length; i++) {
-    const c = text.charCodeAt(i);
-    if (c < 128) {
-      length++;
-    } else if ((c > 127) && (c < 2048)) {
-      length += 2;
-    } else {
-      length += 3;
-    }
-  }
-  return length;
-}
-
 /**
  * Module to manage blobs
  */
@@ -63,7 +48,7 @@ class BlobManager {
     });
     const size = items.reduce((acc, curr) => {
       if (curr.type === 'string') {
-        return acc + countUTF8Bytes(curr.data);
+        return acc + global.unescape(encodeURI(curr.data)).length;
       } else {
         return acc + curr.data.size;
       }
