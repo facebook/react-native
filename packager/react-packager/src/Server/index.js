@@ -577,6 +577,11 @@ class Server {
               action_name: 'Updating existing bundle',
               outdated_modules: outdated.size,
             }));
+          this._reporter.update({
+            type: 'bundle_update_existing',
+            entryFilePath: options.entryFile,
+            outdatedModuleCount: outdated.size,
+          });
 
           debug('Attempt to update existing bundle');
 

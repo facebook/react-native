@@ -27,6 +27,7 @@ type BundleProgress = {
   transformedFileCount: number,
   totalFileCount: number,
   ratio: number,
+  outdatedModuleCount: number,
 };
 
 const DARK_BLOCK_CHAR = '\u2593';
@@ -82,14 +83,22 @@ class TerminalReporter {
    *
    */
   _getFileTransformMessage(
-    {totalFileCount, transformedFileCount, ratio}: BundleProgress,
+    {totalFileCount, transformedFileCount, ratio, outdatedModuleCount}: BundleProgress,
     build: 'in_progress' | 'done',
   ): string {
-    if (build === 'done' && totalFileCount === 0) {
-      return 'All files are already up-to-date.';
+    if (outdatedModuleCount > 0) {
+      const plural = outdatedModuleCount > 1;
+      return `Updating ${outdatedModuleCount} ` +
+        `module${plural ? 's' : ''} in place` +
+        (build === 'done' ? ', done' : '...');
+    }
+    if (totalFileCount === 0) {
+      return build === 'done'
+        ? 'No module changed.'
+        : 'Analysing...';
     }
     return util.format(
-      'Transforming files  %s%s% (%s/%s)%s',
+      'Transforming modules  %s%s% (%s/%s)%s',
       build === 'done' ? '' : getProgressBar(ratio, 30) + '  ',
       (100 * ratio).toFixed(1),
       transformedFileCount,
@@ -174,7 +183,21 @@ class TerminalReporter {
       ratio,
       transformedFileCount,
       totalFileCount,
+      outdatedModuleCount: 0,
     });
+  }
+
+  _updateBundleOutdatedModuleCount(
+    {entryFilePath, outdatedModuleCount}: {
+      entryFilePath: string,
+      outdatedModuleCount: number,
+    },
+  ) {
+    const currentProgress = this._activeBundles.get(entryFilePath);
+    if (currentProgress == null) {
+      return;
+    }
+    currentProgress.outdatedModuleCount = outdatedModuleCount;
   }
 
   /**
@@ -188,13 +211,22 @@ class TerminalReporter {
           transformedFileCount: 0,
           totalFileCount: 0,
           ratio: 0,
+          outdatedModuleCount: 0,
         });
         break;
       case 'bundle_transform_progressed':
-        this._scheduleUpdateBundleProgress(event);
+        if (event.totalFileCount === event.transformedFileCount) {
+          this._scheduleUpdateBundleProgress.cancel();
+          this._updateBundleProgress(event);
+        } else {
+          this._scheduleUpdateBundleProgress(event);
+        }
         break;
       case 'bundle_transform_progressed_throttled':
         this._updateBundleProgress(event);
+        break;
+      case 'bundle_update_existing':
+        this._updateBundleOutdatedModuleCount(event);
         break;
       case 'bundle_built':
         this._activeBundles.delete(event.entryFilePath);
