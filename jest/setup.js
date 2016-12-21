@@ -48,7 +48,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items += dataBlob[key] && dataBlob[key].length;
+            this.items += dataBlob[key] && (
+              dataBlob[key].length || dataBlob[key].size || 0
+            )
           });
         } catch (e) {
           this.items = 'unknown';
