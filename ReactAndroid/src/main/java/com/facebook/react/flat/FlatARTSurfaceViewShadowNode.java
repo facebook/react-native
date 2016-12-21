@@ -48,6 +48,7 @@ import com.facebook.react.views.art.ARTVirtualNode;
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiUpdater) {
     super.onCollectExtraUpdates(uiUpdater);
+    drawOutput();
     uiUpdater.enqueueUpdateExtraData(getReactTag(), this);
   }
 

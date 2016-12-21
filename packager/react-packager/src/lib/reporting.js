@@ -35,6 +35,10 @@ export type ReportableEvent = {
   transformedFileCount: number,
   totalFileCount: number,
 } | {
+  entryFilePath: string,
+  outdatedModuleCount: number,
+  type: 'bundle_update_existing',
+} | {
   type: 'bundle_built',
   entryFilePath: string,
 } | {
