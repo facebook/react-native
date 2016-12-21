@@ -12,21 +12,15 @@ package com.facebook.react.modules.blob;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
+import android.webkit.MimeTypeMap;
+import com.facebook.react.bridge.*;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 
+import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.charset.Charset;
+import java.util.*;
 
 @ReactModule(name = "BlobModule")
 public class BlobModule extends ReactContextBaseJavaModule {
@@ -59,14 +53,14 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   private static Map<String, byte[]> sBlobs = new HashMap<>();
 
+  private static void store(byte[] data, String blobId) {
+    sBlobs.put(blobId, data);
+  }
+
   public static String store(byte[] data) {
     String blobId = UUID.randomUUID().toString();
     store(data, blobId);
     return blobId;
-  }
-
-  public static void store(byte[] data, String blobId) {
-    sBlobs.put(blobId, data);
   }
 
   public static void remove(String blobId) {
@@ -109,12 +103,19 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
-  private static byte[] getBytes(InputStream inputStream) throws IOException {
+  private byte[] getBytesFromUri(Uri contentUri) throws IOException {
+    ContentResolver resolver = getReactApplicationContext().getContentResolver();
+    InputStream is = resolver.openInputStream(contentUri);
+
+    if (is == null) {
+      throw new FileNotFoundException("File not found for " + contentUri);
+    }
+
     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
     int bufferSize = 1024;
     byte[] buffer = new byte[bufferSize];
-    int len = 0;
-    while ((len = inputStream.read(buffer)) != -1) {
+    int len;
+    while ((len = is.read(buffer)) != -1) {
       byteBuffer.write(buffer, 0, len);
     }
     return byteBuffer.toByteArray();
@@ -145,18 +146,48 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return 0;
   }
 
+  private String getMimeTypeFromUri(Uri contentUri) {
+    ContentResolver resolver = getReactApplicationContext().getContentResolver();
+    String type = resolver.getType(contentUri);
+
+    if (type == null) {
+      String ext = MimeTypeMap.getFileExtensionFromUrl(contentUri.getPath());
+      if (ext != null) {
+        type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+      }
+    }
+
+    if (type == null) {
+      type = "";
+    }
+
+    return type;
+  }
+
   @ReactMethod
   public void createFromParts(ReadableArray parts, String blobId) {
     int totalBlobSize = 0;
-    ArrayList<ReadableMap> partList = new ArrayList<>(parts.size());
+    ArrayList<byte[]> partList = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); i++) {
       ReadableMap part = parts.getMap(i);
-      totalBlobSize += part.getInt("size");
-      partList.add(i, part);
+      switch (part.getString("type")) {
+        case "blob":
+          ReadableMap blob = part.getMap("data");
+          totalBlobSize += blob.getInt("size");
+          partList.add(i, resolve(blob));
+          break;
+        case "string":
+          byte[] bytes = part.getString("data").getBytes(Charset.forName("UTF-8"));
+          totalBlobSize += bytes.length;
+          partList.add(i, bytes);
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid type for blob: " + part.getString("type"));
+      }
     }
     ByteBuffer buffer = ByteBuffer.allocate(totalBlobSize);
-    for (ReadableMap part : partList) {
-      buffer.put(resolve(part));
+    for (byte[] bytes : partList) {
+      buffer.put(bytes);
     }
     store(buffer.array(), blobId);
   }
@@ -165,28 +196,13 @@ public class BlobModule extends ReactContextBaseJavaModule {
   public void createFromURI(String path, Promise promise) {
     try {
       Uri uri = Uri.parse(path);
-      ContentResolver resolver = getReactApplicationContext().getContentResolver();
-      String type = resolver.getType(uri);
-
-      if (type == null) {
-        String ext = MimeTypeMap.getFileExtensionFromUrl(path);
-        if (ext != null) {
-          type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-        }
-      }
-
-      if (type == null) {
-        type = "";
-      }
-
-      InputStream is = resolver.openInputStream(uri);
-      byte[] data = getBytes(is);
+      byte[] data = getBytesFromUri(uri);
 
       WritableMap blob = Arguments.createMap();
       blob.putString("blobId", store(data));
       blob.putInt("offset", 0);
       blob.putInt("size", data.length);
-      blob.putString("type", type);
+      blob.putString("type", getMimeTypeFromUri(uri));
 
       // Needed for files
       blob.putString("name", getNameFromUri(uri));

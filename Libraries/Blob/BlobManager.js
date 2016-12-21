@@ -13,12 +13,17 @@
 'use strict';
 
 const uuid = require('uuid');
-const invariant = require('fbjs/lib/invariant');
 const Blob = require('Blob');
 const File = require('File');
 const { BlobModule } = require('NativeModules');
 
 import type { BlobData, BlobOptions } from './BlobTypes';
+
+function countUTF8Bytes(s: string){
+    let b = 0;
+    for (let i = 0, c; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1) {}
+    return b;
+}
 
 /**
  * Module to manage blobs
@@ -28,14 +33,29 @@ class BlobManager {
   /**
    * Create blob from existing array of blobs.
    */
-  static createFromParts(parts: Array<Blob>, options: BlobOptions): Blob {
+  static createFromParts(parts: Array<Blob | string>, options: BlobOptions): Blob {
     let blobId = uuid.v4();
     let size = 0;
     parts.forEach((part) => {
-      invariant(part instanceof Blob, 'Can currently only create a Blob from other Blobs');
-      size += part.size;
+      if (typeof part === 'string') {
+        size += countUTF8Bytes(part);
+      } else if (part instanceof Blob) {
+        size += part.size;
+      } else {
+        throw new Error('Can currently only create a Blob from other Blobs or strings');
+      }
     });
-    BlobModule.createFromParts(parts, blobId);
+    BlobModule.createFromParts(parts.map(part => {
+      let type, data;
+      if (part instanceof Blob) {
+        type = 'blob';
+        data = part.data;
+      } else {
+        type = typeof part;
+        data = part;
+      }
+      return { type, data };
+    }), blobId);
     return BlobManager.createFromOptions({
       blobId,
       offset: 0,

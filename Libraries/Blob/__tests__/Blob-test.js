@@ -24,14 +24,14 @@ describe('Blob', function() {
     expect(blob.type).toBe('');
   });
 
-  it('should create blob from other blobs', () => {
+  it('should create blob from other blobs and strings', () => {
     const blobA = new Blob();
     const blobB = new Blob();
 
-    blobA.data.size = 34546;
-    blobB.data.size = 65453;
+    blobA.data.size = 34540;
+    blobB.data.size = 65452;
 
-    const blob = new Blob([ blobA, blobB ]);
+    const blob = new Blob([ blobA, blobB, 'i ♥ u' ]);
 
     expect(blob.size).toBe(99999);
     expect(blob.type).toBe('');
