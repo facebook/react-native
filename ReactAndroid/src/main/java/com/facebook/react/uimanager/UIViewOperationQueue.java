@@ -589,7 +589,9 @@ public class UIViewOperationQueue {
    * subclass to support UIOperations not provided by UIViewOperationQueue.
    */
   protected void enqueueUIOperation(UIOperation operation) {
-    mOperations.add(operation);
+    if (operation != null) {
+      mOperations.add(operation);
+    }
   }
 
   public void enqueueRemoveRootView(int rootViewTag) {
@@ -773,17 +775,13 @@ public class UIViewOperationQueue {
                  // regular operations may depend on them
                  if (nonBatchedOperations != null) {
                    for (UIOperation op : nonBatchedOperations) {
-                     if (op != null) {
-                       op.execute();
-                     }
+                     op.execute();
                    }
                  }
 
                  if (operations != null) {
                    for (UIOperation op : operations) {
-                     if (op != null) {
-                       op.execute();
-                     } 
+                     op.execute();
                    }
                  }
 
@@ -891,9 +889,7 @@ public class UIViewOperationQueue {
           nextOperation = mNonBatchedOperations.pollFirst();
         }
 
-        if (nextOperation != null) {
-          nextOperation.execute();
-        }
+        nextOperation.execute();
       }
     }
   }
