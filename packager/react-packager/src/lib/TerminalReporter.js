@@ -11,7 +11,6 @@
 
 'use strict';
 
-const chalk = require('chalk');
 const path = require('path');
 const reporting = require('./reporting');
 const terminal = require('./terminal');
@@ -32,7 +31,6 @@ type BundleProgress = {
 
 const DARK_BLOCK_CHAR = '\u2593';
 const LIGHT_BLOCK_CHAR = '\u2591';
-const PACKAGE_EMOJI = '\uD83D\uDCE6';
 
 function getProgressBar(ratio: number, length: number) {
   const blockCount = Math.floor(ratio * length);
@@ -110,8 +108,8 @@ class TerminalReporter {
   ): string {
     const localPath = path.relative('.', entryFilePath);
     return [
-      chalk.underline(`Bundling ${PACKAGE_EMOJI}  \`${localPath}\``),
-      this._getFileTransformMessage(progress, build),
+      `Bundling \`${localPath}\``,
+      '  ' + this._getFileTransformMessage(progress, build),
     ].join('\n');
   }
 
