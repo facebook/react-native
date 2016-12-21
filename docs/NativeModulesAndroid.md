@@ -213,6 +213,8 @@ Native modules can also fulfill a promise, which can simplify your code, especia
 Refactoring the above code to use a promise instead of callbacks looks like this:
 
 ```java
+import com.facebook.react.bridge.Promise;
+
 public class UIManagerModule extends ReactContextBaseJavaModule {
 
 ...
