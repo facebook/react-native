@@ -151,6 +151,9 @@ YG_NODE_STYLE_PROPERTY(float, MaxHeight, maxHeight);
 
 // Yoga specific properties, not compatible with flexbox specification
 // Aspect ratio control the size of the undefined dimension of a node.
+// Aspect ratio is encoded as a floating point value width/height. e.g. A value of 2 leads to a node
+// with a width twice the size of its height while a value of 0.5 gives the opposite effect.
+//
 // - On a node with a set width/height aspect ratio control the size of the unset dimension
 // - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis if
 // unset

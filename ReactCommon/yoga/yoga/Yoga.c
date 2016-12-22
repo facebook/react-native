@@ -1062,7 +1062,7 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
     if (!YGValueIsUndefined(child->style.aspectRatio)) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
         child->layout.computedFlexBasis =
-            fmaxf(childWidth * child->style.aspectRatio,
+            fmaxf(childWidth / child->style.aspectRatio,
                   YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn));
         return;
       } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
@@ -1157,7 +1157,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
         childWidth = fmaxf(childHeight * child->style.aspectRatio,
                            YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn));
       } else if (YGValueIsUndefined(childHeight)) {
-        childHeight = fmaxf(childWidth * child->style.aspectRatio,
+        childHeight = fmaxf(childWidth / child->style.aspectRatio,
                             YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow));
       }
     }
@@ -1880,7 +1880,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         if (!YGValueIsUndefined(currentRelativeChild->style.aspectRatio)) {
           if (isMainAxisRow && childHeightMeasureMode != YGMeasureModeExactly) {
             childHeight =
-                fmaxf(childWidth * currentRelativeChild->style.aspectRatio,
+                fmaxf(childWidth / currentRelativeChild->style.aspectRatio,
                       YGNodePaddingAndBorderForAxis(currentRelativeChild, YGFlexDirectionColumn));
             childHeightMeasureMode = YGMeasureModeExactly;
           } else if (!isMainAxisRow && childWidthMeasureMode != YGMeasureModeExactly) {
