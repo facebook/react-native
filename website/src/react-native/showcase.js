@@ -26,7 +26,13 @@ For each app in the showcase, use infoLink and infoTitle to reference this
 content.
 */
 var featured = [
-  {
+   {
+    name: 'GitHub Popular',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_42366883_1476671101/96',
+    linkPlayStore: 'http://shouji.baidu.com/software/10123273.html',
+    infoLink: 'http://www.devio.org/2016/10/20/GitHub-most-popular-repositories-viewer-with-React-Native',
+    infoTitle: 'This is a GitHub most popular repositories viewer with React Native.',
+   },{
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
