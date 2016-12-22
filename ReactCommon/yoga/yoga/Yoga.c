@@ -825,7 +825,7 @@ static YGFlexDirection YGFlexDirectionCross(const YGFlexDirection flexDirection,
 
 static inline bool YGNodeIsFlex(const YGNodeRef node) {
   return (node->style.positionType == YGPositionTypeRelative &&
-          (node->style.flexGrow != 0 || node->style.flexShrink != 0 || node->style.flex != 0));
+          (YGNodeStyleGetFlexGrow(node) != 0 || YGNodeStyleGetFlexShrink(node) != 0));
 }
 
 static inline float YGNodeDimWithMargin(const YGNodeRef node, const YGFlexDirection axis) {
