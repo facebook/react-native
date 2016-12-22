@@ -37,6 +37,9 @@ const ErrorUtils = {
   getGlobalHandler: function() {
     return _globalHandler;
   },
+  getGlobalHandler: function() {
+    return ErrorUtils._globalHandler;
+  },
   reportError: function(error) {
     _globalHandler && _globalHandler(error);
   },
