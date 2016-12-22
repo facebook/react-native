@@ -42,7 +42,7 @@ typedef struct YGCachedMeasurement {
 
 // This value was chosen based on empiracle data. Even the most complicated
 // layouts should not require more than 16 entries to fit within the cache.
-enum { YG_MAX_CACHED_RESULT_COUNT = 16 };
+#define YG_MAX_CACHED_RESULT_COUNT 16
 
 typedef struct YGLayout {
   float position[4];
