@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.dependency      'React/CSSLayout'
     ss.source_files  = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/CSSLayout/*"
+    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/CSSLayout/*", "React/CSSLayout/*"
     ss.frameworks    = "JavaScriptCore"
     ss.libraries     = "stdc++"
   end
