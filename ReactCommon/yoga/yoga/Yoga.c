@@ -1878,16 +1878,22 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         }
 
         if (!YGValueIsUndefined(currentRelativeChild->style.aspectRatio)) {
-          if (isMainAxisRow && childHeightMeasureMode != YGMeasureModeExactly) {
+          if (isMainAxisRow) {
             childHeight =
                 fmaxf(childWidth / currentRelativeChild->style.aspectRatio,
                       YGNodePaddingAndBorderForAxis(currentRelativeChild, YGFlexDirectionColumn));
             childHeightMeasureMode = YGMeasureModeExactly;
-          } else if (!isMainAxisRow && childWidthMeasureMode != YGMeasureModeExactly) {
+
+            childHeight = fminf(childHeight, availableInnerHeight);
+            childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+          } else {
             childWidth =
                 fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
                       YGNodePaddingAndBorderForAxis(currentRelativeChild, YGFlexDirectionRow));
             childWidthMeasureMode = YGMeasureModeExactly;
+
+            childWidth = fminf(childWidth, availableInnerWidth);
+            childHeight = childWidth / currentRelativeChild->style.aspectRatio;
           }
         }
 
@@ -2080,13 +2086,23 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             YGMeasureMode childHeightMeasureMode = YGMeasureModeExactly;
 
             if (isMainAxisRow) {
-              childHeight = crossDim;
               childWidth = child->layout.measuredDimensions[YGDimensionWidth] +
                            YGNodeMarginForAxis(child, YGFlexDirectionRow);
+
+              if (!YGValueIsUndefined(child->style.aspectRatio)) {
+                childHeight = childWidth / child->style.aspectRatio;
+              } else {
+                childHeight = crossDim;
+              }
             } else {
-              childWidth = crossDim;
               childHeight = child->layout.measuredDimensions[YGDimensionHeight] +
                             YGNodeMarginForAxis(child, YGFlexDirectionColumn);
+
+              if (!YGValueIsUndefined(child->style.aspectRatio)) {
+                childWidth = childHeight * child->style.aspectRatio;
+              } else {
+                childWidth = crossDim;
+              }
             }
 
             YGConstrainMaxSizeForMode(child->style.maxDimensions[YGDimensionWidth],
