@@ -10,10 +10,7 @@
 package com.facebook.react.modules.blob;
 
 import android.net.Uri;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +27,10 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -113,12 +113,42 @@ public class BlobModuleTest {
 
   @Test
   public void testCreateFromParts() {
+    String id = UUID.randomUUID().toString();
+
+    JavaOnlyMap blobData = new JavaOnlyMap();
+    blobData.putString("blobId", blobId);
+    blobData.putInt("offset", 0);
+    blobData.putInt("size", bytes.length);
     JavaOnlyMap blob = new JavaOnlyMap();
-    blob.putString("blobId", blobId);
+    blob.putMap("data", blobData);
+    blob.putString("type", "blob");
+
+    String stringData = "i ♥ dogs";
+    byte[] stringBytes = stringData.getBytes(Charset.forName("UTF-8"));
+    JavaOnlyMap string = new JavaOnlyMap();
+    string.putString("data", stringData);
+    string.putString("type", "blob");
+
+    JavaOnlyArray parts = new JavaOnlyArray();
+    parts.pushMap(blob);
+    parts.pushMap(string);
+
+    blobModule.createFromParts(parts, id);
+
+    JavaOnlyMap resultBlob = new JavaOnlyMap();
+    resultBlob.putString("blobId", id);
     blob.putInt("offset", 0);
     blob.putInt("size", bytes.length);
 
-    assertArrayEquals(bytes, BlobModule.resolve(blob));
+    int resultSize = bytes.length + stringBytes.length;
+
+    byte[] result = BlobModule.resolve(id, 0, resultSize);
+
+    ByteBuffer buffer = ByteBuffer.allocate(resultSize);
+    buffer.put(bytes);
+    buffer.put(stringBytes);
+
+    assertArrayEquals(result, buffer.array());
   }
 
   @Test
