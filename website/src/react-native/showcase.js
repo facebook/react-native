@@ -27,6 +27,13 @@ content.
 */
 var featured = [
   {
+    name: '爱米粒',
+    icon: 'http://www.haokan.com/img/icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/ai-mi-li/id1178550356?ls=1&mt=8',
+    infoLink: 'http://www.haokan.com',
+    infoTitle: 'Amili is a Plastic Beauty community + Live app',
+  },
+  {
     name: 'QQ空间',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
