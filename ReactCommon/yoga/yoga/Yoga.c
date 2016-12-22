@@ -106,6 +106,66 @@ typedef struct YGNode {
   void *context;
 } YGNode;
 
+#define YG_DEFAULT_EDGE_VALUES {    \
+  [YGEdgeLeft] = YGUndefined,       \
+  [YGEdgeTop] = YGUndefined,        \
+  [YGEdgeRight] = YGUndefined,      \
+  [YGEdgeBottom] = YGUndefined,     \
+  [YGEdgeStart] = YGUndefined,      \
+  [YGEdgeEnd] = YGUndefined,        \
+  [YGEdgeHorizontal] = YGUndefined, \
+  [YGEdgeVertical] = YGUndefined,   \
+  [YGEdgeAll] = YGUndefined,        \
+}
+
+#define YG_DEFAULT_DIMENSION_VALUES { \
+  [YGDimensionWidth] = YGUndefined,   \
+  [YGDimensionHeight] = YGUndefined,  \
+}
+
+YGNode gYGNodeDefaults = {
+  .parent = NULL,
+  .children = NULL,
+  .hasNewLayout = true,
+  .isDirty = false,
+
+  .style = {
+    .flex = YGUndefined,
+    .flexGrow = YGUndefined,
+    .flexShrink = YGUndefined,
+    .flexBasis = YGUndefined,
+    .justifyContent = YGJustifyFlexStart,
+    .alignItems = YGAlignStretch,
+    .alignContent = YGAlignFlexStart,
+    .direction = YGDirectionInherit,
+    .flexDirection = YGFlexDirectionColumn,
+    .overflow = YGOverflowVisible,
+    .dimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .minDimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .maxDimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .position = YG_DEFAULT_EDGE_VALUES,
+    .margin = YG_DEFAULT_EDGE_VALUES,
+    .padding = YG_DEFAULT_EDGE_VALUES,
+    .border = YG_DEFAULT_EDGE_VALUES,
+    .aspectRatio = YGUndefined,
+  },
+
+  .layout = {
+    .dimensions = YG_DEFAULT_DIMENSION_VALUES,
+    .lastParentDirection = (YGDirection) -1,
+    .nextCachedMeasurementsIndex = 0,
+    .computedFlexBasis = YGUndefined,
+    .measuredDimensions = YG_DEFAULT_DIMENSION_VALUES,
+
+    .cachedLayout = {
+      .widthMeasureMode = (YGMeasureMode) -1,
+      .heightMeasureMode = (YGMeasureMode) -1,
+      .computedWidth = -1,
+      .computedHeight = -1,
+    },
+  },
+};
+
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
 
 YGMalloc gYGMalloc = &malloc;
@@ -183,69 +243,14 @@ static inline float YGComputedEdgeValue(const float edges[YGEdgeCount],
   return defaultValue;
 }
 
-static void YGNodeInit(const YGNodeRef node) {
-  node->parent = NULL;
-  node->children = NULL;
-  node->hasNewLayout = true;
-  node->isDirty = false;
-
-  node->style.flex = YGUndefined;
-  node->style.flexGrow = YGUndefined;
-  node->style.flexShrink = YGUndefined;
-  node->style.flexBasis = YGUndefined;
-
-  node->style.alignItems = YGAlignStretch;
-  node->style.justifyContent = YGJustifyFlexStart;
-  node->style.alignContent = YGAlignFlexStart;
-
-  node->style.direction = YGDirectionInherit;
-  node->style.flexDirection = YGFlexDirectionColumn;
-
-  node->style.overflow = YGOverflowVisible;
-
-  // Some of the fields default to undefined and not 0
-  node->style.dimensions[YGDimensionWidth] = YGUndefined;
-  node->style.dimensions[YGDimensionHeight] = YGUndefined;
-
-  node->style.minDimensions[YGDimensionWidth] = YGUndefined;
-  node->style.minDimensions[YGDimensionHeight] = YGUndefined;
-
-  node->style.maxDimensions[YGDimensionWidth] = YGUndefined;
-  node->style.maxDimensions[YGDimensionHeight] = YGUndefined;
-
-  for (YGEdge edge = YGEdgeLeft; edge < YGEdgeCount; edge++) {
-    node->style.position[edge] = YGUndefined;
-    node->style.margin[edge] = YGUndefined;
-    node->style.padding[edge] = YGUndefined;
-    node->style.border[edge] = YGUndefined;
-  }
-
-  node->style.aspectRatio = YGUndefined;
-
-  node->layout.dimensions[YGDimensionWidth] = YGUndefined;
-  node->layout.dimensions[YGDimensionHeight] = YGUndefined;
-
-  // Such that the comparison is always going to be false
-  node->layout.lastParentDirection = (YGDirection) -1;
-  node->layout.nextCachedMeasurementsIndex = 0;
-  node->layout.computedFlexBasis = YGUndefined;
-
-  node->layout.measuredDimensions[YGDimensionWidth] = YGUndefined;
-  node->layout.measuredDimensions[YGDimensionHeight] = YGUndefined;
-  node->layout.cachedLayout.widthMeasureMode = (YGMeasureMode) -1;
-  node->layout.cachedLayout.heightMeasureMode = (YGMeasureMode) -1;
-  node->layout.cachedLayout.computedWidth = -1;
-  node->layout.cachedLayout.computedHeight = -1;
-}
-
 int32_t gNodeInstanceCount = 0;
 
 YGNodeRef YGNodeNew(void) {
-  const YGNodeRef node = gYGCalloc(1, sizeof(YGNode));
+  const YGNodeRef node = gYGMalloc(sizeof(YGNode));
   YG_ASSERT(node, "Could not allocate memory for node");
   gNodeInstanceCount++;
 
-  YGNodeInit(node);
+  memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
   return node;
 }
 
@@ -280,8 +285,7 @@ void YGNodeReset(const YGNodeRef node) {
   YG_ASSERT(node->parent == NULL, "Cannot reset a node still attached to a parent");
 
   YGNodeListFree(node->children);
-  memset(node, 0, sizeof(YGNode));
-  YGNodeInit(node);
+  memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
 }
 
 int32_t YGNodeGetInstanceCount(void) {
