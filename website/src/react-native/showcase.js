@@ -325,7 +325,14 @@ var featured = [
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
 		infoTitle: 'What we learned after using React Native for a year',
-	}
+	},
+  {
+    name: 'ULYSS - A.I. Travel Expert',
+    icon: 'http://is5.mzstatic.com/image/thumb/Purple62/v4/7c/5f/bd/7c5fbd2b-f719-66ba-02a4-74ef7476354c/source/175x175bb.jpg',
+		infoTitle: 'The smarter way to find travel inspiration.',
+    linkAppStore: 'https://itunes.apple.com/us/app/ulyss-a.i.-travel-expert/id1179290714',
+    infoLink: 'https://medium.com/@Ulyss/todays-travel-world-has-infinite-possibilities-b48c962213c2'
+  }
 ];
 
 /*
