@@ -133,8 +133,6 @@ static int YGAndroidLog(YGLogLevel level, const char *format, va_list args) {
     case YGLogLevelVerbose:
       androidLevel = ANDROID_LOG_VERBOSE;
       break;
-    case YGLogLevelCount:
-      break;
   }
   const int result = __android_log_vprint(androidLevel, "YG-layout", format, args);
   return result;
@@ -950,8 +948,6 @@ static void YGConstrainMaxSizeForMode(const float maxSize, YGMeasureMode *mode, 
         *mode = YGMeasureModeAtMost;
         *size = maxSize;
       }
-      break;
-    case YGMeasureModeCount:
       break;
   }
 }
@@ -1968,7 +1964,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         leadingMainDim = betweenMainDim / 2;
         break;
       case YGJustifyFlexStart:
-      case YGJustifyCount:
         break;
     }
 
@@ -2171,7 +2166,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         break;
       case YGAlignAuto:
       case YGAlignFlexStart:
-      case YGAlignCount:
         break;
     }
 
@@ -2231,7 +2225,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 break;
               }
               case YGAlignAuto:
-              case YGAlignCount:
                 break;
             }
           }
