@@ -64,6 +64,7 @@ type Props = {
   renderScene: NavigationSceneRenderer,
   cardStyle?: any,
   style: any,
+  interpolator?: Function,
   gestureResponseDistance?: ?number,
   enableGestures: ?boolean
 };
@@ -191,6 +192,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
      * Custom style applied to the cards stack.
      */
     style: View.propTypes.style,
+
+    /**
+     * Custom style interpolator applied to the cards stack.
+     */
+    interpolator: PropTypes.func,
   };
 
   static defaultProps: DefaultProps = {
@@ -264,9 +270,13 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _renderScene(props: NavigationSceneRendererProps): React.Element<any> {
     const isVertical = this.props.direction === 'vertical';
 
-    const style = isVertical ?
-      NavigationCardStackStyleInterpolator.forVertical(props) :
-      NavigationCardStackStyleInterpolator.forHorizontal(props);
+    let interpolatorStyle = isVertical ?
+        NavigationCardStackStyleInterpolator.forVertical :
+        NavigationCardStackStyleInterpolator.forHorizontal;
+    if (this.props.interpolator) {
+      interpolatorStyle = this.props.interpolator;
+    }
+    interpolatorStyle = interpolatorStyle(props)
 
     let panHandlers = null;
 
@@ -287,7 +297,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
         key={'card_' + props.scene.key}
         panHandlers={panHandlers}
         renderScene={this.props.renderScene}
-        style={[style, this.props.cardStyle]}
+        style={[interpolatorStyle, this.props.cardStyle]}
       />
     );
   }
