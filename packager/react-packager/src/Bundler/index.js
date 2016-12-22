@@ -673,20 +673,18 @@ class Bundler {
       'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
     ].indexOf(extname(module.path).slice(1)) !== -1;
 
-    return Promise.all([
-      isImage ? sizeOf(module.path) : null,
-      this._assetServer.getAssetData(relPath, platform),
-    ]).then((res) => {
+    return this._assetServer.getAssetData(relPath, platform).then((assetData) => {
+      return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
+    }).then((res) => {
       const dimensions = res[0];
       const assetData = res[1];
+      const scale = assetData.scales[0];
       const asset = {
         __packager_asset: true,
         fileSystemLocation: pathDirname(module.path),
         httpServerLocation: assetUrlPath,
-        /* $FlowFixMe: `resolution` is assets-only */
-        width: dimensions ? dimensions.width / module.resolution : undefined,
-        /* $FlowFixMe: `resolution` is assets-only */
-        height: dimensions ? dimensions.height / module.resolution : undefined,
+        width: dimensions ? dimensions.width / scale : undefined,
+        height: dimensions ? dimensions.height / scale : undefined,
         scales: assetData.scales,
         files: assetData.files,
         hash: assetData.hash,
