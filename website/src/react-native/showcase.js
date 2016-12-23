@@ -27,14 +27,14 @@ content.
 */
 var featured = [
   {
-    name: 'QQ空间',
+    name: 'Qzone (QQ空间)',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
     infoLink: 'https://en.wikipedia.org/wiki/Qzone',
     infoTitle: 'Qzone is a Chinese social network with over 600 million users',
   },
   {
-    name: 'QQ音乐',
+    name: 'QQ Music (QQ音乐)',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic',
     infoLink: 'http://www.wsj.com/articles/tencent-customers-come-for-the-music-stay-for-the-perks-1433869369',
@@ -53,7 +53,7 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.f8',
     infoLink: 'http://makeitopen.com/tutorials/building-the-f8-app/planning/',
-    infoTitle: 'Building the F8 App',
+    infoTitle: 'Tutorial: Building the F8 2016 conference app',
   },
   {
     name: 'Discovery VR',
@@ -64,7 +64,7 @@ var featured = [
     infoTitle: '"I may never write an iOS app in Objective-C or Swift again."',
   },
   {
-    name: 'Movie Trailers by MovieLaLa',
+    name: 'Movie Trailers',
     icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
     linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
@@ -86,14 +86,14 @@ var featured = [
     infoTitle: 'SoundCloud Pulse: now on iPhone',
   },
   {
-    name: 'Start - medication manager for depression',
+    name: 'Start',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
     infoLink: 'http://www.nytimes.com/2014/09/24/technology/to-gather-drug-information-a-health-start-up-turns-to-consumers.html?_r=0',
     infoTitle: 'NYT: A Health Startup Turns to Consumers',
   },
   {
-    name: 'Taxfyle - taxes filed on-demand via licensed CPA',
+    name: 'Taxfyle',
     icon: 'https://s3.amazonaws.com/taxfyle-public/images/taxfyle-icon-1024px.png',
     linkAppStore: 'https://itunes.apple.com/us/app/taxfyle/id1058033104?mt=8',
     infoLink: 'http://www.techinsider.io/taxfyle-wants-to-be-the-uber-for-taxes-2016-4',
@@ -107,7 +107,7 @@ var featured = [
     infoTitle: 'Refinery29 debuts its first app',
   },
   {
-    name: 'TRED - Sell your car for more',
+    name: 'TRED',
     icon: 'http://a1.mzstatic.com/us/r30/Purple20/v4/b0/0c/07/b00c07d2-a057-06bc-6044-9fdab97f370f/icon175x175.jpeg',
     linkAppStore:  'https://itunes.apple.com/us/app/tred-sell-my-car-for-more!/id1070071394?mt=8',
     linkPlayStore:  'https://play.google.com/store/apps/details?id=com.tredmobile&hl=en',
@@ -122,12 +122,6 @@ var featured = [
     infoTitle: 'Overstock invests in Bitt to launch digital currencies',
   },
   {
-    name: 'Calor - Field Pro',
-    icon: 'http://rnfdigital.com/wp-content/uploads/2016/04/FieldProIcon.png',
-    infoLink: 'http://rnfdigital.com/react-native-a-game-changer-for-enterprise-mobile-development/',
-    infoTitle: 'React Native: a game changer for Enterprise Mobile Development',
-  },
-  {
     name: 'CBS Sports Franchise Football',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
@@ -135,7 +129,7 @@ var featured = [
     infoTitle: 'The award winning Fantasy Football league manager.',
   },
   {
-    name: 'Coiney(窓口)',
+    name: 'Coiney (窓口)',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
     infoLink: 'https://www.techinasia.com/japan-startup-coiney-aims-for-ipo',
@@ -164,7 +158,7 @@ var featured = [
     infoTitle: 'Leanpub: How to Turn Your Blog into an Instant E-Book',
   },
   {
-    name: 'Lugg – Your On-Demand Mover',
+    name: 'Lugg',
     icon: 'https://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.lugg',
     infoLink: 'https://techcrunch.com/2015/08/26/lugg-an-app-for-on-demand-short-distance-moves-raises-3-8-million/',
@@ -244,7 +238,7 @@ var featured = [
     infoTitle: 'Bdsdiet provides real estate brokerage services through web and live agents in Korea.',
   },
   {
-    name: 'Fengniao Crowdsource(蜂鸟众包)',
+    name: 'Crowdsource (蜂鸟众包)',
     icon: 'http://img.wdjimg.com/mms/icon/v1/e/6e/687b129606504cd52632a8cc4ca816ee_256_256.png',
     linkPlayStore: 'http://www.wandoujia.com/apps/me.ele.crowdsource',
     linkAppStore: 'https://itunes.apple.com/cn/app/feng-niao-zhong-bao-jian-zhi/id1061034377?mt=8',
@@ -266,7 +260,7 @@ var featured = [
     infoTitle: 'React Native at Artsy',
   },
   {
-    name: 'Huiseoul(惠首尔)',
+    name: 'Huiseoul (惠首尔)',
     icon: 'https://cdn.huiseoul.com/icon.png',
     linkAppStore: 'https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8',
     infoLink: 'https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07',
@@ -374,7 +368,7 @@ var pinned = [
     linkAppStore: 'https://itunes.apple.com/us/app/airbnb/id401626263?mt=8&bev=1472279725_4ITWKWGX6KrmU6pT&utm_medium=web&utm_source=airbnb&_branch_match_id=307510898795870823',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb',
     infoLink: 'https://www.youtube.com/watch?v=tUfgQtmG3R0',
-    infoTitle: 'Tech Talk: Hybrid React Native Apps at Airbnb',
+    infoTitle: 'Hybrid React Native Apps at Airbnb',
     defaultLink: 'https://www.airbnb.com/mobile',
   },
   {
