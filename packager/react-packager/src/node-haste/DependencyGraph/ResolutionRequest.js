@@ -32,7 +32,7 @@ type DirExistsFn = (filePath: string) => boolean;
 type Options = {
   dirExists: DirExistsFn,
   entryPath: string,
-  extraNodeModules: Object,
+  extraNodeModules: ?Object,
   hasteFS: HasteFS,
   hasteMap: HasteMap,
   helpers: DependencyGraphHelpers,
@@ -46,7 +46,7 @@ type Options = {
 class ResolutionRequest {
   _dirExists: DirExistsFn;
   _entryPath: string;
-  _extraNodeModules: Object;
+  _extraNodeModules: ?Object;
   _hasteFS: HasteFS;
   _hasteMap: HasteMap;
   _helpers: DependencyGraphHelpers;
@@ -338,10 +338,11 @@ class ResolutionRequest {
           }
 
           if (this._extraNodeModules) {
+            const {_extraNodeModules} = this;
             const bits = toModuleName.split('/');
             const packageName = bits[0];
-            if (this._extraNodeModules[packageName]) {
-              bits[0] = this._extraNodeModules[packageName];
+            if (_extraNodeModules[packageName]) {
+              bits[0] = _extraNodeModules[packageName];
               searchQueue.push(path.join.apply(path, bits));
             }
           }
