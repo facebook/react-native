@@ -50,10 +50,10 @@ function getAdbPath() {
 }
 
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+function tryRunAdbReverse(device, adbAddrArg) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+    const adbArgs = [adbAddrArg, 'reverse', 'tcp:8081', 'tcp:8081'];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -80,7 +80,7 @@ function buildAndRun(args) {
   const adbPort = args.adbPort || process.env.ADB_PORT || '5037';
   const adbAddrArg = ['-H', adbHost, '-P', adbPort].join(' ');
   try {
-    adb.getDevices(adbAddrArg).map((device) => tryRunAdbReverse(device));
+    adb.getDevices(adbAddrArg).map((device) => tryRunAdbReverse(device, adbAddrArg));
 
     const gradleArgs = [];
     if (args.variant) {
