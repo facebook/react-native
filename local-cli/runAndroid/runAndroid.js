@@ -53,11 +53,15 @@ function getAdbPath() {
 function tryRunAdbReverse(device, adbAddrArg) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = [adbAddrArg, 'reverse', 'tcp:8081', 'tcp:8081'];
+    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
 
     // If a device is specified then tell adb to use it
     if (device) {
       adbArgs.unshift('-s', device);
+    }
+
+    if (adbAddrArg) {
+      adbArgs.unshift(...adbAddrArg);
     }
 
     console.log(chalk.bold(
@@ -79,7 +83,7 @@ function tryRunAdbReverse(device, adbAddrArg) {
 function buildAndRun(args) {
   const adbHost = args.adbhost || process.env.ADB_HOST || 'localhost';
   const adbPort = args.adbport || process.env.ADB_PORT || '5037';
-  const adbAddrArg = ['-H', adbHost, '-P', adbPort].join(' ');
+  const adbAddrArg = ['-H', adbHost, '-P', adbPort];
   try {
     adb.getDevices(adbAddrArg).map((device) => tryRunAdbReverse(device, adbAddrArg));
 
@@ -168,7 +172,9 @@ function buildAndRun(args) {
       devices.forEach((device) => {
 
         const adbArgs =
-          [adbAddrArg, '-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+
+        adbArgs.unshift(...adbAddrArg)
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -180,8 +186,9 @@ function buildAndRun(args) {
       // If we cannot execute based on adb devices output, fall back to
       // shell am start
       const fallbackAdbArgs = [
-        adbAddrArg, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
       ];
+      fallbackAdbArgs.unshift(...adbAddrArg)
       console.log(chalk.bold(
         `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
       ));
