@@ -1500,9 +1500,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const YGMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
   const YGMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
 
-  const float paddingAndBorderAxisRow = YGNodePaddingAndBorderForAxis(node, YGFlexDirectionRow);
-  const float paddingAndBorderAxisColumn =
-      YGNodePaddingAndBorderForAxis(node, YGFlexDirectionColumn);
+  const float paddingAndBorderAxisRow = isMainAxisRow ? paddingAndBorderAxisMain : paddingAndBorderAxisCross;
+  const float paddingAndBorderAxisColumn = isMainAxisRow ? paddingAndBorderAxisCross : paddingAndBorderAxisMain;
+
   const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow);
   const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn);
 
@@ -1516,7 +1516,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float maxInnerHeight = node->style.maxDimensions[YGDimensionHeight] - marginAxisColumn - paddingAndBorderAxisColumn;
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
   const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
-  
+
   // Max dimension overrides predefined dimension value; Min dimension in turn overrides both of the above
   if (!YGValueIsUndefined(availableInnerWidth)) {
     availableInnerWidth = fmaxf(fminf(availableInnerWidth, maxInnerWidth), minInnerWidth);
@@ -1524,7 +1524,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   if (!YGValueIsUndefined(availableInnerHeight)) {
     availableInnerHeight = fmaxf(fminf(availableInnerHeight, maxInnerHeight), minInnerHeight);
   }
-  
+
   float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
   const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
@@ -1679,7 +1679,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // Calculate the remaining available space that needs to be allocated.
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
-    
+
     // We resolve main dimension to fit minimum and maximum values
     if (YGValueIsUndefined(availableInnerMainDim)) {
       if (!YGValueIsUndefined(minInnerMainDim) &&
@@ -1690,7 +1690,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = maxInnerMainDim;
       }
     }
-    
+
     float remainingFreeSpace = 0;
     if (!YGValueIsUndefined(availableInnerMainDim)) {
       remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine;
