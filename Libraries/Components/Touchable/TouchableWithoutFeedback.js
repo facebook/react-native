@@ -157,9 +157,7 @@ const TouchableWithoutFeedback = React.createClass({
         ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
     );
     if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
-      if (!Array.isArray(children)) {
-        children = [children];
-      }
+      children = React.Children.toArray(children);
       children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
     }
     const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
