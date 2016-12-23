@@ -35,7 +35,7 @@ function parseDevicesResult(result: string): Array<string> {
 /**
  * Executes the commands needed to get a list of devices from ADB
  */
-function getDevices(): Array<string> {
+function getDevices(extraParams): Array<string> {
   const cmd = ['adb', extraParams, 'devices'].join(' ');
   try {
     const devicesResult = child_process.execSync(cmd);
