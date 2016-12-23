@@ -20,21 +20,10 @@ var rnpmConfig = require('./core/config');
  * to tweak.
  */
 var config = {
-  getProjectRoots() {
-    return getRoots();
-  },
+  getProjectRoots,
 
   getProjectConfig: rnpmConfig.getProjectConfig,
   getDependencyConfig: rnpmConfig.getDependencyConfig,
-
-  /**
-   * Specify where to look for assets that are referenced using
-   * `image!<image_name>`. Asset directories for images referenced using
-   * `./<image.extension>` don't require any entry in here.
-   */
-  getAssetRoots() {
-    return getRoots();
-  },
 
   /**
    * Specify any additional asset extentions to be used by the packager.
@@ -42,6 +31,15 @@ var config = {
    * from here and use `require('./fonts/example.ttf')` inside your app.
    */
   getAssetExts() {
+    return [];
+  },
+
+  /**
+   * Specify any additional platforms to be used by the packager.
+   * For example, if you want to add a "custom" platform, and use modules
+   * ending in .custom.js, you would return ['custom'] here.
+   */
+  getPlatforms() {
     return [];
   },
 
@@ -62,7 +60,7 @@ var config = {
   },
 };
 
-function getRoots() {
+function getProjectRoots() {
   var root = process.env.REACT_NATIVE_APP_ROOT;
   if (root) {
     return [path.resolve(root)];

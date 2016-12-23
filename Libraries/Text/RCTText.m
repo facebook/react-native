@@ -11,9 +11,10 @@
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 #import "RCTShadowText.h"
-#import "RCTUtils.h"
-#import "UIView+React.h"
 
 static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDescendants)
 {

@@ -2,8 +2,7 @@
 
 #include "JSCNativeModules.h"
 
-#include <jschelpers/JSCWrapper.h>
-
+#include <jschelpers/JavaScriptCore.h>
 #include <string>
 
 namespace facebook {

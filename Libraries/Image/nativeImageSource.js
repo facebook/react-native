@@ -47,6 +47,7 @@ function nativeImageSource(spec: SourceSpec): Object {
     uri,
     width: spec.width,
     height: spec.height,
+    deprecated: true,
   };
 }
 

@@ -23,7 +23,7 @@ module.exports = function(code, encoding) {
   const hash = crypto.createHash('sha1');
   hash.update(code, encoding);
   const digest = hash.digest('binary');
-  const signature = Buffer(digest.length + 1);
+  const signature = Buffer.alloc ? Buffer.alloc(digest.length + 1) : new Buffer(digest.length + 1); // remove the new Buffer call when RN drops support for Node 4
   signature.write(digest, 'binary');
   signature.writeUInt8(
     constantFor(tryAsciiPromotion(code, encoding)),

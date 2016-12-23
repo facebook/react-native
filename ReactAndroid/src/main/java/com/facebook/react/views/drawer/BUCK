@@ -4,7 +4,7 @@ android_library(
   name = 'drawer',
   srcs = glob(['**/*.java']),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('third-party/android/support/v4:lib-support-v4'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -20,6 +20,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':drawer',
-)

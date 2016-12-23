@@ -31,16 +31,28 @@ Pod::Spec.new do |s|
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.dependency      'React/CSSLayout'
+    ss.dependency      'React/yoga'
+    ss.dependency      'React/cxxreact'
     ss.source_files  = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/CSSLayout/*"
+    ss.exclude_files = "**/__tests__/*", "IntegrationTests/* ReactCommon/yoga/*"
     ss.frameworks    = "JavaScriptCore"
     ss.libraries     = "stdc++"
   end
 
-  s.subspec 'CSSLayout' do |ss|
-    ss.source_files = 'ReactCommon/CSSLayout/**/*.{c,h}'
-    ss.header_dir   = 'CSSLayout'
+  s.subspec 'jschelpers' do |ss|
+    ss.source_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}'
+    ss.header_dir   = 'jschelpers'
+  end
+
+  s.subspec 'cxxreact' do |ss|
+    ss.dependency     'React/jschelpers'
+    ss.source_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}'
+    ss.header_dir   = 'cxxreact'
+  end
+
+  s.subspec 'yoga' do |ss|
+    ss.source_files = 'ReactCommon/yoga/**/*.{c,h}'
+    ss.header_dir   = 'yoga'
   end
 
   s.subspec 'ART' do |ss|

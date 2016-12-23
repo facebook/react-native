@@ -12,14 +12,22 @@
 #if defined(__APPLE__)
 
 #include <mutex>
+
+// TODO: use glog in OSS too
+#if __has_include(<glog/logging.h>)
+#define USE_GLOG 1
 #include <glog/logging.h>
+#else
+#define USE_GLOG 0
+#endif
+
 #include <objc/runtime.h>
 
 // Crash the app (with a descriptive stack trace) if a function that is not supported by
 // the system JSC is called.
-#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME)   \
-static void Unimplemented_##FUNC_NAME(void* args...) { \
-  assert(false);                                       \
+#define UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FUNC_NAME)            \
+static void Unimplemented_##FUNC_NAME(__unused void* args...) { \
+  assert(false);                                                \
 }
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSEvaluateBytecodeBundle)
@@ -34,6 +42,8 @@ bool JSSamplingProfilerEnabled() {
   return false;
 }
 
+const int32_t JSNoBytecodeFileFormatVersion = -1;
+
 namespace facebook {
 namespace react {
 
@@ -41,13 +51,21 @@ static const JSCWrapper* s_customWrapper = nullptr;
 
 static JSCWrapper s_systemWrapper = {};
 
+bool isCustomJSCWrapperSet() {
+  return s_customWrapper != nullptr;
+}
+
 const JSCWrapper* customJSCWrapper() {
+  #if USE_GLOG
   CHECK(s_customWrapper != nullptr) << "Accessing custom JSC wrapper before it's set";
+  #endif
   return s_customWrapper;
 }
 
 void setCustomJSCWrapper(const JSCWrapper* wrapper) {
+  #if USE_GLOG
   CHECK(s_customWrapper == nullptr) << "Can't set custom JSC wrapper multiple times";
+  #endif
   s_customWrapper = wrapper;
 }
 
@@ -135,7 +153,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSContext = objc_getClass("JSContext"),
       .JSValue = objc_getClass("JSValue"),
 
-      .JSBytecodeFileFormatVersion = -1,
+      .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     };
   });
   return &s_systemWrapper;

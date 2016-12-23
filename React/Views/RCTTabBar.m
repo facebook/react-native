@@ -149,6 +149,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.translucent = translucent;
 }
 
+- (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+  if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
+    _tabController.tabBar.unselectedItemTintColor = unselectedItemTintColor;
+  }
+#endif
+}
+
 - (UITabBarItemPositioning)itemPositoning
 {
 #if TARGET_OS_TV
@@ -174,5 +182,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#if TARGET_OS_TV
+
+- (BOOL)isUserInteractionEnabled
+{
+  return YES;
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.nextFocusedView == self) {
+    [self becomeFirstResponder];
+  } else {
+    [self resignFirstResponder];
+  }
+}
+
+#endif
 
 @end

@@ -200,7 +200,6 @@ if (__DEV__) {
   }
 
   require('RCTDebugComponentOwnership');
-  require('react-transform-hmr');
 }
 
 // Set up inspector

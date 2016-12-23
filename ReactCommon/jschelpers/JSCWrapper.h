@@ -27,6 +27,13 @@ extern bool JSSamplingProfilerEnabled();
 extern void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 extern JSValueRef JSPokeSamplingProfiler(JSContextRef);
 
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
+
 namespace facebook {
 namespace react {
 
@@ -120,11 +127,12 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
+bool isCustomJSCWrapperSet();
 void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-const JSCWrapper *systemJSCWrapper();
-const JSCWrapper *customJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
 
 } }
 
