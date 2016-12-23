@@ -5,109 +5,73 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
-
-const Activity = require('../Activity');
 const DependencyGraph = require('../node-haste');
 
-const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const pathJoin = require('path').join;
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  assetRoots: {
-    type: 'array',
-    default: [],
-  },
-  fileWatcher: {
-    type: 'object',
-    required: true,
-  },
-  assetExts: {
-    type: 'array',
-    required: true,
-  },
-  cache: {
-    type: 'object',
-    required: true,
-  },
-  transformCode: {
-    type: 'function',
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  minifyCode: {
-    type: 'function',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-});
+import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type Module from '../node-haste/Module';
+import type {SourceMap} from '../lib/SourceMap';
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Reporter} from '../lib/reporting';
+import type {TransformCode} from '../node-haste/Module';
+import type Cache from '../node-haste/Cache';
 
-const getDependenciesValidateOpts = declareOpts({
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
-  platform: {
-    type: 'string',
-    required: false,
-  },
-  unbundle: {
-    type: 'boolean',
-    default: false,
-  },
-  recursive: {
-    type: 'boolean',
-    default: true,
-  },
-});
+type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
+  Promise<{code: string, map: SourceMap}>;
+
+type Options = {
+  assetExts: Array<string>,
+  blacklistRE?: RegExp,
+  cache: Cache,
+  extraNodeModules?: {},
+  minifyCode: MinifyCode,
+  platforms: Array<string>,
+  polyfillModuleNames?: Array<string>,
+  projectRoots: Array<string>,
+  reporter: Reporter,
+  resetCache: boolean,
+  transformCacheKey: string,
+  transformCode: TransformCode,
+  watch?: boolean,
+};
 
 class Resolver {
 
-  constructor(options) {
-    const opts = validateOpts(options);
+  _depGraph: DependencyGraph;
+  _minifyCode: MinifyCode;
+  _polyfillModuleNames: Array<string>;
 
+  constructor(opts: Options) {
     this._depGraph = new DependencyGraph({
-      activity: Activity,
-      roots: opts.projectRoots,
-      assetRoots_DEPRECATED: opts.assetRoots,
+      assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       assetExts: opts.assetExts,
+      cache: opts.cache,
+      extraNodeModules: opts.extraNodeModules,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
-          (opts.blacklistRE && opts.blacklistRE.test(filepath));
+          (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
-      providesModuleNodeModules: defaults.providesModuleNodeModules,
-      platforms: defaults.platforms,
+      moduleOptions: {
+        cacheTransformResults: true,
+        resetCache: opts.resetCache,
+      },
+      platforms: opts.platforms,
       preferNativePlatform: true,
-      fileWatcher: opts.fileWatcher,
-      cache: opts.cache,
-      shouldThrowOnUnresolvedErrors: (_, platform) => platform !== 'android',
+      providesModuleNodeModules: defaults.providesModuleNodeModules,
+      reporter: opts.reporter,
+      resetCache: opts.resetCache,
+      roots: opts.projectRoots,
+      transformCacheKey: opts.transformCacheKey,
       transformCode: opts.transformCode,
-      extraNodeModules: opts.extraNodeModules,
-      assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      // for jest-haste-map
-      resetCache: options.resetCache,
+      watch: opts.watch || false,
     });
 
     this._minifyCode = opts.minifyCode;
@@ -119,20 +83,25 @@ class Resolver {
     });
   }
 
-  getShallowDependencies(entryFile, transformOptions) {
+  getShallowDependencies(
+    entryFile: string,
+    transformOptions: TransformOptions,
+  ): Array<string> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
-  stat(filePath) {
-    return this._depGraph.getFS().stat(filePath);
-  }
-
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string): Module {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(entryPath, options, transformOptions, onProgress, getModuleId) {
-    const {platform, recursive} = getDependenciesValidateOpts(options);
+  getDependencies(
+    entryPath: string,
+    options: {platform: string, recursive?: boolean},
+    transformOptions: TransformOptions,
+    onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
+    getModuleId: mixed,
+  ): Promise<ResolutionResponse> {
+    const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
       platform,
@@ -149,10 +118,9 @@ class Resolver {
     });
   }
 
-  getModuleSystemDependencies(options) {
-    const opts = getDependenciesValidateOpts(options);
+  getModuleSystemDependencies({dev = true}: {dev?: boolean}): Array<Module> {
 
-    const prelude = opts.dev
+    const prelude = dev
         ? pathJoin(__dirname, 'polyfills/prelude_dev.js')
         : pathJoin(__dirname, 'polyfills/prelude.js');
 
@@ -168,7 +136,7 @@ class Resolver {
     }));
   }
 
-  _getPolyfillDependencies() {
+  _getPolyfillDependencies(): Array<Module> {
     const polyfillModuleNames = defaults.polyfills.concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
@@ -180,7 +148,12 @@ class Resolver {
     );
   }
 
-  resolveRequires(resolutionResponse, module, code, dependencyOffsets = []) {
+  resolveRequires(
+    resolutionResponse: ResolutionResponse,
+    module: Module,
+    code: string,
+    dependencyOffsets: Array<number> = [],
+  ): string {
     const resolvedDeps = Object.create(null);
 
     // here, we build a map of all require strings (relative and absolute)
@@ -188,6 +161,7 @@ class Resolver {
     resolutionResponse.getResolvedDependencyPairs(module)
       .forEach(([depName, depModule]) => {
         if (depModule) {
+          /* $FlowFixMe: `getModuleId` is monkey-patched so may not exist */
           resolvedDeps[depName] = resolutionResponse.getModuleId(depModule);
         }
       });
@@ -200,21 +174,13 @@ class Resolver {
     //    require('./c') => require(3);
     // -- in b/index.js:
     //    require('../a/c') => require(3);
-    const replaceModuleId = (codeMatch, quote, depName) =>
-      depName in resolvedDeps
-        ? `${JSON.stringify(resolvedDeps[depName])} /* ${depName} */`
-        : codeMatch;
-
-    code = dependencyOffsets.reduceRight((codeBits, offset) => {
-      const first = codeBits.shift();
-      codeBits.unshift(
-        first.slice(0, offset),
-        first.slice(offset).replace(/(['"])([^'"']*)\1/, replaceModuleId),
-      );
-      return codeBits;
-    }, [code]);
-
-    return code.join('');
+    return dependencyOffsets.reduceRight(
+      ([unhandled, handled], offset) => [
+        unhandled.slice(0, offset),
+        replaceDependencyID(unhandled.slice(offset) + handled, resolvedDeps),
+      ],
+      [code, ''],
+    ).join('');
   }
 
   wrapModule({
@@ -226,6 +192,17 @@ class Resolver {
     meta = {},
     dev = true,
     minify = false,
+  }: {
+    resolutionResponse: ResolutionResponse,
+    module: Module,
+    name: string,
+    map: SourceMap,
+    code: string,
+    meta?: {
+      dependencyOffsets?: Array<number>,
+    },
+    dev?: boolean,
+    minify?: boolean,
   }) {
     if (module.isJSON()) {
       code = `module.exports = ${code}`;
@@ -234,6 +211,7 @@ class Resolver {
     if (module.isPolyfill()) {
       code = definePolyfillCode(code);
     } else {
+      /* $FlowFixMe: `getModuleId` is monkey-patched so may not exist */
       const moduleId = resolutionResponse.getModuleId(module);
       code = this.resolveRequires(
         resolutionResponse,
@@ -244,29 +222,30 @@ class Resolver {
       code = defineModuleCode(moduleId, code, name, dev);
     }
 
-
     return minify
       ? this._minifyCode(module.path, code, map)
       : Promise.resolve({code, map});
   }
 
-  minifyModule({path, code, map}) {
+  minifyModule(
+    {path, code, map}: {path: string, code: string, map: SourceMap},
+  ): Promise<{code: string, map: SourceMap}> {
     return this._minifyCode(path, code, map);
   }
 
-  getDependecyGraph() {
+  getDependencyGraph(): DependencyGraph {
     return this._depGraph;
   }
 }
 
 function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
-    '__d(',
-    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
-    'function(global, require, module, exports) {',
+    `__d(/* ${verboseName} */`,
+    'function(global, require, module, exports) {', // module factory
       code,
-    '\n}',
-    dev ? `, ${JSON.stringify(verboseName)}` : '',
+    '\n}, ',
+    `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
+    dev ? `, null, ${JSON.stringify(verboseName)}` : '',
     ');',
   ].join('');
 }
@@ -277,6 +256,30 @@ function definePolyfillCode(code,) {
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
+}
+
+const reDepencencyString = /^(['"])([^'"']*)\1/;
+function replaceDependencyID(stringWithDependencyIDAtStart, resolvedDeps) {
+  const match = reDepencencyString.exec(stringWithDependencyIDAtStart);
+  const dependencyName = match && match[2];
+  if (match != null && dependencyName in resolvedDeps) {
+    const {length} = match[0];
+    const id = String(resolvedDeps[dependencyName]);
+    return (
+      padRight(id, length) +
+      stringWithDependencyIDAtStart
+        .slice(length)
+        .replace(/$/m, ` // ${id} = ${dependencyName}`)
+    );
+  } else {
+    return stringWithDependencyIDAtStart;
+  }
+}
+
+function padRight(string, length) {
+  return string.length < length
+    ? string + Array(length - string.length + 1).join(' ')
+    : string;
 }
 
 module.exports = Resolver;

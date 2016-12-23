@@ -14,13 +14,13 @@
 
 var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
+var NativeAnimatedHelper = require('NativeAnimatedHelper');
 var React = require('React');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
-var NativeAnimatedHelper = require('NativeAnimatedHelper');
 
-var findNodeHandle = require('react/lib/findNodeHandle');
+var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -31,6 +31,27 @@ type EndResult = {finished: bool};
 type EndCallback = (result: EndResult) => void;
 
 var NativeAnimatedAPI = NativeAnimatedHelper.API;
+
+var warnedMissingNativeAnimated = false;
+
+function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
+  if (config.useNativeDriver &&
+      !NativeAnimatedHelper.isNativeAnimatedAvailable()) {
+    if (!warnedMissingNativeAnimated) {
+      console.warn(
+        'Animated: `useNativeDriver` is not supported because the native ' +
+        'animated module is missing. Falling back to JS-based animation. To ' +
+        'resolve this, add `RCTAnimation` module to this app, or remove ' +
+        '`useNativeDriver`. ' +
+        'More info: https://github.com/facebook/react-native/issues/11094#issuecomment-263240420'
+      );
+      warnedMissingNativeAnimated = true;
+    }
+    return false;
+  }
+
+  return config.useNativeDriver || false;
+}
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
@@ -251,7 +272,7 @@ class TimingAnimation extends Animation {
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
   }
 
   __getNativeAnimationConfig(): any {
@@ -282,7 +303,10 @@ class TimingAnimation extends Animation {
     this.__onEnd = onEnd;
 
     var start = () => {
-      if (this._duration === 0) {
+      // Animations that sometimes have 0 duration and sometimes do not
+      // still need to use the native driver when duration is 0 so as to
+      // not cause intermixed JS and native animations.
+      if (this._duration === 0 && !this._useNativeDriver) {
         this._onUpdate(this._toValue);
         this.__debouncedOnEnd({finished: true});
       } else {
@@ -360,7 +384,7 @@ class DecayAnimation extends Animation {
     super();
     this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
 
@@ -479,7 +503,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
-    this._useNativeDriver = config.useNativeDriver !== undefined ? config.useNativeDriver : false;
+    this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
 
     var springConfig;
@@ -671,7 +695,6 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
-  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -680,7 +703,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._startingValue = this._value = value;
+    this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
@@ -741,6 +764,18 @@ class AnimatedValue extends AnimatedWithChildren {
     this._offset = 0;
     if (this.__isNative) {
       NativeAnimatedAPI.flattenAnimatedNodeOffset(this.__getNativeTag());
+    }
+  }
+
+  /**
+   * Sets the offset value to the base value, and resets the base value to zero.
+   * The final output of the value is unchanged.
+   */
+  extractOffset(): void {
+    this._offset += this._value;
+    this._value = 0;
+    if (this.__isNative) {
+      NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
     }
   }
 
@@ -879,7 +914,8 @@ class AnimatedValue extends AnimatedWithChildren {
   __getNativeConfig(): Object {
     return {
       type: 'value',
-      value: this._startingValue,
+      value: this._value,
+      offset: this._offset,
     };
   }
 }
@@ -1043,6 +1079,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+     * deploy of Flow v0.36.0. To see the error, remove this comment and run
+     * Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1715,12 +1754,6 @@ function createAnimatedComponent(Component: any): any {
       var callback = () => {
         if (this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
-            if (this._component.viewConfig == null) {
-              var ctor = this._component.constructor;
-              var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
-              throw new Error(componentName + ' "viewConfig" is not defined.');
-            }
-
             this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
             );
@@ -2105,8 +2138,8 @@ var stagger = function(
 
 type Mapping = {[key: string]: Mapping} | AnimatedValue;
 type EventConfig = {
-  listener?: ?Function;
-  useNativeDriver?: bool;
+  listener?: ?Function,
+  useNativeDriver?: bool,
 };
 
 class AnimatedEvent {
@@ -2120,7 +2153,7 @@ class AnimatedEvent {
   ) {
     this._argMapping = argMapping;
     this._listener = config.listener;
-    this.__isNative = config.useNativeDriver || false;
+    this.__isNative = shouldUseNativeDriver(config);
 
     if (this.__isNative) {
       invariant(!this._listener, 'Listener is not supported for native driven events.');

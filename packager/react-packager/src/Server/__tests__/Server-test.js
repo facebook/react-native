@@ -19,9 +19,8 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('../../node-haste')
-    .mock('../../Activity');
-
-let FileWatcher;
+    .mock('../../Logger')
+    .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
   let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
@@ -40,7 +39,8 @@ describe('processRequest', () => {
      projectRoots: ['root'],
      blacklistRE: null,
      cacheVersion: null,
-     polyfillModuleNames: null
+     polyfillModuleNames: null,
+     reporter: require('../../lib/reporting').nullReporter,
   };
 
   const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>
@@ -62,12 +62,9 @@ describe('processRequest', () => {
   );
 
   const invalidatorFunc = jest.fn();
-  const watcherFunc = jest.fn();
   let requestHandler;
-  let triggerFileChange;
 
   beforeEach(() => {
-    FileWatcher = require('../../node-haste').FileWatcher;
     Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
@@ -75,19 +72,10 @@ describe('processRequest', () => {
         getEtag: () => 'this is an etag',
       }));
 
-    FileWatcher.prototype.on = function(eventType, callback) {
-      if (eventType !== 'all') {
-        throw new Error('Can only handle "all" event in watcher.');
-      }
-      watcherFunc.apply(this, arguments);
-      triggerFileChange = callback;
-      return this;
-    };
-
     Bundler.prototype.invalidateFile = invalidatorFunc;
     Bundler.prototype.getResolver =
       jest.fn().mockReturnValue({
-        getDependecyGraph: jest.fn().mockReturnValue({
+        getDependencyGraph: jest.fn().mockReturnValue({
           getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
           load: jest.fn(() => Promise.resolve()),
         }),
@@ -97,7 +85,7 @@ describe('processRequest', () => {
     requestHandler = server.processRequest.bind(server);
   });
 
-  pit('returns JS bundle source on request of *.bundle', () => {
+  it('returns JS bundle source on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true',
@@ -107,7 +95,7 @@ describe('processRequest', () => {
     );
   });
 
-  pit('returns JS bundle source on request of *.bundle (compat)', () => {
+  it('returns JS bundle source on request of *.bundle (compat)', () => {
     return makeRequest(
       requestHandler,
       'mybundle.runModule.bundle'
@@ -116,7 +104,7 @@ describe('processRequest', () => {
     );
   });
 
-  pit('returns ETag header on request of *.bundle', () => {
+  it('returns ETag header on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true'
@@ -125,7 +113,7 @@ describe('processRequest', () => {
     });
   });
 
-  pit('returns 304 on request of *.bundle when if-none-match equals the ETag', () => {
+  it('returns 304 on request of *.bundle when if-none-match equals the ETag', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true',
@@ -135,7 +123,7 @@ describe('processRequest', () => {
     });
   });
 
-  pit('returns sourcemap on request of *.map', () => {
+  it('returns sourcemap on request of *.map', () => {
     return makeRequest(
       requestHandler,
       'mybundle.map?runModule=true'
@@ -144,7 +132,7 @@ describe('processRequest', () => {
     );
   });
 
-  pit('works with .ios.js extension', () => {
+  it('works with .ios.js extension', () => {
     return makeRequest(
       requestHandler,
       'index.ios.includeRequire.bundle'
@@ -169,7 +157,7 @@ describe('processRequest', () => {
     });
   });
 
-  pit('passes in the platform param', function() {
+  it('passes in the platform param', function() {
     return makeRequest(
       requestHandler,
       'index.bundle?platform=ios'
@@ -194,7 +182,7 @@ describe('processRequest', () => {
     });
   });
 
-  pit('passes in the assetPlugin param', function() {
+  it('passes in the assetPlugin param', function() {
     return makeRequest(
       requestHandler,
       'index.bundle?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2'
@@ -219,24 +207,13 @@ describe('processRequest', () => {
     });
   });
 
-  pit('watches all files in projectRoot', () => {
-    return makeRequest(
-      requestHandler,
-      'mybundle.bundle?runModule=true'
-    ).then(() => {
-      expect(watcherFunc.mock.calls[0][0]).toEqual('all');
-      expect(watcherFunc.mock.calls[0][1]).not.toBe(null);
-    });
-  });
-
   describe('file changes', () => {
-    pit('invalides files in bundle when file is updated', () => {
+    it('invalides files in bundle when file is updated', () => {
       return makeRequest(
         requestHandler,
         'mybundle.bundle?runModule=true'
       ).then(() => {
-        const onFileChange = watcherFunc.mock.calls[0][1];
-        onFileChange('all','path/file.js', options.projectRoots[0]);
+        server.onFileChange('all', options.projectRoots[0] + '/path/file.js');
         expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
       });
     });
@@ -273,7 +250,7 @@ describe('processRequest', () => {
 
       jest.runAllTicks();
 
-      triggerFileChange('all','path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       jest.runAllTicks();
 
@@ -322,7 +299,7 @@ describe('processRequest', () => {
 
         jest.runAllTicks();
 
-        triggerFileChange('all','path/file.js', options.projectRoots[0]);
+        server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
         jest.runAllTimers();
         jest.runAllTicks();
 
@@ -355,7 +332,7 @@ describe('processRequest', () => {
 
     it('should hold on to request and inform on change', () => {
       server.processRequest(req, res);
-      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       expect(res.end).toBeCalledWith(JSON.stringify({changed: true}));
     });
@@ -364,7 +341,7 @@ describe('processRequest', () => {
       server.processRequest(req, res);
       req.emit('close');
       jest.runAllTimers();
-      triggerFileChange('all', 'path/file.js', options.projectRoots[0]);
+      server.onFileChange('all', options.projectRoots[0] + 'path/file.js');
       jest.runAllTimers();
       expect(res.end).not.toBeCalled();
     });
@@ -375,11 +352,10 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -387,12 +363,11 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/a.png?platform=ios'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
@@ -401,12 +376,11 @@ describe('processRequest', () => {
       const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve(mockData));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
@@ -414,7 +388,7 @@ describe('processRequest', () => {
       const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -422,13 +396,12 @@ describe('processRequest', () => {
         'imgs/\u{4E3B}\u{9875}/logo.png',
         undefined
       );
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });
 
   describe('buildbundle(options)', () => {
-    pit('Calls the bundler with the correct args', () => {
+    it('Calls the bundler with the correct args', () => {
       return server.buildBundle({
         entryFile: 'foo file'
       }).then(() =>
@@ -451,7 +424,7 @@ describe('processRequest', () => {
   });
 
   describe('buildBundleFromUrl(options)', () => {
-    pit('Calls the bundler with the correct args', () => {
+    it('Calls the bundler with the correct args', () => {
       return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
         .then(() =>
           expect(Bundler.prototype.bundle).toBeCalledWith({
@@ -474,7 +447,7 @@ describe('processRequest', () => {
   });
 
   describe('/symbolicate endpoint', () => {
-    pit('should symbolicate given stack trace', () => {
+    it('should symbolicate given stack trace', () => {
       const body = JSON.stringify({stack: [{
         file: 'http://foo.bundle?platform=ios',
         lineNumber: 2100,
@@ -508,7 +481,7 @@ describe('processRequest', () => {
       });
     });
 
-    pit('ignores `/debuggerWorker.js` stack frames', () => {
+    it('ignores `/debuggerWorker.js` stack frames', () => {
       const body = JSON.stringify({stack: [{
         file: 'http://localhost:8081/debuggerWorker.js',
         lineNumber: 123,
@@ -532,7 +505,7 @@ describe('processRequest', () => {
   });
 
   describe('/symbolicate handles errors', () => {
-    pit('should symbolicate given stack trace', () => {
+    it('should symbolicate given stack trace', () => {
       const body = 'clearly-not-json';
       console.error = jest.fn();
 

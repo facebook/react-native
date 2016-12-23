@@ -20,6 +20,7 @@ global.Promise = require.requireActual('promise');
 global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
 
 jest
+  .mock('setupDevtools')
   .mock('npmlog');
 
 // there's a __mock__ for it.
@@ -32,17 +33,13 @@ jest
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View'))
-  .mock('ScrollView', () => mockComponent('ScrollView'))
+  .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
+  .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
   .mock(
     'ActivityIndicator',
     () => mockComponent('ActivityIndicator'),
   )
-  .mock('ListView', () => {
-    const RealListView = require.requireActual('ListView');
-    const ListView = mockComponent('ListView');
-    ListView.prototype.render = RealListView.prototype.render;
-    return ListView;
-  })
+  .mock('ListView', () => require.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
     const DataSource = require.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
@@ -51,7 +48,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items += dataBlob[key] && dataBlob[key].length;
+            this.items += dataBlob[key] && (
+              dataBlob[key].length || dataBlob[key].size || 0
+            )
           });
         } catch (e) {
           this.items = 'unknown';
@@ -68,6 +67,9 @@ const mockEmptyObject = {};
 const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
+  },
+  AppState: {
+    addEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
     clear: jest.fn(),
@@ -113,9 +115,26 @@ const mockNativeModules = {
     ),
     prefetchImage: jest.fn(),
   },
+  KeyboardObserver: {
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
+  Networking: {
+    sendRequest: jest.fn(),
+    abortRequest: jest.fn(),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   SourceCode: {
     scriptURL: null,
+  },
+  StatusBarManager: {
+    setStyle: jest.fn(),
+    setHidden: jest.fn(),
+    setNetworkActivityIndicatorVisible: jest.fn(),
+    setBackgroundColor: jest.fn(),
+    setTranslucent: jest.fn(),
   },
   Timing: {
     createTimer: jest.fn(),
@@ -141,6 +160,15 @@ const mockNativeModules = {
     View: {
       Constants: {},
     },
+  },
+  WebSocketModule: {
+    connect: jest.fn(),
+    send: jest.fn(),
+    sendBinary: jest.fn(),
+    ping: jest.fn(),
+    close: jest.fn(),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
   },
 };
 

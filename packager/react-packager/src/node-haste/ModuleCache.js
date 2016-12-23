@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 'use strict';
@@ -14,45 +16,76 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
-const path = require('path');
+import type {Reporter} from '../lib/reporting';
+import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
+import type {
+  TransformCode,
+  Options as ModuleOptions,
+} from './Module';
+
+type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  constructor({
-    fastfs,
-    cache,
-    extractRequires,
-    transformCode,
-    depGraphHelpers,
-    assetDependencies,
-    moduleOptions,
-  }, platforms) {
-    this._moduleCache = Object.create(null);
-    this._packageCache = Object.create(null);
-    this._fastfs = fastfs;
-    this._cache = cache;
-    this._extractRequires = extractRequires;
-    this._transformCode = transformCode;
-    this._depGraphHelpers = depGraphHelpers;
-    this._platforms = platforms;
-    this._assetDependencies = assetDependencies;
-    this._moduleOptions = moduleOptions;
-    this._packageModuleMap = new WeakMap();
+  _assetDependencies: mixed;
+  _cache: Cache;
+  _depGraphHelpers: DependencyGraphHelpers;
+  _getClosestPackage: GetClosestPackageFn;
+  _moduleCache: {[filePath: string]: Module};
+  _moduleOptions: ModuleOptions;
+  _packageCache: {[filePath: string]: Package};
+  _packageModuleMap: WeakMap<Module, string>;
+  _platforms: mixed;
+  _transformCacheKey: string;
+  _transformCode: TransformCode;
+  _reporter: Reporter;
 
-    fastfs.on('change', this._processFileChange.bind(this));
+  constructor({
+    assetDependencies,
+    cache,
+    depGraphHelpers,
+    extractRequires,
+    getClosestPackage,
+    moduleOptions,
+    transformCacheKey,
+    transformCode,
+    reporter,
+  }: {
+    assetDependencies: mixed,
+    cache: Cache,
+    depGraphHelpers: DependencyGraphHelpers,
+    getClosestPackage: GetClosestPackageFn,
+    moduleOptions: ModuleOptions,
+    transformCacheKey: string,
+    transformCode: TransformCode,
+    reporter: Reporter,
+  }, platforms: mixed) {
+    this._assetDependencies = assetDependencies;
+    this._getClosestPackage = getClosestPackage;
+    this._cache = cache;
+    this._depGraphHelpers = depGraphHelpers;
+    this._moduleCache = Object.create(null);
+    this._moduleOptions = moduleOptions;
+    this._packageCache = Object.create(null);
+    this._packageModuleMap = new WeakMap();
+    this._platforms = platforms;
+    this._transformCacheKey = transformCacheKey;
+    this._transformCode = transformCode;
+    this._reporter = reporter;
   }
 
-  getModule(filePath) {
+  getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
-        extractor: this._extractRequires,
         transformCode: this._transformCode,
+        transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
+        reporter: this._reporter,
       });
     }
     return this._moduleCache[filePath];
@@ -62,11 +95,10 @@ class ModuleCache {
     return this._moduleCache;
   }
 
-  getAssetModule(filePath) {
+  getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
         dependencies: this._assetDependencies,
@@ -75,20 +107,20 @@ class ModuleCache {
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath) {
+  getPackage(filePath: string) {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
-        fastfs: this._fastfs,
         cache: this._cache,
       });
     }
     return this._packageCache[filePath];
   }
 
-  getPackageForModule(module) {
+  getPackageForModule(module: Module): ?Package {
     if (this._packageModuleMap.has(module)) {
       const packagePath = this._packageModuleMap.get(module);
+      // $FlowFixMe(>=0.37.0)
       if (this._packageCache[packagePath]) {
         return this._packageCache[packagePath];
       } else {
@@ -96,7 +128,7 @@ class ModuleCache {
       }
     }
 
-    const packagePath = this._fastfs.closest(module.path, 'package.json');
+    const packagePath = this._getClosestPackage(module.path);
     if (!packagePath) {
       return null;
     }
@@ -105,27 +137,26 @@ class ModuleCache {
     return this.getPackage(packagePath);
   }
 
-  createPolyfill({file}) {
+  createPolyfill({file}: {file: string}) {
+    /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
       file,
       cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
-      fastfs: this._fastfs,
       moduleCache: this,
       transformCode: this._transformCode,
+      transformCacheKey: this._transformCacheKey,
     });
   }
 
-  _processFileChange(type, filePath, root) {
-    const absPath = path.join(root, filePath);
-
-    if (this._moduleCache[absPath]) {
-      this._moduleCache[absPath].invalidate();
-      delete this._moduleCache[absPath];
+  processFileChange(type: string, filePath: string) {
+    if (this._moduleCache[filePath]) {
+      this._moduleCache[filePath].invalidate();
+      delete this._moduleCache[filePath];
     }
-    if (this._packageCache[absPath]) {
-      this._packageCache[absPath].invalidate();
-      delete this._packageCache[absPath];
+    if (this._packageCache[filePath]) {
+      this._packageCache[filePath].invalidate();
+      delete this._packageCache[filePath];
     }
   }
 }

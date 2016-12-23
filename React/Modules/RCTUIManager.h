@@ -9,11 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTBridgeModule.h"
-#import "RCTInvalidating.h"
-#import "RCTViewManager.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
+#import <React/RCTRootView.h>
+#import <React/RCTViewManager.h>
 
 /**
  * UIManager queue

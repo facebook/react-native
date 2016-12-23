@@ -25,7 +25,9 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const ViewExample = require('./ViewExample');
+
 const createExamplePage = require('./createExamplePage');
+const nativeImageSource = require('nativeImageSource');
 const {
   AlertIOS,
   NavigatorIOS,
@@ -107,7 +109,11 @@ class NavigatorIOSExamplePage extends React.Component {
               component: EmptyPage,
               leftButtonTitle: 'Custom Left',
               onLeftButtonPress: () => this.props.navigator.pop(),
-              rightButtonIcon: require('image!NavBarButtonPlus'),
+              rightButtonIcon: nativeImageSource({
+                ios: 'NavBarButtonPlus',
+                width: 17,
+                height: 17
+              }),
               onRightButtonPress: () => {
                 AlertIOS.alert(
                   'Bar Button Action',

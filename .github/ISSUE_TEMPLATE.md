@@ -14,6 +14,10 @@ If you have a feature request, post it on Product Pains: https://productpains.co
 
 [FILL THIS OUT: Try to reproduce your bug on rnplay.org and provide a link. If you can't reproduce the bug on rnplay.org, provide a sample project.]
 
+### Solution
+
+[FILL THIS OUT: What needs to be done to address this issue? Ideally, provide a pull request with a fix.]
+
 ### Additional Information
 
 * React Native version: [FILL THIS OUT]

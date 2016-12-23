@@ -14,7 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -160,6 +160,13 @@ const DataDetectorTypes = [
  * in the correct position, or to not display the border by setting
  * `underlineColorAndroid` to transparent.
  *
+ * Note that on Android performing text selection in input can change
+ * app's activity `windowSoftInputMode` param to `adjustResize`.
+ * This may cause issues with components that have position: 'absolute'
+ * while keyboard is active. To avoid this behavior either specify `windowSoftInputMode`
+ * in AndroidManifest.xml ( https://developer.android.com/guide/topics/manifest/activity-element.html )
+ * or control this param programmatically with native code.
+ *
  */
 const TextInput = React.createClass({
   statics: {
@@ -187,6 +194,12 @@ const TextInput = React.createClass({
      * If `false`, disables auto-correct. The default value is `true`.
      */
     autoCorrect: PropTypes.bool,
+    /**
+     * If `false`, disables spell-check style (i.e. red underlines).
+     * The default value is inherited from `autoCorrect`.
+     * @platform ios
+     */
+    spellCheck: PropTypes.bool,
     /**
      * If `true`, focuses the input on `componentDidMount`.
      * The default value is `false`.
@@ -298,6 +311,15 @@ const TextInput = React.createClass({
      */
     numberOfLines: PropTypes.number,
     /**
+     * When `false`, if there is a small amount of space available around a text input
+     * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
+     * the text inside of a full screen text input mode. When `true`, this feature is
+     * disabled and users will always edit the text directly inside of the text input.
+     * Defaults to `false`.
+     * @platform android
+     */
+    disableFullscreenUI: PropTypes.bool,
+    /**
      * If `true`, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is `false`.
      * @platform ios
@@ -308,6 +330,12 @@ const TextInput = React.createClass({
      * The default value is `false`.
      */
     multiline: PropTypes.bool,
+    /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `simple`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Callback that is called when the text input is blurred.
      */
@@ -357,6 +385,12 @@ const TextInput = React.createClass({
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
     onLayout: PropTypes.func,
+    /**
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
     /**
      * The string that will be rendered before text input has been entered.
      */
@@ -645,6 +679,7 @@ const TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
         />;
     }
 
@@ -694,6 +729,8 @@ const TextInput = React.createClass({
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
+        disableFullscreenUI={this.props.disableFullscreenUI}
+        textBreakStrategy={this.props.textBreakStrategy}
       />;
 
     return (
@@ -803,6 +840,10 @@ const TextInput = React.createClass({
 
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
+  },
+
+  _onScroll: function(event: Event) {
+    this.props.onScroll && this.props.onScroll(event);
   },
 });
 

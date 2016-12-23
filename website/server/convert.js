@@ -14,6 +14,7 @@ var glob = require('glob');
 var mkdirp = require('mkdirp');
 var optimist = require('optimist');
 var path = require('path');
+var removeMd = require('remove-markdown');
 var extractDocs = require('./extractDocs');
 var argv = optimist.argv;
 
@@ -200,7 +201,8 @@ function execute() {
 
     var res = extractMetadata(fs.readFileSync(file, {encoding: 'utf8'}));
     var rawContent = res.rawContent;
-    var metadata = Object.assign({path: filePath, content: rawContent, publishedAt: publishedAt}, res.metadata);
+    var excerpt = removeMd(rawContent).trim().split('\n')[0];
+    var metadata = Object.assign({path: filePath, content: rawContent, publishedAt: publishedAt, excerpt: excerpt}, res.metadata);
 
     metadatasBlog.files.push(metadata);
 
@@ -210,7 +212,7 @@ function execute() {
     );
   });
 
-  var perPage = 5;
+  var perPage = 15;
   for (var page = 0; page < Math.ceil(metadatasBlog.files.length / perPage); ++page) {
     writeFileAndCreateFolder(
       'src/react-native/blog' + (page > 0 ? '/page' + (page + 1) : '') + '/index.js',

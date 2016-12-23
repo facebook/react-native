@@ -6,7 +6,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
+var Hero = require('Hero');
 var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
@@ -112,18 +114,11 @@ var index = React.createClass({
   render: function() {
     return (
       <Site>
-        <div className="hero">
-          <div className="wrap">
-            <div className="text"><strong>React Native</strong></div>
-            <div className="minitext">
-              Learn once, write anywhere: Build mobile apps with React
-            </div>
-          </div>
-
+        <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
             <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
           </div>
-        </div>
+        </Hero>
 
         <section className="content wrap">
 
@@ -191,7 +186,7 @@ class AwkwardScrollingImageWithText extends Component {
               React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
             </p>
             <br />
-            <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
+            <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
 
             <h2>Use Native Code When You Need To</h2>
             <p>

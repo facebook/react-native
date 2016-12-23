@@ -67,10 +67,10 @@ const Systrace = {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('react/lib/ReactDebugTool').addDevtool(ReactSystraceDevtool);
+          require('ReactDebugTool').addDevtool(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('react/lib/ReactDebugTool').removeDevtool(ReactSystraceDevtool);
+          require('ReactDebugTool').removeDevtool(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;
@@ -213,7 +213,7 @@ if (__DEV__) {
   // other files. Therefore, calls to `require('moduleId')` are not replaced
   // with numeric IDs
   // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  require.Systrace = Systrace;
+  (require: any).Systrace = Systrace;
 }
 
 module.exports = Systrace;

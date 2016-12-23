@@ -33,10 +33,12 @@ class RCTLog {
       logFn,
       'Level "' + level + '" not one of ' + Object.keys(levelsMap)
     );
-    if (typeof global.nativeLoggingHook === 'undefined') {
+    if (typeof global.nativeLoggingHook === 'undefined' || level === 'warn') {
       // We already printed in xcode, so only log here if using a js debugger
+      // or if we're trying to send a yellow box from native down.
       console[logFn].apply(console, args);
     }
+
     return true;
   }
 }

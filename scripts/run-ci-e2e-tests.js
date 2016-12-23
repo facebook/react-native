@@ -33,8 +33,8 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // To make sure we actually installed the local version
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
-const MARKER_IOS = exec(`mktemp ${ROOT}/local-cli/generator-ios/templates/app/XXXXXXXX`).stdout.trim();
-const MARKER_ANDROID = exec(`mktemp ${ROOT}/local-cli/generator-android/templates/src/XXXXXXXX`).stdout.trim();
+const MARKER_IOS = exec(`mktemp ${ROOT}/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX`).stdout.trim();
+const MARKER_ANDROID = exec(`mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX`).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
@@ -57,7 +57,7 @@ try {
     }
   }
 
-  if (argv['android']) {
+  if (argv.android) {
     if (exec('./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"').code) {
       echo('Failed to compile Android binaries');
       exitCode = 1;
@@ -76,7 +76,7 @@ try {
   if (tryExecNTimes(
     () => {
       exec('sleep 10s');
-      return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
+      return exec(`react-native init EndToEndTest --version ${PACKAGE} --npm`).code;
     },
     numberOfRetries,
     () => rm('-rf', 'EndToEndTest'))) {
@@ -88,7 +88,7 @@ try {
 
   cd('EndToEndTest');
 
-  if (argv['android']) {
+  if (argv.android) {
     echo('Running an Android e2e test');
     echo('Installing e2e framework');
     if (tryExecNTimes(
@@ -122,7 +122,7 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('npm', ['start'], {
@@ -146,7 +146,7 @@ try {
     }
   }
 
-  if (argv['ios']) {
+  if (argv.ios) {
     echo('Running an iOS app');
     cd('ios');
     // Make sure we installed local version of react-native
@@ -156,9 +156,9 @@ try {
       throw Error(exitCode);
     }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    let packagerEnv = Object.create(process.env);
+    const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    const packagerProcess = spawn('npm', ['start', '--', '--non-persistent'],
+    const packagerProcess = spawn('npm', ['start', '--', '--nonPersistent'],
       {
         stdio: 'inherit',
         env: packagerEnv
@@ -183,15 +183,15 @@ try {
     cd('..');
   }
 
-  if (argv['js']) {
+  if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
-      echo('Could not build android package');
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+      echo('Could not build Android bundle');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
-      echo('Could not build ios package');
+    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+      echo('Could not build iOS bundle');
       exitCode = 1;
       throw Error(exitCode);
     }
@@ -200,13 +200,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    // Temporarily removed jest test until a RN fix to jest lands in a couple of days
-    // ping @bestander after 27.09.2016 if you see this
-    // if (exec(`npm test`).code) {
-    //   echo('Jest test failure');
-    //   exitCode = 1;
-    //   throw Error(exitCode);
-    // }
+    if (exec('npm test').code) {
+      echo('Jest test failure');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
   }
   exitCode = 0;
 

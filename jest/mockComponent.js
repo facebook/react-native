@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 module.exports = moduleName => {
   const RealComponent = require.requireActual(moduleName);
@@ -16,7 +17,7 @@ module.exports = moduleName => {
       const name = RealComponent.displayName || RealComponent.name;
 
       return React.createElement(
-        name.replace(/^(RTC|RK)/,''),
+        name.replace(/^(RCT|RK)/,''),
         this.props,
         this.props.children,
       );

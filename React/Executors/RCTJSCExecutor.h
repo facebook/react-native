@@ -9,7 +9,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "RCTJavaScriptExecutor.h"
+#import <React/RCTJavaScriptExecutor.h>
 
 typedef void (^RCTJavaScriptValueCallback)(JSValue *result, NSError *error);
 
@@ -51,12 +51,18 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  */
 @interface RCTJSContextProvider : NSObject
 
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode;
 
 /**
  * Marks whether the provider uses the custom implementation of JSC and not the system one.
  */
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
+/**
+ * Marks whether it is safe to try and run bytecode if given the choice.
+ */
+@property (nonatomic, readonly) BOOL tryBytecode;
 
 @end
 
@@ -73,6 +79,11 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
 
 /**
+ * Returns the bytecode file format that the underlying runtime supports.
+ */
+@property (nonatomic, readonly) int32_t bytecodeFileFormatVersion;
+
+/**
  * Specify a name for the JSContext used, which will be visible in debugging tools
  * @default is "RCTJSContext"
  */
@@ -86,16 +97,31 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 
 /**
  * @experimental
+ * Inits a new executor instance with given configuration flags. Please refer to
+ * the documentation for `RCTJSContextProvider` for more information as to their
+ * purpose.
+ */
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
+                                tryBytecode:(BOOL)tryBytecode;
+
+/**
+ * @experimental
  * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
- * The returned executor has already executed the supplied application script synchronously.
- * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL and there was no error.
- * If an error occurs, this method will return nil and specify the error in the error pointer if it is non-NULL.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL.
  */
 + (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                     applicationScript:(NSData *)applicationScript
-                                             sourceURL:(NSURL *)sourceURL
-                                             JSContext:(JSContext **)JSContext
-                                                 error:(NSError **)error;
+                                             JSContext:(JSContext **)JSContext;
+
+/**
+ * @experimental
+ * synchronouslyExecuteApplicationScript:sourceURL:JSContext:error:
+ *
+ * Run the provided JS Script/Bundle, blocking the caller until it finishes.
+ * If there is an error during execution, it is returned, otherwise `NULL` is
+ * returned.
+ */
+- (NSError *)synchronouslyExecuteApplicationScript:(NSData *)script
+                                         sourceURL:(NSURL *)sourceURL;
 
 /**
  * Invokes the given module/method directly. The completion block will be called with the

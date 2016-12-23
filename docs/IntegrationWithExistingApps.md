@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device-ios.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -72,7 +72,7 @@ The keys to integrating React Native components into your Android application ar
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device-android.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -107,11 +107,11 @@ $ sudo gem install cocoapods
 
 <block class="objc" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/iOS-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="swift" />
 
-Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a <a href="https://en.wikipedia.org/wiki/2048_(video_game)">2048</a> game. Here is what the main menu of the native application looks like without React Native.
+Assume the [app for integration](https://github.com/JoelMarcey/swift-2048) is a [2048](https://en.wikipedia.org/wiki/2048_%28video_game%29) game. Here is what the main menu of the native application looks like without React Native.
 
 <block class="objc swift" />
 
@@ -612,7 +612,7 @@ Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 If you need to access to the `DevSettingsActivity` add to your `AndroidManifest.xml`:
 
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      
+
 This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.
 
 ## Add native code
@@ -675,7 +675,7 @@ protected void onPause() {
     super.onPause();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onPause(this);
+        mReactInstanceManager.onHostPause(this);
     }
 }
 
@@ -684,7 +684,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onResume(this, this);
+        mReactInstanceManager.onHostResume(this, this);
     }
 }
 
@@ -693,7 +693,7 @@ protected void onDestroy() {
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onDestroy(this);
+        mReactInstanceManager.onHostDestroy();
     }
 }
 ```
@@ -727,6 +727,8 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 ```
 
 That's it, your activity is ready to run some JavaScript code.
+
+> If your app is targeting the Android `api level 23` or greater, make sure you have, for the development build, the `overlay permission` enabled. You can check it with `Settings.canDrawOverlays(this);`. This is required because, if your app produces an error in the react native component, the error view is displayed above all the other windows. Due to the new permissions system, introduced in the api level 23, the user needs to approve it.
 
 ## Run your app
 
@@ -810,6 +812,8 @@ if (!foundHash) {
   display('platform', isMac ? 'objc' : 'android');
 }
 </script>
+
+<block class="android" />
 
 ## Creating a release build in Android Studio
 

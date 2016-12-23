@@ -11,18 +11,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
-#import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
+#import <yoga/Yoga.h>
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTComponent.h"
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
@@ -240,6 +235,10 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
+  // Report the event across the bridge.
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                              body:@([_bridge.accessibilityManager multiplier])];
+
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
@@ -247,11 +246,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)interfaceOrientationWillChange:(NSNotification *)notification
+- (void)interfaceOrientationDidChange
 {
 #if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
-    [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+    [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
   if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
@@ -261,7 +260,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(YES)];
+                                                body:RCTExportedDimensions()];
 #pragma clang diagnostic pop
   }
 
@@ -348,8 +347,8 @@ RCT_EXPORT_MODULE()
                                              object:_bridge.accessibilityManager];
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationWillChange:)
-                                               name:UIApplicationWillChangeStatusBarOrientationNotification
+                                           selector:@selector(interfaceOrientationDidChange)
+                                               name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 #endif
 
@@ -817,7 +816,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     NSString *property = deleteAnimation.property;
     [deleteAnimation performAnimations:^{
       if ([property isEqualToString:@"scaleXY"]) {
-        removedChild.layer.transform = CATransform3DMakeScale(0, 0, 0);
+        removedChild.layer.transform = CATransform3DMakeScale(0.001, 0.001, 0.001);
       } else if ([property isEqualToString:@"opacity"]) {
         removedChild.layer.opacity = 0.0;
       } else {
@@ -1526,12 +1525,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions(NO);
+  constants[@"Dimensions"] = RCTExportedDimensions();
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
+static NSDictionary *RCTExportedDimensions()
 {
   RCTAssertMainQueue();
 
@@ -1539,8 +1538,8 @@ static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
   CGRect screenSize = [[UIScreen mainScreen] bounds];
   return @{
     @"window": @{
-        @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
-        @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
+        @"width": @(screenSize.size.width),
+        @"height": @(screenSize.size.height),
         @"scale": @(RCTScreenScale()),
     },
   };
@@ -1563,6 +1562,11 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion

@@ -5,16 +5,22 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
+const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
+
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');
-const Promise = require('promise');
 const writeSourceMap = require('./write-sourcemap');
+
 const {joinModules} = require('./util');
 
-const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
+import type ModuleTransport from '../../../../packager/react-packager/src/lib/ModuleTransport';
+import type {Bundle, ModuleGroups, OutputOptions} from '../../types.flow';
+
 const SIZEOF_UINT32 = 4;
 
 /**
@@ -24,18 +30,22 @@ const SIZEOF_UINT32 = 4;
  * The module id for the startup code (prelude, polyfills etc.) is the
  * empty string.
  */
-function saveAsIndexedFile(bundle, options, log) {
+function saveAsIndexedFile(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => void,
+): Promise<> {
   const {
     bundleOutput,
     bundleEncoding: encoding,
-    sourcemapOutput
+    sourcemapOutput,
   } = options;
 
   log('start');
   const {startupModules, lazyModules, groups} = bundle.getUnbundle();
   log('finish');
 
-  const moduleGroups = ModuleGroups(groups, lazyModules);
+  const moduleGroups = createModuleGroups(groups, lazyModules);
   const startupCode = joinModules(startupModules);
 
   log('Writing unbundle output to:', bundleOutput);
@@ -45,21 +55,25 @@ function saveAsIndexedFile(bundle, options, log) {
   ).then(() => log('Done writing unbundle output'));
 
   const sourceMap =
-    buildSourceMapWithMetaData({startupModules, lazyModules, moduleGroups});
+    buildSourceMapWithMetaData({
+      startupModules: startupModules.concat(),
+      lazyModules: lazyModules.concat(),
+      moduleGroups,
+    });
 
   return Promise.all([
     writeUnbundle,
-    writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log),
+    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log),
   ]);
 }
 
 /* global Buffer: true */
 
-const fileHeader = Buffer(4);
-fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER);
-const nullByteBuffer = Buffer(1).fill(0);
+const fileHeader = new Buffer(4);
+fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER, 0);
+const nullByteBuffer: Buffer = new Buffer(1).fill(0);
 
-function writeBuffers(stream, buffers) {
+function writeBuffers(stream, buffers: Array<Buffer>) {
   buffers.forEach(buffer => stream.write(buffer));
   return new Promise((resolve, reject) => {
     stream.on('error', reject);
@@ -69,7 +83,7 @@ function writeBuffers(stream, buffers) {
 }
 
 function nullTerminatedBuffer(contents, encoding) {
-  return Buffer.concat([Buffer(contents, encoding), nullByteBuffer]);
+  return Buffer.concat([new Buffer(contents, encoding), nullByteBuffer]);
 }
 
 function moduleToBuffer(id, code, encoding) {
@@ -98,7 +112,7 @@ function buildModuleTable(startupCode, buffers, moduleGroups) {
   const moduleIds = Array.from(moduleGroups.modulesById.keys());
   const maxId = moduleIds.reduce((max, id) => Math.max(max, id));
   const numEntries = maxId + 1;
-  const table = new Buffer(entryOffset(numEntries)).fill(0);
+  const table: Buffer = new Buffer(entryOffset(numEntries)).fill(0);
 
   // num_entries
   table.writeUInt32LE(numEntries, 0);
@@ -109,9 +123,8 @@ function buildModuleTable(startupCode, buffers, moduleGroups) {
   // entries
   let codeOffset = startupCode.length;
   buffers.forEach(({id, buffer}) => {
-    const idsInGroup = moduleGroups.groups.has(id)
-      ? [id].concat(Array.from(moduleGroups.groups.get(id)))
-      : [id];
+    const group = moduleGroups.groups.get(id);
+    const idsInGroup = group ? [id].concat(Array.from(group)) : [id];
 
     idsInGroup.forEach(moduleId => {
       const offset = entryOffset(moduleId);
@@ -132,7 +145,7 @@ function groupCode(rootCode, moduleGroup, modulesById) {
   }
   const code = [rootCode];
   for (const id of moduleGroup) {
-    code.push(modulesById.get(id).code);
+    code.push((modulesById.get(id) || {}).code);
   }
 
   return code.join('\n');
@@ -170,7 +183,10 @@ function buildTableAndContents(startupCode, modules, moduleGroups, encoding) {
   ].concat(moduleBuffers.map(({buffer}) => buffer));
 }
 
-function ModuleGroups(groups, modules) {
+function createModuleGroups(
+  groups: Map<number, Set<number>>,
+  modules: Array<ModuleTransport>,
+): ModuleGroups {
   return {
     groups,
     modulesById: new Map(modules.map(m => [m.id, m])),

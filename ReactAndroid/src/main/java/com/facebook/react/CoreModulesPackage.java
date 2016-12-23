@@ -52,20 +52,22 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
-@ReactModuleList({
-  AndroidInfoModule.class,
-  AnimationsDebugModule.class,
-  DeviceEventManagerModule.class,
-  ExceptionsManagerModule.class,
-  HeadlessJsTaskSupportModule.class,
-  SourceCodeModule.class,
-  Timing.class,
-  UIManagerModule.class,
-  // Debug only
-  DebugComponentOwnershipModule.class,
-  JSCHeapCapture.class,
-  JSCSamplingProfiler.class,
-})
+@ReactModuleList(
+  javaModules = {
+    AndroidInfoModule.class,
+    AnimationsDebugModule.class,
+    DeviceEventManagerModule.class,
+    ExceptionsManagerModule.class,
+    HeadlessJsTaskSupportModule.class,
+    SourceCodeModule.class,
+    Timing.class,
+    UIManagerModule.class,
+    // Debug only
+    DebugComponentOwnershipModule.class,
+    JSCHeapCapture.class,
+    JSCSamplingProfiler.class,
+  }
+)
 /* package */ class CoreModulesPackage extends LazyReactPackage {
 
   private final ReactInstanceManager mReactInstanceManager;

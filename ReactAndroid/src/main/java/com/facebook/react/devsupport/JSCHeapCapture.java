@@ -22,7 +22,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = "JSCHeapCapture")
+// This module is being called only by Java via the static method "captureHeap" that
+// requires it to alreay be initialized, thus we eagerly initialize this module
+@ReactModule(name = "JSCHeapCapture", needsEagerInit = true)
 public class JSCHeapCapture extends ReactContextBaseJavaModule {
   public interface HeapCapture extends JavaScriptModule {
     void captureHeap(String path);
