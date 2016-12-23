@@ -24,8 +24,8 @@ script:
 
 env:
   matrix:
-    - TEST_TYPE=e2e-objc
     - TEST_TYPE=e2e-objc-tvos
+    - TEST_TYPE=e2e-objc
     - TEST_TYPE=objc-ios
     - TEST_TYPE=objc-tvos
     - TEST_TYPE=js
