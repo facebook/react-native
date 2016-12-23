@@ -427,6 +427,14 @@ var pinned = [
     infoLink: 'http://www.vogue.com/app',
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
+  },
+  {
+    name: 'DN Prio',
+    icon: 'https://dl.dropboxusercontent.com/u/12645300/prioicon.png',
+    linkAppStore: 'https://itunes.apple.com/se/app/dn.prio/id941561366?l=en&mt=8',
+    infoLink: 'http://www.dn.se',
+    infoTitle: '',
+    author: 'Dagens Nyheter',
   }
 ];
 
