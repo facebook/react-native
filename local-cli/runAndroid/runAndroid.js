@@ -76,8 +76,11 @@ function tryRunAdbReverse(device) {
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
+  const adbHost = args.adbHost || process.env.ADB_HOST || 'localhost';
+  const adbPort = args.adbPort || process.env.ADB_PORT || '5037';
+  const adbAddrArg = ['-H', adbHost, '-P', adbPort].join(' ');
   try {
-    adb.getDevices().map((device) => tryRunAdbReverse(device));
+    adb.getDevices(adbAddrArg).map((device) => tryRunAdbReverse(device));
 
     const gradleArgs = [];
     if (args.variant) {
@@ -158,13 +161,13 @@ function buildAndRun(args) {
 
     const adbPath = getAdbPath();
 
-    const devices = adb.getDevices();
+    const devices = adb.getDevices(adbAddrArg);
 
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
         const adbArgs =
-          ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+          [adbAddrArg, '-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -176,7 +179,7 @@ function buildAndRun(args) {
       // If we cannot execute based on adb devices output, fall back to
       // shell am start
       const fallbackAdbArgs = [
-        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+        adbAddrArg, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
       ];
       console.log(chalk.bold(
         `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -251,5 +254,13 @@ module.exports = {
     default: 'Debug'
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--adb-host [string]',
+    description: 'Name of adb server host (default: localhost)',
+    default: ''
+  }, {
+    command: '--adb-port [string]',
+    description: 'Port of adb server (default: 5037)',
+    default: ''
   }],
 };
