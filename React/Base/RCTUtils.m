@@ -305,8 +305,7 @@ CGFloat RCTRoundPixelValue(CGFloat value)
 
 CGFloat RCTCeilPixelValue(CGFloat value)
 {
-  CGFloat scale = RCTScreenScale();
-  return ceil((value * scale) / scale);
+  return ceil(value);
 }
 
 CGFloat RCTFloorPixelValue(CGFloat value)
