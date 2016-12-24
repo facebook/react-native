@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTFPSGRAPH_H
+#define RCTFPSGRAPH_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
@@ -27,3 +30,5 @@
 @end
 
 #endif
+
+#endif //RCTFPSGRAPH_H

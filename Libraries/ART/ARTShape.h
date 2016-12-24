@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTSHAPE_H
+#define ARTSHAPE_H
+
 #import <Foundation/Foundation.h>
 
 #import "ARTRenderable.h"
@@ -16,3 +19,5 @@
 @property (nonatomic, assign) CGPathRef d;
 
 @end
+
+#endif //ARTSHAPE_H

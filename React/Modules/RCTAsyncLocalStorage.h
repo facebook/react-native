@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTASYNCLOCALSTORAGE_H
+#define RCTASYNCLOCALSTORAGE_H
+
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 
@@ -34,3 +37,5 @@
 + (void)clearAllData;
 
 @end
+
+#endif //RCTASYNCLOCALSTORAGE_H

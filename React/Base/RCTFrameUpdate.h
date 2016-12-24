@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTFRAMEUPDATE_H
+#define RCTFRAMEUPDATE_H
+
 #import <Foundation/Foundation.h>
 
 @class CADisplayLink;
@@ -52,3 +55,5 @@
 @property (nonatomic, copy) dispatch_block_t pauseCallback;
 
 @end
+
+#endif //RCTFRAMEUPDATE_H

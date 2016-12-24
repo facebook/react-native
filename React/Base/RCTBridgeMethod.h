@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBRIDGEMETHOD_H
+#define RCTBRIDGEMETHOD_H
+
 #import <Foundation/Foundation.h>
 
 @class RCTBridge;
@@ -27,3 +30,5 @@ typedef NS_ENUM(NSUInteger, RCTFunctionType) {
              arguments:(NSArray *)arguments;
 
 @end
+
+#endif //RCTBRIDGEMETHOD_H

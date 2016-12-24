@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTKEYBOARDOBSERVER_H
+#define RCTKEYBOARDOBSERVER_H
+
 #import <React/RCTEventEmitter.h>
 
 @interface RCTKeyboardObserver : RCTEventEmitter
 
 @end
+
+#endif //RCTKEYBOARDOBSERVER_H

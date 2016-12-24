@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTEXTSELECTION_H
+#define RCTTEXTSELECTION_H
+
 #import <React/RCTConvert.h>
 
 /**
@@ -26,3 +29,5 @@
 + (RCTTextSelection *)RCTTextSelection:(id)json;
 
 @end
+
+#endif //RCTTEXTSELECTION_H

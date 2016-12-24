@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTASSETSLIBRARYREQUESTHANDLER_H
+#define RCTASSETSLIBRARYREQUESTHANDLER_H
+
 #import <React/RCTBridge.h>
 #import <React/RCTURLRequestHandler.h>
 
@@ -24,3 +27,5 @@
 @property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
 
 @end
+
+#endif //RCTASSETSLIBRARYREQUESTHANDLER_H

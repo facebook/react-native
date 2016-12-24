@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTBRUSH_H
+#define ARTBRUSH_H
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
@@ -33,3 +36,5 @@
 - (void)paint:(CGContextRef)context;
 
 @end
+
+#endif //ARTBRUSH_H

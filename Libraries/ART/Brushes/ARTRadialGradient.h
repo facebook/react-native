@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTRADIALGRADIENT_H
+#define ARTRADIALGRADIENT_H
+
 #import "ARTBrush.h"
 
 @interface ARTRadialGradient : ARTBrush
 
 @end
+
+#endif //ARTRADIALGRADIENT_H

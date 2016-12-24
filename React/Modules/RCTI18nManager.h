@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTI18NMANAGER_H
+#define RCTI18NMANAGER_H
+
 #import <React/RCTBridgeModule.h>
 
 /**
@@ -17,3 +20,5 @@
 @interface RCTI18nManager : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTI18NMANAGER_H

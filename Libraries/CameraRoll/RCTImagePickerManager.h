@@ -6,6 +6,9 @@
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
+
+#ifndef RCTIMAGEPICKERMANAGER_H
+#define RCTIMAGEPICKERMANAGER_H
  */
 
 #import <React/RCTBridgeModule.h>
@@ -13,3 +16,5 @@
 @interface RCTImagePickerManager : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTIMAGEPICKERMANAGER_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTRANSFORMANIMATEDNODE_H
+#define RCTTRANSFORMANIMATEDNODE_H
+
 #import "RCTAnimatedNode.h"
 
 @interface RCTTransformAnimatedNode : RCTAnimatedNode
@@ -14,3 +17,5 @@
 - (NSDictionary<NSString *, NSObject *> *)propsDictionary;
 
 @end
+
+#endif //RCTTRANSFORMANIMATEDNODE_H

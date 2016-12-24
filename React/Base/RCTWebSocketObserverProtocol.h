@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTWEBSOCKETOBSERVERPROTOCOL_H
+#define RCTWEBSOCKETOBSERVERPROTOCOL_H
+
 #import <React/RCTDefines.h>
 
 #if RCT_DEV // Only supported in dev mode
@@ -23,3 +26,5 @@
 @end
 
 #endif
+
+#endif //RCTWEBSOCKETOBSERVERPROTOCOL_H

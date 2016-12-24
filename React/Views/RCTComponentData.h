@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCOMPONENTDATA_H
+#define RCTCOMPONENTDATA_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTComponent.h>
@@ -36,3 +39,5 @@
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry;
 
 @end
+
+#endif //RCTCOMPONENTDATA_H

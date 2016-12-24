@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTGROUPMANAGER_H
+#define ARTGROUPMANAGER_H
+
 #import "ARTNodeManager.h"
 
 @interface ARTGroupManager : ARTNodeManager
 
 @end
+
+#endif //ARTGROUPMANAGER_H

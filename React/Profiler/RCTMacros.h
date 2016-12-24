@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMACROS_H
+#define RCTMACROS_H
+
 #define _CONCAT(A, B) A##B
 #define CONCAT(A, B) _CONCAT(A, B)
 
@@ -16,3 +19,5 @@
 
 #define SYMBOL_NAME(name) CONCAT(__USER_LABEL_PREFIX__, name)
 #define SYMBOL_NAME_PIC(name) CONCAT(SYMBOL_NAME(name), PIC_MODIFIER)
+
+#endif //RCTMACROS_H

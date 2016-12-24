@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTABBAR_H
+#define RCTTABBAR_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTTabBar : UIView
@@ -17,3 +20,5 @@
 @property (nonatomic, assign) BOOL translucent;
 
 @end
+
+#endif //RCTTABBAR_H

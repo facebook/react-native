@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTSURFACEVIEWMANAGER_H
+#define ARTSURFACEVIEWMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface ARTSurfaceViewManager : RCTViewManager
 
 @end
+
+#endif //ARTSURFACEVIEWMANAGER_H

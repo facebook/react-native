@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTI18NUTIL_H
+#define RCTI18NUTIL_H
+
 #import <Foundation/Foundation.h>
 
 /**
@@ -25,3 +28,5 @@
 + (id)sharedInstance;
 
 @end
+
+#endif //RCTI18NUTIL_H

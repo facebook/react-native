@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMODALHOSTVIEWCONTROLLER_H
+#define RCTMODALHOSTVIEWCONTROLLER_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTModalHostViewController : UIViewController
@@ -18,3 +21,5 @@
 #endif
 
 @end
+
+#endif //RCTMODALHOSTVIEWCONTROLLER_H

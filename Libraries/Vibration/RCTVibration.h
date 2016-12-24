@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVIBRATION_H
+#define RCTVIBRATION_H
+
 #import <React/RCTBridgeModule.h>
 
 @interface RCTVibration : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTVIBRATION_H

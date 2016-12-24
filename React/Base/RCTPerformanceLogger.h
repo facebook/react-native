@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPERFORMANCELOGGER_H
+#define RCTPERFORMANCELOGGER_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, RCTPLTag) {
@@ -102,3 +105,5 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
 - (NSArray<NSString *> *)labelsForTags;
 
 @end
+
+#endif //RCTPERFORMANCELOGGER_H

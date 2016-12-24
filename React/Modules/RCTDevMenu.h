@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDEVMENU_H
+#define RCTDEVMENU_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -116,3 +119,5 @@
 @property (nonatomic, readonly) RCTDevMenu *devMenu;
 
 @end
+
+#endif //RCTDEVMENU_H

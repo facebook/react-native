@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTROOTVIEWDELEGATE_H
+#define RCTROOTVIEWDELEGATE_H
+
 #import <Foundation/Foundation.h>
 
 @class RCTRootView;
@@ -23,3 +26,5 @@
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView;
 
 @end
+
+#endif //RCTROOTVIEWDELEGATE_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTVNAVIGATIONEVENTEMITTER_H
+#define RCTTVNAVIGATIONEVENTEMITTER_H
+
 #import "RCTEventEmitter.h"
 
 RCT_EXTERN NSString *const RCTTVNavigationEventNotification;
@@ -14,3 +17,5 @@ RCT_EXTERN NSString *const RCTTVNavigationEventNotification;
 @interface RCTTVNavigationEventEmitter : RCTEventEmitter
 
 @end
+
+#endif //RCTTVNAVIGATIONEVENTEMITTER_H

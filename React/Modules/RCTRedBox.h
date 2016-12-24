@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTREDBOX_H
+#define RCTREDBOX_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -36,3 +39,5 @@
 @property (nonatomic, readonly) RCTRedBox *redBox;
 
 @end
+
+#endif //RCTREDBOX_H

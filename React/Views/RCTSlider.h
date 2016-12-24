@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSLIDER_H
+#define RCTSLIDER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -27,3 +30,5 @@
 
 
 @end
+
+#endif //RCTSLIDER_H

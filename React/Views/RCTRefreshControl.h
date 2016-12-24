@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTREFRESHCONTROL_H
+#define RCTREFRESHCONTROL_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -17,3 +20,5 @@
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 
 @end
+
+#endif //RCTREFRESHCONTROL_H

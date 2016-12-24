@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJSCERRORHANDLING_H
+#define RCTJSCERRORHANDLING_H
+
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import <React/RCTDefines.h>
@@ -31,3 +34,5 @@ RCT_EXTERN NSError *RCTNSErrorFromJSError(JSValue *exception);
  @see RCTNSErrorFromJSError for details
  */
 RCT_EXTERN NSError *RCTNSErrorFromJSErrorRef(JSValueRef exceptionRef, JSGlobalContextRef ctx);
+
+#endif //RCTJSCERRORHANDLING_H

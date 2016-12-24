@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTUTILS_H
+#define RCTUTILS_H
+
 #import <tgmath.h>
 
 #import <CoreGraphics/CoreGraphics.h>
@@ -129,3 +132,5 @@ RCT_EXTERN NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSStr
 RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value);
 
 NS_ASSUME_NONNULL_END
+
+#endif //RCTUTILS_H

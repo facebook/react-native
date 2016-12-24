@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMODULEMETHOD_H
+#define RCTMODULEMETHOD_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeMethod.h>
@@ -32,3 +35,5 @@
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
 @end
+
+#endif //RCTMODULEMETHOD_H

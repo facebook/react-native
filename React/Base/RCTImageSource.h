@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTIMAGESOURCE_H
+#define RCTIMAGESOURCE_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTConvert.h>
@@ -42,3 +45,5 @@
 + (NSArray<RCTImageSource *> *)RCTImageSourceArray:(id)json;
 
 @end
+
+#endif //RCTIMAGESOURCE_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTIMAGELOADER_H
+#define RCTIMAGELOADER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -231,3 +234,5 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (float)decoderPriority;
 
 @end
+
+#endif //RCTIMAGELOADER_H

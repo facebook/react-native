@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCOMPONENT_H
+#define RCTCOMPONENT_H
+
 #import <CoreGraphics/CoreGraphics.h>
 
 #import <Foundation/Foundation.h>
@@ -63,3 +66,5 @@ static inline BOOL RCTIsReactRootView(NSNumber *reactTag)
 {
   return reactTag.integerValue % 10 == 1;
 }
+
+#endif //RCTCOMPONENT_H

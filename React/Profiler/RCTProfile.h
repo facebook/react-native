@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPROFILE_H
+#define RCTPROFILE_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTAssert.h>
@@ -233,3 +236,5 @@ RCT_EXTERN void RCTProfileHideControls(void);
 #define RCTProfileHideControls(...)
 
 #endif
+
+#endif //RCTPROFILE_H

@@ -8,9 +8,14 @@
  *
  */
 
+#ifndef RCTIMAGEBLURUTILS_H
+#define RCTIMAGEBLURUTILS_H
+
 #import <Accelerate/Accelerate.h>
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
 
 RCT_EXTERN UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius);
+
+#endif //RCTIMAGEBLURUTILS_H

@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTLOCATIONOBSERVER_H
+#define RCTLOCATIONOBSERVER_H
+
 #import <React/RCTEventEmitter.h>
 
 @interface RCTLocationObserver : RCTEventEmitter
 
 @end
+
+#endif //RCTLOCATIONOBSERVER_H

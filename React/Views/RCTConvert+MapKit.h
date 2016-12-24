@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCONVERT+MAPKIT_H
+#define RCTCONVERT+MAPKIT_H
+
 #import <MapKit/MapKit.h>
 
 #import <React/RCTConvert.h>
@@ -27,3 +30,5 @@
 + (NSArray<RCTMapOverlay *> *)RCTMapOverlayArray:(id)json;
 
 @end
+
+#endif //RCTCONVERT+MAPKIT_H

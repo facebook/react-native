@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJAVASCRIPTEXECUTOR_H
+#define RCTJAVASCRIPTEXECUTOR_H
+
 #import <objc/runtime.h>
 
 #import <JavaScriptCore/JavaScriptCore.h>
@@ -84,3 +87,5 @@ typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
 @end
+
+#endif //RCTJAVASCRIPTEXECUTOR_H

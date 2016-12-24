@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNETWORKTASK_H
+#define RCTNETWORKTASK_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTURLRequestDelegate.h>
@@ -47,3 +50,5 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 - (void)cancel;
 
 @end
+
+#endif //RCTNETWORKTASK_H

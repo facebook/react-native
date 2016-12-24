@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSETTINGSMANAGER_H
+#define RCTSETTINGSMANAGER_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -16,3 +19,5 @@
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults;
 
 @end
+
+#endif //RCTSETTINGSMANAGER_H

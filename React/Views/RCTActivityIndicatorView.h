@@ -7,7 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTACTIVITYINDICATORVIEW_H
+#define RCTACTIVITYINDICATORVIEW_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTActivityIndicatorView : UIActivityIndicatorView
 @end
+
+#endif //RCTACTIVITYINDICATORVIEW_H

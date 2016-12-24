@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNATIVEANIMATEDMODULE_H
+#define RCTNATIVEANIMATEDMODULE_H
+
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTEventEmitter.h>
@@ -16,3 +19,5 @@
 @interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver>
 
 @end
+
+#endif //RCTNATIVEANIMATEDMODULE_H

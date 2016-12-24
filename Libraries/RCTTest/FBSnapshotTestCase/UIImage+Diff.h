@@ -28,6 +28,9 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#ifndef UIIMAGE_DIFF_H
+#define UIIMAGE_DIFF_H
+
 #import <UIKit/UIKit.h>
 
 @interface UIImage (Diff)
@@ -35,3 +38,5 @@
 - (UIImage *)diffWithImage:(UIImage *)image;
 
 @end
+
+#endif //UIIMAGE_DIFF_H

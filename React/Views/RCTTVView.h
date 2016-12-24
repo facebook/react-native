@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTVVIEW_H
+#define RCTTVVIEW_H
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -31,3 +34,5 @@
 @property (nonatomic, assign) BOOL hasTVPreferredFocus;
 
 @end
+
+#endif //RCTTVVIEW_H

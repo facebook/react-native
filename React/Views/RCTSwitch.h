@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSWITCH_H
+#define RCTSWITCH_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -17,3 +20,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif //RCTSWITCH_H

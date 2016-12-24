@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTGROUP_H
+#define ARTGROUP_H
+
 #import <Foundation/Foundation.h>
 
 #import "ARTContainer.h"
@@ -17,3 +20,5 @@
 @property (nonatomic, assign) CGRect clipping;
 
 @end
+
+#endif //ARTGROUP_H

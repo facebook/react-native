@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTTEXTFRAME_H
+#define ARTTEXTFRAME_H
+
 #import <CoreText/CoreText.h>
 
 // A little helper to make sure we have a set of lines including width ready for use.
@@ -23,3 +26,5 @@ typedef struct {
   CTLineRef *lines;
   CGFloat *widths; // Width of each line
 } ARTTextFrame;
+
+#endif //ARTTEXTFRAME_H

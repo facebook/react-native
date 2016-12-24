@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNAVITEM_H
+#define RCTNAVITEM_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -39,3 +42,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onRightButtonPress;
 
 @end
+
+#endif //RCTNAVITEM_H

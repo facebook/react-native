@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTFONT_H
+#define RCTFONT_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTConvert.h>
@@ -38,3 +41,5 @@
 + (UIFont *)UIFont:(id)json;
 
 @end
+
+#endif //RCTFONT_H

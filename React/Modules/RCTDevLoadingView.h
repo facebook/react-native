@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDEVLOADINGVIEW_H
+#define RCTDEVLOADINGVIEW_H
+
 #import <React/RCTBridgeModule.h>
 
 @interface RCTDevLoadingView : NSObject <RCTBridgeModule>
@@ -15,3 +18,5 @@
 - (void)updateProgress:(RCTLoadingProgress *)progress;
 
 @end
+
+#endif //RCTDEVLOADINGVIEW_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMAPANNOTATION_H
+#define RCTMAPANNOTATION_H
+
 #import <MapKit/MapKit.h>
 
 @interface RCTMapAnnotation : MKPointAnnotation <MKAnnotation>
@@ -24,3 +27,5 @@
 @property (nonatomic, assign) BOOL draggable;
 
 @end
+
+#endif //RCTMAPANNOTATION_H

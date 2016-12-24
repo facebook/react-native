@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSWITCHMANAGER_H
+#define RCTSWITCHMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTSwitchManager : RCTViewManager
 
 @end
+
+#endif //RCTSWITCHMANAGER_H

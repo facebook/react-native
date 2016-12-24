@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTNODE_H
+#define ARTNODE_H
+
 #import <React/UIView+React.h>
 
 /**
@@ -30,3 +33,5 @@
 - (void)renderLayerTo:(CGContextRef)context;
 
 @end
+
+#endif //ARTNODE_H

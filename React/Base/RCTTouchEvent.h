@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTOUCHEVENT_H
+#define RCTTOUCHEVENT_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTEventDispatcher.h>
@@ -23,3 +26,5 @@
                    changedIndexes:(NSArray<NSNumber *> *)changedIndexes
                     coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 @end
+
+#endif //RCTTOUCHEVENT_H

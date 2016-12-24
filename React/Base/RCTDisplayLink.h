@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDISPLAYLINK_H
+#define RCTDISPLAYLINK_H
+
 #import <Foundation/Foundation.h>
 
 @protocol RCTBridgeModule;
@@ -21,3 +24,5 @@
 - (void)addToRunLoop:(NSRunLoop *)runLoop;
 
 @end
+
+#endif //RCTDISPLAYLINK_H

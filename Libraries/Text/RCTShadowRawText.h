@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSHADOWRAWTEXT_H
+#define RCTSHADOWRAWTEXT_H
+
 #import <React/RCTShadowView.h>
 
 @interface RCTShadowRawText : RCTShadowView
@@ -14,3 +17,5 @@
 @property (nonatomic, copy) NSString *text;
 
 @end
+
+#endif //RCTSHADOWRAWTEXT_H

@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTFRAMEANIMATION_H
+#define RCTFRAMEANIMATION_H
+
 #import "RCTAnimationDriver.h"
 
 @interface RCTFrameAnimation : NSObject<RCTAnimationDriver>
 
 @end
+
+#endif //RCTFRAMEANIMATION_H

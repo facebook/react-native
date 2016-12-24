@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMAPOVERLAY_H
+#define RCTMAPOVERLAY_H
+
 #import <MapKit/MapKit.h>
 
 @interface RCTMapOverlay : MKPolyline <MKAnnotation>
@@ -16,3 +19,5 @@
 @property (nonatomic, assign) CGFloat lineWidth;
 
 @end
+
+#endif //RCTMAPOVERLAY_H

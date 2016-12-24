@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCONVERT_CORELOCATION_H
+#define RCTCONVERT_CORELOCATION_H
+
 #import <CoreLocation/CoreLocation.h>
 
 #import <React/RCTConvert.h>
@@ -18,3 +21,5 @@
 + (CLLocationCoordinate2D)CLLocationCoordinate2D:(id)json;
 
 @end
+
+#endif //RCTCONVERT_CORELOCATION_H

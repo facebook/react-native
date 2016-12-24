@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVIEW_H
+#define RCTVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBorderStyle.h>
@@ -102,3 +105,5 @@
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
 @end
+
+#endif //RCTVIEW_H

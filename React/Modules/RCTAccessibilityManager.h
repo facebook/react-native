@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTACCESSIBILITYMANAGER_H
+#define RCTACCESSIBILITYMANAGER_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridge.h>
@@ -30,3 +33,5 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 @property (nonatomic, readonly) RCTAccessibilityManager *accessibilityManager;
 
 @end
+
+#endif //RCTACCESSIBILITYMANAGER_H

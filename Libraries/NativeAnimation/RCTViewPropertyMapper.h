@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVIEWPROPERTYMAPPER_H
+#define RCTVIEWPROPERTYMAPPER_H
+
 #import <Foundation/Foundation.h>
 
 @class RCTUIManager;
@@ -21,3 +24,5 @@
 - (void)updateViewWithDictionary:(NSDictionary<NSString *, NSObject *> *)updates;
 
 @end
+
+#endif //RCTVIEWPROPERTYMAPPER_H

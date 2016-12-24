@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTANIMATEDNODE_H
+#define RCTANIMATEDNODE_H
+
 #import <Foundation/Foundation.h>
 
 @interface RCTAnimatedNode : NSObject
@@ -46,3 +49,5 @@
 - (void)detachNode NS_REQUIRES_SUPER;
 
 @end
+
+#endif //RCTANIMATEDNODE_H

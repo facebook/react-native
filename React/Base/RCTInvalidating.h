@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTINVALIDATING_H
+#define RCTINVALIDATING_H
+
 #import <Foundation/Foundation.h>
 
 @protocol RCTInvalidating <NSObject>
@@ -14,3 +17,5 @@
 - (void)invalidate;
 
 @end
+
+#endif //RCTINVALIDATING_H

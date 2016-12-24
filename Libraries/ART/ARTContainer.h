@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTCONTAINER_H
+#define ARTCONTAINER_H
+
 #import <Foundation/Foundation.h>
 
 @protocol ARTContainer <NSObject>
@@ -16,3 +19,5 @@
 - (void)invalidate;
 
 @end
+
+#endif //ARTCONTAINER_H

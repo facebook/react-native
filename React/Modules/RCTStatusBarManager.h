@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSTATUSBARMANAGER_H
+#define RCTSTATUSBARMANAGER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
@@ -24,3 +27,5 @@
 @interface RCTStatusBarManager : RCTEventEmitter
 
 @end
+
+#endif //RCTSTATUSBARMANAGER_H

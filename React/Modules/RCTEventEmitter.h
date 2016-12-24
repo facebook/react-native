@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTEVENTEMITTER_H
+#define RCTEVENTEMITTER_H
+
 #import <React/RCTBridge.h>
 
 /**
@@ -39,3 +42,5 @@
 - (void)stopObserving;
 
 @end
+
+#endif //RCTEVENTEMITTER_H

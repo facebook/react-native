@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSHADOWTEXT_H
+#define RCTSHADOWTEXT_H
+
 #import <React/RCTShadowView.h>
 #import <React/RCTTextDecorationLineType.h>
 
@@ -53,3 +56,5 @@ extern NSString *const RCTReactTagAttributeName;
 - (void)recomputeText;
 
 @end
+
+#endif //RCTSHADOWTEXT_H
