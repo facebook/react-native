@@ -15,13 +15,13 @@ const AssetServer = require('../AssetServer');
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
-const ProgressBar = require('progress');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const mime = require('mime-types');
 const path = require('path');
+const terminal = require('../lib/terminal');
 const url = require('url');
 
 const debug = require('debug')('ReactNativePackager:Server');
@@ -31,12 +31,12 @@ import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
+import type {Reporter} from '../lib/reporting';
 
 const {
   createActionStartEntry,
   createActionEndEntry,
   log,
-  print,
 } = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
@@ -107,6 +107,9 @@ const validateOpts = declareOpts({
   silent: {
     type: 'boolean',
     default: false,
+  },
+  reporter: {
+    type: 'object',
   },
 });
 
@@ -222,12 +225,17 @@ class Server {
   _bundler: Bundler;
   _debouncedFileChangeHandler: (filePath: string) => mixed;
   _hmrFileChangeListener: (type: string, filePath: string) => mixed;
+  _reporter: Reporter;
 
-  constructor(options: {watch?: boolean}) {
+  constructor(options: {
+    reporter: Reporter,
+    watch?: boolean,
+  }) {
     const opts = this._opts = validateOpts(options);
     const processFileChange =
       ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
+    this._reporter = options.reporter;
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
@@ -242,6 +250,7 @@ class Server {
     bundlerOpts.assetServer = this._assetServer;
     bundlerOpts.allowBundleUpdates = options.watch;
     bundlerOpts.watch = options.watch;
+    bundlerOpts.reporter = options.reporter;
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
@@ -264,7 +273,9 @@ class Server {
           this._bundles[key].then(bundle => {
             const deps = bundleDeps.get(bundle);
             filePaths.forEach(filePath => {
+              // $FlowFixMe(>=0.37.0)
               if (deps.files.has(filePath)) {
+                // $FlowFixMe(>=0.37.0)
                 deps.outdated.add(filePath);
               }
             });
@@ -452,7 +463,7 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack); // eslint-disable-line no-console-disallow
+          terminal.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
     } else {
@@ -511,10 +522,10 @@ class Server {
     const assetPath: string = urlObj.pathname.match(/^\/assets\/(.+)$/);
 
     const processingAssetRequestLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Processing asset request',
         asset: assetPath[1],
-      })), ['asset']);
+      }));
 
     /* $FlowFixMe: query may be empty for invalid URLs */
     this._assetServer.get(assetPath[1], urlObj.query.platform)
@@ -527,7 +538,7 @@ class Server {
           }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
           process.nextTick(() => {
-            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+            log(createActionEndEntry(processingAssetRequestLogEntry));
           });
         },
         error => {
@@ -557,19 +568,26 @@ class Server {
     if (optionsJson in this._bundles) {
       return this._bundles[optionsJson].then(bundle => {
         const deps = bundleDeps.get(bundle);
+        // $FlowFixMe(>=0.37.0)
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
 
           const updatingExistingBundleLogEntry =
-            print(log(createActionStartEntry({
+            log(createActionStartEntry({
               action_name: 'Updating existing bundle',
               outdated_modules: outdated.size,
-            })), ['outdated_modules']);
+            }));
+          this._reporter.update({
+            type: 'bundle_update_existing',
+            entryFilePath: options.entryFile,
+            outdatedModuleCount: outdated.size,
+          });
 
           debug('Attempt to update existing bundle');
 
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
+          // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
           const opts = bundleOpts(options);
@@ -627,10 +645,7 @@ class Server {
 
                 bundle.invalidateSource();
 
-                print(
-                  log(createActionEndEntry(updatingExistingBundleLogEntry)),
-                  ['outdated_modules'],
-                );
+                log(createActionEndEntry(updatingExistingBundleLogEntry));
 
                 debug('Successfully updated existing bundle');
                 return bundle;
@@ -684,27 +699,32 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
+    this._reporter.update({
+      type: 'bundle_requested',
+      entryFilePath: options.entryFile,
+    });
     const requestingBundleLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Requesting bundle',
         bundle_url: req.url,
         entry_point: options.entryFile,
-      })), ['bundle_url']);
+      }));
 
-    let consoleProgress = () => {};
-    if (process.stdout.isTTY && !this._opts.silent) {
-      const bar = new ProgressBar('transformed :current/:total (:percent)', {
-        complete: '=',
-        incomplete: ' ',
-        width: 40,
-        total: 1,
-      });
-      consoleProgress = debouncedTick(bar);
+    let reportProgress = () => {};
+    if (!this._opts.silent) {
+      reportProgress = (transformedFileCount, totalFileCount) => {
+        this._reporter.update({
+          type: 'bundle_transform_progressed',
+          entryFilePath: options.entryFile,
+          transformedFileCount,
+          totalFileCount,
+        });
+      };
     }
 
     const mres = MultipartResponse.wrap(req, res);
     options.onProgress = (done, total) => {
-      consoleProgress(done, total);
+      reportProgress(done, total);
       mres.writeChunk({'Content-Type': 'application/json'}, JSON.stringify({done, total}));
     };
 
@@ -712,6 +732,10 @@ class Server {
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
+        this._reporter.update({
+          type: 'bundle_built',
+          entryFilePath: options.entryFile,
+        });
         if (requestType === 'bundle') {
           debug('Generating source code');
           const bundleSource = p.getSource({
@@ -732,7 +756,7 @@ class Server {
             mres.end(bundleSource);
           }
           debug('Finished response');
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'map') {
           let sourceMap = p.getSourceMap({
             minify: options.minify,
@@ -745,12 +769,12 @@ class Server {
 
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
           mres.setHeader('Content-Type', 'application/json');
           mres.end(assetsList);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         }
       },
       error => this._handleError(mres, this.optionsHash(options), error)
@@ -763,7 +787,7 @@ class Server {
 
   _symbolicate(req: IncomingMessage, res: ServerResponse) {
     const symbolicatingLogEntry =
-      print(log(createActionStartEntry('Symbolicating')));
+      log(createActionStartEntry('Symbolicating'));
 
     /* $FlowFixMe: where is `rowBody` defined? Is it added by
      * the `connect` framework? */
@@ -816,7 +840,7 @@ class Server {
       stack => {
         res.end(JSON.stringify({stack: stack}));
         process.nextTick(() => {
-          print(log(createActionEndEntry(symbolicatingLogEntry)));
+          log(createActionEndEntry(symbolicatingLogEntry));
         });
       },
       error => {
@@ -886,7 +910,7 @@ class Server {
     entryModuleOnly: boolean,
     generateSourceMaps: boolean,
     assetPlugins: Array<string>,
-    onProgress?: () => mixed,
+    onProgress?: (doneCont: number, totalCount: number) => mixed,
   } {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
@@ -953,25 +977,6 @@ class Server {
 
 function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
   return array.length === set.size && array.every(set.has, set);
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 module.exports = Server;

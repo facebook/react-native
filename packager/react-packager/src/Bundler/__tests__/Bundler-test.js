@@ -69,20 +69,20 @@ describe('Bundler', function() {
     getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
 
-    Resolver.mockImpl(function() {
+    Resolver.mockImplementation(function() {
       return {
         getDependencies: getDependencies,
         getModuleSystemDependencies: getModuleSystemDependencies,
       };
     });
 
-    fs.statSync.mockImpl(function() {
+    fs.statSync.mockImplementation(function() {
       return {
         isDirectory: () => true
       };
     });
 
-    fs.readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImplementation(function(file, callback) {
       callback(null, '{"json":true}');
     });
 
@@ -113,7 +113,7 @@ describe('Bundler', function() {
       }),
     ];
 
-    getDependencies.mockImpl((main, options, transformOptions) =>
+    getDependencies.mockImplementation((main, options, transformOptions) =>
       Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules,
@@ -123,18 +123,18 @@ describe('Bundler', function() {
       })
     );
 
-    getModuleSystemDependencies.mockImpl(function() {
+    getModuleSystemDependencies.mockImplementation(function() {
       return [];
     });
 
-    sizeOf.mockImpl(function(path, cb) {
+    sizeOf.mockImplementation(function(path, cb) {
       cb(null, { width: 50, height: 100 });
     });
   });
 
   it('create a bundle', function() {
-    assetServer.getAssetData.mockImpl(() => {
-      return {
+    assetServer.getAssetData.mockImplementation(() => {
+      return Promise.resolve({
         scales: [1,2,3],
         files: [
           '/root/img/img.png',
@@ -144,7 +144,7 @@ describe('Bundler', function() {
         hash: 'i am a hash',
         name: 'img',
         type: 'png',
-      };
+      });
     });
 
     return bundler.bundle({
@@ -170,8 +170,8 @@ describe('Bundler', function() {
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
-          width: 25,
-          height: 50,
+          width: 50,
+          height: 100,
           scales: [1, 2, 3],
           files: [
             '/root/img/img.png',
@@ -217,7 +217,7 @@ describe('Bundler', function() {
       name: 'img',
       type: 'png',
     };
-    assetServer.getAssetData.mockImpl(() => mockAsset);
+    assetServer.getAssetData.mockImplementation(() => Promise.resolve(mockAsset));
 
     return bundler.bundle({
       entryFile: '/root/foo.js',
@@ -230,8 +230,8 @@ describe('Bundler', function() {
         __packager_asset: true,
         fileSystemLocation: '/root/img',
         httpServerLocation: '/assets/img',
-        width: 25,
-        height: 50,
+        width: 50,
+        height: 100,
         scales: [1, 2, 3],
         files: [
           '/root/img/img.png',
@@ -242,12 +242,12 @@ describe('Bundler', function() {
         name: 'img',
         type: 'png',
         extraReverseHash: 'hsah a ma i',
-        extraPixelCount: 1250,
+        extraPixelCount: 5000,
       }]);
     });
   });
 
-  pit('gets the list of dependencies from the resolver', function() {
+  it('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>
       // jest calledWith does not support jasmine.any
@@ -279,9 +279,9 @@ describe('Bundler', function() {
 
   describe('getOrderedDependencyPaths', () => {
     beforeEach(() => {
-      assetServer.getAssetData.mockImpl(function(relPath) {
+      assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {
-          return {
+          return Promise.resolve({
             scales: [1,2,3],
             files: [
               '/root/img/new_image.png',
@@ -291,9 +291,9 @@ describe('Bundler', function() {
             hash: 'i am a hash',
             name: 'img',
             type: 'png',
-          };
+          });
         } else if (relPath === 'img/new_image2.png') {
-          return {
+          return Promise.resolve({
             scales: [1,2,3],
             files: [
               '/root/img/new_image2.png',
@@ -303,14 +303,14 @@ describe('Bundler', function() {
             hash: 'i am a hash',
             name: 'img',
             type: 'png',
-          };
+          });
         }
 
         throw new Error('unknown image ' + relPath);
       });
     });
 
-    pit('should get the concrete list of all dependency files', () => {
+    it('should get the concrete list of all dependency files', () => {
       modules.push(
         createModule({
           id: 'new_image2.png',

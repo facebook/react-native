@@ -12,6 +12,7 @@ package com.facebook.react.animated;
 import android.util.SparseArray;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -19,6 +20,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -446,7 +449,17 @@ import javax.annotation.Nullable;
       nextNode.update();
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
-        ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+        try {
+          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+        } catch (IllegalViewOperationException e) {
+            // An exception is thrown if the view hasn't been created yet. This can happen because views are
+            // created in batches. If this particular view didn't make it into a batch yet, the view won't
+            // exist and an exception will be thrown when attempting to start an animation on it.
+            //
+            // Eat the exception rather than crashing. The impact is that we may drop one or more frames of the
+            // animation.
+            FLog.e(ReactConstants.TAG, "Native animation workaround, frame lost as result of race condition", e);
+          }
       }
       if (nextNode instanceof ValueAnimatedNode) {
         // Potentially send events to JS when the node's value is updated

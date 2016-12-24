@@ -14,7 +14,6 @@
 const GlobalTransformCache = require('../lib/GlobalTransformCache');
 const TransformCache = require('../lib/TransformCache');
 
-const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const fs = require('fs');
@@ -25,16 +24,19 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {SourceMap} from '../lib/SourceMap';
 import type {ReadTransformProps} from '../lib/TransformCache';
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 
 type ReadResult = {
-  code?: string,
+  code: string,
   dependencies?: ?Array<string>,
   dependencyOffsets?: ?Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
+  source: string,
 };
 
 export type TransformCode = (
@@ -56,6 +58,7 @@ export type ConstructorArgs = {
   transformCacheKey: ?string,
   depGraphHelpers: DependencyGraphHelpers,
   options: Options,
+  reporter: Reporter,
 };
 
 class Module {
@@ -69,6 +72,7 @@ class Module {
   _transformCacheKey: ?string;
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
+  _reporter: Reporter;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
   _readSourceCodePromise: Promise<string>;
@@ -83,6 +87,7 @@ class Module {
     transformCode,
     transformCacheKey,
     depGraphHelpers,
+    reporter,
     options,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
@@ -102,6 +107,7 @@ class Module {
     );
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
+    this._reporter = reporter;
 
     this._readPromises = new Map();
   }
@@ -122,7 +128,7 @@ class Module {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName(): Promise<string | number> {
+  getName(): Promise<string> {
     return this._cache.get(
       this.path,
       'name',
@@ -209,9 +215,10 @@ class Module {
     id?: string,
     extern: boolean,
     result: TransformedCode,
-  ) {
+  ): ReadResult {
     if (this._options.cacheTransformResults === false) {
       const {dependencies} = result;
+      /* $FlowFixMe: this code path is dead, remove. */
       return {dependencies};
     }
     return {...result, id, source};
@@ -257,22 +264,23 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (Module._globalCacheRetries <= 0 || globalCache == null) {
+    const noMoreRetries = Module._globalCacheRetries <= 0;
+    if (globalCache == null || noMoreRetries) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
       if (globalCacheError != null && Module._globalCacheRetries > 0) {
-        console.log(chalk.red(
-          '\nWarning: the global cache failed with error:',
-        ));
-        console.log(chalk.red(globalCacheError.stack));
+        this._reporter.update({
+          type: 'global_cache_error',
+          error: globalCacheError,
+        });
         Module._globalCacheRetries--;
         if (Module._globalCacheRetries <= 0) {
-          console.log(chalk.red(
-            'No more retries, the global cache will be disabled for the ' +
-              'remainder of the transformation.',
-          ));
+          this._reporter.update({
+            type: 'global_cache_disabled',
+            reason: 'too_many_errors',
+          });
         }
       }
       if (globalCachedResult == null) {

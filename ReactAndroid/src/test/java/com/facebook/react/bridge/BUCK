@@ -42,6 +42,3 @@ rn_robolectric_test(
   ],
 )
 
-project_config(
-  test_target = ':bridge',
-)

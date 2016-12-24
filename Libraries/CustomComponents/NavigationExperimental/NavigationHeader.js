@@ -32,13 +32,14 @@
  */
 'use strict';
 
-const React = require('React');
-const ReactNative = require('react-native');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
-const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
+const NavigationHeaderTitle = require('NavigationHeaderTitle');
+const NavigationPropTypes = require('NavigationPropTypes');
+const React = require('React');
 const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+const ReactNative = require('react-native');
+const TVEventHandler = require('TVEventHandler');
 
 const {
   Animated,
@@ -128,6 +129,24 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
+  _tvEventHandler: TVEventHandler;
+
+  componentDidMount(): void {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.props.onNavigateBack && cmp.props.onNavigateBack();
+      }
+    });
+  }
+
+  componentWillUnmount(): void {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
+  }
+
   render(): React.Element<any> {
     const { scenes, style, viewProps } = this.props;
 
@@ -156,32 +175,32 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderLeft(props: NavigationSceneRendererProps): ?React.Element<any> {
+  _renderLeft = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'left',
       this.props.renderLeftComponent,
       NavigationHeaderStyleInterpolator.forLeft,
     );
-  }
+  };
 
-  _renderTitle(props: NavigationSceneRendererProps): ?React.Element<any> {
+  _renderTitle = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'title',
       this.props.renderTitleComponent,
       NavigationHeaderStyleInterpolator.forCenter,
     );
-  }
+  };
 
-  _renderRight(props: NavigationSceneRendererProps): ?React.Element<any> {
+  _renderRight = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'right',
       this.props.renderRightComponent,
       NavigationHeaderStyleInterpolator.forRight,
     );
-  }
+  };
 
   _renderSubView(
     props: NavigationSceneRendererProps,

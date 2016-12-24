@@ -17,7 +17,6 @@ const {
   createEntry,
   createActionStartEntry,
   createActionEndEntry,
-  enablePrinting,
 } = require('../');
 
 describe('Logger', () => {
@@ -29,7 +28,6 @@ describe('Logger', () => {
 
   afterEach(() => {
     console.log = originalConsoleLog;
-    enablePrinting();
   });
 
   it('creates simple log entries', () => {
