@@ -263,9 +263,9 @@ function getInstallPackage(rnPackage) {
 
 function run(root, projectName, options) {
   // E.g. '0.38' or '/path/to/archive.tgz'
-  const rnPackage = options.version;
-  const forceNpmClient = options.npm;
-  const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  var rnPackage = options.version;
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;
   if (options.installCommand) {
     // In CI environments it can be useful to provide a custom command,
