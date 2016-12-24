@@ -14,9 +14,6 @@
  *  under the License.
  */
 
-#ifndef NSNOTIFICATIONCENTER_OCMADDITIONS_H
-#define NSNOTIFICATIONCENTER_OCMADDITIONS_H
-
 #import <Foundation/Foundation.h>
 
 @class OCObserverMockObject;
@@ -27,5 +24,3 @@
 - (void)addMockObserver:(OCObserverMockObject *)notificationObserver name:(NSString *)notificationName object:(id)notificationSender;
 
 @end
-
-#endif //NSNOTIFICATIONCENTER_OCMADDITIONS_H
