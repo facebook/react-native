@@ -43,16 +43,10 @@ function runAndroid(argv, config, args) {
   });
 }
 
-function getAdbPath() {
-  return process.env.ANDROID_HOME
-    ? process.env.ANDROID_HOME + '/platform-tools/adb'
-    : 'adb';
-}
-
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
 function tryRunAdbReverse(device, adbAddrArg) {
   try {
-    const adbPath = getAdbPath();
+    const adbPath = adb.getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
 
     // If a device is specified then tell adb to use it
@@ -84,8 +78,9 @@ function buildAndRun(args) {
   const adbHost = args.adbhost || process.env.ADB_HOST || 'localhost';
   const adbPort = args.adbport || process.env.ADB_PORT || '5037';
   const adbAddrArg = ['-H', adbHost, '-P', adbPort];
+  const devices = adb.getDevices(adbAddrArg);
   try {
-    adb.getDevices(adbAddrArg).map((device) => tryRunAdbReverse(device, adbAddrArg));
+    devices.forEach((device) => tryRunAdbReverse(device, adbAddrArg));
 
     const gradleArgs = [];
     if (args.variant) {
@@ -164,14 +159,12 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-    const adbPath = getAdbPath();
-
-    const devices = adb.getDevices(adbAddrArg);
+    const adbPath = adb.getAdbPath();
 
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs =
+        const  =
           ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
         adbArgs.unshift(...adbAddrArg)
