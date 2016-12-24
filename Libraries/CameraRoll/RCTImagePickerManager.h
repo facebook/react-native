@@ -6,10 +6,10 @@
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
-
-#ifndef RCTIMAGEPICKERMANAGER_H
-#define RCTIMAGEPICKERMANAGER_H
  */
+
+ #ifndef RCTIMAGEPICKERMANAGER_H
+ #define RCTIMAGEPICKERMANAGER_H
 
 #import <React/RCTBridgeModule.h>
 
