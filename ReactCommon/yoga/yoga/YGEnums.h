@@ -13,28 +13,29 @@
 
 YG_EXTERN_C_BEGIN
 
+#define YGFlexDirectionCount 4
 typedef enum YGFlexDirection {
   YGFlexDirectionColumn,
   YGFlexDirectionColumnReverse,
   YGFlexDirectionRow,
   YGFlexDirectionRowReverse,
-  YGFlexDirectionCount,
 } YGFlexDirection;
 
+#define YGMeasureModeCount 3
 typedef enum YGMeasureMode {
   YGMeasureModeUndefined,
   YGMeasureModeExactly,
   YGMeasureModeAtMost,
-  YGMeasureModeCount,
 } YGMeasureMode;
 
+#define YGPrintOptionsCount 3
 typedef enum YGPrintOptions {
   YGPrintOptionsLayout = 1,
   YGPrintOptionsStyle = 2,
   YGPrintOptionsChildren = 4,
-  YGPrintOptionsCount,
 } YGPrintOptions;
 
+#define YGEdgeCount 9
 typedef enum YGEdge {
   YGEdgeLeft,
   YGEdgeTop,
@@ -45,72 +46,71 @@ typedef enum YGEdge {
   YGEdgeHorizontal,
   YGEdgeVertical,
   YGEdgeAll,
-  YGEdgeCount,
 } YGEdge;
 
+#define YGPositionTypeCount 2
 typedef enum YGPositionType {
   YGPositionTypeRelative,
   YGPositionTypeAbsolute,
-  YGPositionTypeCount,
 } YGPositionType;
 
+#define YGDimensionCount 2
 typedef enum YGDimension {
   YGDimensionWidth,
   YGDimensionHeight,
-  YGDimensionCount,
 } YGDimension;
 
+#define YGJustifyCount 5
 typedef enum YGJustify {
   YGJustifyFlexStart,
   YGJustifyCenter,
   YGJustifyFlexEnd,
   YGJustifySpaceBetween,
   YGJustifySpaceAround,
-  YGJustifyCount,
 } YGJustify;
 
+#define YGDirectionCount 3
 typedef enum YGDirection {
   YGDirectionInherit,
   YGDirectionLTR,
   YGDirectionRTL,
-  YGDirectionCount,
 } YGDirection;
 
+#define YGLogLevelCount 5
 typedef enum YGLogLevel {
   YGLogLevelError,
   YGLogLevelWarn,
   YGLogLevelInfo,
   YGLogLevelDebug,
   YGLogLevelVerbose,
-  YGLogLevelCount,
 } YGLogLevel;
 
+#define YGWrapCount 2
 typedef enum YGWrap {
   YGWrapNoWrap,
   YGWrapWrap,
-  YGWrapCount,
 } YGWrap;
 
+#define YGOverflowCount 3
 typedef enum YGOverflow {
   YGOverflowVisible,
   YGOverflowHidden,
   YGOverflowScroll,
-  YGOverflowCount,
 } YGOverflow;
 
+#define YGExperimentalFeatureCount 2
 typedef enum YGExperimentalFeature {
   YGExperimentalFeatureRounding,
   YGExperimentalFeatureWebFlexBasis,
-  YGExperimentalFeatureCount,
 } YGExperimentalFeature;
 
+#define YGAlignCount 5
 typedef enum YGAlign {
   YGAlignAuto,
   YGAlignFlexStart,
   YGAlignCenter,
   YGAlignFlexEnd,
   YGAlignStretch,
-  YGAlignCount,
 } YGAlign;
 
 YG_EXTERN_C_END

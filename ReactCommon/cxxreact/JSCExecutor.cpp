@@ -15,6 +15,7 @@
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <system_error>
 
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
@@ -30,6 +31,7 @@
 #include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
+#include "RecoverableError.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -59,6 +61,8 @@
 
 namespace facebook {
 namespace react {
+
+using namespace detail;
 
 namespace {
 
@@ -311,6 +315,30 @@ void JSCExecutor::terminateOnJSVMThread() {
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
+static const char* explainLoadSourceError(JSLoadSourceError err) {
+  switch (err) {
+  case JSLoadSourceErrorNone:
+    return "No error encountered during source load";
+
+  case JSLoadSourceErrorOnRead:
+    return "Error reading source";
+
+  case JSLoadSourceErrorNotCompiled:
+    return "Source is not compiled";
+
+  case JSLoadSourceErrorVersionMismatch:
+    return "Source version not supported";
+
+  case JSLoadSourceErrorUnknown:
+    return "Unknown error occurred when loading source";
+
+  default:
+    return "Bad error code";
+  }
+}
+#endif
+
+#ifdef WITH_FBJSCEXTENSIONS
 void JSCExecutor::loadApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
@@ -318,9 +346,9 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  folly::throwOnFail<std::runtime_error>(
-    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
-    "Optimized bundle with no unpacked source or bytecode");
+  if (!(flags & (UNPACKED_JS_SOURCE | UNPACKED_BYTECODE))) {
+    throw RecoverableError("Optimized bundle with no unpacked source or bytecode");
+  }
 
   String jsSourceURL(m_context, sourceURL.c_str());
   JSSourceCodeRef sourceCode = nullptr;
@@ -332,14 +360,17 @@ void JSCExecutor::loadApplicationScript(
 
   if (flags & UNPACKED_BYTECODE) {
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
-    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>([fd]() {
+        folly::checkUnixError(fd, "Couldn't open compiled bundle");
+      });
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
-    folly::throwOnFail<std::runtime_error>(
-      sourceCode != nullptr,
-      "Could not create compiled source code"
-    );
+    JSLoadSourceError jsError;
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+
+    if (!sourceCode) {
+      throw RecoverableError(explainLoadSourceError(jsError));
+    }
   } else {
     auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
     if (!jsScriptBigString->isAscii()) {
@@ -382,18 +413,15 @@ void JSCExecutor::loadApplicationScript(
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
 
-  case JSLoadSourceErrorVersionMismatch:
-    throw std::runtime_error("Compiled Source Version Mismatch");
-
   case JSLoadSourceErrorNone:
-    folly::throwOnFail<std::runtime_error>(
-      bcSourceCode != nullptr,
-      "Unexpected error opening compiled bundle"
-    );
+    if (!bcSourceCode) {
+      throw std::runtime_error("Unexpected error opening compiled bundle");
+    }
     break;
 
-  default:
-    throw std::runtime_error("Unhandled Compiled Source Error");
+  case JSLoadSourceErrorVersionMismatch:
+  case JSLoadSourceErrorUnknown:
+    throw RecoverableError(explainLoadSourceError(jsError));
   }
 
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");

@@ -39,7 +39,7 @@ public class MoviesApplication extends Application implements ReactApplication {
     }
 
     @Override
-    protected boolean getUseDeveloperSupport() {
+    public boolean getUseDeveloperSupport() {
       return true;
     }
 

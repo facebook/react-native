@@ -22,6 +22,7 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 var React = require('react');
 var ReactNative = require('react-native');
 var {
@@ -190,10 +191,10 @@ exports.examples = [
   render: function() {
     return (
       <View>
-        <Text style={{fontFamily: 'Cochin'}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Times' : 'Cochin')}}>
           Cochin
         </Text>
-        <Text style={{fontFamily: 'Cochin', fontWeight: 'bold'}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Times' : 'Cochin'), fontWeight: 'bold'}}>
           Cochin bold
         </Text>
         <Text style={{fontFamily: 'Helvetica'}}>
@@ -202,10 +203,10 @@ exports.examples = [
         <Text style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}>
           Helvetica bold
         </Text>
-        <Text style={{fontFamily: 'Verdana'}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Courier' : 'Verdana')}}>
           Verdana
         </Text>
-        <Text style={{fontFamily: 'Verdana', fontWeight: 'bold'}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Courier' : 'Verdana'), fontWeight: 'bold'}}>
           Verdana bold
         </Text>
       </View>
@@ -565,10 +566,10 @@ exports.examples = [
         <Text style={{fontVariant: ['small-caps']}}>
           Small Caps{'\n'}
         </Text>
-        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['oldstyle-nums']}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Times' : 'Hoefler Text'), fontVariant: ['oldstyle-nums']}}>
           Old Style nums 0123456789{'\n'}
         </Text>
-        <Text style={{fontFamily: 'Hoefler Text', fontVariant: ['lining-nums']}}>
+        <Text style={{fontFamily: (Platform.isTVOS ? 'Times' : 'Hoefler Text'), fontVariant: ['lining-nums']}}>
           Lining nums 0123456789{'\n'}
         </Text>
         <Text style={{fontVariant: ['tabular-nums']}}>
