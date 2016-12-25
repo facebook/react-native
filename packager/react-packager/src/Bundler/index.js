@@ -448,16 +448,15 @@ class Bundler {
         minify,
         isolateModuleIDs,
         generateSourceMaps: unbundle || generateSourceMaps,
-      });
-    }
-
-    return Promise.resolve(resolutionResponse).then(response => {
-      return Promise.all(response.dependencies.map(module =>
+      }).then(response => Promise.all(response.dependencies.map(module =>
         module.getName().then(name => {
           module.name = name;
         })
-      )).then(() => response);
-    }).then(response => {
+      )).then(() => response));
+    }
+
+
+    return Promise.resolve(resolutionResponse).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
       log(createActionEndEntry(transformingFilesLogEntry));
@@ -834,7 +833,7 @@ function createModuleIdFactory({extenalModules, startId: nextId = 0}) {
   const fileToIdMap = Object.create(null);
   return (module: {
     path: string,
-    name?: "string"
+    name: string
   }) => {
     if (extenalModules && module.name) {
       if (module.name in extenalModules) {
