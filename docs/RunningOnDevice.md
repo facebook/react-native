@@ -55,7 +55,7 @@ Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
 
 <block class="mac ios" />
 
-Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Scheme toolbar menu. Xcode will then register your device for development.
+Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Product > Destination toolbar menu. Xcode will then register your device for development.
 
 > If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
 
