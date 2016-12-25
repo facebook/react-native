@@ -29,8 +29,8 @@ describe('Cache', () => {
   });
 
   describe('getting/setting', () => {
-    pit('calls loader callback for uncached file', () => {
-      fs.stat.mockImpl((file, callback) => {
+    it('calls loader callback for uncached file', () => {
+      fs.stat.mockImplementation((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -41,7 +41,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() => Promise.resolve());
+      var loaderCb = jest.genMockFn().mockImplementation(() => Promise.resolve());
 
       return cache
         .get('/rootDir/someFile', 'field', loaderCb)
@@ -50,8 +50,8 @@ describe('Cache', () => {
         );
     });
 
-    pit('supports storing multiple fields', () => {
-      fs.stat.mockImpl((file, callback) => {
+    it('supports storing multiple fields', () => {
+      fs.stat.mockImplementation((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -63,7 +63,7 @@ describe('Cache', () => {
         cacheKey: 'cache',
       });
       var index = 0;
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve(index++)
       );
 
@@ -77,8 +77,8 @@ describe('Cache', () => {
         });
     });
 
-    pit('gets the value from the loader callback', () => {
-      fs.stat.mockImpl((file, callback) =>
+    it('gets the value from the loader callback', () => {
+      fs.stat.mockImplementation((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -89,7 +89,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('lol')
       );
 
@@ -98,8 +98,8 @@ describe('Cache', () => {
         .then(value => expect(value).toBe('lol'));
     });
 
-    pit('caches the value after the first call', () => {
-      fs.stat.mockImpl((file, callback) => {
+    it('caches the value after the first call', () => {
+      fs.stat.mockImplementation((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -110,7 +110,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('lol')
       );
 
@@ -126,9 +126,9 @@ describe('Cache', () => {
         });
     });
 
-    pit('clears old field when getting new field and mtime changed', () => {
+    it('clears old field when getting new field and mtime changed', () => {
       var mtime = 0;
-      fs.stat.mockImpl((file, callback) => {
+      fs.stat.mockImplementation((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => mtime++,
@@ -139,7 +139,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('lol' + mtime)
       );
 
@@ -155,7 +155,7 @@ describe('Cache', () => {
     });
 
     it('does not cache rejections', () => {
-      fs.stat.mockImpl((file, callback) => {
+      fs.stat.mockImplementation((file, callback) => {
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -196,11 +196,11 @@ describe('Cache', () => {
         },
       };
 
-      fs.existsSync.mockImpl(() => true);
+      fs.existsSync.mockImplementation(() => true);
 
-      fs.statSync.mockImpl(filePath => fileStats[filePath]);
+      fs.statSync.mockImplementation(filePath => fileStats[filePath]);
 
-      fs.readFileSync.mockImpl(() => JSON.stringify({
+      fs.readFileSync.mockImplementation(() => JSON.stringify({
         '/rootDir/someFile': {
           metadata: {mtime: 22},
           data: {field: 'oh hai'},
@@ -212,7 +212,7 @@ describe('Cache', () => {
       }));
     });
 
-    pit('should load cache from disk', () => {
+    it('should load cache from disk', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
@@ -233,8 +233,8 @@ describe('Cache', () => {
         });
     });
 
-    pit('should not load outdated cache', () => {
-      fs.stat.mockImpl((file, callback) =>
+    it('should not load outdated cache', () => {
+      fs.stat.mockImplementation((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -247,7 +247,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('new value')
       );
 
@@ -272,7 +272,7 @@ describe('Cache', () => {
       var index = 0;
       var mtimes = [10, 20, 30];
 
-      fs.stat.mockImpl((file, callback) =>
+      fs.stat.mockImplementation((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => mtimes[index++],
@@ -303,7 +303,7 @@ describe('Cache', () => {
 
   describe('check for cache presence', () => {
     it('synchronously resolves cache presence', () => {
-      fs.stat.mockImpl((file, callback) =>
+      fs.stat.mockImplementation((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -314,7 +314,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('banana')
       );
       var file = '/rootDir/someFile';
@@ -331,7 +331,7 @@ describe('Cache', () => {
 
   describe('invalidate', () => {
     it('invalidates the cache per file or per-field', () => {
-      fs.stat.mockImpl((file, callback) =>
+      fs.stat.mockImplementation((file, callback) =>
         callback(null, {
           mtime: {
             getTime: () => {},
@@ -342,7 +342,7 @@ describe('Cache', () => {
       var cache = new Cache({
         cacheKey: 'cache',
       });
-      var loaderCb = jest.genMockFn().mockImpl(() =>
+      var loaderCb = jest.genMockFn().mockImplementation(() =>
         Promise.resolve('banana')
       );
       var file = '/rootDir/someFile';

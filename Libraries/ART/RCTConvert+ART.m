@@ -9,12 +9,13 @@
 
 #import "RCTConvert+ART.h"
 
+#import <React/RCTFont.h>
+#import <React/RCTLog.h>
+
 #import "ARTLinearGradient.h"
 #import "ARTPattern.h"
 #import "ARTRadialGradient.h"
 #import "ARTSolidColor.h"
-#import "RCTLog.h"
-#import "RCTFont.h"
 
 @implementation RCTConvert (ART)
 

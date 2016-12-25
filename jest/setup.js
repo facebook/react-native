@@ -33,17 +33,13 @@ jest
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View'))
-  .mock('ScrollView', () => mockComponent('ScrollView'))
+  .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
+  .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
   .mock(
     'ActivityIndicator',
     () => mockComponent('ActivityIndicator'),
   )
-  .mock('ListView', () => {
-    const RealListView = require.requireActual('ListView');
-    const ListView = mockComponent('ListView');
-    ListView.prototype.render = RealListView.prototype.render;
-    return ListView;
-  })
+  .mock('ListView', () => require.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
     const DataSource = require.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
@@ -52,7 +48,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items += dataBlob[key] && dataBlob[key].length;
+            this.items += dataBlob[key] && (
+              dataBlob[key].length || dataBlob[key].size || 0
+            )
           });
         } catch (e) {
           this.items = 'unknown';
@@ -69,6 +67,9 @@ const mockEmptyObject = {};
 const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
+  },
+  AppState: {
+    addEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
     clear: jest.fn(),
@@ -127,6 +128,13 @@ const mockNativeModules = {
   },
   SourceCode: {
     scriptURL: null,
+  },
+  StatusBarManager: {
+    setStyle: jest.fn(),
+    setHidden: jest.fn(),
+    setNetworkActivityIndicatorVisible: jest.fn(),
+    setBackgroundColor: jest.fn(),
+    setTranslucent: jest.fn(),
   },
   Timing: {
     createTimer: jest.fn(),

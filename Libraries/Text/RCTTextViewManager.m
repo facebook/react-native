@@ -9,11 +9,13 @@
 
 #import "RCTTextViewManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTShadowView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTFont.h>
+#import <React/RCTShadowView.h>
+
+#import "RCTConvert+Text.h"
 #import "RCTTextView.h"
-#import "RCTFont.h"
 
 @implementation RCTTextViewManager
 
@@ -25,7 +27,8 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
-RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_REMAP_VIEW_PROPERTY(autoCorrect, autocorrectionType, UITextAutocorrectionType)
+RCT_REMAP_VIEW_PROPERTY(spellCheck, spellCheckingType, UITextSpellCheckingType)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textView.textColor, UIColor)
@@ -38,6 +41,7 @@ RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)
@@ -64,7 +68,10 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
+
+#if !TARGET_OS_TV
 RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDetectorTypes)
+#endif
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {

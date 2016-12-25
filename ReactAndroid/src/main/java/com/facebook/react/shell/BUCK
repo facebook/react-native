@@ -4,6 +4,7 @@ android_library(
   name = 'shell',
   srcs = glob(['**/*.java']),
   deps = [
+    react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
     react_native_dep('third-party/android/support/v4:lib-support-v4'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
@@ -62,6 +63,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':shell',
-)

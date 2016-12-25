@@ -139,6 +139,12 @@ var NativeMethodsMixin = {
    * Manipulation](docs/direct-manipulation.html)).
    */
   setNativeProps: function(nativeProps: Object) {
+    if (!this.viewConfig) {
+      var ctor = this.constructor;
+      var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
+      invariant(false, componentName + ' "viewConfig" is not defined.');
+    }
+
     if (__DEV__) {
       warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }

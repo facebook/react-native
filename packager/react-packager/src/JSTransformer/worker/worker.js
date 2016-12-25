@@ -14,7 +14,11 @@
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
+const invariant = require('invariant');
 const minify = require('./minify');
+
+import type {LogEntry} from '../../Logger/Types';
+import type {Ast, SourceMap, TransformOptions} from 'babel-core';
 
 function makeTransformParams(filename, sourceCode, options) {
   if (filename.endsWith('.json')) {
@@ -27,24 +31,40 @@ export type TransformedCode = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
 };
 
-type Transform = (params: {
-  filename: string,
-  sourceCode: string,
-  options: ?{},
-}) => mixed;
+type Transform = (
+  params: {
+    filename: string,
+    sourceCode: string,
+    options: ?{},
+  },
+  callback: (
+    error?: Error,
+    tranformed?: {ast: ?Ast, code: string, map: ?SourceMap},
+  ) => mixed,
+) => void;
 
-type Options = {transform?: {}};
+export type Options = {
+  transform: {
+    projectRoots: Array<string>,
+    ramGroups: Array<string>,
+    platform: string,
+    preloadedModules: Array<string>,
+  } & TransformOptions,
+  platform: string,
+};
+
+export type Data = {
+  result: TransformedCode,
+  transformFileStartLogEntry: LogEntry,
+  transformFileEndLogEntry: LogEntry,
+};
 
 type Callback = (
   error: ?Error,
-  data: ?{
-    result: TransformedCode,
-    transformFileStartLogEntry: {},
-    transformFileEndLogEntry: {},
-  },
+  data: ?Data,
 ) => mixed;
 
 function transformCode(
@@ -71,15 +91,18 @@ function transformCode(
       return;
     }
 
+    invariant(
+      transformed != null,
+      'Missing transform results despite having no error.',
+    );
+
     var code, map;
     if (options.minify) {
-      const optimized =
-        constantFolding(filename, inline(filename, transformed, options));
-      code = optimized.code;
-      map = optimized.map;
+      ({code, map} =
+        constantFolding(filename, inline(filename, transformed, options)));
+      invariant(code != null, 'Missing code from constant-folding transform.');
     } else {
-      code = transformed.code;
-      map = transformed.map;
+      ({code, map} = transformed);
     }
 
     if (isJson) {
@@ -115,7 +138,7 @@ exports.transformAndExtractDependencies = (
   transform: string,
   filename: string,
   sourceCode: string,
-  options: ?Options,
+  options: Options,
   callback: Callback,
 ) => {
   /* $FlowFixMe: impossible to type a dynamic require */

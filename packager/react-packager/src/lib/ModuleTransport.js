@@ -11,7 +11,7 @@
 
 'use strict';
 
-import type {SourceMap} from './SourceMap';
+import type {MixedSourceMap} from './SourceMap';
 
 type Metadata = {
   dependencyPairs?: Array<[mixed, {path: string}]>,
@@ -21,27 +21,27 @@ type Metadata = {
 class ModuleTransport {
 
   name: string;
-  id: string | number;
+  id: number;
   code: string;
   sourceCode: string;
   sourcePath: string;
   virtual: ?boolean;
   meta: ?Metadata;
   polyfill: ?boolean;
-  map: ?SourceMap;
+  map: ?MixedSourceMap;
   isPolyfill: ?boolean;
   isRequireCall: ?boolean;
 
   constructor(data: {
     name: string,
-    id: string | number,
+    id: number,
     code: string,
     sourceCode: string,
     sourcePath: string,
     virtual?: ?boolean,
     meta?: ?Metadata,
     polyfill?: ?boolean,
-    map?: ?SourceMap,
+    map?: ?MixedSourceMap,
     isPolyfill?: ?boolean,
     isRequireCall?: ?boolean,
   }) {

@@ -13,27 +13,25 @@
   "jest": {
     "automock": true,
     "transform": {
-      ".*": "jest/preprocessor.js"
+      ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
-      "jest/setup.js"
+      "./jest/setup.js"
     ],
     "timers": "fake",
     "moduleNameMapper": {
       "^React$": "<rootDir>/Libraries/react-native/React.js",
-      "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/website/",
-      "local-cli/generator/templates/"
+      "local-cli/templates/"
     ],
     "haste": {
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
-        "react-native",
-        "parse"
+        "react-native"
       ],
       "platforms": [
         "ios",
@@ -42,7 +40,7 @@
     },
     "modulePathIgnorePatterns": [
       "Libraries/react-native/",
-      "/node_modules/(?!react|fbjs|react-native|parse|react-transform-hmr|core-js|promise)/",
+      "/node_modules/(?!react|fbjs|react-native|react-transform-hmr|core-js|promise)/",
       "node_modules/react/node_modules/fbjs/",
       "node_modules/react/lib/ReactDOM.js",
       "node_modules/fbjs/lib/Map.js",
@@ -68,25 +66,6 @@
       "node_modules/fbjs/lib/someObject.js",
       "node_modules/fbjs/lib/sprintf.js",
       "node_modules/fbjs/lib/xhrSimpleDataSerializer.js",
-      "downstream/core/CSSCore.js",
-      "downstream/core/TouchEventUtils.js",
-      "downstream/core/camelize.js",
-      "downstream/core/createArrayFromMixed.js",
-      "downstream/core/createNodesFromMarkup.js",
-      "downstream/core/dom/containsNode.js",
-      "downstream/core/dom/focusNode.js",
-      "downstream/core/dom/getActiveElement.js",
-      "downstream/core/dom/getUnboundedScrollPosition.js",
-      "downstream/core/dom/isNode.js",
-      "downstream/core/dom/isTextNode.js",
-      "downstream/core/emptyFunction.js",
-      "downstream/core/emptyObject.js",
-      "downstream/core/getMarkupWrap.js",
-      "downstream/core/hyphenate.js",
-      "downstream/core/hyphenateStyleName.js",
-      "downstream/core/invariant.js",
-      "downstream/core/nativeRequestAnimationFrame.js",
-      "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
       "node_modules/fbjs/.*/__mocks__/",
@@ -141,20 +120,20 @@
     "art": "^0.10.0",
     "async": "^2.0.1",
     "babel-core": "^6.18.2",
-    "babel-generator": "^6.18.0",
+    "babel-generator": "^6.19.0",
     "babel-plugin-external-helpers": "^6.18.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.13.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
-    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-plugin-transform-object-rest-spread": "^6.19.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-fbjs": "^2.1.0",
     "babel-preset-react-native": "^1.9.0",
     "babel-register": "^6.18.0",
     "babel-runtime": "^6.18.0",
-    "babel-traverse": "^6.18.0",
-    "babel-types": "^6.18.0",
-    "babylon": "^6.13.1",
+    "babel-traverse": "^6.19.0",
+    "babel-types": "^6.19.0",
+    "babylon": "^6.14.1",
     "base64-js": "^1.1.2",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
@@ -166,7 +145,6 @@
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.5",
     "fbjs-scripts": "^0.7.0",
-    "flow-bin": "^0.34.0",
     "fs-extra": "^0.26.2",
     "glob": "^5.0.15",
     "graceful-fs": "^4.1.3",
@@ -174,10 +152,11 @@
     "immutable": "~3.7.6",
     "imurmurhash": "^0.1.4",
     "inquirer": "^0.12.0",
-    "jest-haste-map": "^17.0.0",
+    "jest-haste-map": "18.0.0",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
+    "left-pad": "^1.1.3",
     "lodash": "^4.16.6",
     "mime": "^1.3.4",
     "mime-types": "2.1.11",
@@ -188,13 +167,13 @@
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "plist": "^1.2.0",
-    "progress": "^1.1.8",
     "promise": "^7.1.1",
     "react-clone-referenced-element": "^1.0.1",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
     "regenerator-runtime": "^0.9.5",
+    "request": "^2.79.0",
     "rimraf": "^2.5.4",
     "sane": "~1.4.1",
     "semver": "^5.0.3",
@@ -211,31 +190,23 @@
     "ws": "^1.1.0",
     "xcode": "^0.8.9",
     "xmldoc": "^0.4.0",
-    "yargs": "^3.24.0",
-    "yeoman-environment": "1.5.3",
-    "yeoman-generator": "0.21.2"
+    "yargs": "^6.4.0"
   },
   "devDependencies": {
-    "JSONStream": "1.2.1",
     "babel-eslint": "^7.0.0",
-    "duplexer": "0.1.1",
     "eslint": "^3.8.1",
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.34.0",
-    "graphql": "0.6.2",
-    "jest": "^17.0.0",
-    "jest-repl": "^17.0.0",
-    "jest-runtime": "^17.0.0",
+    "flow-bin": "^0.37.0",
+    "jest": "18.0.0",
+    "jest-repl": "18.0.0",
+    "jest-runtime": "18.0.0",
     "mock-fs": "^3.11.0",
-    "opener": "1.4.2",
-    "portfinder": "0.4.0",
     "react": "~15.4.0-rc.4",
     "react-dom": "~15.4.0-rc.4",
     "react-test-renderer": "~15.4.0-rc.4",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2",
-    "split": "1.0.0"
+    "sinon": "^2.0.0-pre.2"
   }
 }

@@ -1,8 +1,8 @@
 include_defs('//ReactAndroid/DEFS')
 
 android_library(
-  name = 'csslayout',
-  srcs = glob(['csslayout/*.java']),
+  name = 'yoga',
+  srcs = glob(['yoga/*.java']),
   deps = [
     react_native_dep('java/com/facebook/proguard/annotations:annotations'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
@@ -12,6 +12,3 @@ android_library(
   visibility = ['PUBLIC'],
 )
 
-project_config(
-  src_target = ':csslayout',
-)

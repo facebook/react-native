@@ -15,6 +15,16 @@ const Logger = require('./src/Logger');
 
 exports.createServer = createServer;
 exports.Logger = Logger;
+
+exports.buildBundle = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.buildBundle(bundleOptions)
+    .then(p => {
+      server.end();
+      return p;
+    });
+};
+
 exports.getOrderedDependencyPaths = function(options, bundleOptions) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(bundleOptions)
@@ -45,26 +55,24 @@ function createServer(options) {
     enableDebug();
   }
 
+  options = Object.assign({}, options);
+  delete options.verbose;
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    var TerminalReporter = require('./src/lib/TerminalReporter');
+    options.reporter = new TerminalReporter();
+  }
   var Server = require('./src/Server');
-  return new Server(omit(options, ['verbose']));
+  return new Server(options);
 }
 
 function createNonPersistentServer(options) {
-  Logger.disablePrinting();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    options.reporter = require('./src/lib/reporting').nullReporter;
   }
-
+  options.watch = !options.nonPersistent;
   return createServer(options);
-}
-
-function omit(obj, blacklistedKeys) {
-  return Object.keys(obj).reduce((clone, key) => {
-    if (blacklistedKeys.indexOf(key) === -1) {
-      clone[key] = obj[key];
-    }
-
-    return clone;
-  }, {});
 }

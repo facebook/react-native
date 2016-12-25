@@ -14,13 +14,14 @@
 
 #import "AppDelegate.h"
 
-#import "RCTBridge.h"
-#import "RCTBundleURLProvider.h"
-#import "RCTJavaScriptLoader.h"
-#import "RCTLinkingManager.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
+
 #if !TARGET_OS_TV
-#import "RCTPushNotificationManager.h"
+#import <React/RCTPushNotificationManager.h>
 #endif
 
 @interface AppDelegate() <RCTBridgeDelegate>
@@ -55,8 +56,8 @@
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"Examples/UIExplorer/js/UIExplorerApp.ios" fallbackResource:nil];
-
+  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"Examples/UIExplorer/js/UIExplorerApp.ios"
+                                                                         fallbackResource:nil];
   if (!getenv("CI_USE_PACKAGER")) {
     jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   }

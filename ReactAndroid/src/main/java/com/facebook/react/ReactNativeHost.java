@@ -138,7 +138,7 @@ public abstract class ReactNativeHost {
   /**
    * Returns whether dev mode should be enabled. This enables e.g. the dev menu.
    */
-  protected abstract boolean getUseDeveloperSupport();
+  public abstract boolean getUseDeveloperSupport();
 
   /**
    * Returns a list of {@link ReactPackage} used by the app.
