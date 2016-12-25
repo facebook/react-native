@@ -52,7 +52,7 @@ import type { BlobData, BlobOptions } from './BlobTypes';
  * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob
  */
 class Blob {
-  data: BlobData;
+  _data: ?BlobData;
 
   /**
    * Constructor for JS consumers.
@@ -69,6 +69,17 @@ class Blob {
    * the data in the specified range of bytes of the source Blob.
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/slice
    */
+  set data(data: ?BlobData) {
+    this._data = data;
+  }
+
+  get data(): BlobData {
+    if (this._data) {
+      return this._data;
+    }
+    throw new Error('Blob has been closed and is no longer available');
+  }
+
   slice(start?: number, end?: number): Blob {
     const BlobManager = require('BlobManager');
     let { size, offset } = this.data;
@@ -108,6 +119,7 @@ class Blob {
   close() {
     const BlobManager = require('BlobManager');
     BlobManager.release(this.data.blobId);
+    this.data = null;
   }
 
   /**

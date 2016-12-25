@@ -64,4 +64,12 @@ describe('Blob', function() {
     expect(sliceB.type).toBe('');
   });
 
+  it('should close a blob', () => {
+    const blob = new Blob();
+
+    blob.close();
+
+    expect(() => blob.size).toThrow();
+  });
+
 });
