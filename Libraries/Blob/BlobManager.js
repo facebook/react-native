@@ -15,6 +15,7 @@
 const uuid = require('uuid');
 const Blob = require('Blob');
 const File = require('File');
+const BlobRegistry = require('BlobRegistry');
 const { BlobModule } = require('NativeModules');
 
 import type { BlobData, BlobOptions } from './BlobTypes';
@@ -69,6 +70,7 @@ class BlobManager {
    * Used internally by modules like XHR, WebSocket, etc.
    */
   static createFromOptions(options: BlobData): Blob {
+    BlobRegistry.register(options.blobId);
     return Object.assign(Object.create(Blob.prototype), { data: options });
   }
 
@@ -77,6 +79,8 @@ class BlobManager {
    */
   static async createFromURI(uri: string, options?: { type: string }): Promise<File> {
     const blob = await BlobModule.createFromURI(uri);
+
+    BlobRegistry.register(blob.data.blobId);
 
     if (options && typeof options.type === 'string') {
       blob.type = options.type;
@@ -89,7 +93,18 @@ class BlobManager {
    * Deallocate resources for a blob.
    */
   static release(blobId: string) {
-    return BlobModule.release(blobId);
+    BlobRegistry.unregister(blobId);
+    if (BlobRegistry.has(blobId)) {
+      return;
+    }
+    BlobModule.release(blobId);
+  }
+
+  /**
+   * Deallocate resources for a all related blobs, including sliced ones.
+   */
+  static releaseAll(blobId: string) {
+    BlobModule.release(blobId);
   }
 }
 
