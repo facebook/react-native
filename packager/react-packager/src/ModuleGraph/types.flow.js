@@ -10,21 +10,33 @@
  */
 'use strict';
 
+import type {SourceMap} from './output/source-map';
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
-  = ((error: Error) => mixed)
-  & ((error: null | void, a: A, b: B) => mixed);
+  = (Error => void)
+  & ((null | void, A, B) => void);
 
-type ResolveOptions = {
-  log?: Console,
-};
-
-type LoadOptions = {|
-  log?: Console,
-  optimize?: boolean,
-  platform?: string,
+type Dependency = {|
+  id: string,
+  path: string,
 |};
+
+export type File = {|
+  code: string,
+  map?: ?Object,
+  path: string,
+  type: FileTypes,
+|};
+
+type FileTypes = 'module' | 'script';
+
+export type GraphFn = (
+  entryPoints: Iterable<string>,
+  platform: string,
+  options?: ?GraphOptions,
+  callback?: Callback<GraphResult>,
+) => void;
 
 type GraphOptions = {|
   cwd?: string,
@@ -33,36 +45,12 @@ type GraphOptions = {|
   skip?: Set<string>,
 |};
 
-type Dependency = {|
-  id: string,
-  path: string,
-|};
+export type GraphResult = {
+  entryModules: Array<Module>,
+  modules: Array<Module>,
+};
 
-export type File = {|
-  ast: Object,
-  code?: string,
-  path: string,
-|};
-
-export type Module = {|
-  dependencies: Array<Dependency>,
-  file: File,
-|};
-
-export type GraphFn = (
-  entryPoints: Iterable<string>,
-  platform: string,
-  options?: GraphOptions,
-  callback?: Callback<Array<Module>>,
-) => void;
-
-export type ResolveFn = (
-  id: string,
-  source: string,
-  platform: string,
-  options?: ResolveOptions,
-  callback: Callback<string>,
-) => void;
+export type IdForPathFn = {path: string} => number;
 
 export type LoadFn = (
   file: string,
@@ -70,20 +58,26 @@ export type LoadFn = (
   callback: Callback<File, Array<string>>,
 ) => void;
 
-export type TransformResult = {|
-  code: string,
-  dependencies: Array<string>,
-  dependencyMapName?: string,
-  map: ?Object,
+type LoadOptions = {|
+  log?: Console,
+  optimize?: boolean,
+  platform?: string,
 |};
 
-export type TransformedFile = {
+export type Module = {|
+  dependencies: Array<Dependency>,
+  file: File,
+|};
+
+export type OutputFn = (
+  modules: Iterable<Module>,
+  filename?: string,
+  idForPath: IdForPathFn,
+) => OutputResult;
+
+type OutputResult = {
   code: string,
-  file: string,
-  hasteID: ?string,
-  isPolyfill: boolean,
-  package?: PackageData,
-  transformed: {[variant: string]: TransformResult},
+  map: SourceMap,
 };
 
 export type PackageData = {|
@@ -93,8 +87,16 @@ export type PackageData = {|
   'react-native'?: Object | string,
 |};
 
-export type TransformFnResult = {
-  ast: Object,
+export type ResolveFn = (
+  id: string,
+  source: string,
+  platform: string,
+  options?: ResolveOptions,
+  callback: Callback<string>,
+) => void;
+
+type ResolveOptions = {
+  log?: Console,
 };
 
 export type TransformFn = (
@@ -106,3 +108,27 @@ export type TransformFn = (
   |},
   callback: Callback<TransformFnResult>
 ) => void;
+
+export type TransformFnResult = {
+  ast: Object,
+};
+
+export type TransformResult = {|
+  code: string,
+  dependencies: Array<string>,
+  dependencyMapName?: string,
+  map: ?Object,
+|};
+
+export type TransformResults = {[string]: TransformResult};
+
+export type TransformVariants = {[key: string]: Object};
+
+export type TransformedFile = {
+  code: string,
+  file: string,
+  hasteID: ?string,
+  package?: PackageData,
+  transformed: TransformResults,
+  type: FileTypes,
+};

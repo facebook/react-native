@@ -11,7 +11,6 @@
 const querystring = require('querystring');
 const url = require('url');
 
-const {createEntry, print} = require('../../../packager/react-packager/src/Logger');
 const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 
 const blacklist = [
@@ -114,9 +113,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  print(createEntry(`HMR Server listening on ${path}`));
   wss.on('connection', ws => {
-    print(createEntry('HMR Client connected'));
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
@@ -136,11 +133,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           inverseDependenciesCache,
         };
 
-        packagerServer.setHMRFileChangeListener((filename, stat) => {
+        packagerServer.setHMRFileChangeListener((type, filename) => {
           if (!client) {
             return;
           }
-          print(createEntry('HMR Server detected file change'));
 
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
@@ -151,14 +147,14 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           }
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
-          stat.then(() => {
-            return packagerServer.getShallowDependencies({
-              entryFile: filename,
-              platform: client.platform,
-              dev: true,
-              hot: true,
-            })
-              .then(deps => {
+          const promise = type === 'delete'
+            ? Promise.resolve()
+            : packagerServer.getShallowDependencies({
+                entryFile: filename,
+                platform: client.platform,
+                dev: true,
+                hot: true,
+              }).then(deps => {
                 if (!client) {
                   return [];
                 }
@@ -297,14 +293,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                print(createEntry('HMR Server sending update to client'));
                 client.ws.send(update);
               });
-            },
-            () => {
-              // do nothing, file was removed
-            },
-          ).then(() => {
+
+          promise.then(() => {
             client.ws.send(JSON.stringify({type: 'update-done'}));
           });
         });

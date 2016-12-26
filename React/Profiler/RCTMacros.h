@@ -10,4 +10,9 @@
 #define _CONCAT(A, B) A##B
 #define CONCAT(A, B) _CONCAT(A, B)
 
-#define SYMBOL_NAME(S) CONCAT(__USER_LABEL_PREFIX__, S)
+#if !defined(PIC_MODIFIER)
+#define PIC_MODIFIER
+#endif
+
+#define SYMBOL_NAME(name) CONCAT(__USER_LABEL_PREFIX__, name)
+#define SYMBOL_NAME_PIC(name) CONCAT(SYMBOL_NAME(name), PIC_MODIFIER)

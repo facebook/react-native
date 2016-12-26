@@ -4,9 +4,11 @@ rn_robolectric_test(
   name = 'views',
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
-  srcs = glob(['**/*.java']),
+  # TODO Disabled temporarily until Yoga linking is fixed t14964130
+  # srcs = glob(['**/*.java']),
+  srcs = glob(['image/*.java']),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
@@ -31,8 +33,4 @@ rn_robolectric_test(
     react_native_target('java/com/facebook/react:react'),
     react_native_tests_target('java/com/facebook/react/bridge:testhelpers'),
   ],
-)
-
-project_config(
-  test_target = ':views',
 )

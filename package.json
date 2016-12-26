@@ -13,10 +13,10 @@
   "jest": {
     "automock": true,
     "transform": {
-      ".*": "jest/preprocessor.js"
+      ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
-      "jest/setup.js"
+      "./jest/setup.js"
     ],
     "timers": "fake",
     "moduleNameMapper": {
@@ -66,25 +66,6 @@
       "node_modules/fbjs/lib/someObject.js",
       "node_modules/fbjs/lib/sprintf.js",
       "node_modules/fbjs/lib/xhrSimpleDataSerializer.js",
-      "downstream/core/CSSCore.js",
-      "downstream/core/TouchEventUtils.js",
-      "downstream/core/camelize.js",
-      "downstream/core/createArrayFromMixed.js",
-      "downstream/core/createNodesFromMarkup.js",
-      "downstream/core/dom/containsNode.js",
-      "downstream/core/dom/focusNode.js",
-      "downstream/core/dom/getActiveElement.js",
-      "downstream/core/dom/getUnboundedScrollPosition.js",
-      "downstream/core/dom/isNode.js",
-      "downstream/core/dom/isTextNode.js",
-      "downstream/core/emptyFunction.js",
-      "downstream/core/emptyObject.js",
-      "downstream/core/getMarkupWrap.js",
-      "downstream/core/hyphenate.js",
-      "downstream/core/hyphenateStyleName.js",
-      "downstream/core/invariant.js",
-      "downstream/core/nativeRequestAnimationFrame.js",
-      "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
       "node_modules/fbjs/.*/__mocks__/",
@@ -171,7 +152,7 @@
     "immutable": "~3.7.6",
     "imurmurhash": "^0.1.4",
     "inquirer": "^0.12.0",
-    "jest-haste-map": "17.0.3",
+    "jest-haste-map": "18.0.0",
     "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
@@ -186,7 +167,6 @@
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "plist": "^1.2.0",
-    "progress": "^1.1.8",
     "promise": "^7.1.1",
     "react-clone-referenced-element": "^1.0.1",
     "react-timer-mixin": "^0.13.2",
@@ -210,35 +190,23 @@
     "ws": "^1.1.0",
     "xcode": "^0.8.9",
     "xmldoc": "^0.4.0",
-    "yargs": "^6.4.0",
-    "yeoman-environment": "1.5.3",
-    "yeoman-generator": "0.21.2"
+    "yargs": "^6.4.0"
   },
   "devDependencies": {
-    "JSONStream": "1.2.1",
     "babel-eslint": "^7.0.0",
-    "duplexer": "0.1.1",
     "eslint": "^3.8.1",
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.36.0",
-    "graphlib-dot": "0.6.2",
-    "graphql": "0.8.2",
-    "jest": "17.0.3",
-    "jest-repl": "17.0.3",
-    "jest-runtime": "17.0.3",
+    "flow-bin": "^0.37.0",
+    "jest": "18.0.0",
+    "jest-repl": "18.0.0",
+    "jest-runtime": "18.0.0",
     "mock-fs": "^3.11.0",
-    "opener": "1.4.2",
-    "portfinder": "0.4.0",
     "react": "~15.4.0-rc.4",
     "react-dom": "~15.4.0-rc.4",
-    "react-redux": "4.4.6",
     "react-test-renderer": "~15.4.0-rc.4",
-    "redux": "3.6.0",
-    "redux-thunk": "2.1.0",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2",
-    "split": "1.0.0"
+    "sinon": "^2.0.0-pre.2"
   }
 }

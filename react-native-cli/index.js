@@ -39,7 +39,6 @@ var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
-var spawn = require('child_process').spawn;
 var chalk = require('chalk');
 var prompt = require('prompt');
 var semver = require('semver');
@@ -55,7 +54,8 @@ var semver = require('semver');
  *     - "https://registry.npmjs.org/react-native/-/react-native-0.20.0.tgz" - a .tgz archive from any npm repo
  *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
  */
-var argv = require('minimist')(process.argv.slice(2));
+
+var options = require('minimist')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -74,6 +74,10 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
     'package.json'
   );
 };
+
+if (options._.length === 0 && (options.v || options.version)) {
+  printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
+}
 
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
@@ -102,20 +106,17 @@ function getYarnVersionIfAvailable() {
   }
 }
 
-checkForVersionArgument();
-
 var cli;
 var cliPath = CLI_MODULE_PATH();
 if (fs.existsSync(cliPath)) {
   cli = require(cliPath);
 }
 
-// minimist api
-var commands = argv._;
+var commands = options._;
 if (cli) {
   cli.run();
 } else {
-  if (argv._.length === 0 && (argv.h || argv.help)) {
+  if (options._.length === 0 && (options.h || options.help)) {
     console.log([
       '',
       '  Usage: react-native [command] [options]',
@@ -149,8 +150,7 @@ if (cli) {
       );
       process.exit(1);
     } else {
-      const rnPackage = argv.version;
-      init(commands[1], argv.verbose, rnPackage, argv.npm);
+      init(commands[1], options);
     }
     break;
   default:
@@ -186,22 +186,22 @@ function validateProjectName(name) {
 
 /**
  * @param name Project name, e.g. 'AwesomeApp'.
- * @param verbose If true, will run 'npm install' in verbose mode (for debugging).
- * @param rnPackage Version of React Native to install, e.g. '0.38.0'.
- * @param forceNpmClient If true, always use the npm command line client,
+ * @param options.verbose If true, will run 'npm install' in verbose mode (for debugging).
+ * @param options.version Version of React Native to install, e.g. '0.38.0'.
+ * @param options.npm If true, always use the npm command line client,
  *                       don't use yarn even if available.
  */
-function init(name, verbose, rnPackage, forceNpmClient) {
+function init(name, options) {
   validateProjectName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, verbose, rnPackage, forceNpmClient);
+    createAfterConfirmation(name, options);
   } else {
-    createProject(name, verbose, rnPackage, forceNpmClient);
+    createProject(name, options);
   }
 }
 
-function createAfterConfirmation(name, verbose, rnPackage, forceNpmClient) {
+function createAfterConfirmation(name, options) {
   prompt.start();
 
   var property = {
@@ -214,7 +214,7 @@ function createAfterConfirmation(name, verbose, rnPackage, forceNpmClient) {
 
   prompt.get(property, function (err, result) {
     if (result.yesno[0] === 'y') {
-      createProject(name, verbose, rnPackage, forceNpmClient);
+      createProject(name, options);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -222,7 +222,7 @@ function createAfterConfirmation(name, verbose, rnPackage, forceNpmClient) {
   });
 }
 
-function createProject(name, verbose, rnPackage, forceNpmClient) {
+function createProject(name, options) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -246,11 +246,7 @@ function createProject(name, verbose, rnPackage, forceNpmClient) {
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
   process.chdir(root);
 
-  if (verbose) {
-    runVerbose(root, projectName, rnPackage, forceNpmClient);
-  } else {
-    run(root, projectName, rnPackage, forceNpmClient);
-  }
+  run(root, projectName, options);
 }
 
 function getInstallPackage(rnPackage) {
@@ -265,46 +261,45 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function run(root, projectName, rnPackage, forceNpmClient) {
+function run(root, projectName, options) {
+  // E.g. '0.38' or '/path/to/archive.tgz'
+  const rnPackage = options.version;
+  const forceNpmClient = options.npm;
   const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;
-  if (yarnVersion) {
-    console.log('Using yarn v' + yarnVersion);
-    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
-    installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
+  if (options.installCommand) {
+    // In CI environments it can be useful to provide a custom command,
+    // to set up and use an offline mirror for installing dependencies, for example.
+    installCommand = options.installCommand;
   } else {
-    console.log('Installing ' + getInstallPackage(rnPackage) + '...');
-    if (!forceNpmClient) {
-      console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
+    if (yarnVersion) {
+      console.log('Using yarn v' + yarnVersion);
+      console.log('Installing ' + getInstallPackage(rnPackage) + '...');
+      installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
+      if (options.verbose) {
+        installCommand += ' --verbose';
+      }
+    } else {
+      console.log('Installing ' + getInstallPackage(rnPackage) + '...');
+      if (!forceNpmClient) {
+        console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
+      }
+      installCommand = 'npm install --save --save-exact ' + getInstallPackage(rnPackage);
+      if (options.verbose) {
+        installCommand += ' --verbose';
+      }
     }
-    installCommand = 'npm install --save --save-exact ' + getInstallPackage(rnPackage);
   }
-  exec(installCommand, function(err, stdout, stderr) {
-    if (err) {
-      console.log(stdout);
-      console.error(stderr);
-      console.error('Command `' + installCommand + '` failed.');
-      process.exit(1);
-    }
-    checkNodeVersion();
-    cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
-  });
-}
-
-function runVerbose(root, projectName, rnPackage, forceNpmClient) {
-  // Use npm client, yarn doesn't support --verbose yet
-  console.log('Installing ' + getInstallPackage(rnPackage) + ' from npm. This might take a while...');
-  var proc = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '--verbose', '--save', '--save-exact', getInstallPackage(rnPackage)], {stdio: 'inherit'});
-  proc.on('close', function (code) {
-    if (code !== 0) {
-      console.error('`npm install --save --save-exact react-native` failed');
-      return;
-    }
-
-    cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
-  });
+  try {
+    execSync(installCommand, {stdio: 'inherit'});
+  } catch (err) {
+    console.error(err);
+    console.error('Command `' + installCommand + '` failed.');
+    process.exit(1);
+  }
+  checkNodeVersion();
+  cli = require(CLI_MODULE_PATH());
+  cli.init(root, projectName);
 }
 
 function checkNodeVersion() {
@@ -323,14 +318,12 @@ function checkNodeVersion() {
   }
 }
 
-function checkForVersionArgument() {
-  if (argv._.length === 0 && (argv.v || argv.version)) {
-    console.log('react-native-cli: ' + require('./package.json').version);
-    try {
-      console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
-    } catch (e) {
-      console.log('react-native: n/a - not inside a React Native project directory');
-    }
-    process.exit();
+function printVersionsAndExit(reactNativePackageJsonPath) {
+  console.log('react-native-cli: ' + require('./package.json').version);
+  try {
+    console.log('react-native: ' + require(reactNativePackageJsonPath).version);
+  } catch (e) {
+    console.log('react-native: n/a - not inside a React Native project directory');
   }
+  process.exit();
 }
