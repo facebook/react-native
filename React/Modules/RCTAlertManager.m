@@ -142,7 +142,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     if (button.count != 1) {
       RCTLogError(@"Button definitions should have exactly one key.");
     }
-
     NSString *buttonKey = button.allKeys.firstObject;
     NSString *buttonTitle = [RCTConvert NSString:button[buttonKey]];
     UIAlertActionStyle buttonStyle = UIAlertActionStyleDefault;
