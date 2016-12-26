@@ -113,7 +113,7 @@ The debugger will receive a list of all project roots, separated by a space. For
    import java.util.concurrent.TimeUnit;
    ```
 
-3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
+3. In ```android/app/src/main/java/com/{yourAppName}/MainActivity.java``` add the function:
    ```java
    public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
