@@ -249,7 +249,7 @@ class AlertIOS {
       defaultValue,
       cancelButtonKey,
       destructiveButtonKey,
-      keyboardType
+      keyboardType,
     }, (id, value) => {
       var cb = callbacks[id];
       cb && cb(value);
