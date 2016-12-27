@@ -315,7 +315,7 @@ exports.examples = [
           <Image
             defaultSource={require('./bunny.png')}
             source={{
-              uri: 'https://facebook.github.io/origami/public/images/birds.jpg?cacheBust=notinCache' + Date.now(),
+              uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
               cache: 'only-if-cached'
             }}
             style={styles.base}
@@ -323,7 +323,7 @@ exports.examples = [
           <Image
             defaultSource={require('./bunny.png')}
             source={{
-              uri: 'https://facebook.github.io/origami/public/images/birds.jpg?cacheBust=maybeInCache',
+              uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
               cache: 'reload'
             }}
             style={styles.base}
