@@ -36,14 +36,19 @@ public class NativeModuleRegistry {
 
   public NativeModuleRegistry(
     List<ModuleSpec> moduleSpecList,
-    Map<Class, ReactModuleInfo> reactModuleInfoMap) {
+    Map<Class, ReactModuleInfo> reactModuleInfoMap,
+    boolean isLazyNativeModulesEnabled) {
     Map<String, Pair<Class<? extends NativeModule>, ModuleHolder>> namesToSpecs = new HashMap<>();
     for (ModuleSpec module : moduleSpecList) {
       Class<? extends NativeModule> type = module.getType();
-      ModuleHolder holder = new ModuleHolder(
-        type,
-        reactModuleInfoMap.get(type),
-        module.getProvider());
+      ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type);
+      if (isLazyNativeModulesEnabled &&
+        reactModuleInfo == null &&
+        BaseJavaModule.class.isAssignableFrom(type)) {
+        throw new IllegalStateException("Native Java module " + type.getSimpleName() +
+          " should be annotated with @ReactModule and added to a @ReactModuleList.");
+      }
+      ModuleHolder holder = new ModuleHolder(type, reactModuleInfo, module.getProvider());
       String name = holder.getInfo().name();
       Class<? extends NativeModule> existing = namesToSpecs.containsKey(name) ?
         namesToSpecs.get(name).first :

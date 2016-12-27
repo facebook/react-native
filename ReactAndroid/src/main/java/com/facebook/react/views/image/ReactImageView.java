@@ -28,8 +28,11 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.widget.Toast;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -87,14 +90,13 @@ public class ReactImageView extends GenericDraweeView {
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
     void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
-        ScalingUtils.getTransform(
+      mScaleType.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
             source.getWidth(),
             source.getHeight(),
             0.0f,
-            0.0f,
-            mScaleType);
+            0.0f);
         sMatrix.invert(sInverse);
 
         mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
@@ -271,15 +273,26 @@ public class ReactImageView extends GenericDraweeView {
     if (sources != null && sources.size() != 0) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
-        mSources.add(new ImageSource(getContext(), sources.getMap(0).getString("uri")));
+        ReadableMap source = sources.getMap(0);
+        String uri = source.getString("uri");
+        ImageSource imageSource = new ImageSource(getContext(), uri);
+        mSources.add(imageSource);
+        if (Uri.EMPTY.equals(imageSource.getUri())) {
+          warnImageSource(uri);
+        }
       } else {
         for (int idx = 0; idx < sources.size(); idx++) {
           ReadableMap source = sources.getMap(idx);
-          mSources.add(new ImageSource(
-            getContext(),
-            source.getString("uri"),
-            source.getDouble("width"),
-            source.getDouble("height")));
+          String uri = source.getString("uri");
+          ImageSource imageSource = new ImageSource(
+              getContext(),
+              uri,
+              source.getDouble("width"),
+              source.getDouble("height"));
+          mSources.add(imageSource);
+          if (Uri.EMPTY.equals(imageSource.getUri())) {
+            warnImageSource(uri);
+          }
         }
       }
     }
@@ -469,6 +482,15 @@ public class ReactImageView extends GenericDraweeView {
       return true;
     } else {
       return false;
+    }
+  }
+
+  private void warnImageSource(String uri) {
+    if (ReactBuildConfig.DEBUG) {
+      Toast.makeText(
+        getContext(),
+        "Warning: Image source \"" + uri + "\" doesn't exist",
+        Toast.LENGTH_SHORT).show();
     }
   }
 }

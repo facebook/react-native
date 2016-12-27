@@ -325,6 +325,7 @@ function checkNodeVersion() {
   }
 }
 
+
 function checkForVersionArgument(options) {
   if (options._.length === 0 && (options.v || options.version)) {
     console.log('react-native-cli: ' + require('./package.json').version);
@@ -354,5 +355,4 @@ function checkForVersionArgument(options) {
       console.log('react: n/a ' + reactHint);
     }
     process.exit();
-  }
 }

@@ -43,6 +43,7 @@ var PanResponder = require('PanResponder');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
+var TVEventHandler = require('TVEventHandler');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
@@ -472,6 +473,7 @@ var Navigator = React.createClass({
   componentDidMount: function() {
     this._handleSpringUpdate();
     this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
@@ -485,6 +487,8 @@ var Navigator = React.createClass({
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
     }
+
+    this._disableTVEventHandler();
   },
 
   /**
@@ -1300,6 +1304,24 @@ var Navigator = React.createClass({
       navigator: this._navigationBarNavigator,
       navState: this.state,
     });
+  },
+
+  _tvEventHandler: TVEventHandler,
+
+  _enableTVEventHandler: function() {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler: function() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
   },
 
   render: function() {

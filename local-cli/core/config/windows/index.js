@@ -34,13 +34,13 @@ const getProjectName = (fullProjPath) => {
 exports.projectConfig = function projectConfigWindows(folder, userConfig) {
 
   const csSolution = userConfig.csSolution || findWindowsSolution(folder);
-  const solutionPath = path.join(folder, csSolution);
 
   if (!csSolution) {
     return null;
   }
 
   // expects solutions to be named the same as project folders
+  const solutionPath = path.join(folder, csSolution);
   const windowsAppFolder = csSolution.substring(0, csSolution.lastIndexOf(".sln"));
   const src = userConfig.sourceDir || windowsAppFolder;
   const sourceDir = path.join(folder, src);
