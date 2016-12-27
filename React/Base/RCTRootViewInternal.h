@@ -25,9 +25,7 @@
 /**
  * TV remote gesture recognizers
  */
-#if TARGET_OS_TV
 @property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
 @property (nonatomic, strong) UIView *reactPreferredFocusedView;
-#endif
 
 @end
