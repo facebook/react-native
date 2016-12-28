@@ -99,6 +99,10 @@ class ListViewDataSource {
    * The default extractor expects data of one of the following forms:
    *
    *      { sectionID_1: { rowID_1: <rowData1>, ... }, ... }
+   * 
+   *    or
+   * 
+   *      { sectionID_1: [ <rowData1>, <rowData2>, ... ], ... }
    *
    *    or
    *
