@@ -49,7 +49,7 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  *   // Increase the maximum size of AsyncStorage
  *   long size = 100 * 1024L * 1024L; // 100 MB
  *   ReactDatabaseSupplier.getInstance(getApplicationContext()).setMaximumSize(size);
- * 
+ *
  *   // ...rest of code in `getPackages()`
  * }
  * ```
