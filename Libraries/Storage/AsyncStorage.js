@@ -36,6 +36,24 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  * `AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite
  * based on what is available.
  *
+ * iOS doesn't have any storage limits, but on Android the database is limited to
+ * 6 MB by default. To change the limit, you can modify the `getPackages()` method
+ * in your your project's `MainApplication.java`:
+ * ```
+ * // add the following import
+ * import com.facebook.react.modules.storage.ReactDatabaseSupplier;
+ *
+ * // modify `getPackages()` method
+ * @Override
+ * protected List<ReactPackage> getPackages() {
+ *   // Increase the maximum size of AsyncStorage
+ *   long size = 100 * 1024L * 1024L; // 100 MB
+ *   ReactDatabaseSupplier.getInstance(getApplicationContext()).setMaximumSize(size);
+ * 
+ *   // ...rest of code in `getPackages()`
+ * }
+ * ```
+ *
  * The `AsyncStorage` JavaScript code is a simple facade that provides a clear
  * JavaScript API, real `Error` objects, and simple non-multi functions. Each
  * method in the API returns a `Promise` object.
