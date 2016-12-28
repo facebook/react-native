@@ -84,11 +84,11 @@ gradle.projectsEvaluated {
                     commandLine(*nodeExecutableAndArgs, "node_modules/react-native/local-cli/cli.js", "bundle", "--platform", "android", "--dev", "${devEnabled}",
                             "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraPackagerArgs)
                 }
-
-                enabled config."bundleIn${targetName}" ||
-                    config."bundleIn${buildTypeName.capitalize()}" ?:
-                            targetName.toLowerCase().contains("release")
             }
+
+            currentBundleTask.enabled = config."bundleIn${targetName}" ||
+                config."bundleIn${buildTypeName.capitalize()}" ?:
+                        targetName.toLowerCase().contains("release")
 
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
             currentBundleTask.dependsOn("merge${targetName}Resources")
