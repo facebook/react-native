@@ -287,6 +287,8 @@ const Image = React.createClass({
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
      *
+     * Does not work for static image resources.
+     *
      * @param uri The location of the image.
      * @param success The function that will be called if the image was sucessfully found and width
      * and height retrieved.
