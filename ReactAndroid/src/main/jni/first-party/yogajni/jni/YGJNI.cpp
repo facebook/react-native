@@ -67,10 +67,13 @@ static YGSize YGJNIMeasureFunc(YGNodeRef node,
     static_assert(sizeof(measureResult) == 8,
                   "Expected measureResult to be 8 bytes, or two 32 bit ints");
 
-    const float measuredWidth = static_cast<float>(0xFFFFFFFF & (measureResult >> 32));
-    const float measuredHeight = static_cast<float>(0xFFFFFFFF & measureResult);
+    int32_t wBits = 0xFFFFFFFF & (measureResult >> 32);
+    int32_t hBits = 0xFFFFFFFF & measureResult;
 
-    return YGSize{measuredWidth, measuredHeight};
+    const float *measuredWidth = reinterpret_cast<float*>(&wBits);
+    const float *measuredHeight = reinterpret_cast<float*>(&hBits);
+
+    return YGSize{*measuredWidth, *measuredHeight};
   } else {
     YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
     return YGSize{
