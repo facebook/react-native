@@ -18,6 +18,10 @@
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation;
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
+
 + (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
   restorationHandler:(void (^)(NSArray *))restorationHandler;
