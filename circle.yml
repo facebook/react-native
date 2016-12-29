@@ -19,12 +19,12 @@ dependencies:
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
     - cd /home/ubuntu/buck && ant
     - buck --version
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
     - buck fetch ReactAndroid/src/main/java/com/facebook/react
     - buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
     - buck fetch ReactAndroid/src/test/...
     - buck fetch ReactAndroid/src/androidTest/...
-    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
     # CIRCLE_NPM_TOKEN is in React Native project settings in Circle CI.
     # It was generated for bestander user, easy to replace with anyone's else

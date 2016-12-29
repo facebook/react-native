@@ -86,6 +86,11 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
   }
 
   @Override
+  boolean doesDraw() {
+    return mDrawBorder != null || super.doesDraw();
+  }
+
+  @Override
   public void setBackgroundColor(int backgroundColor) {
     getMutableBorder().setBackgroundColor(backgroundColor);
   }
