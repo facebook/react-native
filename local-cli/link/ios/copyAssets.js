@@ -38,6 +38,6 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
 
   fs.writeFileSync(
     getPlistPath(project, projectConfig.sourceDir),
-    plistParser.build(plist)
+    plistParser.build(plist, { indent: '\t', offset: -1 })
   );
 };
