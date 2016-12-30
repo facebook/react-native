@@ -113,7 +113,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.4.0-rc.4"
+    "react": "~15.4.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -204,9 +204,9 @@
     "jest-repl": "17.0.3",
     "jest-runtime": "17.0.3",
     "mock-fs": "^3.11.0",
-    "react": "~15.4.0-rc.4",
-    "react-dom": "~15.4.0-rc.4",
-    "react-test-renderer": "~15.4.0-rc.4",
+    "react": "~15.4.1",
+    "react-dom": "~15.4.1",
+    "react-test-renderer": "~15.4.1",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
   }
