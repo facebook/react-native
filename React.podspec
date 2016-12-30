@@ -34,12 +34,12 @@ Pod::Spec.new do |s|
     ss.dependency      'React/yoga'
     ss.dependency      'React/cxxreact'
     ss.source_files  = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files = "React/**/RCTTVView.*", "**/__tests__/*", "IntegrationTests/* ReactCommon/yoga/*"
+    ss.exclude_files = "**/__tests__/*", "IntegrationTests/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*"
     ss.frameworks    = "JavaScriptCore"
     ss.libraries     = "stdc++"
   end
 
-  s.subspec 'AppleTV' do |ss|
+  s.subspec 'tvOS' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "React/**/RCTTVView.{h, m}"
   end
