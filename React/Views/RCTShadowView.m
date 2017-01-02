@@ -59,41 +59,41 @@ static void RCTPrint(YGNodeRef node)
 // Enforces precedence rules, e.g. marginLeft > marginHorizontal > margin.
 #define DEFINE_PROCESS_META_PROPS(type)                                                            \
 static void RCTProcessMetaProps##type(const float metaProps[META_PROP_COUNT], YGNodeRef node) {   \
-  if (!YGValueIsUndefined(metaProps[META_PROP_LEFT])) {                                           \
+  if (!YGFloatIsUndefined(metaProps[META_PROP_LEFT])) {                                           \
     YGNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_LEFT]);                          \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
     YGNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_HORIZONTAL]);                    \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     YGNodeStyleSet##type(node, YGEdgeStart, metaProps[META_PROP_ALL]);                           \
   } else {                                                                                         \
     YGNodeStyleSet##type(node, YGEdgeStart, 0);                                                  \
   }                                                                                                \
                                                                                                    \
-  if (!YGValueIsUndefined(metaProps[META_PROP_RIGHT])) {                                          \
+  if (!YGFloatIsUndefined(metaProps[META_PROP_RIGHT])) {                                          \
     YGNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_RIGHT]);                           \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_HORIZONTAL])) {                              \
     YGNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_HORIZONTAL]);                      \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     YGNodeStyleSet##type(node, YGEdgeEnd, metaProps[META_PROP_ALL]);                             \
   } else {                                                                                         \
     YGNodeStyleSet##type(node, YGEdgeEnd, 0);                                                    \
   }                                                                                                \
                                                                                                    \
-  if (!YGValueIsUndefined(metaProps[META_PROP_TOP])) {                                            \
+  if (!YGFloatIsUndefined(metaProps[META_PROP_TOP])) {                                            \
     YGNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_TOP]);                             \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
     YGNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_VERTICAL]);                        \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     YGNodeStyleSet##type(node, YGEdgeTop, metaProps[META_PROP_ALL]);                             \
   } else {                                                                                         \
     YGNodeStyleSet##type(node, YGEdgeTop, 0);                                                    \
   }                                                                                                \
                                                                                                    \
-  if (!YGValueIsUndefined(metaProps[META_PROP_BOTTOM])) {                                         \
+  if (!YGFloatIsUndefined(metaProps[META_PROP_BOTTOM])) {                                         \
     YGNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_BOTTOM]);                       \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_VERTICAL])) {                                \
     YGNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_VERTICAL]);                     \
-  } else if (!YGValueIsUndefined(metaProps[META_PROP_ALL])) {                                     \
+  } else if (!YGFloatIsUndefined(metaProps[META_PROP_ALL])) {                                     \
     YGNodeStyleSet##type(node, YGEdgeBottom, metaProps[META_PROP_ALL]);                          \
   } else {                                                                                         \
     YGNodeStyleSet##type(node, YGEdgeBottom, 0);                                                 \
@@ -145,9 +145,9 @@ DEFINE_PROCESS_META_PROPS(Border);
 #if RCT_DEBUG
   // This works around a breaking change in css-layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
   // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
-  if ((!YGValueIsUndefined(YGNodeStyleGetFlexBasis(node)) && YGNodeStyleGetFlexBasis(node) == 0) &&
-      ((!YGValueIsUndefined(YGNodeStyleGetWidth(node)) && YGNodeStyleGetWidth(node) > 0 && YGNodeLayoutGetWidth(node) == 0) ||
-       (!YGValueIsUndefined(YGNodeStyleGetHeight(node)) && YGNodeStyleGetHeight(node) > 0 && YGNodeLayoutGetHeight(node) == 0))) {
+  if ((YGNodeStyleGetFlexBasis(node).unit == YGUnitPixel && YGNodeStyleGetFlexBasis(node).value == 0) &&
+      ((YGNodeStyleGetWidth(node).unit == YGUnitPixel && YGNodeStyleGetWidth(node).value > 0 && YGNodeLayoutGetWidth(node) == 0) ||
+       (YGNodeStyleGetHeight(node).unit == YGUnitPixel && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0))) {
     RCTLogError(@"View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:) View: %@", self);
   }
 #endif
@@ -493,25 +493,25 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 {
   if (YGNodeLayoutGetDirection(_cssNode) == YGDirectionRTL) {
     return (UIEdgeInsets){
-      YGNodeStyleGetPadding(_cssNode, YGEdgeTop),
-      !YGValueIsUndefined(YGNodeStyleGetPadding(_cssNode, YGEdgeEnd)) ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd) :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft),
-      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom),
-      !YGValueIsUndefined(YGNodeStyleGetPadding(_cssNode, YGEdgeStart)) ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart) :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeRight)
+      YGNodeStyleGetPadding(_cssNode, YGEdgeTop).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).unit == YGUnitPixel ?
+      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).value :
+      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).unit == YGUnitPixel ?
+      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).value :
+      YGNodeStyleGetPadding(_cssNode, YGEdgeRight).value
     };
   } else {
     return (UIEdgeInsets){
-      YGNodeStyleGetPadding(_cssNode, YGEdgeTop),
-      !YGValueIsUndefined(YGNodeStyleGetPadding(_cssNode, YGEdgeStart)) ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart) :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft),
-      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom),
-      !YGValueIsUndefined(YGNodeStyleGetPadding(_cssNode, YGEdgeEnd)) ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd) :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeRight)
+      YGNodeStyleGetPadding(_cssNode, YGEdgeTop).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).unit == YGUnitPixel ?
+      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).value :
+      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom).value,
+      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).unit == YGUnitPixel ?
+      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).value :
+      YGNodeStyleGetPadding(_cssNode, YGEdgeRight).value
     };
   }
 }
@@ -541,12 +541,12 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 #define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \
 - (void)set##setProp:(float)value                                   \
 {                                                                   \
-  YGNodeStyleSet##cssProp(_cssNode, value);                        \
+  YGNodeStyleSet##cssProp(_cssNode, value);                         \
   [self dirtyText];                                                 \
 }                                                                   \
 - (float)getProp                                                    \
 {                                                                   \
-  return YGNodeStyleGet##cssProp(_cssNode);                        \
+  return YGNodeStyleGet##cssProp(_cssNode).value;                   \
 }
 
 RCT_DIMENSION_PROPERTY(Width, width, Width)
@@ -561,12 +561,12 @@ RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 #define RCT_POSITION_PROPERTY(setProp, getProp, edge)               \
 - (void)set##setProp:(float)value                                   \
 {                                                                   \
-  YGNodeStyleSetPosition(_cssNode, edge, value);                   \
+  YGNodeStyleSetPosition(_cssNode, edge, value);                    \
   [self dirtyText];                                                 \
 }                                                                   \
 - (float)getProp                                                    \
 {                                                                   \
-  return YGNodeStyleGetPosition(_cssNode, edge);                   \
+  return YGNodeStyleGetPosition(_cssNode, edge).value;              \
 }
 
 RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
@@ -590,12 +590,12 @@ static inline void RCTAssignSuggestedDimension(YGNodeRef cssNode, YGDimension di
   if (amount != UIViewNoIntrinsicMetric) {
     switch (dimension) {
       case YGDimensionWidth:
-        if (isnan(YGNodeStyleGetWidth(cssNode))) {
+        if (isnan(YGNodeStyleGetWidth(cssNode).value)) {
           YGNodeStyleSetWidth(cssNode, amount);
         }
         break;
       case YGDimensionHeight:
-        if (isnan(YGNodeStyleGetHeight(cssNode))) {
+        if (isnan(YGNodeStyleGetHeight(cssNode).value)) {
           YGNodeStyleSetHeight(cssNode, amount);
         }
         break;
@@ -630,19 +630,28 @@ static inline void RCTAssignSuggestedDimension(YGNodeRef cssNode, YGDimension di
   YGNodeStyleSetFlex(_cssNode, value);
 }
 
+- (void)setFlexBasis:(float)value
+{
+  YGNodeStyleSetFlexBasis(_cssNode, value);
+}
+
+- (float)flexBasis
+{
+  return YGNodeStyleGetFlexBasis(_cssNode).value;
+}
+
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
 - (void)set##setProp:(type)value                            \
 {                                                           \
-  YGNodeStyleSet##cssProp(_cssNode, value);                \
+  YGNodeStyleSet##cssProp(_cssNode, value);                 \
 }                                                           \
 - (type)getProp                                             \
 {                                                           \
-  return YGNodeStyleGet##cssProp(_cssNode);                \
+  return YGNodeStyleGet##cssProp(_cssNode);                 \
 }
 
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
-RCT_STYLE_PROPERTY(FlexBasis, flexBasis, FlexBasis, float)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, YGJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, YGAlign)
