@@ -21,6 +21,8 @@
  */
 - (void)storeImage:(UIImage *)image withBlock:(void (^)(NSString *imageTag))block;
 
+- (void)storeImage:(UIImage *)image quality:(float)quality withBlock:(void (^)(NSString *imageTag))block;
+
 @end
 
 @interface RCTImageStoreManager (Deprecated)

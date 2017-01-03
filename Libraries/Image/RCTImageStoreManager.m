@@ -74,9 +74,14 @@ RCT_EXPORT_MODULE()
 
 - (void)storeImage:(UIImage *)image withBlock:(void (^)(NSString *imageTag))block
 {
+  [self storeImage:image quality:0.75 withBlock:block];
+}
+
+- (void)storeImage:(UIImage *)image quality:(float)quality withBlock:(void (^)(NSString *imageTag))block
+{
   RCTAssertParam(block);
   dispatch_async(_methodQueue, ^{
-    NSString *imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, 0.75)];
+    NSString *imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, quality)];
     dispatch_async(dispatch_get_main_queue(), ^{
       block(imageTag);
     });

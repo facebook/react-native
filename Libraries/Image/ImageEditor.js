@@ -46,6 +46,10 @@ type ImageCropData = {
     cover: string,
     stretch: string,
   }>,
+  /**
+   * (Optional, iOS-only) JPEG compression quality, defaults to 0.75.
+   */
+  quality?: number,
 };
 
 class ImageEditor {
