@@ -674,7 +674,7 @@ Next, we need to pass some activity lifecycle callbacks down to the `ReactInstan
 protected void onPause() {
     super.onPause();
 
-    if (mReactInstanceManager != null) {### 
+    if (mReactInstanceManager != null) {
         mReactInstanceManager.onHostPause(this);
     }
 }
