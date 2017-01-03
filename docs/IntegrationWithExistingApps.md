@@ -741,7 +741,8 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
     }
 }
 ```
-> Finally onActivityResult() method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.
+
+Finally, the `onActivityResult()` method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.
 
 ```java
 @Override
