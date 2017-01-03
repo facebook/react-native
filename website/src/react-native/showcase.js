@@ -313,13 +313,13 @@ var featured = [
     infoLink: 'https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/',
     infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
   },
-	{
-		name: 'Blink',
-		icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
-		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
-		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
-		infoTitle: 'What we learned after using React Native for a year',
-	},
+  {
+    name: 'Blink',
+    icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
+    infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
+    infoTitle: 'What we learned after using React Native for a year',
+  },
   {
     name: 'Delivery.com',
     icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
@@ -327,8 +327,15 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
-  },  
-];
+  },
+  {
+    name: 'Jack',
+    icon: 'https://s3-eu-west-1.amazonaws.com/jack-public/react-native-showcase/jack-raw-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/you-have-a-jack/id1019167559?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
+    infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
+    infoTitle: 'Our switch to React Native',
+}];
 
 /*
 If you want your app to be featured in the showcase, add them to the featured
