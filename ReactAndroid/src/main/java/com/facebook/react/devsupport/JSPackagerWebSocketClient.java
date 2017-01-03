@@ -67,10 +67,7 @@ public class JSPackagerWebSocketClient extends WebSocketListener {
         .build();
 
     Request request = new Request.Builder().url(mUrl).build();
-    //WebSocket call = WebSocket.create(httpClient, request);
     WebSocket call = httpClient.newWebSocket(request, this);
-
-    //call.enqueue(this);
   }
 
   private void reconnect() {

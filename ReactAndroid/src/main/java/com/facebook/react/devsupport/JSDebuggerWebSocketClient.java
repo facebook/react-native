@@ -67,9 +67,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
       .build();
 
     Request request = new Request.Builder().url(url).build();
-  //  WebSocket call = WebSocket.create(mHttpClient, request);
     WebSocket call = mHttpClient.newWebSocket(request, this);
-    //call.enqueue(this);
   }
 
   public void prepareJSRuntime(JSDebuggerCallback callback) {
@@ -220,7 +218,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
 
   @Override
   public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-      t.printStackTrace();
+      abort("Websocket exception", t);
   }
 
   @Override

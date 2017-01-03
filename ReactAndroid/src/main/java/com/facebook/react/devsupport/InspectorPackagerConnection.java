@@ -207,8 +207,8 @@ public class InspectorPackagerConnection {
     public void onMessage(WebSocket webSocket, String text) {
       try {
         handleProxyMessage(new JSONObject(text));
-      } catch (Exception e) {
-        //throw new IOException(e);
+      } catch (JSONException e) {
+        throw new IOException(e);
       } 
     }
 
@@ -234,10 +234,7 @@ public class InspectorPackagerConnection {
           .build();
 
       Request request = new Request.Builder().url(mUrl).build();
-    //  WebSocket call = WebSocket.create(httpClient, request);
       WebSocket call = httpClient.newWebSocket(request, this);
-
-  //    call.enqueue(this);
     }
 
     private void reconnect() {
@@ -264,11 +261,7 @@ public class InspectorPackagerConnection {
     public void close() {
       mClosed = true;
       if (mWebSocket != null) {
-        try {
-          mWebSocket.close(1000, "End of session");
-        } catch (Exception e) {
-          // swallow, no need to handle it here
-        }
+        mWebSocket.close(1000, "End of session");
         mWebSocket = null;
       }
     }

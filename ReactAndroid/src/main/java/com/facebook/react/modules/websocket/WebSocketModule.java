@@ -241,7 +241,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     }
     try {
       Buffer buffer = new Buffer();
-      //client.sendPing(buffer);
     } catch (Exception e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
