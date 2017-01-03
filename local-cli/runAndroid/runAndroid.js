@@ -8,13 +8,14 @@
  */
 'use strict';
 
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const isString = require('lodash/isString');
+const path = require('path');
 const Promise = require('promise');
-const adb = require('./adb');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -69,9 +70,7 @@ function tryRunAdbReverse(device) {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
-    console.log(chalk.yellow(
-      `Could not run adb reverse: ${e.message}`
-    ));
+    console.log(chalk.yellow(`Could not run adb reverse: ${e.message}`));
   }
 }
 
@@ -89,7 +88,11 @@ function buildAndRun(args) {
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
-    runOnSpecificDevice(args, cmd, packageName, adbPath);
+    if (isString(args.deviceId)) {
+        runOnSpecificDevice(args, cmd, packageName, adbPath);
+    } else {
+      console.log(chalk.red('Argument missing for parameter --deviceId'));
+    }
   } else {
     runOnAllDevices(args, cmd, packageName, adbPath);
   }
@@ -113,18 +116,14 @@ function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
 
 function buildApk(gradlew) {
   try {
-    console.log(chalk.bold(
-      'Building the app...'
-    ));
+    console.log(chalk.bold('Building the app...'));
 
     // using '-x lint' in order to ignore linting errors while building the apk
     child_process.execFileSync(gradlew, ['build', '-x', 'lint'], {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
-    console.log(chalk.red(
-      'Could not build the app on the device, read the error above for details.\n'
-    ));
+    console.log(chalk.red('Could not build the app, read the error above for details.\n'));
   }
 }
 

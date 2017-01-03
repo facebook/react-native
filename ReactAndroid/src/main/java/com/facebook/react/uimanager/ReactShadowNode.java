@@ -515,7 +515,7 @@ public class ReactShadowNode {
   }
 
   public final float getStyleWidth() {
-    return mYogaNode.getWidth();
+    return mYogaNode.getWidth().value;
   }
 
   public void setStyleWidth(float widthPx) {
@@ -531,7 +531,7 @@ public class ReactShadowNode {
   }
 
   public final float getStyleHeight() {
-    return mYogaNode.getHeight();
+    return mYogaNode.getHeight().value;
   }
 
   public void setStyleHeight(float heightPx) {
@@ -595,7 +595,7 @@ public class ReactShadowNode {
   }
 
   public final float getPadding(int spacingType) {
-    return mYogaNode.getPadding(YogaEdge.fromInt(spacingType));
+    return mYogaNode.getPadding(YogaEdge.fromInt(spacingType)).value;
   }
 
   public void setDefaultPadding(int spacingType, float padding) {
