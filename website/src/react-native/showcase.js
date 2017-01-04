@@ -45,7 +45,7 @@ var featured = [
     icon: 'http://pp.myapp.com/ma_icon/0/icon_10927178_1479093114/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu',
     linkAppStore: 'https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8',
-    infoLink: 'https://ke.qq.com/',
+    infoLink: 'http://baike.baidu.com/view/13030839.htm',
     infoTitle: 'Classroom is an education app by Chinese Internet giant Tencent',
   },
   {
