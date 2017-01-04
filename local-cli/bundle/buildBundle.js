@@ -17,6 +17,7 @@ const TerminalReporter = require('../../packager/react-packager/src/lib/Terminal
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
+const fs = require('fs');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 
@@ -74,6 +75,12 @@ function buildBundle(
       watch: false,
       reporter: new TerminalReporter(),
     };
+
+    if (typeof args.manifestFile === 'string') {
+      options.manifestReferrence = JSON.parse(
+        fs.readFileSync(args.manifestFile, 'utf-8')
+      );
+    }
 
     packagerInstance = new Server(options);
     shouldClosePackager = true;

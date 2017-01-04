@@ -27,6 +27,7 @@ jest
   .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
+var Bundle = require('../Bundle');
 var Resolver = require('../../Resolver');
 var sizeOf = require('image-size');
 var fs = require('fs');
@@ -35,6 +36,7 @@ describe('Bundler', function() {
 
   function createModule({
     path,
+    name,
     id,
     dependencies,
     isAsset,
@@ -46,7 +48,7 @@ describe('Bundler', function() {
       path,
       resolution,
       getDependencies: () => Promise.resolve(dependencies),
-      getName: () => Promise.resolve(id),
+      getName: () => Promise.resolve(name ? name : id),
       isJSON: () => isJSON,
       isAsset: () => isAsset,
       isPolyfill: () => isPolyfill,
@@ -333,6 +335,124 @@ describe('Bundler', function() {
           '/root/img/new_image2@2x.png',
           '/root/img/new_image2@3x.png',
         ]));
+    });
+  });
+
+
+  describe('bundle with manifest reference', () => {
+    var otherBundler;
+    var doBundle;
+    var getModuleIdInResolver;
+    var refModule = {path: '/root/ref.js', name: '/root/ref.js', dependencies: []};
+    var moduleFoo = {path: '/root/foo.js', name: '/root/foo.js', dependencies: []};
+    var moduleBar = {path: '/root/bar.js', name: '/root/bar.js', dependencies: []};
+    var manifestReferrence = {
+      modules: {
+        [refModule.name]: {
+          id: 456
+        }
+      },
+      lastId: 10, 
+    };
+
+    beforeEach(function() {
+      fs.statSync.mockImplementation(function() {
+        return {
+          isDirectory: () => true
+        };
+      });
+
+      Resolver.mockImplementation(function() {
+        return {
+          getDependencies: (
+            entryFile,
+            options,
+            transformOptions,
+            onProgress,
+            getModuleId
+          ) => {
+            getModuleIdInResolver = getModuleId;
+            return Promise.resolve({
+              mainModuleId: 0,
+              dependencies: [
+                createModule(refModule),
+                createModule(moduleFoo),
+                createModule(moduleBar),
+                createModule({path: '', name: 'aPolyfill.js', dependencies: [], isPolyfill:true}),
+                createModule({path: '', name: 'anotherPolyfill.js', dependencies: [], isPolyfill:true}),
+              ],
+              transformOptions,
+              getModuleId,
+              getResolvedDependencyPairs: () => [],
+            })
+          },
+          getModuleSystemDependencies: () => [],
+          wrapModule: options => Promise.resolve(options),
+        };
+      });
+
+      Bundle.mockImplementation(function() {
+        const _modules = [];
+
+        return {
+          setRamGroups: jest.fn(),
+          setMainModuleId: jest.fn(),
+          finalize: jest.fn(),
+          getModules: () => {
+            return _modules;
+          },
+          addModule: (resolver, resolutionResponse, module, moduleTransport) => {
+            return _modules.push({...moduleTransport}) - 1;
+          }
+        }
+      });
+
+      otherBundler = new Bundler({
+        projectRoots: ['/root'],
+        assetServer: {
+          getAssetData: jest.fn(),
+        },
+        manifestReferrence,
+      });
+
+      doBundle = otherBundler.bundle({
+        entryFile: '/root/foo.js',
+        runBeforeMainModule: [],
+        runModule: true,
+      });
+    });
+
+    it('skip dependencies that exist in the manifest reference', function() {
+      return doBundle.then(bundle => {
+        const modulesNames = bundle.getModules().map(module => module.name);
+
+        expect(modulesNames.indexOf(refModule.name)).toBe(-1);
+        expect(modulesNames.indexOf(moduleFoo.name)).not.toBe(-1);
+        expect(modulesNames.indexOf(moduleBar.name)).not.toBe(-1);
+      });
+    });
+
+    it('skip polyfills if used manifest reference', function() {
+      return doBundle.then(bundle => {
+        expect(bundle.getModules().some(module => module.name == 'somePolyfill.js')).toBeFalsy();
+        expect(bundle.getModules().some(module => module.isPolyfill)).toBeFalsy();
+      });
+    });
+
+    it('get the moduleId from manifest reference that if module was already exists in the manifest', function() {
+      const refModuleReference = manifestReferrence.modules[refModule.name];
+      return doBundle.then(bundle => {
+        expect(getModuleIdInResolver(refModule)).toBe(refModuleReference.id);
+        expect(otherBundler._getModuleId(refModule)).toBe(refModuleReference.id);
+      });
+    });
+
+    it('create new moduleId should bigger than the lastId in the manifest', function() {
+      return doBundle.then(bundle => {
+        bundle.getModules().forEach(module => {
+          expect(module.id).toBeGreaterThan(manifestReferrence.lastId);
+        });
+      });
     });
   });
 });

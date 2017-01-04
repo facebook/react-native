@@ -108,6 +108,10 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  manifestReferrence: {
+    type: 'object',
+    required: false,
+  },
   reporter: {
     type: 'object',
   },

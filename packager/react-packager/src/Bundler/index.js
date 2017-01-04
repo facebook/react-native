@@ -114,6 +114,10 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  manifestReferrence: {
+    type: 'object',
+    required: false,
+  },
   reporter: {
     type: 'object',
   },
@@ -154,6 +158,8 @@ class Bundler {
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions<*>;
+  _startModuleId: number;
+  _extenalModules: ?Object;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
@@ -181,7 +187,19 @@ class Bundler {
       transformModuleHash,
     ];
 
-    this._getModuleId = createModuleIdFactory();
+    const manifest = opts.manifestReferrence;
+    if (manifest) {
+      this._startModuleId = 1 + manifest.lastId;
+      this._extenalModules = manifest.modules;
+    } else {
+      this._startModuleId = 0;
+      this._extenalModules = null;
+    }
+
+    this._getModuleId = createModuleIdFactory({
+      extenalModules: this._extenalModules,
+      startId: this._startModuleId,
+    });
 
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
@@ -343,6 +361,12 @@ class Bundler {
         response.dependencies = response.dependencies.filter(module =>
           module.path.endsWith(entryFile)
         );
+      } else if (this._extenalModules) {
+        const extenals = this._extenalModules;
+        /* If used extenal reference, we don't need polyfills again */ 
+        response.dependencies = response.dependencies.filter(module =>
+          module.name && !module.isPolyfill() && !extenals[module.name]
+        );
       } else {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
       }
@@ -427,8 +451,13 @@ class Bundler {
         minify,
         isolateModuleIDs,
         generateSourceMaps: unbundle || generateSourceMaps,
-      });
+      }).then(response => Promise.all(response.dependencies.map(module =>
+        module.getName().then(name => {
+          module.name = name;
+        })
+      )).then(() => response));
     }
+
 
     return Promise.resolve(resolutionResponse).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
@@ -567,7 +596,10 @@ class Bundler {
         {dev, platform, recursive},
         transformOptions,
         onProgress,
-        isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
+        isolateModuleIDs ? createModuleIdFactory({
+          extenalModules: this._extenalModules,
+          startId: this._startModuleId,
+        }) : this._getModuleId,
       );
     });
   }
@@ -656,7 +688,8 @@ class Bundler {
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
-        sourcePath: module.path
+        sourcePath: module.path,
+        isPolyfill: module.isPolyfill()
       });
     });
   }
@@ -799,15 +832,22 @@ function verifyRootExists(root) {
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
 
-function createModuleIdFactory() {
+function createModuleIdFactory({extenalModules, startId: nextId = 0}) {
   const fileToIdMap = Object.create(null);
-  let nextId = 0;
-  return ({path: modulePath}) => {
-    if (!(modulePath in fileToIdMap)) {
-      fileToIdMap[modulePath] = nextId;
+  return (module: {
+    path: string,
+    name: string
+  }) => {
+    if (extenalModules && module.name) {
+      if (module.name in extenalModules) {
+        return extenalModules[module.name].id;
+      }
+    }
+    if (!(module.path in fileToIdMap)) {
+      fileToIdMap[module.path] = nextId;
       nextId += 1;
     }
-    return fileToIdMap[modulePath];
+    return fileToIdMap[module.path];
   };
 }
 

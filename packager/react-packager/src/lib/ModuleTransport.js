@@ -29,6 +29,8 @@ class ModuleTransport {
   meta: ?Metadata;
   polyfill: ?boolean;
   map: ?MixedSourceMap;
+  isPolyfill: ?boolean;
+  isRequireCall: ?boolean;
 
   constructor(data: {
     name: string,
@@ -40,6 +42,8 @@ class ModuleTransport {
     meta?: ?Metadata,
     polyfill?: ?boolean,
     map?: ?MixedSourceMap,
+    isPolyfill?: ?boolean,
+    isRequireCall?: ?boolean,
   }) {
     this.name = data.name;
 
@@ -59,6 +63,8 @@ class ModuleTransport {
     this.meta = data.meta;
     this.polyfill = data.polyfill;
     this.map = data.map;
+    this.isPolyfill = data.isPolyfill;
+    this.isRequireCall = data.isRequireCall;
 
     Object.freeze(this);
   }

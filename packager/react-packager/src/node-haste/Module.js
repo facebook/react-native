@@ -65,6 +65,7 @@ class Module {
 
   path: string;
   type: string;
+  name: string;
 
   _moduleCache: ModuleCache;
   _cache: Cache;

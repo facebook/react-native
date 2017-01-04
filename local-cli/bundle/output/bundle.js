@@ -40,7 +40,8 @@ function saveBundleAndMap(
     bundleOutput,
     bundleEncoding: encoding,
     dev,
-    sourcemapOutput
+    sourcemapOutput,
+    manifestOutput
   } = options;
 
   log('start');
@@ -58,14 +59,28 @@ function saveBundleAndMap(
   Promise.all([writeBundle, writeMetadata])
     .then(() => log('Done writing bundle output'));
 
+  const writeTasks = [writeBundle];
+
   if (sourcemapOutput) {
     log('Writing sourcemap output to:', sourcemapOutput);
     const writeMap = writeFile(sourcemapOutput, codeWithMap.map, null);
     writeMap.then(() => log('Done writing sourcemap output'));
-    return Promise.all([writeBundle, writeMetadata, writeMap]);
-  } else {
-    return writeBundle;
+    writeTasks.push(writeMetadata, writeMap);
   }
+
+  if (manifestOutput) {
+    log('Writing manifest output to:', manifestOutput);
+    const manifest = createBundleManifest(bundle);
+    const writeManifest = writeFile(manifestOutput, manifest, null);
+    writeManifest.then(() => log('Done writing manifest output'));
+    writeTasks.push(writeManifest);
+  }
+
+  return Promise.all(writeTasks);
+}
+
+function createBundleManifest(bundle) {
+  return JSON.stringify(bundle.getManifest(), null, 2);
 }
 
 exports.build = buildBundle;

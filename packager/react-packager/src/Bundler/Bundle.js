@@ -120,6 +120,7 @@ class Bundle extends BundleBase {
       sourceCode: code,
       sourcePath: name + '.js',
       meta: {preloaded: true},
+      isRequireCall: true,
     }));
     this._numRequireCalls += 1;
   }
@@ -240,6 +241,30 @@ class Bundle extends BundleBase {
      * base `getSource` function, as it does not actually need options. */
     var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
     return eTag;
+  }
+
+  getManifest() {
+    const modules = this.getModules();
+    const manifest: {
+      modules: Object,
+      lastId: number,
+    } = {
+      modules: {},
+      lastId:0,
+    };
+    modules.forEach(module => {
+      // Filter out polyfills and requireCalls
+      if (module.name && !module.isPolyfill && !module.isRequireCall ) {
+        manifest.modules[module.name] = {
+          id: module.id,
+        };
+      }
+      if (typeof module.id === 'number' && typeof manifest.lastId === 'number') {
+        manifest.lastId = Math.max(manifest.lastId, module.id);
+      }
+    });
+
+    return manifest;
   }
 
   _getSourceMapFile() {
