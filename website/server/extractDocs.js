@@ -536,6 +536,7 @@ const apis = [
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Animated/src/Easing.js',
   '../Libraries/Geolocation/Geolocation.js',
+  '../Libraries/HapticFeedbackIOS/HapticFeedbackIOS.js',
   '../Libraries/Image/ImageEditor.js',
   '../Libraries/CameraRoll/ImagePickerIOS.js',
   '../Libraries/Image/ImageStore.js',

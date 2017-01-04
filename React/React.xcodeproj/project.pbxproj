@@ -724,6 +724,8 @@
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
 		E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */; };
+		F72EA1821E01DB6900438025 /* RCTHapticFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = F72EA1801E01DB6900438025 /* RCTHapticFeedback.h */; };
+		F72EA1831E01DB6900438025 /* RCTHapticFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = F72EA1811E01DB6900438025 /* RCTHapticFeedback.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1364,6 +1366,8 @@
 		E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTextDecorationLineType.h; sourceTree = "<group>"; };
 		E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAccessibilityManager.h; sourceTree = "<group>"; };
 		E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAccessibilityManager.m; sourceTree = "<group>"; };
+		F72EA1801E01DB6900438025 /* RCTHapticFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTHapticFeedback.h; sourceTree = "<group>"; };
+		F72EA1811E01DB6900438025 /* RCTHapticFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTHapticFeedback.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1438,6 +1442,8 @@
 				13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */,
 				13B07FE91A69327A00A75B9A /* RCTExceptionsManager.h */,
 				13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */,
+				F72EA1801E01DB6900438025 /* RCTHapticFeedback.h */,
+				F72EA1811E01DB6900438025 /* RCTHapticFeedback.m */,
 				B233E6E81D2D843200BC68BA /* RCTI18nManager.h */,
 				B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */,
 				352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */,
@@ -2001,6 +2007,7 @@
 				3D80DA341DF820620028D040 /* RCTLog.h in Headers */,
 				3D80DA351DF820620028D040 /* RCTModuleData.h in Headers */,
 				3D80DA361DF820620028D040 /* RCTModuleMethod.h in Headers */,
+				F72EA1821E01DB6900438025 /* RCTHapticFeedback.h in Headers */,
 				3D80DA371DF820620028D040 /* RCTMultipartDataTask.h in Headers */,
 				3D80DA381DF820620028D040 /* RCTMultipartStreamReader.h in Headers */,
 				3D80DA391DF820620028D040 /* RCTNullability.h in Headers */,
@@ -2533,6 +2540,7 @@
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
+				F72EA1831E01DB6900438025 /* RCTHapticFeedback.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,
 				3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,

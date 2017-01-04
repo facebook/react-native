@@ -357,6 +357,10 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./XHRExample.ios'),
     supportsTVOS: true,
   },
+  {
+    key: 'HapticFeedbackIOSExample',
+    module: require('./HapticFeedbackIOSExample'),
+  },
 ];
 
 const Modules = {};
