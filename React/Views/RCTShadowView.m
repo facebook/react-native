@@ -599,8 +599,6 @@ static inline void RCTAssignSuggestedDimension(YGNodeRef cssNode, YGDimension di
           YGNodeStyleSetHeight(cssNode, amount);
         }
         break;
-      case YGDimensionCount:
-        break;
     }
   }
 }
