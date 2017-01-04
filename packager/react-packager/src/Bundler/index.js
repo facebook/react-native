@@ -23,7 +23,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../../package.json').version;
+const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
 const defaults = require('../../../defaults');
 
