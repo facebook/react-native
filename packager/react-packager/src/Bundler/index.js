@@ -13,6 +13,7 @@
 
 const assert = require('assert');
 const crypto = require('crypto');
+const debug = require('debug')('RNP:Bundler');
 const fs = require('fs');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
@@ -193,6 +194,8 @@ class Bundler {
     const transformCacheKey = crypto.createHash('sha1').update(
       cacheKeyParts.join('$'),
     ).digest('hex');
+
+    debug(`Using transform cache key "${transformCacheKey}"`);
 
     this._cache = new Cache({
       resetCache: opts.resetCache,

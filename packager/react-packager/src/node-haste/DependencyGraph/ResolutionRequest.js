@@ -13,7 +13,7 @@
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 
-const debug = require('debug')('ReactNativePackager:DependencyGraph');
+const debug = require('debug')('RNP:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const realPath = require('path');
