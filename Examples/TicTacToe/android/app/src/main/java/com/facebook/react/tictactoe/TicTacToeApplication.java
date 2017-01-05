@@ -39,7 +39,7 @@ public class TicTacToeApplication extends Application implements ReactApplicatio
     }
 
     @Override
-    protected boolean getUseDeveloperSupport() {
+    public boolean getUseDeveloperSupport() {
       return true;
     }
 

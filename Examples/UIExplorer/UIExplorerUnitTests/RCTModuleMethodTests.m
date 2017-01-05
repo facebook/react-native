@@ -15,9 +15,9 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTModuleMethod.h"
-#import "RCTLog.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTLog.h>
+#import <React/RCTModuleMethod.h>
 
 static BOOL RCTLogsError(void (^block)(void))
 {

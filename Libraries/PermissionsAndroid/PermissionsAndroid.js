@@ -19,6 +19,8 @@ type Rationale = {
   message: string;
 }
 
+type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
+
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  * Some permissions are granted by default when the application is installed
@@ -47,7 +49,7 @@ type Rationale = {
  *                    'so you can take awesome pictures.'
  *       }
  *     )
- *     if (granted) {
+ *     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
  *       console.log("You can use the camera")
  *     } else {
  *       console.log("Camera permission denied")
@@ -61,6 +63,7 @@ type Rationale = {
 
 class PermissionsAndroid {
   PERMISSIONS: Object;
+  RESULTS: Object;
 
   constructor() {
     /**
@@ -92,17 +95,38 @@ class PermissionsAndroid {
       READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
       WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
     };
+
+    this.RESULTS = {
+      GRANTED: 'granted',
+      DENIED: 'denied',
+      NEVER_ASK_AGAIN: 'never_ask_again',
+    };
+  }
+
+  /**
+   * DEPRECATED - use check
+   *
+   * Returns a promise resolving to a boolean value as to whether the specified
+   * permissions has been granted
+   *
+   * @deprecated
+   */
+  checkPermission(permission: string) : Promise<boolean> {
+    console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead');
+    return Permissions.checkPermission(permission);
   }
 
   /**
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
    */
-  checkPermission(permission: string) : Promise<boolean> {
+  check(permission: string) : Promise<boolean> {
     return Permissions.checkPermission(permission);
   }
 
   /**
+   * DEPRECATED - use request
+   *
    * Prompts the user to enable a permission and returns a promise resolving to a
    * boolean value indicating whether the user allowed or denied the request
    *
@@ -111,8 +135,26 @@ class PermissionsAndroid {
    * necessary to show a dialog explaining why the permission is needed
    * (https://developer.android.com/training/permissions/requesting.html#explain)
    * and then shows the system permission dialog
+   *
+   * @deprecated
    */
   async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
+    console.warn('"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead');
+    const response = await this.request(permission, rationale);
+    return (response === this.RESULTS.GRANTED);
+  }
+
+  /**
+   * Prompts the user to enable a permission and returns a promise resolving to a
+   * string value indicating whether the user allowed or denied the request
+   *
+   * If the optional rationale argument is included (which is an object with a
+   * `title` and `message`), this function checks with the OS whether it is
+   * necessary to show a dialog explaining why the permission is needed
+   * (https://developer.android.com/training/permissions/requesting.html#explain)
+   * and then shows the system permission dialog
+   */
+  async request(permission: string, rationale?: Rationale) : Promise<PermissionStatus> {
     if (rationale) {
       const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
 
@@ -127,6 +169,15 @@ class PermissionsAndroid {
       }
     }
     return Permissions.requestPermission(permission);
+  }
+
+  /**
+   * Prompts the user to enable multiple permissions in the same dialog and
+   * returns an object with the permissions as keys and strings as values
+   * indicating whether the user allowed or denied the request
+   */
+  requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {
+    return Permissions.requestMultiplePermissions(permissions);
   }
 }
 

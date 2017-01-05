@@ -27,6 +27,7 @@
  *   2. Bridged modules.
  *
  */
+'use strict';
 
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
@@ -108,7 +109,7 @@ require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  const handleError = (e, isFatal) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
@@ -117,7 +118,7 @@ if (!global.__fbDisableExceptionsManager) {
       /* eslint-enable no-console-disallow */
       throw e;
     }
-  }
+  };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -178,7 +179,9 @@ let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
 }
-navigator.product = 'ReactNative';
+
+// see https://github.com/facebook/react-native/issues/10881
+defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections
@@ -197,7 +200,6 @@ if (__DEV__) {
   }
 
   require('RCTDebugComponentOwnership');
-  require('react-transform-hmr');
 }
 
 // Set up inspector

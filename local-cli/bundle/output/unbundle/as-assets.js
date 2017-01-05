@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -13,10 +15,14 @@ const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
 const path = require('path');
+const relativizeSourceMap = require('../../../../packager/react-packager/src/lib/relativizeSourceMap');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
+
+import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
+import type {OutputOptions} from '../../types.flow';
 
 // must not start with a dot, as that won't go into the apk
 const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE';
@@ -29,11 +35,16 @@ const MODULES_DIR = 'js-modules';
  * All other modules go into a 'js-modules' folder that in the same parent
  * directory as the startup file.
  */
-function saveAsAssets(bundle, options, log) {
+function saveAsAssets(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => void,
+): Promise<mixed> {
   const {
     bundleOutput,
     bundleEncoding: encoding,
-    sourcemapOutput
+    sourcemapOutput,
+    sourcemapSourcesRoot,
   } = options;
 
   log('start');
@@ -54,11 +65,18 @@ function saveAsAssets(bundle, options, log) {
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
   const sourceMap =
-    buildSourceMapWithMetaData({startupModules, lazyModules});
+    relativizeSourceMap(
+      buildSourceMapWithMetaData({
+        startupModules: startupModules.concat(),
+        lazyModules: lazyModules.concat(),
+      }),
+      sourcemapSourcesRoot
+    );
+
 
   return Promise.all([
     writeUnbundle,
-    writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
+    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
   ]);
 }
 
@@ -80,8 +98,8 @@ function writeModules(modules, modulesDir, encoding) {
 
 function writeMagicFlagFile(outputDir) {
   /* global Buffer: true */
-  const buffer = Buffer(4);
-  buffer.writeUInt32LE(MAGIC_UNBUNDLE_NUMBER);
+  const buffer = new Buffer(4);
+  buffer.writeUInt32LE(MAGIC_UNBUNDLE_NUMBER, 0);
   return writeFile(path.join(outputDir, MAGIC_UNBUNDLE_FILENAME), buffer);
 }
 

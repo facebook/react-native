@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <fcntl.h>
 #include <functional>
 #include <memory>
 #include <string>
@@ -9,6 +10,7 @@
 
 #include <sys/mman.h>
 
+#include <folly/Exception.h>
 #include <folly/dynamic.h>
 
 #include "JSModulesUnbundle.h"
@@ -22,8 +24,7 @@ namespace react {
 
 enum {
   UNPACKED_JS_SOURCE = (1 << 0),
-  UNPACKED_BC_CACHE = (1 << 1),
-  UNPACKED_BYTECODE = (1 << 2),
+  UNPACKED_BYTECODE = (1 << 1),
 };
 
 class JSExecutor;
@@ -153,9 +154,13 @@ class JSBigFileString : public JSBigString {
 public:
 
   JSBigFileString(int fd, size_t size, off_t offset = 0)
-    : m_fd   {fd}
+    : m_fd   {-1}
     , m_data {nullptr}
   {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
     // Offsets given to mmap must be page aligend. We abstract away that
     // restriction by sending a page aligned offset to mmap, and keeping track
     // of the offset within the page that we must alter the mmap pointer by to
@@ -217,11 +222,15 @@ public:
   };
 
   JSBigOptimizedBundleString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
-    m_fd(fd),
+    m_fd(-1),
     m_size(size),
     m_encoding(encoding),
     m_str(nullptr)
   {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
     memcpy(m_hash, sha1, 20);
   }
 

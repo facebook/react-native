@@ -15,6 +15,7 @@
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <system_error>
 
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
@@ -30,6 +31,7 @@
 #include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
+#include "RecoverableError.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -59,6 +61,8 @@
 
 namespace facebook {
 namespace react {
+
+using namespace detail;
 
 namespace {
 
@@ -210,11 +214,20 @@ void JSCExecutor::destroy() {
 
 void JSCExecutor::setContextName(const std::string& name) {
   String jsName = String(m_context, name.c_str());
-  JSGlobalContextSetName(m_context, jsName);
+  JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
+
+  #if defined(__APPLE__)
+  const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
+  if (useCustomJSC) {
+    JSC_configureJSCForIOS(true);
+  }
+  #else
+  const bool useCustomJSC = false;
+  #endif
 
   #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
   configureJSCForAndroid(m_jscConfig);
@@ -224,13 +237,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSClassCreate(&kJSClassDefinitionEmpty);
+    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
-    m_context = JSGlobalContextCreateInGroup(nullptr, globalClass);
+    m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
-  JSClassRelease(globalClass);
+  JSC_JSClassRelease(useCustomJSC, globalClass);
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
@@ -242,7 +255,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  // Websorker support
+  // Webworker support
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
@@ -297,9 +310,33 @@ void JSCExecutor::terminateOnJSVMThread() {
   Inspector::instance().unregisterGlobalContext(m_context);
   #endif
 
-  JSGlobalContextRelease(m_context);
+  JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;
 }
+
+#ifdef WITH_FBJSCEXTENSIONS
+static const char* explainLoadSourceError(JSLoadSourceError err) {
+  switch (err) {
+  case JSLoadSourceErrorNone:
+    return "No error encountered during source load";
+
+  case JSLoadSourceErrorOnRead:
+    return "Error reading source";
+
+  case JSLoadSourceErrorNotCompiled:
+    return "Source is not compiled";
+
+  case JSLoadSourceErrorVersionMismatch:
+    return "Source version not supported";
+
+  case JSLoadSourceErrorUnknown:
+    return "Unknown error occurred when loading source";
+
+  default:
+    return "Bad error code";
+  }
+}
+#endif
 
 #ifdef WITH_FBJSCEXTENSIONS
 void JSCExecutor::loadApplicationScript(
@@ -309,9 +346,9 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  folly::throwOnFail<std::runtime_error>(
-    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
-    "Optimized bundle with no unpacked source or bytecode");
+  if (!(flags & (UNPACKED_JS_SOURCE | UNPACKED_BYTECODE))) {
+    throw RecoverableError("Optimized bundle with no unpacked source or bytecode");
+  }
 
   String jsSourceURL(m_context, sourceURL.c_str());
   JSSourceCodeRef sourceCode = nullptr;
@@ -323,26 +360,23 @@ void JSCExecutor::loadApplicationScript(
 
   if (flags & UNPACKED_BYTECODE) {
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
-    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>([fd]() {
+        folly::checkUnixError(fd, "Couldn't open compiled bundle");
+      });
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
 
-    folly::throwOnFail<std::runtime_error>(
-      sourceCode != nullptr,
-      "Could not create compiled source code"
-    );
+    JSLoadSourceError jsError;
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+
+    if (!sourceCode) {
+      throw RecoverableError(explainLoadSourceError(jsError));
+    }
   } else {
     auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
     if (!jsScriptBigString->isAscii()) {
       LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
       return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
     }
-
-    #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-    if (flags & UNPACKED_BC_CACHE) {
-      configureJSCBCCache(m_context, bundlePath);
-    }
-    #endif
 
     sourceCode = JSCreateSourceCode(
       jsScriptBigString->fd(),
@@ -370,10 +404,24 @@ void JSCExecutor::loadApplicationScript(
 {
   String jsSourceURL(m_context, sourceURL.c_str());
 
-  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL);
-  if (!bcSourceCode) {
+  JSLoadSourceError jsError;
+  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+
+  switch (jsError) {
+  case JSLoadSourceErrorOnRead:
+  case JSLoadSourceErrorNotCompiled:
     // Not bytecode, fall through.
     return JSExecutor::loadApplicationScript(fd, sourceURL);
+
+  case JSLoadSourceErrorNone:
+    if (!bcSourceCode) {
+      throw std::runtime_error("Unexpected error opening compiled bundle");
+    }
+    break;
+
+  case JSLoadSourceErrorVersionMismatch:
+  case JSLoadSourceErrorUnknown:
+    throw RecoverableError(explainLoadSourceError(jsError));
   }
 
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
@@ -713,7 +761,7 @@ void JSCExecutor::installNativeHook(const char* name) {
 }
 
 JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef propertyName) {
-  if (JSStringIsEqualToUTF8CString(propertyName, "name")) {
+  if (JSC_JSStringIsEqualToUTF8CString(m_context, propertyName, "name")) {
     return Value(m_context, String(m_context, "NativeModules"));
   }
 

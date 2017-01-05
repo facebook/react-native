@@ -27,10 +27,17 @@ extern bool JSSamplingProfilerEnabled();
 extern void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 extern JSValueRef JSPokeSamplingProfiler(JSContextRef);
 
+/**
+ * JSNoBytecodeFileFormatVersion
+ *
+ * Version number indicating that bytecode is not supported by this runtime.
+ */
+extern const int32_t JSNoBytecodeFileFormatVersion;
+
 namespace facebook {
 namespace react {
 
-#define JSC_WRAPPER_METHOD(m) const decltype(&m) m
+#define JSC_WRAPPER_METHOD(m) decltype(&m) m
 
 struct JSCWrapper {
   // JSGlobalContext
@@ -49,9 +56,9 @@ struct JSCWrapper {
   // JSString
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CString);
   JSC_WRAPPER_METHOD(JSStringCreateWithCFString);
-#if WITH_FBJSCEXTENSIONS
+  #if WITH_FBJSCEXTENSIONS
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CStringExpectAscii);
-#endif
+  #endif
   JSC_WRAPPER_METHOD(JSStringCopyCFString);
   JSC_WRAPPER_METHOD(JSStringGetCharactersPtr);
   JSC_WRAPPER_METHOD(JSStringGetLength);
@@ -112,7 +119,7 @@ struct JSCWrapper {
   Class JSContext;
   Class JSValue;
 
-  const int32_t JSBytecodeFileFormatVersion;
+  int32_t JSBytecodeFileFormatVersion;
 };
 
 template <typename T>
@@ -120,11 +127,25 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
+bool isCustomJSCWrapperSet();
 void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-const JSCWrapper *systemJSCWrapper();
-const JSCWrapper *customJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
+__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
+
+} }
+
+#else
+
+namespace facebook {
+namespace react {
+
+template <typename T>
+bool isCustomJSCPtr(T *x) {
+  // Always use system JSC pointers
+  return false;
+}
 
 } }
 

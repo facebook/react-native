@@ -9,6 +9,3 @@ prebuilt_jar(
   ],
 )
 
-project_config(
-  src_target = ':buck-android-support',
-)

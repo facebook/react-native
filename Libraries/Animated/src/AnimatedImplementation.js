@@ -42,7 +42,8 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
         'Animated: `useNativeDriver` is not supported because the native ' +
         'animated module is missing. Falling back to JS-based animation. To ' +
         'resolve this, add `RCTAnimation` module to this app, or remove ' +
-        '`useNativeDriver`.'
+        '`useNativeDriver`. ' +
+        'More info: https://github.com/facebook/react-native/issues/11094#issuecomment-263240420'
       );
       warnedMissingNativeAnimated = true;
     }
@@ -1078,6 +1079,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
+     * deploy of Flow v0.36.0. To see the error, remove this comment and run
+     * Flow */
     return this._interpolation(parentValue);
   }
 

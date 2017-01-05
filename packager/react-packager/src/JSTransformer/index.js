@@ -18,9 +18,10 @@ const denodeify = require('denodeify');
 const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
-const debug = require('debug')('ReactNativePackager:JStransformer');
+const debug = require('debug')('RNP:JStransformer');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
+import type {SourceMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -109,8 +110,8 @@ class Transformer {
   minify: (
     filename: string,
     code: string,
-    sourceMap: string,
-  ) => Promise<mixed>;
+    sourceMap: SourceMap,
+  ) => Promise<{code: string, map: SourceMap}>;
 
   constructor(options: Options) {
     const opts = this._opts = validateOpts(options);
