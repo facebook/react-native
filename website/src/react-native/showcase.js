@@ -427,7 +427,16 @@ var pinned = [
     infoLink: 'http://www.vogue.com/app',
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
-  }
+  },
+  {
+    name: 'Walmart',
+    icon: 'http://facebook.github.io/react-native/img/showcase/wmt_spark.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.walmart.android&hl=en',
+    infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
+    infoTitle: 'React Native at Walmart Labs',
+    defaultLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
+  },
 ];
 
 featured.sort(function(a, b) {
