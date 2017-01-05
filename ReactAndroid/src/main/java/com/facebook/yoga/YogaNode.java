@@ -69,6 +69,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @DoNotStrip
   private float mLeft = YogaConstants.UNDEFINED;
   @DoNotStrip
+  private float mPaddingLeft = 0;
+  @DoNotStrip
+  private float mPaddingTop = 0;
+  @DoNotStrip
+  private float mPaddingRight = 0;
+  @DoNotStrip
+  private float mPaddingBottom = 0;
+  @DoNotStrip
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
@@ -562,6 +570,26 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public float getLayoutHeight() {
     return mHeight;
+  }
+
+  @Override
+  public float getLayoutPadding(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mPaddingLeft;
+      case TOP:
+        return mPaddingTop;
+      case RIGHT:
+        return mPaddingRight;
+      case BOTTOM:
+        return mPaddingBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mPaddingRight : mPaddingLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
+    }
   }
 
   @Override
