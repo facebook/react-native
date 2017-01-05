@@ -18,6 +18,9 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+var Platform = require('Platform');
+var TVEventHandler = require('TVEventHandler');
+
 var {
   AppRegistry,
   StyleSheet,
@@ -29,9 +32,15 @@ var Animated = require('Animated');
 var GameBoard = require('GameBoard');
 var TouchableBounce = require('TouchableBounce');
 
-var BOARD_PADDING = 3;
-var CELL_MARGIN = 4;
-var CELL_SIZE = 60;
+var BOARD_PADDING = Platform.isTVOS ? 9 : 3;
+var CELL_MARGIN = Platform.isTVOS ? 12 : 4;
+var CELL_SIZE = Platform.isTVOS ? 180 : 60;
+var BORDER_RADIUS = Platform.isTVOS ? 15 : 5;
+
+var SIZE_40 = Platform.isTVOS ? 120 : 40;
+var SIZE_24 = Platform.isTVOS ? 72 : 24;
+var SIZE_20 = Platform.isTVOS ? 60 : 20;
+var SIZE_18 = Platform.isTVOS ? 54 : 18;
 
 class Cell extends React.Component {
   render() {
@@ -152,6 +161,32 @@ class Game2048 extends React.Component {
   startY: number;
   state: any;
 
+  _tvEventHandler: any;
+
+  _enableTVEventHandler() {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'right') {
+        cmp.setState({board: cmp.state.board.move(2)});
+      } else if(evt && evt.eventType === 'up') {
+        cmp.setState({board: cmp.state.board.move(1)});
+      } else if(evt && evt.eventType === 'left') {
+        cmp.setState({board: cmp.state.board.move(0)});
+      } else if(evt && evt.eventType === 'down') {
+        cmp.setState({board: cmp.state.board.move(3)});
+      } else if(evt && evt.eventType === 'playPause') {
+        cmp.restartGame();
+      }
+    });
+  }
+
+  _disableTVEventHandler() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
+  }
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -159,6 +194,14 @@ class Game2048 extends React.Component {
     };
     this.startX = 0;
     this.startY = 0;
+  }
+
+  componentDidMount() {
+    this._enableTVEventHandler();
+  }
+
+  componentWillUnmount() {
+    this._disableTVEventHandler();
   }
 
   restartGame() {
@@ -222,7 +265,7 @@ var styles = StyleSheet.create({
   board: {
     padding: BOARD_PADDING,
     backgroundColor: '#bbaaaa',
-    borderRadius: 5,
+    borderRadius: BORDER_RADIUS,
   },
   overlay: {
     position: 'absolute',
@@ -237,23 +280,23 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlayMessage: {
-    fontSize: 40,
-    marginBottom: 20,
+    fontSize: SIZE_40,
+    marginBottom: SIZE_20,
   },
   tryAgain: {
     backgroundColor: '#887761',
-    padding: 20,
-    borderRadius: 5,
+    padding: SIZE_20,
+    borderRadius: BORDER_RADIUS,
   },
   tryAgainText: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: SIZE_20,
     fontWeight: '500',
   },
   cell: {
     width: CELL_SIZE,
     height: CELL_SIZE,
-    borderRadius: 5,
+    borderRadius: BORDER_RADIUS,
     backgroundColor: '#ddccbb',
     margin: CELL_MARGIN,
   },
@@ -265,15 +308,15 @@ var styles = StyleSheet.create({
     width: CELL_SIZE,
     height: CELL_SIZE,
     backgroundColor: '#ddccbb',
-    borderRadius: 5,
+    borderRadius: BORDER_RADIUS,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   value: {
-    fontSize: 24,
+    fontSize: SIZE_24,
     color: '#776666',
-    fontFamily: 'Verdana',
+    fontFamily: Platform.isTVOS ? 'Helvetica' : 'Verdana',
     fontWeight: '500',
   },
   tile2: {
@@ -313,10 +356,10 @@ var styles = StyleSheet.create({
     color: '#ffffff',
   },
   threeDigits: {
-    fontSize: 20,
+    fontSize: SIZE_20,
   },
   fourDigits: {
-    fontSize: 18,
+    fontSize: SIZE_18,
   },
 });
 
