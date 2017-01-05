@@ -38,6 +38,11 @@ typedef struct YGSize {
   float height;
 } YGSize;
 
+typedef struct YGValue {
+  float value;
+  YGUnit unit;
+} YGValue;
+
 typedef struct YGNode *YGNodeRef;
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
@@ -83,7 +88,7 @@ WIN_EXPORT bool YGNodeIsDirty(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 
-WIN_EXPORT bool YGValueIsUndefined(const float value);
+WIN_EXPORT bool YGFloatIsUndefined(const float value);
 
 WIN_EXPORT bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                               const float width,
@@ -108,10 +113,24 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
   WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node, const type paramName); \
   WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node);
 
+#define YG_NODE_STYLE_PROPERTY_UNIT(type, name, paramName)                                    \
+  WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node, const float paramName);          \
+  WIN_EXPORT void YGNodeStyleSet##name##Percent(const YGNodeRef node, const float paramName); \
+  WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node);
+
 #define YG_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)    \
   WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node,  \
                                        const YGEdge edge,     \
                                        const type paramName); \
+  WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
+
+#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT(type, name, paramName)         \
+  WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node,            \
+                                       const YGEdge edge,               \
+                                       const float paramName);          \
+  WIN_EXPORT void YGNodeStyleSet##name##Percent(const YGNodeRef node,   \
+                                                const YGEdge edge,      \
+                                                const float paramName); \
   WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
 
 #define YG_NODE_LAYOUT_PROPERTY(type, name) \
@@ -135,19 +154,19 @@ YG_NODE_STYLE_PROPERTY(YGOverflow, Overflow, overflow);
 WIN_EXPORT void YGNodeStyleSetFlex(const YGNodeRef node, const float flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
-YG_NODE_STYLE_PROPERTY(float, FlexBasis, flexBasis);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, FlexBasis, flexBasis);
 
-YG_NODE_STYLE_EDGE_PROPERTY(float, Position, position);
-YG_NODE_STYLE_EDGE_PROPERTY(float, Margin, margin);
-YG_NODE_STYLE_EDGE_PROPERTY(float, Padding, padding);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Position, position);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Padding, padding);
 YG_NODE_STYLE_EDGE_PROPERTY(float, Border, border);
 
-YG_NODE_STYLE_PROPERTY(float, Width, width);
-YG_NODE_STYLE_PROPERTY(float, Height, height);
-YG_NODE_STYLE_PROPERTY(float, MinWidth, minWidth);
-YG_NODE_STYLE_PROPERTY(float, MinHeight, minHeight);
-YG_NODE_STYLE_PROPERTY(float, MaxWidth, maxWidth);
-YG_NODE_STYLE_PROPERTY(float, MaxHeight, maxHeight);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, Width, width);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, Height, height);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MinWidth, minWidth);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MinHeight, minHeight);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MaxWidth, maxWidth);
+YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MaxHeight, maxHeight);
 
 // Yoga specific properties, not compatible with flexbox specification
 // Aspect ratio control the size of the undefined dimension of a node.

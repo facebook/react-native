@@ -24,7 +24,7 @@ const path = require('path');
 const terminal = require('../lib/terminal');
 const url = require('url');
 
-const debug = require('debug')('ReactNativePackager:Server');
+const debug = require('debug')('RNP:Server');
 
 import type Module from '../node-haste/Module';
 import type {Stats} from 'fs';
@@ -671,6 +671,8 @@ class Server {
     next: () => mixed,
   ) {
     const urlObj = url.parse(req.url, true);
+    const {host} = req.headers;
+    debug(`Handling request: ${host ? 'http://' + host : ''}${req.url}`);
     /* $FlowFixMe: Could be empty if the URL is invalid. */
     const pathname: string = urlObj.pathname;
 

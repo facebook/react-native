@@ -113,4 +113,11 @@ typedef enum YGAlign {
   YGAlignStretch,
 } YGAlign;
 
+#define YGUnitCount 3
+typedef enum YGUnit {
+  YGUnitUndefined,
+  YGUnitPixel,
+  YGUnitPercent,
+} YGUnit;
+
 YG_EXTERN_C_END

@@ -31,7 +31,7 @@ import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 
-type ReadResult = {
+export type ReadResult = {
   code: string,
   dependencies?: ?Array<string>,
   dependencyOffsets?: ?Array<number>,

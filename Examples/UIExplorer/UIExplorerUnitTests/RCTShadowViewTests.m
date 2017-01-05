@@ -165,8 +165,8 @@
 
 - (void)testDoesNotAssignSuggestedDimensionsWhenStyledWithFlexAttribute
 {
-  float parentWidth = YGNodeStyleGetWidth(self.parentView.cssNode);
-  float parentHeight = YGNodeStyleGetHeight(self.parentView.cssNode);
+  float parentWidth = YGNodeStyleGetWidth(self.parentView.cssNode).value;
+  float parentHeight = YGNodeStyleGetHeight(self.parentView.cssNode).value;
   [self _withShadowViewWithStyle:^(YGNodeRef node) {
                                    YGNodeStyleSetFlex(node, 1);
                                  }
