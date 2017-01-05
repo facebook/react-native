@@ -249,6 +249,20 @@ class StatusBar extends React.Component {
     StatusBarManager.setTranslucent(translucent);
   }
 
+  /**
+   * Get the current orientation of the status bar
+   * @param callback Function that will be called with a result (orientation: [orientationPortrait orientationPortraitUpsideDown orientationLandscapeLeft orientationLandscapeRight orientationUnknown])
+   */
+  static getStatusBarOrientation(callback: (orientation: string) => void) {
+    if (Platform.OS !== 'ios') {
+      console.warn('`getStatusBarOrientation` is only available on iOS');
+      return;
+    }
+    StatusBarManager.getStatusBarOrientation(callback || function() {
+      console.warn('`getStatusBarOrientation` requires a callback function that will be called to get the result.');
+    });
+  }
+
   static propTypes = {
     /**
      * If the status bar is hidden.

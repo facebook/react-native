@@ -103,6 +103,20 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
   }]);
 }
 
+RCT_EXPORT_METHOD(getStatusBarOrientation:(RCTResponseSenderBlock)callback)
+{
+  NSDictionary *orientations = @{
+                   @(UIInterfaceOrientationPortrait): @"orientationPortrait",
+                   @(UIInterfaceOrientationPortraitUpsideDown): @"orientationPortraitUpsideDown",
+                   @(UIInterfaceOrientationLandscapeLeft): @"orientationLandscapeLeft",
+                   @(UIInterfaceOrientationLandscapeRight): @"orientationLandscapeRight"
+                   };
+
+  UIInterfaceOrientation statusBarOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+  callback(@[orientations[@(statusBarOrientation)] ?: @"orientationUnknown"]);
+}
+
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {
