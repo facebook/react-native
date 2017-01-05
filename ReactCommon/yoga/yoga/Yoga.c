@@ -47,6 +47,7 @@ typedef struct YGCachedMeasurement {
 typedef struct YGLayout {
   float position[4];
   float dimensions[2];
+  float padding[6];
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
@@ -94,16 +95,18 @@ typedef struct YGNode {
   YGStyle style;
   YGLayout layout;
   uint32_t lineIndex;
-  bool hasNewLayout;
+
   YGNodeRef parent;
   YGNodeListRef children;
-  bool isDirty;
 
   struct YGNode *nextChild;
 
   YGMeasureFunc measure;
   YGPrintFunc print;
   void *context;
+
+  bool isDirty;
+  bool hasNewLayout;
 } YGNode;
 
 #define YG_UNDEFINED_VALUES \
@@ -561,6 +564,28 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
 
+float YGNodeLayoutGetPadding(const YGNodeRef node, const YGEdge edge) {
+  YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout paddings of multi-edge shorthands");
+
+  if (edge == YGEdgeLeft) {
+    if (node->layout.direction == YGDirectionRTL) {
+      return node->layout.padding[YGEdgeEnd];
+    } else {
+      return node->layout.padding[YGEdgeStart];
+    }
+  }
+
+  if (edge == YGEdgeRight) {
+    if (node->layout.direction == YGDirectionRTL) {
+      return node->layout.padding[YGEdgeStart];
+    } else {
+      return node->layout.padding[YGEdgeEnd];
+    }
+  }
+
+  return node->layout.padding[edge];
+}
+
 uint32_t gCurrentGenerationCount = 0;
 
 bool YGLayoutNodeInternal(const YGNodeRef node,
@@ -868,8 +893,8 @@ static float YGNodeLeadingPadding(const YGNodeRef node,
   }
 
   return fmaxf(YGValueResolve(YGComputedEdgeValue(node->style.padding, leading[axis], &YGValueZero),
-                              widthSize),
-               0.0f);
+                            widthSize),
+             0.0f);
 }
 
 static float YGNodeTrailingPadding(const YGNodeRef node,
@@ -881,8 +906,8 @@ static float YGNodeTrailingPadding(const YGNodeRef node,
   }
 
   return fmaxf(YGValueResolve(YGComputedEdgeValue(node->style.padding, trailing[axis], &YGValueZero),
-                              widthSize),
-               0.0f);
+                            widthSize),
+             0.0f);
 }
 
 static float YGNodeLeadingBorder(const YGNodeRef node, const YGFlexDirection axis) {
@@ -1654,6 +1679,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   // Set the resolved resolution in the node's layout.
   const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
   node->layout.direction = direction;
+
+  node->layout.padding[YGEdgeStart] = YGNodeLeadingPadding(node, YGFlexDirectionResolve(YGFlexDirectionRow, direction), parentWidth);
+  node->layout.padding[YGEdgeEnd] = YGNodeTrailingPadding(node, YGFlexDirectionResolve(YGFlexDirectionRow, direction), parentWidth);
+  node->layout.padding[YGEdgeTop] = YGNodeLeadingPadding(node, YGFlexDirectionResolve(YGFlexDirectionColumn, direction), parentWidth);
+  node->layout.padding[YGEdgeBottom] = YGNodeTrailingPadding(node, YGFlexDirectionResolve(YGFlexDirectionColumn, direction), parentWidth);
 
   if (node->measure) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(
