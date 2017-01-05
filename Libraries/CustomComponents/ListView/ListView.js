@@ -225,7 +225,8 @@ var ListView = React.createClass({
     /**
      * A performance optimization for improving scroll perf of
      * large lists, used in conjunction with overflow: 'hidden' on the row
-     * containers.  This is enabled by default.
+     * containers.  This is disabled by default.  If this option is enabled,
+     * ensure that views returned by renderRow have {{overflow:hidden}} set on them.
      */
     removeClippedSubviews: React.PropTypes.bool,
     /**
@@ -470,7 +471,7 @@ var ListView = React.createClass({
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
     if (props.removeClippedSubviews === undefined) {
-      props.removeClippedSubviews = true;
+      props.removeClippedSubviews = false;
     }
     Object.assign(props, {
       onScroll: this._onScroll,
