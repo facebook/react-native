@@ -14,43 +14,108 @@
 
 #import "AppDelegate.h"
 
-#import "RCTRootView.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLinkingManager.h>
+#import <React/RCTRootView.h>
+
+#if !TARGET_OS_TV
+#import <React/RCTPushNotificationManager.h>
+#endif
+
+@interface AppDelegate() <RCTBridgeDelegate>
+
+@end
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  NSURL *jsCodeLocation;
+  _bridge = [[RCTBridge alloc] initWithDelegate:self
+                                  launchOptions:launchOptions];
 
-  // Loading JavaScript code - uncomment the one you want.
+  // Appetizer.io params check
+  NSDictionary *initProps = nil;
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rnuiexplorer://example/%@Example", _routeUri]};
+  }
 
-  // OPTION 1
-  // Load from development server. Start the server from the repository root:
-  //
-  // $ npm start
-  //
-  // To run on device, change `localhost` to the IP address of your computer, and make sure your computer and
-  // iOS device are on the same Wi-Fi network.
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/UIExplorer/UIExplorerApp.includeRequire.runModule.bundle?dev=true"];
-
-  // OPTION 2
-  // Load from pre-bundled file on disk. To re-generate the static bundle, run
-  //
-  // $ curl http://localhost:8081/Examples/UIExplorer/UIExplorerApp.includeRequire.runModule.bundle -o main.jsbundle
-  //
-  // and uncomment the next following line
-  // jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@"UIExplorerApp"
-                                                   launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
+                                                   moduleName:@"UIExplorerApp"
+                                            initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [[UIViewController alloc] init];
+  UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
 }
+
+- (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
+{
+  NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"Examples/UIExplorer/js/UIExplorerApp.ios"
+                                                                         fallbackResource:nil];
+  if (!getenv("CI_USE_PACKAGER")) {
+    jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  }
+
+  return jsCodeLocation;
+}
+
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
+                            onProgress:onProgress
+                            onComplete:loadCallback];
+}
+
+# pragma mark - Push Notifications
+
+#if !TARGET_OS_TV
+
+// Required to register for notifications
+- (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+}
+
+// Required for the remoteNotificationsRegistered event.
+- (void)application:(__unused UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+// Required for the remoteNotificationRegistrationError event.
+- (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+// Required for the remoteNotificationReceived event.
+- (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+}
+
+// Required for the localNotificationReceived event.
+- (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+}
+
+#endif
 
 @end

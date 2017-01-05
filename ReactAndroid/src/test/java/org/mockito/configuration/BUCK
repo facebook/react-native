@@ -1,0 +1,13 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'configuration',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_dep('third-party/java/mockito:mockito'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

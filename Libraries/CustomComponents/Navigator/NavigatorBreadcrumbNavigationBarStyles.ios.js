@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -26,20 +26,20 @@
  */
 'use strict';
 
-var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
+var Dimensions = require('Dimensions');
+var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 var merge = require('merge');
 
-var SCREEN_WIDTH = NavigatorNavigationBarStyles.General.ScreenWidth;
-var STATUS_BAR_HEIGHT = NavigatorNavigationBarStyles.General.StatusBarHeight;
-var NAV_BAR_HEIGHT = NavigatorNavigationBarStyles.General.NavBarHeight;
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var STATUS_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.StatusBarHeight;
+var NAV_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.NavBarHeight;
 
 var SPACING = 4;
 var ICON_WIDTH = 40;
 var SEPARATOR_WIDTH = 9;
 var CRUMB_WIDTH = ICON_WIDTH + SEPARATOR_WIDTH;
-var RIGHT_BUTTON_WIDTH = 58;
 
 var OPACITY_RATIO = 100;
 var ICON_INACTIVE_OPACITY = 0.6;
@@ -74,18 +74,17 @@ var TITLE_BASE = {
 // For first title styles, make sure first title is centered
 var FIRST_TITLE_BASE = merge(TITLE_BASE, {
   left: 0,
+  right: 0,
   alignItems: 'center',
-  width: SCREEN_WIDTH,
   height: NAV_BAR_HEIGHT,
 });
 
 var RIGHT_BUTTON_BASE = {
   position: 'absolute',
   top: STATUS_BAR_HEIGHT,
-  left: SCREEN_WIDTH - SPACING - RIGHT_BUTTON_WIDTH,
+  right: SPACING,
   overflow: 'hidden',
   opacity: 1,
-  width: RIGHT_BUTTON_WIDTH,
   height: NAV_BAR_HEIGHT,
   backgroundColor: 'transparent',
 };
@@ -137,7 +136,7 @@ CENTER[0] = {
   Title: merge(FIRST_TITLE_BASE, {opacity: 1}),
   RightItem: CENTER[0].RightItem,
 };
-LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: - SCREEN_WIDTH / 4, opacity: 0});
+LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: -SCREEN_WIDTH / 4, opacity: 0});
 RIGHT[0].Title = merge(FIRST_TITLE_BASE, {opacity: 0});
 
 

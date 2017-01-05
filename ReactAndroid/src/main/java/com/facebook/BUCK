@@ -1,0 +1,14 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'yoga',
+  srcs = glob(['yoga/*.java']),
+  deps = [
+    react_native_dep('java/com/facebook/proguard/annotations:annotations'),
+    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility = ['PUBLIC'],
+)
+

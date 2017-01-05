@@ -7,11 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-
 #import <UIKit/UIKit.h>
+
+#import <React/RCTComponent.h>
 
 @interface RCTSwitch : UISwitch
 
 @property (nonatomic, assign) BOOL wasOn;
+@property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

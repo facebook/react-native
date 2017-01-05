@@ -1,14 +1,20 @@
 /**
  * marked - a markdown parser
- * Copyright (c) 2011-2013, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/chjj/marked
  *
+ * @copyright 2011-2013 Christopher Jeffrey. MIT License.
  * @providesModule Marked
+ * @noflow
  */
 
-var React = require('React');
-var Prism = require('Prism');
+/* eslint-disable */
+
+'use strict';
+
 var Header = require('Header');
+var Prism = require('Prism');
+var React = require('React');
+var WebPlayer = require('WebPlayer');
 
 /**
  * Block-Level Grammar
@@ -595,6 +601,13 @@ InlineLexer.prototype.output = function(src) {
     // tag
     if (cap = this.rules.tag.exec(src)) {
       src = src.substring(cap[0].length);
+
+      var color = cap[0].match('<color ([^ ]+) />');
+      if (color) {
+        out.push(React.DOM.span({className: 'color', style: {backgroundColor: color[1]}}));
+        continue;
+      }
+
       // TODO(alpert): Don't escape if sanitize is false
       out.push(cap[0]);
       continue;
@@ -811,13 +824,25 @@ Parser.prototype.tok = function() {
       return React.DOM.hr(null, null);
     }
     case 'heading': {
-      return Header(
-        {level: this.token.depth, toSlug: this.token.text},
-        this.inline.output(this.token.text)
+      return (
+        <Header
+          level={this.token.depth}
+          toSlug={this.token.text}>
+          {this.inline.output(this.token.text)}
+        </Header>
       );
     }
     case 'code': {
-      return Prism(null, this.token.text);
+      var lang = this.token.lang
+        , text = this.token.text;
+
+      if (lang && lang.indexOf('ReactNativeWebPlayer') === 0) {
+        return (
+          <WebPlayer params={lang.split('?')[1]}>{text}</WebPlayer>
+        );
+      }
+
+      return <Prism>{text}</Prism>;
     }
     case 'table': {
       var table = []

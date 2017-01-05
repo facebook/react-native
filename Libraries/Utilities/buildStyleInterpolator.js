@@ -7,8 +7,9 @@
 /**
  * Cannot "use strict" because we must use eval in this file.
  */
+/* eslint-disable global-strict */
 
-var keyOf = require('keyOf');
+var keyOf = require('fbjs/lib/keyOf');
 
 var X_DIM = keyOf({x: null});
 var Y_DIM = keyOf({y: null});
@@ -101,13 +102,13 @@ var ARGUMENT_NAMES_RE = /([^\s,]+)/g;
  *
  *  inline(inlineMe, ['hi', 'bye']);  // "hi = bye + bye;"
  *
- * @param {function} func Any simple function whos arguments can be replaced via a regex.
+ * @param {string} fnStr Source of any simple function who's arguments can be
+ * replaced via a regex.
  * @param {array<string>} replaceWithArgs Corresponding names of variables
  * within an environment, to replace `func` args with.
  * @return {string} Resulting function body string.
  */
-var inline = function(func, replaceWithArgs) {
-  var fnStr = func.toString();
+var inline = function(fnStr, replaceWithArgs) {
   var parameterNames = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')'))
     .match(ARGUMENT_NAMES_RE) ||
     [];
@@ -115,7 +116,7 @@ var inline = function(func, replaceWithArgs) {
     return '\\b' + paramName + '\\b';
   }).join('|');
   var replaceRegex = new RegExp(replaceRegexStr, 'g');
-  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}') - 1);
+  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}'));
   var newFnBody = fnBody.replace(replaceRegex, function(parameterName) {
     var indexInParameterNames = parameterNames.indexOf(parameterName);
     var replacementName = replaceWithArgs[indexInParameterNames];
@@ -125,11 +126,10 @@ var inline = function(func, replaceWithArgs) {
 };
 
 /**
- * Simply a convenient way to inline functions using the function's toString
- * method.
+ * Simply a convenient way to inline functions using the inline function.
  */
 var MatrixOps = {
-  unroll: function(matVar, m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15) {
+  unroll: `function(matVar, m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15) {
     m0 = matVar[0];
     m1 = matVar[1];
     m2 = matVar[2];
@@ -146,29 +146,29 @@ var MatrixOps = {
     m13 = matVar[13];
     m14 = matVar[14];
     m15 = matVar[15];
-  },
+  }`,
 
-  matrixDiffers: function(retVar, matVar, m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15) {
+  matrixDiffers: `function(retVar, matVar, m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15) {
     retVar = retVar ||
-      m0 !== matVar[0] ||
-      m1 !== matVar[1] ||
-      m2 !== matVar[2] ||
-      m3 !== matVar[3] ||
-      m4 !== matVar[4] ||
-      m5 !== matVar[5] ||
-      m6 !== matVar[6] ||
-      m7 !== matVar[7] ||
-      m8 !== matVar[8] ||
-      m9 !== matVar[9] ||
-      m10 !== matVar[10] ||
-      m11 !== matVar[11] ||
-      m12 !== matVar[12] ||
-      m13 !== matVar[13] ||
-      m14 !== matVar[14] ||
-      m15 !== matVar[15];
-  },
+    m0 !== matVar[0] ||
+    m1 !== matVar[1] ||
+    m2 !== matVar[2] ||
+    m3 !== matVar[3] ||
+    m4 !== matVar[4] ||
+    m5 !== matVar[5] ||
+    m6 !== matVar[6] ||
+    m7 !== matVar[7] ||
+    m8 !== matVar[8] ||
+    m9 !== matVar[9] ||
+    m10 !== matVar[10] ||
+    m11 !== matVar[11] ||
+    m12 !== matVar[12] ||
+    m13 !== matVar[13] ||
+    m14 !== matVar[14] ||
+    m15 !== matVar[15];
+  }`,
 
-  transformScale: function(matVar, opVar) {
+  transformScale: `function(matVar, opVar) {
     // Scaling matVar by opVar
     var x = opVar[0];
     var y = opVar[1];
@@ -189,13 +189,13 @@ var MatrixOps = {
     matVar[13] = matVar[13];
     matVar[14] = matVar[14];
     matVar[15] = matVar[15];
-  },
+  }`,
 
   /**
    * All of these matrix transforms are not general purpose utilities, and are
    * only suitable for being inlined for the use of building up interpolators.
    */
-  transformTranslate: function(matVar, opVar) {
+  transformTranslate: `function(matVar, opVar) {
     // Translating matVar by opVar
     var x = opVar[0];
     var y = opVar[1];
@@ -204,13 +204,13 @@ var MatrixOps = {
     matVar[13] = matVar[1] * x + matVar[5] * y + matVar[9] * z + matVar[13];
     matVar[14] = matVar[2] * x + matVar[6] * y + matVar[10] * z + matVar[14];
     matVar[15] = matVar[3] * x + matVar[7] * y + matVar[11] * z + matVar[15];
-  },
+  }`,
 
   /**
    * @param {array} matVar Both the input, and the output matrix.
    * @param {quaternion specification} q Four element array describing rotation.
    */
-  transformRotateRadians: function(matVar, q) {
+  transformRotateRadians: `function(matVar, q) {
     // Rotating matVar by q
     var xQuat = q[0], yQuat = q[1], zQuat = q[2], wQuat = q[3];
     var x2Quat = xQuat + xQuat;
@@ -225,7 +225,7 @@ var MatrixOps = {
     var wxQuat = wQuat * x2Quat;
     var wyQuat = wQuat * y2Quat;
     var wzQuat = wQuat * z2Quat;
-    // Step 1: Inlines the construction of a quaternion matrix (`quatMat`)
+    // Step 1: Inlines the construction of a quaternion matrix ('quatMat')
     var quatMat0 = 1 - (yyQuat + zzQuat);
     var quatMat1 = xyQuat + wzQuat;
     var quatMat2 = xzQuat - wyQuat;
@@ -266,13 +266,13 @@ var MatrixOps = {
     matVar[9] = b0 * a01 + b1 * a11 + b2 * a21;
     matVar[10] = b0 * a02 + b1 * a12 + b2 * a22;
     matVar[11] = b0 * a03 + b1 * a13 + b2 * a23;
-  }
+  }`
 };
 
 // Optimized version of general operation applications that can be used when
 // the target matrix is known to be the identity matrix.
 var MatrixOpsInitial = {
-  transformScale: function(matVar, opVar) {
+  transformScale: `function(matVar, opVar) {
     // Scaling matVar known to be identity by opVar
     matVar[0] = opVar[0];
     matVar[1] = 0;
@@ -290,10 +290,10 @@ var MatrixOpsInitial = {
     matVar[13] = 0;
     matVar[14] = 0;
     matVar[15] = 1;
-  },
+  }`,
 
-  transformTranslate: function(matVar, opVar) {
-    // Translating matVar known to be identity by opVar';
+  transformTranslate: `function(matVar, opVar) {
+    // Translating matVar known to be identity by opVar;
     matVar[0] = 1;
     matVar[1] = 0;
     matVar[2] = 0;
@@ -310,14 +310,14 @@ var MatrixOpsInitial = {
     matVar[13] = opVar[1];
     matVar[14] = opVar[2];
     matVar[15] = 1;
-  },
+  }`,
 
   /**
    * @param {array} matVar Both the input, and the output matrix - assumed to be
    * identity.
    * @param {quaternion specification} q Four element array describing rotation.
    */
-  transformRotateRadians: function(matVar, q) {
+  transformRotateRadians: `function(matVar, q) {
 
     // Rotating matVar which is known to be identity by q
     var xQuat = q[0], yQuat = q[1], zQuat = q[2], wQuat = q[3];
@@ -333,7 +333,7 @@ var MatrixOpsInitial = {
     var wxQuat = wQuat * x2Quat;
     var wyQuat = wQuat * y2Quat;
     var wzQuat = wQuat * z2Quat;
-    // Step 1: Inlines the construction of a quaternion matrix (`quatMat`)
+    // Step 1: Inlines the construction of a quaternion matrix ('quatMat')
     var quatMat0 = 1 - (yyQuat + zzQuat);
     var quatMat1 = xyQuat + wzQuat;
     var quatMat2 = xzQuat - wyQuat;
@@ -365,14 +365,14 @@ var MatrixOpsInitial = {
     matVar[13] = 0;
     matVar[14] = 0;
     matVar[15] = 1;
-  }
+  }`
 };
 
 
 var setNextValAndDetectChange = function(name, tmpVarName) {
   return (
     '  if (!didChange) {\n' +
-    '    var prevVal = result.' + name +';\n' +
+    '    var prevVal = result.' + name + ';\n' +
     '    result.' + name + ' = ' + tmpVarName + ';\n' +
     '    didChange = didChange  || (' + tmpVarName + ' !== prevVal);\n' +
     '  } else {\n' +
@@ -460,8 +460,9 @@ for (var varIndex = 0; varIndex < 16; varIndex++) {
 }
 var setNextMatrixAndDetectChange = function(orderedMatrixOperations) {
   var fn = [
-    '  var transformMatrix = result.transformMatrix !== undefined ? ' +
-    'result.transformMatrix : (result.transformMatrix = []);'
+    '  var transform = result.transform !== undefined ? ' +
+    'result.transform : (result.transform = [{ matrix: [] }]);' +
+    '  var transformMatrix = transform[0].matrix;'
   ];
   fn.push.apply(
     fn,
@@ -552,8 +553,15 @@ var createFunctionString = function(anims) {
  * object and returns a boolean describing if any update was actually applied.
  */
 var buildStyleInterpolator = function(anims) {
-  return Function(createFunctionString(anims))();
+  // Defer compiling this method until we really need it.
+  var interpolator = null;
+  function lazyStyleInterpolator(result, value) {
+    if (interpolator === null) {
+      interpolator = Function(createFunctionString(anims))();
+    }
+    return interpolator(result, value);
+  }
+  return lazyStyleInterpolator;
 };
-
 
 module.exports = buildStyleInterpolator;

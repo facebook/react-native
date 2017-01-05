@@ -11,30 +11,12 @@
  */
 'use strict';
 
-var RCTStatusBarManager = require('NativeModules').StatusBarManager;
+const NativeEventEmitter = require('NativeEventEmitter');
+const { StatusBarManager } = require('NativeModules');
 
-var StatusBarIOS = {
+/**
+ * Use `StatusBar` for mutating the status bar.
+ */
+class StatusBarIOS extends NativeEventEmitter {}
 
-  Style: {
-    default: RCTStatusBarManager.Style.default,
-    lightContent: RCTStatusBarManager.Style.lightContent
-  },
-
-  Animation: {
-    none: RCTStatusBarManager.Animation.none,
-    fade: RCTStatusBarManager.Animation.fade,
-    slide: RCTStatusBarManager.Animation.slide,
-  },
-
-  setStyle(style: number, animated?: boolean) {
-    animated = animated || false;
-    RCTStatusBarManager.setStyle(style, animated);
-  },
-
-  setHidden(hidden: boolean, animation: number) {
-    animation = animation || StatusBarIOS.Animation.none;
-    RCTStatusBarManager.setHidden(hidden, animation);
-  },
-};
-
-module.exports = StatusBarIOS;
+module.exports = new StatusBarIOS(StatusBarManager);

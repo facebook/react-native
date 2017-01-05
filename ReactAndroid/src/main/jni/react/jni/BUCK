@@ -1,0 +1,18 @@
+include_defs('//ReactAndroid/DEFS')
+
+# TODO(cjhopman): Remove this target (or move the xreact target to this directory).
+cxx_library(
+  name='jni',
+  soname = 'libreactnativejni.$(ext)',
+  header_namespace = 'react/jni',
+  srcs = [
+    'Dummy.cpp',
+  ],
+  deps = [
+    react_native_target('jni/xreact/jni:jni'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

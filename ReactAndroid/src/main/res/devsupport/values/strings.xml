@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload</string>
+  <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug JS Remotely</string>
+  <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Remote JS Debugging</string>
+  <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Reloading</string>
+  <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Reloading</string>
+  <string name="catalyst_live_reload" project="catalyst" translatable="false">Enable Live Reload</string>
+  <string name="catalyst_live_reload_off" project="catalyst" translatable="false">Disable Live Reload</string>
+  <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Show Perf Monitor</string>
+  <string name="catalyst_perf_monitor_off" project="catalyst" translatable="false">Hide Perf Monitor</string>
+  <string name="catalyst_settings" project="catalyst" translatable="false">Dev Settings</string>
+  <string name="catalyst_settings_title" project="catalyst" translatable="false">Catalyst Dev Settings</string>
+  <string name="catalyst_jsload_title" project="catalyst" translatable="false">Please wait…</string>
+  <string name="catalyst_jsload_message" project="catalyst" translatable="false">Fetching JS bundle</string>
+  <string name="catalyst_jsload_error" project="catalyst" translatable="false">Unable to download JS bundle. Did you forget to start the development server or connect your device?</string>
+  <string name="catalyst_remotedbg_message" project="catalyst" translatable="false">Connecting to remote debugger</string>
+  <string name="catalyst_remotedbg_error" project="catalyst" translatable="false">Unable to connect with remote debugger</string>
+  <string name="catalyst_element_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
+  <string name="catalyst_heap_capture" project="catalyst" translatable="false">Capture Heap</string>
+  <string name="catalyst_dismiss_button" project="catalyst" translatable="false">Dismiss\n(ESC)</string>
+  <string name="catalyst_reload_button" project="catalyst" translatable="false">Reload\n(R,\u00A0R)</string>
+  <string name="catalyst_poke_sampling_profiler" project="catalyst" translatable="false">Start/Stop Sampling Profiler</string>
+  <string name="catalyst_copy_button" project="catalyst" translatable="false">Copy</string>
+  <string name="catalyst_report_button" project="catalyst" translatable="false">Report</string>
+</resources>

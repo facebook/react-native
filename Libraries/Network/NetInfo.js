@@ -11,60 +11,148 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTReachability = NativeModules.Reachability;
+const Map = require('Map');
+const NativeEventEmitter = require('NativeEventEmitter');
+const NativeModules = require('NativeModules');
+const Platform = require('Platform');
+const RCTNetInfo = NativeModules.NetInfo;
 
-var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
+const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
+
+const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
-  change: string;
+  change: string,
 }>;
 
 type ReachabilityStateIOS = $Enum<{
-  cell: string;
-  none: string;
-  unknown: string;
-  wifi: string;
+  cell: string,
+  none: string,
+  unknown: string,
+  wifi: string,
 }>;
 
+type ConnectivityStateAndroid = $Enum<{
+  NONE: string,
+  MOBILE: string,
+  WIFI: string,
+  MOBILE_MMS: string,
+  MOBILE_SUPL: string,
+  MOBILE_DUN: string,
+  MOBILE_HIPRI: string,
+  WIMAX: string,
+  BLUETOOTH: string,
+  DUMMY: string,
+  ETHERNET: string,
+  MOBILE_FOTA: string,
+  MOBILE_IMS: string,
+  MOBILE_CBS: string,
+  WIFI_P2P: string,
+  MOBILE_IA: string,
+  MOBILE_EMERGENCY: string,
+  PROXY: string,
+  VPN: string,
+  UNKNOWN: string,
+}>;
+
+
+const _subscriptions = new Map();
+
+let _isConnected;
+if (Platform.OS === 'ios') {
+  _isConnected = function(
+    reachability: ReachabilityStateIOS,
+  ): bool {
+    return reachability !== 'none' && reachability !== 'unknown';
+  };
+} else if (Platform.OS === 'android') {
+  _isConnected = function(
+      connectionType: ConnectivityStateAndroid,
+    ): bool {
+    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
+  };
+}
+
+const _isConnectedSubscriptions = new Map();
 
 /**
  * NetInfo exposes info about online/offline status
  *
- * ### reachabilityIOS
+ * ```
+ * NetInfo.fetch().done((reach) => {
+ *   console.log('Initial: ' + reach);
+ * });
+ * function handleFirstConnectivityChange(reach) {
+ *   console.log('First change: ' + reach);
+ *   NetInfo.removeEventListener(
+ *     'change',
+ *     handleFirstConnectivityChange
+ *   );
+ * }
+ * NetInfo.addEventListener(
+ *   'change',
+ *   handleFirstConnectivityChange
+ * );
+ * ```
  *
- * Asyncronously determine if the device is online and on a cellular network.
+ * ### IOS
+ *
+ * Asynchronously determine if the device is online and on a cellular network.
  *
  * - `none` - device is offline
  * - `wifi` - device is online and connected via wifi, or is the iOS simulator
  * - `cell` - device is connected via Edge, 3G, WiMax, or LTE
  * - `unknown` - error case and the network status is unknown
  *
+ * ### Android
+ *
+ * To request network info, you need to add the following line to your
+ * app's `AndroidManifest.xml`:
+ *
+ * `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
+ * Asynchronously determine if the device is connected and details about that connection.
+ *
+ * Android Connectivity Types.
+ *
+ * - `NONE` - device is offline
+ * - `BLUETOOTH` - The Bluetooth data connection.
+ * - `DUMMY` -  Dummy data connection.
+ * - `ETHERNET` - The Ethernet data connection.
+ * - `MOBILE` - The Mobile data connection.
+ * - `MOBILE_DUN` - A DUN-specific Mobile data connection.
+ * - `MOBILE_HIPRI` - A High Priority Mobile data connection.
+ * - `MOBILE_MMS` - An MMS-specific Mobile data connection.
+ * - `MOBILE_SUPL` -  A SUPL-specific Mobile data connection.
+ * - `VPN` -  A virtual network using one or more native bearers. Requires API Level 21
+ * - `WIFI` - The WIFI data connection.
+ * - `WIMAX` -  The WiMAX data connection.
+ * - `UNKNOWN` - Unknown data connection.
+ *
+ * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
+ *
+ * ### isConnectionExpensive
+ *
+ * Available on Android. Detect if the current active connection is metered or not. A network is
+ * classified as metered when the user is sensitive to heavy data usage on that connection due to
+ * monetary costs, data limitations or battery/performance issues.
+ *
  * ```
- * NetInfo.reachabilityIOS.fetch().done((reach) => {
- *   console.log('Initial: ' + reach);
+ * NetInfo.isConnectionExpensive()
+ * .then(isConnectionExpensive => {
+ *   console.log('Connection is ' + (isConnectionExpensive ? 'Expensive' : 'Not Expensive'));
+ * })
+ * .catch(error => {
+ *   console.error(error);
  * });
- * function handleFirstReachabilityChange(reach) {
- *   console.log('First change: ' + reach);
- *   NetInfo.reachabilityIOS.removeEventListener(
- *     'change',
- *     handleFirstReachabilityChange
- *   );
- * }
- * NetInfo.reachabilityIOS.addEventListener(
- *   'change',
- *   handleFirstReachabilityChange
- * );
  * ```
  *
  * ### isConnected
  *
- * Available on all platforms. Asyncronously fetch a boolean to determine
+ * Available on all platforms. Asynchronously fetch a boolean to determine
  * internet connectivity.
  *
  * ```
- * NetInfo.isConnected.fetch().done((isConnected) => {
+ * NetInfo.isConnected.fetch().then(isConnected => {
  *   console.log('First, is ' + (isConnected ? 'online' : 'offline'));
  * });
  * function handleFirstConnectivityChange(isConnected) {
@@ -80,91 +168,101 @@ type ReachabilityStateIOS = $Enum<{
  * );
  * ```
  */
-
-var NetInfo = {};
-
-if (RCTReachability) {
-
-  // RCTReachability is exposed, so this is an iOS-like environment and we will
-  // expose reachabilityIOS
-
-  var _reachabilitySubscriptions = {};
-
-  NetInfo.reachabilityIOS = {
-    addEventListener: function (
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      _reachabilitySubscriptions[handler] = RCTDeviceEventEmitter.addListener(
-        DEVICE_REACHABILITY_EVENT,
-        (appStateData) => {
-          handler(appStateData.network_reachability);
-        }
-      );
-    },
-
-    removeEventListener: function(
-      eventName: ChangeEventName,
-      handler: Function
-    ): void {
-      if (!_reachabilitySubscriptions[handler]) {
-        return;
+const NetInfo = {
+  /**
+   * Invokes the listener whenever network status changes.
+   * The listener receives one of the connectivity types listed above.
+   */
+  addEventListener(
+    eventName: ChangeEventName,
+    handler: Function
+  ): {remove: () => void} {
+    const listener = NetInfoEventEmitter.addListener(
+      DEVICE_CONNECTIVITY_EVENT,
+      (appStateData) => {
+        handler(appStateData.network_info);
       }
-      _reachabilitySubscriptions[handler].remove();
-      _reachabilitySubscriptions[handler] = null;
-    },
+    );
+    _subscriptions.set(handler, listener);
+    return {
+      remove: () => NetInfo.removeEventListener(eventName, handler)
+    };
+  },
 
-    fetch: function(): Promise {
-      return new Promise((resolve, reject) => {
-        RCTReachability.getCurrentReachability(
-          function(resp) {
-            resolve(resp.network_reachability);
-          },
-          reject
-        );
-      });
-    },
-  };
+  /**
+   * Removes the listener for network status changes.
+   */
+  removeEventListener(
+    eventName: ChangeEventName,
+    handler: Function
+  ): void {
+    const listener = _subscriptions.get(handler);
+    if (!listener) {
+      return;
+    }
+    listener.remove();
+    _subscriptions.delete(handler);
+  },
 
-  var _isConnectedSubscriptions = {};
+  /**
+   * Returns a promise that resolves with one of the connectivity types listed
+   * above.
+   */
+  fetch(): Promise<any> {
+    return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
+  },
 
-  var _iosReachabilityIsConnected = function(
-    reachability: ReachabilityStateIOS
-  ): bool {
-    return reachability !== 'none' &&
-      reachability !== 'unknown';
-  };
-
-  NetInfo.isConnected = {
-    addEventListener: function (
+  /**
+   * An object with the same methods as above but the listener receives a
+   * boolean which represents the internet connectivity.
+   * Use this if you are only interested with whether the device has internet
+   * connectivity.
+   */
+  isConnected: {
+    addEventListener(
       eventName: ChangeEventName,
       handler: Function
-    ): void {
-      _isConnectedSubscriptions[handler] = (reachability) => {
-        handler(_iosReachabilityIsConnected(reachability));
+    ): {remove: () => void} {
+      const listener = (connection) => {
+        handler(_isConnected(connection));
       };
-      NetInfo.reachabilityIOS.addEventListener(
+      _isConnectedSubscriptions.set(handler, listener);
+      NetInfo.addEventListener(
         eventName,
-        _isConnectedSubscriptions[handler]
+        listener
       );
+      return {
+        remove: () => NetInfo.isConnected.removeEventListener(eventName, handler)
+      };
     },
 
-    removeEventListener: function(
+    removeEventListener(
       eventName: ChangeEventName,
       handler: Function
     ): void {
-      NetInfo.reachabilityIOS.removeEventListener(
+      const listener = _isConnectedSubscriptions.get(handler);
+      NetInfo.removeEventListener(
         eventName,
-        _isConnectedSubscriptions[handler]
+        /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during
+         * the deploy of Flow v0.36.0. To see the error, remove this comment
+         * and run Flow */
+        listener
       );
+      _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch: function(): Promise {
-      return NetInfo.reachabilityIOS.fetch().then(
-        (reachability) => _iosReachabilityIsConnected(reachability)
+    fetch(): Promise<any> {
+      return NetInfo.fetch().then(
+        (connection) => _isConnected(connection)
       );
     },
-  };
-}
+  },
+
+  isConnectionExpensive(): Promise<boolean> {
+    return (
+      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS'))
+    );
+  },
+};
 
 module.exports = NetInfo;

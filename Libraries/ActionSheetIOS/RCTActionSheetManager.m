@@ -9,133 +9,196 @@
 
 #import "RCTActionSheetManager.h"
 
-#import "RCTLog.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
-
 @end
 
 @implementation RCTActionSheetManager
 {
-  NSMutableDictionary *_callbacks;
+  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
+  // which is required for NSDictionary keys
+  NSMapTable *_callbacks;
 }
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+@synthesize bridge = _bridge;
+
+- (dispatch_queue_t)methodQueue
 {
-  if ((self = [super init])) {
-    _callbacks = [[NSMutableDictionary alloc] init];
+  return dispatch_get_main_queue();
+}
+
+/*
+ * The `anchor` option takes a view to set as the anchor for the share
+ * popup to point to, on iPads running iOS 8. If it is not passed, it
+ * defaults to centering the share popup on screen without any arrows.
+ */
+- (CGRect)sourceRectInView:(UIView *)sourceView
+             anchorViewTag:(NSNumber *)anchorViewTag
+{
+  if (anchorViewTag) {
+    UIView *anchorView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+    return [anchorView convertRect:anchorView.bounds toView:sourceView];
+  } else {
+    return (CGRect){sourceView.center, {1, 1}};
   }
-  return self;
 }
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
-                  failureCallback:(RCTResponseSenderBlock)failureCallback
-                  successCallback:(RCTResponseSenderBlock)successCallback)
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"Unable to show action sheet from app extension");
+    return;
+  }
 
-    actionSheet.title = options[@"title"];
+  if (!_callbacks) {
+    _callbacks = [NSMapTable strongToStrongObjectsMapTable];
+  }
 
-    for (NSString *option in options[@"options"]) {
-      [actionSheet addButtonWithTitle:option];
+  NSString *title = [RCTConvert NSString:options[@"title"]];
+  NSString *message = [RCTConvert NSString:options[@"message"]];
+  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
+  NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
+  NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
+
+  UIViewController *controller = RCTPresentedViewController();
+
+  if (controller == nil) {
+    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
+    return;
+  }
+
+  /*
+   * The `anchor` option takes a view to set as the anchor for the share
+   * popup to point to, on iPads running iOS 8. If it is not passed, it
+   * defaults to centering the share popup on screen without any arrows.
+   */
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+  UIView *sourceView = controller.view;
+  CGRect sourceRect = [self sourceRectInView:sourceView anchorViewTag:anchorViewTag];
+
+  UIAlertController *alertController =
+  [UIAlertController alertControllerWithTitle:title
+                                      message:message
+                               preferredStyle:UIAlertControllerStyleActionSheet];
+
+  NSInteger index = 0;
+  for (NSString *option in buttons) {
+    UIAlertActionStyle style = UIAlertActionStyleDefault;
+    if (index == destructiveButtonIndex) {
+      style = UIAlertActionStyleDestructive;
+    } else if (index == cancelButtonIndex) {
+      style = UIAlertActionStyleCancel;
     }
 
-    if (options[@"destructiveButtonIndex"]) {
-      actionSheet.destructiveButtonIndex = [options[@"destructiveButtonIndex"] integerValue];
-    }
-    if (options[@"cancelButtonIndex"]) {
-      actionSheet.cancelButtonIndex = [options[@"cancelButtonIndex"] integerValue];
-    }
+    NSInteger localIndex = index;
+    [alertController addAction:[UIAlertAction actionWithTitle:option
+                                                        style:style
+                                                      handler:^(__unused UIAlertAction *action){
+      callback(@[@(localIndex)]);
+    }]];
 
-    actionSheet.delegate = self;
+    index++;
+  }
 
-    _callbacks[keyForInstance(actionSheet)] = successCallback;
+  alertController.modalPresentationStyle = UIModalPresentationPopover;
+  alertController.popoverPresentationController.sourceView = sourceView;
+  alertController.popoverPresentationController.sourceRect = sourceRect;
+  if (!anchorViewTag) {
+    alertController.popoverPresentationController.permittedArrowDirections = 0;
+  }
+  [controller presentViewController:alertController animated:YES completion:nil];
 
-    UIWindow *appWindow = [[[UIApplication sharedApplication] delegate] window];
-    if (appWindow == nil) {
-      RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
-      return;
-    }
-    [actionSheet showInView:appWindow];
-  });
+  alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
-                  failureCallback:(RCTResponseSenderBlock)failureCallback
+                  failureCallback:(RCTResponseErrorBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSMutableArray *items = [NSMutableArray array];
-    id message = options[@"message"];
-    id url = options[@"url"];
-    if ([message isKindOfClass:[NSString class]]) {
-      [items addObject:message];
-    }
-    if ([url isKindOfClass:[NSString class]]) {
-      [items addObject:[NSURL URLWithString:url]];
-    }
-    if ([items count] == 0) {
-      failureCallback(@[@"No `url` or `message` to share"]);
-      return;
-    }
-    UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-    UIViewController *ctrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    if ([share respondsToSelector:@selector(setCompletionWithItemsHandler:)]) {
-      share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-        if (activityError) {
-          failureCallback(@[[activityError localizedDescription]]);
-        } else {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        }
-      };
-    } else {
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"Unable to show action sheet from app extension");
+    return;
+  }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-      if (![UIActivityViewController instancesRespondToSelector:@selector(completionWithItemsHandler)]) {
-        // Legacy iOS 7 implementation
-        share.completionHandler = ^(NSString *activityType, BOOL completed) {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        };
-      } else
-
-#endif
-
-      {
-        // iOS 8 version
-        share.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
-          successCallback(@[@(completed), (activityType ?: [NSNull null])]);
-        };
+  NSMutableArray<id> *items = [NSMutableArray array];
+  NSString *message = [RCTConvert NSString:options[@"message"]];
+  if (message) {
+    [items addObject:message];
+  }
+  NSURL *URL = [RCTConvert NSURL:options[@"url"]];
+  if (URL) {
+    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
+      NSError *error;
+      NSData *data = [NSData dataWithContentsOfURL:URL
+                                           options:(NSDataReadingOptions)0
+                                             error:&error];
+      if (!data) {
+        failureCallback(error);
+        return;
       }
+      [items addObject:data];
+    } else {
+      [items addObject:URL];
     }
-    [ctrl presentViewController:share animated:YES completion:nil];
-  });
+  }
+  if (items.count == 0) {
+    RCTLogError(@"No `url` or `message` to share");
+    return;
+  }
+
+  UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+
+  NSString *subject = [RCTConvert NSString:options[@"subject"]];
+  if (subject) {
+    [shareController setValue:subject forKey:@"subject"];
+  }
+
+  NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options[@"excludedActivityTypes"]];
+  if (excludedActivityTypes) {
+    shareController.excludedActivityTypes = excludedActivityTypes;
+  }
+
+  UIViewController *controller = RCTPresentedViewController();
+  shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+    if (activityError) {
+      failureCallback(activityError);
+    } else {
+      successCallback(@[@(completed), RCTNullIfNil(activityType)]);
+    }
+  };
+
+  shareController.modalPresentationStyle = UIModalPresentationPopover;
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
+  if (!anchorViewTag) {
+    shareController.popoverPresentationController.permittedArrowDirections = 0;
+  }
+  shareController.popoverPresentationController.sourceView = controller.view;
+  shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
+
+  [controller presentViewController:shareController animated:YES completion:nil];
+
+  shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
 #pragma mark UIActionSheetDelegate Methods
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-  NSString *key = keyForInstance(actionSheet);
-  RCTResponseSenderBlock callback = _callbacks[key];
+  RCTResponseSenderBlock callback = [_callbacks objectForKey:actionSheet];
   if (callback) {
     callback(@[@(buttonIndex)]);
-    [_callbacks removeObjectForKey:key];
+    [_callbacks removeObjectForKey:actionSheet];
   } else {
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
   }
-
-  [[[[UIApplication sharedApplication] delegate] window] makeKeyWindow];
-}
-
-#pragma mark Private
-
-NS_INLINE NSString *keyForInstance(id instance)
-{
-  return [NSString stringWithFormat:@"%p", instance];
 }
 
 @end

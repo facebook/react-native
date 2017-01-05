@@ -1,0 +1,8 @@
+android_library(
+  name = 'identifiers',
+  srcs = glob(['*.java']),
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

@@ -11,24 +11,19 @@
  */
 'use strict';
 
-var StyleSheetRegistry = require('StyleSheetRegistry');
-var invariant = require('invariant');
-var mergeIntoFast = require('mergeIntoFast');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
+var invariant = require('fbjs/lib/invariant');
 
-type Atom = number | bool | Object | Array<?Atom>
-type StyleObj = Atom | Array<?StyleObj>
+import type { StyleObj } from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (typeof style === 'number') {
-    return StyleSheetRegistry.getStyleByID(style);
+    return ReactNativePropRegistry.getByID(style);
   }
   return style;
 }
 
-// TODO: Flow 0.7.0 doesn't refine bools properly so we have to use `any` to
-// tell it that this can't be a bool anymore. Should be fixed in 0.8.0,
-// after which this can take a ?StyleObj.
-function flattenStyle(style: any): ?Object {
+function flattenStyle(style: ?StyleObj): ?Object {
   if (!style) {
     return undefined;
   }
@@ -39,10 +34,12 @@ function flattenStyle(style: any): ?Object {
   }
 
   var result = {};
-  for (var i = 0; i < style.length; ++i) {
+  for (var i = 0, styleLength = style.length; i < styleLength; ++i) {
     var computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
-      mergeIntoFast(result, computedStyle);
+      for (var key in computedStyle) {
+        result[key] = computedStyle[key];
+      }
     }
   }
   return result;

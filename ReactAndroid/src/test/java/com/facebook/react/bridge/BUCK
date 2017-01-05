@@ -1,0 +1,44 @@
+include_defs('//ReactAndroid/DEFS')
+
+STANDARD_TEST_SRCS = [
+  '*Test.java',
+]
+
+android_library(
+  name = 'testhelpers',
+  srcs = glob(['*.java'], excludes = STANDARD_TEST_SRCS),
+  deps = [
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_tests_target('java/org/mockito/configuration:configuration'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
+
+rn_robolectric_test(
+  name = 'bridge',
+  # Please change the contact to the oncall of your team
+  contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
+  srcs = glob(STANDARD_TEST_SRCS),
+  deps = [
+    ':testhelpers',
+    react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
+    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
+    react_native_dep('third-party/java/fest:fest'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_dep('third-party/java/junit:junit'),
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
+

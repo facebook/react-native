@@ -7,6 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
+@class CADisplayLink;
+
 /**
  * Interface containing the information about the last screen refresh.
  */
@@ -22,6 +26,8 @@
  */
 @property (nonatomic, readonly) NSTimeInterval deltaTime;
 
+- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink NS_DESIGNATED_INITIALIZER;
+
 @end
 
 /**
@@ -34,11 +40,15 @@
  */
 - (void)didUpdateFrame:(RCTFrameUpdate *)update;
 
-@optional
-
 /**
  * Synthesize and set to true to pause the calls to -[didUpdateFrame:]
  */
-@property (nonatomic, assign, getter=isPaused) BOOL paused;
+@property (nonatomic, readonly, getter=isPaused) BOOL paused;
+
+/**
+ * Callback for pause/resume observer.
+ * Observer should call it when paused property is changed.
+ */
+@property (nonatomic, copy) dispatch_block_t pauseCallback;
 
 @end

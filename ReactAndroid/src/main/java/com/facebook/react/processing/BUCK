@@ -1,0 +1,19 @@
+include_defs('//ReactAndroid/DEFS')
+
+java_library(
+  name = 'processing',
+  srcs = glob(['*.java']),
+  source = '7',
+  target = '7',
+  deps = [
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/javapoet:javapoet'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
+  ],
+  visibility=[
+    'PUBLIC'
+  ]
+)
+

@@ -1,0 +1,52 @@
+include_defs('//ReactAndroid/DEFS')
+
+# Tests that are too flaky to run on SandCastle
+# TODO t11057216 stabilise them
+SANDCASTLE_FLAKY = [
+]
+
+deps = [
+  react_native_dep('third-party/android/support/v4:lib-support-v4'),
+  react_native_dep('third-party/java/jsr-305:jsr-305'),
+  react_native_dep('third-party/java/junit:junit'),
+  react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
+  react_native_target('java/com/facebook/react/bridge:bridge'),
+  react_native_target('java/com/facebook/react/common:common'),
+  react_native_target('java/com/facebook/react/modules/core:core'),
+  react_native_target('java/com/facebook/react/modules/datepicker:datepicker'),
+  react_native_target('java/com/facebook/react/modules/share:share'),
+  react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+  react_native_target('java/com/facebook/react/modules/timepicker:timepicker'),
+  react_native_target('java/com/facebook/react/touch:touch'),
+  react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
+  react_native_target('java/com/facebook/react/uimanager:uimanager'),
+  react_native_target('java/com/facebook/react/views/picker:picker'),
+  react_native_target('java/com/facebook/react/views/progressbar:progressbar'),
+  react_native_target('java/com/facebook/react/views/recyclerview:recyclerview'),
+  react_native_target('java/com/facebook/react/views/scroll:scroll'),
+  react_native_target('java/com/facebook/react/views/slider:slider'),
+  react_native_target('java/com/facebook/react/views/swiperefresh:swiperefresh'),
+  react_native_target('java/com/facebook/react/views/text:text'),
+  react_native_target('java/com/facebook/react/views/textinput:textinput'),
+  react_native_target('java/com/facebook/react/views/view:view'),
+  react_native_target('java/com/facebook/react:react'),
+]
+
+android_library(
+  name = 'tests',
+  srcs = glob(['**/*.java']),
+  deps = deps,
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+android_library(
+  name = 'stable-tests',
+  srcs = glob(['**/*.java'], excludes=SANDCASTLE_FLAKY),
+  deps = deps,
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

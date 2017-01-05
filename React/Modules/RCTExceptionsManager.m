@@ -9,6 +9,8 @@
 
 #import "RCTExceptionsManager.h"
 
+#import "RCTConvert.h"
+#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTRedBox.h"
 #import "RCTRootView.h"
@@ -16,74 +18,68 @@
 @implementation RCTExceptionsManager
 {
   __weak id<RCTExceptionsManagerDelegate> _delegate;
-  NSUInteger _reloadRetries;
 }
 
-#ifndef DEBUG
-static NSUInteger RCTReloadRetries = 0;
-#endif
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {
-  if ((self = [super init])) {
+  if ((self = [self init])) {
     _delegate = delegate;
-    _maxReloadAttempts = 0;
   }
   return self;
 }
 
-- (instancetype)init
+RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
+                  stack:(NSArray<NSDictionary *> *)stack
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
-  return [self initWithDelegate:nil];
+  [_bridge.redBox showErrorMessage:message withStack:stack];
+
+  if (_delegate) {
+    [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+  }
 }
 
-RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
-                  stack:(NSArray *)stack)
+RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
+                  stack:(NSArray<NSDictionary *> *)stack
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
+  [_bridge.redBox showErrorMessage:message withStack:stack];
+
   if (_delegate) {
-    [_delegate unhandledJSExceptionWithMessage:message stack:stack];
-    return;
+    [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
   }
 
-#ifdef DEBUG
-    [[RCTRedBox sharedInstance] showErrorMessage:message withStack:stack];
-#else
-  if (RCTReloadRetries < _maxReloadAttempts) {
-    RCTReloadRetries++;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
-    });
+  static NSUInteger reloadRetries = 0;
+  if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
+    reloadRetries++;
+    [_bridge reload];
   } else {
-    NSError *error;
-    const NSUInteger MAX_SANITIZED_LENGTH = 75;
-    // Filter out numbers so the same base errors are mapped to the same categories independent of incorrect values.
-    NSString *pattern = @"[+-]?\\d+[,.]?\\d*";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&error];
-    RCTAssert(error == nil, @"Bad regex pattern: %@", pattern);
-    NSString *sanitizedMessage = [regex stringByReplacingMatchesInString:message
-                                                                 options:0
-                                                                   range:NSMakeRange(0, message.length)
-                                                            withTemplate:@"<num>"];
-    if (sanitizedMessage.length > MAX_SANITIZED_LENGTH) {
-      sanitizedMessage = [[sanitizedMessage substringToIndex:MAX_SANITIZED_LENGTH] stringByAppendingString:@"..."];
-    }
-    NSMutableString *prettyStack = [@"\n" mutableCopy];
-    for (NSDictionary *frame in stack) {
-      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
-    }
-
-    NSString *name = [@"Unhandled JS Exception: " stringByAppendingString:sanitizedMessage];
-    [NSException raise:name format:@"Message: %@, stack: %@", message, prettyStack];
+    NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
+    NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
+    RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
   }
-#endif
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
-                  stack:(NSArray *)stack)
+                  stack:(NSArray<NSDictionary *> *)stack
+                  exceptionId:(nonnull NSNumber *)exceptionId)
 {
-  [[RCTRedBox sharedInstance] updateErrorMessage:message withStack:stack];
+  [_bridge.redBox updateErrorMessage:message withStack:stack];
+
+  if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
+    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+  }
+}
+
+// Deprecated.  Use reportFatalException directly instead.
+RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
+                  stack:(NSArray<NSDictionary *> *)stack)
+{
+  [self reportFatalException:message stack:stack exceptionId:@-1];
 }
 
 @end

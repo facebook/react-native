@@ -12,11 +12,12 @@
 'use strict';
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ReactPropTypeLocations = require('ReactPropTypeLocations');
+var ReactPropTypeLocations = require('react/lib/ReactPropTypeLocations');
+var ReactPropTypesSecret = require('react/lib/ReactPropTypesSecret');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 class StyleSheetValidation {
   static validateStyleProp(prop, style, caller) {
@@ -26,14 +27,16 @@ class StyleSheetValidation {
     if (allStylePropTypes[prop] === undefined) {
       var message1 = '"' + prop + '" is not a valid style property.';
       var message2 = '\nValid style props: ' +
-        JSON.stringify(Object.keys(allStylePropTypes), null, '  ');
+        JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
       styleError(message1, style, caller, message2);
     }
     var error = allStylePropTypes[prop](
       style,
       prop,
       caller,
-      ReactPropTypeLocations.prop
+      ReactPropTypeLocations.prop,
+      null,
+      ReactPropTypesSecret
     );
     if (error) {
       styleError(error.message, style, caller);
@@ -51,11 +54,6 @@ class StyleSheetValidation {
 
   static addValidStylePropTypes(stylePropTypes) {
     for (var key in stylePropTypes) {
-      invariant(
-        allStylePropTypes[key] === undefined ||
-          allStylePropTypes[key] === stylePropTypes[key],
-        'Attemped to redefine existing style prop type "' + key + '".'
-      );
       allStylePropTypes[key] = stylePropTypes[key];
     }
   }

@@ -12,7 +12,7 @@ to wait more than a few seconds after starting the packager.
 
 The main deviation from the node module system is the support for our
 proprietary module format known as `@providesModule`. However, we
-discourage people to use this module format because going forward, we
+discourage people from using this module format because going forward we
 want to completely separate our infrastructure from React Native and
 provide an experience most JavaScript developers are familiar with,
 namely the node module format. We want to even go further, and let you
@@ -62,7 +62,7 @@ if the option is boolean `1/0` or `true/false` is accepted.
 Here are the current options the packager accepts:
 
 * `dev` boolean, defaults to true: sets a global `__DEV__` variable
-  which will effect how the React Nativeg core libraries behave.
+  which will effect how the React Native core libraries behave.
 * `minify` boolean, defaults to false: whether to minify the bundle.
 * `runModule` boolean, defaults to true: whether to require your entry
   point module. So if you requested `moduleName`, this option will add
@@ -72,12 +72,10 @@ Here are the current options the packager accepts:
 
 ### /debug
 
-This is a page used for debugging, it has links to two pages:
+This is a page used for debugging, it offers a link to a single page :
 
 * Cached Packages: which shows you the packages that's been already
   generated and cached
-* Dependency Graph: is the in-memory graph of all the modules and
-  their dependencies
 
 ## Programmatic API
 
@@ -92,14 +90,15 @@ ReactPackager is how you mainly interact with the API.
 var ReactPackager = require('./react-packager');
 ```
 
-### ReactPackager.middleware(options)
+### ReactPackager.buildBundle(serverOptions, bundleOptions)
 
-Returns a function that can be used in a connect-like
-middleware. Takes the following options:
+Builds a bundle according to the provided options.
+
+#### `serverOptions`
 
 * `projectRoots` array (required): Is the roots where your JavaScript
   file will exist
-* `blacklistRE` regexp: Is a patter to ignore certain paths from the
+* `blacklistRE` regexp: Is a pattern to ignore certain paths from the
   packager
 * `polyfillModuleName` array: Paths to polyfills you want to be
   included at the start of the bundle
@@ -111,18 +110,34 @@ middleware. Takes the following options:
 * `nonPersistent` boolean, defaults to false: Whether the server
   should be used as a persistent deamon to watch files and update
   itself
-* `assetRoots` array: Where should the packager look for assets
+* `getTransformOptions` function: A function that acts as a middleware for
+  generating options to pass to the transformer based on the bundle being built.
 
-### ReactPackager.buildPackageFromUrl(options, url)
+#### `bundleOptions`
 
-Build a package from a url (see the `.bundle` endpoint). `options` is
-the same options that is passed to `ReactPackager.middleware`
+* `entryFile` string (required): the entry file of the bundle, relative to one
+  of the roots.
+* `dev` boolean (defaults to `true`): sets a global `__DEV__` variable
+  which will effect how the React Native core libraries behave.
+* `minify` boolean: Whether to minify code and apply production optimizations.
+* `runModule` boolean (defaults to `true`): whether to require your entry
+  point module.
+* `inlineSourceMap` boolean, defaults to false: whether to inline
+  source maps.
+* `platform` string: The target platform for the build
+* `generateSourceMaps` boolean: Whether to generate source maps.
+* `sourceMapUrl` string: The url of the source map (will be appended to
+  the bundle).
 
-### ReactPackager.getDependencies(options, main)
+## Debugging
 
-Given an entry point module. Recursively collect all the dependent
-modules and return it as an array. `options` is the same options that
-is passed to `ReactPackager.middleware`
+To get verbose output when running the packager, define an environment variable:
+
+    export DEBUG=RNP:*
+
+You can combine this with other values, e.g. `DEBUG=babel,RNP:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
+
+The `/debug` endpoint discussed above is also useful.
 
 ## FAQ
 
@@ -134,5 +149,5 @@ is informed by React Native needs.
 ### Why didn't you use webpack?
 
 We love webpack, however, when we tried on our codebase it was slower
-than our developers would like it to be. You find can more discussion about
-the subject [here](https://github.com/facebook/react-native/issues/5)
+than our developers would like it to be. You can find more discussion about
+the subject [here](https://github.com/facebook/react-native/issues/5).

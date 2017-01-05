@@ -10,8 +10,8 @@
 #import "RCTPickerManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
 #import "RCTPicker.h"
+#import "RCTFont.h"
 
 @implementation RCTPickerManager
 
@@ -19,19 +19,29 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTPicker alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [RCTPicker new];
 }
 
-RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
+RCT_EXPORT_VIEW_PROPERTY(items, NSArray<NSDictionary *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
-
-- (NSDictionary *)constantsToExport
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTPicker)
 {
-  RCTPicker *pv = [[RCTPicker alloc] init];
-  return @{
-    @"ComponentHeight": @(CGRectGetHeight(pv.frame)),
-    @"ComponentWidth": @(CGRectGetWidth(pv.frame))
-  };
+  view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
+}
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTPicker)
+{
+  view.font = [RCTFont updateFont:view.font withWeight:json]; // defaults to normal
+}
+RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTPicker)
+{
+  view.font = [RCTFont updateFont:view.font withStyle:json]; // defaults to normal
+}
+RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
+{
+  view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 
 @end

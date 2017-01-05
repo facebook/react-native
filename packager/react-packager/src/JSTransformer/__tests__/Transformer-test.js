@@ -9,70 +9,82 @@
 'use strict';
 
 jest
-  .dontMock('worker-farm')
-  .dontMock('os')
-  .dontMock('../index');
+  .unmock('imurmurhash')
+  .unmock('../../lib/ModuleTransport')
+  .unmock('../');
 
-var OPTIONS = {
-  transformModulePath: '/foo/bar'
-};
+const fs = {writeFileSync: jest.fn()};
+const temp = {path: () => '/arbitrary/path'};
+const workerFarm = jest.fn();
+jest.setMock('fs', fs);
+jest.setMock('temp', temp);
+jest.setMock('worker-farm', workerFarm);
+
+var Transformer = require('../');
+
+const {any} = jasmine;
 
 describe('Transformer', function() {
-  var Transformer;
-  var workers;
+  let options, workers, Cache;
+  const fileName = '/an/arbitrary/file.js';
+  const transformModulePath = __filename;
 
   beforeEach(function() {
-    workers = jest.genMockFn();
-    jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
-      return workers;
-    }));
-    require('../Cache').prototype.get.mockImpl(function(filePath, callback) {
-      return callback();
+    Cache = jest.fn();
+    Cache.prototype.get = jest.fn((a, b, c) => c());
+
+    fs.writeFileSync.mockClear();
+    options = {transformModulePath};
+    workerFarm.mockClear();
+    workerFarm.mockImplementation((opts, path, methods) => {
+      const api = workers = {};
+      methods.forEach(method => {api[method] = jest.fn();});
+      return api;
     });
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
-    });
-    Transformer = require('../');
   });
 
-  pit('should loadFileAndTransform', function() {
-    workers.mockImpl(function(data, callback) {
-      callback(null, { code: 'transformed' });
-    });
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
-    });
-
-    return new Transformer(OPTIONS).loadFileAndTransform('file')
-      .then(function(data) {
-        expect(data).toEqual({
-          code: 'transformed',
-          sourcePath: 'file',
-          sourceCode: 'content'
-        });
-      });
+  it('passes transform module path, file path, source code,' +
+    ' and options to the worker farm when transforming', () => {
+    const transformOptions = {arbitrary: 'options'};
+    const code = 'arbitrary(code)';
+    new Transformer(options).transformFile(fileName, code, transformOptions);
+    expect(workers.transformAndExtractDependencies).toBeCalledWith(
+      transformModulePath,
+      fileName,
+      code,
+      transformOptions,
+      any(Function),
+    );
   });
 
-  pit('should add file info to parse errors', function() {
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'var x;\nvar answer = 1 = x;');
-    });
+  it('should add file info to parse errors', function() {
+    const transformer = new Transformer(options);
+    var message = 'message';
+    var snippet = 'snippet';
 
-    workers.mockImpl(function(data, callback) {
-      var esprimaError = new Error('Error: Line 2: Invalid left-hand side in assignment');
-      esprimaError.description = 'Invalid left-hand side in assignment';
-      esprimaError.lineNumber = 2;
-      esprimaError.column = 15;
-      callback(null, {error: esprimaError});
-    });
+    workers.transformAndExtractDependencies.mockImplementation(
+      function(transformPath, filename, code, opts, callback) {
+        var babelError = new SyntaxError(message);
+        babelError.type = 'SyntaxError';
+        babelError.description = message;
+        babelError.loc = {
+          line: 2,
+          column: 15,
+        };
+        babelError.codeFrame = snippet;
+        callback(babelError);
+      },
+    );
 
-    return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
+    return transformer.transformFile(fileName, '', {})
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
-        expect(error.snippet).toEqual([
-          'var answer = 1 = x;',
-          '             ^',
-        ].join('\n'));
+        expect(error.message).toBe('SyntaxError ' + message);
+        expect(error.lineNumber).toBe(2);
+        expect(error.column).toBe(15);
+        expect(error.filename).toBe(fileName);
+        expect(error.description).toBe(message);
+        expect(error.snippet).toBe(snippet);
       });
   });
 });

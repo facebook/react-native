@@ -1,0 +1,36 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We package the JS files from the bundler and local directory into what we
+# pretend is an ordinary JAR file. By putting them under the assets/ directory
+# within the zip file and relying on Buck to merge its contents into the APK,
+# our JS bundles arrive in a place accessible by the AssetManager at runtime.
+
+python_binary(
+  name = 'package_js',
+  main = 'package_js.py',
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+android_library(
+  name = 'bridge',
+  srcs = glob(['**/*.java']),
+  exported_deps = [
+    react_native_dep('java/com/facebook/jni:jni'),
+    react_native_dep('java/com/facebook/proguard/annotations:annotations'),
+    react_native_dep('third-party/java/jsr-330:jsr-330'),
+  ],
+  deps = [
+    react_native_dep('java/com/facebook/systrace:systrace'),
+    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
+    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/common:common'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

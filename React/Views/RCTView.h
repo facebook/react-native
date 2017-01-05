@@ -7,22 +7,24 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTView.h"
-
 #import <UIKit/UIKit.h>
 
-#import "RCTPointerEvents.h"
-
-typedef NS_ENUM(NSInteger, RCTBorderSide) {
-  RCTBorderSideTop,
-  RCTBorderSideRight,
-  RCTBorderSideBottom,
-  RCTBorderSideLeft
-};
+#import <React/RCTBorderStyle.h>
+#import <React/RCTComponent.h>
+#import <React/RCTPointerEvents.h>
+#import <React/RCTView.h>
 
 @protocol RCTAutoInsetsProtocol;
 
+@class RCTView;
+
 @interface RCTView : UIView
+
+/**
+ * Accessibility event handlers
+ */
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
+@property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
 
 /**
  * Used to control how touch events are processed.
@@ -37,6 +39,13 @@ typedef NS_ENUM(NSInteger, RCTBorderSide) {
  * Find the first view controller whose view, or any subview is the specified view.
  */
 + (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
+
+/**
+ * z-index, used to override sibling order in didUpdateReactSubviews. This is
+ * inherited from UIView+React, but we override it here to reduce the boxing
+ * and associated object overheads.
+ */
+@property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
  * This is an optimization used to improve performance
@@ -56,7 +65,16 @@ typedef NS_ENUM(NSInteger, RCTBorderSide) {
 - (void)updateClippedSubviews;
 
 /**
- * Border colors.
+ * Border radii.
+ */
+@property (nonatomic, assign) CGFloat borderRadius;
+@property (nonatomic, assign) CGFloat borderTopLeftRadius;
+@property (nonatomic, assign) CGFloat borderTopRightRadius;
+@property (nonatomic, assign) CGFloat borderBottomLeftRadius;
+@property (nonatomic, assign) CGFloat borderBottomRightRadius;
+
+/**
+ * Border colors (actually retained).
  */
 @property (nonatomic, assign) CGColorRef borderTopColor;
 @property (nonatomic, assign) CGColorRef borderRightColor;
@@ -72,5 +90,15 @@ typedef NS_ENUM(NSInteger, RCTBorderSide) {
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderWidth;
+
+/**
+ * Border styles.
+ */
+@property (nonatomic, assign) RCTBorderStyle borderStyle;
+
+/**
+ *  Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
 @end

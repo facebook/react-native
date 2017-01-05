@@ -11,29 +11,42 @@
  */
 'use strict';
 
-var React = require('React');
-var Touchable = require('Touchable');
-var onlyChild = require('onlyChild');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const React = require('React');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const View = require('View');
 
-/**
- * When the scroll view is disabled, this defines how far your touch may move
- * off of the button, before deactivating the button. Once deactivated, try
- * moving it back and you'll see that the button is once again reactivated!
- * Move it back and forth several times while the scroll view is disabled.
- */
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const warning = require('fbjs/lib/warning');
 
 type Event = Object;
+
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Do not use unless you have a very good reason. All the elements that
  * respond to press should have a visual feedback when touched. This is
- * one of the primary reason a "web" app doesn't feel "native".
+ * one of the primary reasons a "web" app doesn't feel "native".
+ *
+ * > **NOTE**: TouchableWithoutFeedback supports only one child
+ * >
+ * > If you wish to have several child components, wrap them in a View.
  */
-var TouchableWithoutFeedback = React.createClass({
-  mixins: [Touchable.Mixin],
+const TouchableWithoutFeedback = React.createClass({
+  mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
+    accessible: React.PropTypes.bool,
+    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
+    accessibilityTraits: React.PropTypes.oneOfType([
+      React.PropTypes.oneOf(View.AccessibilityTraits),
+      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+    ]),
+    /**
+     * If true, disable all interactions for this component.
+     */
+    disabled: React.PropTypes.bool,
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
@@ -41,11 +54,56 @@ var TouchableWithoutFeedback = React.createClass({
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     */
+    onLayout: React.PropTypes.func,
+
     onLongPress: React.PropTypes.func,
+
+    /**
+     * Delay in ms, from the start of the touch, before onPressIn is called.
+     */
+    delayPressIn: React.PropTypes.number,
+    /**
+     * Delay in ms, from the release of the touch, before onPressOut is called.
+     */
+    delayPressOut: React.PropTypes.number,
+    /**
+     * Delay in ms, from onPressIn, before onLongPress is called.
+     */
+    delayLongPress: React.PropTypes.number,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * This defines how far your touch can start away from the button. This is
+     * added to `pressRetentionOffset` when moving off of the button.
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function() {
     return this.touchableGetInitialState();
+  },
+
+  componentDidMount: function() {
+    ensurePositiveDelayProps(this.props);
+  },
+
+  componentWillReceiveProps: function(nextProps: Object) {
+    ensurePositiveDelayProps(nextProps);
   },
 
   /**
@@ -56,37 +114,71 @@ var TouchableWithoutFeedback = React.createClass({
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleActivePressIn: function() {
-    this.props.onPressIn && this.props.onPressIn();
+  touchableHandleActivePressIn: function(e: Event) {
+    this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function() {
-    this.props.onPressOut && this.props.onPressOut();
+  touchableHandleActivePressOut: function(e: Event) {
+    this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandleLongPress: function() {
-    this.props.onLongPress && this.props.onLongPress();
+  touchableHandleLongPress: function(e: Event) {
+    this.props.onLongPress && this.props.onLongPress(e);
   },
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
+  },
+
+  touchableGetHitSlop: function(): ?Object {
+    return this.props.hitSlop;
   },
 
   touchableGetHighlightDelayMS: function(): number {
-    return 0;
+    return this.props.delayPressIn || 0;
   },
 
-  render: function(): ReactElement {
+  touchableGetLongPressDelayMS: function(): number {
+    return this.props.delayLongPress === 0 ? 0 :
+      this.props.delayLongPress || 500;
+  },
+
+  touchableGetPressOutDelayMS: function(): number {
+    return this.props.delayPressOut || 0;
+  },
+
+  render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    return (React: any).cloneElement(onlyChild(this.props.children), {
-      accessible: true,
+    const child = React.Children.only(this.props.children);
+    let children = child.props.children;
+    warning(
+      !child.type || child.type.displayName !== 'Text',
+      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
+        ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
+    );
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
+      children = React.Children.toArray(children);
+      children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
+    }
+    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
+      [child.props.style, {color: 'red'}] :
+      child.props.style;
+    return (React: any).cloneElement(child, {
+      accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
+      onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate
+      onResponderTerminate: this.touchableHandleResponderTerminate,
+      style,
+      children,
     });
   }
 });

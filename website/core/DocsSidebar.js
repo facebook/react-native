@@ -8,9 +8,10 @@
  *
  * @providesModule DocsSidebar
  */
+'use strict';
 
-var React = require('React');
 var Metadata = require('Metadata');
+var React = require('React');
 
 var DocsSidebar = React.createClass({
   getCategories: function() {
@@ -69,32 +70,31 @@ var DocsSidebar = React.createClass({
   },
 
   getLink: function(metadata) {
-    if (metadata.permalink.match(/^https?:/)) {
-      return metadata.permalink;
-    }
-    return '/react-native/' + metadata.permalink + '#content';
+    return metadata.permalink;
   },
 
   render: function() {
     return <div className="nav-docs">
-      {this.getCategories().map((category) =>
-        <div className="nav-docs-section" key={category.name}>
-          <h3>{category.name}</h3>
-          <ul>
-            {category.links.map((metadata) =>
-              <li key={metadata.id}>
-                <a
-                  target={metadata.permalink.match(/^https?:/) && '_blank'}
-                  style={{marginLeft: metadata.indent ? 20 : 0}}
-                  className={metadata.id === this.props.metadata.id ? 'active' : ''}
-                  href={this.getLink(metadata)}>
-                  {metadata.title}
-                </a>
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+      <div className="nav-docs-viewport">
+        {this.getCategories().map((category) =>
+          <div className="nav-docs-section" key={category.name}>
+            <h3>{category.name}</h3>
+            <ul>
+              {category.links.map((metadata) =>
+                <li key={metadata.id}>
+                  <a
+                    target={metadata.permalink.match(/^https?:/) && '_blank'}
+                    style={{marginLeft: metadata.indent ? 20 : 0}}
+                    className={metadata.id === this.props.metadata.id ? 'active' : ''}
+                    href={this.getLink(metadata)}>
+                    {metadata.title}
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>;
   }
 });

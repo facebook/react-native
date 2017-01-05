@@ -5,118 +5,199 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
-var fs = require('fs');
-var Promise = require('bluebird');
-var Cache = require('./Cache');
-var workerFarm = require('worker-farm');
-var declareOpts = require('../lib/declareOpts');
-var util = require('util');
+const Logger = require('../Logger');
 
-var readFile = Promise.promisify(fs.readFile);
+const declareOpts = require('../lib/declareOpts');
+const denodeify = require('denodeify');
+const os = require('os');
+const util = require('util');
+const workerFarm = require('worker-farm');
+const debug = require('debug')('RNP:JStransformer');
 
-module.exports = Transformer;
-Transformer.TransformError = TransformError;
+import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
+import type {SourceMap} from '../lib/SourceMap';
 
-var validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
+// Avoid memory leaks caused in workers. This number seems to be a good enough number
+// to avoid any memory leak while not slowing down initial builds.
+// TODO(amasad): Once we get bundle splitting, we can drive this down a bit more.
+const MAX_CALLS_PER_WORKER = 600;
+
+// Worker will timeout if one of the callers timeout.
+const DEFAULT_MAX_CALL_TIME = 301000;
+
+// How may times can we tolerate failures from the worker.
+const MAX_RETRIES = 2;
+
+const validateOpts = declareOpts({
   transformModulePath: {
     type:'string',
     required: false,
   },
-  nonPersistent: {
-    type: 'boolean',
-    default: false,
+  transformTimeoutInterval: {
+    type: 'number',
+    default: DEFAULT_MAX_CALL_TIME,
+  },
+  worker: {
+    type: 'string',
+  },
+  methods: {
+    type: 'array',
+    default: [],
   },
 });
 
-function Transformer(options) {
-  var opts = validateOpts(options);
+type Options = {
+  transformModulePath?: ?string,
+  transformTimeoutInterval?: ?number,
+  worker?: ?string,
+  methods?: ?Array<string>,
+};
 
-  this._cache = opts.nonPersistent
-    ? new DummyCache()
-    : new Cache({
-      resetCache: options.resetCache,
-      cacheVersion: options.cacheVersion,
-      projectRoots: options.projectRoots,
-    });
-
-  if (options.transformModulePath != null) {
-    this._workers = workerFarm(
-      {autoStart: true, maxConcurrentCallsPerWorker: 1},
-      options.transformModulePath
-    );
-
-    this._transform = Promise.promisify(this._workers);
+const maxConcurrentWorkers = ((cores, override) => {
+  if (override) {
+    return Math.min(cores, override);
   }
+
+  if (cores < 3) {
+    return cores;
+  }
+  if (cores < 8) {
+    return Math.floor(cores * 0.75);
+  }
+  if (cores < 24) {
+    return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
+  }
+  return cores / 2;
+})(os.cpus().length, parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10));
+
+function makeFarm(worker, methods, timeout) {
+  return workerFarm(
+    {
+      autoStart: true,
+      maxConcurrentCallsPerWorker: 1,
+      maxConcurrentWorkers: maxConcurrentWorkers,
+      maxCallsPerWorker: MAX_CALLS_PER_WORKER,
+      maxCallTime: timeout,
+      maxRetries: MAX_RETRIES,
+    },
+    worker,
+    methods,
+  );
 }
 
-Transformer.prototype.kill = function() {
-  this._workers && workerFarm.end(this._workers);
-  return this._cache.end();
-};
+class Transformer {
 
-Transformer.prototype.invalidateFile = function(filePath) {
-  this._cache.invalidate(filePath);
-};
+  _opts: {
+    transformModulePath?: ?string,
+    transformTimeoutInterval: number,
+    worker: ?string,
+    methods: Array<string>,
+  };
+  _workers: {[name: string]: mixed};
+  _transformModulePath: ?string;
+  _transform: (
+    transform: string,
+    filename: string,
+    sourceCode: string,
+    options: ?TransformOptions,
+  ) => Promise<TransformData>;
+  minify: (
+    filename: string,
+    code: string,
+    sourceMap: SourceMap,
+  ) => Promise<{code: string, map: SourceMap}>;
 
-Transformer.prototype.loadFileAndTransform = function(filePath) {
-  if (this._transform == null) {
-    return Promise.reject(new Error('No transfrom module'));
+  constructor(options: Options) {
+    const opts = this._opts = validateOpts(options);
+
+    const {transformModulePath} = opts;
+
+    if (opts.worker) {
+      this._workers =
+        makeFarm(opts.worker, opts.methods, opts.transformTimeoutInterval);
+      opts.methods.forEach(name => {
+        /* $FlowFixMe: assigning the class object fields directly is
+         * questionable, because it's prone to conflicts. */
+        this[name] = this._workers[name];
+      });
+    }
+    else if (transformModulePath) {
+      this._transformModulePath = require.resolve(transformModulePath);
+
+      this._workers = makeFarm(
+        require.resolve('./worker'),
+        ['minify', 'transformAndExtractDependencies'],
+        opts.transformTimeoutInterval,
+      );
+      this._transform = denodeify(this._workers.transformAndExtractDependencies);
+      this.minify = denodeify(this._workers.minify);
+    }
   }
 
-  var transform = this._transform;
-  return this._cache.get(filePath, function() {
-    return readFile(filePath)
-      .then(function(buffer) {
-        var sourceCode = buffer.toString();
+  kill() {
+    this._workers && workerFarm.end(this._workers);
+  }
 
-        return transform({
-          sourceCode: sourceCode,
-          filename: filePath,
-        }).then(
-          function(res) {
-            if (res.error) {
-              throw formatError(res.error, filePath, sourceCode);
-            }
+  transformFile(fileName: string, code: string, options: TransformOptions) {
+    if (!this._transform) {
+      return Promise.reject(new Error('No transform module'));
+    }
+    debug('transforming file', fileName);
+    return this
+      /* $FlowFixMe: _transformModulePath may be empty, see constructor */
+      ._transform(this._transformModulePath, fileName, code, options)
+      .then(data => {
+        Logger.log(data.transformFileStartLogEntry);
+        Logger.log(data.transformFileEndLogEntry);
+        debug('done transforming file', fileName);
+        return data.result;
+      })
+      .catch(error => {
+        if (error.type === 'TimeoutError') {
+          const timeoutErr = new Error(
+            `TimeoutError: transforming ${fileName} took longer than ` +
+            `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
+            'You can adjust timeout via the \'transformTimeoutInterval\' option'
+          );
+          /* $FlowFixMe: monkey-patch Error */
+          timeoutErr.type = 'TimeoutError';
+          throw timeoutErr;
+        } else if (error.type === 'ProcessTerminatedError') {
+          const uncaughtError = new Error(
+            'Uncaught error in the transformer worker: ' +
+            /* $FlowFixMe: _transformModulePath may be empty, see constructor */
+            this._opts.transformModulePath
+          );
+          /* $FlowFixMe: monkey-patch Error */
+          uncaughtError.type = 'ProcessTerminatedError';
+          throw uncaughtError;
+        }
 
-            return {
-              code: res.code,
-              sourcePath: filePath,
-              sourceCode: sourceCode
-            };
-          }
-        );
+        throw formatError(error, fileName);
       });
-  });
-};
+  }
 
-function TransformError() {}
+  static TransformError;
+}
+
+module.exports = Transformer;
+
+Transformer.TransformError = TransformError;
+
+function TransformError() {
+  Error.captureStackTrace && Error.captureStackTrace(this, TransformError);
+}
 util.inherits(TransformError, SyntaxError);
 
 function formatError(err, filename, source) {
-  if (err.lineNumber && err.column) {
-    return formatEsprimaError(err, filename, source);
+  if (err.loc) {
+    return formatBabelError(err, filename, source);
   } else {
     return formatGenericError(err, filename, source);
   }
@@ -133,32 +214,15 @@ function formatGenericError(err, filename) {
   return error;
 }
 
-function formatEsprimaError(err, filename, source) {
-  var stack = err.stack.split('\n');
-  stack.shift();
-
-  var msg = 'TransformError: ' + err.description + ' ' +  filename + ':' +
-    err.lineNumber + ':' + err.column;
-  var sourceLine = source.split('\n')[err.lineNumber - 1];
-  var snippet = sourceLine + '\n' + new Array(err.column - 1).join(' ') + '^';
-
-  stack.unshift(msg);
-
+function formatBabelError(err, filename) {
   var error = new TransformError();
-  error.message = msg;
   error.type = 'TransformError';
-  error.stack = stack.join('\n');
-  error.snippet = snippet;
+  error.message = (err.type || error.type) + ' ' + err.message;
+  error.stack = err.stack;
+  error.snippet = err.codeFrame;
+  error.lineNumber = err.loc.line;
+  error.column = err.loc.column;
   error.filename = filename;
-  error.lineNumber = err.lineNumber;
-  error.column = err.column;
-  error.description = err.description;
+  error.description = err.message;
   return error;
 }
-
-function DummyCache() {}
-DummyCache.prototype.get = function(filePath, loaderCb) {
-  return loaderCb();
-};
-DummyCache.prototype.end =
-DummyCache.prototype.invalidate = function(){};

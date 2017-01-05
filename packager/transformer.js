@@ -10,57 +10,119 @@
  */
 'use strict';
 
-var jstransform = require('jstransform').transform;
+const babel = require('babel-core');
+const externalHelpersPlugin = require('babel-plugin-external-helpers');
+const fs = require('fs');
+const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
+const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
+const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
+const json5 = require('json5');
+const path = require('path');
 
-var reactVisitors =
-  require('react-tools/vendor/fbtransform/visitors').getAllVisitors();
-var staticTypeSyntax =
-  require('jstransform/visitors/type-syntax').visitorList;
-// Note that reactVisitors now handles ES6 classes, rest parameters, arrow
-// functions, template strings, and object short notation.
-var visitorList = reactVisitors;
+/**
+ * Return a memoized function that checks for the existence of a
+ * project level .babelrc file, and if it doesn't exist, reads the
+ * default RN babelrc file and uses that.
+ */
+const getBabelRC = (function() {
+  let babelRC = null;
 
+  return function _getBabelRC(projectRoots) {
+    if (babelRC !== null) {
+      return babelRC;
+    }
 
-function transform(srcTxt, filename) {
-  var options = {
-    es3: true,
-    sourceType: 'nonStrictModule',
-    filename: filename,
+    babelRC = { plugins: [] }; // empty babelrc
+
+    // Let's look for the .babelrc in the first project root.
+    // In the future let's look into adding a command line option to specify
+    // this location.
+    let projectBabelRCPath;
+    if (projectRoots && projectRoots.length > 0) {
+      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    }
+
+    // If a .babelrc file doesn't exist in the project,
+    // use the Babel config provided with react-native.
+    if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
+      babelRC = json5.parse(
+        fs.readFileSync(
+          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+        );
+
+      // Require the babel-preset's listed in the default babel config
+      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.plugins = resolvePlugins(babelRC.plugins);
+    } else {
+      // if we find a .babelrc file we tell babel to use it
+      babelRC.extends = projectBabelRCPath;
+    }
+
+    return babelRC;
+  };
+})();
+
+/**
+ * Given a filename and options, build a Babel
+ * config object with the appropriate plugins.
+ */
+function buildBabelConfig(filename, options) {
+  const babelRC = getBabelRC(options.projectRoots);
+
+  const extraConfig = {
+    filename,
+    sourceFileName: filename,
   };
 
-  // These tranforms mostly just erase type annotations and static typing
-  // related statements, but they were conflicting with other tranforms.
-  // Running them first solves that problem
-  var staticTypeSyntaxResult = jstransform(
-    staticTypeSyntax,
-    srcTxt,
-    options
-  );
+  let config = Object.assign({}, babelRC, extraConfig);
 
-  return jstransform(
-    visitorList,
-    staticTypeSyntaxResult.code,
-    options
-  );
+  // Add extra plugins
+  const extraPlugins = [externalHelpersPlugin];
+
+  var inlineRequires = options.inlineRequires;
+  var blacklist = inlineRequires && inlineRequires.blacklist;
+  if (inlineRequires && !(blacklist && filename in blacklist)) {
+    extraPlugins.push(inlineRequiresPlugin);
+  }
+
+  config.plugins = extraPlugins.concat(config.plugins);
+
+  if (options.hot) {
+    const hmrConfig = makeHMRConfig(options, filename);
+    config = Object.assign({}, config, hmrConfig);
+  }
+
+  return Object.assign({}, babelRC, config);
+}
+
+function transform(src, filename, options) {
+  options = options || {};
+
+  const OLD_BABEL_ENV = process.env.BABEL_ENV;
+  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
+
+  try {
+    const babelConfig = buildBabelConfig(filename, options);
+    const result = babel.transform(src, babelConfig);
+
+    return {
+      ast: result.ast,
+      code: result.code,
+      map: result.map,
+      filename: filename,
+    };
+  } finally {
+    process.env.BABEL_ENV = OLD_BABEL_ENV;
+  }
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename, data.options);
   } catch (e) {
-    return callback(null, {
-      error: {
-        lineNumber: e.lineNumber,
-        column: e.column,
-        message: e.message,
-        stack: e.stack,
-        description: e.description
-      }
-    });
+    callback(e);
+    return;
   }
 
   callback(null, result);

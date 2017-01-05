@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'android-support-annotations',
+    binary_jar = ':support-annotations-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'support-annotations-binary-aar',
+    url = 'mvn:com.android.support:support-annotations:jar:23.4.0',
+    sha1 = 'ffbe55fdb2bb456b1485831706a9eac3300bb6b8',
+)

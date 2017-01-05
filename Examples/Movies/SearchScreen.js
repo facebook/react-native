@@ -15,21 +15,24 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
-  ActivityIndicatorIOS,
+  ActivityIndicator,
   ListView,
+  Platform,
   StyleSheet,
   Text,
-  TextInput,
   View,
-} = React;
+} = ReactNative;
 var TimerMixin = require('react-timer-mixin');
+
+var invariant = require('fbjs/lib/invariant');
+var dismissKeyboard = require('dismissKeyboard');
 
 var MovieCell = require('./MovieCell');
 var MovieScreen = require('./MovieScreen');
-
-var fetch = require('fetch');
+var SearchBar = require('SearchBar');
 
 /**
  * This is for demo purposes only, and rate limited.
@@ -75,7 +78,7 @@ var SearchScreen = React.createClass({
     this.searchMovies('');
   },
 
-  _urlForQueryAndPage: function(query: string, pageNumber: ?number): string {
+  _urlForQueryAndPage: function(query: string, pageNumber: number): string {
     var apiKey = API_KEYS[this.state.queryNumber % API_KEYS.length];
     if (query) {
       return (
@@ -176,6 +179,7 @@ var SearchScreen = React.createClass({
     });
 
     var page = resultsCache.nextPageNumberForQuery[query];
+    invariant(page != null, 'Next page number for "%s" is missing', query);
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
       .catch((error) => {
@@ -218,11 +222,20 @@ var SearchScreen = React.createClass({
   },
 
   selectMovie: function(movie: Object) {
-    this.props.navigator.push({
-      title: movie.title,
-      component: MovieScreen,
-      passProps: {movie},
-    });
+    if (Platform.OS === 'ios') {
+      this.props.navigator.push({
+        title: movie.title,
+        component: MovieScreen,
+        passProps: {movie},
+      });
+    } else {
+      dismissKeyboard();
+      this.props.navigator.push({
+        title: movie.title,
+        name: 'movie',
+        movie: movie,
+      });
+    }
   },
 
   onSearchChange: function(event: Object) {
@@ -236,13 +249,36 @@ var SearchScreen = React.createClass({
     if (!this.hasMore() || !this.state.isLoadingTail) {
       return <View style={styles.scrollSpinner} />;
     }
-    return <ActivityIndicatorIOS style={styles.scrollSpinner} />;
+
+    return <ActivityIndicator style={styles.scrollSpinner} />;
   },
 
-  renderRow: function(movie: Object)  {
+  renderSeparator: function(
+    sectionID: number | string,
+    rowID: number | string,
+    adjacentRowHighlighted: boolean
+  ) {
+    var style = styles.rowSeparator;
+    if (adjacentRowHighlighted) {
+        style = [style, styles.rowSeparatorHide];
+    }
+    return (
+      <View key={'SEP_' + sectionID + '_' + rowID}  style={style}/>
+    );
+  },
+
+  renderRow: function(
+    movie: Object,
+    sectionID: number | string,
+    rowID: number | string,
+    highlightRowFunc: (sectionID: ?number | string, rowID: ?number | string) => void,
+  ) {
     return (
       <MovieCell
+        key={movie.id}
         onSelect={() => this.selectMovie(movie)}
+        onHighlight={() => highlightRowFunc(sectionID, rowID)}
+        onUnhighlight={() => highlightRowFunc(null, null)}
         movie={movie}
       />
     );
@@ -256,13 +292,14 @@ var SearchScreen = React.createClass({
       /> :
       <ListView
         ref="listview"
+        renderSeparator={this.renderSeparator}
         dataSource={this.state.dataSource}
         renderFooter={this.renderFooter}
         renderRow={this.renderRow}
         onEndReached={this.onEndReached}
         automaticallyAdjustContentInsets={false}
-        keyboardDismissMode="onDrag"
-        keyboardShouldPersistTaps={true}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       />;
 
@@ -271,7 +308,8 @@ var SearchScreen = React.createClass({
         <SearchBar
           onSearchChange={this.onSearchChange}
           isLoading={this.state.isLoading}
-          onFocus={() => this.refs.listview.getScrollResponder().scrollTo(0, 0)}
+          onFocus={() =>
+            this.refs.listview && this.refs.listview.getScrollResponder().scrollTo({ x: 0, y: 0 })}
         />
         <View style={styles.separator} />
         {content}
@@ -280,11 +318,11 @@ var SearchScreen = React.createClass({
   },
 });
 
-var NoMovies = React.createClass({
-  render: function() {
+class NoMovies extends React.Component {
+  render() {
     var text = '';
     if (this.props.filter) {
-      text = `No results for “${this.props.filter}”`;
+      text = `No results for "${this.props.filter}"`;
     } else if (!this.props.isLoading) {
       // If we're looking at the latest movies, aren't currently loading, and
       // still have no results, show a message
@@ -297,28 +335,7 @@ var NoMovies = React.createClass({
       </View>
     );
   }
-});
-
-var SearchBar = React.createClass({
-  render: function() {
-    return (
-      <View style={styles.searchBar}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          onChange={this.props.onSearchChange}
-          placeholder="Search a movie..."
-          onFocus={this.props.onFocus}
-          style={styles.searchBarInput}
-        />
-        <ActivityIndicatorIOS
-          animating={this.props.isLoading}
-          style={styles.spinner}
-        />
-      </View>
-    );
-  }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -332,27 +349,20 @@ var styles = StyleSheet.create({
     marginTop: 80,
     color: '#888888',
   },
-  searchBar: {
-    marginTop: 64,
-    padding: 3,
-    paddingLeft: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchBarInput: {
-    fontSize: 15,
-    flex: 1,
-    height: 30,
-  },
   separator: {
     height: 1,
     backgroundColor: '#eeeeee',
   },
-  spinner: {
-    width: 30,
-  },
   scrollSpinner: {
     marginVertical: 20,
+  },
+  rowSeparator: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    height: 1,
+    marginLeft: 4,
+  },
+  rowSeparatorHide: {
+    opacity: 0.0,
   },
 });
 

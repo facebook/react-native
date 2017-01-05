@@ -9,20 +9,39 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTDefines.h>
+
+typedef NS_ENUM(NSInteger, RCTTestStatus) {
+  RCTTestStatusPending = 0,
+  RCTTestStatusPassed,
+  RCTTestStatusFailed
+};
 
 @class FBSnapshotTestController;
 
 @interface RCTTestModule : NSObject <RCTBridgeModule>
 
-// This is typically polled while running the runloop until true
-@property (nonatomic, readonly, getter=isDone) BOOL done;
+/**
+ * The snapshot test controller for this module.
+ */
+@property (nonatomic, strong) FBSnapshotTestController *controller;
 
-// This is used to give meaningful names to snapshot image files.
+/**
+ * This is the view to be snapshotted.
+ */
+@property (nonatomic, strong) UIView *view;
+
+/**
+ * This is used to give meaningful names to snapshot image files.
+ */
 @property (nonatomic, assign) SEL testSelector;
 
-@property (nonatomic, weak) UIView *view;
+/**
+ * This is polled while running the runloop until true.
+ */
+@property (nonatomic, readonly) RCTTestStatus status;
 
-- (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view;
+@property (nonatomic, copy) NSString *testSuffix;
 
 @end

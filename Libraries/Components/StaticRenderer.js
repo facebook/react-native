@@ -6,26 +6,31 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @provides StaticRenderer
+ * @providesModule StaticRenderer
  * @flow
  */
 'use strict';
 
 var React = require('React');
 
-var StaticRenderer = React.createClass({
-  propTypes: {
+class StaticRenderer extends React.Component {
+  props: {
+    shouldUpdate: boolean,
+    render: Function,
+  };
+
+  static propTypes = {
     shouldUpdate: React.PropTypes.bool.isRequired,
     render: React.PropTypes.func.isRequired,
-  },
+  };
 
-  shouldComponentUpdate: function(nextProps: { shouldUpdate: boolean }): boolean {
+  shouldComponentUpdate(nextProps: { shouldUpdate: boolean }): boolean {
     return nextProps.shouldUpdate;
-  },
+  }
 
-  render: function(): ReactElement {
+  render(): React.Element<any> {
     return this.props.render();
-  },
-});
+  }
+}
 
 module.exports = StaticRenderer;

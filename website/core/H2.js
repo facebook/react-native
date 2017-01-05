@@ -8,15 +8,14 @@
  *
  * @providesModule H2
  */
+'use strict';
 
-var React = require('React');
 var Header = require('Header');
+var React = require('React');
 
 var H2 = React.createClass({
   render: function() {
-    return this.transferPropsTo(
-      <Header level={2}>{this.props.children}</Header>
-    );
+    return <Header {...this.props} level={2}>{this.props.children}</Header>;
   }
 });
 

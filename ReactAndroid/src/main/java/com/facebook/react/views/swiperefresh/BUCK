@@ -1,0 +1,20 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'swiperefresh',
+  srcs = glob(['*.java']),
+  deps = [
+    react_native_dep('third-party/android/support/v4:lib-support-v4'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/module/annotations:annotations'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
+    react_native_target('java/com/facebook/react/views/scroll:scroll'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

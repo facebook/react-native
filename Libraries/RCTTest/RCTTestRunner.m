@@ -9,97 +9,168 @@
 
 #import "RCTTestRunner.h"
 
-#import "FBSnapshotTestController.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
-#import "RCTTestModule.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTJSCExecutor.h>
+#import <React/RCTLog.h>
+#import <React/RCTRootView.h>
+#import <React/RCTUtils.h>
 
-#define TIMEOUT_SECONDS 240
+#import "FBSnapshotTestController.h"
+#import "RCTTestModule.h"
+
+static const NSTimeInterval kTestTimeoutSeconds = 120;
+static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 
 @implementation RCTTestRunner
 {
-  FBSnapshotTestController *_snapshotController;
+  FBSnapshotTestController *_testController;
+  RCTBridgeModuleProviderBlock _moduleProvider;
 }
 
-- (instancetype)initWithApp:(NSString *)app referenceDir:(NSString *)referenceDir
+- (instancetype)initWithApp:(NSString *)app
+         referenceDirectory:(NSString *)referenceDirectory
+             moduleProvider:(RCTBridgeModuleProviderBlock)block
 {
+  RCTAssertParam(app);
+  RCTAssertParam(referenceDirectory);
+
   if ((self = [super init])) {
+    if (!referenceDirectory.length) {
+      referenceDirectory = [[NSBundle bundleForClass:self.class].resourcePath stringByAppendingPathComponent:@"ReferenceImages"];
+    }
+
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
-    _snapshotController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
-    _snapshotController.referenceImagesDirectory = referenceDir;
-    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.includeRequire.runModule.bundle?dev=true", app]];
+    _testController = [[FBSnapshotTestController alloc] initWithTestName:sanitizedAppName];
+    _testController.referenceImagesDirectory = referenceDirectory;
+    _moduleProvider = [block copy];
+
+    if (getenv("CI_USE_PACKAGER")) {
+      _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    } else {
+      _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+    }
+    RCTAssert(_scriptURL != nil, @"No scriptURL set");
   }
   return self;
 }
 
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
+
 - (void)setRecordMode:(BOOL)recordMode
 {
-  _snapshotController.recordMode = recordMode;
+  _testController.recordMode = recordMode;
 }
 
 - (BOOL)recordMode
 {
-  return _snapshotController.recordMode;
+  return _testController.recordMode;
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
 {
-  [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
+  [self runTest:test module:moduleName initialProps:nil configurationBlock:nil expectErrorBlock:nil];
 }
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 {
-  [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
+  [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:nil];
+}
+
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorRegex:(NSString *)errorRegex
+{
+  BOOL(^expectErrorBlock)(NSString *error)  = ^BOOL(NSString *error){
     return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
-  }];
+  };
+
+  [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:expectErrorBlock];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-  if ([vc.view isKindOfClass:[RCTRootView class]]) {
-    [(RCTRootView *)vc.view invalidate]; // Make sure the normal app view doesn't interfere
-  }
-  vc.view = [[UIView alloc] init];
+  __weak id weakJSContext;
 
-  RCTTestModule *testModule = [[RCTTestModule alloc] initWithSnapshotController:_snapshotController view:nil];
-  testModule.testSelector = test;
-  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
-                                            moduleProvider:^(){
-                                              return @[testModule];
-                                            }
-                                             launchOptions:nil];
+  @autoreleasepool {
+    __block NSString *error = nil;
+    RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+      if (level >= RCTLogLevelError) {
+        error = message;
+      }
+    });
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                                   moduleName:moduleName];
-  testModule.view = rootView;
-  [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
-  rootView.initialProperties = initialProps;
-  rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
+    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
+                                              moduleProvider:_moduleProvider
+                                               launchOptions:nil];
 
-  NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
-  NSString *error = [[RCTRedBox sharedInstance] currentErrorMessage];
-  while ([date timeIntervalSinceNow] > 0 && ![testModule isDone] && error == nil) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:date];
-    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:date];
-    error = [[RCTRedBox sharedInstance] currentErrorMessage];
+    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProps];
+#if TARGET_OS_TV
+    rootView.frame = CGRectMake(0, 0, 1920, 1080); // Standard screen size for tvOS
+#else
+    rootView.frame = CGRectMake(0, 0, 320, 2000); // Constant size for testing on multiple devices
+#endif
+
+    RCTTestModule *testModule = [rootView.bridge moduleForClass:[RCTTestModule class]];
+    RCTAssert(_testController != nil, @"_testController should not be nil");
+    testModule.controller = _testController;
+    testModule.testSelector = test;
+    testModule.testSuffix = _testSuffix;
+    testModule.view = rootView;
+
+    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    vc.view = [UIView new];
+    [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+
+    if (configurationBlock) {
+      configurationBlock(rootView);
+    }
+
+    NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
+    while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && error == nil) {
+      [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+      [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    }
+
+    // Take a weak reference to the JS context, so we track its deallocation later
+    // (we can only do this now, since it's been lazily initialized)
+    id jsExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
+    if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+      weakJSContext = [jsExecutor valueForKey:@"_context"];
+    }
+    [rootView removeFromSuperview];
+
+    RCTSetLogFunction(RCTDefaultLogFunction);
+
+    NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
+      return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
+    }]];
+    RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
+
+    if (expectErrorBlock) {
+      RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
+    } else {
+      RCTAssert(error == nil, @"RedBox error: %@", error);
+      RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
+      RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
+    }
+    [bridge invalidate];
   }
-  [rootView removeFromSuperview];
-  [rootView.bridge invalidate];
-  [rootView invalidate];
-  RCTAssert(vc.view.subviews.count == 0, @"There shouldn't be any other views: %@", vc.view);
-  vc.view = nil;
-  [[RCTRedBox sharedInstance] dismiss];
-  if (expectErrorBlock) {
-    RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
-  } else if (error) {
-    RCTAssert(error == nil, @"RedBox error: %@", error);
-  } else {
-    RCTAssert([testModule isDone], @"Test didn't finish within %d seconds", TIMEOUT_SECONDS);
+
+  // Wait for the executor to have shut down completely before returning
+  NSDate *teardownTimeout = [NSDate dateWithTimeIntervalSinceNow:kTestTeardownTimeoutSeconds];
+  while (teardownTimeout.timeIntervalSinceNow > 0 && weakJSContext) {
+    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
+  RCTAssert(!weakJSContext, @"JS context was not deallocated after being invalidated");
 }
 
 @end

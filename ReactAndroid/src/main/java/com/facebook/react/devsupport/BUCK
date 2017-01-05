@@ -1,0 +1,26 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'devsupport',
+  manifest = 'AndroidManifest.xml',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+    react_native_dep('third-party/java/okhttp:okhttp3'),
+    react_native_dep('third-party/java/okhttp:okhttp3-ws'),
+    react_native_dep('third-party/java/okio:okio'),
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common/network:network'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/module/annotations:annotations'),
+    react_native_target('java/com/facebook/react/modules/debug:debug'),
+    react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
+    react_native_target('res:devsupport'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

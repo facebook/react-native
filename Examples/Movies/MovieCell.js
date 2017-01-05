@@ -15,26 +15,35 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 var {
   Image,
-  PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableNativeFeedback,
   View
-} = React;
+} = ReactNative;
 
 var getStyleFromScore = require('./getStyleFromScore');
 var getImageSource = require('./getImageSource');
 var getTextFromScore = require('./getTextFromScore');
 
-var MovieCell = React.createClass({
-  render: function() {
+class MovieCell extends React.Component {
+  render() {
     var criticsScore = this.props.movie.ratings.critics_score;
+    var TouchableElement = TouchableHighlight;
+    if (Platform.OS === 'android') {
+      TouchableElement = TouchableNativeFeedback;
+    }
     return (
       <View>
-        <TouchableHighlight onPress={this.props.onSelect}>
+        <TouchableElement
+          onPress={this.props.onSelect}
+          onShowUnderlay={this.props.onHighlight}
+          onHideUnderlay={this.props.onUnhighlight}>
           <View style={styles.row}>
             <Image
               source={getImageSource(this.props.movie, 'det')}
@@ -53,12 +62,11 @@ var MovieCell = React.createClass({
               </Text>
             </View>
           </View>
-        </TouchableHighlight>
-        <View style={styles.cellBorder} />
+        </TouchableElement>
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   textContainer: {
@@ -88,8 +96,7 @@ var styles = StyleSheet.create({
   },
   cellBorder: {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    // Trick to get the thinest line the device can display
-    height: 1 / PixelRatio.get(),
+    height: StyleSheet.hairlineWidth,
     marginLeft: 4,
   },
 });

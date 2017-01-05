@@ -1,57 +1,30 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
-
 'use strict';
 
-var spawn = require('child_process').spawn;
-var path = require('path');
-var install = require('./install.js');
+// gracefulify() has to be called before anything else runs
+require('graceful-fs').gracefulify(require('fs'));
 
-function printUsage() {
-  console.log([
-    'Usage: react-native <command>',
-    '',
-    'Commands:',
-    '  start: starts the webserver',
-    '  install: installs npm react components'
-  ].join('\n'));
-  process.exit(1);
-}
+// This file must be able to run in node 0.12 without babel so we can show that
+// it is not supported. This is why the rest of the cli code is in `cliEntry.js`.
+require('./server/checkNodeVersion')();
 
-function run() {
-  var args = process.argv.slice(2);
-  if (args.length === 0) {
-    printUsage();
-  }
+require('../packager/babelRegisterOnly')([
+  /private-cli\/src/,
+  /local-cli/,
+  /react-packager\/src/,
+]);
 
-  switch (args[0]) {
-  case 'start':
-    spawn('sh', [
-      path.resolve(__dirname, '../packager', 'packager.sh'),
-      '--projectRoots',
-      process.cwd(),
-    ], {stdio: 'inherit'});
-    break;
-  case 'install':
-    install.init();
-    break;
-  default:
-    console.error('Command `%s` unrecognized', args[0]);
-    printUsage();
-  }
-  // Here goes any cli commands we need to
-}
-
-function init(root, projectName) {
-  spawn(path.resolve(__dirname, '../init.sh'), [projectName], {stdio:'inherit'});
-}
+var cliEntry = require('./cliEntry');
 
 if (require.main === module) {
-  run();
+  cliEntry.run();
 }
 
-module.exports = {
-  run: run,
-  init: init,
-};
+module.exports = cliEntry;

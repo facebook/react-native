@@ -2,8 +2,10 @@
 id: timers
 title: Timers
 layout: docs
-category: Polyfills
+category: Guides
 permalink: docs/timers.html
+next: direct-manipulation
+previous: accessibility
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
@@ -15,7 +17,7 @@ Timers are an important part of an application and React Native implements the [
 - setImmediate, clearImmediate
 - requestAnimationFrame, cancelAnimationFrame
 
-`requestAnimationFrame(fn)` is the exact equivalent of `setTimeout(fn, 0)`, they are triggered right after the screen has been flushed.
+`requestAnimationFrame(fn)` is not the same as `setTimeout(fn, 0)` - the former will fire after all the frame has flushed, whereas the latter will fire as quickly as possible (over 1000x per second on a iPhone 5S).
 
 `setImmediate` is executed at the end of the current JavaScript execution block, right before sending the batched response back to native. Note that if you call `setImmediate` within a `setImmediate` callback, it will be executed right away, it won't yield back to native in between.
 
@@ -57,8 +59,10 @@ InteractionManager.clearInteractionHandle(handle);
 
 We found out that the primary cause of fatals in apps created with React Native was due to timers firing after a component was unmounted. To solve this recurring issue, we introduced `TimerMixin`. If you include `TimerMixin`, then you can replace your calls to `setTimeout(fn, 500)` with `this.setTimeout(fn, 500)` (just prepend `this.`) and everything will be properly cleaned up for you when the component unmounts.
 
+This library does not ship with React Native - in order to use it on your project, you will need to install it with `npm i react-timer-mixin --save` from your project directory.
+
 ```javascript
-var TimerMixin = require('react-timer-mixin');
+import TimerMixin from 'react-timer-mixin';
 
 var Component = React.createClass({
   mixins: [TimerMixin],
@@ -71,4 +75,6 @@ var Component = React.createClass({
 });
 ```
 
-We highly recommend never using bare timers and always using this mixin, it will save you from a lot of hard to track down bugs.
+This will eliminate a lot of hard work tracking down bugs, such as crashes caused by timeouts firing after a component has been unmounted.
+
+Keep in mind that if you use ES6 classes for your React components [there is no built-in API for mixins](https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#mixins). To use `TimerMixin` with ES6 classes, we recommend [react-mixin](https://github.com/brigand/react-mixin).

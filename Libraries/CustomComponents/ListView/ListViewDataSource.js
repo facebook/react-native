@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
  *
- * Facebook, Inc. (“Facebook”) owns all right, title and interest, including
+ * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
- * Native CustomComponents software (the “Software”).  Subject to your
+ * Native CustomComponents software (the "Software").  Subject to your
  * compliance with these terms, you are hereby granted a non-exclusive,
  * worldwide, royalty-free copyright license to (1) use and copy the Software;
  * and (2) reproduce and distribute the Software as part of your own software
- * (“Your Software”).  Facebook reserves all rights not expressly granted to
+ * ("Your Software").  Facebook reserves all rights not expressly granted to
  * you in this license agreement.
  *
  * THE SOFTWARE AND DOCUMENTATION, IF ANY, ARE PROVIDED "AS IS" AND ANY EXPRESS
@@ -23,14 +23,13 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule ListViewDataSource
- * @typechecks
  * @flow
  */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var isEmpty = require('isEmpty');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
   dataBlob: any,
@@ -50,10 +49,10 @@ function defaultGetSectionHeaderData(
 type differType = (data1: any, data2: any) => bool;
 
 type ParamType = {
-  rowHasChanged: differType;
-  getRowData: ?typeof defaultGetRowData;
-  sectionHeaderHasChanged: ?differType;
-  getSectionHeaderData: ?typeof defaultGetSectionHeaderData;
+  rowHasChanged: differType,
+  getRowData?: ?typeof defaultGetRowData,
+  sectionHeaderHasChanged?: ?differType,
+  getSectionHeaderData?: ?typeof defaultGetSectionHeaderData,
 }
 
 /**
@@ -103,6 +102,10 @@ class ListViewDataSource {
    *
    *    or
    *
+   *      { sectionID_1: [ <rowData1>, <rowData2>, ... ], ... }
+   *
+   *    or
+   *
    *      [ [ <rowData1>, <rowData2>, ... ], ... ]
    *
    * The constructor takes in a params argument that can contain any of the
@@ -137,11 +140,11 @@ class ListViewDataSource {
 
   /**
    * Clones this `ListViewDataSource` with the specified `dataBlob` and
-   * `rowIdentities`. The `dataBlob` is just an aribitrary blob of data. At
-   * construction an extractor to get the interesting informatoin was defined
+   * `rowIdentities`. The `dataBlob` is just an arbitrary blob of data. At
+   * construction an extractor to get the interesting information was defined
    * (or the default was used).
    *
-   * The `rowIdentities` is is a 2D array of identifiers for rows.
+   * The `rowIdentities` is a 2D array of identifiers for rows.
    * ie. [['a1', 'a2'], ['b1', 'b2', 'b3'], ...].  If not provided, it's
    * assumed that the keys of the section data are the row identities.
    *
@@ -182,6 +185,11 @@ class ListViewDataSource {
       typeof this._sectionHeaderHasChanged === 'function',
       'Must provide a sectionHeaderHasChanged function with section data.'
     );
+    invariant(
+      !sectionIdentities || !rowIdentities || sectionIdentities.length === rowIdentities.length,
+      'row and section ids lengths must be the same'
+    );
+
     var newSource = new ListViewDataSource({
       getRowData: this._getRowData,
       getSectionHeaderData: this._getSectionHeaderData,
@@ -215,6 +223,10 @@ class ListViewDataSource {
 
   getRowCount(): number {
     return this._cachedRowCount;
+  }
+
+  getRowAndSectionCount(): number {
+   return (this._cachedRowCount + this.sectionIdentities.length);
   }
 
   /**

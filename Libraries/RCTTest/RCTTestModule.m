@@ -9,55 +9,80 @@
 
 #import "RCTTestModule.h"
 
-#import "FBSnapshotTestController.h"
-#import "RCTAssert.h"
-#import "RCTLog.h"
+#import <React/RCTAssert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
 
-@implementation RCTTestModule
-{
-  __weak FBSnapshotTestController *_snapshotController;
-  __weak UIView *_view;
-  NSMutableDictionary *_snapshotCounter;
+#import "FBSnapshotTestController.h"
+
+@implementation RCTTestModule {
+  NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)initWithSnapshotController:(FBSnapshotTestController *)controller view:(UIView *)view
+- (dispatch_queue_t)methodQueue
 {
-  if ((self = [super init])) {
-    _snapshotController = controller;
-    _view = view;
-    _snapshotCounter = [NSMutableDictionary new];
-  }
-  return self;
+  return _bridge.uiManager.methodQueue;
 }
 
 RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
 {
-  if (!_snapshotController) {
-    RCTLogWarn(@"No snapshot controller configured.");
-    callback(@[]);
-    return;
-  }
+  RCTAssert(_controller != nil, @"No snapshot controller configured.");
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSString *testName = NSStringFromSelector(_testSelector);
-    _snapshotCounter[testName] = @([_snapshotCounter[testName] integerValue] + 1);
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    NSString *testName = NSStringFromSelector(self->_testSelector);
+    if (!self->_snapshotCounter) {
+      self->_snapshotCounter = [NSMutableDictionary new];
+    }
+
+    NSNumber *counter = @([self->_snapshotCounter[testName] integerValue] + 1);
+    self->_snapshotCounter[testName] = counter;
+
     NSError *error = nil;
-    BOOL success = [_snapshotController compareSnapshotOfView:_view
-                                                     selector:_testSelector
-                                                   identifier:[_snapshotCounter[testName] stringValue]
-                                                        error:&error];
-    RCTAssert(success, @"Snapshot comparison failed: %@", error);
-    callback(@[]);
-  });
+    NSString *identifier = [counter stringValue];
+    if (self->_testSuffix) {
+      identifier = [identifier stringByAppendingString:self->_testSuffix];
+    }
+    BOOL success = [self->_controller compareSnapshotOfView:self->_view
+                                                   selector:self->_testSelector
+                                                 identifier:identifier
+                                                      error:&error];
+    callback(@[@(success)]);
+  }];
+}
+
+RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendAppEventWithName:name body:body];
+#pragma clang diagnostic pop
+}
+
+RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve(@1);
+}
+
+RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  reject(nil, nil, nil);
 }
 
 RCT_EXPORT_METHOD(markTestCompleted)
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _done = YES;
-  });
+  [self markTestPassed:YES];
+}
+
+RCT_EXPORT_METHOD(markTestPassed:(BOOL)success)
+{
+  [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    self->_status = success ? RCTTestStatusPassed : RCTTestStatusFailed;
+  }];
 }
 
 @end

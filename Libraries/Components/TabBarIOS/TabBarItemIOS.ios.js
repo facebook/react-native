@@ -7,22 +7,22 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TabBarItemIOS
- * @flow
+ * @noflow
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var Image = require('Image');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
-var TabBarItemIOS = React.createClass({
-  propTypes: {
+class TabBarItemIOS extends React.Component {
+  static propTypes = {
+    ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */
@@ -31,8 +31,12 @@ var TabBarItemIOS = React.createClass({
       React.PropTypes.number,
     ]),
     /**
+     * Background color for the badge. Available since iOS 10.
+     */
+    badgeColor: ColorPropType,
+    /**
      * Items comes with a few predefined system icons. Note that if you are
-     * using them, the title and selectedIcon will be overriden with the
+     * using them, the title and selectedIcon will be overridden with the
      * system ones.
      */
     systemIcon: React.PropTypes.oneOf([
@@ -64,71 +68,72 @@ var TabBarItemIOS = React.createClass({
      */
     onPress: React.PropTypes.func,
     /**
+     * If set to true it renders the image as original,
+     * it defaults to being displayed as a template
+     */
+    renderAsOriginal: React.PropTypes.bool,
+    /**
      * It specifies whether the children are visible or not. If you see a
      * blank content, you probably forgot to add a selected one.
      */
     selected: React.PropTypes.bool,
+    /**
+     * React style object.
+     */
     style: View.propTypes.style,
     /**
      * Text that appears under the icon. It is ignored when a system icon
      * is defined.
      */
     title: React.PropTypes.string,
-  },
+    /**
+     *(Apple TV only)* When set to true, this view will be focusable
+     * and navigable using the Apple TV remote.
+     *
+     * @platform ios
+     */
+    isTVSelectable: React.PropTypes.bool,
+  };
 
-  getInitialState: function() {
-    return {
-      hasBeenSelected: false,
-    };
-  },
+  state = {
+    hasBeenSelected: false,
+  };
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps: { selected: boolean }) {
+  componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
-  },
+  }
 
-  render: function() {
-    var tabContents = null;
+  render() {
+    var {style, children, ...props} = this.props;
+
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
     if (this.state.hasBeenSelected) {
-      tabContents =
+      var tabContents =
         <StaticContainer shouldUpdate={this.props.selected}>
-          {this.props.children}
+          {children}
         </StaticContainer>;
     } else {
-      tabContents = <View />;
+      var tabContents = <View />;
     }
-
-    var icon = this.props.systemIcon || (
-      this.props.icon && this.props.icon.uri
-    );
-
-    var badge = typeof this.props.badge === 'number' ?
-      '' + this.props.badge :
-      this.props.badge;
 
     return (
       <RCTTabBarItem
-        icon={icon}
-        selectedIcon={this.props.selectedIcon && this.props.selectedIcon.uri}
-        onPress={this.props.onPress}
-        selected={this.props.selected}
-        badgeValue={badge}
-        title={this.props.title}
-        style={[styles.tab, this.props.style]}>
+        {...props}
+        style={[styles.tab, style]}>
         {tabContents}
       </RCTTabBarItem>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   tab: {
@@ -140,15 +145,6 @@ var styles = StyleSheet.create({
   }
 });
 
-var RCTTabBarItem = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    title: true,
-    icon: true,
-    selectedIcon: true,
-    selected: true,
-    badgeValue: true,
-  }),
-  uiViewClassName: 'RCTTabBarItem',
-});
+var RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
 
 module.exports = TabBarItemIOS;

@@ -10,7 +10,7 @@
 #import "RCTDatePickerManager.h"
 
 #import "RCTBridge.h"
-#import "RCTConvert.h"
+#import "RCTDatePicker.h"
 #import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
@@ -20,7 +20,7 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
   @"time": @(UIDatePickerModeTime),
   @"date": @(UIDatePickerModeDate),
   @"datetime": @(UIDatePickerModeDateAndTime),
-  //@"countdown": @(UIDatePickerModeCountDownTimer) // not supported yet
+  @"countdown": @(UIDatePickerModeCountDownTimer), // not supported yet
 }), UIDatePickerModeTime, integerValue)
 
 @end
@@ -31,43 +31,15 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  UIDatePicker *picker = [[UIDatePicker alloc] init];
-  [picker addTarget:self
-             action:@selector(onChange:)
-   forControlEvents:UIControlEventValueChanged];
-  return picker;
+  return [RCTDatePicker new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minimumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
-
-- (void)onChange:(UIDatePicker *)sender
-{
-  NSDictionary *event = @{
-    @"target": sender.reactTag,
-    @"timestamp": @([sender.date timeIntervalSince1970] * 1000.0)
-  };
-  [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:event];
-}
-
-- (NSDictionary *)constantsToExport
-{
-  UIDatePicker *dp = [[UIDatePicker alloc] init];
-  [dp layoutIfNeeded];
-
-  return @{
-    @"ComponentHeight": @(CGRectGetHeight(dp.frame)),
-    @"ComponentWidth": @(CGRectGetWidth(dp.frame)),
-    @"DatePickerModes": @{
-      @"time": @(UIDatePickerModeTime),
-      @"date": @(UIDatePickerModeDate),
-      @"datetime": @(UIDatePickerModeDateAndTime),
-    }
-  };
-}
 
 @end

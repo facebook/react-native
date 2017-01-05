@@ -8,40 +8,71 @@
  */
 'use strict';
 
-var Activity = require('./src/Activity');
-var Server = require('./src/Server');
+require('../babelRegisterOnly')([/react-packager\/src/]);
 
-exports.middleware = function(options) {
-  var server = new Server(options);
-  return server.processRequest.bind(server);
-};
+const debug = require('debug');
+const Logger = require('./src/Logger');
 
-exports.buildPackageFromUrl = function(options, reqUrl) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
+exports.createServer = createServer;
+exports.Logger = Logger;
 
-  var server = new Server(options);
-  return server.buildPackageFromUrl(reqUrl)
-    .then(function(p) {
+exports.buildBundle = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.buildBundle(bundleOptions)
+    .then(p => {
       server.end();
       return p;
     });
 };
 
-exports.getDependencies = function(options, main) {
-  Activity.disable();
-  // Don't start the filewatcher or the cache.
-  if (options.nonPersistent == null) {
-    options.nonPersistent = true;
-  }
-
-  var server = new Server(options);
-  return server.getDependencies(main)
-    .then(function(r) {
+exports.getOrderedDependencyPaths = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.getOrderedDependencyPaths(bundleOptions)
+    .then(function(paths) {
       server.end();
-      return r.dependencies;
+      return paths;
     });
 };
+
+function enableDebug() {
+  // react-packager logs debug messages using the 'debug' npm package, and uses
+  // the following prefix throughout.
+  // To enable debugging, we need to set our pattern or append it to any
+  // existing pre-configured pattern to avoid disabling logging for
+  // other packages
+  var debugPattern = 'RNP:*';
+  var existingPattern = debug.load();
+  if (existingPattern) {
+    debugPattern += ',' + existingPattern;
+  }
+  debug.enable(debugPattern);
+}
+
+function createServer(options) {
+  // the debug module is configured globally, we need to enable debugging
+  // *before* requiring any packages that use `debug` for logging
+  if (options.verbose) {
+    enableDebug();
+  }
+
+  options = Object.assign({}, options);
+  delete options.verbose;
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    var TerminalReporter = require('./src/lib/TerminalReporter');
+    options.reporter = new TerminalReporter();
+  }
+  var Server = require('./src/Server');
+  return new Server(options);
+}
+
+function createNonPersistentServer(options) {
+  if (options.reporter == null) {
+    // It's unsound to set-up the reporter here, but this allows backward
+    // compatibility.
+    options.reporter = require('./src/lib/reporting').nullReporter;
+  }
+  options.watch = !options.nonPersistent;
+  return createServer(options);
+}

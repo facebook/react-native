@@ -8,45 +8,36 @@
  */
 'use strict';
 
-// Don't forget to everything listed here to `testConfig.json`
+var path = require('path');
+
+// Don't forget to everything listed here to `package.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  __dirname,
-  'website',
-  'node_modules/react-tools/src/utils/ImmutableObject.js',
-  'node_modules/react-tools/src/core/ReactInstanceHandles.js',
-  'node_modules/react-tools/src/event/EventPropagators.js'
+  /node_modules[/\\]react[/\\]dist[/\\].*/,
+
+  /website\/node_modules\/.*/,
+
+  // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
+  'Libraries/Relay/relay/tools/relayUnstableBatchedUpdates.js',
+
+  /heapCapture\/bundle\.js/,
 ];
 
-var platformBlacklists = {
-  web: [
-    '.ios.js'
-  ],
-  ios: [
-    'node_modules/react-tools/src/browser/ui/React.js',
-    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
-    '.web.js',
-    '.android.js',
-  ],
-  android: [
-    'node_modules/react-tools/src/browser/ui/React.js',
-    'node_modules/react-tools/src/browser/eventPlugins/ResponderEventPlugin.js',
-    'node_modules/react-tools/src/browser/ReactTextComponent.js',
-    // 'node_modules/react-tools/src/vendor/core/ExecutionEnvironment.js',
-    '.web.js',
-    '.ios.js',
-  ],
-};
-
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+function escapeRegExp(pattern) {
+  if (Object.prototype.toString.call(pattern) === '[object RegExp]') {
+    return pattern.source.replace(/\//g, path.sep);
+  } else if (typeof pattern === 'string') {
+    var escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    // convert the '/' into an escaped local file separator
+    return escaped.replace(/\//g,'\\' + path.sep);
+  } else {
+    throw new Error('Unexpected packager blacklist pattern: ' + pattern);
+  }
 }
 
-function blacklist(platform, additionalBlacklist) {
+function blacklist(additionalBlacklist) {
   return new RegExp('(' +
     (additionalBlacklist || []).concat(sharedBlacklist)
-      .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
       .join('|') +
     ')$'

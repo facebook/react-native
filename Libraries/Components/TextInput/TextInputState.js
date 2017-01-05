@@ -15,43 +15,60 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').UIManager;
+var Platform = require('Platform');
+var UIManager = require('UIManager');
 
 var TextInputState = {
    /**
    * Internal state
    */
-  _currentlyFocusedID: (null: ?string),
+  _currentlyFocusedID: (null: ?number),
 
   /**
    * Returns the ID of the currently focused text field, if one exists
    * If no text field is focused it returns null
    */
-  currentlyFocusedField: function(): ?string {
+  currentlyFocusedField: function(): ?number {
     return this._currentlyFocusedID;
   },
 
   /**
-   * @param {string} TextInputID id of the text field to focus
+   * @param {number} TextInputID id of the text field to focus
    * Focuses the specified text field
    * noop if the text field was already focused
    */
-  focusTextInput: function(textFieldID: string) {
+  focusTextInput: function(textFieldID: ?number) {
     if (this._currentlyFocusedID !== textFieldID && textFieldID !== null) {
       this._currentlyFocusedID = textFieldID;
-      RCTUIManager.focus(textFieldID);
+      if (Platform.OS === 'ios') {
+        UIManager.focus(textFieldID);
+      } else if (Platform.OS === 'android') {
+        UIManager.dispatchViewManagerCommand(
+          textFieldID,
+          UIManager.AndroidTextInput.Commands.focusTextInput,
+          null
+        );
+      }
     }
   },
 
   /**
-   * @param {string} textFieldID id of the text field to focus
+   * @param {number} textFieldID id of the text field to focus
    * Unfocuses the specified text field
    * noop if it wasn't focused
    */
-  blurTextInput: function(textFieldID: string) {
+  blurTextInput: function(textFieldID: ?number) {
     if (this._currentlyFocusedID === textFieldID && textFieldID !== null) {
       this._currentlyFocusedID = null;
-      RCTUIManager.blur(textFieldID);
+      if (Platform.OS === 'ios') {
+        UIManager.blur(textFieldID);
+      } else if (Platform.OS === 'android') {
+        UIManager.dispatchViewManagerCommand(
+          textFieldID,
+          UIManager.AndroidTextInput.Commands.blurTextInput,
+          null
+        );
+      }
     }
   }
 };

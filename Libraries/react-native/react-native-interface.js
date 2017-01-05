@@ -8,6 +8,7 @@
  *
  * @flow
  */
+'use strict';
 
 // see also react-native.js
 
@@ -16,3 +17,11 @@ declare var __DEV__: boolean;
 declare var __REACT_DEVTOOLS_GLOBAL_HOOK__: any; /*?{
   inject: ?((stuff: Object) => void)
 };*/
+
+declare var fetch: any;
+declare var Headers: any;
+declare var Request: any;
+declare var Response: any;
+declare module requestAnimationFrame {
+  declare var exports: (callback: any) => any;
+}
