@@ -149,8 +149,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
           params.putString("reason", reason);
           sendEvent("websocketClosed", params);
 
-          webSocket.close(1000, null);
-          System.out.println("Closing: " + code + " " + reason);
+          webSocket.close(1000, "Closing: " + code + " " + reason);
       }
 
       @Override
@@ -178,8 +177,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     };
 
     WebSocket call = client.newWebSocket(builder.build(), listener);
-
-//    WebSocket.create(client, builder.build()).enqueue();
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown();

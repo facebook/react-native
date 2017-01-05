@@ -207,8 +207,8 @@ public class InspectorPackagerConnection {
     public void onMessage(WebSocket webSocket, String text) {
       try {
         handleProxyMessage(new JSONObject(text));
-      } catch (JSONException e) {
-        throw new IOException(e);
+      } catch (JSONException | IOException e) {
+        FLog.w(TAG, "Couldn't handle proxy message", e);
       } 
     }
 
