@@ -283,14 +283,12 @@ module.exports = {
   }, {
     command: '--variant [string]',
   }, {
-<<<<<<< HEAD
     command: '--main-activity [string]',
     description: 'Name of the activity to start',
-    default: 'MainActivity'
-=======
+    default: 'MainActivity',
+  }, {
     command: '--deviceId [string]',
     description: 'builds your app and starts it on a specific device/simulator with the ' +
       'given device id (listed by running "adb devices" on the command line).',
->>>>>>> master
   }],
 };
