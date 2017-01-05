@@ -161,9 +161,9 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
       YGNodeRef childNode = child.cssNode;
-      float width = YGNodeStyleGetWidth(childNode);
-      float height = YGNodeStyleGetHeight(childNode);
-      if (YGValueIsUndefined(width) || YGValueIsUndefined(height)) {
+      float width = YGNodeStyleGetWidth(childNode).value;
+      float height = YGNodeStyleGetHeight(childNode).value;
+      if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
@@ -307,9 +307,9 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
       [child setTextComputed];
     } else {
-      float width = YGNodeStyleGetWidth(child.cssNode);
-      float height = YGNodeStyleGetHeight(child.cssNode);
-      if (YGValueIsUndefined(width) || YGValueIsUndefined(height)) {
+      float width = YGNodeStyleGetWidth(child.cssNode).value;
+      float height = YGNodeStyleGetHeight(child.cssNode).value;
+      if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
       NSTextAttachment *attachment = [NSTextAttachment new];
