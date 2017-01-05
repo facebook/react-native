@@ -322,7 +322,7 @@ describe('processRequest', () => {
 
     beforeEach(() => {
       EventEmitter = require.requireActual('events').EventEmitter;
-      req = new EventEmitter();
+      req = scaffoldReq(new EventEmitter());
       req.url = '/onchange';
       res = {
         writeHead: jest.fn(),
@@ -349,7 +349,7 @@ describe('processRequest', () => {
 
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
-      const req = {url: '/assets/imgs/a.png'};
+      const req = scaffoldReq({url: '/assets/imgs/a.png'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
@@ -360,7 +360,7 @@ describe('processRequest', () => {
     });
 
     it('should parse the platform option', () => {
-      const req = {url: '/assets/imgs/a.png?platform=ios'};
+      const req = scaffoldReq({url: '/assets/imgs/a.png?platform=ios'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
@@ -372,7 +372,10 @@ describe('processRequest', () => {
     });
 
     it('should serve range request', () => {
-      const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
+      const req = scaffoldReq({
+        url: '/assets/imgs/a.png?platform=ios',
+        headers: {range: 'bytes=0-3'},
+      });
       const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
@@ -385,7 +388,7 @@ describe('processRequest', () => {
     });
 
     it('should serve assets files\'s name contain non-latin letter', () => {
-      const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
+      const req = scaffoldReq({url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
       AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
@@ -522,4 +525,12 @@ describe('processRequest', () => {
       });
     });
   });
+
+  // ensures that vital properties exist on fake request objects
+  function scaffoldReq(req) {
+    if (!req.headers) {
+      req.headers = {};
+    }
+    return req;
+  }
 });

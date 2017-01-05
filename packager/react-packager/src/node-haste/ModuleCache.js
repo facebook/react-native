@@ -28,7 +28,7 @@ type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  _assetDependencies: mixed;
+  _assetDependencies: Array<string>;
   _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
@@ -36,7 +36,7 @@ class ModuleCache {
   _moduleOptions: ModuleOptions;
   _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
-  _platforms: mixed;
+  _platforms: Set<string>;
   _transformCacheKey: string;
   _transformCode: TransformCode;
   _reporter: Reporter;
@@ -52,7 +52,7 @@ class ModuleCache {
     transformCode,
     reporter,
   }: {
-    assetDependencies: mixed,
+    assetDependencies: Array<string>,
     cache: Cache,
     depGraphHelpers: DependencyGraphHelpers,
     getClosestPackage: GetClosestPackageFn,
@@ -60,7 +60,7 @@ class ModuleCache {
     transformCacheKey: string,
     transformCode: TransformCode,
     reporter: Reporter,
-  }, platforms: mixed) {
+  }, platforms: Set<string>) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
     this._cache = cache;
@@ -97,6 +97,9 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
+      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
+       * design in the first place: AssetModule, being simpler than a normal
+       * Module, should not inherit the Module class. */
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
         moduleCache: this,
