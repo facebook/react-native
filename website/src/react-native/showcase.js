@@ -319,6 +319,14 @@ var featured = [
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
 		infoTitle: 'What we learned after using React Native for a year',
+	},
+	{
+		name: 'Jack',
+		icon: 'https://s3-eu-west-1.amazonaws.com/jack-public/react-native-showcase/jack-raw-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/you-have-a-jack/id1019167559?ls=1&mt=8',
+		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
+		infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
+		infoTitle: 'Our switch to React Native',
 	}
 ];
 
