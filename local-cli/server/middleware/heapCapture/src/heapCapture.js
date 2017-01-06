@@ -8,7 +8,17 @@
  */
 'use strict';
 /*eslint no-console-disallow: "off"*/
-/*global React ReactDOM Table StringInterner StackRegistry AggrowData Aggrow preLoadedCapture:true*/
+/*global preLoadedCapture:true*/
+
+import ReactDOM from 'react-dom';
+import React from 'react';
+import {
+  Aggrow,
+  AggrowData,
+  AggrowTable,
+  StringInterner,
+  StackRegistry,
+} from './index.js';
 
 function RefVisitor(refs, id) {
   this.refs = refs;
@@ -338,15 +348,15 @@ function registerCapture(data, captureId, capture, stacks, strings) {
 }
 
 if (preLoadedCapture) {
-  const strings = StringInterner();
+  const strings = new StringInterner();
   const stacks =  new StackRegistry();
   const columns = [
     { name: 'id', type: 'int' },
     { name: 'type', type: 'string', strings: strings },
     { name: 'size', type: 'int' },
     { name: 'trace', type: 'string', strings: strings },
-    { name: 'path', type: 'stack', stacks: stacks },
-    { name: 'react', type: 'stack', stacks: stacks },
+    { name: 'path', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
+    { name: 'react', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
     { name: 'value', type: 'string', strings: strings },
     { name: 'module', type: 'string', strings: strings },
   ];
@@ -358,8 +368,8 @@ if (preLoadedCapture) {
   const typeExpander = aggrow.addStringExpander('Type', 'type');
   aggrow.addNumberExpander('Size', 'size');
   aggrow.addStringExpander('Trace', 'trace');
-  const pathExpander = aggrow.addStackExpander('Path', 'path', strings.get);
-  const reactExpander = aggrow.addStackExpander('React Tree', 'react', strings.get);
+  const pathExpander = aggrow.addStackExpander('Path', 'path');
+  const reactExpander = aggrow.addStackExpander('React Tree', 'react');
   const valueExpander = aggrow.addStringExpander('Value', 'value');
   const moduleExpander = aggrow.addStringExpander('Module', 'module');
   aggrow.expander.setActiveExpanders([
@@ -375,5 +385,5 @@ if (preLoadedCapture) {
     sizeAggregator,
     countAggregator,
   ]);
-  ReactDOM.render(<Table aggrow={aggrow.expander} />, document.body);
+  ReactDOM.render(<AggrowTable aggrow={aggrow} />, document.body);
 }

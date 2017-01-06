@@ -4,32 +4,28 @@ EXPORTED_HEADERS = [
 
 def library(**kwargs):
   if THIS_IS_FBANDROID:
-    include_defs('//ReactAndroid/DEFS')
     cxx_library(
       force_static = True,
       # We depend on JSC, support the same platforms
       supported_platforms_regex = '^android-(armv7|x86)$',
-      deps = JSC_DEPS + [
+      deps = [
         '//xplat/folly:molly',
         react_native_xplat_target('jschelpers:jschelpers'),
       ],
       **kwargs
     )
   elif THIS_IS_FBOBJC:
-    pass
-    # TODO: Currently untested on iOS, but might require linking against a
-    # custom version to ensure binary stability?
-    # ios_library(
-    #   inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
-    #   frameworks = [
-    #    '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
-    #   ],
-    #   deps = [
-    #     '//xplat/folly:molly',
-    #     react_native_xplat_target('jschelpers:jschelpers'),
-    #   ],
-    #   **kwargs
-    # )
+    ios_library(
+      inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+      frameworks = [
+       '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+      ],
+      deps = [
+        '//xplat/folly:molly',
+        react_native_xplat_target('jschelpers:jschelpers'),
+      ],
+      **kwargs
+    )
   else:
     raise Error('Unknown repo')
 
@@ -40,12 +36,17 @@ library(
   ],
   compiler_flags = [
     '-Wall',
+    '-Wno-shadow',
+    '-Wno-inconsistent-missing-override',
+    '-Wno-unused-local-typedef',
+    '-Wno-unused-private-field',
+    '-Wno-undefined-bool-conversion',
     '-fexceptions',
     '-fvisibility=hidden',
     '-std=gnu++1y',
   ],
   exported_headers = EXPORTED_HEADERS,
-  headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
+  headers = subdir_glob([('inspector', '*.h')], excludes=EXPORTED_HEADERS),
   header_namespace = 'inspector',
   srcs = glob(['*.cpp']),
   visibility = [

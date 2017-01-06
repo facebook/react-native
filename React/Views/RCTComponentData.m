@@ -12,11 +12,11 @@
 #import <objc/message.h>
 
 #import "RCTBridge.h"
+#import "RCTBridgeModule.h"
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
-#import "RCTBridgeModule.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 

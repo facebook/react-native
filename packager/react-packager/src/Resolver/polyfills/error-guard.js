@@ -6,15 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * The particular require runtime that we are using looks for a global
- * `ErrorUtils` object and if it exists, then it requires modules with the
- * error handler specified via ErrorUtils.setGlobalHandler by calling the
- * require function with applyWithGuard. Since the require module is loaded
- * before any of the modules, this ErrorUtils must be defined (and the handler
- * set) globally before requiring anything.
+ * @polyfill
  */
 
-/* eslint strict:0 */
+/* eslint-disable strict */
+
 let _inGuard = 0;
 
 /**
@@ -26,6 +22,14 @@ let _globalHandler = function onError(e) {
   throw e;
 };
 
+/**
+ * The particular require runtime that we are using looks for a global
+ * `ErrorUtils` object and if it exists, then it requires modules with the
+ * error handler specified via ErrorUtils.setGlobalHandler by calling the
+ * require function with applyWithGuard. Since the require module is loaded
+ * before any of the modules, this ErrorUtils must be defined (and the handler
+ * set) globally before requiring anything.
+ */
 const ErrorUtils = {
   setGlobalHandler: function(fun) {
     _globalHandler = fun;

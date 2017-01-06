@@ -8,7 +8,8 @@
  */
 
 #import "RCTDiffClampAnimatedNode.h"
-#import "RCTLog.h"
+
+#import <React/RCTLog.h>
 
 @implementation RCTDiffClampAnimatedNode
 {
@@ -55,7 +56,7 @@
     RCTLogError(@"Illegal node ID set as an input for Animated.DiffClamp node");
     return 0;
   }
-  
+
   return inputNode.value;
 }
 

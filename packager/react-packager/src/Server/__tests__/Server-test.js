@@ -19,7 +19,8 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
     .mock('../../node-haste')
-    .mock('../../Logger');
+    .mock('../../Logger')
+    .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
   let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
@@ -38,7 +39,8 @@ describe('processRequest', () => {
      projectRoots: ['root'],
      blacklistRE: null,
      cacheVersion: null,
-     polyfillModuleNames: null
+     polyfillModuleNames: null,
+     reporter: require('../../lib/reporting').nullReporter,
   };
 
   const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>
@@ -320,7 +322,7 @@ describe('processRequest', () => {
 
     beforeEach(() => {
       EventEmitter = require.requireActual('events').EventEmitter;
-      req = new EventEmitter();
+      req = scaffoldReq(new EventEmitter());
       req.url = '/onchange';
       res = {
         writeHead: jest.fn(),
@@ -347,49 +349,49 @@ describe('processRequest', () => {
 
   describe('/assets endpoint', () => {
     it('should serve simple case', () => {
-      const req = {url: '/assets/imgs/a.png'};
+      const req = scaffoldReq({url: '/assets/imgs/a.png'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should parse the platform option', () => {
-      const req = {url: '/assets/imgs/a.png?platform=ios'};
+      const req = scaffoldReq({url: '/assets/imgs/a.png?platform=ios'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
 
     it('should serve range request', () => {
-      const req = {url: '/assets/imgs/a.png?platform=ios', headers: {range: 'bytes=0-3'}};
+      const req = scaffoldReq({
+        url: '/assets/imgs/a.png?platform=ios',
+        headers: {range: 'bytes=0-3'},
+      });
       const res = {end: jest.fn(), writeHead: jest.fn(), setHeader: jest.fn()};
       const mockData = 'i am image';
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve(mockData));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve(mockData));
 
       server.processRequest(req, res);
       jest.runAllTimers();
       expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith(mockData.slice(0, 4));
     });
 
     it('should serve assets files\'s name contain non-latin letter', () => {
-      const req = {url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'};
+      const req = scaffoldReq({url: '/assets/imgs/%E4%B8%BB%E9%A1%B5/logo.png'});
       const res = {end: jest.fn(), setHeader: jest.fn()};
 
-      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+      AssetServer.prototype.get.mockImplementation(() => Promise.resolve('i am image'));
 
       server.processRequest(req, res);
       jest.runAllTimers();
@@ -397,7 +399,6 @@ describe('processRequest', () => {
         'imgs/\u{4E3B}\u{9875}/logo.png',
         undefined
       );
-      expect(res.setHeader).toBeCalledWith('Cache-Control', 'max-age=31536000');
       expect(res.end).toBeCalledWith('i am image');
     });
   });
@@ -524,4 +525,12 @@ describe('processRequest', () => {
       });
     });
   });
+
+  // ensures that vital properties exist on fake request objects
+  function scaffoldReq(req) {
+    if (!req.headers) {
+      req.headers = {};
+    }
+    return req;
+  }
 });

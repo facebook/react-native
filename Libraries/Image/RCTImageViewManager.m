@@ -11,9 +11,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+#import <React/RCTImageSource.h>
+
 #import "RCTImageLoader.h"
-#import "RCTImageSource.h"
 #import "RCTImageView.h"
 
 @implementation RCTImageViewManager

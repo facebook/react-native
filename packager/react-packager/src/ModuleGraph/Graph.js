@@ -10,75 +10,90 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
 const memoize = require('async/memoize');
+const nullthrows = require('fbjs/lib/nullthrows');
 const queue = require('async/queue');
 const seq = require('async/seq');
-const invariant = require('fbjs/lib/invariant');
 
-import type {GraphFn, LoadFn, ResolveFn, File, Module} from './types.flow';
+import type {
+  Callback,
+  File,
+  GraphFn,
+  LoadFn,
+  ResolveFn,
+} from './types.flow';
+
+type Async$Queue<T, C> = {
+  buffer: number,
+  concurrency: number,
+  drain: () => mixed,
+  empty: () => mixed,
+  error: (Error, T) => mixed,
+  idle(): boolean,
+  kill(): void,
+  length(): number,
+  pause(): void,
+  paused: boolean,
+  push(T | Array<T>, void | C): void,
+  resume(): void,
+  running(): number,
+  saturated: () => mixed,
+  started: boolean,
+  unsaturated: () => mixed,
+  unshift(T, void | C): void,
+  workersList(): Array<T>,
+};
+
+type LoadQueue =
+  Async$Queue<{id: string, parent: string}, Callback<File, Array<string>>>;
 
 const createParentModule =
-  () => ({file: {path: '', ast: {}}, dependencies: []});
+  () => ({file: {code: '', type: 'script', path: ''}, dependencies: []});
 
 const noop = () => {};
+const NO_OPTIONS = {};
 
 exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
-  function Graph(entryPoints, platform, options = {}, callback = noop) {
-    const {cwd = '', log = (console: any), optimize = false, skip} = options;
+  function Graph(entryPoints, platform, options, callback = noop) {
+    const {
+      cwd = '',
+      log = (console: any),
+      optimize = false,
+      skip,
+    } = options || NO_OPTIONS;
 
     if (typeof platform !== 'string') {
       log.error('`Graph`, called without a platform');
-      return callback(Error('The target platform has to be passed'));
+      callback(Error('The target platform has to be passed'));
+      return;
     }
 
-    const modules: Map<string | null, Module> = new Map();
-    modules.set(null, createParentModule());
-
-    const loadQueue = queue(seq(
-      ({id, parent}, cb) => resolve(id, parent, platform, options, cb),
+    const loadQueue: LoadQueue = queue(seq(
+      ({id, parent}, cb) => resolve(id, parent, platform, options || NO_OPTIONS, cb),
       memoize((file, cb) => load(file, {log, optimize}, cb)),
     ), Number.MAX_SAFE_INTEGER);
 
-    const cleanup = () => (loadQueue.drain = noop);
+    const {collect, loadModule} = createGraphHelpers(loadQueue, cwd, skip);
+
     loadQueue.drain = () => {
-      cleanup();
-      callback(null, collect(null, modules));
+      loadQueue.kill();
+      callback(null, collect());
     };
-
-    function loadModule(id: string, parent: string | null, parentDependencyIndex) {
-      function onFileLoaded(
-        error: ?Error,
-        file: File,
-        dependencyIDs: Array<string>,
-      ) {
-        if (error) {
-          cleanup();
-          callback(error);
-          return;
-        }
-
-        const parentModule = modules.get(parent);
-        invariant(parentModule, 'Invalid parent module: ' + String(parent));
-        parentModule.dependencies[parentDependencyIndex] = {id, path: file.path};
-
-        if ((!skip || !skip.has(file.path)) && !modules.has(file.path)) {
-          const dependencies = Array(dependencyIDs.length);
-          modules.set(file.path, {file, dependencies});
-          dependencyIDs.forEach(
-            (dependencyID, j) => loadModule(dependencyID, file.path, j));
-        }
-      }
-      loadQueue.push({id, parent: parent != null ? parent : cwd}, onFileLoaded);
-    }
+    loadQueue.error = error => {
+      loadQueue.error = noop;
+      loadQueue.kill();
+      callback(error);
+    };
 
     let i = 0;
     for (const entryPoint of entryPoints) {
       loadModule(entryPoint, null, i++);
     }
 
-    if (loadQueue.idle()) {
+    if (i === 0) {
       log.error('`Graph` called without any entry points');
-      cleanup();
+      loadQueue.kill();
       callback(Error('At least one entry point has to be passed.'));
     }
   }
@@ -86,21 +101,73 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
   return Graph;
 };
 
-function collect(
-  path,
-  modules,
-  serialized = [],
-  seen: Set<string | null> = new Set(),
-): Array<Module> {
-  const module = modules.get(path);
-  if (!module || seen.has(path)) { return serialized; }
+function createGraphHelpers(loadQueue, cwd, skip) {
+  const modules = new Map([[null, createParentModule()]]);
 
-  if (path !== null) {
-    serialized.push(module);
-    seen.add(path);
+  function collect(
+    path = null,
+    serialized = {entryModules: [], modules: []},
+    seen = new Set(),
+  ) {
+    const module = modules.get(path);
+    if (module == null || seen.has(path)) {
+      return serialized;
+    }
+
+    const {dependencies} = module;
+    if (path === null) {
+      serialized.entryModules =
+        dependencies.map(dep => nullthrows(modules.get(dep.path)));
+    } else {
+      serialized.modules.push(module);
+      seen.add(path);
+    }
+
+    for (const dependency of dependencies) {
+      collect(dependency.path, serialized, seen);
+    }
+
+    return serialized;
   }
-  module.dependencies.forEach(
-    dependency => collect(dependency.path, modules, serialized, seen));
 
-  return serialized;
+  function loadModule(id, parent, parentDepIndex) {
+    loadQueue.push(
+      {id, parent: parent != null ? parent : cwd},
+      (error, file, dependencyIDs) =>
+        onFileLoaded(error, file, dependencyIDs, id, parent, parentDepIndex),
+    );
+  }
+
+  function onFileLoaded(
+    error,
+    file,
+    dependencyIDs,
+    id,
+    parent,
+    parentDependencyIndex,
+  ) {
+    if (error) {
+      return;
+    }
+
+    const {path} = nullthrows(file);
+    dependencyIDs = nullthrows(dependencyIDs);
+
+    const parentModule = modules.get(parent);
+    invariant(parentModule, 'Invalid parent module: ' + String(parent));
+    parentModule.dependencies[parentDependencyIndex] = {id, path};
+
+    if ((!skip || !skip.has(path)) && !modules.has(path)) {
+      const module = {
+        dependencies: Array(dependencyIDs.length),
+        file: nullthrows(file),
+      };
+      modules.set(path, module);
+      for (let i = 0; i < dependencyIDs.length; ++i) {
+        loadModule(dependencyIDs[i], path, i);
+      }
+    }
+  }
+
+  return {collect, loadModule};
 }

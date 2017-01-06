@@ -21,6 +21,12 @@ const crypto = require('crypto');
 import type {SourceMap, CombinedSourceMap, MixedSourceMap} from '../lib/SourceMap';
 import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
 
+export type Unbundle = {
+  startupModules: Array<*>,
+  lazyModules: Array<*>,
+  groups: Map<number, Set<number>>,
+};
+
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 class Bundle extends BundleBase {
@@ -29,7 +35,7 @@ class Bundle extends BundleBase {
   _inlineSourceMap: string | void;
   _minify: boolean | void;
   _numRequireCalls: number;
-  _ramBundle: mixed | void;
+  _ramBundle: Unbundle | null;
   _ramGroups: Array<string> | void;
   _shouldCombineSourceMaps: boolean;
   _sourceMap: boolean;
@@ -144,7 +150,7 @@ class Bundle extends BundleBase {
     return source;
   }
 
-  getUnbundle() {
+  getUnbundle(): Unbundle {
     this.assertFinalized();
     if (!this._ramBundle) {
       const modules = this.getModules().slice();
@@ -419,7 +425,7 @@ function createGroups(ramGroups: Array<string>, lazyModules) {
   });
 
   // build a map of group root IDs to an array of module IDs in the group
-  const result = new Map(
+  const result: Map<number, Set<number>> = new Map(
     ramGroups
       .map(modulePath => {
         const root = byPath.get(modulePath);

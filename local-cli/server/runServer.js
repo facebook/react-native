@@ -16,6 +16,7 @@ const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
@@ -87,11 +88,11 @@ function getPackagerServer(args, config) {
 
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
-    assetRoots: args.assetRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    getTransformOptions: config.getTransformOptions,
+    platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,

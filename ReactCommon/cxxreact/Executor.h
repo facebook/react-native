@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <fcntl.h>
 #include <functional>
 #include <memory>
 #include <string>
@@ -9,6 +10,7 @@
 
 #include <sys/mman.h>
 
+#include <folly/Exception.h>
 #include <folly/dynamic.h>
 
 #include "JSModulesUnbundle.h"
@@ -22,8 +24,7 @@ namespace react {
 
 enum {
   UNPACKED_JS_SOURCE = (1 << 0),
-  UNPACKED_BC_CACHE = (1 << 1),
-  UNPACKED_BYTECODE = (1 << 2),
+  UNPACKED_BYTECODE = (1 << 1),
 };
 
 class JSExecutor;
@@ -153,9 +154,13 @@ class JSBigFileString : public JSBigString {
 public:
 
   JSBigFileString(int fd, size_t size, off_t offset = 0)
-    : m_fd   {fd}
+    : m_fd   {-1}
     , m_data {nullptr}
   {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
     // Offsets given to mmap must be page aligend. We abstract away that
     // restriction by sending a page aligned offset to mmap, and keeping track
     // of the offset within the page that we must alter the mmap pointer by to
@@ -182,7 +187,11 @@ public:
   const char *c_str() const override {
     if (!m_data) {
       m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
-      CHECK(m_data != MAP_FAILED);
+      CHECK(m_data != MAP_FAILED)
+        << " fd: " << m_fd
+        << " size: " << m_size
+        << " offset: " << m_mapOff
+        << " error: " << std::strerror(errno);
     }
     return m_data + m_pageOff;
   }
@@ -213,11 +222,15 @@ public:
   };
 
   JSBigOptimizedBundleString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
-    m_fd(fd),
+    m_fd(-1),
     m_size(size),
     m_encoding(encoding),
     m_str(nullptr)
   {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
     memcpy(m_hash, sha1, 20);
   }
 
@@ -278,6 +291,14 @@ public:
    * Execute an application script optimized bundle in the JS context.
    */
   virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
+
+  /**
+   * @experimental
+   *
+   * Read an app bundle from a file descriptor, determine how it should be
+   * loaded, load and execute it in the JS context.
+   */
+  virtual void loadApplicationScript(int fd, std::string source);
 
   /**
    * Add an application "unbundle" file

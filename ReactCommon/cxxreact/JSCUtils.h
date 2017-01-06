@@ -9,7 +9,7 @@
 namespace facebook {
 namespace react {
 
-String jsStringFromBigString(const JSBigString& bigstr);
+String jsStringFromBigString(JSContextRef ctx, const JSBigString& bigstr);
 
 }
 }

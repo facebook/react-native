@@ -45,7 +45,7 @@ const querystring = require('querystring');
 const parseUrl = require('url').parse;
 const WebSocket = require('ws');
 
-const debug = require('debug')('ReactNativePackager:InspectorProxy');
+const debug = require('debug')('RNP:InspectorProxy');
 const launchChrome = require('./launchChrome');
 
 type DevicePage = {
@@ -197,7 +197,7 @@ class Device {
 
   _handleWrappedEvent(event: WrappedEvent) {
     const payload = nullthrows(event.payload);
-    const socket = this._connections.get(payload.pageId);
+    const socket = this._connections.get(nullthrows(payload.pageId));
     if (!socket) {
       console.error('Invalid pageId from device:', payload.pageId);
       return;
@@ -456,7 +456,7 @@ function attachToServer(server: http.Server, pathPrefix: string): InspectorProxy
 
 if (!module.parent) {
   console.info('Starting server');
-  process.env.DEBUG = 'ReactNativePackager:Inspector';
+  process.env.DEBUG = 'RNP:Inspector';
   const serverInstance = http.createServer().listen(
     8081,
     'localhost',

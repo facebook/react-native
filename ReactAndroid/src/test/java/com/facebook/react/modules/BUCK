@@ -1,12 +1,12 @@
 include_defs('//ReactAndroid/DEFS')
 
-robolectric3_test(
+rn_robolectric_test(
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
   name = 'modules',
   srcs = glob(['**/*.java']),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('third-party/java/fest:fest'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -40,6 +40,3 @@ robolectric3_test(
   ],
 )
 
-project_config(
-  test_target = ':modules',
-)
