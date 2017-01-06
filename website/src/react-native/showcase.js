@@ -430,7 +430,7 @@ var pinned = [
   },
   {
     name: 'Walmart',
-    icon: 'http://facebook.github.io/react-native/img/showcase/wmt_spark.png',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.walmart.android&hl=en',
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
