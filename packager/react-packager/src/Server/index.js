@@ -32,6 +32,7 @@ import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
 import type {Reporter} from '../lib/reporting';
+import type {GetTransformOptions} from '../Bundler';
 
 const {
   createActionStartEntry,
@@ -52,66 +53,23 @@ function debounceAndBatch(fn, delay) {
   };
 }
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  transformModulePath: {
-    type: 'string',
-    required: false,
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  watch: {
-    type: 'boolean',
-    default: false,
-  },
-  assetExts: {
-    type: 'array',
-    default: defaults.assetExts,
-  },
-  platforms: {
-    type: 'array',
-    default: defaults.platforms,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    required: false,
-  },
-  getTransformOptions: {
-    type: 'function',
-    required: false,
-  },
-  silent: {
-    type: 'boolean',
-    default: false,
-  },
-  reporter: {
-    type: 'object',
-  },
-});
+type Options = {
+  assetExts?: Array<string>,
+  blacklistRE?: RegExp,
+  cacheVersion?: string,
+  extraNodeModules?: {},
+  getTransformOptions?: GetTransformOptions<*>,
+  moduleFormat?: string,
+  platforms?: Array<string>,
+  polyfillModuleNames?: Array<string>,
+  projectRoots: Array<string>,
+  reporter: Reporter,
+  resetCache?: boolean,
+  silent?: boolean,
+  transformModulePath?: string,
+  transformTimeoutInterval?: number,
+  watch?: boolean,
+};
 
 const bundleOpts = declareOpts({
   sourceMapUrl: {
@@ -211,7 +169,20 @@ const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 class Server {
 
   _opts: {
+    assetExts: Array<string>,
+    blacklistRE: ?RegExp,
+    cacheVersion: string,
+    extraNodeModules: {},
+    getTransformOptions?: GetTransformOptions<*>,
+    moduleFormat: string,
+    platforms: Array<string>,
+    polyfillModuleNames: Array<string>,
     projectRoots: Array<string>,
+    reporter: Reporter,
+    resetCache: boolean,
+    silent: boolean,
+    transformModulePath: ?string,
+    transformTimeoutInterval: ?number,
     watch: boolean,
   };
   _projectRoots: Array<string>;
@@ -227,29 +198,42 @@ class Server {
   _hmrFileChangeListener: (type: string, filePath: string) => mixed;
   _reporter: Reporter;
 
-  constructor(options: {
-    reporter: Reporter,
-    watch?: boolean,
-  }) {
-    const opts = this._opts = validateOpts(options);
+  constructor(options: Options) {
+    this._opts = {
+      assetExts: options.assetExts || defaults.assetExts,
+      blacklistRE: options.blacklistRE,
+      cacheVersion: options.cacheVersion || '1.0',
+      extraNodeModules: options.extraNodeModules || {},
+      getTransformOptions: options.getTransformOptions,
+      moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
+      platforms: options.platforms || defaults.platforms,
+      polyfillModuleNames: options.polyfillModuleNames || [],
+      projectRoots: options.projectRoots,
+      reporter: options.reporter,
+      resetCache: options.resetCache || false,
+      silent: options.silent || false,
+      transformModulePath: options.transformModulePath,
+      transformTimeoutInterval: options.transformTimeoutInterval,
+      watch: options.watch || false,
+    };
     const processFileChange =
       ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
     this._reporter = options.reporter;
-    this._projectRoots = opts.projectRoots;
+    this._projectRoots = this._opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
 
     this._assetServer = new AssetServer({
-      assetExts: opts.assetExts,
-      projectRoots: opts.projectRoots,
+      assetExts: this._opts.assetExts,
+      projectRoots: this._opts.projectRoots,
     });
 
-    const bundlerOpts = Object.create(opts);
+    const bundlerOpts = Object.create(this._opts);
     bundlerOpts.assetServer = this._assetServer;
-    bundlerOpts.allowBundleUpdates = options.watch;
-    bundlerOpts.watch = options.watch;
+    bundlerOpts.allowBundleUpdates = this._opts.watch;
+    bundlerOpts.watch = this._opts.watch;
     bundlerOpts.reporter = options.reporter;
     this._bundler = new Bundler(bundlerOpts);
 

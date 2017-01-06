@@ -129,7 +129,7 @@ type Options = {
   allowBundleUpdates: boolean,
   assetExts: Array<string>,
   assetServer: AssetServer,
-  blacklistRE: RegExp,
+  blacklistRE?: RegExp,
   cacheVersion: string,
   extraNodeModules: {},
   getTransformOptions?: GetTransformOptions<*>,
@@ -139,7 +139,7 @@ type Options = {
   projectRoots: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
-  transformModulePath: string,
+  transformModulePath?: string,
   transformTimeoutInterval: ?number,
   watch: boolean,
 };

@@ -21,9 +21,10 @@ exports.createServer = createServer;
 exports.Logger = Logger;
 
 type Options = {
+  nonPersistent: boolean,
+  projectRoots: Array<string>,
   reporter?: Reporter,
   watch?: boolean,
-  nonPersistent: boolean,
 };
 
 exports.buildBundle = function(options: Options, bundleOptions: {}) {
