@@ -16,8 +16,10 @@ Now, many of the Facebook apps ship once per week, especially on Android. Becaus
 
 We're happy to announce the new monthly release cadence, and the new versions that have just been cut: `v0.40`(December 2016) has been stabilizing for all of December and is ready for you to use. (Just make sure to [update headers in your native modules on iOS](https://github.com/facebook/react-native/releases/tag/v0.40.0))
 
-There is also a fresh version cut from master, which is now on npm as `react-native@0.41.0-rc.0`, but you can simply refer to it as "January". See [what's new here](https://github.com/facebook/react-native/releases/tag/v0.41.0-rc.0). By the time it is released at the end of the month, the changes it contains will have been shipped in production Facebook apps for weeks.
+There is also a fresh release candidate cut from master, which is now on npm as `react-native@0.41.0-rc.0`, but you can simply refer to it as "January". See [what's new here](https://github.com/facebook/react-native/releases/tag/v0.41.0-rc.0). By the time it is released at the end of the month, the changes it contains will have been shipped in production Facebook apps for weeks.
 
-Always use the RC when you can, to see what changes are coming and provide better feedback to RN contributors. We hope this simpler approach will make it easier for the community to keep track of changes in React Native, and to adopt new versions as quickly as possible!
+Always use the RC when possible, to see what changes are coming and provide better feedback to RN contributors. It is often the exact same code that FB has in production. You can easily upgrade your app with the new [react-native-git-upgrade](http://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html) command: `react-native-git-upgrade 0.41.0-rc.0`
+
+We hope this simpler approach will make it easier for the community to keep track of changes in React Native, and to adopt new versions as quickly as possible!
 
 (Thanks go to @mkonicek for coming up with this plan and @grabbou for making it happen)
