@@ -1,7 +1,7 @@
 ---
 title: A Monthly Release Cadence: Releasing December and January RC
 author: Eric Vicenti
-authorTitle: Developer Advocate at Facebook
+authorTitle: UI Engineer at Facebook
 authorURL: https://twitter.com/EricVicenti
 authorImage: https://secure.gravatar.com/avatar/077ad5372b65567fe952a99f3b627048?s=128
 authorTwitter: EricVicenti
