@@ -6,10 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
 */
+'use strict';
 
 var React = require('React');
 var Site = require('Site');
-
 
 /*
 Thousands of applications use React Native, so we can't list all of them
@@ -49,13 +49,6 @@ var featured = [
     infoTitle: 'Classroom is an education app by Chinese Internet giant Tencent',
   },
   {
-    name: 'FanVision Bolt',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
-    infoLink: 'https://www.youtube.com/watch?v=oWOcAXyDf0w',
-    infoTitle: 'FanVision Bolt accessory + app provide live audio/video and stats at NASCAR events',
-  },
-  {
     name: 'F8',
     icon: 'https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png',
     linkAppStore: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
@@ -90,8 +83,8 @@ var featured = [
     name: 'SoundCloud Pulse',
     icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
-    infoLink: 'https://blog.soundcloud.com/2016/02/23/soundcloud-pulse-now-on-iphone/',
-    infoTitle: 'SoundCloud Pulse: now on iPhone',
+    infoLink: 'https://developers.soundcloud.com/blog/react-native-at-soundcloud',
+    infoTitle: 'Why React Native worked well for us',
   },
   {
     name: 'Start',
@@ -112,7 +105,7 @@ var featured = [
     icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
     linkAppStore: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
     infoLink: 'https://techcrunch.com/2016/02/01/refinery29-debuts-its-first-app-a-morning-news-round-up-called-refinery29-am/',
-    infoTitle: 'Refinery29 debuts its first app',
+    infoTitle: 'Refinery29 debuts morning news roundup app created with React Native',
   },
   {
     name: 'TRED',
@@ -134,14 +127,14 @@ var featured = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
     infoLink: 'http://www.cbssports.com/fantasy/football/games/franchise/2015',
-    infoTitle: 'The award winning Fantasy Football league manager.',
+    infoTitle: 'Award winning Fantasy Football league manager',
   },
   {
     name: 'Coiney (窓口)',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
     infoLink: 'https://www.techinasia.com/japan-startup-coiney-aims-for-ipo',
-    infoTitle: 'Japanese startup Coiney aims for IPO',
+    infoTitle: 'Coiney provides smarphone-based credit card processing services in Japan',
   },
   {
     name: 'Convoy Driver',
@@ -312,7 +305,22 @@ var featured = [
     linkAppStore: 'http://apple.co/2dfkYH9',
     infoLink: 'https://blog.getchop.io/how-we-built-chop-bae3d8acd131#.7y8buamrq',
     infoTitle: 'How we built Chop',
-  }  
+  },
+  {
+    name: 'Bloomberg',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple71/v4/31/24/72/312472df-3d53-0acf-fc31-8a25682e528f/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/bloomberg/id281941097?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bloomberg.android.plus&hl=en',
+    infoLink: 'https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/',
+    infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
+  },
+	{
+		name: 'Blink',
+		icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
+		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
+		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
+		infoTitle: 'What we learned after using React Native for a year',
+	}
 ];
 
 /*
@@ -362,7 +370,6 @@ var pinned = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb',
     infoLink: 'https://www.youtube.com/watch?v=tUfgQtmG3R0',
     infoTitle: 'Hybrid React Native Apps at Airbnb',
-    infoTitle: 'Tech Talk: Hybrid React Native Apps at Airbnb',
     defaultLink: 'https://www.airbnb.com/mobile',
   },
   {
@@ -515,7 +522,7 @@ var showcase = React.createClass({
         <section className="content wrap documentationContent nosidebar showcaseSection">
           <div className="inner-content showcaseHeader">
             <h1 style={{textAlign: 'center'}}>Who's using React Native?</h1>
-            <div className="subHeader"></div>
+            <div className="subHeader" />
             <p>Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!</p>
 
             <div className="inner-content">
