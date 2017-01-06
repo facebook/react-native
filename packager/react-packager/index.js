@@ -8,7 +8,7 @@
  */
 'use strict';
 
-require('../babelRegisterOnly')([/react-packager\/src/]);
+require('../../setupBabel')();
 
 const debug = require('debug');
 const Logger = require('./src/Logger');
