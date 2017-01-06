@@ -1,7 +1,7 @@
 ---
 title: A Monthly Release Cadence: Releasing December and January RC
 author: Eric Vicenti
-authorTitle: UI Engineer at Facebook
+authorTitle: Engineer at Facebook
 authorURL: https://twitter.com/EricVicenti
 authorImage: https://secure.gravatar.com/avatar/077ad5372b65567fe952a99f3b627048?s=128
 authorTwitter: EricVicenti
@@ -10,11 +10,11 @@ category: announcements
 
 Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release of our production iOS apps, so we decided to release the open source versions at the same pace. Now, many of the Facebook apps ship once per week, especially on Android. Because we ship from master weekly, we need to keep it quite stable. So the bi-weekly release cadence doesn't even benefit internal contributors anymore.
 
-We frequently hear feedback from the community that the release rate is hard to keep up with. Tools like [Exponent](https://getexponent.com/) had to skip every other release in order to manage the rapid change in version. And these days, most of our releases are coordinated by external contributors, (usually [Mike Grabowski](https://twitter.com/grabbou)). So it seems clear that the bi-weekly releases did not serve the community well.
+We frequently hear feedback from the community that the release rate is hard to keep up with. Tools like [Exponent](https://getexponent.com/) had to skip every other release in order to manage the rapid change in version. So it seems clear that the bi-weekly releases did not serve the community well.
 
 ### Now releasing monthly
 
-We're happy to announce the new monthly release cadence, and the new release, `v0.40`(December 2016), which has been stabilizing for all of December and is ready to adopt. (Just make sure to [update headers in your native modules on iOS](https://github.com/facebook/react-native/releases/tag/v0.40.0)).
+We're happy to announce the new monthly release cadence, and the December 2016 release, `v0.40`, which has been stabilizing for all last month and is ready to adopt. (Just make sure to [update headers in your native modules on iOS](https://github.com/facebook/react-native/releases/tag/v0.40.0)).
 
 Although it may vary a few days to avoid weekends or handle unforeseen issues, you can now expect a given release to be available on the first day of the month, and released on the last.
 
