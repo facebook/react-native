@@ -298,7 +298,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.injectJavaScript,
-      [String(data)]
+      [data]
     );
   };
 

@@ -281,7 +281,7 @@ class InjectJS extends React.Component {
             backgroundColor: BGWASH,
             height: 300,
           }}
-          source={{uri: "https://www.facebook.com"}}
+          source={{uri: 'https://www.facebook.com'}}
           scalesPageToFit={true}
         />
         <View style={styles.buttons}>
