@@ -37,7 +37,6 @@ TEST(JSBigFileString, MapWholeFileTest) {
   JSBigFileString bigStr {fd, size};
 
   // Test
-  ASSERT_EQ(fd, bigStr.fd());
   ASSERT_STREQ(data.c_str(), bigStr.c_str());
 }
 
@@ -53,7 +52,6 @@ TEST(JSBigFileString, MapPartTest) {
   JSBigFileString bigStr {fd, needle.size(), offset};
 
   // Test
-  ASSERT_EQ(fd, bigStr.fd());
   ASSERT_EQ(needle.length(), bigStr.size());
   for (unsigned int i = 0; i < needle.length(); ++i) {
     ASSERT_EQ(needle[i], bigStr.c_str()[i]);

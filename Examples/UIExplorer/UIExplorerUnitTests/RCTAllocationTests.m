@@ -15,11 +15,11 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTBridge+Private.h"
-#import "RCTJSCExecutor.h"
-#import "RCTModuleMethod.h"
-#import "RCTRootView.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTJSCExecutor.h>
+#import <React/RCTModuleMethod.h>
+#import <React/RCTRootView.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -213,7 +213,10 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     (void)rootView;
   }
 
+#if !TARGET_OS_TV // userInteractionEnabled is true for Apple TV views
   XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
+#endif
+
 }
 
 - (void)testUnderlyingBridgeIsDeallocated

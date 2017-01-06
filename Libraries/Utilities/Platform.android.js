@@ -12,10 +12,11 @@
 
 'use strict';
 
-var Platform = {
+const Platform = {
   OS: 'android',
   get Version() {
-    return require('NativeModules').AndroidConstants.Version;
+    const AndroidConstants = require('NativeModules').AndroidConstants;
+    return AndroidConstants && AndroidConstants.Version;
   },
   select: (obj: Object) => obj.android,
 };

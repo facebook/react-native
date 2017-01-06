@@ -48,7 +48,7 @@ import com.facebook.react.uimanager.ViewManager;
  * {@link #onHostDestroy} and {@link #onHostResume}).
  *
  * Ideally, this would be an interface, but because of the API used by earlier versions, it has to
- * have a static method, and so cannot (in Java < 8), be one.
+ * have a static method, and so cannot (in Java < 8) be one.
  */
 public abstract class ReactInstanceManager {
 

@@ -9,7 +9,7 @@ android_library(
     'layoutanimation/*.java'
   ]),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('java/com/facebook/systrace:systrace'),
     react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('third-party/android/support/v4:lib-support-v4'),
@@ -28,6 +28,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':uimanager',
-)

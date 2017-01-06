@@ -12,8 +12,6 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-
 #define RCT_TEST(name)                  \
 - (void)test##name                      \
 {                                       \
@@ -32,6 +30,7 @@
 - (void)setUp
 {
   _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp", nil);
+  _runner.recordMode = NO;
 }
 
 #pragma mark - Test harness

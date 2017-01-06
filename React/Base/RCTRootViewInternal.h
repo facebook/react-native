@@ -7,7 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
+
+@class RCTTVRemoteHandler;
 
 /**
  * The interface provides a set of functions that allow other internal framework
@@ -19,5 +21,13 @@
  * This setter should be used only by RCTUIManager on react root view size update.
  */
 @property (readwrite, nonatomic, assign) CGSize intrinsicSize;
+
+/**
+ * TV remote gesture recognizers
+ */
+#if TARGET_OS_TV
+@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
+@property (nonatomic, strong) UIView *reactPreferredFocusedView;
+#endif
 
 @end

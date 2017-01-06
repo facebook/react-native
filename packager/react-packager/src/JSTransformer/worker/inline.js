@@ -148,7 +148,9 @@ const plugin = () => inlinePlugin;
 function checkRequireArgs(args, dependencyId) {
   const pattern = t.stringLiteral(dependencyId);
   return t.isStringLiteral(args[0], pattern) ||
-         t.isNumericLiteral(args[0]) && t.isStringLiteral(args[1], pattern);
+         t.isMemberExpression(args[0]) &&
+         t.isNumericLiteral(args[0].property) &&
+         t.isStringLiteral(args[1], pattern);
 }
 
 type AstResult = {

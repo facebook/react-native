@@ -11,6 +11,7 @@
 
 'use strict';
 
+const debugRead = require('debug')('RNP:TransformCache:Read');
 const fs = require('fs');
 /**
  * We get the package "for free" with "write-file-atomic". MurmurHash3 is a
@@ -22,11 +23,15 @@ const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
+const terminal = require('../lib/terminal');
+const toFixedHex = require('./toFixedHex');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 const CACHE_NAME = 'react-native-packager-cache';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
+import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {SourceMap} from './SourceMap';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -41,6 +46,10 @@ const getCacheDirPath = (function () {
       dirPath = path.join(
         require('os').tmpdir(),
         CACHE_NAME + '-' + imurmurhash(__dirname).result().toString(16),
+      );
+
+      require('debug')('RNP:TransformCache:Dir')(
+        `transform cache directory: ${dirPath}`
       );
     }
     return dirPath;
@@ -61,24 +70,23 @@ function hashSourceCode(props: {
  */
 function getCacheFilePaths(props: {
   filePath: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 }): CacheFilePaths {
   const hasher = imurmurhash()
     .hash(props.filePath)
     .hash(jsonStableStringify(props.transformOptions) || '');
-  let hash = hasher.result().toString(16);
-  hash = Array(8 - hash.length + 1).join('0') + hash;
+  const hash = toFixedHex(8, hasher.result());
   const prefix = hash.substr(0, 2);
   const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
   const base = path.join(getCacheDirPath(), prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
-type CachedResult = {
+export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
 };
 
 /**
@@ -117,7 +125,7 @@ function writeSync(props: {
   filePath: string,
   sourceCode: string,
   transformCacheKey: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
   result: CachedResult,
 }): void {
   const cacheFilePath = getCacheFilePaths(props);
@@ -135,7 +143,7 @@ function writeSync(props: {
   ]));
 }
 
-type CacheOptions = {resetCache?: boolean};
+export type CacheOptions = {resetCache?: boolean};
 
 /* 1 day */
 const GARBAGE_COLLECTION_PERIOD = 24 * 60 * 60 * 1000;
@@ -187,18 +195,18 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     try {
       this._collectSync();
     } catch (error) {
-      console.error(error.stack);
-      console.error(
+      terminal.log(error.stack);
+      terminal.log(
         'Error: Cleaning up the cache folder failed. Continuing anyway.',
       );
-      console.error('The cache folder is: %s', getCacheDirPath());
+      terminal.log('The cache folder is: %s', getCacheDirPath());
     }
     this._lastCollected = Date.now();
   }
 
   _resetCache() {
     rimraf.sync(getCacheDirPath());
-    console.log('Warning: The transform cache was reset.');
+    terminal.log('Warning: The transform cache was reset.');
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
   }
@@ -226,7 +234,7 @@ function readMetadataFileSync(
   cachedSourceHash: number,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  sourceMap: ?{},
+  sourceMap: ?SourceMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
   let metadata;
@@ -272,6 +280,14 @@ function readMetadataFileSync(
   };
 }
 
+export type ReadTransformProps = {
+  filePath: string,
+  sourceCode: string,
+  transformOptions: TransformOptions,
+  transformCacheKey: string,
+  cacheOptions: CacheOptions,
+};
+
 /**
  * We verify the source hash matches to ensure we always favor rebuilding when
  * source change (rather than just using fs.mtime(), a bit less robust).
@@ -285,13 +301,7 @@ function readMetadataFileSync(
  * Meanwhile we store transforms with different options in different files so
  * that it is fast to switch between ex. minified, or not.
  */
-function readSync(props: {
-  filePath: string,
-  sourceCode: string,
-  transformOptions: mixed,
-  transformCacheKey: string,
-  cacheOptions: CacheOptions,
-}): ?CachedResult {
+function readSync(props: ReadTransformProps): ?CachedResult {
   GARBAGE_COLLECTOR.collectIfNecessarySync(props.cacheOptions);
   const cacheFilePaths = getCacheFilePaths(props);
   let metadata, transformedCode;
@@ -324,5 +334,10 @@ function readSync(props: {
 
 module.exports = {
   writeSync,
-  readSync,
+  readSync(props: ReadTransformProps): ?CachedResult {
+    const result = readSync(props);
+    const msg = result ? 'Cache hit: ' : 'Cache miss: ';
+    debugRead(msg + props.filePath);
+    return result;
+  }
 };

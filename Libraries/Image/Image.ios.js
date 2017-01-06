@@ -288,7 +288,7 @@ const Image = React.createClass({
      * preload images will be provided as a separate API.
      *
      * @param uri The location of the image.
-     * @param success The function that will be called if the image was sucessfully found and width
+     * @param success The function that will be called if the image was successfully found and width
      * and height retrieved.
      * @param failure The function that will be called if there was an error, such as failing to
      * to retrieve the image.

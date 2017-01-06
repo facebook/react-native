@@ -15,12 +15,12 @@ const AssetModule = require('../AssetModule');
 describe('AssetModule:', () => {
   const defaults = {file: '/arbitrary'};
 
-  pit('has no dependencies by default', () => {
+  it('has no dependencies by default', () => {
     return new AssetModule(defaults).getDependencies()
       .then(deps => expect(deps).toEqual([]));
   });
 
-  pit('can be parametrized with dependencies', () => {
+  it('can be parametrized with dependencies', () => {
     const dependencies = ['arbitrary', 'dependencies'];
     return new AssetModule({...defaults, dependencies}).getDependencies()
       .then(deps => expect(deps).toEqual(dependencies));

@@ -14,13 +14,14 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
-#if !TARGET_OS_TV
-#import "RCTRefreshControl.h"
-#endif
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+
+#if !TARGET_OS_TV
+#import "RCTRefreshControl.h"
+#endif
 
 CGFloat const ZINDEX_DEFAULT = 0;
 CGFloat const ZINDEX_STICKY_HEADER = 50;
@@ -450,6 +451,11 @@ static inline BOOL isRectInvalid(CGRect rect) {
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+- (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
+{
+  // Does nothing
+}
+
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:view atIndex:atIndex];
@@ -481,19 +487,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing for subview management, since it's done by `insertReactSubview:atIndex:`
-
-  // Unfortunately we have to copy paste clipping related logic from superclass.
-  // Ideally subview management and clipping wouldn't happen in a single place.
-  if (self.rct_nextClippingView || self.rct_removesClippedSubviews) {
-    UIView *rct_nextClippingViewForSubviews = self.rct_removesClippedSubviews ? self : self.rct_nextClippingView;
-    [self rct_updateSubviewsWithNextClippingView:rct_nextClippingViewForSubviews];
-
-    CGRect clippingRect = [self rct_activeClippingRect];
-    if (!CGRectIsNull(clippingRect)) {
-      [self rct_clipSubviewsWithAncestralClipRect:clippingRect];
-    }
-  }
+  // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`
 }
 
 - (BOOL)centerContent
@@ -536,10 +530,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
 
   CGPoint originalOffset = _scrollView.contentOffset;
-  if (!CGRectEqualToRect(_scrollView.frame, self.bounds)) {
-    _scrollView.frame = self.bounds;
-    [self updateClippedSubviews];
-  }
+  _scrollView.frame = self.bounds;
   _scrollView.contentOffset = originalOffset;
 
 #if !TARGET_OS_TV
@@ -549,10 +540,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
 #endif
+
+  [self updateClippedSubviews];
 }
 
 - (void)updateClippedSubviews
 {
+  // Find a suitable view to use for clipping
+  UIView *clipView = [self react_findClipView];
+  if (!clipView) {
+    return;
+  }
+
   static const CGFloat leeway = 1.0;
 
   const CGSize contentSize = _scrollView.contentSize;
@@ -567,7 +566,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     (scrollsVertically && (bounds.size.height < leeway || fabs(_lastClippedToRect.origin.y - bounds.origin.y) >= leeway));
 
   if (shouldClipAgain) {
-    [self rct_reclip];
+    const CGRect clipRect = CGRectInset(clipView.bounds, -leeway, -leeway);
+    [self react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
     _lastClippedToRect = bounds;
   }
 }

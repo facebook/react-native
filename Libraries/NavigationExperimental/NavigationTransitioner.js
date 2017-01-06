@@ -127,13 +127,15 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       scenes: nextScenes,
     };
 
-    this._prevTransitionProps = this._transitionProps;
-    this._transitionProps = buildTransitionProps(nextProps, nextState);
-
     const {
       position,
       progress,
     } = nextState;
+
+    progress.setValue(0);
+
+    this._prevTransitionProps = this._transitionProps;
+    this._transitionProps = buildTransitionProps(nextProps, nextState);
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
@@ -150,8 +152,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     const {timing} = transitionSpec;
     delete transitionSpec.timing;
-
-    progress.setValue(0);
 
     const animations = [
       timing(

@@ -6,11 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');
-var H2 = require('H2');
 
 var support = React.createClass({
   childContextTypes: {

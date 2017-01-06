@@ -161,6 +161,9 @@ class Cache {
             const ret = (Object.create(null): Record);
             ret.metadata = record.metadata;
             ret.data = Object.create(null);
+            /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected
+             * during the deploy of Flow v0.36.0. To see the error, remove this
+             * comment and run Flow */
             fieldNames.forEach((field, index) =>
               ret.data[field] = ref[index]
             );

@@ -9,22 +9,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeDelegate.h"
-#import "RCTBridgeModule.h"
-#import "RCTDefines.h"
-#import "RCTFrameUpdate.h"
-#import "RCTInvalidating.h"
+#import <React/RCTBridgeDelegate.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTDefines.h>
+#import <React/RCTFrameUpdate.h>
+#import <React/RCTInvalidating.h>
 
 @class JSValue;
 @class RCTBridge;
 @class RCTEventDispatcher;
 @class RCTPerformanceLogger;
-
-/**
- * This notification triggers a reload of all bridges currently running.
- * Deprecated, use RCTBridge::requestReload instead.
- */
-RCT_EXTERN NSString *const RCTReloadNotification DEPRECATED_ATTRIBUTE;
 
 /**
  * This notification fires when the bridge starts loading the JS bundle.
@@ -203,7 +197,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * Inform the bridge, and anything subscribing to it, that it should reload.
  */
-- (void)requestReload;
+- (void)requestReload __deprecated_msg("Call reload instead");
 
 /**
  * Says whether bridge has started recieving calls from javascript.
