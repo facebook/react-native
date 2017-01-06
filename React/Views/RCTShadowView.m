@@ -491,29 +491,12 @@ RCT_PADDING_PROPERTY(Right, RIGHT)
 
 - (UIEdgeInsets)paddingAsInsets
 {
-  if (YGNodeLayoutGetDirection(_cssNode) == YGDirectionRTL) {
-    return (UIEdgeInsets){
-      YGNodeStyleGetPadding(_cssNode, YGEdgeTop).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).unit == YGUnitPixel ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).value :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).unit == YGUnitPixel ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).value :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeRight).value
-    };
-  } else {
-    return (UIEdgeInsets){
-      YGNodeStyleGetPadding(_cssNode, YGEdgeTop).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).unit == YGUnitPixel ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeStart).value :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeLeft).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeBottom).value,
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).unit == YGUnitPixel ?
-      YGNodeStyleGetPadding(_cssNode, YGEdgeEnd).value :
-      YGNodeStyleGetPadding(_cssNode, YGEdgeRight).value
-    };
-  }
+  return (UIEdgeInsets){
+    YGNodeLayoutGetPadding(_cssNode, YGEdgeTop),
+    YGNodeLayoutGetPadding(_cssNode, YGEdgeLeft),
+    YGNodeLayoutGetPadding(_cssNode, YGEdgeBottom),
+    YGNodeLayoutGetPadding(_cssNode, YGEdgeRight)
+  };
 }
 
 // Border
