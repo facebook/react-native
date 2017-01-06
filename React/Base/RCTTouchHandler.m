@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
     NSNumber *reactTag = [targetView reactTagAtPoint:[touch locationInView:targetView]];
     if (!reactTag || !targetView.userInteractionEnabled) {
-      return;
+      continue;
     }
 
     // Get new, unique touch identifier for the react touch
@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 {
   for (UITouch *touch in touches) {
     NSUInteger index = [_nativeTouches indexOfObject:touch];
-    if(index == NSNotFound) {
+    if (index == NSNotFound) {
       continue;
     }
 
@@ -322,6 +322,10 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 - (void)reset
 {
   _dispatchedInitialTouches = NO;
+
+  [_nativeTouches removeAllObjects];
+  [_reactTouches removeAllObjects];
+  [_touchViews removeAllObjects];
 }
 
 - (void)cancel

@@ -163,6 +163,7 @@
 		2D3B5EF11D9B09E700451313 /* UIView+React.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067541A70F44B002CDEE1 /* UIView+React.m */; };
 		2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
+		2D9F8B9B1DE398DB00A16144 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
 		2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
 		369123E11DDC75850095B341 /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* JSCSamplingProfiler.m */; };
@@ -420,6 +421,15 @@
 		3D3CD9441DE5FC6500167DC4 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */; };
 		3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
+		3D5AC7131E0056C4000F9153 /* RCTTVView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5AC70F1E0056BC000F9153 /* RCTTVView.h */; };
+		3D5AC7141E0056C7000F9153 /* RCTTVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5AC7101E0056BC000F9153 /* RCTTVView.m */; };
+		3D5AC7191E0056E0000F9153 /* RCTTVNavigationEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5AC7151E0056D9000F9153 /* RCTTVNavigationEventEmitter.h */; };
+		3D5AC71A1E0056E0000F9153 /* RCTTVNavigationEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5AC7161E0056D9000F9153 /* RCTTVNavigationEventEmitter.m */; };
+		3D5AC71B1E005723000F9153 /* RCTReloadCommand.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
+		3D5AC71C1E005723000F9153 /* RCTTVNavigationEventEmitter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D5AC7151E0056D9000F9153 /* RCTTVNavigationEventEmitter.h */; };
+		3D5AC71D1E00572F000F9153 /* RCTTVView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D5AC70F1E0056BC000F9153 /* RCTTVView.h */; };
+		3D5AC7221E005763000F9153 /* RCTTVRemoteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5AC71E1E005750000F9153 /* RCTTVRemoteHandler.h */; };
+		3D5AC7231E005766000F9153 /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D5AC71F1E005750000F9153 /* RCTTVRemoteHandler.m */; };
 		3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
 		3D7A27E21DE325B7002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
 		3D7A27E31DE325DA002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
@@ -775,6 +785,9 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				3D5AC71D1E00572F000F9153 /* RCTTVView.h in Copy Headers */,
+				3D5AC71B1E005723000F9153 /* RCTReloadCommand.h in Copy Headers */,
+				3D5AC71C1E005723000F9153 /* RCTTVNavigationEventEmitter.h in Copy Headers */,
 				3D302FA01DF8290600D6DDAE /* RCTImageLoader.h in Copy Headers */,
 				3D302FA11DF8290600D6DDAE /* RCTImageStoreManager.h in Copy Headers */,
 				3D302FA21DF8290600D6DDAE /* RCTResizeMode.h in Copy Headers */,
@@ -1283,6 +1296,12 @@
 		3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjschelpers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D5AC70F1E0056BC000F9153 /* RCTTVView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVView.h; sourceTree = "<group>"; };
+		3D5AC7101E0056BC000F9153 /* RCTTVView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVView.m; sourceTree = "<group>"; };
+		3D5AC7151E0056D9000F9153 /* RCTTVNavigationEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVNavigationEventEmitter.h; sourceTree = "<group>"; };
+		3D5AC7161E0056D9000F9153 /* RCTTVNavigationEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVNavigationEventEmitter.m; sourceTree = "<group>"; };
+		3D5AC71E1E005750000F9153 /* RCTTVRemoteHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVRemoteHandler.h; sourceTree = "<group>"; };
+		3D5AC71F1E005750000F9153 /* RCTTVRemoteHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVRemoteHandler.m; sourceTree = "<group>"; };
 		3D7749421DC1065C007EC8D8 /* RCTPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPlatform.h; sourceTree = "<group>"; };
 		3D7749431DC1065C007EC8D8 /* RCTPlatform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
 		3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavaScriptCore.h; sourceTree = "<group>"; };
@@ -1433,6 +1452,8 @@
 				13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */,
 				13B07FED1A69327A00A75B9A /* RCTTiming.h */,
 				13B07FEE1A69327A00A75B9A /* RCTTiming.m */,
+				3D5AC7151E0056D9000F9153 /* RCTTVNavigationEventEmitter.h */,
+				3D5AC7161E0056D9000F9153 /* RCTTVNavigationEventEmitter.m */,
 				13E067481A70F434002CDEE1 /* RCTUIManager.h */,
 				13E067491A70F434002CDEE1 /* RCTUIManager.m */,
 			);
@@ -1527,6 +1548,8 @@
 				137327E51AA5CF210034F82E /* RCTTabBarManager.h */,
 				137327E61AA5CF210034F82E /* RCTTabBarManager.m */,
 				E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */,
+				3D5AC70F1E0056BC000F9153 /* RCTTVView.h */,
+				3D5AC7101E0056BC000F9153 /* RCTTVView.m */,
 				13E0674F1A70F44B002CDEE1 /* RCTView.h */,
 				13E067501A70F44B002CDEE1 /* RCTView.m */,
 				13442BF41AA90E0B0037E5B0 /* RCTViewControllerProtocol.h */,
@@ -1734,6 +1757,8 @@
 				391E86A21C623EC800009732 /* RCTTouchEvent.m */,
 				83CBBA961A6020BB00E9B192 /* RCTTouchHandler.h */,
 				83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */,
+				3D5AC71E1E005750000F9153 /* RCTTVRemoteHandler.h */,
+				3D5AC71F1E005750000F9153 /* RCTTVRemoteHandler.m */,
 				1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */,
 				1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */,
 				83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */,
@@ -1781,6 +1806,7 @@
 				3D302F361DF828F800D6DDAE /* RCTErrorInfo.h in Headers */,
 				3D302F371DF828F800D6DDAE /* RCTEventDispatcher.h in Headers */,
 				3D302F381DF828F800D6DDAE /* RCTFrameUpdate.h in Headers */,
+				3D5AC7221E005763000F9153 /* RCTTVRemoteHandler.h in Headers */,
 				3D302F391DF828F800D6DDAE /* RCTImageSource.h in Headers */,
 				3D302F3A1DF828F800D6DDAE /* RCTInvalidating.h in Headers */,
 				3D302F3B1DF828F800D6DDAE /* RCTJavaScriptExecutor.h in Headers */,
@@ -1854,6 +1880,7 @@
 				3D302F841DF828F800D6DDAE /* RCTPointerEvents.h in Headers */,
 				3D302F851DF828F800D6DDAE /* RCTProgressViewManager.h in Headers */,
 				3D302F861DF828F800D6DDAE /* RCTRefreshControl.h in Headers */,
+				3D5AC7131E0056C4000F9153 /* RCTTVView.h in Headers */,
 				3D302F871DF828F800D6DDAE /* RCTRefreshControlManager.h in Headers */,
 				A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */,
 				3D302F881DF828F800D6DDAE /* RCTRootShadowView.h in Headers */,
@@ -1865,6 +1892,7 @@
 				3D302F8E1DF828F800D6DDAE /* RCTShadowView.h in Headers */,
 				3D302F8F1DF828F800D6DDAE /* RCTSlider.h in Headers */,
 				3D302F901DF828F800D6DDAE /* RCTSliderManager.h in Headers */,
+				3D5AC7191E0056E0000F9153 /* RCTTVNavigationEventEmitter.h in Headers */,
 				3D302F911DF828F800D6DDAE /* RCTSwitch.h in Headers */,
 				3D302F921DF828F800D6DDAE /* RCTSwitchManager.h in Headers */,
 				3D302F931DF828F800D6DDAE /* RCTTabBar.h in Headers */,
@@ -2338,6 +2366,7 @@
 				2D3B5EC91D9B095C00451313 /* RCTBorderDrawing.m in Sources */,
 				2D3B5ED31D9B097B00451313 /* RCTMapOverlay.m in Sources */,
 				2D3B5E991D9B089A00451313 /* RCTDisplayLink.m in Sources */,
+				2D9F8B9B1DE398DB00A16144 /* RCTPlatform.m in Sources */,
 				2D3B5EBF1D9B093300451313 /* RCTJSCProfiler.m in Sources */,
 				2D3B5EA11D9B08B600451313 /* RCTModuleData.mm in Sources */,
 				2D3B5EEA1D9B09CD00451313 /* RCTTabBar.m in Sources */,
@@ -2393,15 +2422,18 @@
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
 				3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */,
 				2D3B5EC61D9B095000451313 /* RCTProfileTrampoline-x86_64.S in Sources */,
+				3D5AC71A1E0056E0000F9153 /* RCTTVNavigationEventEmitter.m in Sources */,
 				3D7A27E31DE325DA002E3F95 /* RCTJSCErrorHandling.mm in Sources */,
 				2D3B5ED01D9B097200451313 /* RCTMap.m in Sources */,
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
 				2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */,
+				3D5AC7141E0056C7000F9153 /* RCTTVView.m in Sources */,
 				2D3B5EEC1D9B09D400451313 /* RCTTabBarItemManager.m in Sources */,
 				2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */,
 				2D3B5E9C1D9B08A300451313 /* RCTImageSource.m in Sources */,
 				3DDEC1521DDCE0CA0020BBDF /* JSCSamplingProfiler.m in Sources */,
+				3D5AC7231E005766000F9153 /* RCTTVRemoteHandler.m in Sources */,
 				2D3B5EC31D9B094800451313 /* RCTProfileTrampoline-arm.S in Sources */,
 				2D3B5ED91D9B098E00451313 /* RCTNavItem.m in Sources */,
 				2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */,

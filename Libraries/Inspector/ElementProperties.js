@@ -11,20 +11,20 @@
  */
 'use strict';
 
-var BoxInspector = require('BoxInspector');
-var React = require('React');
-var StyleInspector = require('StyleInspector');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TouchableHighlight = require('TouchableHighlight');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const BoxInspector = require('BoxInspector');
+const React = require('React');
+const StyleInspector = require('StyleInspector');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 
-var flattenStyle = require('flattenStyle');
-var mapWithSeparator = require('mapWithSeparator');
-var openFileInEditor = require('openFileInEditor');
+const flattenStyle = require('flattenStyle');
+const mapWithSeparator = require('mapWithSeparator');
+const openFileInEditor = require('openFileInEditor');
 
-var PropTypes = React.PropTypes;
+const PropTypes = React.PropTypes;
 
 class ElementProperties extends React.Component {
   props: {
@@ -50,15 +50,15 @@ class ElementProperties extends React.Component {
   };
 
   render() {
-    var style = flattenStyle(this.props.style);
+    const style = flattenStyle(this.props.style);
     // $FlowFixMe found when converting React.createClass to ES6
-    var selection = this.props.selection;
-    var openFileButton;
-    var source = this.props.source;
-    var {fileName, lineNumber} = source || {};
+    const selection = this.props.selection;
+    let openFileButton;
+    const source = this.props.source;
+    const {fileName, lineNumber} = source || {};
     if (fileName && lineNumber) {
-      var parts = fileName.split('/');
-      var fileNameShort = parts[parts.length - 1];
+      const parts = fileName.split('/');
+      const fileNameShort = parts[parts.length - 1];
       openFileButton = (
         <TouchableHighlight
           style={styles.openButton}
@@ -120,7 +120,7 @@ function getInstanceName(instance) {
   return 'Unknown';
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   breadSep: {
     fontSize: 8,
     color: 'white',
@@ -155,10 +155,6 @@ var styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-  },
-  path: {
-    color: 'white',
-    fontSize: 9,
   },
   openButton: {
     padding: 10,

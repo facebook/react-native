@@ -36,7 +36,7 @@ describe('Transformer', function() {
     fs.writeFileSync.mockClear();
     options = {transformModulePath};
     workerFarm.mockClear();
-    workerFarm.mockImpl((opts, path, methods) => {
+    workerFarm.mockImplementation((opts, path, methods) => {
       const api = workers = {};
       methods.forEach(method => {api[method] = jest.fn();});
       return api;
@@ -57,12 +57,12 @@ describe('Transformer', function() {
     );
   });
 
-  pit('should add file info to parse errors', function() {
+  it('should add file info to parse errors', function() {
     const transformer = new Transformer(options);
     var message = 'message';
     var snippet = 'snippet';
 
-    workers.transformAndExtractDependencies.mockImpl(
+    workers.transformAndExtractDependencies.mockImplementation(
       function(transformPath, filename, code, opts, callback) {
         var babelError = new SyntaxError(message);
         babelError.type = 'SyntaxError';

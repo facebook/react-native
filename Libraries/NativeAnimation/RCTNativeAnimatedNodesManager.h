@@ -60,6 +60,8 @@
 
 - (void)stopAnimation:(nonnull NSNumber *)animationId;
 
+- (void)stopAnimationLoop;
+
 // events
 
 - (void)addAnimatedEventToView:(nonnull NSNumber *)viewTag
