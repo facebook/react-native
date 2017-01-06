@@ -319,7 +319,15 @@ var featured = [
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
 		infoTitle: 'What we learned after using React Native for a year',
-	}
+	},
+  {
+    name: 'Delivery.com',
+    icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/delivery.com-food-alcohol/id435168129?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
+    infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
+    infoTitle: 'React Native in an Existing iOS App: Getting Started'
+  },  
 ];
 
 /*
