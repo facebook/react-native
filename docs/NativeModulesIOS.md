@@ -336,12 +336,19 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 
 ## Sending Events to JavaScript
 
-The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
+The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to subclass `RCTEventEmitter`:
 
 ```objective-c
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+// CalendarManager.h
+#import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
 
+@interface CalendarManager : RCTEventEmitter <RCTBridgeModule>
+@end
+```
+
+```objective-c
+// CalendarManager.m
 @implementation CalendarManager
 
 @synthesize bridge = _bridge;
@@ -349,8 +356,7 @@ The native module can signal events to JavaScript without being invoked directly
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
-  [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
-                                               body:@{@"name": eventName}];
+  [self sendEventWithName:@"EventReminder" body:@{@"name": eventName}];
 }
 
 @end
@@ -359,15 +365,17 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-import { NativeAppEventEmitter } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+const CalendarManager = NativeModules.CalendarManager;
 
-var subscription = NativeAppEventEmitter.addListener(
+const eventSubscription = new NativeEventEmitter(CalendarManager);
+eventSubscription.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );
 ...
 // Don't forget to unsubscribe, typically in componentWillUnmount
-subscription.remove();
+eventSubscription.remove();
 ```
 For more examples of sending events to JavaScript, see [`RCTLocationObserver`](https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m).
 
