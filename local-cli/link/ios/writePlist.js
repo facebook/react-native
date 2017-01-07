@@ -14,6 +14,9 @@ module.exports = function writePlist(project, sourceDir, plist) {
     return null;
   }
 
+  // We start with an offset of -1, because Xcode maintains a custom
+  // indentation of the plist.
+  // Ref: https://github.com/facebook/react-native/issues/11668
   return fs.writeFileSync(
     plistPath,
     plistParser.build(plist, { indent: '\t', offset: -1 }) + '\n'
