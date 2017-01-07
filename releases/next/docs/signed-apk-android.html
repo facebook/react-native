@@ -7,10 +7,12 @@ android <span class="token punctuation">{</span>
     defaultConfig <span class="token punctuation">{</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">}</span>
     signingConfigs <span class="token punctuation">{</span>
         release <span class="token punctuation">{</span>
-            storeFile <span class="token function">file<span class="token punctuation">(</span></span>MYAPP_RELEASE_STORE_FILE<span class="token punctuation">)</span>
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>project<span class="token punctuation">.</span><span class="token function">hasProperty<span class="token punctuation">(</span></span><span class="token string">&#x27;MYAPP_RELEASE_STORE_FILE&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                storeFile <span class="token function">file<span class="token punctuation">(</span></span>MYAPP_RELEASE_STORE_FILE<span class="token punctuation">)</span>
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            <span class="token punctuation">}</span>
         <span class="token punctuation">}</span>
     <span class="token punctuation">}</span>
     buildTypes <span class="token punctuation">{</span>
