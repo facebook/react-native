@@ -49,6 +49,7 @@ typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 YGMeasureMode widthMode,
                                 float height,
                                 YGMeasureMode heightMode);
+typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(YGLogLevel level, const char *format, va_list args);
 
@@ -138,6 +139,7 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
 
 YG_NODE_PROPERTY(void *, Context, context);
 YG_NODE_PROPERTY(YGMeasureFunc, MeasureFunc, measureFunc);
+YG_NODE_PROPERTY(YGBaselineFunc, BaselineFunc, baselineFunc)
 YG_NODE_PROPERTY(YGPrintFunc, PrintFunc, printFunc);
 YG_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
 
@@ -190,6 +192,12 @@ YG_NODE_LAYOUT_PROPERTY(float, Bottom);
 YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
+
+// Get the computed padding for this node after performing layout. If padding was set using
+// pixel values then the returned value will be the same as YGNodeStyleGetPadding. However if
+// padding was set using a percentage value then the returned value is the computed value used
+// during layout.
+WIN_EXPORT float YGNodeLayoutGetPadding(const YGNodeRef node, const YGEdge edge);
 
 WIN_EXPORT void YGSetLogger(YGLogger logger);
 WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);

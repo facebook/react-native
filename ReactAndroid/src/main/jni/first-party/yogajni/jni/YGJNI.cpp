@@ -30,10 +30,21 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
     static auto leftField = obj->getClass()->getField<jfloat>("mLeft");
     static auto topField = obj->getClass()->getField<jfloat>("mTop");
 
+    static auto paddingLeftField = obj->getClass()->getField<jfloat>("mPaddingLeft");
+    static auto paddingTopField = obj->getClass()->getField<jfloat>("mPaddingTop");
+    static auto paddingRightField = obj->getClass()->getField<jfloat>("mPaddingRight");
+    static auto paddingBottomField = obj->getClass()->getField<jfloat>("mPaddingBottom");
+
     obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
     obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
     obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
     obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
+
+    obj->setFieldValue(paddingLeftField, YGNodeLayoutGetPadding(root, YGEdgeLeft));
+    obj->setFieldValue(paddingTopField, YGNodeLayoutGetPadding(root, YGEdgeTop));
+    obj->setFieldValue(paddingRightField, YGNodeLayoutGetPadding(root, YGEdgeRight));
+    obj->setFieldValue(paddingBottomField, YGNodeLayoutGetPadding(root, YGEdgeBottom));
+
     YGTransferLayoutDirection(root, obj);
 
     for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {

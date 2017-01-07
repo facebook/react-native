@@ -104,13 +104,14 @@ typedef enum YGExperimentalFeature {
   YGExperimentalFeatureWebFlexBasis,
 } YGExperimentalFeature;
 
-#define YGAlignCount 5
+#define YGAlignCount 6
 typedef enum YGAlign {
   YGAlignAuto,
   YGAlignFlexStart,
   YGAlignCenter,
   YGAlignFlexEnd,
   YGAlignStretch,
+  YGAlignBaseline,
 } YGAlign;
 
 #define YGUnitCount 3

@@ -18,7 +18,7 @@ const invariant = require('invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap, TransformOptions} from 'babel-core';
+import type {Ast, SourceMap, TransformOptions as BabelTransformOptions} from 'babel-core';
 
 function makeTransformParams(filename, sourceCode, options) {
   if (filename.endsWith('.json')) {
@@ -46,13 +46,15 @@ type Transform = (
   ) => mixed,
 ) => void;
 
+export type TransformOptions = {
+  platform: string,
+  preloadedModules?: Array<string>,
+  projectRoots: Array<string>,
+  ramGroups?: Array<string>,
+} & BabelTransformOptions;
+
 export type Options = {
-  transform: {
-    projectRoots: Array<string>,
-    ramGroups: Array<string>,
-    platform: string,
-    preloadedModules: Array<string>,
-  } & TransformOptions,
+  transform: TransformOptions,
   platform: string,
 };
 

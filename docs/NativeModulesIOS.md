@@ -22,7 +22,7 @@ A native module is just an Objective-C class that implements the `RCTBridgeModul
 
 ```objective-c
 // CalendarManager.h
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface CalendarManager : NSObject <RCTBridgeModule>
 @end
@@ -43,7 +43,7 @@ React Native will not expose any methods of `CalendarManager` to JavaScript unle
 
 ```objective-c
 #import "CalendarManager.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation CalendarManager
 
@@ -126,7 +126,7 @@ And both values would get converted correctly to the native `NSDate`.  A bad val
 As `CalendarManager.addEvent` method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:
 
 ```objective-c
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 RCT_EXPORT_METHOD(addEvent:(NSString *)name details:(NSDictionary *)details)
 {
@@ -339,8 +339,8 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
 
 ```objective-c
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
 
 @implementation CalendarManager
 
@@ -397,7 +397,7 @@ Then create a private implementation file that will register the required inform
 
 ```objc
 // CalendarManagerBridge.m
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE(CalendarManager, NSObject)
 
@@ -410,7 +410,7 @@ For those of you new to Swift and Objective-C, whenever you [mix the two languag
 
 ```objc
 // CalendarManager-Bridging-Header.h
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 ```
 
 You can also use `RCT_EXTERN_REMAP_MODULE` and `RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h).
