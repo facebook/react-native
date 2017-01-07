@@ -17,7 +17,7 @@ describe('InteractionMixin', () => {
   var component;
 
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     InteractionManager = require('InteractionManager');
     InteractionMixin = require('InteractionMixin');
 
