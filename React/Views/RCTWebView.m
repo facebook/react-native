@@ -29,6 +29,8 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onNavigationBlocked;
+@property (nonatomic, copy) NSArray *navigationBlockingPolicies;
 
 @end
 
@@ -193,8 +195,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
-  BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
-
   static NSDictionary<NSNumber *, NSString *> *navigationTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -208,13 +208,68 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     };
   });
 
+  NSString *sourceURL = (NSString *)self.source[@"uri"];
+  NSString *requestURL = (request.URL).absoluteString;
+  NSString *namedNavigationType = navigationTypes[@(navigationType)];
+
+  NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+  [event addEntriesFromDictionary: @{
+                                     @"url": requestURL,
+                                     @"navigationType": namedNavigationType
+                                     }];
+
+  BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
+  BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
+  BOOL isLoadingSourceURL = ([sourceURL isEqualToString:requestURL] && !_webView.isLoading);
+  
+  // skip this for the JS Navigation handler, initial load, iFrames
+  if (!isJSNavigation && isTopFrame && !isLoadingSourceURL) {
+    if (_navigationBlockingPolicies.count > 0) {
+      NSDictionary *currentValues = @{
+                                      @"currentURL": sourceURL,
+                                      @"url": requestURL,
+                                      @"navigationType": namedNavigationType
+                                      };
+      NSString *eventValue;
+      BOOL policyFulfilled;
+
+      for (NSDictionary *policy in _navigationBlockingPolicies) {
+        // policy with no rules
+        if (policy.count < 1) {
+          continue;
+        }
+
+        policyFulfilled = YES;
+
+        for (NSString *key in policy) {
+          // policy has failed already
+          if (!policyFulfilled) break;
+
+          eventValue = [currentValues objectForKey:key];
+
+          // unverifiable policy rule
+          if (!eventValue) {
+            RCTLogWarn(@"Could not verify webview loading policy named %@. Failing policy with rules %@", key, policy);
+            policyFulfilled = NO;
+            break;
+          }
+
+          NSPredicate *rule = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", [policy objectForKey:key]];
+
+          policyFulfilled = [rule evaluateWithObject: eventValue];
+        }
+
+        // call blocked callback
+        if (policyFulfilled && _onNavigationBlocked) {
+          _onNavigationBlocked(event);
+          return NO;
+        }
+      }
+    }
+  }
+
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
-      @"url": (request.URL).absoluteString,
-      @"navigationType": navigationTypes[@(navigationType)]
-    }];
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
                    withCallback:_onShouldStartLoadWithRequest]) {
@@ -224,13 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
-    BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
     if (isTopFrame) {
-      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-      [event addEntriesFromDictionary: @{
-        @"url": (request.URL).absoluteString,
-        @"navigationType": navigationTypes[@(navigationType)]
-      }];
       _onLoadingStart(event);
     }
   }
@@ -240,11 +289,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
+    NSMutableDictionary<NSString *, id> *_event = [self baseEvent];
+    [_event addEntriesFromDictionary: @{
       @"data": data,
     }];
-    _onMessage(event);
+    _onMessage(_event);
   }
 
   // JS Navigation handler

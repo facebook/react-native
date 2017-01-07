@@ -334,6 +334,21 @@ class WebView extends React.Component {
      * to tap them before they start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Rules that will be used to block the webview navigation
+     */
+    navigationBlockingPolicies: PropTypes.arrayOf(PropTypes.shape({
+      currentURL: PropTypes.string,
+      navigationType: PropTypes.string,
+      url: PropTypes.string,
+    })),
+
+    /**
+     * Function that is invoked when the `WebView` navigation is blocked by the
+     * `navigationBlockingPolicies`.
+     */
+    onNavigationBlocked: PropTypes.func,
   };
 
   state = {
@@ -416,6 +431,8 @@ class WebView extends React.Component {
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         dataDetectorTypes={this.props.dataDetectorTypes}
+        onNavigationBlocked={this.props.onNavigationBlocked}
+        navigationBlockingPolicies={this.props.navigationBlockingPolicies}
       />;
 
     return (
