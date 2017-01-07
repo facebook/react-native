@@ -28,8 +28,19 @@ jest
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
+var defaults = require('../../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
+
+var commonOptions = {
+  allowBundleUpdates: false,
+  assetExts: defaults.assetExts,
+  cacheVersion: 'smth',
+  extraNodeModules: {},
+  platforms: defaults.platforms,
+  resetCache: false,
+  watch: false,
+};
 
 describe('Bundler', function() {
 
@@ -91,6 +102,7 @@ describe('Bundler', function() {
     };
 
     bundler = new Bundler({
+      ...commonOptions,
       projectRoots,
       assetServer: assetServer,
     });
@@ -134,7 +146,7 @@ describe('Bundler', function() {
 
   it('create a bundle', function() {
     assetServer.getAssetData.mockImplementation(() => {
-      return {
+      return Promise.resolve({
         scales: [1,2,3],
         files: [
           '/root/img/img.png',
@@ -144,7 +156,7 @@ describe('Bundler', function() {
         hash: 'i am a hash',
         name: 'img',
         type: 'png',
-      };
+      });
     });
 
     return bundler.bundle({
@@ -170,8 +182,8 @@ describe('Bundler', function() {
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
-          width: 25,
-          height: 50,
+          width: 50,
+          height: 100,
           scales: [1, 2, 3],
           files: [
             '/root/img/img.png',
@@ -217,7 +229,7 @@ describe('Bundler', function() {
       name: 'img',
       type: 'png',
     };
-    assetServer.getAssetData.mockImplementation(() => mockAsset);
+    assetServer.getAssetData.mockImplementation(() => Promise.resolve(mockAsset));
 
     return bundler.bundle({
       entryFile: '/root/foo.js',
@@ -230,8 +242,8 @@ describe('Bundler', function() {
         __packager_asset: true,
         fileSystemLocation: '/root/img',
         httpServerLocation: '/assets/img',
-        width: 25,
-        height: 50,
+        width: 50,
+        height: 100,
         scales: [1, 2, 3],
         files: [
           '/root/img/img.png',
@@ -242,7 +254,7 @@ describe('Bundler', function() {
         name: 'img',
         type: 'png',
         extraReverseHash: 'hsah a ma i',
-        extraPixelCount: 1250,
+        extraPixelCount: 5000,
       }]);
     });
   });
@@ -270,6 +282,7 @@ describe('Bundler', function() {
   it('allows overriding the platforms array', () => {
     expect(bundler._opts.platforms).toEqual(['ios', 'android', 'windows', 'web']);
     const b = new Bundler({
+      ...commonOptions,
       projectRoots,
       assetServer: assetServer,
       platforms: ['android', 'vr'],
@@ -281,7 +294,7 @@ describe('Bundler', function() {
     beforeEach(() => {
       assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {
-          return {
+          return Promise.resolve({
             scales: [1,2,3],
             files: [
               '/root/img/new_image.png',
@@ -291,9 +304,9 @@ describe('Bundler', function() {
             hash: 'i am a hash',
             name: 'img',
             type: 'png',
-          };
+          });
         } else if (relPath === 'img/new_image2.png') {
-          return {
+          return Promise.resolve({
             scales: [1,2,3],
             files: [
               '/root/img/new_image2.png',
@@ -303,7 +316,7 @@ describe('Bundler', function() {
             hash: 'i am a hash',
             name: 'img',
             type: 'png',
-          };
+          });
         }
 
         throw new Error('unknown image ' + relPath);

@@ -133,9 +133,9 @@ Builds a bundle according to the provided options.
 
 To get verbose output when running the packager, define an environment variable:
 
-    export DEBUG=ReactNativePackager:*
+    export DEBUG=RNP:*
 
-You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
+You can combine this with other values, e.g. `DEBUG=babel,RNP:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
 
 The `/debug` endpoint discussed above is also useful.
 

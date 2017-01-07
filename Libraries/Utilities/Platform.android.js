@@ -12,7 +12,7 @@
 
 'use strict';
 
-var Platform = {
+const Platform = {
   OS: 'android',
   get Version() {
     const AndroidConstants = require('NativeModules').AndroidConstants;

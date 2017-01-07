@@ -22,7 +22,7 @@ export type ConfigT = {
   extraNodeModules?: {[id: string]: string},
   getAssetExts?: () => Array<string>,
   getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions<*>,
+  getTransformOptions?: GetTransformOptions,
   transformVariants?: () => {[name: string]: Object},
 
   getBlacklistRE(): RegExp,

@@ -104,6 +104,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     }
 
     setOnHierarchyChangeListener(this);
+    setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
