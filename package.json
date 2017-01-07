@@ -91,6 +91,7 @@
     "jest-preset.json",
     "jest",
     "lib",
+    "setupBabel.js",
     "Libraries",
     "LICENSE",
     "local-cli",
