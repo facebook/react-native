@@ -11,6 +11,9 @@ describe('android::findManifest', () => {
     flat: {
       android: mocks.valid,
     },
+    multipleManifests: {
+      android: mocks.validMultipleManifests,
+    },
   }));
 
   it('should return a manifest path if file exists in the folder', () => {
@@ -19,6 +22,10 @@ describe('android::findManifest', () => {
 
   it('should return `null` if there is no manifest in the folder', () => {
     expect(findManifest('empty')).toBe(null);
+  });
+
+  it('should return the main manifest before other manifests', () => {
+    expect(findManifest('multipleManifests')).toMatch(/[\/\\]src[\/\\]main/);
   });
 
   afterAll(mockFs.restore);

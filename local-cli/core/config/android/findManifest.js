@@ -12,16 +12,33 @@ const glob = require('glob');
 const path = require('path');
 
 /**
- * Find an android application path in the folder
+ * Find an AndroidManifest.xml in the folder.
  *
  * @param {String} folder Name of the folder where to seek
  * @return {String}
  */
 module.exports = function findManifest(folder) {
-  const manifestPath = glob.sync(path.join('**', 'AndroidManifest.xml'), {
+  // Android projects may contain multiple manifest files that are merged
+  // during build. Usually we should use the manifest file of the main source
+  // set at src/main/AndroidManifest.xml. If for some reason that manifest
+  // isn't available (e.g. with a highly customised build setup) we should
+  // look for the first manifest we find.
+  const globOptions = {
     cwd: folder,
-    ignore: ['node_modules/**', '**/build/**', 'Examples/**', 'examples/**'],
-  })[0];
+    ignore: ['**/build/**'],
+  };
 
-  return manifestPath ? path.join(folder, manifestPath) : null;
+  const mainPattern = path.join('**', 'main', 'AndroidManifest.xml');
+  const mainManifestPath = glob.sync(mainPattern, globOptions)[0];
+
+  if (mainManifestPath) {
+    return path.join(folder, mainManifestPath);
+  }
+
+  // Here it's possible that we might not find the manifest that contains what
+  // our caller is looking for but this should be better than returning null.
+  const anyPattern = path.join('**', 'AndroidManifest.xml');
+  const anyManifestPath = glob.sync(anyPattern, globOptions)[0];
+
+  return anyManifestPath ? path.join(folder, anyManifestPath) : null;
 };
