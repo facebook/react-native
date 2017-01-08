@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
     if (mAnimatedProperty != null) {
       switch (mAnimatedProperty) {
         case OPACITY:
+          toValue = view.getAlpha(); // Animate to view's real alpha value
           return new OpacityAnimation(view, fromValue, toValue);
         case SCALE_XY:
           return new ScaleAnimation(
