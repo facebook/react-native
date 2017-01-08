@@ -8,14 +8,9 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.InvalidIteratorException;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NoSuchKeyException;
@@ -23,6 +18,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -37,6 +33,16 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
@@ -299,9 +305,28 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertEquals(ReadableType.Null, array.getType(6));
   }
 
+  public void testCustomTypeViaArgumentExtractor() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnCustomType();
+    waitForBridgeAndUIIdle();
+
+    List<CustomType> calls = mRecordingTestModule.getCustomTypeCalls();
+    assertEquals(1, calls.size());
+    CustomType obj = calls.get(0);
+
+    assertEquals(obj.foo, 1);
+    assertEquals(obj.bar, "string");
+    assertEquals(obj.baz, true);
+    assertEquals(obj.obj.innerBool, true);
+    assertEquals(obj.obj.innerStr, "other string");
+    assertEquals(obj.arr.size(), 3);
+    assertEquals(obj.arr.getInt(0), 1);
+    assertEquals(obj.arr.getString(1), "foo");
+    assertEquals(obj.arr.getString(2), "bar");
+  }
+
   public void testGetTypeFromMap() {
     mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class)
-        .returnMapWithStringDoubleIntMapArrayBooleanNull();
+      .returnMapWithStringDoubleIntMapArrayBooleanNull();
     waitForBridgeAndUIIdle();
 
     List<ReadableMap> calls = mRecordingTestModule.getMapCalls();
@@ -668,11 +693,51 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
-  private class RecordingTestModule extends BaseJavaModule {
+  static class CustomType {
+    private final int foo;
+    private final String bar;
+    private final boolean baz;
+    private final Obj obj;
+    private final ReadableArray arr;
 
-    private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
-    private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
-    private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
+    CustomType(ReadableMap map) {
+      foo = map.getInt("foo");
+      bar = map.getString("bar");
+      baz = map.getBoolean("baz");
+      obj = new CustomType.Obj(map.getMap("obj"));
+      arr = map.getArray("arr");
+    }
+
+    static class Obj {
+      private final String innerStr;
+      private final boolean innerBool;
+
+      Obj(ReadableMap obj) {
+        this.innerStr = obj.getString("innerStr");
+        this.innerBool = obj.getBoolean("innerBool");
+      }
+    }
+  }
+
+  private class RecordingTestModule extends BaseJavaModule {
+    private final List<Object[]> mBasicTypesCalls = new ArrayList<>();
+    private final List<ReadableArray> mArrayCalls = new ArrayList<>();
+    private final List<ReadableMap> mMapCalls = new ArrayList<>();
+    private final List<CustomType> mCustomTypeCalls = new ArrayList<>();
+
+    @Override protected List<? extends CustomArgumentExtractor> getCustomExtractors() {
+      return Collections.singletonList(new CustomArgumentExtractor() {
+        @Override public boolean supportsType(Class<?> type) {
+          return CustomType.class.isAssignableFrom(type);
+        }
+
+        @Nullable @Override public CustomType extractArgument(
+          CatalystInstance catalystInstance, ExecutorToken executorToken,
+          ReadableNativeArray jsArguments, int atIndex) {
+          return new CustomType(jsArguments.getMap(0));
+        }
+      });
+    }
 
     @Override
     public String getName() {
@@ -690,6 +755,11 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
 
     @ReactMethod
+    public void receiveCustomType(CustomType type) {
+      mCustomTypeCalls.add(type);
+    }
+
+    @ReactMethod
     public void receiveMap(ReadableMap map) {
       mMapCalls.add(map);
     }
@@ -704,6 +774,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     public List<ReadableMap> getMapCalls() {
       return mMapCalls;
+    }
+
+    public List<CustomType> getCustomTypeCalls() {
+      return mCustomTypeCalls;
     }
   }
 }

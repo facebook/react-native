@@ -107,6 +107,18 @@ var TestJSToJavaParametersModule = {
       '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107'
     ]);
   },
+  returnCustomType: function() {
+    Recording.receiveCustomType({
+      foo: 1,
+      bar: "string",
+      baz: true,
+      obj: {
+        innerStr: 'other string',
+        innerBool: true
+      },
+      arr: [1,'foo','bar'],
+    });
+  },
 };
 
 BatchedBridge.registerCallableModule(

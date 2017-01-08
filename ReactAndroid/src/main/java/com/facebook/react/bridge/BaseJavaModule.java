@@ -9,16 +9,19 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
@@ -38,7 +41,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * 2/ {@link String} mapped from JS string
  * 3/ {@link ReadableArray} mapped from JS Array
  * 4/ {@link ReadableMap} mapped from JS Object
- * 5/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
+ * 5/ Any {@link Type} that can be handled by a {@link CustomArgumentExtractor} that's returned
+ * by {@link BaseJavaModule#getCustomExtractors()}.
+ * 6/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
  * case when it express success & error callback pair as two last arguments respecively.
  *
  * All methods exposed as native to JS with {@link ReactMethod} annotation must return
@@ -49,17 +54,25 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
-  static final public String METHOD_TYPE_ASYNC = "async";
-  static final public String METHOD_TYPE_PROMISE= "promise";
-  static final public String METHOD_TYPE_SYNC = "sync";
+  private static final String METHOD_TYPE_ASYNC = "async";
+  private static final String METHOD_TYPE_PROMISE= "promise";
+  public static final String METHOD_TYPE_SYNC = "sync";
 
-  private static abstract class ArgumentExtractor<T> {
+  public static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
       return 1;
     }
 
     public abstract @Nullable T extractArgument(
         CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
+  }
+
+  protected List<? extends CustomArgumentExtractor> getCustomExtractors() {
+    return Collections.emptyList();
+  }
+
+  public abstract class CustomArgumentExtractor extends ArgumentExtractor {
+    public abstract boolean supportsType(Class<?> type);
   }
 
   static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
@@ -159,7 +172,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
   public class JavaMethod implements NativeMethod {
 
-    private Method mMethod;
+    private final Method mMethod;
     private final ArgumentExtractor[] mArgumentExtractors;
     private final String mSignature;
     private final Object[] mArguments;
@@ -167,7 +180,7 @@ public abstract class BaseJavaModule implements NativeModule {
     private final int mJSArgumentsNeeded;
     private final String mTraceName;
 
-    public JavaMethod(Method method) {
+    JavaMethod(Method method) {
       mMethod = method;
       mMethod.setAccessible(true);
       Class[] parameterTypes = method.getParameterTypes();
@@ -260,11 +273,25 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (argumentClass == ReadableArray.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_ARRAY;
         } else {
-          throw new RuntimeException(
+          ArgumentExtractor<?> argumentExtractor = findArgumentExtractorForType(argumentClass);
+          if (argumentExtractor != null) {
+            argumentExtractors[i] = argumentExtractor;
+          } else {
+            throw new RuntimeException(
               "Got unknown argument class: " + argumentClass.getSimpleName());
+          }
         }
       }
       return argumentExtractors;
+    }
+
+    private ArgumentExtractor<?> findArgumentExtractorForType(Class<?> argumentClass) {
+      for (CustomArgumentExtractor customArgumentExtractor : getCustomExtractors()) {
+        if (customArgumentExtractor.supportsType(argumentClass)) {
+          return customArgumentExtractor;
+        }
+      }
+      return null;
     }
 
     private int calculateJSArgumentsNeeded() {
@@ -350,10 +377,10 @@ public abstract class BaseJavaModule implements NativeModule {
 
   public class SyncJavaHook implements SyncNativeHook {
 
-    private Method mMethod;
+    private final Method mMethod;
     private final String mSignature;
 
-    public SyncJavaHook(Method method) {
+    SyncJavaHook(Method method) {
       mMethod = method;
       mMethod.setAccessible(true);
       mSignature = buildSignature(method);
@@ -485,8 +512,7 @@ public abstract class BaseJavaModule implements NativeModule {
     } else if (paramClass == ReadableArray.class) {
       return 'A';
     } else {
-      throw new RuntimeException(
-        "Got unknown param class: " + paramClass.getSimpleName());
+      return 'M';
     }
   }
 
