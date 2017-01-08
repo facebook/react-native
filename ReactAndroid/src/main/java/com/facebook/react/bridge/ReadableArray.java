@@ -23,5 +23,6 @@ public interface ReadableArray {
   String getString(int index);
   ReadableArray getArray(int index);
   ReadableMap getMap(int index);
+  Dynamic getDynamic(int index);
   ReadableType getType(int index);
 }
