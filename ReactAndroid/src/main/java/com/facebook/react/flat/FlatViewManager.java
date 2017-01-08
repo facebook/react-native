@@ -20,7 +20,7 @@ abstract class FlatViewManager extends ViewGroupManager<FlatViewGroup> {
   }
 
   @Override
-  public void setBackgroundColor(FlatViewGroup view, int backgroundColor) {
+  public void setBackgroundColor(FlatViewGroup view, Integer backgroundColor) {
     // suppress
   }
 

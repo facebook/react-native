@@ -83,7 +83,10 @@ public class ReactEditText extends EditText {
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
-  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
+  private boolean mHasBackgroundColor = false;
+  private ReactViewBackgroundDrawable mRnBgDrawable;
+  private Drawable mRnOnDefaultBgDrawable;
+  private Drawable mCurrentBgDrawable = null;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
@@ -547,13 +550,19 @@ public class ReactEditText extends EditText {
     }
   }
 
+  public void clearBackgroundColor() {
+    mHasBackgroundColor = false;
+    if (mRnBgDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable
+    } else {
+      getOrCreateReactViewBackground().setColor(Color.TRANSPARENT);
+    }
+  }
+
   @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
-      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
-    } else {
-      getOrCreateReactViewBackground().setColor(color);
-    }
+    mHasBackgroundColor = true;
+    getOrCreateReactViewBackground().setColor(color);
   }
 
   public void setBorderWidth(int position, float width) {
@@ -577,20 +586,23 @@ public class ReactEditText extends EditText {
   }
 
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
-    if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
-      Drawable backgroundDrawable = getBackground();
+    if (mRnBgDrawable == null) {
+      mRnBgDrawable = new ReactViewBackgroundDrawable();
+      Drawable defaultBgDrawable = getBackground();
+      mRnOnDefaultBgDrawable = defaultBgDrawable == null
+          ? mRnBgDrawable
+          : new LayerDrawable(new Drawable[]{mRnBgDrawable, defaultBgDrawable});
+    }
+
+    Drawable currentBgDrawable = mHasBackgroundColor ? mRnBgDrawable : mRnOnDefaultBgDrawable;
+    if (mCurrentBgDrawable != currentBgDrawable) {
+      mCurrentBgDrawable = currentBgDrawable;
       super.setBackground(null);  // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
-      if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
-      } else {
-        LayerDrawable layerDrawable =
-            new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
-      }
+      super.setBackground(currentBgDrawable);
     }
-    return mReactBackgroundDrawable;
+
+    return mRnBgDrawable;
   }
 
   /**

@@ -44,9 +44,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       new MatrixMathHelper.MatrixDecompositionContext();
   private static double[] sTransformDecompositionArray = new double[16];
 
-  @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setBackgroundColor(T view, int backgroundColor) {
-    view.setBackgroundColor(backgroundColor);
+  @ReactProp(name = PROP_BACKGROUND_COLOR, customType = "Color")
+  public void setBackgroundColor(T view, Integer backgroundColor) {
+    view.setBackgroundColor(backgroundColor == null ? Color.TRANSPARENT : backgroundColor);
   }
 
   @ReactProp(name = PROP_TRANSFORM)
