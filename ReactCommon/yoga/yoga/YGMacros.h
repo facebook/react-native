@@ -40,3 +40,19 @@
     YG_ABORT();                            \
   }
 #endif
+
+#ifndef YG_ENUM_BEGIN
+#ifndef NS_ENUM
+#define YG_ENUM_BEGIN(name) enum name
+#else
+#define YG_ENUM_BEGIN(name) NS_ENUM(NSInteger, name)
+#endif
+#endif
+
+#ifndef YG_ENUM_END
+#ifndef NS_ENUM
+#define YG_ENUM_END(name) name
+#else
+#define YG_ENUM_END(name)
+#endif
+#endif
