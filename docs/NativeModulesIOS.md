@@ -392,7 +392,7 @@ For more examples of sending events to JavaScript, see [`RCTLocationObserver`](h
 You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override `startObserving` and `stopObserving` in your `RCTEventEmitter` subclass.
 
 ```objective-c
-@implementation RCTEventEmitter
+@implementation CalendarManager
 {
   bool hasListeners;
 }
