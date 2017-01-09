@@ -311,7 +311,8 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
   ]),
 
   /** `alignSelf` controls how a child aligns in the cross direction,
@@ -325,7 +326,8 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
   ]),
 
   /** `overflow` controls how a children are measured and displayed.
