@@ -335,7 +335,8 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
-}];
+  }
+];
 
 /*
 If you want your app to be featured in the showcase, add them to the featured
