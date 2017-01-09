@@ -31,6 +31,10 @@ function runAndroid(argv, config, args) {
     return;
   }
 
+  if (!args.packager) {
+    return buildAndRun(args);
+  }
+
   return isPackagerRunning().then(result => {
     if (result === 'running') {
       console.log(chalk.bold('JS server already running.'));
@@ -286,5 +290,8 @@ module.exports = {
     command: '--deviceId [string]',
     description: 'builds your app and starts it on a specific device/simulator with the ' +
       'given device id (listed by running "adb devices" on the command line).',
+  }, {
+    command: '--no-packager',
+    description: 'Do not launch packager while building',
   }],
 };
