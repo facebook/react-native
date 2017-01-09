@@ -64,6 +64,21 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action)
 
+- (void)attachToView:(UIView *)view
+{
+  RCTAssert(self.view == nil, @"RCTTouchHandler already has attached view.");
+
+  [view addGestureRecognizer:self];
+}
+
+- (void)detachFromView:(UIView *)view
+{
+  RCTAssertParam(view);
+  RCTAssert(self.view == view, @"RCTTouchHandler attached to another view.");
+
+  [view removeGestureRecognizer:self];
+}
+
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeStart,
   RCTTouchEventTypeMove,
