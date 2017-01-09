@@ -16,37 +16,37 @@ const findMatchingSimulator = require('../findMatchingSimulator');
 describe('findMatchingSimulator', () => {
   it('should find simulator', () => {
     expect(findMatchingSimulator({
-        "devices": {
-          "iOS 9.2": [
+        'devices': {
+          'iOS 9.2': [
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 4s",
-              "udid": "B9B5E161-416B-43C4-A78F-729CB96CC8C6"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 4s',
+              'udid': 'B9B5E161-416B-43C4-A78F-729CB96CC8C6'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 5",
-              "udid": "1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 5',
+              'udid': '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6",
-              "udid": "BA0D93BD-07E6-4182-9B0A-F60A2474139C"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6',
+              'udid': 'BA0D93BD-07E6-4182-9B0A-F60A2474139C'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6 (Plus)",
-              "udid": "9564ABEE-9EC2-4B4A-B443-D3710929A45A"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6 (Plus)',
+              'udid': '9564ABEE-9EC2-4B4A-B443-D3710929A45A'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6s",
-              "udid": "D0F29BE7-CC3C-4976-888D-C739B4F50508"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6s',
+              'udid': 'D0F29BE7-CC3C-4976-888D-C739B4F50508'
             }
           ]
         }
@@ -61,37 +61,37 @@ describe('findMatchingSimulator', () => {
 
   it('should return null if no simulators available', () => {
     expect(findMatchingSimulator({
-        "devices": {
-          "iOS 9.2": [
+        'devices': {
+          'iOS 9.2': [
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 4s",
-              "udid": "B9B5E161-416B-43C4-A78F-729CB96CC8C6"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 4s',
+              'udid': 'B9B5E161-416B-43C4-A78F-729CB96CC8C6'
             },
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 5",
-              "udid": "1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 5',
+              'udid': '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB'
             },
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 6",
-              "udid": "BA0D93BD-07E6-4182-9B0A-F60A2474139C"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 6',
+              'udid': 'BA0D93BD-07E6-4182-9B0A-F60A2474139C'
             },
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 6 (Plus)",
-              "udid": "9564ABEE-9EC2-4B4A-B443-D3710929A45A"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 6 (Plus)',
+              'udid': '9564ABEE-9EC2-4B4A-B443-D3710929A45A'
             },
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 6s",
-              "udid": "D0F29BE7-CC3C-4976-888D-C739B4F50508"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 6s',
+              'udid': 'D0F29BE7-CC3C-4976-888D-C739B4F50508'
             }
           ]
         }
@@ -106,37 +106,37 @@ describe('findMatchingSimulator', () => {
 
   it('should return the first simulator in list if none is defined', () => {
     expect(findMatchingSimulator({
-        "devices": {
-          "iOS 9.2": [
+        'devices': {
+          'iOS 9.2': [
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 4s",
-              "udid": "B9B5E161-416B-43C4-A78F-729CB96CC8C6"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 4s',
+              'udid': 'B9B5E161-416B-43C4-A78F-729CB96CC8C6'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 5",
-              "udid": "1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 5',
+              'udid': '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6",
-              "udid": "BA0D93BD-07E6-4182-9B0A-F60A2474139C"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6',
+              'udid': 'BA0D93BD-07E6-4182-9B0A-F60A2474139C'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6 (Plus)",
-              "udid": "9564ABEE-9EC2-4B4A-B443-D3710929A45A"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6 (Plus)',
+              'udid': '9564ABEE-9EC2-4B4A-B443-D3710929A45A'
             },
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 6s",
-              "udid": "D0F29BE7-CC3C-4976-888D-C739B4F50508"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 6s',
+              'udid': 'D0F29BE7-CC3C-4976-888D-C739B4F50508'
             }
           ]
         }
@@ -222,37 +222,37 @@ describe('findMatchingSimulator', () => {
 
   it('should return the booted simulator in list if none is defined', () => {
     expect(findMatchingSimulator({
-        "devices": {
-          "iOS 9.2": [
+        'devices': {
+          'iOS 9.2': [
             {
-              "state": "Shutdown",
-              "availability": "(unavailable, runtime profile not found)",
-              "name": "iPhone 4s",
-              "udid": "B9B5E161-416B-43C4-A78F-729CB96CC8C6"
+              'state': 'Shutdown',
+              'availability': '(unavailable, runtime profile not found)',
+              'name': 'iPhone 4s',
+              'udid': 'B9B5E161-416B-43C4-A78F-729CB96CC8C6'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 5",
-              "udid": "1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 5',
+              'udid': '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6",
-              "udid": "BA0D93BD-07E6-4182-9B0A-F60A2474139C"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6',
+              'udid': 'BA0D93BD-07E6-4182-9B0A-F60A2474139C'
             },
             {
-              "state": "Shutdown",
-              "availability": "(available)",
-              "name": "iPhone 6 (Plus)",
-              "udid": "9564ABEE-9EC2-4B4A-B443-D3710929A45A"
+              'state': 'Shutdown',
+              'availability': '(available)',
+              'name': 'iPhone 6 (Plus)',
+              'udid': '9564ABEE-9EC2-4B4A-B443-D3710929A45A'
             },
             {
-              "state": "Booted",
-              "availability": "(available)",
-              "name": "iPhone 6s",
-              "udid": "D0F29BE7-CC3C-4976-888D-C739B4F50508"
+              'state': 'Booted',
+              'availability': '(available)',
+              'name': 'iPhone 6s',
+              'udid': 'D0F29BE7-CC3C-4976-888D-C739B4F50508'
             }
           ]
         }
