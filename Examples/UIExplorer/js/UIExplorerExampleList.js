@@ -84,6 +84,7 @@ class UIExplorerExampleList extends React.Component {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
+          stickySectionHeaders={true}
         />
       </View>
     );
@@ -147,7 +148,7 @@ class UIExplorerExampleList extends React.Component {
 
   _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?React.Element<any> {
     return (
-      <View key={key || title}>
+      <View key={key || title} collapsable={false}>
         <TouchableHighlight onPress={handler}>
           <View style={styles.row}>
             <Text style={styles.rowTitleText}>
@@ -184,6 +185,7 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
+    backgroundColor: '#eeeeee',
   },
   row: {
     backgroundColor: 'white',

@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Field;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -25,13 +21,27 @@ import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.view.ReactViewGroup;
+import com.facebook.react.views.view.ReactViewManager;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -44,6 +54,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private static Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
+  private static boolean sHasWarnedAboutStickyHeaders = false;
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final OverScroller mScroller;
@@ -60,6 +71,20 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private View mContentView;
+  private @Nullable int[] mStickyHeaderIndices;
+  private @Nullable Set<View> mStickyHeaderViews;
+  private @Nullable List<View> mOrderedChildViews;
+  private ViewGroupManager mViewManager;
+
+  private final ReactViewGroup.ChildDrawingOrderDelegate mContentDrawingOrderDelegate =
+    new ReactViewGroup.ChildDrawingOrderDelegate() {
+      @Override
+      public int getChildDrawingOrder(ReactViewGroup viewGroup, int drawingIndex) {
+        Assertions.assertNotNull(mOrderedChildViews);
+
+        return viewGroup.indexOfChild(mOrderedChildViews.get(drawingIndex));
+      }
+    };
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -67,6 +92,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
+
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    mViewManager = (ViewGroupManager) uiManager.getUIImplementation().getViewManager(ReactViewManager.REACT_CLASS);
+
     mFpsListener = fpsListener;
 
     if (!sTriedToGetScrollerField) {
@@ -146,6 +175,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mRemoveClippedSubviews) {
       updateClippingRect();
     }
+
+    View contentView = getChildAt(0);
+    if (contentView instanceof ReactViewGroup) {
+      ((ReactViewGroup) contentView).setChildDrawingOrderDelegate(
+        mStickyHeaderIndices != null ? mContentDrawingOrderDelegate : null);
+    }
+
+    dockClosestSectionHeader();
   }
 
   @Override
@@ -153,6 +190,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     super.onScrollChanged(x, y, oldX, oldY);
 
     if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+      dockClosestSectionHeader();
+
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
@@ -311,6 +350,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   }
 
   @Override
+  protected void onDraw(Canvas canvas) {
+    updateOrderedChildViews();
+
+    super.onDraw(canvas);
+  }
+
+  @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
       final View content = getChildAt(0);
@@ -326,6 +372,141 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (color != mEndFillColor) {
       mEndFillColor = color;
       mEndBackground = new ColorDrawable(mEndFillColor);
+    }
+  }
+
+  public void setStickyHeaderIndices(@Nullable ReadableArray indices) {
+    if (indices == null || indices.size() == 0) {
+      mStickyHeaderIndices = null;
+    } else {
+      int[] indicesArray = new int[indices.size()];
+      for (int i = 0; i < indices.size(); i++) {
+        indicesArray[i] = indices.getInt(i);
+      }
+
+      mStickyHeaderIndices = indicesArray;
+    }
+  }
+
+  public void onAfterUpdateTransaction() {
+    View contentView = getChildAt(0);
+    if (contentView instanceof ReactViewGroup) {
+      ((ReactViewGroup) contentView).setChildDrawingOrderDelegate(
+        mStickyHeaderIndices != null ? mContentDrawingOrderDelegate : null);
+    }
+
+    dockClosestSectionHeader();
+  }
+
+  private void dockClosestSectionHeader() {
+    if (mStickyHeaderIndices == null) {
+      return;
+    }
+
+    if (mStickyHeaderViews == null) {
+      mStickyHeaderViews = new HashSet<>();
+    }
+    mStickyHeaderViews.clear();
+
+    View previousHeader = null;
+    View currentHeader = null;
+    View nextHeader = null;
+    View firstChild = getChildAt(0);
+
+    if (firstChild != null && !(firstChild instanceof ReactViewGroup)) {
+      if (!sHasWarnedAboutStickyHeaders) {
+        FLog.w(
+          ReactConstants.TAG,
+          "'stickyHeaderIndices' isn't a supported prop type for this UIImplementation (nodes). " +
+            "It'd be awesome if you could help us support it by sending a diff or PR :)");
+        sHasWarnedAboutStickyHeaders = true;
+      }
+      return;
+    }
+
+    ReactViewGroup contentView = (ReactViewGroup) getChildAt(0);
+    if (contentView == null) {
+      return;
+    }
+
+    int scrollY = getScrollY();
+    for (int idx : mStickyHeaderIndices) {
+      // If the subviews are out of sync with the sticky header indices don't
+      // do anything.
+      if (idx >= mViewManager.getChildCount(contentView)) {
+        break;
+      }
+
+      View header = mViewManager.getChildAt(contentView, idx);
+      mStickyHeaderViews.add(header);
+
+      // If nextHeader not yet found, search for docked headers.
+      if (nextHeader == null) {
+        int top = header.getTop();
+        if (top > scrollY) {
+          nextHeader = header;
+        } else {
+          previousHeader = currentHeader;
+          currentHeader = header;
+        }
+      }
+
+      header.setTranslationY(0);
+      if (header instanceof ReactViewGroup) {
+        ((ReactViewGroup) header).setLayoutAnimationEnabled(true);
+      }
+    }
+
+    if (currentHeader == null) {
+      return;
+    }
+
+    int currentHeaderTop = currentHeader.getTop();
+    int currentHeaderHeight = currentHeader.getHeight();
+    int yOffset = scrollY - currentHeaderTop;
+
+    if (nextHeader != null) {
+      // The next header nudges the current header out of the way when it reaches
+      // the top of the screen.
+      int nextHeaderTop = nextHeader.getTop();
+      int overlap = currentHeaderHeight - (nextHeaderTop - scrollY);
+      yOffset -= Math.max(0, overlap);
+    }
+
+    currentHeader.setTranslationY(yOffset);
+    if (currentHeader instanceof ReactViewGroup) {
+      ((ReactViewGroup) currentHeader).setLayoutAnimationEnabled(false);
+    }
+
+    if (previousHeader != null) {
+      // The previous header sits right above the currentHeader's initial position
+      // so it scrolls away nicely once the currentHeader has locked into place.
+      yOffset = currentHeaderTop - previousHeader.getTop() - previousHeader.getHeight();
+      previousHeader.setTranslationY(yOffset);
+    }
+  }
+
+  private void updateOrderedChildViews() {
+    if (mStickyHeaderIndices == null || mStickyHeaderViews == null) {
+      return;
+    }
+
+    if (mOrderedChildViews == null) {
+      mOrderedChildViews = new ArrayList<>();
+    }
+    mOrderedChildViews.clear();
+
+    ReactViewGroup contentView = (ReactViewGroup) getChildAt(0);
+    int childCount = contentView.getChildCount();
+    int totalStickyHeaders = 0;
+    for (int i = 0; i < childCount; i++) {
+      View child = contentView.getChildAt(i);
+      if (mStickyHeaderViews.contains(child)) {
+        mOrderedChildViews.add(mOrderedChildViews.size(), child);
+        totalStickyHeaders++;
+      } else {
+        mOrderedChildViews.add(mOrderedChildViews.size() - totalStickyHeaders, child);
+      }
     }
   }
 

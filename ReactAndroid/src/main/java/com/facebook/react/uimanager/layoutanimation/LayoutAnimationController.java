@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.uimanager.DrawingOrderViewGroup;
 
 /**
  * Class responsible for animation layout changes, if a valid layout animation config has been
@@ -66,6 +67,12 @@ public class LayoutAnimationController {
   }
 
   public boolean shouldAnimateLayout(View viewToAnimate) {
+    if (viewToAnimate instanceof LayoutAnimationViewGroup) {
+      if (!((LayoutAnimationViewGroup) viewToAnimate).isLayoutAnimationEnabled()) {
+        return false;
+      }
+    }
+
     // if view parent is null, skip animation: view have been clipped, we don't want animation to
     // resume when view is re-attached to parent, which is the standard android animation behavior.
     return mShouldAnimateLayout && viewToAnimate.getParent() != null;
