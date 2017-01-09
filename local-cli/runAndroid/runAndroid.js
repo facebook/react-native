@@ -150,9 +150,9 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath) {
+function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -167,7 +167,7 @@ function tryLaunchAppOnDevice(device, packageName, adbPath) {
 function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
   tryRunAdbReverse(selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath);
+  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
 }
 
 function runOnAllDevices(args, cmd, packageName, adbPath){
@@ -215,7 +215,7 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath);
+        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
       });
     } else {
       try {
@@ -286,6 +286,10 @@ module.exports = {
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--main-activity [string]',
+    description: 'Name of the activity to start',
+    default: 'MainActivity',
   }, {
     command: '--deviceId [string]',
     description: 'builds your app and starts it on a specific device/simulator with the ' +
