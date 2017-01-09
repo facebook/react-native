@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2016-12-05T00:00:00Z</updated>
+    <updated>2017-01-07T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html">
+        </link>
+        <updated>2017-01-07T00:00:00Z</updated>
+        <summary type="html"><![CDATA[Shortly after React Native was introduced, we started releasing every two weeks to help the community adopt new features, while keeping versions stable for production use. At Facebook we had to stabilize the codebase every two weeks for the release of our production iOS apps, so we decided to release the open source versions at the same pace. Now, many of the Facebook apps ship once per week, especially on Android. Because we ship from master weekly, we need to keep it quite stable. So the bi-weekly release cadence doesn't even benefit internal contributors anymore.]]></summary>
+        <author>
+            <name>Eric Vicenti</name>
+            <uri>https://twitter.com/EricVicenti</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Easier Upgrades Thanks to Git]]></title>
         <id>https://facebook.github.io/react-native/blog/2016/12/05/easier-upgrades.html</id>
