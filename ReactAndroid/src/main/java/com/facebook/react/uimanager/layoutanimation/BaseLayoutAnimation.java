@@ -33,14 +33,14 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
           float fromValue = isReverse() ? 1.0f : 0.0f;
           float toValue = isReverse() ? 0.0f : 1.0f;
           return new ScaleAnimation(
-            fromValue,
-            toValue,
-            fromValue,
-            toValue,
-            Animation.RELATIVE_TO_SELF,
-            .5f,
-            Animation.RELATIVE_TO_SELF,
-            .5f);
+              fromValue,
+              toValue,
+              fromValue,
+              toValue,
+              Animation.RELATIVE_TO_SELF,
+              .5f,
+              Animation.RELATIVE_TO_SELF,
+              .5f);
         }
         default:
           throw new IllegalViewOperationException(
