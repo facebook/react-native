@@ -12,7 +12,7 @@
 
 const { getProjectCommands } = require('./core');
 
-import type {ConfigT} from './core';
+import type { ConfigT } from './core';
 
 export type CommandT = {
   name: string,

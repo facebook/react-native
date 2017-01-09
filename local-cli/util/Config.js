@@ -16,6 +16,9 @@ const path = require('path');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
+// TODO: @bestander & @grabbou - get rid when internal tests are fixed
+export type { ConfigT } from '../core';
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
