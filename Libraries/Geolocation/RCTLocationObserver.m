@@ -13,11 +13,11 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
 
 typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
   RCTPositionErrorDenied = 1,
@@ -146,7 +146,7 @@ RCT_EXPORT_MODULE()
     [_locationManager requestAlwaysAuthorization];
 
     // On iOS 9+ we also need to enable background updates
-    NSArray* backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+    NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
     if(backgroundModes && [backgroundModes containsObject:@"location"]) {
       if([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
         [_locationManager setAllowsBackgroundLocationUpdates:YES];

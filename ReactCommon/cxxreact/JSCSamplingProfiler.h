@@ -4,7 +4,7 @@
 
 #ifdef WITH_JSC_EXTRA_TRACING
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <jschelpers/JavaScriptCore.h>
 
 namespace facebook {
 namespace react {

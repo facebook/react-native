@@ -119,6 +119,8 @@ class AnExampleReactPackage implements ReactPackage {
 
     return modules;
   }
+  
+}
 ```
 
 The package needs to be provided in the `getPackages` method of the `MainApplication.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainApplication.java`.
@@ -213,6 +215,8 @@ Native modules can also fulfill a promise, which can simplify your code, especia
 Refactoring the above code to use a promise instead of callbacks looks like this:
 
 ```java
+import com.facebook.react.bridge.Promise;
+
 public class UIManagerModule extends ReactContextBaseJavaModule {
 
 ...

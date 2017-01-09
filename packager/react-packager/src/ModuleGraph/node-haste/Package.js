@@ -17,11 +17,13 @@ import type {PackageData} from '../types.flow';
 
 module.exports = class Package {
   data: Promise<PackageData>;
+  path: string;
   root: string;
   type: 'Package';
 
   constructor(packagePath: string, data: Promise<PackageData>) {
     this.data = data;
+    this.path = packagePath;
     this.root = path.dirname(packagePath);
     this.type = 'Package';
   }
@@ -52,6 +54,10 @@ module.exports = class Package {
     return this.data.then(p => p.name);
   }
 
+  isHaste() {
+    return this.data.then(p => !!p.name);
+  }
+
   redirectRequire(name: string) {
     // Copied from node-haste/Package.js
     return this.data.then(data => {
@@ -71,7 +77,7 @@ module.exports = class Package {
 
       let relPath = './' + path.relative(this.root, name);
       if (path.sep !== '/') {
-        relPath = relPath.replace(path.sep, '/');
+        relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
       }
 
       let redirect = replacements[relPath];

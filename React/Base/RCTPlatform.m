@@ -38,6 +38,7 @@ RCT_EXPORT_MODULE(IOSConstants)
   return @{
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),
     @"osVersion": [device systemVersion],
+    @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
   };
 }

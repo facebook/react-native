@@ -16,74 +16,76 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
-const path = require('path');
-
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
+import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type {
-  DepGraphHelpers,
   TransformCode,
   Options as ModuleOptions,
 } from './Module';
-import type FastFs from './fastfs';
+
+type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  _moduleCache: {[filePath: string]: Module};
-  _packageCache: {[filePath: string]: Package};
-  _fastfs: FastFs;
+  _assetDependencies: Array<string>;
   _cache: Cache;
-  _transformCode: TransformCode;
-  _transformCacheKey: string;
-  _depGraphHelpers: DepGraphHelpers;
-  _platforms: mixed;
-  _assetDependencies: mixed;
+  _depGraphHelpers: DependencyGraphHelpers;
+  _getClosestPackage: GetClosestPackageFn;
+  _moduleCache: {[filePath: string]: Module};
   _moduleOptions: ModuleOptions;
+  _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
+  _platforms: Set<string>;
+  _transformCacheKey: string;
+  _transformCode: TransformCode;
+  _reporter: Reporter;
 
   constructor({
-    fastfs,
-    cache,
-    extractRequires,
-    transformCode,
-    transformCacheKey,
-    depGraphHelpers,
     assetDependencies,
+    cache,
+    depGraphHelpers,
+    extractRequires,
+    getClosestPackage,
     moduleOptions,
+    transformCacheKey,
+    transformCode,
+    reporter,
   }: {
-    fastfs: FastFs,
+    assetDependencies: Array<string>,
     cache: Cache,
-    transformCode: TransformCode,
-    transformCacheKey: string,
-    depGraphHelpers: DepGraphHelpers,
-    assetDependencies: mixed,
+    depGraphHelpers: DependencyGraphHelpers,
+    getClosestPackage: GetClosestPackageFn,
     moduleOptions: ModuleOptions,
-  }, platforms: mixed) {
-    this._moduleCache = Object.create(null);
-    this._packageCache = Object.create(null);
-    this._fastfs = fastfs;
-    this._cache = cache;
-    this._transformCode = transformCode;
-    this._transformCacheKey = transformCacheKey;
-    this._depGraphHelpers = depGraphHelpers;
-    this._platforms = platforms;
+    transformCacheKey: string,
+    transformCode: TransformCode,
+    reporter: Reporter,
+  }, platforms: Set<string>) {
     this._assetDependencies = assetDependencies;
+    this._getClosestPackage = getClosestPackage;
+    this._cache = cache;
+    this._depGraphHelpers = depGraphHelpers;
+    this._moduleCache = Object.create(null);
     this._moduleOptions = moduleOptions;
+    this._packageCache = Object.create(null);
     this._packageModuleMap = new WeakMap();
-
-    fastfs.on('change', this._processFileChange.bind(this));
+    this._platforms = platforms;
+    this._transformCacheKey = transformCacheKey;
+    this._transformCode = transformCode;
+    this._reporter = reporter;
   }
 
   getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
         transformCode: this._transformCode,
         transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
+        reporter: this._reporter,
       });
     }
     return this._moduleCache[filePath];
@@ -95,9 +97,11 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
+      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
+       * design in the first place: AssetModule, being simpler than a normal
+       * Module, should not inherit the Module class. */
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
-        fastfs: this._fastfs,
         moduleCache: this,
         cache: this._cache,
         dependencies: this._assetDependencies,
@@ -110,7 +114,6 @@ class ModuleCache {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
-        fastfs: this._fastfs,
         cache: this._cache,
       });
     }
@@ -120,6 +123,7 @@ class ModuleCache {
   getPackageForModule(module: Module): ?Package {
     if (this._packageModuleMap.has(module)) {
       const packagePath = this._packageModuleMap.get(module);
+      // $FlowFixMe(>=0.37.0)
       if (this._packageCache[packagePath]) {
         return this._packageCache[packagePath];
       } else {
@@ -127,7 +131,7 @@ class ModuleCache {
       }
     }
 
-    const packagePath = this._fastfs.closest(module.path, 'package.json');
+    const packagePath = this._getClosestPackage(module.path);
     if (!packagePath) {
       return null;
     }
@@ -142,23 +146,20 @@ class ModuleCache {
       file,
       cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
-      fastfs: this._fastfs,
       moduleCache: this,
       transformCode: this._transformCode,
       transformCacheKey: this._transformCacheKey,
     });
   }
 
-  _processFileChange(type, filePath, root) {
-    const absPath = path.join(root, filePath);
-
-    if (this._moduleCache[absPath]) {
-      this._moduleCache[absPath].invalidate();
-      delete this._moduleCache[absPath];
+  processFileChange(type: string, filePath: string) {
+    if (this._moduleCache[filePath]) {
+      this._moduleCache[filePath].invalidate();
+      delete this._moduleCache[filePath];
     }
-    if (this._packageCache[absPath]) {
-      this._packageCache[absPath].invalidate();
-      delete this._packageCache[absPath];
+    if (this._packageCache[filePath]) {
+      this._packageCache[filePath].invalidate();
+      delete this._packageCache[filePath];
     }
   }
 }

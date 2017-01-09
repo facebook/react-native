@@ -9,7 +9,7 @@
 
 #import "RCTAnimationUtils.h"
 
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 /**
  * Interpolates value by remapping it linearly fromMin->fromMax to toMin->toMax

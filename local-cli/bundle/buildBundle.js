@@ -5,17 +5,23 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Promise = require('promise');
 const Server = require('../../packager/react-packager/src/Server');
+const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+
+import type {RequestOptions, OutputOptions} from './types.flow';
+import type {ConfigT} from '../core';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -23,12 +29,22 @@ function saveBundle(output, bundle, args) {
   ).then(() => bundle);
 }
 
-function buildBundle(args, config, output = outputBundle, packagerInstance) {
+function buildBundle(
+  args: OutputOptions & {
+    assetsDest: mixed,
+    entryFile: string,
+    resetCache: boolean,
+    transformer: string,
+  },
+  config: ConfigT,
+  output = outputBundle,
+  packagerInstance,
+) {
   // This is used by a bazillion of npm modules we don't control so we don't
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-  const requestOpts = {
+  const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
     dev: args.dev,
@@ -50,13 +66,13 @@ function buildBundle(args, config, output = outputBundle, packagerInstance) {
     const options = {
       projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
-      assetRoots: config.getAssetRoots(),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+      getTransformOptions: config.getTransformOptions,
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
-      nonPersistent: true,
       resetCache: args.resetCache,
+      watch: false,
+      reporter: new TerminalReporter(),
     };
 
     packagerInstance = new Server(options);

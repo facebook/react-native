@@ -8,6 +8,7 @@
  *
  * @providesModule center
  */
+'use strict';
 
 var React = require('React');
 

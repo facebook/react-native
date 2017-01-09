@@ -8,13 +8,14 @@
  */
 'use strict';
 
+const adb = require('./adb');
 const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
 const isPackagerRunning = require('../util/isPackagerRunning');
+const isString = require('lodash/isString');
+const path = require('path');
 const Promise = require('promise');
-const adb = require('./adb');
 
 // Verifies this is an Android project
 function checkAndroid(root) {
@@ -28,6 +29,10 @@ function runAndroid(argv, config, args) {
   if (!checkAndroid(args.root)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
+  }
+
+  if (!args.packager) {
+    return buildAndRun(args);
   }
 
   return isPackagerRunning().then(result => {
@@ -69,17 +74,104 @@ function tryRunAdbReverse(device) {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
-    console.log(chalk.yellow(
-      `Could not run adb reverse: ${e.message}`
-    ));
+    console.log(chalk.yellow(`Could not run adb reverse: ${e.message}`));
   }
 }
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
-  try {
-    adb.getDevices().map((device) => tryRunAdbReverse(device));
+  process.chdir(path.join(args.root, 'android'));
+  const cmd = process.platform.startsWith('win')
+    ? 'gradlew.bat'
+    : './gradlew';
 
+  const packageName = fs.readFileSync(
+      'app/src/main/AndroidManifest.xml',
+      'utf8'
+    ).match(/package="(.+?)"/)[1];
+
+  const adbPath = getAdbPath();
+  if (args.deviceId) {
+    if (isString(args.deviceId)) {
+        runOnSpecificDevice(args, cmd, packageName, adbPath);
+    } else {
+      console.log(chalk.red('Argument missing for parameter --deviceId'));
+    }
+  } else {
+    runOnAllDevices(args, cmd, packageName, adbPath);
+  }
+}
+
+function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
+  let devices = adb.getDevices();
+  if (devices && devices.length > 0) {
+    if (devices.indexOf(args.deviceId) !== -1) {
+      buildApk(gradlew);
+      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
+    } else {
+      console.log('Could not find device with the id: "' + args.deviceId + '".');
+      console.log('Choose one of the following:');
+      console.log(devices);
+    }
+  } else {
+    console.log('No Android devices connected.');
+  }
+}
+
+function buildApk(gradlew) {
+  try {
+    console.log(chalk.bold('Building the app...'));
+
+    // using '-x lint' in order to ignore linting errors while building the apk
+    child_process.execFileSync(gradlew, ['build', '-x', 'lint'], {
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+  } catch (e) {
+    console.log(chalk.red('Could not build the app, read the error above for details.\n'));
+  }
+}
+
+function tryInstallAppOnDevice(args, device) {
+  try {
+    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const adbPath = getAdbPath();
+    const adbArgs = ['-s', device, 'install', pathToApk];
+    console.log(chalk.bold(
+      `Installing the app on the device (cd android && adb -s ${device} install ${pathToApk}`
+    ));
+    child_process.execFileSync(adbPath, adbArgs, {
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+  } catch (e) {
+    console.log(e.message);
+    console.log(chalk.red(
+      'Could not install the app on the device, read the error above for details.\n'
+    ));
+  }
+}
+
+function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
+  try {
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
+    console.log(chalk.bold(
+      `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
+    ));
+    child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+  } catch (e) {
+    console.log(chalk.red(
+      'adb invocation failed. Do you have adb in your PATH?'
+    ));
+  }
+}
+
+function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
+  tryRunAdbReverse(selectedDevice);
+  tryInstallAppOnDevice(args, selectedDevice);
+  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
+}
+
+function runOnAllDevices(args, cmd, packageName, adbPath){
+  try {
     const gradleArgs = [];
     if (args.variant) {
       gradleArgs.push('install' +
@@ -93,32 +185,12 @@ function buildAndRun(args) {
         args.flavor[0].toUpperCase() + args.flavor.slice(1)
       );
     } else {
-      gradleArgs.push('install');
+      gradleArgs.push('installDebug');
     }
 
-    // Append the build type to the current gradle install configuration. By default it will generate `installDebug`.
-    gradleArgs[0] = gradleArgs[0] + args.configuration[0].toUpperCase() + args.configuration.slice(1);
-
-    // Get the Android project directory.
-    const androidProjectDir = path.join(args.root, 'android');
-
-    if (args.configuration.toUpperCase() === 'RELEASE') {
-      console.log(chalk.bold(
-        `Generating the bundle for the release build...`
-      ));
-
-      child_process.execSync(`react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output ${androidProjectDir}/app/src/main/assets/index.android.bundle --assets-dest ${androidProjectDir}/app/src/main/res/`, {
-        stdio: [process.stdin, process.stdout, process.stderr]
-      });
+    if (args.installDebug) {
+      gradleArgs.push(args.installDebug);
     }
-
-    // Change to the Android directory.
-    process.chdir(androidProjectDir);
-
-    // Get the gradle binary for the current platform.
-    const cmd = process.platform.startsWith('win')
-      ? 'gradlew.bat'
-      : './gradlew';
 
     console.log(chalk.bold(
       `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
@@ -139,49 +211,33 @@ function buildAndRun(args) {
     // `console.log(e.stderr)`
     return Promise.reject();
   }
-
-  try {
-    const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
-
-    const adbPath = getAdbPath();
-
     const devices = adb.getDevices();
-
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-
-        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
-
-        console.log(chalk.bold(
-          `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
-        ));
-
-        child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+        tryRunAdbReverse(device);
+        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
       });
     } else {
-      // If we cannot execute based on adb devices output, fall back to
-      // shell am start
-      const fallbackAdbArgs = [
-        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-      ];
-      console.log(chalk.bold(
-        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
-      ));
-      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+      try {
+        // If we cannot execute based on adb devices output, fall back to
+        // shell am start
+        const fallbackAdbArgs = [
+          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+        ];
+        console.log(chalk.bold(
+          `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+        ));
+        child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+      } catch (e) {
+        console.log(chalk.red(
+          'adb invocation failed. Do you have adb in your PATH?'
+        ));
+        // stderr is automatically piped from the gradle process, so the user
+        // should see the error already, there is no need to do
+        // `console.log(e.stderr)`
+        return Promise.reject();
+      }
     }
-
-  } catch (e) {
-    console.log(chalk.red(
-      'adb invocation failed. Do you have adb in your PATH?'
-    ));
-    // stderr is automatically piped from the gradle process, so the user
-    // should see the error already, there is no need to do
-    // `console.log(e.stderr)`
-    return Promise.reject();
-  }
 }
 
 function startServerInNewWindow() {
@@ -220,6 +276,8 @@ module.exports = {
   description: 'builds your app and starts it on a connected Android emulator or device',
   func: runAndroid,
   options: [{
+    command: '--install-debug',
+  }, {
     command: '--root [string]',
     description: 'Override the root directory for the android build (which contains the android directory)',
     default: '',
@@ -227,10 +285,17 @@ module.exports = {
     command: '--flavor [string]',
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
-    command: '--configuration [string]',
-    description: 'You can use `Release` or `Debug`. This creates a build based on the selected configuration. If you want to use the `Release` configuration make sure you have the `signingConfig` configured at `app/build.gradle`.',
-    default: 'Debug'
-  }, {
     command: '--variant [string]',
+  }, {
+    command: '--main-activity [string]',
+    description: 'Name of the activity to start',
+    default: 'MainActivity',
+  }, {
+    command: '--deviceId [string]',
+    description: 'builds your app and starts it on a specific device/simulator with the ' +
+      'given device id (listed by running "adb devices" on the command line).',
+  }, {
+    command: '--no-packager',
+    description: 'Do not launch packager while building',
   }],
 };

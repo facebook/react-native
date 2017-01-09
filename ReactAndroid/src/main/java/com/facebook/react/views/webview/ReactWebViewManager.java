@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
@@ -94,6 +95,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
   public static final int COMMAND_POST_MESSAGE = 5;
+  public static final int COMMAND_INJECT_JAVASCRIPT = 6;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -136,9 +138,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             url.startsWith("file://")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);
+          try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            view.getContext().startActivity(intent);
+          } catch (ActivityNotFoundException e) {
+            FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
+          }
           return true;
         }
     }
@@ -472,7 +478,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
         "stopLoading", COMMAND_STOP_LOADING,
-        "postMessage", COMMAND_POST_MESSAGE);
+        "postMessage", COMMAND_POST_MESSAGE,
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+      );
   }
 
   @Override
@@ -498,6 +506,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
+        break;
+      case COMMAND_INJECT_JAVASCRIPT:
+        root.loadUrl("javascript:" + args.getString(0));
         break;
     }
   }

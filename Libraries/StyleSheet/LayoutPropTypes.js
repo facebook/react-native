@@ -311,7 +311,8 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
   ]),
 
   /** `alignSelf` controls how a child aligns in the cross direction,
@@ -325,7 +326,8 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
   ]),
 
   /** `overflow` controls how a children are measured and displayed.
@@ -364,6 +366,21 @@ var LayoutPropTypes = {
   flexGrow: ReactPropTypes.number,
   flexShrink: ReactPropTypes.number,
   flexBasis: ReactPropTypes.number,
+
+  /**
+   * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
+   * non-standard property only available in react native and not CSS.
+   *
+   * - On a node with a set width/height aspect ratio control the size of the unset dimension
+   * - On a node with a set flex basis aspect ratio controls the size of the node in the cross axis
+   *   if unset
+   * - On a node with a measure function aspect ratio works as though the measure function measures
+   *   the flex basis
+   * - On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis
+   *   if unset
+   * - Aspect ratio takes min/max dimensions into account
+   */
+  aspectRatio: ReactPropTypes.number,
 
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to

@@ -19,7 +19,7 @@ android_library(
   ],
 )
 
-robolectric3_test(
+rn_robolectric_test(
   name = 'bridge',
   # Please change the contact to the oncall of your team
   contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
@@ -29,8 +29,6 @@ robolectric3_test(
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
     react_native_dep('third-party/java/fest:fest'),
-    react_native_dep('third-party/java/jackson:core'),
-    react_native_dep('third-party/java/jackson:jackson'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
     react_native_dep('third-party/java/junit:junit'),
     react_native_dep('third-party/java/mockito:mockito'),
@@ -44,6 +42,3 @@ robolectric3_test(
   ],
 )
 
-project_config(
-  test_target = ':bridge',
-)

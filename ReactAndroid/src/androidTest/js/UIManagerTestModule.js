@@ -119,7 +119,6 @@ var CenteredTextView = React.createClass({
       width: 200,
       height: 100,
       backgroundColor: '#aa3311',
-      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },

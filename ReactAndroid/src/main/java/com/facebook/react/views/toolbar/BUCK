@@ -4,7 +4,7 @@ android_library(
   name = 'toolbar',
   srcs = glob(['**/*.java']),
   deps = [
-    CSSLAYOUT_TARGET,
+    YOGA_TARGET,
     react_native_dep('android_res/android/support/v7/appcompat-orig:res-for-react-native'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
@@ -22,6 +22,3 @@ android_library(
   ],
 )
 
-project_config(
-  src_target = ':toolbar',
-)
