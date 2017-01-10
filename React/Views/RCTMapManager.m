@@ -104,7 +104,7 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
-  #pragma unused (defaultView)
+#pragma unused (defaultView)
   if (json) {
     [view setRegion:[RCTConvert MKCoordinateRegion:json] animated:YES];
   }

@@ -88,7 +88,7 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 // that css-layout is always treating the contents of a scroll container as
 // overflow: 'scroll'.
 RCT_CUSTOM_SHADOW_PROPERTY(overflow, YGOverflow, RCTShadowView) {
-  #pragma unused (json)
+#pragma unused (json)
   view.overflow = YGOverflowScroll;
 }
 
