@@ -66,6 +66,9 @@ function server(argv, config, args) {
     console.log('for common problems and solutions.');
     process.exit(11);
   });
+    console.log('server index opts:');
+    console.log(JSON.stringify(args, null, 2));
+
 
   runServer(args, config, () => console.log('\nReact packager ready.\n'));
 }

@@ -372,10 +372,10 @@ class ResolutionRequest {
               toModuleName,
               `Module does not exist in the module map${hint}\n` +
                 searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
-              'This might be related to https://github.com/facebook/react-native/issues/4968\n' +
-              'To resolve try the following:\n' +
-              '  1. Clear watchman watches: `watchman watch-del-all`.\n' +
-              '  2. Delete the `node_modules` folder: `rm -rf node_modules && npm install`.\n' +
+              `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
+              `To resolve try the following:\n` +
+              `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
+              `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
               '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
             );
           });
@@ -438,7 +438,6 @@ class ResolutionRequest {
       }
 
       if (!file) {
-        console.log(`Looking for ${potentialModulePath} (exts: ${this._sourceExts.join(',')})`);
         throw new UnableToResolveError(
           fromModule,
           toModule,

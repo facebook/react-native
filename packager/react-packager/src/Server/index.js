@@ -66,6 +66,7 @@ type Options = {
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
+  sourceExts: Array<string>,
   transformModulePath?: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
@@ -181,6 +182,7 @@ class Server {
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
+    sourceExts: Array<string>,
     transformModulePath: ?string,
     transformTimeoutInterval: ?number,
     watch: boolean,
@@ -212,6 +214,7 @@ class Server {
       reporter: options.reporter,
       resetCache: options.resetCache || false,
       silent: options.silent || false,
+      sourceExts: options.sourceExts || defaults.sourceExts,
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,
@@ -235,7 +238,9 @@ class Server {
     bundlerOpts.allowBundleUpdates = this._opts.watch;
     bundlerOpts.watch = this._opts.watch;
     bundlerOpts.reporter = options.reporter;
+    bundlerOpts.sourceExts = this._opts.sourceExts;
     this._bundler = new Bundler(bundlerOpts);
+
 
     // changes to the haste map can affect resolution of files in the bundle
     const dependencyGraph = this._bundler.getResolver().getDependencyGraph();

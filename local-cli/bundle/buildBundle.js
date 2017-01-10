@@ -57,6 +57,7 @@ function buildBundle(
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const sourceExts = (config.getSourceExts && config.getSourceExts()) || ['js'];
 
     const transformModulePath =
       args.transformer ? path.resolve(args.transformer) :
@@ -71,6 +72,7 @@ function buildBundle(
       transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
       resetCache: args.resetCache,
+      sourceExts: sourceExts,
       watch: false,
       reporter: new TerminalReporter(),
     };
