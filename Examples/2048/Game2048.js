@@ -139,7 +139,7 @@ class GameEndOverlay extends React.Component {
     var board = this.props.board;
 
     if (!board.hasWon() && !board.hasLost()) {
-      return <View/>;
+      return null;
     }
 
     var message = board.hasWon() ?
