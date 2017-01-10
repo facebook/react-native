@@ -218,6 +218,8 @@ const TextInput = React.createClass({
      * - `numeric`
      * - `email-address`
      * - `phone-pad`
+     *
+     * A 12-key numeric keyboard will be opened if `keyboardType` is `numeric` and `secureTextEntry` is `true`.
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
