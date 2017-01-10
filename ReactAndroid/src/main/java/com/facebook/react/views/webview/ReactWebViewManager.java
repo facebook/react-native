@@ -95,6 +95,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
   public static final int COMMAND_POST_MESSAGE = 5;
+  public static final int COMMAND_INJECT_JAVASCRIPT = 6;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -477,7 +478,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
         "stopLoading", COMMAND_STOP_LOADING,
-        "postMessage", COMMAND_POST_MESSAGE);
+        "postMessage", COMMAND_POST_MESSAGE,
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+      );
   }
 
   @Override
@@ -503,6 +506,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
+        break;
+      case COMMAND_INJECT_JAVASCRIPT:
+        root.loadUrl("javascript:" + args.getString(0));
         break;
     }
   }

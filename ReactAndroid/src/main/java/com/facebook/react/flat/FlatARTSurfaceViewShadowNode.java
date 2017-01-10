@@ -104,7 +104,7 @@ import com.facebook.react.views.art.ARTVirtualNode;
 
   @Override
   public void setPadding(int spacingType, float padding) {
-    if (getPadding(spacingType) != padding) {
+    if (getStylePadding(spacingType) != padding) {
       super.setPadding(spacingType, padding);
       mPaddingChanged = true;
       markUpdated();

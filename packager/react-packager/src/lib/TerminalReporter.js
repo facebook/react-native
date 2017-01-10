@@ -41,7 +41,7 @@ function getProgressBar(ratio: number, length: number) {
   );
 }
 
-type TerminalReportableEvent = ReportableEvent | {
+export type TerminalReportableEvent = ReportableEvent | {
   type: 'bundle_transform_progressed_throttled',
   entryFilePath: string,
   transformedFileCount: number,

@@ -83,6 +83,7 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
+    void onCaptureHeapCommand();
   }
 
   public interface PackagerStatusCallback {
@@ -123,8 +124,12 @@ public class DevServerHelper {
           new JSPackagerWebSocketClient.JSPackagerCallback() {
             @Override
             public void onMessage(String target, String action) {
-              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-                commandListener.onPackagerReloadCommand();
+              if (commandListener != null && "bridge".equals(target)) {
+                if ("reload".equals(action)) {
+                  commandListener.onPackagerReloadCommand();
+                } else if ("captureHeap".equals(action)) {
+                  commandListener.onCaptureHeapCommand();
+                }
               }
             }
           });
