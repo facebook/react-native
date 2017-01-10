@@ -597,6 +597,12 @@ RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
   self.executorClass = enableDebug ? jsDebuggingExecutorClass : nil;
 }
 
+RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
+{
+  Class jsDebuggingExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
+  self.executorClass = enableDebug ? jsDebuggingExecutorClass : nil;
+}
+
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
   _shakeToShow = shakeToShow;
