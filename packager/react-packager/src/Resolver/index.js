@@ -38,6 +38,7 @@ type Options = {
   projectRoots: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
+  sourceExts: Array<string>,
   transformCacheKey: string,
   transformCode: TransformCode,
   watch?: boolean,
@@ -69,6 +70,7 @@ class Resolver {
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
+      sourceExts: opts.sourceExts,
       transformCacheKey: opts.transformCacheKey,
       transformCode: opts.transformCode,
       watch: opts.watch || false,
@@ -254,7 +256,7 @@ function definePolyfillCode(code,) {
   return [
     '(function(global) {',
     code,
-    `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
+    '\n})(typeof global !== \'undefined\' ? global : typeof self !== \'undefined\' ? self : this);',
   ].join('');
 }
 

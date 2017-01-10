@@ -92,6 +92,11 @@ module.exports = {
     parse: (val) => val.split(','),
     default: (config) => config.getProjectRoots(),
   }, {
+    command: '--sourceExts [list]',
+    description: 'Specify any source extentions to be used by the packager, defaults to js',
+    parse: (val) => val.split(','),
+    default: (config) => config.getSourceExts(),
+  }, {
     command: '--assetExts [list]',
     description: 'Specify any additional asset extentions to be used by the packager',
     parse: (val) => val.split(','),

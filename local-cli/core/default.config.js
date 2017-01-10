@@ -82,6 +82,9 @@ const config: ConfigT = {
       params: rnpm.params || [],
     });
   },
+  getSourceExts() {
+    return ['js'];
+  },
   getAssetExts() {
     return [];
   },
