@@ -18,9 +18,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
 
-type DimensionsChangedEventName = $Enum<{
-  change: string,
-}>;
+type DimensionsChangedEventName = 'backPress';
 
 var eventEmitter = new NativeEventEmitter();
 
