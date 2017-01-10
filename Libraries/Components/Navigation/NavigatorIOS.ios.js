@@ -19,6 +19,7 @@ var React = require('React');
 var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
+var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
 var invariant = require('fbjs/lib/invariant');
@@ -37,13 +38,13 @@ function getuid() {
 }
 
 class NavigatorTransitionerIOS extends React.Component {
-  requestSchedulingNavigation = (cb) => {
+  requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
       logError,
       cb
     );
-  };
+  }
 
   render() {
     return (
@@ -89,11 +90,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
-  leftButtonSystemIcon?: SystemButtonType;
+  leftButtonSystemIcon?: SystemButtonType,
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
-  rightButtonSystemIcon?: SystemButtonType;
+  rightButtonSystemIcon?: SystemButtonType,
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -506,6 +507,7 @@ var NavigatorIOS = React.createClass({
       pop: this.pop,
       popN: this.popN,
       replace: this.replace,
+      replaceAtIndex: this.replaceAtIndex,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
       resetTo: this.resetTo,
@@ -518,11 +520,13 @@ var NavigatorIOS = React.createClass({
 
   componentDidMount: function() {
     this._emitDidFocus(this.state.routeStack[this.state.observedTopOfStack]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
     this.navigationContext.dispose();
     this.navigationContext = new NavigationContext();
+    this._disableTVEventHandler();
   },
 
   getDefaultProps: function(): Object {
@@ -888,6 +892,24 @@ var NavigatorIOS = React.createClass({
         </NavigatorTransitionerIOS>
       </StaticContainer>
     );
+  },
+
+  _tvEventHandler: (undefined: ?TVEventHandler),
+
+  _enableTVEventHandler: function() {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler: function() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
   },
 
   render: function() {

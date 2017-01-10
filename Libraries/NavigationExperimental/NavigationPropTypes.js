@@ -40,7 +40,7 @@ const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* navigationRoute  */
+/* NavigationState  */
 const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
   routes: PropTypes.arrayOf(navigationRoute),

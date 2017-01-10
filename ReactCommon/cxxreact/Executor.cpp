@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include <folly/Memory.h>
+#include <folly/ScopeGuard.h>
 
 namespace facebook {
 namespace react {
@@ -18,32 +19,43 @@ void JSExecutor::loadApplicationScript(std::string bundlePath, std::string sourc
     throw std::runtime_error("No unpacked js source file");
   }
   return loadApplicationScript(
-      JSBigMmapString::fromOptimizedBundle(bundlePath),
+      JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath),
       std::move(sourceURL));
 }
 
-static JSBigMmapString::Encoding encodingFromByte(uint8_t byte) {
+std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(const std::string& sourceURL) {
+  int fd = ::open(sourceURL.c_str(), O_RDONLY);
+  folly::checkUnixError(fd, "Could not open file", sourceURL);
+  SCOPE_EXIT { CHECK(::close(fd) == 0); };
+
+  struct stat fileInfo;
+  folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on bundle failed.");
+
+  return folly::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
+}
+
+static JSBigOptimizedBundleString::Encoding encodingFromByte(uint8_t byte) {
   switch (byte) {
   case 0:
-    return JSBigMmapString::Encoding::Unknown;
+    return JSBigOptimizedBundleString::Encoding::Unknown;
   case 1:
-    return JSBigMmapString::Encoding::Ascii;
+    return JSBigOptimizedBundleString::Encoding::Ascii;
   case 2:
-    return JSBigMmapString::Encoding::Utf8;
+    return JSBigOptimizedBundleString::Encoding::Utf8;
   case 3:
-    return JSBigMmapString::Encoding::Utf16;
+    return JSBigOptimizedBundleString::Encoding::Utf16;
   default:
     throw std::invalid_argument("Unknown bundle encoding");
   }
 }
 
-std::unique_ptr<const JSBigMmapString> JSBigMmapString::fromOptimizedBundle(
+std::unique_ptr<const JSBigOptimizedBundleString> JSBigOptimizedBundleString::fromOptimizedBundle(
     const std::string& bundlePath) {
   uint8_t sha1[20];
   uint8_t encoding;
   struct stat fileInfo;
   int fd = -1;
-  SCOPE_FAIL { CHECK(fd == -1 || ::close(fd) == 0); };
+  SCOPE_EXIT { CHECK(fd == -1 || ::close(fd) == 0); };
 
   {
     auto metaPath = bundlePath + UNPACKED_META_PATH_SUFFIX;
@@ -57,16 +69,12 @@ std::unique_ptr<const JSBigMmapString> JSBigMmapString::fromOptimizedBundle(
   {
     auto sourcePath = bundlePath + UNPACKED_JS_SOURCE_PATH_SUFFIX;
     fd = ::open(sourcePath.c_str(), O_RDONLY);
-    if (fd == -1) {
-      throw std::runtime_error(std::string("could not open js bundle file: ") + ::strerror(errno));
-    }
+    folly::checkUnixError(fd, "could not open js bundle file.");
   }
 
-  if (::fstat(fd, &fileInfo)) {
-    throw std::runtime_error(std::string("fstat on js bundle failed: ") + strerror(errno));
-  }
+  folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on js bundle failed.");
 
-  return folly::make_unique<const JSBigMmapString>(
+  return folly::make_unique<const JSBigOptimizedBundleString>(
       fd,
       fileInfo.st_size,
       sha1,

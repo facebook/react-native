@@ -6,11 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
+var Hero = require('Hero');
 var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
-var Hero = require('Hero');
 
 var apps = [
   {
@@ -72,7 +73,12 @@ var apps = [
     name: 'Vogue',
     icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/06/24/92/0624927f-a389-746c-27f9-e2466d59e55b/icon175x175.jpeg',
     infoLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
-  }
+  },
+  {
+    name: 'Walmart',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
+    infoLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
+  },
 ];
 
 var AppList = React.createClass({
@@ -185,7 +191,7 @@ class AwkwardScrollingImageWithText extends Component {
               React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
             </p>
             <br />
-            <img src='https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif' />
+            <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
 
             <h2>Use Native Code When You Need To</h2>
             <p>

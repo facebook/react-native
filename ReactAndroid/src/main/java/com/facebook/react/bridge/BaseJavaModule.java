@@ -116,6 +116,15 @@ public abstract class BaseJavaModule implements NativeModule {
         }
       };
 
+  static final private ArgumentExtractor<Dynamic> ARGUMENT_EXTRACTOR_DYNAMIC =
+      new ArgumentExtractor<Dynamic>() {
+        @Override
+        public Dynamic extractArgument(
+            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+          return new DynamicFromArray(jsArguments, atIndex);
+        }
+      };
+
   static final private ArgumentExtractor<ReadableMap> ARGUMENT_EXTRACTOR_MAP =
       new ArgumentExtractor<ReadableMap>() {
         @Override
@@ -169,6 +178,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public JavaMethod(Method method) {
       mMethod = method;
+      mMethod.setAccessible(true);
       Class[] parameterTypes = method.getParameterTypes();
       mArgumentExtractors = buildArgumentExtractors(parameterTypes);
       mSignature = buildSignature(parameterTypes);
@@ -258,6 +268,8 @@ public abstract class BaseJavaModule implements NativeModule {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
         } else if (argumentClass == ReadableArray.class) {
           argumentExtractors[i] = ARGUMENT_EXTRACTOR_ARRAY;
+        } else if (argumentClass == Dynamic.class) {
+          argumentExtractors[i] = ARGUMENT_EXTRACTOR_DYNAMIC;
         } else {
           throw new RuntimeException(
               "Got unknown argument class: " + argumentClass.getSimpleName());
@@ -354,6 +366,7 @@ public abstract class BaseJavaModule implements NativeModule {
 
     public SyncJavaHook(Method method) {
       mMethod = method;
+      mMethod.setAccessible(true);
       mSignature = buildSignature(method);
     }
 
@@ -482,6 +495,8 @@ public abstract class BaseJavaModule implements NativeModule {
       return 'M';
     } else if (paramClass == ReadableArray.class) {
       return 'A';
+    } else if (paramClass == Dynamic.class) {
+      return 'Y';
     } else {
       throw new RuntimeException(
         "Got unknown param class: " + paramClass.getSimpleName());

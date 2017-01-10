@@ -810,6 +810,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     appParams.putDouble("rootTag", rootTag);
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    rootView.onAttachedToReactInstance();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
@@ -891,7 +892,10 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
-       nativeModuleRegistry = new NativeModuleRegistry(moduleSpecs, reactModuleInfoMap);
+       nativeModuleRegistry = new NativeModuleRegistry(
+         moduleSpecs,
+         reactModuleInfoMap,
+         mLazyNativeModulesEnabled);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);

@@ -193,7 +193,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     synchronized (mJSCallsPendingInitLock) {
       // Loading the bundle is queued on the JS thread, but may not have
-      // run yet.  It's save to set this here, though, since any work it
+      // run yet.  It's safe to set this here, though, since any work it
       // gates will be queued on the JS thread behind the load.
       mAcceptCalls = true;
 

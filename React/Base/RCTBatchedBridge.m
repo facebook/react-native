@@ -10,10 +10,11 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
+#import "RCTDevLoadingView.h"
 #import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
 #import "RCTJavaScriptLoader.h"
@@ -21,10 +22,8 @@
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTSourceCode.h"
-#import "RCTUtils.h"
 #import "RCTRedBox.h"
-#import "RCTDevLoadingView.h"
+#import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -496,9 +495,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   if (!_valid || !_javaScriptExecutor) {
     return;
   }
-
-  RCTSourceCode *sourceCodeModule = [self moduleForClass:[RCTSourceCode class]];
-  sourceCodeModule.scriptURL = self.bundleURL;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
     if (!self->_valid) {

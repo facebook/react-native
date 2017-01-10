@@ -66,7 +66,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
- * import { AppRegistry, View, Image, StyleSheet} from 'react-native';
+ * import { AppRegistry, View, Image, StyleSheet } from 'react-native';
  *
  * const styles = StyleSheet.create({
  *   stretch: {
@@ -255,7 +255,6 @@ const Image = React.createClass({
     onProgress: PropTypes.func,
     /**
      * Invoked on load error with `{nativeEvent: {error}}`.
-     * @platform ios
      */
     onError: PropTypes.func,
     /**
@@ -289,7 +288,7 @@ const Image = React.createClass({
      * preload images will be provided as a separate API.
      *
      * @param uri The location of the image.
-     * @param success The function that will be called if the image was sucessfully found and width
+     * @param success The function that will be called if the image was successfully found and width
      * and height retrieved.
      * @param failure The function that will be called if there was an error, such as failing to
      * to retrieve the image.
@@ -318,6 +317,12 @@ const Image = React.createClass({
     prefetch(url: string) {
       return ImageViewManager.prefetchImage(url);
     },
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
+     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     */
+    resolveAssetSource: resolveAssetSource,
   },
 
   mixins: [NativeMethodsMixin],

@@ -127,6 +127,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public void reloadJSFromServer(String bundleURL) {
+
+  }
+
+  @Override
   public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
 
   }

@@ -11,7 +11,7 @@
 
 #import <libkern/OSAtomic.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTLocalAssetImageLoader
 
@@ -105,6 +105,7 @@ static NSBundle *bundleForPath(NSString *key)
       completionHandler(nil, image);
     } else {
       NSString *message = [NSString stringWithFormat:@"Could not find image named %@", imageName];
+      RCTLogWarn(@"%@", message);
       completionHandler(RCTErrorWithMessage(message), nil);
     }
   });
