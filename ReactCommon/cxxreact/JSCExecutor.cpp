@@ -276,9 +276,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   PerfLogging::installNativeHooks(m_context);
+  #endif
 
   initSamplingProfilerOnMainJSCThread(m_context);
-  #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
   addNativeMemoryHooks(m_context);
