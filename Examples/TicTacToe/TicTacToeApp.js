@@ -25,6 +25,8 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+var Platform = require('Platform');
+
 var {
   AppRegistry,
   StyleSheet,
@@ -236,6 +238,29 @@ var TicTacToeApp = React.createClass({
   }
 });
 
+var TITLE_SIZE = Platform.isTVOS ? 117 : 39;
+var TITLE_FONT = Platform.isTVOS ? 'Helvetica' : 'Chalkduster';
+var TITLE_MARGIN_BOTTOM = Platform.isTVOS ? 60 : 20;
+
+var BOARD_BORDER_RADIUS = Platform.isTVOS ? 30 : 10;
+var BOARD_PADDING = Platform.isTVOS ? 15 : 5;
+
+var CELL_BORDER_RADIUS = Platform.isTVOS ? 15 : 5;
+var CELL_MARGIN_SIZE = Platform.isTVOS ? 15 : 5;
+
+var CELL_SIZE = Platform.isTVOS ? 240 : 80;
+var CELL_FONT = Platform.isTVOS ? 'Helvetica-Bold' : 'AvenirNext-Bold';
+var CELL_FONT_SIZE = Platform.isTVOS ? 150 : 50;
+
+var OVERLAY_FONT = Platform.isTVOS ? 'Helvetica-Bold' : 'AvenirNext-DemiBold';
+var OVERLAY_FONT_SIZE = Platform.isTVOS ? 120: 40;
+var OVERLAY_MARGIN_SIZE = Platform.isTVOS ? 60 : 20;
+
+var NEW_GAME_FONT = Platform.isTVOS ? 'Helvetica-Bold' : 'AvenirNext-DemiBold';
+var NEW_GAME_FONT_SIZE = Platform.isTVOS ? 60 : 20;
+var NEW_GAME_PADDING_SIZE = Platform.isTVOS ? 60 : 20;
+var NEW_GAME_BORDER_RADIUS = Platform.isTVOS ? 15 : 5;
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -244,14 +269,14 @@ var styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   title: {
-    fontFamily: 'Chalkduster',
-    fontSize: 39,
-    marginBottom: 20,
+    fontFamily: TITLE_FONT,
+    fontSize: TITLE_SIZE,
+    marginBottom: TITLE_MARGIN_BOTTOM,
   },
   board: {
-    padding: 5,
+    padding: BOARD_PADDING,
     backgroundColor: '#47525d',
-    borderRadius: 10,
+    borderRadius: BOARD_BORDER_RADIUS,
   },
   row: {
     flexDirection: 'row',
@@ -260,11 +285,11 @@ var styles = StyleSheet.create({
   // CELL
 
   cell: {
-    width: 80,
-    height: 80,
-    borderRadius: 5,
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    borderRadius: CELL_BORDER_RADIUS,
     backgroundColor: '#7b8994',
-    margin: 5,
+    margin: CELL_MARGIN_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -278,8 +303,8 @@ var styles = StyleSheet.create({
   // CELL TEXT
 
   cellText: {
-    fontSize: 50,
-    fontFamily: 'AvenirNext-Bold',
+    fontSize: CELL_FONT_SIZE,
+    fontFamily: CELL_FONT,
   },
   cellTextX: {
     color: '#19a9e5',
@@ -303,22 +328,22 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlayMessage: {
-    fontSize: 40,
-    marginBottom: 20,
-    marginLeft: 20,
-    marginRight: 20,
-    fontFamily: 'AvenirNext-DemiBold',
+    fontSize: OVERLAY_FONT_SIZE,
+    marginBottom: OVERLAY_MARGIN_SIZE,
+    marginLeft: OVERLAY_MARGIN_SIZE,
+    marginRight: OVERLAY_MARGIN_SIZE,
+    fontFamily: OVERLAY_FONT,
     textAlign: 'center',
   },
   newGame: {
     backgroundColor: '#887765',
-    padding: 20,
-    borderRadius: 5,
+    padding: NEW_GAME_PADDING_SIZE,
+    borderRadius: NEW_GAME_BORDER_RADIUS,
   },
   newGameText: {
     color: 'white',
-    fontSize: 20,
-    fontFamily: 'AvenirNext-DemiBold',
+    fontSize: NEW_GAME_FONT_SIZE,
+    fontFamily: NEW_GAME_FONT,
   },
 });
 
