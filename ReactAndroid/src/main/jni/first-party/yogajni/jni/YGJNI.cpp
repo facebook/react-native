@@ -63,6 +63,14 @@ static void YGPrint(YGNodeRef node) {
   }
 }
 
+static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
+  if (auto obj = YGNodeJobject(node)->lockLocal()) {
+    return findClassLocal("com/facebook/yoga/YogaNode")->getMethod<jfloat(jfloat, jfloat)>("baseline")(obj, width, height);
+  } else {
+    return height;
+  }
+}
+
 static YGSize YGJNIMeasureFunc(YGNodeRef node,
                                float width,
                                YGMeasureMode widthMode,
@@ -203,6 +211,10 @@ void jni_YGNodeSetHasMeasureFunc(alias_ref<jobject>, jlong nativePointer, jboole
   YGNodeSetMeasureFunc(_jlong2YGNodeRef(nativePointer), hasMeasureFunc ? YGJNIMeasureFunc : NULL);
 }
 
+void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>, jlong nativePointer, jboolean hasBaselineFunc) {
+  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer), hasBaselineFunc ? YGJNIBaselineFunc : NULL);
+}
+
 jboolean jni_YGNodeHasNewLayout(alias_ref<jobject>, jlong nativePointer) {
   return (jboolean) YGNodeGetHasNewLayout(_jlong2YGNodeRef(nativePointer));
 }
@@ -332,6 +344,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeIsDirty),
                         YGMakeNativeMethod(jni_YGNodeMarkLayoutSeen),
                         YGMakeNativeMethod(jni_YGNodeSetHasMeasureFunc),
+                        YGMakeNativeMethod(jni_YGNodeSetHasBaselineFunc),
                         YGMakeNativeMethod(jni_YGNodeCopyStyle),
                         YGMakeNativeMethod(jni_YGNodeStyleGetDirection),
                         YGMakeNativeMethod(jni_YGNodeStyleSetDirection),

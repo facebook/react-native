@@ -52,6 +52,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private YogaNode mParent;
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
+  private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
   private Object mData;
 
@@ -621,6 +622,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
           YogaMeasureMode.values()[widthMode],
           height,
           YogaMeasureMode.values()[heightMode]);
+  }
+
+  private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
+  @Override
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mBaselineFunction = baselineFunction;
+    jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
+  }
+
+  @DoNotStrip
+  public final float baseline(float width, float height) {
+    return mBaselineFunction.baseline(this, width, height);
   }
 
   @Override
