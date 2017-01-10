@@ -425,7 +425,7 @@ var pinned = [
     linkAppStore: 'https://itunes.apple.com/gb/app/adidas-glitch-interchangeable/id1166181522?mt=8&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-IPHONE',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.adidas.glitch&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-ANDROID',
     infoLink: 'http://bit.ly/adidasGLITCH',
-    infoTitle: '',
+    infoTitle: 'GLITCH - Break the pattern',
     defaultLink: 'http://bit.ly/adidasGLITCH',
   }
 ];
