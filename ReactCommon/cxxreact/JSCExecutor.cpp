@@ -397,60 +397,54 @@ void JSCExecutor::loadApplicationScript(
 }
 #endif
 
-#ifdef WITH_FBJSCEXTENSIONS
-void JSCExecutor::loadApplicationScript(
-    int fd,
-    std::string sourceURL)
-{
-  String jsSourceURL(m_context, sourceURL.c_str());
-
-  JSLoadSourceError jsError;
-  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
-
-  switch (jsError) {
-  case JSLoadSourceErrorOnRead:
-  case JSLoadSourceErrorNotCompiled:
-    // Not bytecode, fall through.
-    return JSExecutor::loadApplicationScript(fd, sourceURL);
-
-  case JSLoadSourceErrorNone:
-    if (!bcSourceCode) {
-      throw std::runtime_error("Unexpected error opening compiled bundle");
-    }
-    break;
-
-  case JSLoadSourceErrorVersionMismatch:
-  case JSLoadSourceErrorUnknown:
-    throw RecoverableError(explainLoadSourceError(jsError));
-  }
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
-  evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
-
-  // TODO(luk): t13903306 Remove this check once we make native modules
-  // working for java2js
-  if (m_delegate) {
-    bindBridge();
-    flush();
-  }
-
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
-}
-#endif
-
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+  String jsSourceURL(m_context, sourceURL.c_str());
+
+#ifdef WITH_FBJSCEXTENSIONS
+  if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
+    JSLoadSourceError jsError;
+    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsError);
+
+    switch (jsError) {
+    case JSLoadSourceErrorNone:
+      if (!bcSourceCode) {
+        throw std::runtime_error("Unexpected error opening compiled bundle");
+      }
+
+      evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
+
+      // TODO(luk): t13903306 Remove this check once we make native modules
+      // working for java2js
+      if (m_delegate) {
+        bindBridge();
+        flush();
+      }
+
+      ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+      ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      return;
+
+    case JSLoadSourceErrorVersionMismatch:
+    case JSLoadSourceErrorUnknown:
+      throw RecoverableError(explainLoadSourceError(jsError));
+
+    case JSLoadSourceErrorOnRead:
+    case JSLoadSourceErrorNotCompiled:
+      // Not bytecode, fall through.
+      break;
+    }
+  }
+#endif
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_begin_section(
     TRACE_TAG_REACT_CXX_BRIDGE,
     "JSCExecutor::loadApplicationScript-createExpectingAscii");
   #endif
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
   String jsScript = jsStringFromBigString(m_context, *script);
@@ -460,7 +454,6 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
   #endif
 
-  String jsSourceURL(m_context, sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
 
   // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
