@@ -100,6 +100,7 @@ function getPackagerServer(args, config) {
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new TerminalReporter(),
     resetCache: args.resetCache,
+    sourceExts: args.sourceExts,
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,

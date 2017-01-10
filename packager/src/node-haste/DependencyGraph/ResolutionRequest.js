@@ -38,6 +38,7 @@ type Options = {
   helpers: DependencyGraphHelpers,
   // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
   moduleCache: ModuleCache | any,
+  sourceExts: Array<string>,
   platform: string,
   platforms: Set<string>,
   preferNativePlatform: boolean,
@@ -52,6 +53,7 @@ class ResolutionRequest {
   _helpers: DependencyGraphHelpers;
   _immediateResolutionCache: {[key: string]: string};
   _moduleCache: ModuleCache;
+  _sourceExts: Array<string>
   _platform: string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
@@ -65,6 +67,7 @@ class ResolutionRequest {
     hasteMap,
     helpers,
     moduleCache,
+    sourceExts,
     platform,
     platforms,
     preferNativePlatform,
@@ -76,6 +79,7 @@ class ResolutionRequest {
     this._hasteMap = hasteMap;
     this._helpers = helpers;
     this._moduleCache = moduleCache;
+    this._sourceExts = sourceExts;
     this._platform = platform;
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
@@ -372,7 +376,7 @@ class ResolutionRequest {
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
               `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start --reset-cache`.'
+              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
             );
           });
         });
@@ -417,17 +421,23 @@ class ResolutionRequest {
       let file;
       if (this._hasteFS.exists(potentialModulePath)) {
         file = potentialModulePath;
-      } else if (this._platform != null &&
-                 this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.js')) {
-        file = potentialModulePath + '.' + this._platform + '.js';
-      } else if (this._preferNativePlatform &&
-                 this._hasteFS.exists(potentialModulePath + '.native.js')) {
-        file = potentialModulePath + '.native.js';
-      } else if (this._hasteFS.exists(potentialModulePath + '.js')) {
-        file = potentialModulePath + '.js';
       } else if (this._hasteFS.exists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
       } else {
+        this._sourceExts.forEach(extension => {
+          if (this._platform != null &&
+                    this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.' + extension)) {
+            file = potentialModulePath + '.' + this._platform + '.' + extension;
+          } else if (this._preferNativePlatform &&
+                    this._hasteFS.exists(potentialModulePath + '.native' + '.' + extension)) {
+            file = potentialModulePath + '.native' + '.' + extension;
+          } else if (this._hasteFS.exists(potentialModulePath + '.' + extension)) {
+            file = potentialModulePath + '.' + extension;
+          }
+        });
+      }
+
+      if (!file) {
         throw new UnableToResolveError(
           fromModule,
           toModule,

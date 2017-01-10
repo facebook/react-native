@@ -29,6 +29,13 @@ export type ConfigT = {
    * from here and use `require('./fonts/example.ttf')` inside your app.
    */
   getAssetExts?: () => Array<string>,
+   /**
+   * Specify any additional source code extentions to be used by the packager.
+   * For example, if you want to include a .ts file, you would return ['ts']
+   * from here and you would need to include a custom `getTransformModulePath`
+   * function to handle the transformation.
+   */
+  getSourceExts?: () => Array<string>,
   /**
    * Specify any additional platforms to be used by the packager.
    * For example, if you want to add a "custom" platform, and use modules

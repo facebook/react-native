@@ -18,6 +18,10 @@ module.exports = {
     return this._getRoots();
   },
 
+  getSourceExts() {
+    return ['js'];
+  },
+
   getAssetExts() {
     return [];
   },
