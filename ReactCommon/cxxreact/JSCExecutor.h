@@ -62,7 +62,7 @@ public:
 
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) throw(JSException) override;
+    std::string sourceURL) override;
 
 #ifdef WITH_FBJSCEXTENSIONS
   virtual void loadApplicationScript(

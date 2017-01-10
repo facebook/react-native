@@ -397,7 +397,7 @@ void JSCExecutor::loadApplicationScript(
 }
 #endif
 
-void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
+void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
