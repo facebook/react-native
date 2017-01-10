@@ -15,6 +15,8 @@
 
 #include "JSModulesUnbundle.h"
 
+#define RN_EXPORT __attribute__((visibility("default")))
+
 namespace facebook {
 namespace react {
 
@@ -150,7 +152,7 @@ private:
 };
 
 // JSBigString interface implemented by a file-backed mmap region.
-class JSBigFileString : public JSBigString {
+class RN_EXPORT JSBigFileString : public JSBigString {
 public:
 
   JSBigFileString(int fd, size_t size, off_t offset = 0)
@@ -203,6 +205,8 @@ public:
   int fd() const {
     return m_fd;
   }
+
+  static std::unique_ptr<const JSBigFileString> fromPath(const std::string& sourceURL);
 
 private:
   int m_fd;                     // The file descriptor being mmaped
@@ -291,14 +295,6 @@ public:
    * Execute an application script optimized bundle in the JS context.
    */
   virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
-
-  /**
-   * @experimental
-   *
-   * Read an app bundle from a file descriptor, determine how it should be
-   * loaded, load and execute it in the JS context.
-   */
-  virtual void loadApplicationScript(int fd, std::string source);
 
   /**
    * Add an application "unbundle" file

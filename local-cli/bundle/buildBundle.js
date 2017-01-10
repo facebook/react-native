@@ -21,7 +21,7 @@ const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from '../core';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(

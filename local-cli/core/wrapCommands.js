@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const makeCommand = require('../makeCommand');
+const makeCommand = require('./makeCommand');
 
 module.exports = function wrapCommands(commands) {
   const mappedCommands = {};

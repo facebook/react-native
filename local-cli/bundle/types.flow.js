@@ -36,6 +36,7 @@ export type OutputOptions = {
   dev?: boolean,
   platform: string,
   sourcemapOutput?: string,
+  sourcemapSourcesRoot?: string,
 };
 
 export type RequestOptions = {|

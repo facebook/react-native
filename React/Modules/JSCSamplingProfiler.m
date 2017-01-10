@@ -20,7 +20,7 @@
 RCT_EXPORT_MODULE(JSCSamplingProfiler);
 
 #ifdef RCT_PROFILE
-RCT_EXPORT_METHOD(operationComplete:(int)token result:(id)profileData error:(id)error)
+RCT_EXPORT_METHOD(operationComplete:(__unused int)token result:(id)profileData error:(id)error)
 {
   if (error) {
     RCTLogError(@"JSC Sampling profiler ended with error: %@", error);

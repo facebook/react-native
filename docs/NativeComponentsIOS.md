@@ -28,7 +28,7 @@ Vending a view is simple:
 // RCTMapManager.m
 #import <MapKit/MapKit.h>
 
-#import "RCTViewManager.h"
+#import <React/RCTViewManager.h>
 
 @interface RCTMapManager : RCTViewManager
 @end

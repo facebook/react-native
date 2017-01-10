@@ -595,6 +595,10 @@ public class ReactShadowNode {
   }
 
   public final float getPadding(int spacingType) {
+    return mYogaNode.getLayoutPadding(YogaEdge.fromInt(spacingType));
+  }
+
+  public final float getStylePadding(int spacingType) {
     return mYogaNode.getPadding(YogaEdge.fromInt(spacingType)).value;
   }
 

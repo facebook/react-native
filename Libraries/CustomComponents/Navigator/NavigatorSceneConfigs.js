@@ -534,13 +534,13 @@ var BaseRightToLeftGesture = {
 var BaseDownUpGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'down-to-up',
+  direction: 'bottom-to-top',
 };
 
 var BaseUpDownGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'up-to-down',
+  direction: 'top-to-bottom',
 };
 
 // For RTL experiment, we need to swap all the Left and Right gesture and animation.

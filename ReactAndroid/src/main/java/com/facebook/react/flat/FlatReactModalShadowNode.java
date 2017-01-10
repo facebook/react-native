@@ -86,7 +86,7 @@ class FlatReactModalShadowNode extends FlatShadowNode implements AndroidView {
 
   @Override
   public void setPadding(int spacingType, float padding) {
-    if (getPadding(spacingType) != padding) {
+    if (getStylePadding(spacingType) != padding) {
       super.setPadding(spacingType, padding);
       mPaddingChanged = true;
       markUpdated();
