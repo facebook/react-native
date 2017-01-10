@@ -659,6 +659,9 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
   }
 
   if (_bridge.executorClass != executorClass) {
+    if ([[_bridge.bundleURL absoluteString] rangeOfString:@"file://"].location != NSNotFound) {
+        return;
+    }
 
     // TODO (6929129): we can remove this special case test once we have better
     // support for custom executors in the dev menu. But right now this is
