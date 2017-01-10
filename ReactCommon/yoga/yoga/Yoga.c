@@ -2239,8 +2239,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                               availableInnerWidth));
             childHeightMeasureMode = YGMeasureModeExactly;
 
-            childHeight = fminf(childHeight, availableInnerHeight);
-            childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childHeight = fminf(childHeight, availableInnerHeight);
+              childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+            }
           } else {
             childWidth = fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
                                YGNodePaddingAndBorderForAxis(currentRelativeChild,
@@ -2248,8 +2251,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                              availableInnerWidth));
             childWidthMeasureMode = YGMeasureModeExactly;
 
-            childWidth = fminf(childWidth, availableInnerWidth);
-            childHeight = childWidth / currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childWidth = fminf(childWidth, availableInnerWidth);
+              childHeight = childWidth / currentRelativeChild->style.aspectRatio;
+            }
           }
         }
 
