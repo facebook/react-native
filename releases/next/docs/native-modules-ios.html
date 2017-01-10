@@ -111,29 +111,65 @@ RCTRootView <span class="token operator">*</span>rootView <span class="token ope
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token function">RCT_EXPORT_METHOD<span class="token punctuation">(</span></span>updateStatusBarAnimation<span class="token punctuation">:</span><span class="token punctuation">(</span>UIStatusBarAnimation<span class="token punctuation">)</span>animation
-                                completion<span class="token punctuation">:</span><span class="token punctuation">(</span>RCTResponseSenderBlock<span class="token punctuation">)</span>callback<span class="token punctuation">)</span></div><p>Your enum will then be automatically unwrapped using the selector provided (<code>integerValue</code> in the above example) before being passed to your exported method.</p><h2><a class="anchor" name="sending-events-to-javascript"></a>Sending Events to JavaScript <a class="hash-link" href="docs/native-modules-ios.html#sending-events-to-javascript">#</a></h2><p>The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use <code>eventDispatcher</code>:</p><div class="prism language-javascript">#import &lt;React<span class="token operator">/</span>RCTBridge<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
-#import &lt;React<span class="token operator">/</span>RCTEventDispatcher<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
+                                completion<span class="token punctuation">:</span><span class="token punctuation">(</span>RCTResponseSenderBlock<span class="token punctuation">)</span>callback<span class="token punctuation">)</span></div><p>Your enum will then be automatically unwrapped using the selector provided (<code>integerValue</code> in the above example) before being passed to your exported method.</p><h2><a class="anchor" name="sending-events-to-javascript"></a>Sending Events to JavaScript <a class="hash-link" href="docs/native-modules-ios.html#sending-events-to-javascript">#</a></h2><p>The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass <code>RCTEventEmitter</code>, implement <code>suppportEvents</code> and call <code>self sendEventWithName</code>:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManager.h
+</span>#import &lt;React<span class="token operator">/</span>RCTBridgeModule<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
+#import &lt;React<span class="token operator">/</span>RCTEventEmitter<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
+
+@interface <span class="token class-name">CalendarManager</span> <span class="token punctuation">:</span> RCTEventEmitter &lt;RCTBridgeModule<span class="token operator">&gt;</span>
+
+@end</div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManager.m
+</span>#import <span class="token string">&quot;CalendarManager.h&quot;</span>
 
 @implementation CalendarManager
 
-@synthesize bridge <span class="token operator">=</span> _bridge<span class="token punctuation">;</span>
+<span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token operator">-</span> <span class="token punctuation">(</span>NSArray&lt;NSString <span class="token operator">*</span><span class="token operator">&gt;</span> <span class="token operator">*</span><span class="token punctuation">)</span>supportedEvents
+<span class="token punctuation">{</span>
+  <span class="token keyword">return</span> @<span class="token punctuation">[</span>@<span class="token string">&quot;EventReminder&quot;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token operator">-</span> <span class="token punctuation">(</span>void<span class="token punctuation">)</span>calendarEventReminderReceived<span class="token punctuation">:</span><span class="token punctuation">(</span>NSNotification <span class="token operator">*</span><span class="token punctuation">)</span>notification
 <span class="token punctuation">{</span>
   NSString <span class="token operator">*</span>eventName <span class="token operator">=</span> notification<span class="token punctuation">.</span>userInfo<span class="token punctuation">[</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token punctuation">[</span>self<span class="token punctuation">.</span>bridge<span class="token punctuation">.</span>eventDispatcher sendAppEventWithName<span class="token punctuation">:</span>@<span class="token string">&quot;EventReminder&quot;</span>
-                                               body<span class="token punctuation">:</span>@<span class="token punctuation">{</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">:</span> eventName<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">[</span>self sendEventWithName<span class="token punctuation">:</span>@<span class="token string">&quot;EventReminder&quot;</span> body<span class="token punctuation">:</span>@<span class="token punctuation">{</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">:</span> eventName<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 
-@end</div><p>JavaScript code can subscribe to these events:</p><div class="prism language-javascript">import <span class="token punctuation">{</span> NativeAppEventEmitter <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
+@end</div><p>JavaScript code can subscribe to these events by creating a new <code>NativeEventEmitter</code> instance around your module.</p><div class="prism language-javascript">import <span class="token punctuation">{</span> NativeEventEmitter<span class="token punctuation">,</span> NativeModules <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
+const <span class="token punctuation">{</span> CalendarManager <span class="token punctuation">}</span> <span class="token operator">=</span> NativeModules<span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> subscription <span class="token operator">=</span> NativeAppEventEmitter<span class="token punctuation">.</span><span class="token function">addListener<span class="token punctuation">(</span></span>
+const calendarManagerEmitter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">NativeEventEmitter</span><span class="token punctuation">(</span>CalendarManager<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+const subscription <span class="token operator">=</span> calendarManagerEmitter<span class="token punctuation">.</span><span class="token function">addListener<span class="token punctuation">(</span></span>
   <span class="token string">&#x27;EventReminder&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">(</span>reminder<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> console<span class="token punctuation">.</span><span class="token function">log<span class="token punctuation">(</span></span>reminder<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token comment" spellcheck="true">
 // Don&#x27;t forget to unsubscribe, typically in componentWillUnmount
-</span>subscription<span class="token punctuation">.</span><span class="token function">remove<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>For more examples of sending events to JavaScript, see <a href="https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m" target="_blank"><code>RCTLocationObserver</code></a>.</p><h2><a class="anchor" name="exporting-swift"></a>Exporting Swift <a class="hash-link" href="docs/native-modules-ios.html#exporting-swift">#</a></h2><p>Swift doesn&#x27;t have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.</p><p>Let&#x27;s say we have the same <code>CalendarManager</code> but as a Swift class:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManager.swift
+</span>subscription<span class="token punctuation">.</span><span class="token function">remove<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p>For more examples of sending events to JavaScript, see <a href="https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m" target="_blank"><code>RCTLocationObserver</code></a>.</p><h3><a class="anchor" name="optimizing-for-zero-listeners"></a>Optimizing for zero listeners <a class="hash-link" href="docs/native-modules-ios.html#optimizing-for-zero-listeners">#</a></h3><p>You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module&#x27;s workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override <code>startObserving</code> and <code>stopObserving</code> in your <code>RCTEventEmitter</code> subclass.</p><div class="prism language-javascript">@implementation CalendarManager
+<span class="token punctuation">{</span>
+  bool hasListeners<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// Will be called when this module&#x27;s first listener is added.
+</span><span class="token operator">-</span><span class="token punctuation">(</span>void<span class="token punctuation">)</span>startObserving <span class="token punctuation">{</span> 
+    hasListeners <span class="token operator">=</span> YES<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // Set up any upstream listeners or background tasks as necessary
+</span><span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// Will be called when this module&#x27;s last listener is removed, or on dealloc.
+</span><span class="token operator">-</span><span class="token punctuation">(</span>void<span class="token punctuation">)</span>stopObserving <span class="token punctuation">{</span> 
+    hasListeners <span class="token operator">=</span> NO<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // Remove upstream listeners, stop unnecessary background tasks
+</span><span class="token punctuation">}</span>
+
+<span class="token operator">-</span> <span class="token punctuation">(</span>void<span class="token punctuation">)</span>calendarEventReminderReceived<span class="token punctuation">:</span><span class="token punctuation">(</span>NSNotification <span class="token operator">*</span><span class="token punctuation">)</span>notification
+<span class="token punctuation">{</span>
+  NSString <span class="token operator">*</span>eventName <span class="token operator">=</span> notification<span class="token punctuation">.</span>userInfo<span class="token punctuation">[</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>hasListeners<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token comment" spellcheck="true"> // Only send events if anyone is listening
+</span>    <span class="token punctuation">[</span>self sendEventWithName<span class="token punctuation">:</span>@<span class="token string">&quot;EventReminder&quot;</span> body<span class="token punctuation">:</span>@<span class="token punctuation">{</span>@<span class="token string">&quot;name&quot;</span><span class="token punctuation">:</span> eventName<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></div><h2><a class="anchor" name="exporting-swift"></a>Exporting Swift <a class="hash-link" href="docs/native-modules-ios.html#exporting-swift">#</a></h2><p>Swift doesn&#x27;t have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.</p><p>Let&#x27;s say we have the same <code>CalendarManager</code> but as a Swift class:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManager.swift
 </span>
 @<span class="token function">objc<span class="token punctuation">(</span></span>CalendarManager<span class="token punctuation">)</span>
 class <span class="token class-name">CalendarManager</span><span class="token punctuation">:</span> NSObject <span class="token punctuation">{</span>
