@@ -640,7 +640,8 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"flex-end": @(YGAlignFlexEnd),
   @"center": @(YGAlignCenter),
   @"auto": @(YGAlignAuto),
-  @"stretch": @(YGAlignStretch)
+  @"stretch": @(YGAlignStretch),
+  @"baseline": @(YGAlignBaseline)
 }), YGAlignFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGPositionType, (@{

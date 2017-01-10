@@ -20,6 +20,11 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 RCT_EXPORT_MODULE();
 
+- (void)invalidate
+{
+  [_nodesManager stopAnimationLoop];
+}
+
 - (void)dealloc
 {
   [self.bridge.eventDispatcher removeDispatchObserver:self];

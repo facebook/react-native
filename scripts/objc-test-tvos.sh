@@ -11,7 +11,7 @@ XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
 XCODE_SCHEME="UIExplorer-tvOS"
 XCODE_SDK="appletvsimulator"
 if [ -z ${XCODE_DESTINATION+x} ]; then
-  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=9.2"
+  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0"
 fi
 
 . ./scripts/objc-test.sh

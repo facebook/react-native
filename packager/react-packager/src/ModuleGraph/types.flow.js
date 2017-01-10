@@ -120,6 +120,8 @@ export type TransformResult = {|
   map: ?Object,
 |};
 
+export type TransformResults = {[string]: TransformResult};
+
 export type TransformVariants = {[key: string]: Object};
 
 export type TransformedFile = {
@@ -127,6 +129,6 @@ export type TransformedFile = {
   file: string,
   hasteID: ?string,
   package?: PackageData,
-  transformed: {[variant: string]: TransformResult},
+  transformed: TransformResults,
   type: FileTypes,
 };
