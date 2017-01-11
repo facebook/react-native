@@ -53,14 +53,16 @@ var BASE_STYLES = {
   LeftButton: {
     position: 'absolute',
     bottom: 0,
-    left: 0,
+    left: BUTTON_EFFECTIVE_MARGIN,
+    overflow: 'hidden',
     height: NAV_ELEMENT_HEIGHT,
     backgroundColor: 'transparent',
   },
   RightButton: {
     position: 'absolute',
     bottom: 0,
-    right: 0,
+    right: BUTTON_EFFECTIVE_MARGIN,
+    overflow: 'hidden',
     height: NAV_ELEMENT_HEIGHT,
     backgroundColor: 'transparent',
   },
