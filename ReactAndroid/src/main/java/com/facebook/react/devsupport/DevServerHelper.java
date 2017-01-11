@@ -84,6 +84,7 @@ public class DevServerHelper {
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
     void onCaptureHeapCommand();
+    void onPokeSamplingProfilerCommand();
   }
 
   public interface PackagerStatusCallback {
@@ -129,6 +130,8 @@ public class DevServerHelper {
                   commandListener.onPackagerReloadCommand();
                 } else if ("captureHeap".equals(action)) {
                   commandListener.onCaptureHeapCommand();
+                } else if ("pokeSamplingProfiler".equals(action)) {
+                  commandListener.onPokeSamplingProfilerCommand();
                 }
               }
             }
