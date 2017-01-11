@@ -18,7 +18,7 @@ const denodeify = require('denodeify');
 const os = require('os');
 const util = require('util');
 const workerFarm = require('worker-farm');
-const debug = require('debug')('ReactNativePackager:JStransformer');
+const debug = require('debug')('RNP:JStransformer');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 import type {SourceMap} from '../lib/SourceMap';

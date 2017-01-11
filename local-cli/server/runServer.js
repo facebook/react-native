@@ -10,6 +10,7 @@
 
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
+const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
@@ -94,6 +95,7 @@ function getPackagerServer(args, config) {
     getTransformOptions: config.getTransformOptions,
     platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
+    reporter: new TerminalReporter(),
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
     verbose: args.verbose,

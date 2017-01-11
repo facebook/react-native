@@ -17,7 +17,8 @@ public enum YogaAlign {
   FLEX_START(1),
   CENTER(2),
   FLEX_END(3),
-  STRETCH(4);
+  STRETCH(4),
+  BASELINE(5);
 
   private int mIntValue;
 
@@ -36,6 +37,7 @@ public enum YogaAlign {
       case 2: return CENTER;
       case 3: return FLEX_END;
       case 4: return STRETCH;
+      case 5: return BASELINE;
       default: throw new IllegalArgumentException("Unkown enum value: " + value);
     }
   }

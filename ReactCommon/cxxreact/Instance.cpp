@@ -4,6 +4,7 @@
 
 #include "Executor.h"
 #include "MethodCall.h"
+#include "RecoverableError.h"
 #include "SystraceSection.h"
 
 #include <folly/json.h>
@@ -13,12 +14,13 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
-#include <fstream>
 #include <mutex>
 #include <string>
 
 namespace facebook {
 namespace react {
+
+using namespace detail;
 
 Instance::~Instance() {
   if (nativeToJsBridge_) {
@@ -66,24 +68,17 @@ void Instance::loadScriptFromStringSync(std::unique_ptr<const JSBigString> strin
 
 void Instance::loadScriptFromFile(const std::string& filename,
                                   const std::string& sourceURL) {
-  // TODO mhorowitz: ReactMarker around file read
-  std::unique_ptr<JSBigBufferString> buf;
-  {
-    SystraceSection s("reactbridge_xplat_loadScriptFromFile",
-                      "fileName", filename);
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_loadScriptFromFile",
+                    "fileName", filename);
 
-    std::ifstream jsfile(filename);
-    if (!jsfile) {
-      LOG(ERROR) << "Unable to load script from file" << filename;
-    } else {
-      jsfile.seekg(0, std::ios::end);
-      buf.reset(new JSBigBufferString(jsfile.tellg()));
-      jsfile.seekg(0, std::ios::beg);
-      jsfile.read(buf->data(), buf->size());
-    }
-  }
+  std::unique_ptr<const JSBigFileString> script;
+  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+    [&filename, &script]() {
+      script = JSBigFileString::fromPath(filename);
+    });
 
-  loadScriptFromString(std::move(buf), sourceURL);
+  nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
 }
 
 void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,

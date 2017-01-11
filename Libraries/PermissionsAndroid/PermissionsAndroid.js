@@ -29,7 +29,7 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  * permissions.
  *
  * On devices before SDK version 23, the permissions are automatically granted
- * if they appear in the manifest, so `checkPermission` and `requestPermission`
+ * if they appear in the manifest, so `check` and `request`
  * should always be true.
  *
  * If a user has previously turned off a permission that you prompt for, the OS
@@ -41,7 +41,7 @@ type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
  * ```
  * async function requestCameraPermission() {
  *   try {
- *     const granted = await PermissionsAndroid.requestPermission(
+ *     const granted = await PermissionsAndroid.request(
  *       PermissionsAndroid.PERMISSIONS.CAMERA,
  *       {
  *         'title': 'Cool Photo App Camera Permission',

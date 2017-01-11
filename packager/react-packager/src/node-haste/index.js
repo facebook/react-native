@@ -68,7 +68,7 @@ class DependencyGraph {
     useWatchman: boolean,
     watch: boolean,
   |};
-  _assetDependencies: mixed;
+  _assetDependencies: Array<string>;
   _cache: Cache;
   _haste: JestHasteMap;
   _hasteFS: HasteFS;
@@ -103,7 +103,7 @@ class DependencyGraph {
     watch,
     reporter,
   }: {
-    assetDependencies: mixed,
+    assetDependencies: Array<string>,
     assetExts: Array<string>,
     cache: Cache,
     extensions?: ?Array<string>,
