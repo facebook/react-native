@@ -36,13 +36,16 @@ RCT_EXPORT_METHOD(operationComplete:(__unused int)token result:(id)profileData e
   [request setHTTPBody:[profileData dataUsingEncoding:NSUTF8StringEncoding]];
 
   // Send the request
-  NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+  NSURLSessionDataTask *sessionDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *sessionError) {
+    if (sessionError) {
+      RCTLogWarn(@"JS CPU Profile data failed to send. Is the packager server running locally?\nDetails: %@", error);
+    } else {
+      RCTLogInfo(@"JS CPU Profile data sent successfully.");
+    }
+  }];
 
-  if (connection) {
-    RCTLogInfo(@"JSC CPU Profile data sent successfully.");
-  } else {
-    RCTLogWarn(@"JSC CPU Profile data failed to send.");
-  }
+  [sessionDataTask resume];
 }
 
 - (void)operationCompletedWithResults:(NSString *)results

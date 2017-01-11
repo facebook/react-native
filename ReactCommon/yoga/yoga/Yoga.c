@@ -181,8 +181,6 @@ YGCalloc gYGCalloc = &calloc;
 YGRealloc gYGRealloc = &realloc;
 YGFree gYGFree = &free;
 
-static YGValue YGValueUndefined = YG_UNDEFINED_VALUES;
-
 static YGValue YGValueZero = {.value = 0, .unit = YGUnitPixel};
 
 #ifdef ANDROID

@@ -11,6 +11,11 @@
 
 #import <objc/runtime.h>
 
+#import <JavaScriptCore/JavaScriptCore.h>
+
+#import <jschelpers/JavaScriptCore.h>
+
+#import "JSCSamplingProfiler.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
@@ -527,6 +532,23 @@ RCT_EXPORT_MODULE()
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
         strongSelf.hotLoadingEnabled = !strongSelf->_hotLoadingEnabled;
+      }
+    }]];
+  }
+
+  // Add toggles for JSC's sampling profiler, if the profiler is enabled
+  if (JSC_JSSamplingProfilerEnabled(self->_bridge.jsContext.JSGlobalContextRef)) {
+    JSContext *context = self->_bridge.jsContext;
+    // Allow to toggle the sampling profiler through RN's dev menu
+    [self->_bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
+      JSGlobalContextRef globalContext = context.JSGlobalContextRef;
+      // JSPokeSamplingProfiler() toggles the profiling process
+      JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
+
+      if (JSC_JSValueGetType(globalContext, jsResult) != kJSTypeNull) {
+        NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
+        JSCSamplingProfiler *profilerModule = [self->_bridge moduleForClass:[JSCSamplingProfiler class]];
+        [profilerModule operationCompletedWithResults:results];
       }
     }]];
   }

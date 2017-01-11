@@ -160,16 +160,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public void updateExtraData(ReactEditText view, Object extraData) {
-    if (extraData instanceof float[]) {
-      float[] padding = (float[]) extraData;
+    if (extraData instanceof ReactTextUpdate) {
+      ReactTextUpdate update = (ReactTextUpdate) extraData;
 
       view.setPadding(
-          (int) Math.floor(padding[0]),
-          (int) Math.floor(padding[1]),
-          (int) Math.floor(padding[2]),
-          (int) Math.floor(padding[3]));
-    } else if (extraData instanceof ReactTextUpdate) {
-      ReactTextUpdate update = (ReactTextUpdate) extraData;
+          (int) update.getPaddingLeft(),
+          (int) update.getPaddingTop(),
+          (int) update.getPaddingRight(),
+          (int) update.getPaddingBottom());
+
       if (update.containsImages()) {
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
