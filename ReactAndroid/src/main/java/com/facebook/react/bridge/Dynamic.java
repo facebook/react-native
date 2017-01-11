@@ -21,4 +21,5 @@ public interface Dynamic {
   ReadableArray asArray();
   ReadableMap asMap();
   ReadableType getType();
+  void recycle();
 }
