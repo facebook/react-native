@@ -45,16 +45,20 @@ public class LayoutShadowNode extends ReactShadowNode {
     return (float) PixelUtil.toPixelFromDIP(dynamic.asDouble());
   }
 
+  private static boolean isNull(Dynamic d) {
+    return d == null || d.isNull();
+  }
+
   @ReactProp(name = ViewProps.WIDTH)
   public void setWidth(Dynamic width) {
     if (isVirtual()) {
       return;
     }
 
-    if (width != null && dynamicIsPercent(width)) {
+    if (!isNull(width) && dynamicIsPercent(width)) {
       setStyleWidthPercent(getDynamicAsPercent(width));
     } else {
-      setStyleWidth(width == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(width));
+      setStyleWidth(isNull(width) ? YogaConstants.UNDEFINED : getDynamicAsFloat(width));
     }
 
     width.recycle();
@@ -66,10 +70,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (minWidth != null && dynamicIsPercent(minWidth)) {
+    if (!isNull(minWidth) && dynamicIsPercent(minWidth)) {
       setStyleMinWidthPercent(getDynamicAsPercent(minWidth));
     } else {
-      setStyleMinWidth(minWidth == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(minWidth));
+      setStyleMinWidth(isNull(minWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minWidth));
     }
 
     minWidth.recycle();
@@ -81,10 +85,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (maxWidth != null && dynamicIsPercent(maxWidth)) {
+    if (!isNull(maxWidth) && dynamicIsPercent(maxWidth)) {
       setStyleMaxWidthPercent(getDynamicAsPercent(maxWidth));
     } else {
-      setStyleMaxWidth(maxWidth == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxWidth));
+      setStyleMaxWidth(isNull(maxWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxWidth));
     }
 
     maxWidth.recycle();
@@ -96,10 +100,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (height != null && dynamicIsPercent(height)) {
+    if (!isNull(height) && dynamicIsPercent(height)) {
       setStyleHeightPercent(getDynamicAsPercent(height));
     } else {
-      setStyleHeight(height == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(height));
+      setStyleHeight(isNull(height) ? YogaConstants.UNDEFINED : getDynamicAsFloat(height));
     }
 
     height.recycle();
@@ -111,10 +115,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (minHeight != null && dynamicIsPercent(minHeight)) {
+    if (!isNull(minHeight) && dynamicIsPercent(minHeight)) {
       setStyleMinHeightPercent(getDynamicAsPercent(minHeight));
     } else {
-      setStyleMinHeight(minHeight == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(minHeight));
+      setStyleMinHeight(isNull(minHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minHeight));
     }
 
     minHeight.recycle();
@@ -126,10 +130,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (maxHeight != null && dynamicIsPercent(maxHeight)) {
+    if (!isNull(maxHeight) && dynamicIsPercent(maxHeight)) {
       setStyleMaxHeightPercent(getDynamicAsPercent(maxHeight));
     } else {
-      setStyleMaxHeight(maxHeight == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxHeight));
+      setStyleMaxHeight(isNull(maxHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxHeight));
     }
 
     maxHeight.recycle();
@@ -165,10 +169,10 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (flexBasis != null && dynamicIsPercent(flexBasis)) {
+    if (!isNull(flexBasis) && dynamicIsPercent(flexBasis)) {
       setFlexBasisPercent(getDynamicAsPercent(flexBasis));
     } else {
-      setFlexBasis(flexBasis == null ? 0 : getDynamicAsFloat(flexBasis));
+      setFlexBasis(isNull(flexBasis) ? 0 : getDynamicAsFloat(flexBasis));
     }
 
     flexBasis.recycle();
@@ -254,12 +258,12 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (margin != null && dynamicIsPercent(margin)) {
+    if (!isNull(margin) && dynamicIsPercent(margin)) {
       setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(margin));
     } else {
       setMargin(
           ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-          margin == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(margin));
+          isNull(margin) ? YogaConstants.UNDEFINED : getDynamicAsFloat(margin));
     }
 
     margin.recycle();
@@ -279,13 +283,13 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (padding != null && dynamicIsPercent(padding)) {
+    if (!isNull(padding) && dynamicIsPercent(padding)) {
       setPaddingPercent(
           ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(padding));
     } else {
       setPadding(
           ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-          padding == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(padding));
+          isNull(padding) ? YogaConstants.UNDEFINED : getDynamicAsFloat(padding));
     }
 
     padding.recycle();
@@ -316,12 +320,12 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (position != null && dynamicIsPercent(position)) {
+    if (!isNull(position) && dynamicIsPercent(position)) {
       setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], getDynamicAsPercent(position));
     } else {
       setPosition(
           ViewProps.POSITION_SPACING_TYPES[index],
-          position == null ? YogaConstants.UNDEFINED : getDynamicAsFloat(position));
+          isNull(position) ? YogaConstants.UNDEFINED : getDynamicAsFloat(position));
     }
 
     position.recycle();

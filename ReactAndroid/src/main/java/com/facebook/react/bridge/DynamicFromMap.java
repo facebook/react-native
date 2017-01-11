@@ -43,6 +43,14 @@ public class DynamicFromMap implements Dynamic {
   }
 
   @Override
+  public boolean isNull() {
+    if (mMap == null || mName == null) {
+      throw new IllegalStateException("This dynamic value has been recycled");
+    }
+    return mMap.isNull(mName);
+  }
+
+  @Override
   public boolean asBoolean() {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");

@@ -43,6 +43,14 @@ public class DynamicFromArray implements Dynamic {
   }
 
   @Override
+  public boolean isNull() {
+    if (mArray == null) {
+      throw new IllegalStateException("This dynamic value has been recycled");
+    }
+    return mArray.isNull(mIndex);
+  }
+
+  @Override
   public boolean asBoolean() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
