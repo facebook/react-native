@@ -27,6 +27,14 @@ content.
 */
 var featured = [
   {
+    name: 'Remedy',
+    icon: 'https://www.remedymedical.com/static/images/AppIconPatient.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/remedy-on-demand-intelligent/id1125877350?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.remedy.android',
+    infoLink: 'https://techcrunch.com/2017/01/10/doctordoctorcantyouseeimburning/',
+    infoTitle: 'Talk to a world-class doctor: advice, prescriptions, and care',
+  },
+  {
     name: 'Qzone (QQ空间)',
     icon: 'http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96',
     linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.qzone',
@@ -327,7 +335,7 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
-  },  
+  },
 ];
 
 /*
