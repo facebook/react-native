@@ -51,7 +51,7 @@ type Props = {
 
 const NavigationHeaderTitle = ({ children, style, textStyle, viewProps }: Props) => (
   <View style={[ styles.title, style ]} {...viewProps}>
-    <Text style={[ styles.titleText, textStyle ]}>{children}</Text>
+    <Text numberOfLines={1} style={[ styles.titleText, textStyle ]}>{children}</Text>
   </View>
 );
 
