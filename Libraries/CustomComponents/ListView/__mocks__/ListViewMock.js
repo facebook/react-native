@@ -48,11 +48,7 @@ class ListViewMock extends React.Component {
       }
     }
     renderFooter && rows.push(renderFooter());
-    return (
-      <View>
-        {this.props.renderScrollComponent({children: rows})}
-      </View>
-    );
+    return this.props.renderScrollComponent({...this.props, children: rows});
   }
   static DataSource = ListViewDataSource;
 }
