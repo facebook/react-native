@@ -63,6 +63,7 @@ var BASE_STYLES = {
     bottom: 0,
     right: BUTTON_EFFECTIVE_MARGIN,
     overflow: 'hidden',
+    alignItems: 'flex-end',
     height: NAV_ELEMENT_HEIGHT,
     backgroundColor: 'transparent',
   },
