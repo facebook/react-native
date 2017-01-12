@@ -142,10 +142,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
 
   case facebook::react::ScriptTag::BCBundle:
-    if (header.BCVersion != runtimeBCVersion) {
+    if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
+      if (error) {
+        *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorBCNotSupported
+                                 userInfo:@{NSLocalizedDescriptionKey:
+                                              @"Bytecode bundles are not supported by this runtime."}];
+      }
+      return nil;
+    }
+    else if ((uint32_t)runtimeBCVersion != header.BCVersion) {
       if (error) {
         NSString *errDesc =
-          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %d",
+          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u",
                     runtimeBCVersion, header.BCVersion];
 
         *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain

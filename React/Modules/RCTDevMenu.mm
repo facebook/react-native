@@ -540,7 +540,7 @@ RCT_EXPORT_MODULE()
   if (JSC_JSSamplingProfilerEnabled(self->_bridge.jsContext.JSGlobalContextRef)) {
     JSContext *context = self->_bridge.jsContext;
     // Allow to toggle the sampling profiler through RN's dev menu
-    [self->_bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
       JSGlobalContextRef globalContext = context.JSGlobalContextRef;
       // JSPokeSamplingProfiler() toggles the profiling process
       JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);

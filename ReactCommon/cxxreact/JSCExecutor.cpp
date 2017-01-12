@@ -40,6 +40,9 @@
 #ifdef WITH_JSC_EXTRA_TRACING
 #include "JSCLegacyProfiler.h"
 #include "JSCLegacyTracing.h"
+#endif
+
+#if !defined(__APPLE__) && defined(WITH_JSC_EXTRA_TRACING)
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
@@ -278,7 +281,11 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   PerfLogging::installNativeHooks(m_context);
   #endif
 
-  initSamplingProfilerOnMainJSCThread(m_context);
+  #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
+  if (JSC_JSSamplingProfilerEnabled(m_context)) {
+    initSamplingProfilerOnMainJSCThread(m_context);
+  }
+  #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
   addNativeMemoryHooks(m_context);
