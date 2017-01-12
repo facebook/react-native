@@ -8,6 +8,7 @@
  */
 
 #import "RCTTouchEvent.h"
+
 #import "RCTAssert.h"
 
 @implementation RCTTouchEvent
