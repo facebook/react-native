@@ -297,6 +297,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "caretHidden", defaultBoolean = false)
+  public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    view.setCursorVisible(!caretHidden);
+  }
+
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
   public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
     view.setSelectAllOnFocus(selectTextOnFocus);
