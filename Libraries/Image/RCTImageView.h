@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTResizeMode.h>
+#import <React/RCTLoadingIndicatorSize.h>
 
 @class RCTBridge;
 @class RCTImageSource;
@@ -24,5 +25,9 @@
 @property (nonatomic, copy) NSArray<RCTImageSource *> *imageSources;
 @property (nonatomic, assign) CGFloat blurRadius;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
+@property (nonatomic, assign) BOOL showLoadingIndicator;
+@property (nonatomic, strong) UIColor *loadingIndicatorColor;
+@property (nonatomic, assign) RCTLoadingIndicatorSize loadingIndicatorSize;
+@property (nonatomic, strong) UIImage *failureImage;
 
 @end

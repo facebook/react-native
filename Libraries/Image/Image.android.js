@@ -33,6 +33,8 @@ var PropTypes = React.PropTypes;
 var {
   ImageLoader,
 } = NativeModules;
+var ColorPropType = require('ColorPropType');
+var ImageSourcePropType = require('ImageSourcePropType');
 
 let _requestId = 1;
 function generateRequestId() {
@@ -70,6 +72,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   progressiveRenderingEnabled: true,
   fadeDuration: true,
   shouldNotifyLoadEvents: true,
+  failureImageSrc: true,
 });
 
 var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
@@ -113,6 +116,15 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]),
+
+
+    // 2017/01/10 QuangCM added -->
+    showLoadingIndicator: PropTypes.bool,
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),      // default is small
+    loadingIndicatorColor: ColorPropType,                           // default is gray
+    failureImageSource: PropTypes.number,                           // only accept local image require('./image.jpg')
+    // <-- 2017/01/10 QuangCM added
+
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
     /**
@@ -271,6 +283,7 @@ var Image = React.createClass({
   render: function() {
     const source = resolveAssetSource(this.props.source);
     const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const failureImageSource = resolveAssetSource(this.props.failureImageSource);
 
     // As opposed to the ios version, here we render `null` when there is no source, source.uri
     // or source array.
@@ -301,6 +314,7 @@ var Image = React.createClass({
         shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+        failureImageSrc: failureImageSource ? failureImageSource.uri : null,
       });
 
       if (nativeProps.children) {
@@ -348,6 +362,7 @@ var cfg = {
     src: true,
     loadingIndicatorSrc: true,
     shouldNotifyLoadEvents: true,
+    failureImageSrc: true,
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);

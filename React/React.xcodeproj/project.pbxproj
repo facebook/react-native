@@ -706,6 +706,8 @@
 		58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
 		58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
+		7467AFD11E249590000D2D4C /* RCTLoadingIndicatorSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */; };
+		7467AFD21E2495BA000D2D4C /* RCTLoadingIndicatorSize.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
 		83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8B1B62640A00BE0E65 /* RCTModalHostView.m */; };
@@ -950,6 +952,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				7467AFD21E2495BA000D2D4C /* RCTLoadingIndicatorSize.h in Copy Headers */,
 				3D80D91F1DF6FA890028D040 /* RCTImageLoader.h in Copy Headers */,
 				3D80D9201DF6FA890028D040 /* RCTImageStoreManager.h in Copy Headers */,
 				3D80D9211DF6FA890028D040 /* RCTResizeMode.h in Copy Headers */,
@@ -1324,6 +1327,7 @@
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
+		7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTLoadingIndicatorSize.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
@@ -1622,6 +1626,7 @@
 		3D1FA0821DE4F36600E03CC6 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */,
 				3D1FA0831DE4F3A000E03CC6 /* RCTImageLoader.h */,
 				3D1FA0841DE4F3A000E03CC6 /* RCTImageStoreManager.h */,
 				3D1FA0851DE4F3A000E03CC6 /* RCTResizeMode.h */,
@@ -1973,6 +1978,7 @@
 			files = (
 				3D80DA191DF820620028D040 /* RCTImageLoader.h in Headers */,
 				3D80DA1A1DF820620028D040 /* RCTImageStoreManager.h in Headers */,
+				7467AFD11E249590000D2D4C /* RCTLoadingIndicatorSize.h in Headers */,
 				3D80DA1B1DF820620028D040 /* RCTResizeMode.h in Headers */,
 				3D80DA1C1DF820620028D040 /* RCTLinkingManager.h in Headers */,
 				3D80DA1D1DF820620028D040 /* RCTNetworking.h in Headers */,

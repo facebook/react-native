@@ -21,6 +21,7 @@ const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
+const ColorPropType = require('ColorPropType');
 
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
@@ -167,6 +168,16 @@ const Image = React.createClass({
       }),
       PropTypes.number,
     ]),
+
+
+    // 2017/01/10 QuangCM added -->
+    showLoadingIndicator: PropTypes.bool,
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),      // default is small
+    loadingIndicatorColor: ColorPropType,                           // default is gray
+    failureImageSource: PropTypes.number,                           // only accept local image require('./image.jpg')
+    // <-- 2017/01/10 QuangCM added
+
+
     /**
      * When true, indicates the image is an accessibility element.
      * @platform ios
