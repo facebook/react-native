@@ -25,9 +25,9 @@ remote_file(
 android_library(
   name = 'imagepipeline',
   exported_deps = [
-      ':imagepipeline-base',
-      ':imagepipeline-core',
-      ':bolts',
+    ':bolts',
+    ':imagepipeline-base',
+    ':imagepipeline-core',
   ],
   visibility = ['//ReactAndroid/...',],
 )

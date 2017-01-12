@@ -14,6 +14,7 @@
 const Logger = require('./src/Logger');
 
 const debug = require('debug');
+const invariant = require('invariant');
 
 import type {Reporter} from './src/lib/reporting';
 
@@ -24,6 +25,13 @@ type Options = {
   nonPersistent: boolean,
   projectRoots: Array<string>,
   reporter?: Reporter,
+  watch?: boolean,
+};
+
+type StrictOptions = {
+  nonPersistent: boolean,
+  projectRoots: Array<string>,
+  reporter: Reporter,
   watch?: boolean,
 };
 
@@ -59,21 +67,17 @@ function enableDebug() {
   debug.enable(debugPattern);
 }
 
-function createServer(options: Options) {
+function createServer(options: StrictOptions) {
   // the debug module is configured globally, we need to enable debugging
   // *before* requiring any packages that use `debug` for logging
   if (options.verbose) {
     enableDebug();
   }
 
+  // Some callsites may not be Flowified yet.
+  invariant(options.reporter != null, 'createServer() requires reporter');
   const serverOptions = Object.assign({}, options);
   delete serverOptions.verbose;
-  if (serverOptions.reporter == null) {
-    // It's unsound to set-up the reporter here, but this allows backward
-    // compatibility.
-    var TerminalReporter = require('./src/lib/TerminalReporter');
-    serverOptions.reporter = new TerminalReporter();
-  }
   var Server = require('./src/Server');
   return new Server(serverOptions);
 }
