@@ -14,7 +14,6 @@ const ListViewDataSource = require('ListViewDataSource');
 const React = require('React');
 const ScrollView = require('ScrollView');
 const StaticRenderer = require('StaticRenderer');
-const View = require('View');
 
 class ListViewMock extends React.Component {
   static latestRef: ?ListViewMock;
@@ -48,11 +47,7 @@ class ListViewMock extends React.Component {
       }
     }
     renderFooter && rows.push(renderFooter());
-    return (
-      <View>
-        {this.props.renderScrollComponent({children: rows})}
-      </View>
-    );
+    return this.props.renderScrollComponent({...this.props, children: rows});
   }
   static DataSource = ListViewDataSource;
 }
