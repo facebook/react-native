@@ -125,6 +125,8 @@ function unlink(args, config) {
 
   return promiseWaterfall(tasks)
     .then(() => {
+      // @todo move all these to `tasks` array, just like in
+      // link
       const assets = difference(
         dependency.assets,
         flatten(allDependencies, d => d.assets)
