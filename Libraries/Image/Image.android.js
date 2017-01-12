@@ -117,13 +117,23 @@ var Image = React.createClass({
       PropTypes.number,
     ]),
 
-
-    // 2017/01/10 QuangCM added -->
+    /**
+     * Show a circle loading indicator while loading image from url
+     */
     showLoadingIndicator: PropTypes.bool,
-    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),      // default is small
-    loadingIndicatorColor: ColorPropType,                           // default is gray
-    failureImageSource: PropTypes.number,                           // only accept local image require('./image.jpg')
-    // <-- 2017/01/10 QuangCM added
+    /**
+     * Determines the size of loading indicator
+     */
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),
+    /**
+     * Determines color of loading indicator
+     */
+    loadingIndicatorColor: ColorPropType,
+    /**
+     * A static image to display in case of loading image from url is failed (not a placeholder).
+     * only accept local image, for example require('./image.jpg')
+     */
+    failureImageSource: PropTypes.number,
 
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,

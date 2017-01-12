@@ -169,7 +169,6 @@ public class ReactImageView extends GenericDraweeView {
   private ImageLoadingIndicatorSize mLoadingIndicatorSize;
   private int mLoadingIndicatorColor = CircleLoadingIndicatorDrawable.DEFAULT_COLOR;
   private @Nullable Drawable mFailureImageDrawable;
-  private @Nullable Drawable mLoadingIndicatorDrawable;
   // <-- 2017/01/11 QuangCM added
 
   // We can't specify rounding in XML, so have to do so here
