@@ -27,6 +27,7 @@ import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
+import com.facebook.react.modules.content.SettingsModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
@@ -225,6 +226,12 @@ public class MainReactPackage extends LazyReactPackage {
         @Override
         public NativeModule get() {
           return new WebSocketModule(context);
+        }
+      }),
+      new ModuleSpec(SettingsModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new SettingsModule(context);
         }
       }));
   }
