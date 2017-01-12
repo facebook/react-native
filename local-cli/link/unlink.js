@@ -113,15 +113,14 @@ function unlink(args, config) {
 
   const allDependencies = getDependencyConfig(config, getProjectDependencies());
   const otherDependencies = filter(allDependencies, d => d.name !== packageName);
-  const thisDependency = find(allDependencies, d => d.name === packageName);
   const iOSDependencies = compact(otherDependencies.map(d => d.config.ios));
 
   const tasks = [
-    () => promisify(thisDependency.config.commands.preunlink || commandStub),
+    () => promisify(dependency.commands.preunlink || commandStub),
     () => unlinkDependencyAndroid(project.android, dependency, packageName),
     () => unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies),
     () => unlinkDependencyWindows(project.windows, dependency, packageName),
-    () => promisify(thisDependency.config.commands.postunlink || commandStub)
+    () => promisify(dependency.commands.postunlink || commandStub)
   ];
 
   return promiseWaterfall(tasks)
