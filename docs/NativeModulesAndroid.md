@@ -361,7 +361,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule {
   private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
   
     @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
       if (requestCode == IMAGE_PICKER_REQUEST) {
         if (mPickerPromise != null) {
           if (resultCode == Activity.RESULT_CANCELED) {
