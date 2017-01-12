@@ -234,6 +234,29 @@ function globalizeTransformOptions(
   };
 }
 
+export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
+
+function profileKey({dev, minify, platform}: TransformProfile): string {
+  return jsonStableStringify({dev, minify, platform});
+}
+
+/**
+ * We avoid doing any request to the server if we know the server is not
+ * going to have any key at all for a particular set of transform options.
+ */
+class TransformProfileSet {
+  _profileKeys: Set<string>;
+  constructor(profiles: Iterable<TransformProfile>) {
+    this._profileKeys = new Set();
+    for (const profile of profiles) {
+      this._profileKeys.add(profileKey(profile));
+    }
+  }
+  has(profile: TransformProfile): boolean {
+    return this._profileKeys.has(profileKey(profile));
+  }
+}
+
 /**
  * One can enable the global cache by calling configure() from a custom CLI
  * script. Eventually we may make it more flexible.
@@ -242,12 +265,15 @@ class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
   _store: ?KeyResultStore;
+  _profileSet: TransformProfileSet;
   static _global: ?GlobalTransformCache;
 
   constructor(
     fetchResultURIs: FetchResultURIs,
-    storeResults?: StoreResults,
+    storeResults: ?StoreResults,
+    profiles: Iterable<TransformProfile>,
   ) {
+    this._profileSet = new TransformProfileSet(profiles);
     this._fetcher = new KeyURIFetcher(fetchResultURIs);
     if (storeResults != null) {
       this._store = new KeyResultStore(storeResults);
@@ -294,6 +320,10 @@ class GlobalTransformCache {
   }
 
   fetch(props: FetchProps, callback: FetchCallback) {
+    if (!this._profileSet.has(props.transformOptions)) {
+      process.nextTick(callback);
+      return;
+    }
     this._fetcher.fetch(GlobalTransformCache.keyOf(props), (error, uri) => {
       if (error != null) {
         callback(error);
@@ -323,11 +353,13 @@ class GlobalTransformCache {
    */
   static configure(
     fetchResultURIs: FetchResultURIs,
-    storeResults?: StoreResults,
+    storeResults: ?StoreResults,
+    profiles: Iterable<TransformProfile>,
   ) {
     GlobalTransformCache._global = new GlobalTransformCache(
       fetchResultURIs,
       storeResults,
+      profiles,
     );
   }
 

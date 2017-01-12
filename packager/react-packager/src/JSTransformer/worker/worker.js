@@ -56,6 +56,8 @@ export type TransformOptions = {
 export type Options = {
   transform: TransformOptions,
   platform: string,
+  +dev: boolean,
+  +minify: boolean,
 };
 
 export type Data = {
