@@ -147,7 +147,7 @@
     "fbjs": "^0.8.5",
     "fbjs-scripts": "^0.7.0",
     "fs-extra": "^0.26.2",
-    "glob": "^5.0.15",
+    "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
     "image-size": "^0.3.5",
     "immutable": "~3.7.6",
