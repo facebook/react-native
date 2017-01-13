@@ -73,10 +73,16 @@ void Instance::loadScriptFromFile(const std::string& filename,
                     "fileName", filename);
 
   std::unique_ptr<const JSBigFileString> script;
-  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-    [&filename, &script]() {
-      script = JSBigFileString::fromPath(filename);
-    });
+
+  // This function can be called in order to change the Bridge's Source URL.
+  // In that case, the filename will be empty, and we should not attempt to
+  // load it.
+  if (!filename.empty()) {
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+      [&filename, &script]() {
+        script = JSBigFileString::fromPath(filename);
+      });
+  }
 
   nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
 }
