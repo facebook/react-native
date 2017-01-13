@@ -14,7 +14,7 @@
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
