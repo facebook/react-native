@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 
+import com.facebook.common.logging.FLog;
+
 /**
  * FallbackJSBundleLoader
  *
@@ -24,6 +26,7 @@ import java.util.Stack;
 public final class FallbackJSBundleLoader extends JSBundleLoader {
 
   /* package */ static final String RECOVERABLE = "facebook::react::Recoverable";
+  /* package */ static final String TAG = "FallbackJSBundleLoader";
 
   // Loaders to delegate to, with the preferred one at the top.
   private Stack<JSBundleLoader> mLoaders;
@@ -60,7 +63,7 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
 
         mLoaders.pop();
         mRecoveredErrors.add(e);
-        // TODO (t14839302): Report a soft error for each swallowed exception.
+        FLog.wtf(TAG, "Falling back from recoverable error", e);
       }
     }
   }

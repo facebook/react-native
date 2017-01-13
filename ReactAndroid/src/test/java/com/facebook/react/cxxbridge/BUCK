@@ -11,6 +11,7 @@ rn_robolectric_test(
     react_native_dep('third-party/java/mockito:mockito'),
     react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
     react_native_target('java/com/facebook/react/cxxbridge:bridge'),
+    react_native_tests_target('java/com/facebook/common/logging:logging'),
   ],
   visibility = [
     'PUBLIC'

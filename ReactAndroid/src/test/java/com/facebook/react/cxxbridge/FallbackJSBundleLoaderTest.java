@@ -15,6 +15,10 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.common.logging.FakeLoggingDelegate;
+import com.facebook.common.logging.LoggingDelegate;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.fail;
 
@@ -34,6 +38,14 @@ public class FallbackJSBundleLoaderTest {
     UNRECOVERABLE = prefix.replace(first, (char) (first + 1));
   }
 
+  private FakeLoggingDelegate mLoggingDelegate;
+
+  @Before
+  public void setup() {
+    mLoggingDelegate = new FakeLoggingDelegate();
+    FLog.setLoggingDelegate(mLoggingDelegate);
+  }
+
   @Test
   public void firstLoaderSucceeds() {
     JSBundleLoader delegates[] = new JSBundleLoader[] {
@@ -48,6 +60,12 @@ public class FallbackJSBundleLoaderTest {
 
     verify(delegates[0], times(1)).loadScript(null);
     verify(delegates[1], never()).loadScript(null);
+
+    assertThat(mLoggingDelegate.logContains(
+        FakeLoggingDelegate.WTF,
+        FallbackJSBundleLoader.TAG,
+        null))
+      .isFalse();
   }
 
   @Test
@@ -66,6 +84,12 @@ public class FallbackJSBundleLoaderTest {
     verify(delegates[0], times(1)).loadScript(null);
     verify(delegates[1], times(1)).loadScript(null);
     verify(delegates[2], never()).loadScript(null);
+
+    assertThat(mLoggingDelegate.logContains(
+        FakeLoggingDelegate.WTF,
+        FallbackJSBundleLoader.TAG,
+        recoverableMsg("error1")))
+      .isTrue();
   }
 
   @Test
@@ -98,6 +122,18 @@ public class FallbackJSBundleLoaderTest {
 
     verify(delegates[0], times(1)).loadScript(null);
     verify(delegates[1], times(1)).loadScript(null);
+
+    assertThat(mLoggingDelegate.logContains(
+        FakeLoggingDelegate.WTF,
+        FallbackJSBundleLoader.TAG,
+        recoverableMsg("error1")))
+      .isTrue();
+
+    assertThat(mLoggingDelegate.logContains(
+        FakeLoggingDelegate.WTF,
+        FallbackJSBundleLoader.TAG,
+        recoverableMsg("error2")))
+      .isTrue();
   }
 
   @Test
@@ -119,6 +155,12 @@ public class FallbackJSBundleLoaderTest {
 
     verify(delegates[0], times(1)).loadScript(null);
     verify(delegates[1], never()).loadScript(null);
+
+    assertThat(mLoggingDelegate.logContains(
+        FakeLoggingDelegate.WTF,
+        FallbackJSBundleLoader.TAG,
+        null))
+      .isFalse();
   }
 
   private static JSBundleLoader successfulLoader(String url) {
