@@ -442,7 +442,7 @@ describe('processRequest', () => {
             entryFile: 'path/to/foo.js',
             inlineSourceMap: false,
             minify: false,
-            generateSourceMaps: false,
+            generateSourceMaps: true,
             hot: false,
             runModule: false,
             sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',

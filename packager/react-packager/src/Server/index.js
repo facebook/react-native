@@ -926,11 +926,13 @@ class Server {
       assetPlugin :
       (typeof assetPlugin === 'string') ? [assetPlugin] : [];
 
+    const dev = this._getBoolOptionFromQuery(urlObj.query, 'dev', true);
+    const minify = this._getBoolOptionFromQuery(urlObj.query, 'minify', false);
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
-      dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
-      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify', false),
+      dev,
+      minify,
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
@@ -944,7 +946,7 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
+      generateSourceMaps: minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }
