@@ -61,6 +61,7 @@
     "SyntheticEvent": false,
     "$Either": false,
     "$All": false,
+    "$ArrayBufferView": false,
     "$Tuple": false,
     "$Supertype": false,
     "$Subtype": false,
