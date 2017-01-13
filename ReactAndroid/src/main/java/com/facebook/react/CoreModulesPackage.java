@@ -128,7 +128,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new SourceCodeModule(mReactInstanceManager.getSourceUrl());
+          return new SourceCodeModule(reactContext);
         }
       }));
     moduleSpecList.add(

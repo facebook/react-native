@@ -14,13 +14,21 @@
 const Generator = require('./Generator');
 
 import type ModuleTransport from '../../lib/ModuleTransport';
+import type {RawMapping as BabelRawMapping} from 'babel-generator';
+
+type GeneratedCodeMapping = [number, number];
+type SourceMapping = [number, number, number, number, void];
+type SourceMappingWithName =  [number, number, number, number, string];
+
+export type RawMapping =
+  SourceMappingWithName | SourceMapping | GeneratedCodeMapping;
 
 /**
  * Creates a source map from modules with "raw mappings", i.e. an array of
  * tuples with either 2, 4, or 5 elements:
  * generated line, generated column, source line, source line, symbol name.
  */
-function fromRawMappings(modules: Array<ModuleTransport>): string {
+function fromRawMappings(modules: Array<ModuleTransport>): Generator {
   const generator = new Generator();
   let carryOver = 0;
 
@@ -39,7 +47,24 @@ function fromRawMappings(modules: Array<ModuleTransport>): string {
     carryOver = carryOver + countLines(code);
   }
 
-  return generator.toString();
+  return generator;
+}
+
+function compactMapping(mapping: BabelRawMapping): RawMapping {
+  const {column, line} = mapping.generated;
+  const {name, original} = mapping;
+
+  if (original == null) {
+    return [line, column];
+  }
+
+  if (typeof name !== 'string') {
+    return ([line, column, original.line, original.column]: SourceMapping);
+  }
+
+  return (
+    [line, column, original.line, original.column, name]: SourceMappingWithName
+  );
 }
 
 function addMappingsForFile(generator, mappings, module, carryOver) {
@@ -54,6 +79,7 @@ function addMappingsForFile(generator, mappings, module, carryOver) {
       mapping[0] === 1 && mapping[1] + columnOffset || mapping[1],
       mapping[2],
       mapping[3],
+      //$FlowIssue #15417846
       mapping[4],
     );
   }
@@ -66,3 +92,4 @@ function countLines(string) {
 }
 
 exports.fromRawMappings = fromRawMappings;
+exports.compactMapping = compactMapping;
