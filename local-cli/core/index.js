@@ -11,6 +11,7 @@
 'use strict';
 
 const Config = require('../util/Config');
+
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
@@ -34,6 +35,11 @@ export type ConfigT = {
    * ending in .custom.js, you would return ['custom'] here.
    */
   getPlatforms: () => Array<string>,
+  /**
+   * Specify any additional node modules that should be processed for
+   * providesModule declarations.
+   */
+  getProvidesModuleNodeModules?: () => Array<string>,
   /**
    * Returns the path to a custom transformer. This can also be overridden
    * with the --transformer commandline argument.
