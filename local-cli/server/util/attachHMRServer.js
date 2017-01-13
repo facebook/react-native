@@ -22,13 +22,6 @@ const blacklist = [
  * Hot Module Replacement updates to the simulator.
  */
 function attachHMRServer({httpServer, path, packagerServer}) {
-  let client = null;
-
-  function disconnect() {
-    client = null;
-    packagerServer.setHMRFileChangeListener(null);
-  }
-
   // For the give platform and entry file, returns a promise with:
   //   - The full list of dependencies.
   //   - The shallow dependencies each file on the dependency list has
@@ -113,8 +106,58 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
+  const wsList = {
+    clients: [],
+    fileChangeListener: (type, filename) => {}
+  };
+
+  const listener = (type, filename) => {
+    wsList.fileChangeListener(type, filename);
+  };
+
+  packagerServer.setHMRFileChangeListener(listener);
+
   wss.on('connection', ws => {
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
+    const wasEmpty = wsList.clients.length === 0;
+
+    wsList.clients.push(ws);
+
+    const removeClient = function (wsClient) {
+      wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
+      if (wsList.clients.length === 0) {
+        packagerServer.setHMRFileChangeListener(null);
+      }
+    };
+
+    const sendAllClients = function (data) {
+      const removed = [];
+      wsList.clients.forEach(wsClient => {
+        try {
+          wsClient.send(data);
+        } catch (e) {
+          wsClient.close();
+          removed.push(wsClient);
+        }
+      });
+
+      removed.forEach(wsClient => {
+        removeClient(wsClient);
+      });
+    };
+
+    ws.on('error', e => {
+      removeClient(ws);
+      console.error('[Hot Module Replacement] Unexpected error', e);
+    });
+
+    ws.on('close', () => {
+      removeClient(ws);
+    });
+
+    if (!wasEmpty) {
+      return;
+    }
 
     getDependencies(params.platform, params.bundleEntry)
       .then(({
@@ -123,7 +166,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         shallowDependencies,
         inverseDependenciesCache,
       }) => {
-        client = {
+        const client = {
           ws,
           platform: params.platform,
           bundleEntry: params.bundleEntry,
@@ -133,7 +176,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           inverseDependenciesCache,
         };
 
-        packagerServer.setHMRFileChangeListener((type, filename) => {
+        wsList.fileChangeListener = (type, filename) => {
           if (!client) {
             return;
           }
@@ -146,7 +189,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             return;
           }
 
-          client.ws.send(JSON.stringify({type: 'update-start'}));
+          sendAllClients(JSON.stringify({type: 'update-start'}));
           const promise = type === 'delete'
             ? Promise.resolve()
             : packagerServer.getShallowDependencies({
@@ -293,20 +336,13 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                client.ws.send(update);
+                sendAllClients(update);
               });
 
           promise.then(() => {
-            client.ws.send(JSON.stringify({type: 'update-done'}));
+            sendAllClients(JSON.stringify({type: 'update-done'}));
           });
-        });
-
-        client.ws.on('error', e => {
-          console.error('[Hot Module Replacement] Unexpected error', e);
-          disconnect();
-        });
-
-        client.ws.on('close', () => disconnect());
+        };
       })
     .catch(err => {
       throw err;
