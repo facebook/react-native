@@ -93,7 +93,7 @@ const viewConfig = {
 const Text = React.createClass({
   propTypes: {
     /**
-     * When `numberOfLines` is set, this prop defines how text will be truncated. 
+     * When `numberOfLines` is set, this prop defines how text will be truncated.
      * `numberOfLines` must be set in conjunction with this prop.
      *
      * This can be one of the following values:
