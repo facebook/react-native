@@ -155,16 +155,6 @@ public abstract class ReactInstanceManager {
   public abstract void showDevOptionsDialog();
 
   /**
-   * Get the URL where the last bundle was loaded from.
-   */
-  public abstract String getSourceUrl();
-
-  /**
-   * The JS Bundle file that this Instance Manager was constructed with.
-   */
-  public abstract @Nullable String getJSBundleFile();
-
-  /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently
    * being (re)-created, or if react context has not been created yet, the JS application associated

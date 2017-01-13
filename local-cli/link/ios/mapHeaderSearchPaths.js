@@ -7,12 +7,14 @@
  * that target.
  *
  * To workaround that issue and make it more bullet-proof for different names,
- * we iterate over all configurations and look if React is already there. If it is,
- * we assume we want to modify that section either
+ * we iterate over all configurations and look for `lc++` linker flag to detect
+ * React Native target.
  *
  * Important: That function mutates `buildSettings` and it's not pure thus you should
  * not rely on its return value
  */
+const defaultHeaderPaths = ['"$(inherited)"'];
+
 module.exports = function headerSearchPathIter(project, func) {
   const config = project.pbxXCBuildConfigurationSection();
 
@@ -22,15 +24,16 @@ module.exports = function headerSearchPathIter(project, func) {
     .forEach(ref => {
       const buildSettings = config[ref].buildSettings;
       const shouldVisitBuildSettings = (
-          Array.isArray(buildSettings.HEADER_SEARCH_PATHS) ?
-            buildSettings.HEADER_SEARCH_PATHS :
+          Array.isArray(buildSettings.OTHER_LDFLAGS) ?
+            buildSettings.OTHER_LDFLAGS :
             []
         )
-        .filter(path => path.indexOf('react-native/React/**') >= 0)
-        .length > 0;
+        .indexOf('"-lc++"') >= 0;
 
       if (shouldVisitBuildSettings) {
-        buildSettings.HEADER_SEARCH_PATHS = func(buildSettings.HEADER_SEARCH_PATHS);
+        buildSettings.HEADER_SEARCH_PATHS = func(
+          buildSettings.HEADER_SEARCH_PATHS || defaultHeaderPaths
+        );
       }
     });
 };
