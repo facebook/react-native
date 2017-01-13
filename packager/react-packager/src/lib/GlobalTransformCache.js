@@ -13,7 +13,7 @@
 
 const crypto = require('crypto');
 const imurmurhash = require('imurmurhash');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 const request = require('request');
