@@ -63,6 +63,7 @@ type Options = {
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
   projectRoots: Array<string>,
+  providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
@@ -178,6 +179,7 @@ class Server {
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
     projectRoots: Array<string>,
+    providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
@@ -209,6 +211,7 @@ class Server {
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
       projectRoots: options.projectRoots,
+      providesModuleNodeModules: options.providesModuleNodeModules,
       reporter: options.reporter,
       resetCache: options.resetCache || false,
       silent: options.silent || false,
@@ -744,14 +747,10 @@ class Server {
           debug('Finished response');
           log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'map') {
-          let sourceMap = p.getSourceMap({
+          const sourceMap = p.getSourceMapString({
             minify: options.minify,
             dev: options.dev,
           });
-
-          if (typeof sourceMap !== 'string') {
-            sourceMap = JSON.stringify(sourceMap);
-          }
 
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
@@ -945,8 +944,7 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      /* $FlowFixMe: missing defaultVal */
-      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
+      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }

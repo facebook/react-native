@@ -373,16 +373,6 @@ class Module {
   isPolyfill() {
     return false;
   }
-
-  toJSON() {
-    return {
-      hash: this.hash(),
-      isJSON: this.isJSON(),
-      isAsset: this.isAsset(),
-      type: this.type,
-      path: this.path,
-    };
-  }
 }
 
 Module._globalCacheRetries = 4;
