@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
 import java.util.Collection;
 
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -23,6 +25,13 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 @DoNotStrip
 public interface CatalystInstance extends MemoryPressureListener {
   void runJSBundle();
+
+  /**
+   * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
+   * bundle has been run yet.
+   */
+  @Nullable String getSourceURL();
+
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
   @DoNotStrip
