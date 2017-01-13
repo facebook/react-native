@@ -68,7 +68,8 @@ describe('processRequest', () => {
     Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
-        getSourceMap: () => 'this is the source map',
+        getSourceMap: () => {},
+        getSourceMapString: () => 'this is the source map',
         getEtag: () => 'this is an etag',
       }));
 
@@ -142,6 +143,7 @@ describe('processRequest', () => {
         entryFile: 'index.ios.js',
         inlineSourceMap: false,
         minify: false,
+        generateSourceMaps: false,
         hot: false,
         runModule: true,
         sourceMapUrl: 'index.ios.includeRequire.map',
@@ -167,6 +169,7 @@ describe('processRequest', () => {
         entryFile: 'index.js',
         inlineSourceMap: false,
         minify: false,
+        generateSourceMaps: false,
         hot: false,
         runModule: true,
         sourceMapUrl: 'index.map?platform=ios',
@@ -192,6 +195,7 @@ describe('processRequest', () => {
         entryFile: 'index.js',
         inlineSourceMap: false,
         minify: false,
+        generateSourceMaps: false,
         hot: false,
         runModule: true,
         sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
@@ -225,6 +229,7 @@ describe('processRequest', () => {
           Promise.resolve({
             getSource: () => 'this is the first source',
             getSourceMap: () => {},
+            getSourceMapString: () => 'this is the source map',
             getEtag: () => () => 'this is an etag',
           })
         )
@@ -232,6 +237,7 @@ describe('processRequest', () => {
           Promise.resolve({
             getSource: () => 'this is the rebuilt source',
             getSourceMap: () => {},
+            getSourceMapString: () => 'this is the source map',
             getEtag: () => () => 'this is an etag',
           })
         );
@@ -273,6 +279,7 @@ describe('processRequest', () => {
             Promise.resolve({
               getSource: () => 'this is the first source',
               getSourceMap: () => {},
+              getSourceMapString: () => 'this is the source map',
               getEtag: () => () => 'this is an etag',
             })
           )
@@ -280,6 +287,7 @@ describe('processRequest', () => {
             Promise.resolve({
               getSource: () => 'this is the rebuilt source',
               getSourceMap: () => {},
+              getSourceMapString: () => 'this is the source map',
               getEtag: () => () => 'this is an etag',
             })
           );
@@ -434,6 +442,7 @@ describe('processRequest', () => {
             entryFile: 'path/to/foo.js',
             inlineSourceMap: false,
             minify: false,
+            generateSourceMaps: false,
             hot: false,
             runModule: false,
             sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',

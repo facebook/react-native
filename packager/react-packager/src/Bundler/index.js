@@ -364,7 +364,7 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle || generateSourceMaps,
+        generateSourceMaps: unbundle || minify || generateSourceMaps,
       });
     }
 
