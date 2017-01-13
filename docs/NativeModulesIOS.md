@@ -336,32 +336,49 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 
 ## Sending Events to JavaScript
 
-The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
+The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `suppportEvents` and call `self sendEventWithName`:
 
 ```objective-c
-#import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+// CalendarManager.h
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
+
+@interface CalendarManager : RCTEventEmitter <RCTBridgeModule>
+
+@end
+```
+
+```objective-c
+// CalendarManager.m
+#import "CalendarManager.h"
 
 @implementation CalendarManager
 
-@synthesize bridge = _bridge;
+RCT_EXPORT_MODULE();
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"EventReminder"];
+}
 
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
-  [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
-                                               body:@{@"name": eventName}];
+  [self sendEventWithName:@"EventReminder" body:@{@"name": eventName}];
 }
 
 @end
 ```
 
-JavaScript code can subscribe to these events:
+JavaScript code can subscribe to these events by creating a new `NativeEventEmitter` instance around your module.
 
 ```javascript
-import { NativeAppEventEmitter } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+const { CalendarManager } = NativeModules;
 
-var subscription = NativeAppEventEmitter.addListener(
+const calendarManagerEmitter = new NativeEventEmitter(CalendarManager);
+
+const subscription = calendarManagerEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );
@@ -371,6 +388,35 @@ subscription.remove();
 ```
 For more examples of sending events to JavaScript, see [`RCTLocationObserver`](https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m).
 
+### Optimizing for zero listeners
+You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override `startObserving` and `stopObserving` in your `RCTEventEmitter` subclass.
+
+```objective-c
+@implementation CalendarManager
+{
+  bool hasListeners;
+}
+
+// Will be called when this module's first listener is added.
+-(void)startObserving { 
+    hasListeners = YES;
+    // Set up any upstream listeners or background tasks as necessary
+}
+
+// Will be called when this module's last listener is removed, or on dealloc.
+-(void)stopObserving { 
+    hasListeners = NO;
+    // Remove upstream listeners, stop unnecessary background tasks
+}
+
+- (void)calendarEventReminderReceived:(NSNotification *)notification
+{
+  NSString *eventName = notification.userInfo[@"name"];
+  if (hasListeners) { // Only send events if anyone is listening
+    [self sendEventWithName:@"EventReminder" body:@{@"name": eventName}];
+  }
+}
+```
 ## Exporting Swift
 
 Swift doesn't have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.

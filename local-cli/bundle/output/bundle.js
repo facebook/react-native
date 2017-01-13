@@ -26,7 +26,10 @@ function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {
 }
 
 function createCodeWithMap(bundle: Bundle, dev: boolean, sourceMapSourcesRoot?: string): * {
-  const sourceMap = relativizeSourceMap(bundle.getSourceMap({dev}), sourceMapSourcesRoot);
+  const map = bundle.getSourceMap({dev});
+  const sourceMap = relativizeSourceMap(
+    typeof map === 'string' ? JSON.parse(map) : map,
+    sourceMapSourcesRoot);
   return {
     code: bundle.getSource({dev}),
     map: JSON.stringify(sourceMap),

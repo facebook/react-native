@@ -14,6 +14,7 @@ package com.facebook.react.bridge;
  * pass one of multiple types down to the native layer.
  */
 public interface Dynamic {
+  boolean isNull();
   boolean asBoolean();
   double asDouble();
   int asInt();
@@ -21,4 +22,5 @@ public interface Dynamic {
   ReadableArray asArray();
   ReadableMap asMap();
   ReadableType getType();
+  void recycle();
 }
