@@ -454,6 +454,7 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
 {
   [_bridge reload];
+  [self dismiss];
 }
 
 @end
