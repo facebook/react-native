@@ -12,5 +12,5 @@
 'use strict';
 
 export type ImageSource = {
-  uri: string,
+  uri?: string,
 } | number;
