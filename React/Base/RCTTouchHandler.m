@@ -53,10 +53,12 @@
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
 
-    // `cancelsTouchesInView` is needed in order to be used as a top level
+    // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
     // using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
+    self.delaysTouchesBegan = NO; // This is default value.
+    self.delaysTouchesEnded = NO;
 
     self.delegate = self;
   }

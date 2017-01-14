@@ -1,3 +1,5 @@
+include_defs('//ReactAndroid/DEFS')
+
 android_library(
   name = 'logging',
   srcs = glob(['**/*.java']),
