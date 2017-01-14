@@ -14,8 +14,8 @@ const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
-  return `build/Build/Products/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+const getBuildPath = function(buildPath, configuration = 'Debug', isDevice, appName) {
+  return `${buildPath}/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
 };
 
 function runIOS(argv, config, args) {
@@ -34,7 +34,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.buildPath);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -54,7 +54,7 @@ function runIOS(argv, config, args) {
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
   if (selectedDevice){
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
+    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.buildPath);
   } else {
     if (devices){
       console.log('Could not find device with the udid: "' + args.udid + '".');
@@ -91,12 +91,12 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     }
     resolve(selectedSimulator.udid)
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration))
+  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.buildPath))
   .then((appName) => {
     if (!appName) {
       appName = inferredSchemeName;
     }
-    let appPath = getBuildPath(args.configuration, appName);
+    let appPath = getBuildPath(args.buildPath, args.configuration, appName);
     console.log(`Installing ${appPath}`);
     child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
@@ -111,14 +111,14 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   })
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
-  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration)
+function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, buildPath){
+  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, buildPath)
   .then((appName) => {
     if (!appName) {
       appName = scheme;
     }
     const iosDeployInstallArgs = [
-      '--bundle', getBuildPath(configuration, appName, true),
+      '--bundle', getBuildPath(configuration, appName, true, buildPath),
       '--id' , selectedDevice.udid,
       '--justlaunch'
     ];
@@ -135,11 +135,12 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', buildPath = 'build/Products') {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
       xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+      '-buildPath', buildPath,
       '-configuration', configuration,
       '-scheme', scheme,
       '-destination', `id=${udid}`,
@@ -156,10 +157,15 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
       console.error(data.toString());
     });
     buildProcess.on('close', function(code) {
-      //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
+      /*  
+      * FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from 
+      * the Product Name in the build config, which does not necessary match a scheme name,  
+      * example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
+      */
       let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app/.exec(buildOutput);
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
-        return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
+        //0 is the full match, 1 is the app name
+        return resolve(productNameMatch[1]);
       }
       return buildProcess.error? reject(error) : resolve();
     });
@@ -219,6 +225,9 @@ module.exports = {
     command: '--simulator [string]',
     description: 'Explicitly set simulator to use',
     default: 'iPhone 6',
+  } , {
+    command: '--buildPath [string]',
+    description: 'Explicitly set the Xcode build path',
   } , {
     command: '--configuration [string]',
     description: 'Explicitly set the scheme configuration to use',
