@@ -14,8 +14,8 @@ const path = require('path');
 const findXcodeProject = require('./findXcodeProject');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(buildPath, configuration = 'Debug', isDevice, appName) {
-  return `${buildPath}/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+const getBuildPath = function(xcodePath, configuration = 'Debug', appName, isDevice) {
+  return `${xcodePath}/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
 };
 
 function runIOS(argv, config, args) {
@@ -34,7 +34,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.buildPath);
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.xcodePath);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -54,7 +54,7 @@ function runIOS(argv, config, args) {
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
   if (selectedDevice){
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.buildPath);
+    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.xcodePath);
   } else {
     if (devices){
       console.log('Could not find device with the udid: "' + args.udid + '".');
@@ -91,12 +91,12 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     }
     resolve(selectedSimulator.udid)
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.buildPath))
+  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration))
   .then((appName) => {
     if (!appName) {
       appName = inferredSchemeName;
     }
-    let appPath = getBuildPath(args.buildPath, args.configuration, appName);
+    let appPath = getBuildPath(args.xcodePath, args.configuration, appName);
     console.log(`Installing ${appPath}`);
     child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
 
@@ -111,14 +111,14 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   })
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, buildPath){
-  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, buildPath)
+function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, xcodePath){
+  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration)
   .then((appName) => {
     if (!appName) {
       appName = scheme;
     }
     const iosDeployInstallArgs = [
-      '--bundle', getBuildPath(configuration, appName, true, buildPath),
+      '--bundle', getBuildPath(xcodePath, configuration, appName, true),
       '--id' , selectedDevice.udid,
       '--justlaunch'
     ];
@@ -135,12 +135,11 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, buildP
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', buildPath = 'build/Products') {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
       xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
-      '-buildPath', buildPath,
       '-configuration', configuration,
       '-scheme', scheme,
       '-destination', `id=${udid}`,
@@ -226,8 +225,9 @@ module.exports = {
     description: 'Explicitly set simulator to use',
     default: 'iPhone 6',
   } , {
-    command: '--buildPath [string]',
+    command: '--xcodePath [string]',
     description: 'Explicitly set the Xcode build path',
+    default: 'build/Products'
   } , {
     command: '--configuration [string]',
     description: 'Explicitly set the scheme configuration to use',
