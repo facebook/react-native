@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
     RCTLogError(@"Attempted to remove more %@ listeners than added", [self class]);
   }
   _listenerCount -= count;
-  _listenerCount = (_listenerCount <= 0) 0 : _listenerCount;
+  _listenerCount = (_listenerCount <= 0) ? 0 : _listenerCount;
   if (_listenerCount == 0) {
     [self stopObserving];
   }
