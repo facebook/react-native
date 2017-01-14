@@ -93,3 +93,20 @@ If you run into issues where running `react-native init` hangs in your system, t
 ```
 react-native init --verbose
 ```
+
+## Failed to install the requested application
+
+If you receive this error:
+```
+An error was encountered processing the command (domain=NSPOSIXErrorDomain, code=2):
+Failed to install the requested application
+An application bundle was not found at the provided path.
+Provide a valid path to the desired application bundle.
+Print: Entry, ":CFBundleIdentifier", Does Not Exist
+```
+It is because the xcodebuild tool can not find your `{ProjectName}.App` file.  You can either set the path in two ways.
+1. In Xcode, refer to Finding your .App file.
+2. In the terminal, using the `--xcodePath` command like this
+```
+react-native run-ios --xcodePath 'build/Products'
+```
