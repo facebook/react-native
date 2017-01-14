@@ -207,7 +207,6 @@ Select "SDK Platforms" from within the SDK Manager, then check the box next to "
 - `Google APIs`
 - `Intel x86 Atom System Image`
 - `Intel x86 Atom_64 System Image`
-- `Google APIs Intel x86 Atom_64 System Image`
 
 Next, select "SDK Tools" and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
 
