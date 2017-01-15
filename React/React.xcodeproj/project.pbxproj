@@ -708,6 +708,7 @@
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		7467AFD11E249590000D2D4C /* RCTLoadingIndicatorSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */; };
 		7467AFD21E2495BA000D2D4C /* RCTLoadingIndicatorSize.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */; };
+		74A5A0D51E2B45DD003FA06B /* RCTLoadingIndicatorSize.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD01E249590000D2D4C /* RCTLoadingIndicatorSize.h */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
 		83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8B1B62640A00BE0E65 /* RCTModalHostView.m */; };
@@ -787,6 +788,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				74A5A0D51E2B45DD003FA06B /* RCTLoadingIndicatorSize.h in Copy Headers */,
 				3D5AC71D1E00572F000F9153 /* RCTTVView.h in Copy Headers */,
 				3D5AC71B1E005723000F9153 /* RCTReloadCommand.h in Copy Headers */,
 				3D5AC71C1E005723000F9153 /* RCTTVNavigationEventEmitter.h in Copy Headers */,
