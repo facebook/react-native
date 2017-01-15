@@ -53,6 +53,8 @@
 		3DED3AA01DE6F7A400336DD7 /* RCTResizeMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
 		7467AFD51E24D24A000D2D4C /* RCTLoadingIndicatorSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD31E24D24A000D2D4C /* RCTLoadingIndicatorSize.h */; };
 		7467AFD61E24D24A000D2D4C /* RCTLoadingIndicatorSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 7467AFD41E24D24A000D2D4C /* RCTLoadingIndicatorSize.m */; };
+		74A5A0581E2B15C8003FA06B /* RCTLoadingIndicatorSize.h in Headers */ = {isa = PBXBuildFile; fileRef = 7467AFD31E24D24A000D2D4C /* RCTLoadingIndicatorSize.h */; };
+		74A5A0591E2B15CC003FA06B /* RCTLoadingIndicatorSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 7467AFD41E24D24A000D2D4C /* RCTLoadingIndicatorSize.m */; };
 		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
 		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 /* End PBXBuildFile section */
@@ -196,6 +198,7 @@
 				3DED3A991DE6F7A400336DD7 /* RCTImageEditingManager.h in Headers */,
 				3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */,
 				3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */,
+				74A5A0581E2B15C8003FA06B /* RCTLoadingIndicatorSize.h in Headers */,
 				3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */,
 				3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */,
 				3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */,
@@ -285,6 +288,7 @@
 				2D3B5F231D9B0D1300451313 /* RCTImageStoreManager.m in Sources */,
 				2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */,
 				2D3B5F1D1D9B0D1300451313 /* RCTLocalAssetImageLoader.m in Sources */,
+				74A5A0591E2B15CC003FA06B /* RCTLoadingIndicatorSize.m in Sources */,
 				2D3B5F1F1D9B0D1300451313 /* RCTImageEditingManager.m in Sources */,
 				2D3B5F1E1D9B0D1300451313 /* RCTGIFImageDecoder.m in Sources */,
 				2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */,
