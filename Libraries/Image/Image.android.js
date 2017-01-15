@@ -34,7 +34,6 @@ var {
   ImageLoader,
 } = NativeModules;
 var ColorPropType = require('ColorPropType');
-var ImageSourcePropType = require('ImageSourcePropType');
 
 let _requestId = 1;
 function generateRequestId() {

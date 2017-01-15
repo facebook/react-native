@@ -176,7 +176,7 @@ const Image = React.createClass({
     /**
      * Determines the size of loading indicator
      */
-    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']), 
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),
     /**
      * Determines color of loading indicator
      */
