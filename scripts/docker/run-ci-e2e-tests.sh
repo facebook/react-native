@@ -9,6 +9,7 @@ SCRIPTS=$(pwd)/scripts
 RUN_ANDROID=0
 RUN_CLI_INSTALL=1
 RUN_IOS=0
+RUN_JS=0
 
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
 CLI_PACKAGE=$ROOT/react-native-cli/react-native-cli-*.tgz
@@ -47,6 +48,11 @@ while :; do
       break
   esac
 done
+
+if [ $RUN_ANDROID -eq 0 ] && [ $RUN_IOS -eq 0 ] && [ $RUN_JS -eq 0 ]; then
+  echo "No e2e tests specified!"
+  exit 0
+fi
 
 # create temp dir
 TEMP_DIR=$(mktemp -d /tmp/react-native-XXXXXXXX)
@@ -163,6 +169,18 @@ if [ $RUN_ANDROID -ne 0 ]; then
     exit 1
   fi
 
+  # kill packager process
+  if kill -0 $SERVER_PID; then
+    echo "Killing packager $SERVER_PID"
+    kill -9 $SERVER_PID
+  fi
+
+  # kill appium process
+  if kill -0 $APPIUM_PID; then
+    echo "Killing appium $APPIUM_PID"
+    kill -9 $APPIUM_PID
+  fi
+
 fi
 
 # ios tests
@@ -186,19 +204,8 @@ if [ $RUN_JS -ne 0 ]; then
   fi
 fi
 
-# cleanup
-cd $ROOT
+# directory cleanup
 rm $IOS_MARKER
 rm $ANDROID_MARKER
-
-if kill -0 $SERVER_PID; then
-  echo "Killing packager $SERVER_PID"
-  kill -9 $SERVER_PID
-fi
-
-if kill -0 $APPIUM_PID; then
-  echo "Killing appium $APPIUM_PID"
-  kill -9 $APPIUM_PID
-fi
 
 exit 0
