@@ -8,7 +8,28 @@ and how they integrate with the Jenkins Pipeline script to run the automated tes
 It is required to have Docker running on your machine in order to build and run the tests in the Dockerfiles.
 See <https://docs.docker.com/engine/installation/> for more information on how to install.
 
-## Android Setup
+## Convenience NPM Run Scripts
+
+We have added a number of default run scripts to the `package.json` file to simplify building and running your tests.
+
+`npm run test-android-setup` - Pulls down the base android docker image used for running the tests
+
+`npm run test-android-build` - Builds the docker image used to run the tests
+
+`npm run test-android-run-unit` - Runs all the unit tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail)
+
+`npm run test-android-run-instrumentation` - Runs all the instrumentation tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail). You can also pass additional flags to filter which tests instrumentation tests are run. Ex: `npm run test-android-run-instrumentation -- --filter=TestIdTestCase` to only run the TestIdTestCase instrumentation test. See below for more information
+on the instrumentation test flags.
+
+`npm run test-android-run-e2e` - Runs all the end to end tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail)
+
+`npm run test-android-unit` - Builds and runs the android unit tests.
+
+`npm run test-android-instrumentation` - Builds and runs the android instrumentation tests.
+
+`npm run test-android-e2e` - Builds and runs the android end to end tests.
+
+## Detailed Android Setup
 
 There are two Dockerfiles for use with the Android codebase.
 
