@@ -985,7 +985,9 @@ static inline YGDirection YGNodeResolveDirection(const YGNodeRef node,
 
 static float YGBaseline(const YGNodeRef node) {
   if (node->baseline != NULL) {
-    const float baseline = node->baseline(node, node->layout.measuredDimensions[YGDimensionWidth], node->layout.measuredDimensions[YGDimensionHeight]);
+    const float baseline = node->baseline(node,
+                                          node->layout.measuredDimensions[YGDimensionWidth],
+                                          node->layout.measuredDimensions[YGDimensionHeight]);
     YG_ASSERT(!YGFloatIsUndefined(baseline), "Expect custom baseline function to not return NaN")
     return baseline;
   }
@@ -2672,19 +2674,22 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
   // If the user didn't specify a width or height for the node, set the
   // dimensions based on the children.
-  if (measureModeMainDim == YGMeasureModeUndefined) {
+  if (measureModeMainDim == YGMeasureModeUndefined ||
+      (node->style.overflow != YGOverflowScroll && measureModeMainDim == YGMeasureModeAtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
     node->layout.measuredDimensions[dim[mainAxis]] =
         YGNodeBoundAxis(node, mainAxis, maxLineMainDim, mainAxisParentSize, parentWidth);
-  } else if (measureModeMainDim == YGMeasureModeAtMost) {
+  } else if (measureModeMainDim == YGMeasureModeAtMost &&
+             node->style.overflow == YGOverflowScroll) {
     node->layout.measuredDimensions[dim[mainAxis]] = fmaxf(
         fminf(availableInnerMainDim + paddingAndBorderAxisMain,
               YGNodeBoundAxisWithinMinAndMax(node, mainAxis, maxLineMainDim, mainAxisParentSize)),
         paddingAndBorderAxisMain);
   }
 
-  if (measureModeCrossDim == YGMeasureModeUndefined) {
+  if (measureModeCrossDim == YGMeasureModeUndefined ||
+      (node->style.overflow != YGOverflowScroll && measureModeCrossDim == YGMeasureModeAtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
     node->layout.measuredDimensions[dim[crossAxis]] =
@@ -2693,7 +2698,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                         totalLineCrossDim + paddingAndBorderAxisCross,
                         crossAxisParentSize,
                         parentWidth);
-  } else if (measureModeCrossDim == YGMeasureModeAtMost) {
+  } else if (measureModeCrossDim == YGMeasureModeAtMost &&
+             node->style.overflow == YGOverflowScroll) {
     node->layout.measuredDimensions[dim[crossAxis]] =
         fmaxf(fminf(availableInnerCrossDim + paddingAndBorderAxisCross,
                     YGNodeBoundAxisWithinMinAndMax(node,
