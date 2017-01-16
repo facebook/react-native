@@ -40,3 +40,4 @@ module.exports = {
     return Settings.clearWatch('' + watchId);
   },
 };
+
