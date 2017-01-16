@@ -66,9 +66,6 @@ function server(argv, config, args) {
     console.log('for common problems and solutions.');
     process.exit(11);
   });
-    console.log('server index opts:');
-    console.log(JSON.stringify(args, null, 2));
-
 
   runServer(args, config, () => console.log('\nReact packager ready.\n'));
 }
@@ -109,6 +106,16 @@ module.exports = {
     description: 'Specify any additional platforms to be used by the packager',
     parse: (val) => val.split(','),
     default: (config) => config.getPlatforms(),
+  }, {
+    command: '--providesModuleNodeModules [list]',
+    description: 'Specify any npm packages that import dependencies with providesModule',
+    parse: (val) => val.split(','),
+    default: (config) => {
+      if (typeof config.getProvidesModuleNodeModules === 'function') {
+        return config.getProvidesModuleNodeModules();
+      }
+      return null;
+    },
   }, {
     command: '--skipflow',
     description: 'Disable flow checks'

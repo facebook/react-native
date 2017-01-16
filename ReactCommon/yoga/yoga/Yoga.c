@@ -47,6 +47,7 @@ typedef struct YGCachedMeasurement {
 typedef struct YGLayout {
   float position[4];
   float dimensions[2];
+  float margin[6];
   float padding[6];
   YGDirection direction;
 
@@ -180,8 +181,6 @@ YGMalloc gYGMalloc = &malloc;
 YGCalloc gYGCalloc = &calloc;
 YGRealloc gYGRealloc = &realloc;
 YGFree gYGFree = &free;
-
-static YGValue YGValueUndefined = YG_UNDEFINED_VALUES;
 
 static YGValue YGValueZero = {.value = 0, .unit = YGUnitPixel};
 
@@ -532,6 +531,29 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
     return node->layout.instanceName;                          \
   }
 
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)  \
+  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {                    \
+    YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout properties of multi-edge shorthands"); \
+                                                                                           \
+    if (edge == YGEdgeLeft) {                                                              \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    if (edge == YGEdgeRight) {                                                             \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    return node->layout.instanceName[edge];                                                \
+  }
+
 YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
 YG_NODE_PROPERTY_IMPL(YGPrintFunc, PrintFunc, printFunc, print);
 YG_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
@@ -573,27 +595,8 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
 
-float YGNodeLayoutGetPadding(const YGNodeRef node, const YGEdge edge) {
-  YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout paddings of multi-edge shorthands");
-
-  if (edge == YGEdgeLeft) {
-    if (node->layout.direction == YGDirectionRTL) {
-      return node->layout.padding[YGEdgeEnd];
-    } else {
-      return node->layout.padding[YGEdgeStart];
-    }
-  }
-
-  if (edge == YGEdgeRight) {
-    if (node->layout.direction == YGDirectionRTL) {
-      return node->layout.padding[YGEdgeStart];
-    } else {
-      return node->layout.padding[YGEdgeEnd];
-    }
-  }
-
-  return node->layout.padding[edge];
-}
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
 uint32_t gCurrentGenerationCount = 0;
 
@@ -1744,6 +1747,23 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
   node->layout.direction = direction;
 
+  node->layout.margin[YGEdgeStart] =
+      YGNodeLeadingMargin(node,
+                           YGFlexDirectionResolve(YGFlexDirectionRow, direction),
+                           parentWidth);
+  node->layout.margin[YGEdgeEnd] =
+      YGNodeTrailingMargin(node,
+                            YGFlexDirectionResolve(YGFlexDirectionRow, direction),
+                            parentWidth);
+  node->layout.margin[YGEdgeTop] =
+      YGNodeLeadingMargin(node,
+                           YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
+                           parentWidth);
+  node->layout.margin[YGEdgeBottom] =
+      YGNodeTrailingMargin(node,
+                            YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
+                            parentWidth);
+
   node->layout.padding[YGEdgeStart] =
       YGNodeLeadingPadding(node,
                            YGFlexDirectionResolve(YGFlexDirectionRow, direction),
@@ -2239,8 +2259,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                               availableInnerWidth));
             childHeightMeasureMode = YGMeasureModeExactly;
 
-            childHeight = fminf(childHeight, availableInnerHeight);
-            childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childHeight = fminf(childHeight, availableInnerHeight);
+              childWidth = childHeight * currentRelativeChild->style.aspectRatio;
+            }
           } else {
             childWidth = fmaxf(childHeight * currentRelativeChild->style.aspectRatio,
                                YGNodePaddingAndBorderForAxis(currentRelativeChild,
@@ -2248,8 +2271,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                              availableInnerWidth));
             childWidthMeasureMode = YGMeasureModeExactly;
 
-            childWidth = fminf(childWidth, availableInnerWidth);
-            childHeight = childWidth / currentRelativeChild->style.aspectRatio;
+            // Parent size constraint should have higher priority than flex
+            if (YGNodeIsFlex(currentRelativeChild)) {
+              childWidth = fminf(childWidth, availableInnerWidth);
+              childHeight = childWidth / currentRelativeChild->style.aspectRatio;
+            }
           }
         }
 

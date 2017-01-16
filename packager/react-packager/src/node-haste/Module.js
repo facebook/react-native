@@ -17,7 +17,7 @@ const TransformCache = require('../lib/TransformCache');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const fs = require('fs');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 
@@ -372,16 +372,6 @@ class Module {
 
   isPolyfill() {
     return false;
-  }
-
-  toJSON() {
-    return {
-      hash: this.hash(),
-      isJSON: this.isJSON(),
-      isAsset: this.isAsset(),
-      type: this.type,
-      path: this.path,
-    };
   }
 }
 

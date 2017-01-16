@@ -121,7 +121,7 @@ public abstract class BaseJavaModule implements NativeModule {
         @Override
         public Dynamic extractArgument(
             CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
-          return new DynamicFromArray(jsArguments, atIndex);
+          return DynamicFromArray.create(jsArguments, atIndex);
         }
       };
 

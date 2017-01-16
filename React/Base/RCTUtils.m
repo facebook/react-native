@@ -252,6 +252,19 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
   }
 }
 
+// Please do not use this method
+// unless you know what you are doing.
+void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
+{
+  if (RCTIsMainQueue()) {
+    block();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
 {
   if (RCTIsMainQueue()) {
@@ -272,9 +285,9 @@ CGFloat RCTScreenScale()
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTExecuteOnMainThread(^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       scale = [UIScreen mainScreen].scale;
-    }, YES);
+    });
   });
 
   return scale;
@@ -289,9 +302,9 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTExecuteOnMainThread(^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       size = [UIScreen mainScreen].bounds.size;
-    }, YES);
+    });
   });
 
   return size;

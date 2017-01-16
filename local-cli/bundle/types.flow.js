@@ -26,7 +26,7 @@ export type ModuleGroups = {|
 export type ModuleTransportLike = {
   code: string,
   id: number,
-  map?: ?MixedSourceMap,
+  map?: $PropertyType<ModuleTransport, 'map'>,
   +name?: string,
 };
 

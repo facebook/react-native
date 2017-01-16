@@ -10,6 +10,8 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {ModuleGroups, ModuleTransportLike, SourceMap} from '../../types.flow';
 
 const newline = /\r\n?|\n|\u2028|\u2029/g;
@@ -99,6 +101,10 @@ function combineSourceMaps({
       column = wrapperEnd(code);
     }
 
+    invariant(
+      !Array.isArray(map),
+      'Random Access Bundle source maps cannot be built from raw mappings',
+    );
     sections.push(Section(line, column, map || lineToLineSourceMap(code, name)));
     if (hasOffset) {
       offsets[id] = line;

@@ -3,8 +3,8 @@ include_defs('//ReactAndroid/DEFS')
 android_library(
   name = 'junit',
   exported_deps = [
-    ':junit-core',
     ':hamcrest',
+    ':junit-core',
   ],
   visibility = ['//ReactAndroid/...',],
 )

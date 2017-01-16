@@ -127,7 +127,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   private @Nullable volatile ReactContext mCurrentReactContext;
   private final Context mApplicationContext;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
-  private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
       Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
@@ -635,22 +634,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   }
 
   /**
-   * Get the URL where the last bundle was loaded from.
-   */
-  @Override
-  public String getSourceUrl() {
-    return Assertions.assertNotNull(mSourceUrl);
-  }
-
-  @Override
-  public @Nullable String getJSBundleFile() {
-    if (mBundleLoader == null) {
-      return null;
-    }
-    return mBundleLoader.getSourceUrl();
-  }
-
-  /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently
    * being (re)-created, or if react context has not been created yet, the JS application associated
@@ -843,7 +826,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
-    mSourceUrl = jsBundleLoader.getSourceUrl();
     List<ModuleSpec> moduleSpecs = new ArrayList<>();
     Map<Class, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
     JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();

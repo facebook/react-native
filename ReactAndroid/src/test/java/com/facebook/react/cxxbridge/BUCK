@@ -1,0 +1,19 @@
+include_defs('//ReactAndroid/DEFS')
+
+rn_robolectric_test(
+  name = 'cxxbridge',
+  # Please change the contact to the oncall of your team
+  contacts = ['oncall+fbandroid_sheriff@xmail.facebook.com'],
+  srcs = glob(['*Test.java']),
+  deps = [
+    react_native_dep('third-party/java/fest:fest'),
+    react_native_dep('third-party/java/junit:junit'),
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+    react_native_target('java/com/facebook/react/cxxbridge:bridge'),
+    react_native_tests_target('java/com/facebook/common/logging:logging'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
