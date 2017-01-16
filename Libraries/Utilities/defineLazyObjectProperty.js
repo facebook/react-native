@@ -35,7 +35,21 @@ function defineLazyObjectProperty<T>(
     // `setValue` which calls `Object.defineProperty` which somehow triggers
     // `getValue` again. Adding `valueSet` breaks this loop.
     if (!valueSet) {
-      setValue(get());
+      try {
+        // Set `valueSet` to true optimistically to not fail into another infinite
+        // loop when property getter would try to access already defined property.
+        // This is specifically the case with 'regenerator-runtime' module, which
+        // checks if `global.regeneratorRuntime` property is already defined and
+        // thus triggers `getValue()` again.
+        valueSet = true;
+        var newValue = get();
+      } catch (e) {
+        // Getter threw an exception, so set `valueSet` back to `false` and rethrow
+        valueSet = false;
+        throw e;
+      }
+
+      setValue(newValue);
     }
     return value;
   }
