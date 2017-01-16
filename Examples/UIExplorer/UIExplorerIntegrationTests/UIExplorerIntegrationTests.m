@@ -18,6 +18,14 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
+#define RCT_TEST_ONLY_WITH_PACKAGER(name) \
+- (void)test##name                        \
+{                                         \
+  if (getenv("CI_USE_PACKAGER")) {        \
+    [_runner runTest:_cmd module:@#name]; \
+  }                                       \
+}
+
 @interface UIExplorerIntegrationTests : XCTestCase
 
 @end
@@ -63,6 +71,7 @@ RCT_TEST(AppEventsTest)
 //RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(PromiseTest)
+RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest)
 
 
 @end

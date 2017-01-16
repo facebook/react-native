@@ -31,6 +31,7 @@ var TESTS = [
   require('./SimpleSnapshotTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./WebSocketTest'),
 ];
 
 TESTS.forEach(
