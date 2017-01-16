@@ -28,6 +28,14 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const colors = {
+    GREEN: '\x1b[32m',
+    RED: '\x1b[31m',
+    RESET: '\x1b[0m'
+};
+
+const test_suite_results = {};
+
 const test_opts = {
     FILTER: new RegExp(argv.filter || '.*', 'i'),
     PACKAGE: argv.package || 'com.facebook.react.tests',
@@ -37,6 +45,8 @@ const test_opts = {
     OFFSET: argv.offset,
     COUNT: argv.count
 }
+
+let max_test_class_length = Number.NEGATIVE_INFINITY;
 
 let testClasses = fs.readdirSync(path.resolve(process.cwd(), test_opts.PATH))
     .filter((file) => {
@@ -65,6 +75,10 @@ if (test_opts.COUNT != null && test_opts.OFFSET != null) {
 }
 
 return async.eachSeries(testClasses, (clazz, callback) => {
+    if(clazz.length > max_test_class_length) {
+        max_test_class_length = clazz.length;
+    }
+
     return async.retry(test_opts.RETRIES, (retryCb) => {
         return child_process.spawn('./scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
             stdio: 'inherit'
@@ -75,14 +89,53 @@ return async.eachSeries(testClasses, (clazz, callback) => {
 
             return retryCb();
         });
-    }, callback);
-}, (err) => {
-    if (err) {
-        console.error(err);
-        return process.exit(1);
-    }
+    }, (err) => {
+        test_suite_results[clazz] = {
+            status: err ? 'failure' : 'success'
+        }
 
+        return callback();
+    });
+}, () => {
+    print_test_suite_results();
     return process.exit(0);
 });
+
+function print_test_suite_results() {
+    console.log('\n\nTest Suite Results:\n');
+
+    let color;
+    let failing_suites = 0;
+    let passing_suites = 0;
+
+    function pad_output(num_chars) {
+        let i = 0;
+
+        while(i < num_chars) {
+            process.stdout.write(' ');
+            i++;
+        }
+    }
+
+    for(const key in test_suite_results) {
+        const test = test_suite_results[key];
+
+        if(test.status === 'success') {
+            color = colors.GREEN;
+            passing_suites++;
+        } else if(test.status === 'failure') {
+            color = colors.RED;
+            failing_suites++;
+        }
+
+        process.stdout.write(color);
+        process.stdout.write(key);
+        pad_output((max_test_class_length - key.length) + 8);
+        process.stdout.write(test_suite_results[key].status);
+        process.stdout.write(`${colors.RESET}\n`);
+    }
+
+    console.log(`\n${passing_suites} passing, ${failing_suites} failing!`);
+}
 
 /*eslint-enable no-undef */
