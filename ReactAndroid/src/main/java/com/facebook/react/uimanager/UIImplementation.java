@@ -8,6 +8,8 @@
  */
 package com.facebook.react.uimanager;
 
+import android.view.View;
+
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
@@ -225,6 +227,11 @@ public class UIImplementation {
   public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
     mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
+  }
+
+
+  public View getView(int tag) {
+    return mOperationsQueue.getNativeViewHierarchyManager().resolveView(tag);
   }
 
   protected void handleUpdateView(
