@@ -152,7 +152,7 @@ const RefreshControl = React.createClass({
     return (
       <NativeRefreshControl
         {...this.props}
-        ref={ref => this._nativeRef = ref}
+        ref={ref => {this._nativeRef = ref;}}
         onRefresh={this._onRefresh}
       />
     );

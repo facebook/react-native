@@ -22,22 +22,22 @@ const defaults = require('../../../defaults');
 const mime = require('mime-types');
 const path = require('path');
 const terminal = require('../lib/terminal');
-const throttle = require('lodash/throttle');
 const url = require('url');
 
-const debug = require('debug')('ReactNativePackager:Server');
+const debug = require('debug')('RNP:Server');
 
 import type Module from '../node-haste/Module';
 import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
+import type {Reporter} from '../lib/reporting';
+import type {GetTransformOptions} from '../Bundler';
 
 const {
   createActionStartEntry,
   createActionEndEntry,
   log,
-  print,
 } = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
@@ -53,63 +53,24 @@ function debounceAndBatch(fn, delay) {
   };
 }
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  transformModulePath: {
-    type: 'string',
-    required: false,
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  watch: {
-    type: 'boolean',
-    default: false,
-  },
-  assetExts: {
-    type: 'array',
-    default: defaults.assetExts,
-  },
-  platforms: {
-    type: 'array',
-    default: defaults.platforms,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    required: false,
-  },
-  getTransformOptions: {
-    type: 'function',
-    required: false,
-  },
-  silent: {
-    type: 'boolean',
-    default: false,
-  },
-});
+type Options = {
+  assetExts?: Array<string>,
+  blacklistRE?: RegExp,
+  cacheVersion?: string,
+  extraNodeModules?: {},
+  getTransformOptions?: GetTransformOptions,
+  moduleFormat?: string,
+  platforms?: Array<string>,
+  polyfillModuleNames?: Array<string>,
+  projectRoots: Array<string>,
+  providesModuleNodeModules?: Array<string>,
+  reporter: Reporter,
+  resetCache?: boolean,
+  silent?: boolean,
+  transformModulePath?: string,
+  transformTimeoutInterval?: number,
+  watch?: boolean,
+};
 
 const bundleOpts = declareOpts({
   sourceMapUrl: {
@@ -209,7 +170,21 @@ const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 class Server {
 
   _opts: {
+    assetExts: Array<string>,
+    blacklistRE: ?RegExp,
+    cacheVersion: string,
+    extraNodeModules: {},
+    getTransformOptions?: GetTransformOptions,
+    moduleFormat: string,
+    platforms: Array<string>,
+    polyfillModuleNames: Array<string>,
     projectRoots: Array<string>,
+    providesModuleNodeModules?: Array<string>,
+    reporter: Reporter,
+    resetCache: boolean,
+    silent: boolean,
+    transformModulePath: ?string,
+    transformTimeoutInterval: ?number,
     watch: boolean,
   };
   _projectRoots: Array<string>;
@@ -223,26 +198,46 @@ class Server {
   _bundler: Bundler;
   _debouncedFileChangeHandler: (filePath: string) => mixed;
   _hmrFileChangeListener: (type: string, filePath: string) => mixed;
+  _reporter: Reporter;
 
-  constructor(options: {watch?: boolean}) {
-    const opts = this._opts = validateOpts(options);
+  constructor(options: Options) {
+    this._opts = {
+      assetExts: options.assetExts || defaults.assetExts,
+      blacklistRE: options.blacklistRE,
+      cacheVersion: options.cacheVersion || '1.0',
+      extraNodeModules: options.extraNodeModules || {},
+      getTransformOptions: options.getTransformOptions,
+      moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
+      platforms: options.platforms || defaults.platforms,
+      polyfillModuleNames: options.polyfillModuleNames || [],
+      projectRoots: options.projectRoots,
+      providesModuleNodeModules: options.providesModuleNodeModules,
+      reporter: options.reporter,
+      resetCache: options.resetCache || false,
+      silent: options.silent || false,
+      transformModulePath: options.transformModulePath,
+      transformTimeoutInterval: options.transformTimeoutInterval,
+      watch: options.watch || false,
+    };
     const processFileChange =
       ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
-    this._projectRoots = opts.projectRoots;
+    this._reporter = options.reporter;
+    this._projectRoots = this._opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
 
     this._assetServer = new AssetServer({
-      assetExts: opts.assetExts,
-      projectRoots: opts.projectRoots,
+      assetExts: this._opts.assetExts,
+      projectRoots: this._opts.projectRoots,
     });
 
-    const bundlerOpts = Object.create(opts);
+    const bundlerOpts = Object.create(this._opts);
     bundlerOpts.assetServer = this._assetServer;
-    bundlerOpts.allowBundleUpdates = options.watch;
-    bundlerOpts.watch = options.watch;
+    bundlerOpts.allowBundleUpdates = this._opts.watch;
+    bundlerOpts.watch = this._opts.watch;
+    bundlerOpts.reporter = options.reporter;
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
@@ -514,10 +509,10 @@ class Server {
     const assetPath: string = urlObj.pathname.match(/^\/assets\/(.+)$/);
 
     const processingAssetRequestLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Processing asset request',
         asset: assetPath[1],
-      })), ['asset']);
+      }));
 
     /* $FlowFixMe: query may be empty for invalid URLs */
     this._assetServer.get(assetPath[1], urlObj.query.platform)
@@ -530,7 +525,7 @@ class Server {
           }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
           process.nextTick(() => {
-            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+            log(createActionEndEntry(processingAssetRequestLogEntry));
           });
         },
         error => {
@@ -565,10 +560,15 @@ class Server {
         if (outdated.size) {
 
           const updatingExistingBundleLogEntry =
-            print(log(createActionStartEntry({
+            log(createActionStartEntry({
               action_name: 'Updating existing bundle',
               outdated_modules: outdated.size,
-            })), ['outdated_modules']);
+            }));
+          this._reporter.update({
+            type: 'bundle_update_existing',
+            entryFilePath: options.entryFile,
+            outdatedModuleCount: outdated.size,
+          });
 
           debug('Attempt to update existing bundle');
 
@@ -632,10 +632,7 @@ class Server {
 
                 bundle.invalidateSource();
 
-                print(
-                  log(createActionEndEntry(updatingExistingBundleLogEntry)),
-                  ['outdated_modules'],
-                );
+                log(createActionEndEntry(updatingExistingBundleLogEntry));
 
                 debug('Successfully updated existing bundle');
                 return bundle;
@@ -661,6 +658,8 @@ class Server {
     next: () => mixed,
   ) {
     const urlObj = url.parse(req.url, true);
+    const {host} = req.headers;
+    debug(`Handling request: ${host ? 'http://' + host : ''}${req.url}`);
     /* $FlowFixMe: Could be empty if the URL is invalid. */
     const pathname: string = urlObj.pathname;
 
@@ -689,21 +688,32 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
+    this._reporter.update({
+      type: 'bundle_requested',
+      entryFilePath: options.entryFile,
+    });
     const requestingBundleLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Requesting bundle',
         bundle_url: req.url,
         entry_point: options.entryFile,
-      })), ['bundle_url']);
+      }));
 
-    let updateTTYProgressMessage = () => {};
-    if (process.stdout.isTTY && !this._opts.silent) {
-      updateTTYProgressMessage = startTTYProgressMessage();
+    let reportProgress = () => {};
+    if (!this._opts.silent) {
+      reportProgress = (transformedFileCount, totalFileCount) => {
+        this._reporter.update({
+          type: 'bundle_transform_progressed',
+          entryFilePath: options.entryFile,
+          transformedFileCount,
+          totalFileCount,
+        });
+      };
     }
 
     const mres = MultipartResponse.wrap(req, res);
     options.onProgress = (done, total) => {
-      updateTTYProgressMessage(done, total);
+      reportProgress(done, total);
       mres.writeChunk({'Content-Type': 'application/json'}, JSON.stringify({done, total}));
     };
 
@@ -711,6 +721,10 @@ class Server {
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
+        this._reporter.update({
+          type: 'bundle_built',
+          entryFilePath: options.entryFile,
+        });
         if (requestType === 'bundle') {
           debug('Generating source code');
           const bundleSource = p.getSource({
@@ -731,25 +745,21 @@ class Server {
             mres.end(bundleSource);
           }
           debug('Finished response');
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'map') {
-          let sourceMap = p.getSourceMap({
+          const sourceMap = p.getSourceMapString({
             minify: options.minify,
             dev: options.dev,
           });
 
-          if (typeof sourceMap !== 'string') {
-            sourceMap = JSON.stringify(sourceMap);
-          }
-
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
           mres.setHeader('Content-Type', 'application/json');
           mres.end(assetsList);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         }
       },
       error => this._handleError(mres, this.optionsHash(options), error)
@@ -762,7 +772,7 @@ class Server {
 
   _symbolicate(req: IncomingMessage, res: ServerResponse) {
     const symbolicatingLogEntry =
-      print(log(createActionStartEntry('Symbolicating')));
+      log(createActionStartEntry('Symbolicating'));
 
     /* $FlowFixMe: where is `rowBody` defined? Is it added by
      * the `connect` framework? */
@@ -815,7 +825,7 @@ class Server {
       stack => {
         res.end(JSON.stringify({stack: stack}));
         process.nextTick(() => {
-          print(log(createActionEndEntry(symbolicatingLogEntry)));
+          log(createActionEndEntry(symbolicatingLogEntry));
         });
       },
       error => {
@@ -916,11 +926,13 @@ class Server {
       assetPlugin :
       (typeof assetPlugin === 'string') ? [assetPlugin] : [];
 
+    const dev = this._getBoolOptionFromQuery(urlObj.query, 'dev', true);
+    const minify = this._getBoolOptionFromQuery(urlObj.query, 'minify', false);
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
-      dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
-      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify', false),
+      dev,
+      minify,
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
@@ -934,8 +946,7 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      /* $FlowFixMe: missing defaultVal */
-      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
+      generateSourceMaps: minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }
@@ -948,41 +959,6 @@ class Server {
 
     return query[opt] === 'true' || query[opt] === '1';
   }
-}
-
-function getProgressBar(ratio: number, length: number) {
-  const blockCount = Math.floor(ratio * length);
-  return (
-    '\u2593'.repeat(blockCount) +
-    '\u2591'.repeat(length - blockCount)
-  );
-}
-
-/**
- * We use Math.pow(ratio, 2) to as a conservative measure of progress because we
- * know the `totalCount` is going to progressively increase as well. We also
- * prevent the ratio from going backwards.
- */
-function startTTYProgressMessage(
-): (doneCount: number, totalCount: number) => void {
-  let currentRatio = 0;
-  const updateMessage = (doneCount, totalCount) => {
-    const isDone = doneCount === totalCount;
-    const conservativeRatio = Math.pow(doneCount / totalCount, 2);
-    currentRatio = Math.max(conservativeRatio, currentRatio);
-    terminal.status(
-      'Transforming files  %s%s% (%s/%s)%s',
-      isDone ? '' : getProgressBar(currentRatio, 20) + '  ',
-      (100 * currentRatio).toFixed(1),
-      doneCount,
-      totalCount,
-      isDone ? ', done.' : '...',
-    );
-    if (isDone) {
-      terminal.persistStatus();
-    }
-  };
-  return throttle(updateMessage, 200);
 }
 
 function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {

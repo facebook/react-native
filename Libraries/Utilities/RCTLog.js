@@ -37,6 +37,7 @@ class RCTLog {
       // We already printed in xcode, so only log here if using a js debugger
       console[logFn].apply(console, args);
     }
+
     return true;
   }
 }

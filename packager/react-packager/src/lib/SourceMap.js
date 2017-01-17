@@ -17,7 +17,7 @@ export type SourceMap = BabelSourceMap;
 
 export type CombinedSourceMap = {
   version: number,
-  file: string,
+  file?: string,
   sections: Array<{
     offset: {line: number, column: number},
     map: MixedSourceMap,

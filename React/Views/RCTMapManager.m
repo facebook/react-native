@@ -104,6 +104,7 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
+#pragma unused (defaultView)
   if (json) {
     [view setRegion:[RCTConvert MKCoordinateRegion:json] animated:YES];
   }
@@ -290,7 +291,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   return annotationView;
 }
 
-- (void)mapView:(RCTMap *)mapView didAddAnnotationViews:(NSArray *)views {
+- (void)mapView:(RCTMap *)mapView didAddAnnotationViews:(__unused NSArray *)views {
   if (mapView.showsAnnotationCallouts) {
     for (id<MKAnnotation> annotation in mapView.annotations) {
       [mapView selectAnnotation:annotation animated:YES];
@@ -298,7 +299,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
+- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
 {
   RCTAssert([overlay isKindOfClass:[RCTMapOverlay class]], @"Overlay must be of type RCTMapOverlay");
   MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];

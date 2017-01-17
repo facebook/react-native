@@ -1,0 +1,18 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'logging',
+  srcs = glob(['**/*.java']),
+
+  exported_deps = [
+    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
+  ],
+
+  deps = [
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+
+  visibility = [
+    'PUBLIC',
+  ],
+)

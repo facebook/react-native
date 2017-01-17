@@ -55,12 +55,11 @@ Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
 
 <block class="mac ios" />
 
-Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Scheme toolbar menu. Xcode will then register your device for development.
+Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Product > Destination toolbar menu. Xcode will then register your device for development.
 
 > If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
 
 Finally, select your phone as the build target and press **Build and run**.
-
 
 <block class="mac windows linux android" />
 
@@ -156,7 +155,14 @@ $ react-native run-android
 
 ## Connecting to the development server
 
+<block class="mac ios" />
+
+You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Shake the device to open the [Developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
+
+<block class="mac windows linux android" />
+
 You can also iterate quickly on a device by connecting to the development server running on your development machine. There are several ways of accomplishing this, depending on whether you have access to a USB cable or a Wi-Fi network.
+
 
 ### Method 1: Using adb reverse (recommended)
 
@@ -164,7 +170,7 @@ You can also iterate quickly on a device by connecting to the development server
 
 You can use this method if your device is running Android 5.0 (Lollipop), it has USB debugging enabled, and it is connected via USB to your development machine.
 
-<block class="mac windows linux android ios" />
+<block class="mac windows linux android" />
 
 Run the following in a command prompt:
 
@@ -178,19 +184,19 @@ You can now use `Reload JS` from the React Native in-app Developer menu without 
 
 You can also connect to the development server over Wi-Fi. You'll first need to install the app on your device using a USB cable, but once that has been done you can debug wirelessly by following these instructions. You'll need your development machine's current IP address before proceeding.
 
-<block class="mac android ios" />
+<block class="mac android" />
 
 You can find the IP address in **System Preferences** → **Network**.
 
-<block class="windows android ios" />
+<block class="windows android" />
 
 Open the command prompt and type `ipconfig` to find your machine's IP address ([more info](http://windows.microsoft.com/en-us/windows/using-command-line-tools-networking-information)).
 
-<block class="linux android ios" />
+<block class="linux android" />
 
 Open a terminal and type `/sbin/ifconfig` to find your machine's IP address.
 
-<block class="mac windows linux android ios" />
+<block class="mac windows linux android" />
 
 1. Make sure your laptop and your phone are on the **same** Wi-Fi network.
 2. Open your React Native app on your device.

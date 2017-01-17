@@ -11,6 +11,7 @@
 
 'use strict';
 
+const debugRead = require('debug')('RNP:TransformCache:Read');
 const fs = require('fs');
 /**
  * We get the package "for free" with "write-file-atomic". MurmurHash3 is a
@@ -45,6 +46,10 @@ const getCacheDirPath = (function () {
       dirPath = path.join(
         require('os').tmpdir(),
         CACHE_NAME + '-' + imurmurhash(__dirname).result().toString(16),
+      );
+
+      require('debug')('RNP:TransformCache:Dir')(
+        `transform cache directory: ${dirPath}`
       );
     }
     return dirPath;
@@ -329,5 +334,10 @@ function readSync(props: ReadTransformProps): ?CachedResult {
 
 module.exports = {
   writeSync,
-  readSync,
+  readSync(props: ReadTransformProps): ?CachedResult {
+    const result = readSync(props);
+    const msg = result ? 'Cache hit: ' : 'Cache miss: ';
+    debugRead(msg + props.filePath);
+    return result;
+  }
 };
