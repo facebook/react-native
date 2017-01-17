@@ -1984,8 +1984,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       child->lineIndex = lineCount;
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
-        const float outerFlexBasis = child->layout.computedFlexBasis +
-                                     YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+        const float outerFlexBasis =
+            fmaxf(YGValueResolve(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize), child->layout.computedFlexBasis) +
+                  YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
