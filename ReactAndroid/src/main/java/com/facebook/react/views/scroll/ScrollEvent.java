@@ -42,55 +42,55 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private @Nullable ArrayList<ChildFrame> mUpdatedChildFrames;
 
   public static ScrollEvent obtain(
-      int viewTag,
-      ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
-      int contentWidth,
-      int contentHeight,
-      int scrollViewWidth,
-      int scrollViewHeight) {
-    ScrollEvent event = EVENTS_POOL.acquire();
-    if (event == null) {
-      event = new ScrollEvent();
-    }
-    event.init(
-        viewTag,
-        scrollEventType,
-        scrollX,
-        scrollY,
-        contentWidth,
-        contentHeight,
-        scrollViewWidth,
-        scrollViewHeight);
-    return event;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight) {
+      ScrollEvent event = EVENTS_POOL.acquire();
+      if (event == null) {
+        event = new ScrollEvent();
+      }
+      event.init(
+          viewTag,
+          scrollEventType,
+          scrollX,
+          scrollY,
+          contentWidth,
+          contentHeight,
+          scrollViewWidth,
+          scrollViewHeight);
+      return event;
   }
 
   public static ScrollEvent obtain(
-          int viewTag,
-          ScrollEventType scrollEventType,
-          int scrollX,
-          int scrollY,
-          int contentWidth,
-          int contentHeight,
-          int scrollViewWidth,
-          int scrollViewHeight,
-          ArrayList<ChildFrame> updatedChildFrames) {
-    ScrollEvent event = EVENTS_POOL.acquire();
-    if (event == null) {
-      event = new ScrollEvent();
-    }
-    event.init(
-            viewTag,
-            scrollEventType,
-            scrollX,
-            scrollY,
-            contentWidth,
-            contentHeight,
-            scrollViewWidth,
-            scrollViewHeight,
-            updatedChildFrames);
-    return event;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight,
+    ArrayList<ChildFrame> updatedChildFrames) {
+      ScrollEvent event = EVENTS_POOL.acquire();
+      if (event == null) {
+        event = new ScrollEvent();
+      }
+      event.init(
+              viewTag,
+              scrollEventType,
+              scrollX,
+              scrollY,
+              contentWidth,
+              contentHeight,
+              scrollViewWidth,
+              scrollViewHeight,
+              updatedChildFrames);
+      return event;
   }
 
   @Override
@@ -102,36 +102,36 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   private void init(
-          int viewTag,
-          ScrollEventType scrollEventType,
-          int scrollX,
-          int scrollY,
-          int contentWidth,
-          int contentHeight,
-          int scrollViewWidth,
-          int scrollViewHeight) {
-    super.init(viewTag);
-    mScrollEventType = scrollEventType;
-    mScrollX = scrollX;
-    mScrollY = scrollY;
-    mContentWidth = contentWidth;
-    mContentHeight = contentHeight;
-    mScrollViewWidth = scrollViewWidth;
-    mScrollViewHeight = scrollViewHeight;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight) {
+      super.init(viewTag);
+      mScrollEventType = scrollEventType;
+      mScrollX = scrollX;
+      mScrollY = scrollY;
+      mContentWidth = contentWidth;
+      mContentHeight = contentHeight;
+      mScrollViewWidth = scrollViewWidth;
+      mScrollViewHeight = scrollViewHeight;
   }
 
   private void init(
-      int viewTag,
-      ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
-      int contentWidth,
-      int contentHeight,
-      int scrollViewWidth,
-      int scrollViewHeight,
-      ArrayList<ChildFrame> updatedChildFrames) {
-    init(viewTag, scrollEventType, scrollX, scrollY, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight);
-    mUpdatedChildFrames = updatedChildFrames;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight,
+    ArrayList<ChildFrame> updatedChildFrames) {
+      init(viewTag, scrollEventType, scrollX, scrollY, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight);
+      mUpdatedChildFrames = updatedChildFrames;
   }
 
   @Override
