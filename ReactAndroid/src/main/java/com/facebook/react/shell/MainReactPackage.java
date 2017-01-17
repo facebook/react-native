@@ -56,6 +56,7 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.scroll.ScrollViewManager;
 import com.facebook.react.views.slider.ReactSliderManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
@@ -189,6 +190,12 @@ public class MainReactPackage extends LazyReactPackage {
         @Override
         public NativeModule get() {
           return new PermissionsModule(context);
+        }
+      }),
+      new ModuleSpec(ScrollViewManager.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new ScrollViewManager(context);
         }
       }),
       new ModuleSpec(ShareModule.class, new Provider<NativeModule>() {
