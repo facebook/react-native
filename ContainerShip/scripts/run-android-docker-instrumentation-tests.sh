@@ -31,4 +31,4 @@ node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAnd
 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
 
 # run installed apk with tests
-node ./scripts/docker/run-android-ci-instrumentation-tests.js $*
+node ./ContainerShip/scripts/run-android-ci-instrumentation-tests.js $*

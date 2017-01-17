@@ -34,8 +34,6 @@ const colors = {
     RESET: '\x1b[0m'
 };
 
-const test_suite_results = {};
-
 const test_opts = {
     FILTER: new RegExp(argv.filter || '.*', 'i'),
     PACKAGE: argv.package || 'com.facebook.react.tests',
@@ -74,7 +72,7 @@ if (test_opts.COUNT != null && test_opts.OFFSET != null) {
     }
 }
 
-return async.eachSeries(testClasses, (clazz, callback) => {
+return async.mapSeries(testClasses, (clazz, callback) => {
     if(clazz.length > max_test_class_length) {
         max_test_class_length = clazz.length;
     }
@@ -90,18 +88,22 @@ return async.eachSeries(testClasses, (clazz, callback) => {
             return retryCb();
         });
     }, (err) => {
-        test_suite_results[clazz] = {
+        return callback(null, {
+            name: clazz,
             status: err ? 'failure' : 'success'
-        }
-
-        return callback();
+        });
     });
-}, () => {
-    print_test_suite_results();
-    return process.exit(0);
+}, (err, results) => {
+    print_test_suite_results(results);
+
+    const failures = results.filter((test) => {
+        test.status === 'failure';
+    });
+
+    return failures.length === 0 ? process.exit(0) : process.exit(1);
 });
 
-function print_test_suite_results() {
+function print_test_suite_results(results) {
     console.log('\n\nTest Suite Results:\n');
 
     let color;
@@ -116,10 +118,7 @@ function print_test_suite_results() {
             i++;
         }
     }
-
-    for(const key in test_suite_results) {
-        const test = test_suite_results[key];
-
+    results.forEach((test) => {
         if(test.status === 'success') {
             color = colors.GREEN;
             passing_suites++;
@@ -129,13 +128,11 @@ function print_test_suite_results() {
         }
 
         process.stdout.write(color);
-        process.stdout.write(key);
-        pad_output((max_test_class_length - key.length) + 8);
-        process.stdout.write(test_suite_results[key].status);
+        process.stdout.write(test.name);
+        pad_output((max_test_class_length - test.name.length) + 8);
+        process.stdout.write(test.status);
         process.stdout.write(`${colors.RESET}\n`);
-    }
+    });
 
     console.log(`\n${passing_suites} passing, ${failing_suites} failing!`);
 }
-
-/*eslint-enable no-undef */

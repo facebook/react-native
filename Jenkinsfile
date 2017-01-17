@@ -54,7 +54,7 @@ def getParallelInstrumentationTests(testDir, parallelCount, imageName) {
         def offset = x
         integrationTests["android integration tests: ${offset}"] = {
             run: {
-                runCmdOnDockerImage(imageName, "bash /app/scripts/docker/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel}", '--privileged')
+                runCmdOnDockerImage(imageName, "bash /app/ContainerShip/scripts/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel}", '--privileged')
             }
         }
     }
@@ -143,13 +143,13 @@ def runStages() {
 
                 parallelInstrumentationTests["android unit tests"] = {
                     run: {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/scripts/docker/run-android-docker-unit-tests.sh', '--privileged')
+                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged')
                     }
                 }
 
                 parallelInstrumentationTests["android e2e tests"] = {
                     run: {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/scripts/docker/run-ci-e2e-tests.sh --android --js')
+                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js')
                     }
                 }
 
