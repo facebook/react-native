@@ -24,7 +24,7 @@ function copyToClipBoard(content) {
   case 'win32':
     var child = spawn('clip', []);
     child.stdin.end(new Buffer(content, 'utf8'));
-   return true;
+    return true;
   default:
     return false;
   }
