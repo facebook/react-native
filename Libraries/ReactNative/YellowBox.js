@@ -231,13 +231,9 @@ const WarningInspector = ({
     <View style={styles.inspector}>
       <View style={styles.inspectorCount}>
         <Text style={styles.inspectorCountText}>{countSentence}</Text>
-        <TouchableHighlight
-          activeOpacity={0.5}
-          onPress={toggleStacktrace}
-          style={styles.toggleStacktraceButton}
-          underlayColor="transparent">
+        <TouchableHighlight onPress={toggleStacktrace} underlayColor="transparent">
           <Text style={styles.inspectorButtonText}>
-            {stacktraceVisible ? 'Hide' : 'Show'} Stacktrace
+            {stacktraceVisible ? '▼' : '▶' } Stacktrace
           </Text>
         </TouchableHighlight>
       </View>
@@ -415,10 +411,6 @@ var styles = StyleSheet.create({
     paddingVertical: 22,
     backgroundColor: backgroundColor(1),
   },
-  toggleStacktraceButton: {
-    flex: 1,
-    padding: 5,
-  },
   stacktraceList: {
     paddingBottom: 5,
   },
@@ -435,6 +427,8 @@ var styles = StyleSheet.create({
   inspectorCount: {
     padding: 15,
     paddingBottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   inspectorCountText: {
     color: textColor,
