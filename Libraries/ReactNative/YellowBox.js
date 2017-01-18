@@ -70,8 +70,7 @@ if (__DEV__) {
     updateWarningMap.apply(null, arguments);
   };
 
-  const ProcessInfo = require('NativeModules').ProcessInfo;
-  if (ProcessInfo && ProcessInfo.environment.DISABLE_YELLOW_BOX) {
+  if (Platform.isTesting) {
     (console: any).disableYellowBox = true;
   }
 }

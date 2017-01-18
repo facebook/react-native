@@ -51,7 +51,7 @@ As with a RedBox, you can use `console.warn()` to trigger a YellowBox.
 
 YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`.
 
-In CI/Xcode, YellowBoxes can also be disabled by setting the `DISABLE_YELLOW_BOX` environment variable.
+In CI/Xcode, YellowBoxes can also be disabled by setting the `IS_TESTING` environment variable.
 
 > RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
 
