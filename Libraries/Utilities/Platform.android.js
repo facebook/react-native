@@ -18,7 +18,7 @@ const Platform = {
     const AndroidConstants = require('NativeModules').AndroidConstants;
     return AndroidConstants && AndroidConstants.Version;
   },
-  select: (obj: Object) => obj.android,
+  select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
 };
 
 module.exports = Platform;
