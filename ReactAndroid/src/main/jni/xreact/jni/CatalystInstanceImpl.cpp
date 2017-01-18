@@ -101,8 +101,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
       makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+      makeNativeMethod("setSourceURL", CatalystInstanceImpl::setSourceURL),
       makeNativeMethod("loadScriptFromAssets",
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
@@ -158,6 +159,10 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
+void CatalystInstanceImpl::setSourceURL(const std::string& sourceURL) {
+  instance_->setSourceURL(sourceURL);
+}
+
 void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
                                                 const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
@@ -187,20 +192,18 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
+void CatalystInstanceImpl::loadScriptFromFile(const std::string& fileName,
                                               const std::string& sourceURL) {
-
-  std::string file = fileName ? fileName->toStdString() : "";
-
-  if (isIndexedRAMBundle(file.c_str())) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(file.c_str());
+  auto zFileName = fileName.c_str();
+  if (isIndexedRAMBundle(zFileName)) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
     auto startupScript = bundle->getStartupCode();
     instance_->loadUnbundle(
       std::move(bundle),
       std::move(startupScript),
       sourceURL);
   } else {
-    instance_->loadScriptFromFile(file, sourceURL);
+    instance_->loadScriptFromFile(fileName, sourceURL);
   }
 }
 
