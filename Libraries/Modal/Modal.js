@@ -90,6 +90,16 @@ class Modal extends React.Component {
      */
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     /**
+     * The `softInputMode` prop controls soft input mode for the modal window.
+     *
+     * - `unspecified` The system will try to pick a mode, `resize` or `pan`.
+     * - `resize` Window is resized when an input method is shown. This mode is ignored if the window is fullscreen.
+     * - `pan` Window is panned to ensure the current input focus is visible.
+     * - `nothing` Window is neither resized nor panned when an input method is shown.
+     * @platform android
+     */
+    softInputMode: PropTypes.oneOf(['unspecified', 'resize', 'pan', 'nothing']),
+    /**
      * The `transparent` prop determines whether your modal will fill the entire view. Setting this to `true` will render the modal over a transparent background.
      */
     transparent: PropTypes.bool,
@@ -132,6 +142,7 @@ class Modal extends React.Component {
   static defaultProps = {
     visible: true,
     hardwareAccelerated: false,
+    softInputMode: 'resize',
   };
 
   static contextTypes = {
@@ -165,6 +176,7 @@ class Modal extends React.Component {
     return (
       <RCTModalHostView
         animationType={animationType}
+        softInputMode={this.props.softInputMode}
         transparent={this.props.transparent}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}

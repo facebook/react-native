@@ -61,6 +61,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private String mAnimationType;
+  private String mSoftInputMode;
   private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
@@ -154,6 +155,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mPropertyRequiresNewDialog = true;
   }
 
+  protected void setSoftInputMode(String softInputMode) {
+    mSoftInputMode = softInputMode;
+  }
+
   protected void setHardwareAccelerated(boolean hardwareAccelerated) {
     mHardwareAccelerated = hardwareAccelerated;
     mPropertyRequiresNewDialog = true;
@@ -242,7 +247,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
         }
       });
 
-    mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     if (mHardwareAccelerated) {
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
@@ -277,6 +281,18 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       mDialog.getWindow().setFlags(
           WindowManager.LayoutParams.FLAG_DIM_BEHIND,
           WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
+
+    switch (mSoftInputMode) {
+      case "resize":
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        break;
+      case "pan":
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        break;
+      case "nothing":
+        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        break;
     }
   }
 
