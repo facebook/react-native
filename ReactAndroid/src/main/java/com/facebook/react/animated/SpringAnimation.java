@@ -38,6 +38,10 @@ import com.facebook.react.bridge.ReadableMap;
   private double mRestSpeedThreshold;
   private double mDisplacementFromRestThreshold;
   private double mTimeAccumulator = 0;
+  // for controlling loop
+  private int mNumLoops;
+  private int mCurrentLoop;
+  private double mOriginalValue;
 
   SpringAnimation(ReadableMap config) {
     mSpringFriction = config.getDouble("friction");
@@ -47,6 +51,9 @@ import com.facebook.react.bridge.ReadableMap;
     mRestSpeedThreshold = config.getDouble("restSpeedThreshold");
     mDisplacementFromRestThreshold = config.getDouble("restDisplacementThreshold");
     mOvershootClampingEnabled = config.getBoolean("overshootClamping");
+    mOriginalValue = mAnimatedValue.mValue;
+    mNumLoops = config.hasKey("numLoops") ? config.getInt("numLoops") : 1;
+    mCurrentLoop = 1;
   }
 
   @Override
@@ -60,7 +67,15 @@ import com.facebook.react.bridge.ReadableMap;
     advance((frameTimeMillis - mLastTime) / 1000.0);
     mLastTime = frameTimeMillis;
     mAnimatedValue.mValue = mCurrentState.position;
-    mHasFinished = isAtRest();
+    if (isAtRest()) {
+      if (mNumLoops == -1 || mCurrentLoop < mNumLoops) { // looping animation, return to start
+        mSpringStarted = false;
+        mAnimatedValue.mValue = mOriginalValue;
+        mCurrentLoop++;
+      } else { // animation has completed
+        mHasFinished = true;
+      }
+    }
   }
 
   /**
