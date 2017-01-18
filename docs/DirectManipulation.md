@@ -189,7 +189,7 @@ class App extends React.Component {
       <View style={styles.container}>
         <TextInput ref={component => this._textInput = component}
                    style={styles.textInput} />
-        <TouchableOpacity onPress={this.clearText}>
+        <TouchableOpacity onPress={this.clearText.bind(this)}>
           <Text>Clear text</Text>
         </TouchableOpacity>
       </View>
