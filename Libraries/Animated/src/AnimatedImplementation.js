@@ -228,11 +228,12 @@ function _flush(rootNode: AnimatedValue): void {
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 
-type TimingAnimationConfig =  AnimationConfig & {
+type TimingAnimationConfig = AnimationConfig & {
   toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  numLoops?: number,
 };
 
 type TimingAnimationConfigSingle = AnimationConfig & {
@@ -240,6 +241,7 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  numLoops?: number,
 };
 
 let _easeInOut;
@@ -257,6 +259,7 @@ class TimingAnimation extends Animation {
   _toValue: any;
   _duration: number;
   _delay: number;
+  _numLoops: number;
   _easing: (value: number) => number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -286,7 +289,8 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay
+      delay: this._delay,
+      numLoops: this._numLoops
     };
   }
 
@@ -695,6 +699,7 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
+  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -703,7 +708,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._value = value;
+    this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
@@ -844,6 +849,16 @@ class AnimatedValue extends AnimatedWithChildren {
     this._animation && this._animation.stop();
     this._animation = null;
     callback && callback(this.__getValue());
+  }
+
+  /**
+  * Stops any animation and resets the value to its original
+  */
+  resetAnimation(callback?: ?(value: number) => void): void {
+    console.log('Resetting animated value');
+    this.stopAnimation(callback);
+    this._value = this._startingValue;
+    this._offset = 0;
   }
 
   /**
@@ -1885,6 +1900,8 @@ class AnimatedTracking extends Animated {
 type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
+  reset: () => void,
+  startNativeLoop: (iterations?: ?number) => void,
 };
 
 var add = function(
@@ -1962,16 +1979,18 @@ var spring = function(
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, spring) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: SpringAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
-      if (config.toValue instanceof Animated) {
+      if (configuration.toValue instanceof Animated) {
         singleValue.track(new AnimatedTracking(
           singleValue,
-          config.toValue,
+          configuration.toValue,
           SpringAnimation,
           singleConfig,
           callback
@@ -1979,11 +1998,24 @@ var spring = function(
       } else {
         singleValue.animate(new SpringAnimation(singleConfig), callback);
       }
+  };
+  return maybeVectorAnim(value, config, spring) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      value.resetAnimation();
+    },
+
+    startNativeLoop: function(iterations: number): void {
+      config.numLoops = iterations;
+      start(value, config);
+    }
   };
 };
 
@@ -1991,16 +2023,18 @@ var timing = function(
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, timing) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: TimingAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
-      if (config.toValue instanceof Animated) {
+      if (configuration.toValue instanceof Animated) {
         singleValue.track(new AnimatedTracking(
           singleValue,
-          config.toValue,
+          configuration.toValue,
           TimingAnimation,
           singleConfig,
           callback
@@ -2008,11 +2042,26 @@ var timing = function(
       } else {
         singleValue.animate(new TimingAnimation(singleConfig), callback);
       }
+  }
+
+  return maybeVectorAnim(value, config, timing) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      console.log('Resetting timing');
+      value.resetAnimation();
+    },
+
+    startNativeLoop: function(iterations: number): void {
+      config.numLoops = iterations;
+      start(value, config);
+    }
   };
 };
 
@@ -2020,18 +2069,34 @@ var decay = function(
   value: AnimatedValue | AnimatedValueXY,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, decay) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: DecayAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
       singleValue.animate(new DecayAnimation(singleConfig), callback);
+  }
+
+  return maybeVectorAnim(value, config, decay) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      value.resetAnimation();
+    },
+
+    startNativeLoop: function(iterations: number): void {
+      config.numLoops = iterations;
+      start(value, config);
+    }
   };
 };
 
@@ -2068,6 +2133,17 @@ var sequence = function(
       if (current < animations.length) {
         animations[current].stop();
       }
+    },
+
+    reset: function() {
+      animations.forEach((animation, idx) => {
+        if (idx <= current) animation.reset();
+      });
+      current = 0;
+    },
+
+    startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.sequence animations');
     }
   };
 };
@@ -2119,6 +2195,18 @@ var parallel = function(
         !hasEnded[idx] && animation.stop();
         hasEnded[idx] = true;
       });
+    },
+
+    reset: function(): void {
+      animations.forEach((animation, idx) => {
+        animation.reset();
+        hasEnded[idx] = false;
+        doneCount = 0;
+      });
+    },
+
+    startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.parallel animations');
     }
   };
 
@@ -2140,6 +2228,54 @@ var stagger = function(
       animation,
     ]);
   }));
+};
+
+type LoopAnimationConfig = AnimationConfig & { iterations: number };
+
+var loop = function(
+  animation: CompositeAnimation,
+  config: LoopAnimationConfig,
+): CompositeAnimation {
+  if (!config) config = {}; // Use empty config to avoid checking if (config && ...) every time
+  var isFinished = false;
+  var iterationsSoFar = 0;
+  return {
+    start: function(callback?: ?EndCallback) {
+      var restart = function(): void {
+        if (isFinished || (config.iterations && iterationsSoFar === config.iterations)) {
+          callback && ({finished: true});
+        } else {
+          iterationsSoFar++;
+          animation.reset();
+          animation.start(restart);
+        }
+      };
+      if (!animation) {
+        callback && callback({finished: true});
+      } else {
+        if (config.useNativeDriver) {
+          animation.startNativeLoop(config.iterations);
+        } else {
+          restart(); // Start looping recursively on the js thread
+        }
+      }
+    },
+
+    stop: function(): void {
+      isFinished = true;
+      animation.stop();
+    },
+
+    reset: function(): void {
+      iterationsSoFar = 0;
+      isFinished = false;
+      animation.reset();
+    },
+
+    startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.loop animations');
+    }
+  };
 };
 
 type Mapping = {[key: string]: Mapping} | AnimatedValue;
@@ -2446,6 +2582,12 @@ module.exports = {
    * sequence with successive delays.  Nice for doing trailing effects.
    */
   stagger,
+  /**
+  * Loops a given animation continuously, so that each time it reaches the
+  * end, it resets and begins again from the start. Can specify number of
+  * times to loop using the key 'iterations' in the config.
+  */
+  loop,
 
   /**
    *  Takes an array of mappings and extracts values from each arg accordingly,
