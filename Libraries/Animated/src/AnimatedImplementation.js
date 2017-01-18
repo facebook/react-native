@@ -274,6 +274,7 @@ class TimingAnimation extends Animation {
     this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
+    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this._useNativeDriver = shouldUseNativeDriver(config);
   }
@@ -1019,6 +1020,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
       x: this.x.__getValue(),
       y: this.y.__getValue(),
     };
+  }
+
+  resetAnimation(callback?: (value: {x: number, y: number}) => void): void {
+    this.x.resetAnimation();
+    this.y.resetAnimation();
+    callback && callback(this.__getValue());
   }
 
   stopAnimation(callback?: (value: {x: number, y: number}) => void): void {
