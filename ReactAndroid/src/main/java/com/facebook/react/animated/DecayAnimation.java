@@ -50,7 +50,7 @@ public class DecayAnimation extends AnimationDriver {
     if (Math.abs(mLastValue - value) < 0.1) {
 
       if (mNumLoops == -1 || mCurrentLoop < mNumLoops) { // looping animation, return to start
-        mStartFrameTimeNanos = -1;
+        mStartFrameTimeMillis = -1;
         mAnimatedValue.mValue = mFromValue;
         mCurrentLoop++;
       } else { // animation has completed

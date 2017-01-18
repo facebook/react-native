@@ -366,11 +366,13 @@ class TimingAnimation extends Animation {
 type DecayAnimationConfig = AnimationConfig & {
   velocity: number | {x: number, y: number},
   deceleration?: number,
+  numLoops?: number,
 };
 
 type DecayAnimationConfigSingle = AnimationConfig & {
   velocity: number,
   deceleration?: number,
+  numLoops?: number,
 };
 
 class DecayAnimation extends Animation {
@@ -382,6 +384,7 @@ class DecayAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: bool;
+  _numLoops: number;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -391,6 +394,7 @@ class DecayAnimation extends Animation {
     this._velocity = config.velocity;
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
   }
 
   __getNativeAnimationConfig() {
@@ -398,6 +402,7 @@ class DecayAnimation extends Animation {
       type: 'decay',
       deceleration: this._deceleration,
       velocity: this._velocity,
+      numLoops: this._numLoops
     };
   }
 
@@ -459,6 +464,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  numLoops?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -471,6 +477,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  numLoops?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -496,6 +503,7 @@ class SpringAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: bool;
+  _numLoops: number;
 
   constructor(
     config: SpringAnimationConfigSingle,
@@ -510,6 +518,7 @@ class SpringAnimation extends Animation {
     this._toValue = config.toValue;
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
 
     var springConfig;
     if (config.bounciness !== undefined || config.speed !== undefined) {
@@ -541,6 +550,7 @@ class SpringAnimation extends Animation {
       friction: this._friction,
       initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
       toValue: this._toValue,
+      numLoops: this._numLoops
     };
   }
 
@@ -856,7 +866,6 @@ class AnimatedValue extends AnimatedWithChildren {
   * Stops any animation and resets the value to its original
   */
   resetAnimation(callback?: ?(value: number) => void): void {
-    console.log('Resetting animated value');
     this.stopAnimation(callback);
     this._value = this._startingValue;
     this._offset = 0;
@@ -2061,7 +2070,6 @@ var timing = function(
     },
 
     reset: function(): void {
-      console.log('Resetting timing');
       value.resetAnimation();
     },
 
