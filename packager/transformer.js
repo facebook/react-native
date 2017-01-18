@@ -13,11 +13,14 @@
 const babel = require('babel-core');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
-const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
-const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
+const generate = require('babel-generator').default;
 const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
 const json5 = require('json5');
+const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const path = require('path');
+const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
+
+const {compactMapping} = require('./react-packager/src/Bundler/source-map');
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -70,8 +73,8 @@ function buildBabelConfig(filename, options) {
   const babelRC = getBabelRC(options.projectRoots);
 
   const extraConfig = {
+    code: false,
     filename,
-    sourceFileName: filename,
   };
 
   let config = Object.assign({}, babelRC, extraConfig);
@@ -103,13 +106,20 @@ function transform(src, filename, options) {
 
   try {
     const babelConfig = buildBabelConfig(filename, options);
-    const result = babel.transform(src, babelConfig);
+    const {ast} = babel.transform(src, babelConfig);
+    const result = generate(ast, {
+      comments: false,
+      compact: false,
+      filename,
+      sourceFileName: filename,
+      sourceMaps: true,
+    }, src);
 
     return {
-      ast: result.ast,
+      ast,
       code: result.code,
-      map: result.map,
-      filename: filename,
+      filename,
+      map: options.generateSourceMaps ? result.map : result.rawMappings.map(compactMapping),
     };
   } finally {
     process.env.BABEL_ENV = OLD_BABEL_ENV;

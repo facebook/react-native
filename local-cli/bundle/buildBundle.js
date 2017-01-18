@@ -19,6 +19,7 @@ const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../core';
@@ -63,16 +64,21 @@ function buildBundle(
       typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
       undefined;
 
+    const providesModuleNodeModules =
+      typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
+      defaultProvidesModuleNodeModules;
+
     const options = {
-      projectRoots: config.getProjectRoots(),
       assetExts: defaultAssetExts.concat(assetExts),
       blacklistRE: config.getBlacklistRE(),
-      getTransformOptions: config.getTransformOptions,
-      transformModulePath: transformModulePath,
       extraNodeModules: config.extraNodeModules,
+      getTransformOptions: config.getTransformOptions,
+      projectRoots: config.getProjectRoots(),
+      providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
-      watch: false,
       reporter: new TerminalReporter(),
+      transformModulePath: transformModulePath,
+      watch: false,
     };
 
     packagerInstance = new Server(options);

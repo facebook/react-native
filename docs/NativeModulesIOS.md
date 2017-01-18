@@ -260,10 +260,10 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 ## Dependency Injection
 The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).
 
-You can do this by creating a class that implements the RTCBridgeDelegate Protocol, initializing an RTCBridge with the delegate as an argument and initialising a RTCRootView with the initialized bridge.
+You can do this by creating a class that implements the RCTBridgeDelegate Protocol, initializing an RCTBridge with the delegate as an argument and initialising a RCTRootView with the initialized bridge.
 
 ```objective-c
-id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRTCBridgeDelegate alloc] init];
+id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRCTBridgeDelegate alloc] init];
 
 RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:nil];
 
