@@ -2244,12 +2244,13 @@ var loop = function(
   config: LoopAnimationConfig,
 ): CompositeAnimation {
   if (!config) config = {}; // Use empty config to avoid checking if (config && ...) every time
+  if (!config.iterations) config.iterations = -1; // Loop indefinitely if no 'iterations' provided
   var isFinished = false;
   var iterationsSoFar = 0;
   return {
     start: function(callback?: ?EndCallback) {
       var restart = function(): void {
-        if (isFinished || (config.iterations && iterationsSoFar === config.iterations)) {
+        if (isFinished || (iterationsSoFar === config.iterations)) {
           callback && ({finished: true});
         } else {
           iterationsSoFar++;
