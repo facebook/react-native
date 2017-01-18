@@ -327,7 +327,16 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
-  },  
+  },
+  {
+    name: 'adidas GLITCH',
+    icon: 'http://d2w4pyf30enukh.cloudfront.net/prod/glitch-logo.jpg/tnm.jpg',
+    linkAppStore: 'https://itunes.apple.com/gb/app/adidas-glitch-interchangeable/id1166181522?mt=8&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-IPHONE',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.adidas.glitch&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-ANDROID',
+    infoLink: 'http://bit.ly/adidasGLITCH',
+    infoTitle: 'GLITCH - Break the pattern',
+    defaultLink: 'http://bit.ly/adidasGLITCH',
+  },
 ];
 
 /*
@@ -435,15 +444,6 @@ var pinned = [
     infoLink: 'http://www.vogue.com/app',
     infoTitle: '',
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
-  },
-  {
-    name: 'adidas GLITCH',
-    icon: 'http://d2w4pyf30enukh.cloudfront.net/prod/glitch-logo.jpg/tnm.jpg',
-    linkAppStore: 'https://itunes.apple.com/gb/app/adidas-glitch-interchangeable/id1166181522?mt=8&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-IPHONE',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.adidas.glitch&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-ANDROID',
-    infoLink: 'http://bit.ly/adidasGLITCH',
-    infoTitle: 'GLITCH - Break the pattern',
-    defaultLink: 'http://bit.ly/adidasGLITCH',
   },
   {
     name: 'Walmart',
