@@ -327,7 +327,16 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
-  },  
+  },
+  {
+    name: 'Talk7',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple111/v4/ca/97/40/ca974051-989c-56ab-183f-54e3c63062fe/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/br/app/talk7/id1076992561?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.talk7&hl=pt_BR',
+    infoLink: 'http://www.talk7.com/',
+    infoTitle: 'React Native at Elo7',
+    defaultLink: 'https://itunes.apple.com/br/app/talk7/id1076992561?mt=8',
+  },
 ];
 
 /*
@@ -444,15 +453,6 @@ var pinned = [
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
     infoTitle: 'React Native at Walmart Labs',
     defaultLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
-  },
-  {
-    name: 'Talk7',
-    icon: 'http://is1.mzstatic.com/image/thumb/Purple111/v4/ca/97/40/ca974051-989c-56ab-183f-54e3c63062fe/source/175x175bb.jpg',
-    linkAppStore: 'https://itunes.apple.com/br/app/talk7/id1076992561?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.talk7&hl=pt_BR',
-    infoLink: 'http://www.talk7.com/',
-    infoTitle: 'React Native at Elo7',
-    defaultLink: 'https://itunes.apple.com/br/app/talk7/id1076992561?mt=8',
   },
 ];
 
