@@ -14,7 +14,7 @@
 const Logger = require('./src/Logger');
 
 const debug = require('debug');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {Reporter} from './src/lib/reporting';
 

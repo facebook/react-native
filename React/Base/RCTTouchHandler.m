@@ -53,12 +53,10 @@
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
 
-    // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
+    // `cancelsTouchesInView` is needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
     // using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
-    self.delaysTouchesBegan = NO; // This is default value.
-    self.delaysTouchesEnded = NO;
 
     self.delegate = self;
   }
@@ -347,7 +345,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];

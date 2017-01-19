@@ -69,10 +69,13 @@ if (__DEV__) {
     warn.apply(console, arguments);
     updateWarningMap.apply(null, arguments);
   };
+<<<<<<< HEAD
+=======
 
   if (Platform.isTesting) {
     (console: any).disableYellowBox = true;
   }
+>>>>>>> facebook/master
 }
 
 /**
