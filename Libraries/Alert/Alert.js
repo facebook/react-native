@@ -17,8 +17,6 @@ var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
-/* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during the
- * deployment of v0.38.0. To see the error, remove this comment and run flow */
 type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
