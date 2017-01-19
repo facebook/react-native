@@ -165,11 +165,11 @@ var MatrixMath = {
   },
 
   reuseSkewXCommand: function(matrixCommand, radians) {
-    matrixCommand[4] = Math.tan(radians);
+     matrixCommand[4] = Math.tan(radians);
   },
 
   reuseSkewYCommand: function(matrixCommand, radians) {
-    matrixCommand[1] = Math.tan(radians);
+     matrixCommand[1] = Math.tan(radians);
   },
 
   multiplyInto: function(out, a, b) {
