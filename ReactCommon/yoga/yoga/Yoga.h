@@ -199,6 +199,7 @@ YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 // pixel values then the returned value will be the same as YGNodeStyleGetPadding. However if
 // padding was set using a percentage value then the returned value is the computed value used
 // during layout.
+WIN_EXPORT float YGNodeLayoutGetMargin(const YGNodeRef node, const YGEdge edge);
 WIN_EXPORT float YGNodeLayoutGetPadding(const YGNodeRef node, const YGEdge edge);
 
 WIN_EXPORT void YGSetLogger(YGLogger logger);

@@ -47,6 +47,7 @@
 + (NSData *)NSData:(id)json;
 + (NSIndexSet *)NSIndexSet:(id)json;
 
++ (NSURLRequestCachePolicy)NSURLRequestCachePolicy:(id)json;
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
 

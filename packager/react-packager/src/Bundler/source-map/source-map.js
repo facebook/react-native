@@ -59,6 +59,9 @@ function compactMapping(mapping: BabelRawMapping): RawMapping {
   }
 
   if (typeof name !== 'string') {
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
+     * the deployment of v0.38.0. To see the error, remove this comment and run
+     * flow */
     return ([line, column, original.line, original.column]: SourceMapping);
   }
 
@@ -77,7 +80,13 @@ function addMappingsForFile(generator, mappings, module, carryOver) {
       mapping[0] + carryOver,
       // lines start at 1, columns start at 0
       mapping[0] === 1 && mapping[1] + columnOffset || mapping[1],
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
+       * the deployment of v0.38.0. To see the error, remove this comment and
+       * run flow */
       mapping[2],
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
+       * the deployment of v0.38.0. To see the error, remove this comment and
+       * run flow */
       mapping[3],
       //$FlowIssue #15417846
       mapping[4],

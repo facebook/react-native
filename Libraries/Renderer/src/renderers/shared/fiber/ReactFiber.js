@@ -57,6 +57,8 @@ type Instance = {
 
 // A Fiber is work on a Component that needs to be done or was done. There can
 // be more than one per component.
+/* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during the
+ * deployment of v0.38.0. To see the error, remove this comment and run flow */
 export type Fiber = Instance & {
 
   // The Fiber to return to after finishing processing this one.
