@@ -465,6 +465,10 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
   @"square": @(kCGLineCapSquare),
 }), kCGLineCapButt, intValue)
 
+RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
+  @"a", @"b", @"c", @"d", @"tx", @"ty"
+]), nil)
+
 + (UIColor *)UIColor:(id)json
 {
   if (!json) {

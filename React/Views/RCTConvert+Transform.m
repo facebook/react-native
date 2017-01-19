@@ -9,6 +9,8 @@
 
 #import "RCTConvert+Transform.h"
 
+static const NSUInteger kMatrixArrayLength = 4 * 4;
+
 @implementation RCTConvert (Transform)
 
 + (CGFloat)convertToRadians:(id)json
@@ -28,7 +30,7 @@
 
 + (CATransform3D)CATransform3DFromMatrix:(id)json
 {
-  CATransform3D transform;
+  CATransform3D transform = CATransform3DIdentity;
   if (!json) {
     return transform;
   }
@@ -36,11 +38,11 @@
     RCTLogConvertError(json, @"a CATransform3D. Expected array for transform matrix.");
     return transform;
   }
-  if ([json count] != 16) {
+  if ([json count] != kMatrixArrayLength) {
     RCTLogConvertError(json, @"a CATransform3D. Expected 4x4 matrix array.");
     return transform;
   }
-  for (NSUInteger i = 0; i < 16; i++) {
+  for (NSUInteger i = 0; i < kMatrixArrayLength; i++) {
     ((CGFloat *)&transform)[i] = [RCTConvert CGFloat:json[i]];
   }
   return transform;
@@ -55,6 +57,11 @@
   if (![json isKindOfClass:[NSArray class]]) {
     RCTLogConvertError(json, @"a CATransform3D. Did you pass something other than an array?");
     return transform;
+  }
+  // legacy matrix support
+  if ([(NSArray *)json count] == kMatrixArrayLength && [json[0] isKindOfClass:[NSNumber class]]) {
+    RCTLogWarn(@"[RCTConvert CATransform3D:] has deprecated a matrix as input. Pass an array of configs (which can contain a matrix key) instead.");
+    return [self CATransform3DFromMatrix:json];
   }
   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
     if (transformConfig.count != 1) {
