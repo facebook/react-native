@@ -166,6 +166,13 @@ var featured = [
     infoTitle: 'Lugg, An App for Short-Distance Moves, Raises $3.8 Million',
   },
   {
+    name: 'papott',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple30/v4/50/29/a6/5029a63a-df62-8063-c939-92cb0ed0b631/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/fr/app/papott/id1132288449?l=en&mt=8',
+    infoLink: 'http://papott.com/en/homepage/',
+    infoTitle: 'Papott is your solution for local social and professional networking.',
+  },
+  {
     name: 'Pimmr',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
@@ -197,7 +204,7 @@ var featured = [
     name: 'sneat',
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
-    infoLink: 'http://www.internetsansfrontieres.com/sneat-application-mobile-reserver-restaurant/',
+    infoLink: 'http://www.sneat.fr/',
     infoTitle: 'Application mobile pour réserver un restaurant',
   },
   {
