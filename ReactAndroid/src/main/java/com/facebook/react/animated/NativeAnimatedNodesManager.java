@@ -29,6 +29,7 @@ import com.facebook.react.uimanager.events.EventDispatcherListener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -334,7 +335,8 @@ import javax.annotation.Nullable;
       EventAnimationDriver eventDriver = mEventDrivers.get(event.getViewTag() + eventName);
       if (eventDriver != null) {
         event.dispatch(eventDriver);
-        mUpdatedNodes.put(eventDriver.mValueNode.mTag, eventDriver.mValueNode);
+
+        updateNodes(Collections.singletonList((AnimatedNode) eventDriver.mValueNode));
       }
     }
   }
@@ -353,9 +355,47 @@ import javax.annotation.Nullable;
    */
   public void runUpdates(long frameTimeNanos) {
     UiThreadUtil.assertOnUiThread();
+    boolean hasFinishedAnimations = false;
+
+    List<AnimatedNode> nodes = new ArrayList<AnimatedNode>(mUpdatedNodes.size() + mActiveAnimations.size());
+    for (int i = 0; i < mUpdatedNodes.size(); i++) {
+      AnimatedNode node = mUpdatedNodes.valueAt(i);
+      nodes.add(node);
+    }
+
+    for (int i = 0; i < mActiveAnimations.size(); i++) {
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
+      animation.runAnimationStep(frameTimeNanos);
+      AnimatedNode valueNode = animation.mAnimatedValue;
+      nodes.add(valueNode);
+      if (animation.mHasFinished) {
+        hasFinishedAnimations = true;
+      }
+    }
+
+    updateNodes(nodes);
+
+    // Clean mUpdatedNodes queue
+    mUpdatedNodes.clear();
+
+    // Cleanup finished animations. Iterate over the array of animations and override ones that has
+    // finished, then resize `mActiveAnimations`.
+    if (hasFinishedAnimations) {
+      for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
+        AnimationDriver animation = mActiveAnimations.valueAt(i);
+        if (animation.mHasFinished) {
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", true);
+          animation.mEndCallback.invoke(endCallbackResponse);
+          mActiveAnimations.removeAt(i);
+        }
+      }
+    }
+  }
+
+  private void updateNodes(List<AnimatedNode> nodes) {
     int activeNodesCount = 0;
     int updatedNodesCount = 0;
-    boolean hasFinishedAnimations = false;
 
     // STEP 1.
     // BFS over graph of nodes starting from ones from `mUpdatedNodes` and ones that are attached to
@@ -371,26 +411,11 @@ import javax.annotation.Nullable;
     }
 
     Queue<AnimatedNode> nodesQueue = new ArrayDeque<>();
-    for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.valueAt(i);
+    for (AnimatedNode node : nodes) {
       if (node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         activeNodesCount++;
         nodesQueue.add(node);
-      }
-    }
-
-    for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.valueAt(i);
-      animation.runAnimationStep(frameTimeNanos);
-      AnimatedNode valueNode = animation.mAnimatedValue;
-      if (valueNode.mBFSColor != mAnimatedGraphBFSColor) {
-        valueNode.mBFSColor = mAnimatedGraphBFSColor;
-        activeNodesCount++;
-        nodesQueue.add(valueNode);
-      }
-      if (animation.mHasFinished) {
-        hasFinishedAnimations = true;
       }
     }
 
@@ -425,21 +450,11 @@ import javax.annotation.Nullable;
 
     // find nodes with zero "incoming nodes", those can be either nodes from `mUpdatedNodes` or
     // ones connected to active animations
-    for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.valueAt(i);
+    for (AnimatedNode node : nodes) {
       if (node.mActiveIncomingNodes == 0 && node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         updatedNodesCount++;
         nodesQueue.add(node);
-      }
-    }
-    for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.valueAt(i);
-      AnimatedNode valueNode = animation.mAnimatedValue;
-      if (valueNode.mActiveIncomingNodes == 0 && valueNode.mBFSColor != mAnimatedGraphBFSColor) {
-        valueNode.mBFSColor = mAnimatedGraphBFSColor;
-        updatedNodesCount++;
-        nodesQueue.add(valueNode);
       }
     }
 
@@ -485,23 +500,6 @@ import javax.annotation.Nullable;
     if (activeNodesCount != updatedNodesCount) {
       throw new IllegalStateException("Looks like animated nodes graph has cycles, there are "
         + activeNodesCount + " but toposort visited only " + updatedNodesCount);
-    }
-
-    // Clean mUpdatedNodes queue
-    mUpdatedNodes.clear();
-
-    // Cleanup finished animations. Iterate over the array of animations and override ones that has
-    // finished, then resize `mActiveAnimations`.
-    if (hasFinishedAnimations) {
-      for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
-        AnimationDriver animation = mActiveAnimations.valueAt(i);
-        if (animation.mHasFinished) {
-          WritableMap endCallbackResponse = Arguments.createMap();
-          endCallbackResponse.putBoolean("finished", true);
-          animation.mEndCallback.invoke(endCallbackResponse);
-          mActiveAnimations.removeAt(i);
-        }
-      }
     }
   }
 }
