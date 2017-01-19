@@ -78,7 +78,7 @@ Simply run the following in a terminal:
 $ cd android && ./gradlew assembleRelease
 ```
 
-> If you prefer you can just run `react-native run-android --configuration=release` that will generate the **release** `apk` and install it onto the connected `android` device.
+> If you prefer, you can run `react-native run-android --configuration=release` to generate the **release** `apk` and install it onto the connected `android` device.
 
 Gradle's `assembleRelease` will bundle all the JavaScript needed to run your app into the APK. If you need to change the way the JavaScript bundle and/or drawable resources are bundled (e.g. if you changed the default file/folder names or the general structure of the project), have a look at `android/app/build.gradle` to see how you can update it to reflect these changes.
 
