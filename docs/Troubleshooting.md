@@ -93,3 +93,17 @@ If you run into issues where running `react-native init` hangs in your system, t
 ```
 react-native init --verbose
 ```
+
+## react-native can't find ANDROID_HOME
+
+You should check where Android SDK is installed (via Android Studio SDK Manager) and create new
+environmental variable:
+
+```
+export ANDROID_HOME="/Users/username/Library/Android/sdk"
+```
+
+## react-native failed to find Build Tools revision 23.0.x
+
+You should edit android/app/build.gradle file in your project, so buildToolsVersion property reflects
+your build tools version. You can check build tools version in Android Studio SDK Manager under SDK Tools tab.
