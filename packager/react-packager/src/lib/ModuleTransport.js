@@ -11,7 +11,10 @@
 
 'use strict';
 
+import type {RawMapping} from '../Bundler/source-map';
 import type {MixedSourceMap} from './SourceMap';
+
+type SourceMapOrMappings = MixedSourceMap | Array<RawMapping>;
 
 type Metadata = {
   dependencyPairs?: Array<[mixed, {path: string}]>,
@@ -28,7 +31,7 @@ class ModuleTransport {
   virtual: ?boolean;
   meta: ?Metadata;
   polyfill: ?boolean;
-  map: ?MixedSourceMap;
+  map: ?SourceMapOrMappings;
 
   constructor(data: {
     name: string,
@@ -39,7 +42,7 @@ class ModuleTransport {
     virtual?: ?boolean,
     meta?: ?Metadata,
     polyfill?: ?boolean,
-    map?: ?MixedSourceMap,
+    map?: ?SourceMapOrMappings,
   }) {
     this.name = data.name;
 

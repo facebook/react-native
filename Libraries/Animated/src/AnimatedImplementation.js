@@ -1030,6 +1030,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     delete this._listeners[id];
   }
 
+  removeAllListeners(): void {
+    this.x.removeAllListeners();
+    this.y.removeAllListeners();
+    this._listeners = {};
+  }
+
   /**
    * Converts `{x, y}` into `{left, top}` for use in style, e.g.
    *

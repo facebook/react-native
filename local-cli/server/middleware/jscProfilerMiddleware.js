@@ -44,6 +44,37 @@ class TreeTransformator {
   }
 
   // private
+  getFileUrl(source, lineNumber) {
+    if (!source) {
+      return '';
+    }
+
+    const url = urlLib.parse(
+      'https://our.intern.facebook.com/intern/nuclide/open/arc/',
+      true);
+    let project = '';
+    let root = '';
+
+    if (source.includes('fbsource/fbandroid/')) {
+      project = 'facebook-fbandroid';
+      root = 'fbsource/fbandroid/';
+    } else if (source.includes('fbsource/fbobjc/')) {
+      project = 'fbobjc';
+      root = 'fbsource/fbobjc/';
+    } else {
+      return 'file://' + source;
+    }
+
+    url.query = {
+      'project' : project,
+      'paths[0]' : source.substring(source.indexOf(root) + root.length),
+      'lines[0]' : [lineNumber],
+    };
+
+    return urlLib.format(url);
+  }
+
+  // private
   transformNode(tree) {
     if (tree.url in this.urlResults) {
       const original = this.urlResults[tree.url].originalPositionFor({
@@ -58,7 +89,7 @@ class TreeTransformator {
         tree.functionName = tree.functionName || functionName;
       }
       tree.scriptId = tree.id;
-      tree.url = 'file://' + original.source;
+      tree.url = this.getFileUrl(original.source, original.line);
       tree.lineNumber = original.line;
       tree.columnNumber = original.column;
     } else if (tree.deoptReason === 'outside_vm') {

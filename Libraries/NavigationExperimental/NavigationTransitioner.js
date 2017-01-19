@@ -259,13 +259,15 @@ function buildTransitionProps(
     scenes,
   } = state;
 
+  /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during the
+   * deployment of v0.38.0. To see the error, remove this comment and run flow
+   */
   return {
     layout,
     navigationState,
     position,
     progress,
     scenes,
-    // $FlowFixMe(>=0.32.0) - find can return undefined
     scene: scenes.find(isSceneActive),
   };
 }
