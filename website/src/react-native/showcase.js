@@ -152,6 +152,13 @@ var featured = [
     infoTitle: 'A hassle-free smartphone repair service',
   },
   {
+    name: 'Gitify',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple30/v4/6f/c6/12/6fc61257-3171-0aa7-c902-e5c20878a72a/icon350x350.jpeg',
+    linkAppStore: 'https://itunes.apple.com/us/app/gitify/id1123311036?ls=1&mt=8',
+    linkPlayStore:  'http://play.google.com/store/apps/details?id=com.gitify',
+    author: 'Emmanouil Konstantinidis',
+  },
+  {
     name: 'Leanpub',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
     linkAppStore: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
