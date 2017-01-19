@@ -5,7 +5,7 @@ android_library(
   srcs = glob(['**/*.java']),
   deps = [
     YOGA_TARGET,
-    react_native_dep('android_res/android/support/v7/appcompat-orig:res-for-react-native'),
+    react_native_dep('android_res/com/facebook/catalyst/appcompat:appcompat'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
     react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
