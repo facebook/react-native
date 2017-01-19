@@ -47,9 +47,9 @@ export default class AggrowTable extends React.Component {
   state: State;
 
   componentDidMount() {
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-     * the deployment of v0.38.0. To see the error, remove this comment and run
-     * flow */
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     document.body.addEventListener('keydown', this.keydown);
   }
 
@@ -64,9 +64,9 @@ export default class AggrowTable extends React.Component {
   }
 
   componentWillUnmount() {
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-     * the deployment of v0.38.0. To see the error, remove this comment and run
-     * flow */
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     document.body.removeEventListener('keydown', this.keydown);
   }
 
