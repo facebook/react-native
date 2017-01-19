@@ -27,6 +27,8 @@ Libraries/react-native/react-native-interface.js
 flow/
 
 [options]
+emoji=true
+
 module.system=haste
 
 experimental.strict_type_args=true
