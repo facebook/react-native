@@ -52,8 +52,7 @@ const guard = (fn) => {
 class MessageQueue {
   _callableModules: {[key: string]: Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
-  _callbacks: [];
-  _callbackID: number;
+  _callbacksForCall: Array<?[?Function, ?Function]>;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
@@ -67,8 +66,7 @@ class MessageQueue {
   constructor() {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
-    this._callbacks = [];
-    this._callbackID = 0;
+    this._callbacksForCall = [];
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
@@ -150,22 +148,14 @@ class MessageQueue {
   enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
     if (onFail || onSucc) {
       if (__DEV__) {
-        const callId = this._callbackID >> 1;
-        this._debugInfo[callId] = [moduleID, methodID];
-        if (callId > DEBUG_INFO_LIMIT) {
-          delete this._debugInfo[callId - DEBUG_INFO_LIMIT];
+        this._debugInfo[this._callID] = [moduleID, methodID];
+        if (this._callID > DEBUG_INFO_LIMIT) {
+          delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
       }
-      onFail && params.push(this._callbackID);
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-       * the deployment of v0.38.0. To see the error, remove this comment and
-       * run flow */
-      this._callbacks[this._callbackID++] = onFail;
-      onSucc && params.push(this._callbackID);
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-       * the deployment of v0.38.0. To see the error, remove this comment and
-       * run flow */
-      this._callbacks[this._callbackID++] = onSucc;
+      onFail && params.push(this._callID * 2);
+      onSucc && params.push((this._callID  * 2) + 1);
+      this._callbacksForCall[this._callID] = [onFail || null, onSucc || null];
     }
 
     if (__DEV__) {
@@ -247,13 +237,15 @@ class MessageQueue {
   __invokeCallback(cbID: number, args: Array<any>) {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    const callback = this._callbacks[cbID];
+    const callID = cbID >> 1;
+    const callback: ?Function = this._callbacksForCall[callID] && this._callbacksForCall[callID][cbID % 2 ? 1 : 0];
+
 
     if (__DEV__) {
-      const debug = this._debugInfo[cbID >> 1];
+      const debug = this._debugInfo[callID];
       const module = debug && this._remoteModuleTable[debug[0]];
       const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-      if (callback == null) {
+      if (!callback) {
         let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
         if (method) {
           errorMessage = `The callback ${method}() exists in module ${module}, `
@@ -276,14 +268,8 @@ class MessageQueue {
       }
     }
 
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-     * the deployment of v0.38.0. To see the error, remove this comment and run
-     * flow */
-    this._callbacks[cbID & ~1] = null;
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb) - Flow error detected during
-     * the deployment of v0.38.0. To see the error, remove this comment and run
-     * flow */
-    this._callbacks[cbID |  1] = null;
+    this._callbacksForCall[callID] = null;
+
     // $FlowIssue(>=0.35.0) #14551610
     callback.apply(null, args);
 
