@@ -27,6 +27,7 @@ const Platform = {
     return constants && constants.isTesting;
   },
   select: (obj: Object) => obj.ios,
+  is: (osString: string): boolean => { return osString === 'ios'},
 };
 
 module.exports = Platform;
