@@ -132,20 +132,27 @@ var SearchScreen = React.createClass({
         });
       })
       .then((responseData) => {
-        LOADING[query] = false;
-        resultsCache.totalForQuery[query] = responseData.total;
-        resultsCache.dataForQuery[query] = responseData.movies;
-        resultsCache.nextPageNumberForQuery[query] = 2;
+        if (responseData) {
+          LOADING[query] = false;
+          resultsCache.totalForQuery[query] = responseData.total;
+          resultsCache.dataForQuery[query] = responseData.movies;
+          resultsCache.nextPageNumberForQuery[query] = 2;
 
-        if (this.state.filter !== query) {
-          // do not update state if the query is stale
-          return;
+          if (this.state.filter !== query) {
+            // do not update state if the query is stale
+            return;
+          }
+
+          this.setState({
+            isLoading: false,
+            dataSource: this.getDataSource(responseData.movies),
+          });
+        } else {
+          this.setState({
+            dataSource: this.getDataSource([]),
+            isLoading: false,
+          });
         }
-
-        this.setState({
-          isLoading: false,
-          dataSource: this.getDataSource(responseData.movies),
-        });
       })
       .done();
   },
