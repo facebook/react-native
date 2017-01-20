@@ -337,7 +337,7 @@ var featured = [
     infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
   },
   {
-    name: 'Stock Master(投顾大师)',
+    name: 'A Stock Master(投顾大师)',
     icon: 'http://is4.mzstatic.com/image/thumb/Purple122/v4/4d/3e/0b/4d3e0b34-660a-5548-fd99-b49f9f9b3d08/source/175x175bb.jpg',
     linkPlayStore: 'http://a.app.qq.com/o/simple.jsp?pkgname=cn.tougudashi',
     linkAppStore: 'https://itunes.apple.com/cn/app/gu-piao-tou-gu-da-shi-tou/id1107938157?mt=8',
