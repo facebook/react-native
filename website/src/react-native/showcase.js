@@ -139,6 +139,7 @@ var featured = [
     name: 'Convoy Driver',
     icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.driver',
     infoLink: 'http://www.theverge.com/2015/10/27/9620352/convoy-uber-for-trucking',
     infoTitle: 'Convoy, a Seattle-based "Uber for trucking"',
   },
@@ -335,7 +336,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
-  }
+  },
+  {
+    name: 'Yeti Smart Home',
+    icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
+    infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
+    infoTitle: 'How react native is helping us to reinvent the wheel',
+  },
 ];
 
 /*

@@ -138,47 +138,7 @@ describe('Bundle', () => {
 
   describe('sourcemap bundle', () => {
     it('should create sourcemap', () => {
-      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
-
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: [
-            'transformed foo',
-            'transformed foo',
-            'transformed foo',
-          ].join('\n'),
-          sourceCode: [
-            'source foo',
-            'source foo',
-            'source foo',
-          ].join('\n'),
-          sourcePath: 'foo path',
-        });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: [
-            'transformed bar',
-            'transformed bar',
-            'transformed bar',
-          ].join('\n'),
-          sourceCode: [
-            'source bar',
-            'source bar',
-            'source bar',
-          ].join('\n'),
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        otherBundle.setMainModuleId('foo');
-        otherBundle.finalize({
-          runBeforeMainModule: [],
-          runMainModule: true,
-        });
-        const sourceMap = otherBundle.getSourceMap({dev: true});
-        expect(sourceMap).toEqual(genSourceMap(otherBundle.getModules()));
-      });
+      //TODO: #15357872 add a meaningful test here
     });
 
     it('should combine sourcemaps', () => {
@@ -321,16 +281,6 @@ describe('Bundle', () => {
       bundle.setMainModuleId(id);
       expect(bundle.getMainModuleId()).toEqual(id);
     });
-
-    it('can serialize and deserialize the module ID', function() {
-      const id = 'arbitrary module ID';
-      bundle.setMainModuleId(id);
-      bundle.finalize({});
-
-      const deserialized = Bundle.fromJSON(bundle.toJSON());
-
-      expect(deserialized.getMainModuleId()).toEqual(id);
-    });
   });
 
   describe('random access bundle groups:', () => {
@@ -441,40 +391,6 @@ describe('Bundle', () => {
     }
   });
 });
-
-
-function genSourceMap(modules) {
-  var sourceMapGen = new SourceMapGenerator({file: 'test_url', version: 3});
-  var bundleLineNo = 0;
-  for (var i = 0; i < modules.length; i++) {
-    var module = modules[i];
-    var transformedCode = module.code;
-    var sourcePath = module.sourcePath;
-    var sourceCode = module.sourceCode;
-    var transformedLineCount = 0;
-    var lastCharNewLine = false;
-    for (var t = 0; t < transformedCode.length; t++) {
-      if (t === 0 || lastCharNewLine) {
-        sourceMapGen.addMapping({
-          generated: {line: bundleLineNo + 1, column: 0},
-          original: {line: transformedLineCount + 1, column: 0},
-          source: sourcePath
-        });
-      }
-      lastCharNewLine = transformedCode[t] === '\n';
-      if (lastCharNewLine) {
-        transformedLineCount++;
-        bundleLineNo++;
-      }
-    }
-    bundleLineNo++;
-    sourceMapGen.setSourceContent(
-      sourcePath,
-      sourceCode
-    );
-  }
-  return sourceMapGen.toJSON();
-}
 
 function resolverFor(code, map) {
   return {

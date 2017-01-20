@@ -29,12 +29,8 @@ public abstract class JSBundleLoader {
       final String assetUrl) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(CatalystInstanceImpl instance) {
+      public String loadScript(CatalystInstanceImpl instance) {
         instance.loadScriptFromAssets(context.getAssets(), assetUrl);
-      }
-
-      @Override
-      public String getSourceUrl() {
         return assetUrl;
       }
     };
@@ -47,12 +43,8 @@ public abstract class JSBundleLoader {
   public static JSBundleLoader createFileLoader(final String fileName) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(CatalystInstanceImpl instance) {
+      public String loadScript(CatalystInstanceImpl instance) {
         instance.loadScriptFromFile(fileName, fileName);
-      }
-
-      @Override
-      public String getSourceUrl() {
         return fileName;
       }
     };
@@ -70,17 +62,13 @@ public abstract class JSBundleLoader {
       final String cachedFileLocation) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(CatalystInstanceImpl instance) {
+      public String loadScript(CatalystInstanceImpl instance) {
         try {
           instance.loadScriptFromFile(cachedFileLocation, sourceURL);
+          return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);
         }
-      }
-
-      @Override
-      public String getSourceUrl() {
-        return sourceURL;
       }
     };
   }
@@ -94,17 +82,15 @@ public abstract class JSBundleLoader {
       final String realSourceURL) {
     return new JSBundleLoader() {
       @Override
-      public void loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(null, proxySourceURL);
-      }
-
-      @Override
-      public String getSourceUrl() {
+      public String loadScript(CatalystInstanceImpl instance) {
+        instance.setSourceURLs(realSourceURL, proxySourceURL);
         return realSourceURL;
       }
     };
   }
 
-  public abstract void loadScript(CatalystInstanceImpl instance);
-  public abstract String getSourceUrl();
+  /**
+   * Loads the script, returning the URL of the source it loaded.
+   */
+  public abstract String loadScript(CatalystInstanceImpl instance);
 }

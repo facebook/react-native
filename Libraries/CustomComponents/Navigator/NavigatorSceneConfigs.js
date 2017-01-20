@@ -32,8 +32,8 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var PixelRatio = require('PixelRatio');
 var I18nManager = require('I18nManager');
+var PixelRatio = require('PixelRatio');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 
@@ -745,7 +745,7 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseDownUpGesture,
+        ...BaseUpDownGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
@@ -766,7 +766,7 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseUpDownGesture,
+        ...BaseDownUpGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,

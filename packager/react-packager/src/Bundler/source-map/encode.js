@@ -1,4 +1,14 @@
 /**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ */
+/**
  * Copyright 2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE or:
  * http://opensource.org/licenses/BSD-3-Clause
@@ -34,46 +44,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @copyright
- * @noflow
  */
 
-/* -*- Mode: js; js-indent-level: 2; -*- */
-/* eslint-disable no-bitwise, quotes, global-strict */
+/* eslint-disable no-bitwise */
 
 'use strict';
 
-var charToIntMap = {};
-var intToCharMap = {};
-
-'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  .split('')
-  .forEach(function (ch, index) {
-    charToIntMap[ch] = index;
-    intToCharMap[index] = ch;
-  });
-
-var base64 = {};
-/**
- * Encode an integer in the range of 0 to 63 to a single base 64 digit.
- */
-base64.encode = function base64_encode(aNumber) {
-  if (aNumber in intToCharMap) {
-    return intToCharMap[aNumber];
-  }
-  throw new TypeError("Must be between 0 and 63: " + aNumber);
-};
-
-/**
- * Decode a single base 64 digit to an integer.
- */
-base64.decode = function base64_decode(aChar) {
-  if (aChar in charToIntMap) {
-    return charToIntMap[aChar];
-  }
-  throw new TypeError("Not a valid base 64 digit: " + aChar);
-};
-
-
+// A map of values to characters for the b64 encoding
+const CHAR_MAP = [
+  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+  0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
+  0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+  0x59, 0x5a, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66,
+  0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e,
+  0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
+  0x77, 0x78, 0x79, 0x7a, 0x30, 0x31, 0x32, 0x33,
+  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f,
+];
 
 // A single base 64 digit can contain 6 bits of data. For the base 64 variable
 // length quantities we use in the source map spec, the first bit is the sign,
@@ -87,16 +74,16 @@ base64.decode = function base64_decode(aChar) {
 //   V    V
 //   101011
 
-var VLQ_BASE_SHIFT = 5;
+const VLQ_BASE_SHIFT = 5;
 
 // binary: 100000
-var VLQ_BASE = 1 << VLQ_BASE_SHIFT;
+const VLQ_BASE = 1 << VLQ_BASE_SHIFT;
 
 // binary: 011111
-var VLQ_BASE_MASK = VLQ_BASE - 1;
+const VLQ_BASE_MASK = VLQ_BASE - 1;
 
 // binary: 100000
-var VLQ_CONTINUATION_BIT = VLQ_BASE;
+const VLQ_CONTINUATION_BIT = VLQ_BASE;
 
 /**
  * Converts from a two-complement value to a value where the sign bit is
@@ -104,71 +91,35 @@ var VLQ_CONTINUATION_BIT = VLQ_BASE;
  *   1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
  *   2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
  */
-function toVLQSigned(aValue) {
-  return aValue < 0
-    ? ((-aValue) << 1) + 1
-    : (aValue << 1) + 0;
+function toVLQSigned(value) {
+  return value < 0
+    ? ((-value) << 1) + 1
+    : (value << 1) + 0;
 }
 
 /**
- * Converts to a two-complement value from a value where the sign bit is
- * placed in the least significant bit.  For example, as decimals:
- *   2 (10 binary) becomes 1, 3 (11 binary) becomes -1
- *   4 (100 binary) becomes 2, 5 (101 binary) becomes -2
+ * Encodes a number to base64 VLQ format and appends it to the passed-in buffer
+ *
+ * DON'T USE COMPOUND OPERATORS (eg `>>>=`) ON `let`-DECLARED VARIABLES!
+ * V8 WILL DEOPTIMIZE THIS FUNCTION AND MAP CREATION WILL BE 25% SLOWER!
+ *
+ * DON'T ADD MORE COMMENTS TO THIS FUNCTION TO KEEP ITS LENGTH SHORT ENOUGH FOR
+ * V8 OPTIMIZATION!
  */
-function fromVLQSigned(aValue) {
-  var isNegative = (aValue & 1) === 1;
-  var shifted = aValue >> 1;
-  return isNegative
-    ? -shifted
-    : shifted;
-}
-
-/**
- * Returns the base 64 VLQ encoded value.
- */
-exports.encode = function base64VLQ_encode(aValue) {
-  var encoded = "";
-  var digit;
-
-  var vlq = toVLQSigned(aValue);
-
+function encode(value: number, buffer: Buffer, position: number): number {
+  let digit, vlq = toVLQSigned(value);
   do {
     digit = vlq & VLQ_BASE_MASK;
-    vlq >>>= VLQ_BASE_SHIFT;
+    vlq = vlq >>> VLQ_BASE_SHIFT;
     if (vlq > 0) {
       // There are still more digits in this value, so we must make sure the
       // continuation bit is marked.
-      digit |= VLQ_CONTINUATION_BIT;
+      digit = digit | VLQ_CONTINUATION_BIT;
     }
-    encoded += base64.encode(digit);
+    buffer[position++] = CHAR_MAP[digit];
   } while (vlq > 0);
 
-  return encoded;
-};
+  return position;
+}
 
-/**
- * Decodes the next base 64 VLQ value from the given string and returns the
- * value and the rest of the string via the out parameter.
- */
-exports.decode = function base64VLQ_decode(aStr, aOutParam) {
-  var i = 0;
-  var strLen = aStr.length;
-  var result = 0;
-  var shift = 0;
-  var continuation, digit;
-
-  do {
-    if (i >= strLen) {
-      throw new Error("Expected more digits in base 64 VLQ value.");
-    }
-    digit = base64.decode(aStr.charAt(i++));
-    continuation = !!(digit & VLQ_CONTINUATION_BIT);
-    digit &= VLQ_BASE_MASK;
-    result = result + (digit << shift);
-    shift += VLQ_BASE_SHIFT;
-  } while (continuation);
-
-  aOutParam.value = fromVLQSigned(result);
-  aOutParam.rest = aStr.slice(i);
-};
+module.exports = encode;

@@ -14,10 +14,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 
 export type FinalizeOptions = {
   allowUpdates?: boolean,
-  /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
-   * deploy of Flow v0.36.0. To see the error, remove this comment and run Flow
-   */
-  runBeforeMainModule?: Array<mixed>,
+  runBeforeMainModule?: Array<string>,
   runMainModule?: boolean,
 };
 
@@ -112,29 +109,6 @@ class BundleBase {
   }
 
   setRamGroups(ramGroups: Array<string>) {}
-
-  toJSON(): {
-    modules: Array<ModuleTransport>,
-    assets: Array<mixed>,
-    mainModuleId: number | void,
-  } {
-    return {
-      modules: this._modules,
-      assets: this._assets,
-      mainModuleId: this.getMainModuleId(),
-    };
-  }
-
-  static fromJSON(bundle, json) {
-    bundle._assets = json.assets;
-    bundle._modules = json.modules;
-    bundle.setMainModuleId(json.mainModuleId);
-
-    Object.freeze(bundle._modules);
-    Object.freeze(bundle._assets);
-
-    bundle._finalized = true;
-  }
 }
 
 module.exports = BundleBase;

@@ -74,6 +74,7 @@ type Options = {
   platforms: Array<string>,
   polyfillModuleNames: Array<string>,
   projectRoots: Array<string>,
+  providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
   transformModulePath?: string,
@@ -154,6 +155,7 @@ class Bundler {
       platforms: opts.platforms,
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
+      providesModuleNodeModules: opts.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       transformCacheKey,
@@ -364,7 +366,7 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle || generateSourceMaps,
+        generateSourceMaps: unbundle || minify || generateSourceMaps,
       });
     }
 

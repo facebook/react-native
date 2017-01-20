@@ -90,7 +90,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
 
   @Override
   public Dynamic getDynamic(int index) {
-    return new DynamicFromArray(this, index);
+    return DynamicFromArray.create(this, index);
   }
 
   @Override

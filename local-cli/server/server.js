@@ -102,6 +102,16 @@ module.exports = {
     parse: (val) => val.split(','),
     default: (config) => config.getPlatforms(),
   }, {
+    command: '--providesModuleNodeModules [list]',
+    description: 'Specify any npm packages that import dependencies with providesModule',
+    parse: (val) => val.split(','),
+    default: (config) => {
+      if (typeof config.getProvidesModuleNodeModules === 'function') {
+        return config.getProvidesModuleNodeModules();
+      }
+      return null;
+    },
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
