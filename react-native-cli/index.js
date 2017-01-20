@@ -26,6 +26,9 @@
 // The only reason to modify this file is to add more warnings and
 // troubleshooting information for the `react-native init` command.
 //
+// To allow for graceful failure on older node versions, this file should
+// retain ES5 compatibility.
+//
 // Do not make breaking changes! We absolutely don't want to have to
 // tell people to update their global version of react-native-cli.
 //
