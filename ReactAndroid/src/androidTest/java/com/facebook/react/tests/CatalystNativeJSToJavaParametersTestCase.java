@@ -16,28 +16,28 @@ import java.util.Set;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.InvalidIteratorException;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NoSuchKeyException;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.UnexpectedNativeTypeException;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-
-import org.junit.Ignore;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
@@ -46,6 +46,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
   private interface TestJSToJavaParametersModule extends JavaScriptModule {
     void returnBasicTypes();
+    void returnDynamicTypes();
 
     void returnArrayWithBasicTypes();
     void returnNestedArray();
@@ -74,13 +75,13 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    
+
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -94,6 +95,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mRecordingTestModule)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new FakeWebSocketModule())
         .addNativeModule(mUIManager)
         .addJSModule(TestJSToJavaParametersModule.class)
         .build();
@@ -111,6 +113,17 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertEquals(3.14, args[1]);
     assertEquals(true, args[2]);
     assertNull(args[3]);
+  }
+
+  public void testDynamicType() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnDynamicTypes();
+    waitForBridgeAndUIIdle();
+
+    List<Dynamic> dynamicCalls = mRecordingTestModule.getDynamicCalls();
+    assertEquals(2, dynamicCalls.size());
+
+    assertEquals("foo", dynamicCalls.get(0).asString());
+    assertEquals(3.14, dynamicCalls.get(1).asDouble());
   }
 
   public void testArrayWithBasicTypes() {
@@ -673,6 +686,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
     private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
+    private final List<Dynamic> mDynamicCalls = new ArrayList<Dynamic>();
 
     @Override
     public String getName() {
@@ -694,6 +708,11 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
       mMapCalls.add(map);
     }
 
+    @ReactMethod
+    public void receiveDynamic(Dynamic dynamic) {
+      mDynamicCalls.add(dynamic);
+    }
+
     public List<Object[]> getBasicTypesCalls() {
       return mBasicTypesCalls;
     }
@@ -704,6 +723,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     public List<ReadableMap> getMapCalls() {
       return mMapCalls;
+    }
+
+    public List<Dynamic> getDynamicCalls() {
+      return mDynamicCalls;
     }
   }
 }

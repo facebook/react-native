@@ -14,10 +14,11 @@ import javax.annotation.Nullable;
 import android.graphics.Color;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -25,11 +26,13 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
+@ReactModule(name = ReactHorizontalScrollViewManager.REACT_CLASS)
 public class ReactHorizontalScrollViewManager
     extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
-  private static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  protected static final String REACT_CLASS = "AndroidHorizontalScrollView";
+
   private @Nullable FpsListener mFpsListener = null;
 
   public ReactHorizontalScrollViewManager() {

@@ -89,7 +89,29 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
+  public Dynamic getDynamic(int index) {
+    return DynamicFromArray.create(this, index);
+  }
+
+  @Override
   public ReadableType getType(int index) {
+    Object object = mBackingList.get(index);
+
+    if (object == null) {
+      return ReadableType.Null;
+    } else if (object instanceof Boolean) {
+      return ReadableType.Boolean;
+    } else if (object instanceof Double ||
+        object instanceof Float ||
+        object instanceof Integer) {
+      return ReadableType.Number;
+    } else if (object instanceof String) {
+      return ReadableType.String;
+    } else if (object instanceof ReadableArray) {
+      return ReadableType.Array;
+    } else if (object instanceof ReadableMap) {
+      return ReadableType.Map;
+    }
     return null;
   }
 

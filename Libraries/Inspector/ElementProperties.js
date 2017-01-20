@@ -11,23 +11,32 @@
  */
 'use strict';
 
-var BoxInspector = require('BoxInspector');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleInspector = require('StyleInspector');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TouchableHighlight = require('TouchableHighlight');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
-var {fetch} = require('fetch');
+const BoxInspector = require('BoxInspector');
+const React = require('React');
+const StyleInspector = require('StyleInspector');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 
-var flattenStyle = require('flattenStyle');
-var mapWithSeparator = require('mapWithSeparator');
-var getDevServer = require('getDevServer');
+const flattenStyle = require('flattenStyle');
+const mapWithSeparator = require('mapWithSeparator');
+const openFileInEditor = require('openFileInEditor');
 
-var ElementProperties = React.createClass({
-  propTypes: {
+const PropTypes = React.PropTypes;
+
+class ElementProperties extends React.Component {
+  props: {
+    hierarchy: Array<$FlowFixMe>,
+    style?: Object | Array<$FlowFixMe> | number,
+    source?: {
+      fileName?: string,
+      lineNumber?: number,
+    },
+  };
+
+  static propTypes = {
     hierarchy: PropTypes.array.isRequired,
     style: PropTypes.oneOfType([
       PropTypes.object,
@@ -38,21 +47,22 @@ var ElementProperties = React.createClass({
       fileName: PropTypes.string,
       lineNumber: PropTypes.number,
     }),
-  },
+  };
 
-  render: function() {
-    var style = flattenStyle(this.props.style);
-    var selection = this.props.selection;
-    var openFileButton;
-    var source = this.props.source;
-    var {fileName, lineNumber} = source || {};
+  render() {
+    const style = flattenStyle(this.props.style);
+    // $FlowFixMe found when converting React.createClass to ES6
+    const selection = this.props.selection;
+    let openFileButton;
+    const source = this.props.source;
+    const {fileName, lineNumber} = source || {};
     if (fileName && lineNumber) {
-      var parts = fileName.split('/');
-      var fileNameShort = parts[parts.length - 1];
+      const parts = fileName.split('/');
+      const fileNameShort = parts[parts.length - 1];
       openFileButton = (
         <TouchableHighlight
           style={styles.openButton}
-          onPress={this._openFile.bind(null, fileName, lineNumber)}>
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
           <Text style={styles.openButtonTitle} numberOfLines={1}>
             {fileNameShort}:{lineNumber}
           </Text>
@@ -71,6 +81,7 @@ var ElementProperties = React.createClass({
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
+                  // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
                     {getInstanceName(item)}
@@ -89,20 +100,15 @@ var ElementProperties = React.createClass({
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            <BoxInspector style={style} frame={this.props.frame} />
+            {
+              // $FlowFixMe found when converting React.createClass to ES6
+            <BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
-  },
-
-  _openFile: function(fileName: string, lineNumber: number) {
-    fetch(getDevServer().url + 'open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({file: fileName, lineNumber}),
-    });
-  },
-});
+  }
+}
 
 function getInstanceName(instance) {
   if (instance.getName) {
@@ -114,7 +120,7 @@ function getInstanceName(instance) {
   return 'Unknown';
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   breadSep: {
     fontSize: 8,
     color: 'white',
@@ -149,10 +155,6 @@ var styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-  },
-  path: {
-    color: 'white',
-    fontSize: 9,
   },
   openButton: {
     padding: 10,

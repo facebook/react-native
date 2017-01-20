@@ -40,7 +40,7 @@ const navigationRoute = PropTypes.shape({
   key: PropTypes.string.isRequired,
 });
 
-/* navigationRoute  */
+/* NavigationState  */
 const navigationState = PropTypes.shape({
   index: PropTypes.number.isRequired,
   routes: PropTypes.arrayOf(navigationRoute),
@@ -58,6 +58,7 @@ const layout = PropTypes.shape({
 /* NavigationScene */
 const scene = PropTypes.shape({
   index: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
   isStale: PropTypes.bool.isRequired,
   key: PropTypes.string.isRequired,
   route: navigationRoute.isRequired,

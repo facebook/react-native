@@ -12,7 +12,6 @@ jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
-const Promise = require('Promise');
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
 
@@ -27,7 +26,7 @@ describe('Bundle', () => {
   });
 
   describe('source bundle', () => {
-    pit('should create a bundle and get the source', () => {
+    it('should create a bundle and get the source', () => {
       return Promise.resolve().then(() => {
         return addModule({
           bundle,
@@ -52,7 +51,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should be ok to leave out the source map url', () => {
+    it('should be ok to leave out the source map url', () => {
       const otherBundle = new Bundle();
       return Promise.resolve().then(() => {
         return addModule({
@@ -77,7 +76,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should create a bundle and add run module code', () => {
+    it('should create a bundle and add run module code', () => {
       return Promise.resolve().then(() => {
         return addModule({
           bundle,
@@ -108,7 +107,7 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+    it('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
       const moduleTransports = [
         createModuleTransport({name: 'module1'}),
         createModuleTransport({name: 'module2'}),
@@ -138,51 +137,11 @@ describe('Bundle', () => {
   });
 
   describe('sourcemap bundle', () => {
-    pit('should create sourcemap', () => {
-      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
-
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: [
-            'transformed foo',
-            'transformed foo',
-            'transformed foo',
-          ].join('\n'),
-          sourceCode: [
-            'source foo',
-            'source foo',
-            'source foo',
-          ].join('\n'),
-          sourcePath: 'foo path',
-        });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: [
-            'transformed bar',
-            'transformed bar',
-            'transformed bar',
-          ].join('\n'),
-          sourceCode: [
-            'source bar',
-            'source bar',
-            'source bar',
-          ].join('\n'),
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        otherBundle.setMainModuleId('foo');
-        otherBundle.finalize({
-          runBeforeMainModule: [],
-          runMainModule: true,
-        });
-        const sourceMap = otherBundle.getSourceMap({dev: true});
-        expect(sourceMap).toEqual(genSourceMap(otherBundle.getModules()));
-      });
+    it('should create sourcemap', () => {
+      //TODO: #15357872 add a meaningful test here
     });
 
-    pit('should combine sourcemaps', () => {
+    it('should combine sourcemaps', () => {
       const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
       return Promise.resolve().then(() => {
@@ -212,7 +171,7 @@ describe('Bundle', () => {
       }).then(() => {
         otherBundle.setMainModuleId('foo');
         otherBundle.finalize({
-          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          runBeforeMainModule: ['InitializeCore'],
           runMainModule: true,
         });
 
@@ -243,11 +202,11 @@ describe('Bundle', () => {
                 line: 6
               },
               map: {
-                file: 'require-InitializeJavaScriptAppEngine.js',
+                file: 'require-InitializeCore.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
-                sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+                sources: [ 'require-InitializeCore.js' ],
+                sourcesContent: [';require("InitializeCore");'],
                 version: 3,
               }
             },
@@ -284,7 +243,7 @@ describe('Bundle', () => {
   });
 
   describe('getJSModulePaths()', () => {
-    pit('should return module paths', () => {
+    it('should return module paths', () => {
       var otherBundle = new Bundle({sourceMapUrl: 'test_url'});
       return Promise.resolve().then(() => {
         return addModule({
@@ -322,52 +281,116 @@ describe('Bundle', () => {
       bundle.setMainModuleId(id);
       expect(bundle.getMainModuleId()).toEqual(id);
     });
+  });
 
-    it('can serialize and deserialize the module ID', function() {
-      const id = 'arbitrary module ID';
-      bundle.setMainModuleId(id);
-      bundle.finalize({});
-
-      const deserialized = Bundle.fromJSON(bundle.toJSON());
-
-      expect(deserialized.getMainModuleId()).toEqual(id);
+  describe('random access bundle groups:', () => {
+    let moduleTransports;
+    beforeEach(() => {
+      moduleTransports = [
+        transport('Product1', ['React', 'Relay']),
+        transport('React', ['ReactFoo', 'ReactBar']),
+        transport('ReactFoo', ['invariant']),
+        transport('invariant', []),
+        transport('ReactBar', ['cx']),
+        transport('cx', []),
+        transport('OtherFramework', ['OtherFrameworkFoo', 'OtherFrameworkBar']),
+        transport('OtherFrameworkFoo', ['invariant']),
+        transport('OtherFrameworkBar', ['crc32']),
+        transport('crc32', ['OtherFrameworkBar']),
+      ];
     });
+
+    it('can create a single group', () => {
+      bundle = createBundle([fsLocation('React')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('React'), new Set(['ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))],
+      ]));
+    });
+
+    it('can create two groups', () => {
+      bundle = createBundle([fsLocation('ReactFoo'), fsLocation('ReactBar')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('ReactFoo'), new Set([idFor('invariant')])],
+        [idFor('ReactBar'), new Set([idFor('cx')])],
+      ]));
+    });
+
+    it('can handle circular dependencies', () => {
+      bundle = createBundle([fsLocation('OtherFramework')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([[
+        idFor('OtherFramework'),
+        new Set(['OtherFrameworkFoo', 'invariant', 'OtherFrameworkBar', 'crc32'].map(idFor)),
+      ]]));
+    });
+
+    it('omits modules that are contained by more than one group', () => {
+      bundle = createBundle([fsLocation('React'), fsLocation('OtherFramework')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([
+        [idFor('React'),
+          new Set(['ReactFoo', 'ReactBar', 'cx'].map(idFor))],
+        [idFor('OtherFramework'),
+          new Set(['OtherFrameworkFoo', 'OtherFrameworkBar', 'crc32'].map(idFor))],
+      ]));
+    });
+
+    it('ignores missing dependencies', () => {
+      bundle = createBundle([fsLocation('Product1')]);
+      const {groups} = bundle.getUnbundle();
+      expect(groups).toEqual(new Map([[
+        idFor('Product1'),
+        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))
+      ]]));
+    });
+
+    it('throws for group roots that do not exist', () => {
+      bundle = createBundle([fsLocation('DoesNotExist')]);
+      expect(() => {
+        const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
+      }).toThrow(new Error(`Group root ${fsLocation('DoesNotExist')} is not part of the bundle`));
+    });
+
+    function idFor(name) {
+      const {map} = idFor;
+      if (!map) {
+        idFor.map = new Map([[name, 0]]);
+        idFor.next = 1;
+        return 0;
+      }
+
+      if (map.has(name)) {
+        return map.get(name);
+      }
+
+      const id = idFor.next++;
+      map.set(name, id);
+      return id;
+    }
+    function createBundle(ramGroups, options = {}) {
+      const b = new Bundle(Object.assign(options, {ramGroups}));
+      moduleTransports.forEach(t => addModule({bundle: b, ...t}));
+      b.finalize();
+      return b;
+    }
+    function fsLocation(name) {
+      return `/fs/${name}.js`;
+    }
+    function module(name) {
+      return {path: fsLocation(name)};
+    }
+    function transport(name, deps) {
+      return createModuleTransport({
+        name,
+        id: idFor(name),
+        sourcePath: fsLocation(name),
+        meta: {dependencyPairs: deps.map(d => [d, module(d)])},
+      });
+    }
   });
 });
-
-
-function genSourceMap(modules) {
-  var sourceMapGen = new SourceMapGenerator({file: 'test_url', version: 3});
-  var bundleLineNo = 0;
-  for (var i = 0; i < modules.length; i++) {
-    var module = modules[i];
-    var transformedCode = module.code;
-    var sourcePath = module.sourcePath;
-    var sourceCode = module.sourceCode;
-    var transformedLineCount = 0;
-    var lastCharNewLine = false;
-    for (var t = 0; t < transformedCode.length; t++) {
-      if (t === 0 || lastCharNewLine) {
-        sourceMapGen.addMapping({
-          generated: {line: bundleLineNo + 1, column: 0},
-          original: {line: transformedLineCount + 1, column: 0},
-          source: sourcePath
-        });
-      }
-      lastCharNewLine = transformedCode[t] === '\n';
-      if (lastCharNewLine) {
-        transformedLineCount++;
-        bundleLineNo++;
-      }
-    }
-    bundleLineNo++;
-    sourceMapGen.setSourceContent(
-      sourcePath,
-      sourceCode
-    );
-  }
-  return sourceMapGen.toJSON();
-}
 
 function resolverFor(code, map) {
   return {
@@ -375,7 +398,7 @@ function resolverFor(code, map) {
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill, meta, id = ''}) {
   return bundle.addModule(
     resolverFor(code, map),
     null,
@@ -384,7 +407,9 @@ function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill
       code,
       sourceCode,
       sourcePath,
+      id,
       map,
+      meta,
       virtual,
       polyfill,
     }),
@@ -394,9 +419,9 @@ function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill
 function createModuleTransport(data) {
   return new ModuleTransport({
     code: '',
-    id: '',
     sourceCode: '',
     sourcePath: '',
+    id: 'id' in data ? data.id : '',
     ...data,
   });
 }

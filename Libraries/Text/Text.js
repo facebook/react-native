@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const ColorPropType = require('ColorPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
@@ -19,44 +21,66 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const createReactNativeComponentClass =
-  require('createReactNativeComponentClass');
-const merge = require('merge');
+const processColor = require('processColor');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
+const mergeFast = require('mergeFast');
+
+const { PropTypes } = React;
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 const viewConfig = {
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
+  validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
     isHighlighted: true,
     numberOfLines: true,
-    lineBreakMode: true,
+    ellipsizeMode: true,
     allowFontScaling: true,
+    selectable: true,
+    selectionColor: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    textBreakStrategy: true,
   }),
   uiViewClassName: 'RCTText',
 };
 
 /**
- * A React component for displaying text which supports nesting,
- * styling, and touch handling.  In the following example, the nested title and
- * body text will inherit the `fontFamily` from `styles.baseText`, but the title
- * provides its own additional styles.  The title and body will stack on top of
- * each other on account of the literal newlines:
+ * A React component for displaying text.
  *
- * ```
- * renderText: function() {
- *   return (
- *     <Text style={styles.baseText}>
- *       <Text style={styles.titleText} onPress={this.onPressTitle}>
- *         {this.state.titleText + '\n\n'}
+ * `Text` supports nesting, styling, and touch handling.
+ *
+ * In the following example, the nested title and body text will inherit the `fontFamily` from
+ *`styles.baseText`, but the title provides its own additional styles.  The title and body will
+ * stack on top of each other on account of the literal newlines:
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, Text, StyleSheet } from 'react-native';
+ *
+ * class TextInANest extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       titleText: "Bird's Nest",
+ *       bodyText: 'This is not really a bird nest.'
+ *     };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <Text style={styles.baseText}>
+ *         <Text style={styles.titleText} onPress={this.onPressTitle}>
+ *           {this.state.titleText}{'\n'}{'\n'}
+ *         </Text>
+ *         <Text numberOfLines={5}>
+ *           {this.state.bodyText}
+ *         </Text>
  *       </Text>
- *       <Text numberOfLines={5}>
- *         {this.state.bodyText}
- *       </Text>
- *     </Text>
- *   );
- * },
- * ...
- * var styles = StyleSheet.create({
+ *     );
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
  *   baseText: {
  *     fontFamily: 'Cochin',
  *   },
@@ -64,63 +88,128 @@ const viewConfig = {
  *     fontSize: 20,
  *     fontWeight: 'bold',
  *   },
- * };
+ * });
+ *
+ * // App registration and rendering
+ * AppRegistry.registerComponent('TextInANest', () => TextInANest);
  * ```
  */
 
 const Text = React.createClass({
   propTypes: {
     /**
-     * Line Break mode. Works only with numberOfLines.
-     * clip is working only for iOS
+     * This can be one of the following values:
+     *
+     * - `head` - The line is displayed so that the end fits in the container and the missing text
+     * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
+     * - `middle` - The line is displayed so that the beginning and end fit in the container and the
+     * missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
+     * - `tail` - The line is displayed so that the beginning fits in the container and the
+     * missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
+     * - `clip` - Lines are not drawn past the edge of the text container.
+     *
+     * The default is `tail`.
+     *
+     * `numberOfLines` must be set in conjunction with this prop.
+     *
+     * > `clip` is working only for iOS
      */
-    lineBreakMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
      * does not exceed this number.
+     *
+     * This prop is commonly used with `ellipsizeMode`.
      */
-    numberOfLines: React.PropTypes.number,
+    numberOfLines: PropTypes.number,
+    /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `highQuality`.
+     * @platform android
+     */
+    textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Invoked on mount and layout changes with
      *
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
      */
-    onLayout: React.PropTypes.func,
+    onLayout: PropTypes.func,
     /**
      * This function is called on press.
+     *
+     * e.g., `onPress={() => console.log('1st')}``
      */
-    onPress: React.PropTypes.func,
+    onPress: PropTypes.func,
     /**
      * This function is called on long press.
+     *
+     * e.g., `onLongPress={this.increaseSize}>``
      */
-    onLongPress: React.PropTypes.func,
+    onLongPress: PropTypes.func,
     /**
-     * When true, no visual change is made when text is pressed down. By
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * Lets the user select text, to use the native copy and paste functionality.
+     */
+    selectable: PropTypes.bool,
+    /**
+     * The highlight color of the text.
+     * @platform android
+     */
+    selectionColor: ColorPropType,
+    /**
+     * When `true`, no visual change is made when text is pressed down. By
      * default, a gray oval highlights the text on press down.
      * @platform ios
      */
-    suppressHighlighting: React.PropTypes.bool,
+    suppressHighlighting: PropTypes.bool,
     style: stylePropType,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: React.PropTypes.string,
+    testID: PropTypes.string,
     /**
-     * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
+     * When set to `true`, indicates that the view is an accessibility element. The default value
+     * for a `Text` element is `true`.
+     *
+     * See the
+     * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
+     * for more information.
+     */
+    accessible: PropTypes.bool,
+    /**
+     * Specifies whether font should be scaled down automatically to fit given style constraints.
      * @platform ios
      */
-    allowFontScaling: React.PropTypes.bool,
+    adjustsFontSizeToFit: PropTypes.bool,
+
+    /**
+     * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+     * @platform ios
+     */
+    minimumFontScale: PropTypes.number,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
-      lineBreakMode: 'tail',
+      ellipsizeMode: 'tail',
     };
   },
   getInitialState: function(): Object {
-    return merge(Touchable.Mixin.touchableGetInitialState(), {
+    return mergeFast(Touchable.Mixin.touchableGetInitialState(), {
       isHighlighted: false,
     });
   },
@@ -130,10 +219,10 @@ const Text = React.createClass({
     return {isInAParentText: true};
   },
   childContextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
   contextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
   /**
    * Only assigned if touch is needed.
@@ -151,7 +240,7 @@ const Text = React.createClass({
   touchableHandlePress: (null: ?Function),
   touchableHandleLongPress: (null: ?Function),
   touchableGetPressRectOffset: (null: ?Function),
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     let newProps = this.props;
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
@@ -186,16 +275,16 @@ const Text = React.createClass({
                 });
               };
 
-              this.touchableHandlePress = () => {
-                this.props.onPress && this.props.onPress();
+              this.touchableHandlePress = (e: SyntheticEvent) => {
+                this.props.onPress && this.props.onPress(e);
               };
 
-              this.touchableHandleLongPress = () => {
-                this.props.onLongPress && this.props.onLongPress();
+              this.touchableHandleLongPress = (e: SyntheticEvent) => {
+                this.props.onLongPress && this.props.onLongPress(e);
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
-                return PRESS_RECT_OFFSET;
+                return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
             return setResponder;
@@ -237,6 +326,12 @@ const Text = React.createClass({
         isHighlighted: this.state.isHighlighted,
       };
     }
+    if (newProps.selectionColor != null) {
+      newProps = {
+        ...newProps,
+        selectionColor: processColor(newProps.selectionColor)
+      };
+    }
     if (Touchable.TOUCH_TARGET_DEBUG && newProps.onPress) {
       newProps = {
         ...newProps,
@@ -252,10 +347,10 @@ const Text = React.createClass({
 });
 
 type RectOffset = {
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
 }
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -265,7 +360,7 @@ var RCTVirtualText = RCTText;
 
 if (Platform.OS === 'android') {
   RCTVirtualText = createReactNativeComponentClass({
-    validAttributes: merge(ReactNativeViewAttributes.UIView, {
+    validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
     }),
     uiViewClassName: 'RCTVirtualText',

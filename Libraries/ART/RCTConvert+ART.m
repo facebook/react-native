@@ -9,11 +9,13 @@
 
 #import "RCTConvert+ART.h"
 
+#import <React/RCTFont.h>
+#import <React/RCTLog.h>
+
 #import "ARTLinearGradient.h"
 #import "ARTPattern.h"
 #import "ARTRadialGradient.h"
 #import "ARTSolidColor.h"
-#import "RCTLog.h"
 
 @implementation RCTConvert (ART)
 
@@ -86,15 +88,14 @@ RCT_ENUM_CONVERTER(CTTextAlignment, (@{
     return frame;
   }
 
-  NSDictionary *fontDict = dict[@"font"];
-  CTFontRef font = (__bridge CTFontRef)[self UIFont:nil withFamily:fontDict[@"fontFamily"] size:fontDict[@"fontSize"] weight:fontDict[@"fontWeight"] style:fontDict[@"fontStyle"] scaleMultiplier:1.0];
+  CTFontRef font = (__bridge CTFontRef)[self UIFont:dict[@"font"]];
   if (!font) {
     return frame;
   }
 
   // Create a dictionary for this font
   CFDictionaryRef attributes = (__bridge CFDictionaryRef)@{
-    (NSString *)kCTFontAttributeName: (__bridge id)font,
+    (NSString *)kCTFontAttributeName:(__bridge id)font,
     (NSString *)kCTForegroundColorFromContextAttributeName: @YES
   };
 

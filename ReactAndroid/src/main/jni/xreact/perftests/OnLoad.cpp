@@ -135,9 +135,48 @@ void tearDown(
   jsModule.reset();
 }
 
+namespace logwatcher {
+
+static std::string gMessageToLookFor;
+static int gMessagePriorityToLookFor;
+static bool gHasSeenMessage = false;
+
+/**
+ * NB: Don't put JNI logic (or anything else that could trigger a log) here!
+ */
+static void stubLogHandler(int pri, const char *tag, const char *msg) {
+  if (gMessageToLookFor.empty()) {
+    return;
+  }
+
+  bool priorityMatches = pri == gMessagePriorityToLookFor;
+  bool substringFound = strstr(msg, gMessageToLookFor.c_str()) != NULL;
+  gHasSeenMessage |= priorityMatches && substringFound;
 }
+
+static jboolean hasSeenExpectedLogMessage(JNIEnv*, jclass) {
+  return gHasSeenMessage ? JNI_TRUE : JNI_FALSE;
 }
+
+static void stopWatchingLogMessages(JNIEnv*, jclass) {
+  gMessageToLookFor = "";
+  gHasSeenMessage = false;
+  setLogHandler(NULL);
 }
+
+static void startWatchingForLogMessage(JNIEnv* env, jclass loggerClass, jstring jmsg, jint priority) {
+  stopWatchingLogMessages(env, loggerClass);
+  gMessageToLookFor = jni::wrap_alias(jmsg)->toStdString();
+  gMessagePriorityToLookFor = priority;
+  setLogHandler(&stubLogHandler);
+}
+
+} // namespace logwatcher
+} // namespace
+} // namespace react
+} // namespace facebook
+
+using namespace facebook::react;
 
 extern "C" facebook::xplat::module::CxxModule* CxxBenchmarkModule() {
   return new facebook::react::CxxBenchmarkModule();
@@ -146,10 +185,16 @@ extern "C" facebook::xplat::module::CxxModule* CxxBenchmarkModule() {
 extern "C" jint JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
       facebook::jni::registerNatives(
+        "com/facebook/catalyst/testing/LogWatcher", {
+          makeNativeMethod("startWatchingForLogMessage", "(Ljava/lang/String;I)V", logwatcher::startWatchingForLogMessage),
+          makeNativeMethod("stopWatchingLogMessages", "()V", logwatcher::stopWatchingLogMessages),
+          makeNativeMethod("hasSeenExpectedLogMessage", "()Z", logwatcher::hasSeenExpectedLogMessage),
+      });
+      facebook::jni::registerNatives(
         "com/facebook/react/CatalystBridgeBenchmarks", {
-          makeNativeMethod("runNativeBounce", facebook::react::runBounce),
-          makeNativeMethod("nativeSetUp", facebook::react::setUp),
-          makeNativeMethod("nativeTearDown", facebook::react::tearDown),
+          makeNativeMethod("runNativeBounce", runBounce),
+          makeNativeMethod("nativeSetUp", setUp),
+          makeNativeMethod("nativeTearDown", tearDown),
         });
       });
 }

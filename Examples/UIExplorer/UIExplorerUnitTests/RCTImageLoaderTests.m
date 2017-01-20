@@ -14,8 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTImageLoader.h"
+#import <React/RCTBridge.h>
+#import <React/RCTImageLoader.h>
+
 #import "RCTImageLoaderHelpers.h"
 
 unsigned char blackGIF[] = {
@@ -33,7 +34,15 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
 @end
 
-@implementation RCTImageLoaderTests
+@implementation RCTImageLoaderTests {
+  NSURL *_bundleURL;
+}
+
+- (void)setUp
+{
+  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+  _bundleURL = [bundle URLForResource:@"TestBundle" withExtension:@"js"];
+}
 
 - (void)testImageLoading
 {
@@ -47,13 +56,13 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return nil;
   }];
 
-  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader]; } launchOptions:nil];
+  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://facebook.github.io/react/img/logo_og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/img/logo_og.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
@@ -78,13 +87,13 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return nil;
   }];
 
-  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
+  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://facebook.github.io/react/img/logo_og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/img/logo_og.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
-  } completionBlock:^(NSError *loadError, id loadedImage) {
+  } partialLoadBlock:nil completionBlock:^(NSError *loadError, id loadedImage) {
     XCTAssertEqualObjects(loadedImage, image);
     XCTAssertNil(loadError);
   }];
@@ -103,7 +112,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return nil;
   }];
 
-  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder]; } launchOptions:nil];
+  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[decoder]; } launchOptions:nil];
 
   RCTImageLoaderCancellationBlock cancelBlock = [bridge.imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 clipped:NO resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
     XCTAssertEqualObjects(decodedImage, image);
@@ -132,7 +141,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
     return nil;
   }];
 
-  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder1, decoder2]; } launchOptions:nil];
+  NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[decoder1, decoder2]; } launchOptions:nil];
 
   RCTImageLoaderCancellationBlock cancelBlock = [bridge.imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 clipped:NO resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
     XCTAssertEqualObjects(decodedImage, image);

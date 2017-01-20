@@ -18,16 +18,19 @@ import android.content.res.Resources;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.csslayout.CSSNode;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImageSpan;
 
 /**
- * {@link CSSNode} that represents an inline image. Loading is done using Fresco.
+ * Shadow node that represents an inline image. Loading is done using Fresco.
  *
  */
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
@@ -35,6 +38,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   private @Nullable Uri mUri;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
+  private float mWidth = YogaConstants.UNDEFINED;
+  private float mHeight = YogaConstants.UNDEFINED;
 
   public FrescoBasedReactTextInlineImageShadowNode(
     AbstractDraweeControllerBuilder draweeControllerBuilder,
@@ -68,6 +73,29 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mUri = uri;
   }
 
+  /**
+   * Besides width/height, all other layout props on inline images are ignored
+   */
+  @Override
+  public void setWidth(Dynamic width) {
+    if (width.getType() == ReadableType.Number) {
+      mWidth = (float) width.asDouble();
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Inline images must not have percentage based width");
+    }
+  }
+
+  @Override
+  public void setHeight(Dynamic height) {
+    if (height.getType() == ReadableType.Number) {
+      mHeight = (float) height.asDouble();
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Inline images must not have percentage based height");
+    }
+  }
+
   public @Nullable Uri getUri() {
     return mUri;
   }
@@ -96,8 +124,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   @Override
   public TextInlineImageSpan buildInlineImageSpan() {
     Resources resources = getThemedContext().getResources();
-    int height = (int) Math.ceil(getStyleHeight());
-    int width = (int) Math.ceil(getStyleWidth());
+    int height = (int) Math.ceil(mWidth);
+    int width = (int) Math.ceil(mHeight);
     return new FrescoBasedReactTextInlineImageSpan(
       resources,
       height,
@@ -114,5 +142,4 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   public @Nullable Object getCallerContext() {
     return mCallerContext;
   }
-
 }

@@ -46,6 +46,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{@"initialAppState": RCTCurrentAppBackgroundState()};
+}
+
 #pragma mark - Lifecycle
 
 - (NSArray<NSString *> *)supportedEvents

@@ -26,7 +26,7 @@ class NativeMap : public jni::HybridClass<NativeMap> {
   folly::dynamic map_;
 
   friend HybridBase;
-  friend class ReadableNativeMapKeySetIterator;
+  friend struct ReadableNativeMapKeySetIterator;
 };
 
 }  // namespace react

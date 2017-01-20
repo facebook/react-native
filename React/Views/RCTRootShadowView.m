@@ -7,9 +7,25 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
 
 @implementation RCTRootShadowView
+
+/**
+ * Init the RCTRootShadowView with RTL status.
+ * Returns a RTL CSS layout if isRTL is true (Default is LTR CSS layout).
+ */
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    if ([[RCTI18nUtil sharedInstance] isRTL]) {
+      YGNodeStyleSetDirection(self.cssNode, YGDirectionRTL);
+    }
+  }
+  return self;
+}
 
 - (void)applySizeConstraints
 {
@@ -17,14 +33,14 @@
     case RCTRootViewSizeFlexibilityNone:
       break;
     case RCTRootViewSizeFlexibilityWidth:
-      self.cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityHeight:
-      self.cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityWidthAndHeight:
-      self.cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-      self.cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
   }
 }
@@ -33,8 +49,7 @@
 {
   [self applySizeConstraints];
 
-  [self fillCSSNode:self.cssNode];
-  layoutNode(self.cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];

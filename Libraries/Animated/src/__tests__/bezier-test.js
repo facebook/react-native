@@ -1,17 +1,27 @@
+/**
+ * BezierEasing - use bezier curve for transition easing function
+ * https://github.com/gre/bezier-easing
+ *
+ * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
+ * @noflow
+ */
+
 /* eslint-disable */
+
+'use strict';
 
 jest.unmock('bezier');
 var bezier = require('bezier');
 
 var identity = function (x) { return x; };
 
-function assertClose (a, b, precision) {
-  expect(a).toBeCloseTo(b, 3);
+function assertClose (a, b, precision = 3) {
+  expect(a).toBeCloseTo(b, precision);
 }
 
 function makeAssertCloseWithPrecision (precision) {
-  return function (a, b, message) {
-    assertClose(a, b, message, precision);
+  return function (a, b) {
+    assertClose(a, b, precision);
   };
 }
 
@@ -19,7 +29,7 @@ function allEquals (be1, be2, samples, assertion) {
   if (!assertion) assertion = assertClose;
   for (var i=0; i<=samples; ++i) {
     var x = i / samples;
-    assertion(be1(x), be2(x), 'comparing '+be1+' and '+be2+' for value '+x);
+    assertion(be1(x), be2(x));
   }
 }
 
@@ -64,7 +74,7 @@ describe('bezier', function(){
         var easing = bezier(a, b, c, d);
         var projected = bezier(b, a, d, c);
         var composed = function (x) { return projected(easing(x)); };
-        allEquals(identity, composed, 100, makeAssertCloseWithPrecision(0.05));
+        allEquals(identity, composed, 100, makeAssertCloseWithPrecision(2));
       });
     });
   });
@@ -81,7 +91,7 @@ describe('bezier', function(){
       repeat(10)(function () {
         var a = Math.random(), b = 2*Math.random()-0.5, c = 1-a, d = 1-b;
         var easing = bezier(a, b, c, d);
-        assertClose(easing(0.5), 0.5, easing+'(0.5) should be 0.5');
+        assertClose(easing(0.5), 0.5, 2);
       });
     });
     it('should be symetrical', function () {
@@ -89,7 +99,7 @@ describe('bezier', function(){
         var a = Math.random(), b = 2*Math.random()-0.5, c = 1-a, d = 1-b;
         var easing = bezier(a, b, c, d);
         var sym = function (x) { return 1 - easing(1-x); };
-        allEquals(easing, sym, 100);
+        allEquals(easing, sym, 100, makeAssertCloseWithPrecision(2));
       });
     });
   });

@@ -109,13 +109,13 @@ Error: ${e.message}`
               : eval;
 
             code = [
-              `__accept(`,
+              '__accept(',
                 `${id},`,
-                `function(global,require,module,exports){`,
+                'function(global,require,module,exports){',
                   `${code}`,
                 '\n},',
                 `${JSON.stringify(inverseDependencies)}`,
-              `);`,
+              ');',
             ].join('');
 
             injectFunction(code, sourceURLs[i]);

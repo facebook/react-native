@@ -15,12 +15,12 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 
 type SimpleTask = {
-  name: string;
-  run: () => void;
+  name: string,
+  run: () => void,
 };
 type PromiseTask = {
-  name: string;
-  gen: () => Promise<any>;
+  name: string,
+  gen: () => Promise<any>,
 };
 export type Task = Function | SimpleTask | PromiseTask;
 
@@ -75,7 +75,7 @@ class TaskQueue {
         ...queue,
         tasks: queue.tasks.filter((task) => tasksToCancel.indexOf(task) === -1),
       }))
-      .filter((queue) => queue.tasks.length > 0);
+      .filter((queue, idx) => (queue.tasks.length > 0 || idx === 0));
   }
 
   /**
@@ -151,7 +151,10 @@ class TaskQueue {
     DEBUG && infoLog('exec gen task ' + task.name);
     task.gen()
       .then(() => {
-        DEBUG && infoLog('onThen for gen task ' + task.name, {stackIdx, queueStackSize: this._queueStack.length});
+        DEBUG && infoLog(
+          'onThen for gen task ' + task.name,
+          {stackIdx, queueStackSize: this._queueStack.length},
+        );
         this._queueStack[stackIdx].popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })

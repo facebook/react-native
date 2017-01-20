@@ -14,6 +14,7 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
+var Easing = require('Easing');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
@@ -41,7 +42,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *     <TouchableOpacity onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./myButton.png')}
  *       />
  *     </TouchableOpacity>
  *   );
@@ -58,11 +59,17 @@ var TouchableOpacity = React.createClass({
      * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
+    focusedOpacity: React.PropTypes.number,
+    /**
+     * Apple TV parallax effects
+     */
+    tvParallaxProperties: React.PropTypes.object,
   },
 
   getDefaultProps: function() {
     return {
       activeOpacity: 0.2,
+      focusedOpacity: 0.7,
     };
   },
 
@@ -84,10 +91,15 @@ var TouchableOpacity = React.createClass({
   /**
    * Animate the touchable to a new opacity.
    */
-  setOpacityTo: function(value: number) {
+  setOpacityTo: function(value: number, duration: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: 150}
+      {
+        toValue: value,
+        duration: duration,
+        easing: Easing.inOut(Easing.quad),
+        useNativeDriver: true,
+      }
     ).start();
   },
 
@@ -96,26 +108,20 @@ var TouchableOpacity = React.createClass({
    * defined on your component.
    */
   touchableHandleActivePressIn: function(e: Event) {
-    this.clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
-    this._opacityActive();
+    if (e.dispatchConfig.registrationName === 'onResponderGrant') {
+      this._opacityActive(0);
+    } else {
+      this._opacityActive(150);
+    }
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
   touchableHandleActivePressOut: function(e: Event) {
-    if (!this._hideTimeout) {
-      this._opacityInactive();
-    }
+    this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
   touchableHandlePress: function(e: Event) {
-    this.clearTimeout(this._hideTimeout);
-    this._opacityActive();
-    this._hideTimeout = this.setTimeout(
-      this._opacityInactive,
-      this.props.delayPressOut || 100
-    );
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -144,29 +150,34 @@ var TouchableOpacity = React.createClass({
     return this.props.delayPressOut;
   },
 
-  _opacityActive: function() {
-    this.setOpacityTo(this.props.activeOpacity);
+  _opacityActive: function(duration: number) {
+    this.setOpacityTo(this.props.activeOpacity, duration);
   },
 
-  _opacityInactive: function() {
-    this.clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
+  _opacityInactive: function(duration: number) {
     var childStyle = flattenStyle(this.props.style) || {};
     this.setOpacityTo(
-      childStyle.opacity === undefined ? 1 : childStyle.opacity
+      childStyle.opacity === undefined ? 1 : childStyle.opacity,
+      duration
     );
+  },
+
+  _opacityFocused: function() {
+    this.setOpacityTo(this.props.focusedOpacity);
   },
 
   render: function() {
     return (
       <Animated.View
-        accessible={true}
+        accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

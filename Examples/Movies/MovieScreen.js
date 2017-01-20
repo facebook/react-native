@@ -29,8 +29,8 @@ var getImageSource = require('./getImageSource');
 var getStyleFromScore = require('./getStyleFromScore');
 var getTextFromScore = require('./getTextFromScore');
 
-var MovieScreen = React.createClass({
-  render: function() {
+class MovieScreen extends React.Component {
+  render() {
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.mainSection}>
@@ -57,11 +57,11 @@ var MovieScreen = React.createClass({
         <Cast actors={this.props.movie.abridged_cast} />
       </ScrollView>
     );
-  },
-});
+  }
+}
 
-var Ratings = React.createClass({
-  render: function() {
+class Ratings extends React.Component {
+  render() {
     var criticsScore = this.props.ratings.critics_score;
     var audienceScore = this.props.ratings.audience_score;
 
@@ -81,11 +81,11 @@ var Ratings = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
-var Cast = React.createClass({
-  render: function() {
+class Cast extends React.Component {
+  render() {
     if (!this.props.actors) {
       return null;
     }
@@ -100,8 +100,8 @@ var Cast = React.createClass({
         )}
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   contentContainer: {

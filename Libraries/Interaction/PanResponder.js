@@ -26,7 +26,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * single-touch gestures resilient to extra touches, and can be used to
  * recognize simple multi-touch gestures.
  *
- * By default, `PanResponder` holds an `InteractionManager handle to block
+ * By default, `PanResponder` holds an `InteractionManager` handle to block
  * long-running JS events from interrupting active gestures.
  *
  * It provides a predictable wrapper of the responder handlers provided by the
@@ -80,7 +80,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  *         // The guesture has started. Show visual feedback so the user knows
  *         // what is happening!
  *
- *         // gestureState.{x,y}0 will be set to zero now
+ *         // gestureState.d{x,y} will be set to zero now
  *       },
  *       onPanResponderMove: (evt, gestureState) => {
  *         // The most recent move distance is gestureState.move{X,Y}
@@ -116,7 +116,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/PanResponderExample.js)
+ * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/PanResponderExample.js)
  */
 
 const PanResponder = {
@@ -388,7 +388,12 @@ const PanResponder = {
           config.onPanResponderTerminationRequest(e, gestureState);
       }
     };
-    return { panHandlers: panHandlers };
+    return {
+      panHandlers,
+      getInteractionHandle(): ?number {
+        return interactionState.handle;
+      },
+    };
   }
 };
 

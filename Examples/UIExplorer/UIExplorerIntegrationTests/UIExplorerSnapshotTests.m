@@ -17,10 +17,6 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-#import "RCTAssert.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
-
 @interface UIExplorerSnapshotTests : XCTestCase
 {
   RCTTestRunner *_runner;
@@ -32,7 +28,10 @@
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerApp.ios", nil);
+  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/js/UIExplorerApp.ios", nil);
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
+    _runner.testSuffix = @"-iOS10";
+  }
   _runner.recordMode = NO;
 }
 
@@ -45,9 +44,13 @@
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
+#if !TARGET_OS_TV
+// No switch or slider available on tvOS
 RCT_TEST(SwitchExample)
-//RCT_TEST(SliderExample) // Disabled: #8985988
-//RCT_TEST(TabBarExample) // Disabled: #8985988
+RCT_TEST(SliderExample)
+// TabBarExample on tvOS passes locally but not on Travis
+RCT_TEST(TabBarExample)
+#endif
 
 - (void)testZZZNotInRecordMode
 {

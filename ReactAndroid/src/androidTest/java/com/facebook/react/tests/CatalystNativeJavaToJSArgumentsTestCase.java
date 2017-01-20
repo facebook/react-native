@@ -14,15 +14,16 @@ import java.util.List;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ObjectAlreadyConsumedException;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.testing.AssertModule;
+import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
@@ -61,7 +62,7 @@ public class CatalystNativeJavaToJSArgumentsTestCase extends ReactIntegrationTes
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementation(getContext(), viewManagers));
+        new UIImplementationProvider());
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -75,6 +76,7 @@ public class CatalystNativeJavaToJSArgumentsTestCase extends ReactIntegrationTes
 
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mAssertModule)
+        .addNativeModule(new FakeWebSocketModule())
         .addJSModule(TestJavaToJSArgumentsModule.class)
         .addNativeModule(mUIManager)
         .build();

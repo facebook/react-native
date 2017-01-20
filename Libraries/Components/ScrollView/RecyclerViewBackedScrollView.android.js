@@ -16,7 +16,13 @@ var requireNativeComponent = require('requireNativeComponent');
 var INNERVIEW = 'InnerView';
 
 /**
- * Wrapper around android native recycler view.
+ * RecyclerViewBackedScrollView is DEPRECATED and will be removed from
+ * React Native.
+ * Please use a `ListView` which has `removeClippedSubviews` enabled by
+ * default so that rows that are out of sight are automatically
+ * detached from the view hierarchy.
+ *
+ * Wrapper around Android native recycler view.
  *
  * It simply renders rows passed as children in a separate recycler view cells
  * similarly to how `ScrollView` is doing it. Thanks to the fact that it uses
@@ -58,6 +64,13 @@ var RecyclerViewBackedScrollView = React.createClass({
 
   mixins: [ScrollResponder.Mixin],
 
+  componentWillMount: function() {
+    console.warn(
+      'RecyclerViewBackedScrollView is DEPRECATED and will be removed from React Native. ' +
+      'Please use a ListView which has removeClippedSubviews enabled by default so that ' +
+      'rows that are out of sight are automatically detached from the view hierarchy.')
+  },
+
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();
   },
@@ -75,8 +88,32 @@ var RecyclerViewBackedScrollView = React.createClass({
     this.props.onContentSizeChange(width, height);
   },
 
+  /**
+   * A helper function to scroll to a specific point  in the scrollview.
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollTo: function(
+    y?: number | { x?: number, y?: number, animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ) {
+    if (typeof y === 'number') {
+      console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = y || {});
+    }
+    this.getScrollResponder().scrollResponderScrollTo({x: x || 0, y: y || 0, animated: animated !== false});
+  },
+
   render: function() {
-    var props = {
+    var recyclerProps = {
       ...this.props,
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
@@ -92,12 +129,11 @@ var RecyclerViewBackedScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
       onScroll: this.scrollResponderHandleScroll,
-      style: ([{flex: 1}, this.props.style]: ?Array<any>),
       ref: INNERVIEW,
     };
 
     if (this.props.onContentSizeChange) {
-      props.onContentSizeChange = this._handleContentSizeChange;
+      recyclerProps.onContentSizeChange = this._handleContentSizeChange;
     }
 
     var wrappedChildren = React.Children.map(this.props.children, (child) => {
@@ -113,8 +149,20 @@ var RecyclerViewBackedScrollView = React.createClass({
       );
     });
 
+    const refreshControl = this.props.refreshControl;
+    if (refreshControl) {
+      // Wrap the NativeAndroidRecyclerView with a AndroidSwipeRefreshLayout.
+      return React.cloneElement(
+        refreshControl,
+        {style: [styles.base, this.props.style]},
+        <NativeAndroidRecyclerView {...recyclerProps} style={styles.base}>
+          {wrappedChildren}
+        </NativeAndroidRecyclerView>
+      );
+    }
+
     return (
-      <NativeAndroidRecyclerView {...props}>
+      <NativeAndroidRecyclerView {...recyclerProps} style={[styles.base, this.props.style]}>
         {wrappedChildren}
       </NativeAndroidRecyclerView>
     );
@@ -127,6 +175,9 @@ var styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+  },
+  base: {
+    flex: 1,
   },
 });
 

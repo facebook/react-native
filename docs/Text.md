@@ -4,13 +4,24 @@
 
 Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
-```javascript
-<Text style={{fontWeight: 'bold'}}>
-  I am bold
-  <Text style={{color: 'red'}}>
-    and red
-  </Text>
-</Text>
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text } from 'react-native';
+
+class BoldAndBeautiful extends Component {
+  render() {
+    return (
+      <Text style={{fontWeight: 'bold'}}>
+        I am bold
+        <Text style={{color: 'red'}}>
+          and red
+        </Text>
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
 ```
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
@@ -25,15 +36,26 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 
 On iOS, you can nest views within your Text component. Here's an example:
 
-```javascript
-<Text>
-  There is a blue square
-  <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-  in between my text.
-</Text>
+```ReactNativeWebPlayer
+import React, { Component } from 'react';
+import { AppRegistry, Text, View } from 'react-native';
+
+class BlueIsCool extends Component {
+  render() {
+    return (
+      <Text>
+        There is a blue square
+        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+        in between my text.
+      </Text>
+    );
+  }
+}
+
+AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
 ```
 
-In order to use this feature, you must give the view a `width` and a `height`.
+> In order to use this feature, you must give the view a `width` and a `height`.
 
 ## Containers
 
@@ -98,6 +120,22 @@ You also lose the ability to set up a default font for an entire subtree. The re
   <MyAppHeaderText>Text styled as a header</MyAppHeaderText>
 </View>
 ```
+
+Assuming that `MyAppText` is a component that simply renders out its children into a `Text` component with styling, then `MyAppHeaderText` can be defined as follows:
+
+```javascript
+class MyAppHeaderText extends Component {
+  render() {
+    <MyAppText>
+      <Text style={{fontSize: 20}}>
+        {this.props.children}
+      </Text>
+    </MyAppText>
+  }
+}
+```
+
+Composing `MyAppText` in this way ensures that we get the styles from a top-level component, but leaves us the ability to add / override them in specific use cases.
 
 React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.
 

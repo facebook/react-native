@@ -13,8 +13,8 @@
 const warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
-  const warningDedupe = {};
-  const addonWarn = function(prevName, newPackageName) {
+  var warningDedupe = {};
+  var addonWarn = function(prevName, newPackageName) {
     warning(
       warningDedupe[prevName],
       'React.addons.' + prevName + ' is deprecated. Please import the "' +
@@ -28,8 +28,8 @@ if (__DEV__) {
 const ReactNative = {
   // Components
   get ActivityIndicator() { return require('ActivityIndicator'); },
-  get ActivityIndicatorIOS() { return require('ActivityIndicatorIOS'); },
   get ART() { return require('ReactNativeART'); },
+  get Button() { return require('Button'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },
@@ -48,14 +48,12 @@ const ReactNative = {
   get ScrollView() { return require('ScrollView'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
   get Slider() { return require('Slider'); },
-  get SliderIOS() { return require('SliderIOS'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
-  get SwitchAndroid() { return require('SwitchAndroid'); },
-  get SwitchIOS() { return require('SwitchIOS'); },
+  get SwipeableListView() { return require('SwipeableListView'); },
   get TabBarIOS() { return require('TabBarIOS'); },
   get Text() { return require('Text'); },
   get TextInput() { return require('TextInput'); },
@@ -78,7 +76,6 @@ const ReactNative = {
   get Animated() { return require('Animated'); },
   get AppRegistry() { return require('AppRegistry'); },
   get AppState() { return require('AppState'); },
-  get AppStateIOS() { return require('AppStateIOS'); },
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },
   get CameraRoll() { return require('CameraRoll'); },
@@ -86,20 +83,21 @@ const ReactNative = {
   get DatePickerAndroid() { return require('DatePickerAndroid'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
+  get I18nManager() { return require('I18nManager'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
-  get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
   get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
-  get LinkingIOS() { return require('LinkingIOS'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
+  get PermissionsAndroid() { return require('PermissionsAndroid'); },
   get PixelRatio() { return require('PixelRatio'); },
   get PushNotificationIOS() { return require('PushNotificationIOS'); },
   get Settings() { return require('Settings'); },
+  get Share() { return require('Share'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
   get Systrace() { return require('Systrace'); },
@@ -127,14 +125,13 @@ const ReactNative = {
       if (__DEV__) {
         addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
       }
-      return require('LinkedStateMixin');
+      return require('react/lib/LinkedStateMixin');
     },
-    Perf: undefined,
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
       }
-      return require('ReactComponentWithPureRenderMixin');
+      return require('react/lib/ReactComponentWithPureRenderMixin');
     },
     get TestModule() {
       if (__DEV__) {
@@ -147,7 +144,6 @@ const ReactNative = {
       }
       return require('NativeModules').TestModule;
     },
-    TestUtils: undefined,
     get batchedUpdates() {
       if (__DEV__) {
         warning(
@@ -163,13 +159,13 @@ const ReactNative = {
       if (__DEV__) {
         addonWarn('createFragment', 'react-addons-create-fragment');
       }
-      return require('ReactFragment').create;
+      return require('react/lib/ReactFragment').create;
     },
     get update() {
       if (__DEV__) {
         addonWarn('update', 'react-addons-update');
       }
-      return require('update');
+      return require('react/lib/update');
     },
   },
 };
@@ -183,7 +179,7 @@ if (__DEV__) {
     Object.defineProperty(ReactNative, key, {
       get() { throwOnWrongReactAPI(key); },
       enumerable: false,
-      configurable: false
+      configurable: false,
     });
   }
 }
@@ -205,26 +201,4 @@ function applyForwarding(key) {
 for (const key in ReactNativeInternal) {
   applyForwarding(key);
 }
-
-if (__DEV__) {
-  Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('Perf', 'react-addons-perf');
-      }
-      return require('ReactPerf');
-    }
-  });
-  Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true,
-    get: () => {
-      if (__DEV__) {
-        addonWarn('update', 'react-addons-test-utils');
-      }
-      return require('ReactTestUtils');
-    }
-  });
-}
-
 module.exports = ReactNative;

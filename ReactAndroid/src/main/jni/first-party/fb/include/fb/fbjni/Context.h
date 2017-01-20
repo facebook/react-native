@@ -25,6 +25,10 @@ class AContext : public JavaClass<AContext> {
     return method(self());
   }
 
+  local_ref<JFile::javaobject> getFilesDir() {
+    static auto method = getClass()->getMethod<JFile::javaobject()>("getFilesDir");
+    return method(self());
+  }
 };
 
 }

@@ -14,10 +14,14 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +39,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -56,7 +61,9 @@ public class NativeAnimatedNodeTraversalTest {
   public PowerMockRule rule = new PowerMockRule();
 
   private long mFrameTimeNanos;
+  private UIManagerModule mUIManagerMock;
   private UIImplementation mUIImplementationMock;
+  private EventDispatcher mEventDispatcherMock;
   private NativeAnimatedNodesManager mNativeAnimatedNodesManager;
 
   private long nextFrameTime() {
@@ -80,8 +87,28 @@ public class NativeAnimatedNodeTraversalTest {
     });
 
     mFrameTimeNanos = INITIAL_FRAME_TIME_NANOS;
+    mUIManagerMock = mock(UIManagerModule.class);
     mUIImplementationMock = mock(UIImplementation.class);
-    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIImplementationMock);
+    mEventDispatcherMock = mock(EventDispatcher.class);
+    PowerMockito.when(mUIManagerMock.getUIImplementation()).thenAnswer(new Answer<UIImplementation>() {
+      @Override
+      public UIImplementation answer(InvocationOnMock invocation) throws Throwable {
+        return mUIImplementationMock;
+      }
+    });
+    PowerMockito.when(mUIManagerMock.getEventDispatcher()).thenAnswer(new Answer<EventDispatcher>() {
+      @Override
+      public EventDispatcher answer(InvocationOnMock invocation) throws Throwable {
+        return mEventDispatcherMock;
+      }
+    });
+    PowerMockito.when(mUIManagerMock.getConstants()).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        return MapBuilder.of("customDirectEventTypes", MapBuilder.newHashMap());
+      }
+    });
+    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock);
   }
 
   /**
@@ -94,7 +121,7 @@ public class NativeAnimatedNodeTraversalTest {
   private void createSimpleAnimatedViewWithOpacity(int viewTag, double opacity) {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", opacity));
+      JavaOnlyMap.of("type", "value", "value", opacity, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
       JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("opacity", 1)));
@@ -135,6 +162,181 @@ public class NativeAnimatedNodeTraversalTest {
           .isEqualTo(frames.getDouble(i));
     }
 
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIImplementationMock);
+  }
+
+  @Test
+  public void testNodeValueListenerIfNotListening() {
+    int nodeId = 1;
+
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
+
+    Callback animationCallback = mock(Callback.class);
+    AnimatedNodeValueListener valueListener = mock(AnimatedNodeValueListener.class);
+
+    mNativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      nodeId,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
+      animationCallback);
+
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(valueListener).onValueUpdate(eq(0d));
+
+    mNativeAnimatedNodesManager.stopListeningToAnimatedNodeValue(nodeId);
+
+    reset(valueListener);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(valueListener);
+  }
+
+  @Test
+  public void testNodeValueListenerIfListening() {
+    int nodeId = 1;
+
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.2d, 0.4d, 0.6d, 0.8d, 1d);
+
+    Callback animationCallback = mock(Callback.class);
+    AnimatedNodeValueListener valueListener = mock(AnimatedNodeValueListener.class);
+
+    mNativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      nodeId,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
+      animationCallback);
+
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(valueListener).onValueUpdate(eq(0d));
+
+    for (int i = 0; i < frames.size(); i++) {
+      reset(valueListener);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)));
+    }
+
+    reset(valueListener);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(valueListener);
+  }
+
+  @Test
+  public void testSpringAnimation() {
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+
+    Callback animationCallback = mock(Callback.class);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      1,
+      JavaOnlyMap.of(
+        "type",
+        "spring",
+        "friction",
+        7d,
+        "tension",
+        40.0d,
+        "initialVelocity",
+        0d,
+        "toValue",
+        1d,
+        "restSpeedThreshold",
+        0.001d,
+        "restDisplacementThreshold",
+        0.001d,
+        "overshootClamping",
+        false),
+      animationCallback);
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+
+    double previousValue = 0d;
+    boolean wasGreaterThanOne = false;
+    /* run 3 secs of animation */
+    for (int i = 0; i < 3 * 60; i++) {
+      reset(mUIImplementationMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIImplementationMock, atMost(1))
+        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      if (currentValue > 1d) {
+        wasGreaterThanOne = true;
+      }
+      // verify that animation step is relatively small
+      assertThat(Math.abs(currentValue - previousValue)).isLessThan(0.1d);
+      previousValue = currentValue;
+    }
+    // verify that we've reach the final value at the end of animation
+    assertThat(previousValue).isEqualTo(1d);
+    // verify that value has reached some maximum value that is greater than the final value (bounce)
+    assertThat(wasGreaterThanOne);
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIImplementationMock);
+  }
+
+  @Test
+  public void testDecayAnimation() {
+    createSimpleAnimatedViewWithOpacity(1000, 0d);
+
+    Callback animationCallback = mock(Callback.class);
+    mNativeAnimatedNodesManager.startAnimatingNode(
+      1,
+      1,
+      JavaOnlyMap.of(
+        "type",
+        "decay",
+        "velocity",
+        0.5d,
+        "deceleration",
+        0.998d),
+      animationCallback);
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock, atMost(1))
+      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    double previousValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+    double previousDiff = Double.POSITIVE_INFINITY;
+    /* run 3 secs of animation */
+    for (int i = 0; i < 3 * 60; i++) {
+      reset(mUIImplementationMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIImplementationMock, atMost(1))
+        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentDiff = currentValue - previousValue;
+      // verify monotonicity
+      // greater *or equal* because the animation stops during these 3 seconds
+      assertThat(currentValue).as("on frame " + i).isGreaterThanOrEqualTo(previousValue);
+      // verify decay
+      if (i > 3) {
+        // i > 3 because that's how long it takes to settle previousDiff
+        if (i % 3 != 0) {
+          // i % 3 != 0 because every 3 frames we go a tiny
+          // bit faster, because frame length is 16.(6)ms
+          assertThat(currentDiff).as("on frame " + i).isLessThanOrEqualTo(previousDiff);
+        } else {
+          assertThat(currentDiff).as("on frame " + i).isGreaterThanOrEqualTo(previousDiff);
+        }
+      }
+      previousValue = currentValue;
+      previousDiff = currentDiff;
+    }
+    // should be done in 3s
     reset(mUIImplementationMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(mUIImplementationMock);
@@ -185,10 +387,10 @@ public class NativeAnimatedNodeTraversalTest {
       double secondValue) {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 100d));
+      JavaOnlyMap.of("type", "value", "value", 100d, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
-      JavaOnlyMap.of("type", "value", "value", 1000d));
+      JavaOnlyMap.of("type", "value", "value", 1000d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -356,10 +558,10 @@ public class NativeAnimatedNodeTraversalTest {
   public void testMultiplicationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 1d));
+      JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
-      JavaOnlyMap.of("type", "value", "value", 5d));
+      JavaOnlyMap.of("type", "value", "value", 5d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -467,7 +669,7 @@ public class NativeAnimatedNodeTraversalTest {
   public void testInterpolationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 10d));
+      JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
@@ -477,7 +679,11 @@ public class NativeAnimatedNodeTraversalTest {
         "inputRange",
         JavaOnlyArray.of(10d, 20d),
         "outputRange",
-        JavaOnlyArray.of(0d, 1d)));
+        JavaOnlyArray.of(0d, 1d),
+        "extrapolateLeft",
+        "extend",
+        "extrapolateRight",
+        "extend"));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -518,5 +724,97 @@ public class NativeAnimatedNodeTraversalTest {
     reset(mUIImplementationMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(mUIImplementationMock);
+  }
+
+  private Event createScrollEvent(final int tag, final double value) {
+    return new Event(tag) {
+      @Override
+      public String getEventName() {
+        return "topScroll";
+      }
+
+      @Override
+      public void dispatch(RCTEventEmitter rctEventEmitter) {
+        rctEventEmitter.receiveEvent(tag, "topScroll", JavaOnlyMap.of(
+          "contentOffset", JavaOnlyMap.of("y", value)));
+      }
+    };
+  }
+
+  @Test
+  public void testNativeAnimatedEventDoUpdate() {
+    int viewTag = 1000;
+
+    createSimpleAnimatedViewWithOpacity(viewTag, 0d);
+
+    mNativeAnimatedNodesManager.addAnimatedEventToView(viewTag, "topScroll", JavaOnlyMap.of(
+      "animatedValueTag", 1,
+      "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
+
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(10);
+  }
+
+  @Test
+  public void testNativeAnimatedEventDoNotUpdate() {
+    int viewTag = 1000;
+
+    createSimpleAnimatedViewWithOpacity(viewTag, 0d);
+
+    mNativeAnimatedNodesManager.addAnimatedEventToView(viewTag, "otherEvent", JavaOnlyMap.of(
+      "animatedValueTag", 1,
+      "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
+
+    mNativeAnimatedNodesManager.addAnimatedEventToView(999, "topScroll", JavaOnlyMap.of(
+      "animatedValueTag", 1,
+      "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
+
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+  }
+
+  @Test
+  public void testNativeAnimatedEventCustomMapping() {
+    int viewTag = 1000;
+
+    PowerMockito.when(mUIManagerMock.getConstants()).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        return MapBuilder.of("customDirectEventTypes", MapBuilder.of(
+          "topScroll", MapBuilder.of("registrationName", "onScroll")
+        ));
+      }
+    });
+    mNativeAnimatedNodesManager = new NativeAnimatedNodesManager(mUIManagerMock);
+
+    createSimpleAnimatedViewWithOpacity(viewTag, 0d);
+
+    mNativeAnimatedNodesManager.addAnimatedEventToView(viewTag, "onScroll", JavaOnlyMap.of(
+      "animatedValueTag", 1,
+      "nativeEventPath", JavaOnlyArray.of("contentOffset", "y")));
+
+    mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
+
+    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+
+    reset(mUIImplementationMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(10);
   }
 }

@@ -13,8 +13,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "RCTAssert.h"
-#import "RCTDefines.h"
+#import <React/RCTAssert.h>
+#import <React/RCTDefines.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +29,7 @@ RCT_EXTERN id RCTJSONClean(id object);
 // Get MD5 hash of a string
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
-// Check is we are currently on the main queue (not to be confused with
+// Check if we are currently on the main queue (not to be confused with
 // the main thread, which is not neccesarily the same thing)
 // https://twitter.com/olebegemann/status/738656134731599872
 RCT_EXTERN BOOL RCTIsMainQueue(void);
@@ -38,10 +38,9 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
 // this will execute immediately if we're already on the main queue.
 RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 
-// Deprecated - do not use.
-RCT_EXTERN void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
-__deprecated_msg("Use RCTExecuteOnMainQueue instead. RCTExecuteOnMainQueue is "
-                 "async. If you need to use the `sync` option... please don't.");
+// Legacy function to execute the specified block on the main queue synchronously.
+// Please do not use this unless you know what you're doing.
+RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
@@ -92,20 +91,12 @@ RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
 // Does this device support force touch (aka 3D Touch)?
 RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 
-// Return a UIAlertView initialized with the given values
-// or nil if running in an app extension
-RCT_EXTERN UIAlertView *__nullable RCTAlertView(NSString *title,
-                                                NSString *__nullable message,
-                                                id __nullable delegate,
-                                                NSString *__nullable cancelButtonTitle,
-                                                NSArray<NSString *> *__nullable otherButtonTitles);
-
 // Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
 // Convert nil values to NSNull, and vice-versa
-RCT_EXTERN id __nullable RCTNilIfNull(id __nullable value);
-RCT_EXTERN id RCTNullIfNil(id __nullable value);
+#define RCTNullIfNil(value) (value ?: (id)kCFNull)
+#define RCTNilIfNull(value) (value == (id)kCFNull ? nil : value)
 
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);
@@ -120,8 +111,8 @@ RCT_EXTERN NSData *__nullable RCTGzipData(NSData *__nullable data, float level);
 // (or nil, if the URL does not specify a path within the main bundle)
 RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
 
-// Determines if a given image URL actually refers to an XCAsset
-RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL);
+// Determines if a given image URL refers to a local image
+RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);
 
 // Creates a new, unique temporary file path with the specified extension
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);

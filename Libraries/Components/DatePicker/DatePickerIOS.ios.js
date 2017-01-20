@@ -14,15 +14,16 @@
 'use strict';
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('ReactPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
 
+const PropTypes = React.PropTypes;
+
 type DefaultProps = {
-  mode: 'date' | 'time' | 'datetime';
+  mode: 'date' | 'time' | 'datetime',
 };
 
 type Event = Object;
@@ -133,6 +134,8 @@ const DatePickerIOS = React.createClass({
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );

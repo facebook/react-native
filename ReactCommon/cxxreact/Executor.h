@@ -2,20 +2,37 @@
 
 #pragma once
 
+#include <fcntl.h>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include <sys/mman.h>
+
+#include <folly/Exception.h>
 #include <folly/dynamic.h>
 
 #include "JSModulesUnbundle.h"
 
+#define RN_EXPORT __attribute__((visibility("default")))
+
 namespace facebook {
 namespace react {
 
+#define UNPACKED_JS_SOURCE_PATH_SUFFIX "/bundle.js"
+#define UNPACKED_META_PATH_SUFFIX "/bundle.meta"
+#define UNPACKED_BYTECODE_SUFFIX "/bundle.bytecode"
+
+enum {
+  UNPACKED_JS_SOURCE = (1 << 0),
+  UNPACKED_BYTECODE = (1 << 1),
+};
+
 class JSExecutor;
+class JSModulesUnbundle;
 class MessageQueueThread;
+class ModuleRegistry;
 
 struct MethodCallResult {
   folly::dynamic result;
@@ -32,10 +49,10 @@ class ExecutorDelegate {
                                 std::shared_ptr<MessageQueueThread> queue) = 0;
   virtual std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executor) = 0;
 
-  virtual std::vector<std::string> moduleNames() = 0;
-  virtual folly::dynamic getModuleConfig(const std::string& name) = 0;
+  virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
+
   virtual void callNativeModules(
-    JSExecutor& executor, std::string callJSON, bool isEndOfBatch) = 0;
+    JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
 };
@@ -102,8 +119,12 @@ private:
 class JSBigBufferString : public facebook::react::JSBigString {
 public:
   JSBigBufferString(size_t size)
-    : m_data(new char[size])
-    , m_size(size) {}
+    : m_data(new char[size + 1])
+    , m_size(size) {
+    // Guarantee nul-termination.  The caller is responsible for
+    // filling in the rest of m_data.
+    m_data[m_size] = '\0';
+  }
 
   ~JSBigBufferString() {
     delete[] m_data;
@@ -130,6 +151,138 @@ private:
   size_t m_size;
 };
 
+// JSBigString interface implemented by a file-backed mmap region.
+class RN_EXPORT JSBigFileString : public JSBigString {
+public:
+
+  JSBigFileString(int fd, size_t size, off_t offset = 0)
+    : m_fd   {-1}
+    , m_data {nullptr}
+  {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
+    // Offsets given to mmap must be page aligend. We abstract away that
+    // restriction by sending a page aligned offset to mmap, and keeping track
+    // of the offset within the page that we must alter the mmap pointer by to
+    // get the final desired offset.
+    auto ps = getpagesize();
+    auto d  = lldiv(offset, ps);
+
+    m_mapOff  = d.quot;
+    m_pageOff = d.rem;
+    m_size    = size + m_pageOff;
+  }
+
+  ~JSBigFileString() {
+    if (m_data) {
+      munmap((void *)m_data, m_size);
+    }
+    close(m_fd);
+  }
+
+  bool isAscii() const override {
+    return true;
+  }
+
+  const char *c_str() const override {
+    if (!m_data) {
+      m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+      CHECK(m_data != MAP_FAILED)
+        << " fd: " << m_fd
+        << " size: " << m_size
+        << " offset: " << m_mapOff
+        << " error: " << std::strerror(errno);
+    }
+    return m_data + m_pageOff;
+  }
+
+  size_t size() const override {
+    return m_size - m_pageOff;
+  }
+
+  int fd() const {
+    return m_fd;
+  }
+
+  static std::unique_ptr<const JSBigFileString> fromPath(const std::string& sourceURL);
+
+private:
+  int m_fd;                     // The file descriptor being mmaped
+  size_t m_size;                // The size of the mmaped region
+  size_t m_pageOff;             // The offset in the mmaped region to the data.
+  off_t m_mapOff;               // The offset in the file to the mmaped region.
+  mutable const char *m_data;   // Pointer to the mmaped region.
+};
+
+class JSBigOptimizedBundleString : public JSBigString  {
+public:
+  enum class Encoding {
+    Unknown,
+    Ascii,
+    Utf8,
+    Utf16,
+  };
+
+  JSBigOptimizedBundleString(int fd, size_t size, const uint8_t sha1[20], Encoding encoding) :
+    m_fd(-1),
+    m_size(size),
+    m_encoding(encoding),
+    m_str(nullptr)
+  {
+    folly::checkUnixError(
+      m_fd = dup(fd),
+      "Could not duplicate file descriptor");
+
+    memcpy(m_hash, sha1, 20);
+  }
+
+  ~JSBigOptimizedBundleString() {
+    if (m_str) {
+      CHECK(munmap((void *)m_str, m_size) != -1);
+    }
+    close(m_fd);
+  }
+
+  bool isAscii() const override {
+    return m_encoding == Encoding::Ascii;
+  }
+
+  const char* c_str() const override {
+    if (!m_str) {
+      m_str = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, 0);
+      CHECK(m_str != MAP_FAILED);
+    }
+    return m_str;
+  }
+
+  size_t size() const override {
+    return m_size;
+  }
+
+  int fd() const {
+    return m_fd;
+  }
+
+  const uint8_t* hash() const {
+    return m_hash;
+  }
+
+  Encoding encoding() const {
+    return m_encoding;
+  }
+
+  static std::unique_ptr<const JSBigOptimizedBundleString> fromOptimizedBundle(const std::string& bundlePath);
+
+private:
+  int m_fd;
+  size_t m_size;
+  uint8_t m_hash[20];
+  Encoding m_encoding;
+  mutable const char *m_str;
+};
+
 class JSExecutor {
 public:
   /**
@@ -137,6 +290,11 @@ public:
    */
   virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
                                      std::string sourceURL) = 0;
+
+  /**
+   * Execute an application script optimized bundle in the JS context.
+   */
+  virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
 
   /**
    * Add an application "unbundle" file

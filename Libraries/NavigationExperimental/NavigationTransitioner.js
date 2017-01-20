@@ -24,16 +24,19 @@ import type {
   NavigationLayout,
   NavigationScene,
   NavigationState,
-  NavigationTransitionConfigurator,
   NavigationTransitionProps,
+  NavigationTransitionSpec,
 } from 'NavigationTypeDefinition';
 
 type Props = {
-  configureTransition: NavigationTransitionConfigurator,
+  configureTransition: (
+    a: NavigationTransitionProps,
+    b: ?NavigationTransitionProps,
+  ) => NavigationTransitionSpec,
   navigationState: NavigationState,
   onTransitionEnd: () => void,
   onTransitionStart: () => void,
-  render: (props: NavigationTransitionProps) => any,
+  render: (a: NavigationTransitionProps, b: ?NavigationTransitionProps) => any,
   style: any,
 };
 
@@ -49,16 +52,15 @@ const {PropTypes} = React;
 const DefaultTransitionSpec = {
   duration: 250,
   easing: Easing.inOut(Easing.ease),
+  timing: Animated.timing,
 };
 
-function isSceneNotStale(scene: NavigationScene): boolean {
-  return !scene.isStale;
-}
-
 class NavigationTransitioner extends React.Component<any, Props, State> {
-
   _onLayout: (event: any) => void;
   _onTransitionEnd: () => void;
+  _prevTransitionProps: ?NavigationTransitionProps;
+  _transitionProps: NavigationTransitionProps;
+  _isMounted: boolean;
 
   props: Props;
   state: State;
@@ -90,11 +92,23 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       progress: new Animated.Value(1),
       scenes: NavigationScenesReducer([], this.props.navigationState),
     };
+
+    this._prevTransitionProps = null;
+    this._transitionProps = buildTransitionProps(props, this.state);
+    this._isMounted = false;
   }
 
   componentWillMount(): void {
     this._onLayout = this._onLayout.bind(this);
     this._onTransitionEnd = this._onTransitionEnd.bind(this);
+  }
+
+  componentDidMount(): void {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount(): void {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps: Props): void {
@@ -108,19 +122,27 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       return;
     }
 
+    const nextState = {
+      ...this.state,
+      scenes: nextScenes,
+    };
+
     const {
       position,
       progress,
-    } = this.state;
+    } = nextState;
 
-    // update scenes.
-    this.setState({
-      scenes: nextScenes,
-    });
+    progress.setValue(0);
+
+    this._prevTransitionProps = this._transitionProps;
+    this._transitionProps = buildTransitionProps(nextProps, nextState);
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
-      nextProps.configureTransition() :
+      nextProps.configureTransition(
+        this._transitionProps,
+        this._prevTransitionProps,
+      ) :
       null;
 
     const transitionSpec = {
@@ -128,10 +150,11 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       ...transitionUserSpec,
     };
 
-    progress.setValue(0);
+    const {timing} = transitionSpec;
+    delete transitionSpec.timing;
 
     const animations = [
-      Animated.timing(
+      timing(
         progress,
         {
           ...transitionSpec,
@@ -142,7 +165,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     if (nextProps.navigationState.index !== this.props.navigationState.index) {
       animations.push(
-        Animated.timing(
+        timing(
           position,
           {
             ...transitionSpec,
@@ -152,24 +175,32 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       );
     }
 
-    // play the transition.
-    nextProps.onTransitionStart && nextProps.onTransitionStart();
-    Animated.parallel(animations).start(this._onTransitionEnd);
+    // update scenes and play the transition
+    this.setState(nextState, () => {
+      nextProps.onTransitionStart && nextProps.onTransitionStart(
+        this._transitionProps,
+        this._prevTransitionProps,
+      );
+      Animated.parallel(animations).start(this._onTransitionEnd);
+    });
   }
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     return (
       <View
         onLayout={this._onLayout}
         style={[styles.main, this.props.style]}>
-        {this.props.render(this._buildTransitionProps())}
+        {this.props.render(this._transitionProps, this._prevTransitionProps)}
       </View>
     );
   }
 
   _onLayout(event: any): void {
     const {height, width} = event.nativeEvent.layout;
-
+    if (this.state.layout.initWidth === width &&
+      this.state.layout.initHeight === height) {
+      return;
+    }
     const layout = {
       ...this.state.layout,
       initHeight: height,
@@ -180,37 +211,74 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
     layout.height.setValue(height);
     layout.width.setValue(width);
 
-    this.setState({ layout });
+    const nextState = {
+      ...this.state,
+      layout,
+    };
+
+    this._transitionProps = buildTransitionProps(this.props, nextState);
+    this.setState(nextState);
   }
 
   _onTransitionEnd(): void {
-    const scenes = this.state.scenes.filter(isSceneNotStale);
-    if (scenes.length !== this.state.scenes.length) {
-      this.setState({ scenes });
+    if (!this._isMounted) {
+      return;
     }
-    this.props.onTransitionEnd && this.props.onTransitionEnd();
-  }
 
-  _buildTransitionProps(): NavigationTransitionProps {
-    const {
-      navigationState,
-    } = this.props;
+    const prevTransitionProps = this._prevTransitionProps;
+    this._prevTransitionProps = null;
 
-    const {
-      layout,
-      position,
-      progress,
-      scenes,
-    } = this.state;
-
-    return {
-      layout,
-      navigationState,
-      position,
-      progress,
-      scenes,
+    const nextState = {
+      ...this.state,
+      scenes: this.state.scenes.filter(isSceneNotStale),
     };
+
+    this._transitionProps = buildTransitionProps(this.props, nextState);
+
+    this.setState(nextState, () => {
+      this.props.onTransitionEnd && this.props.onTransitionEnd(
+        this._transitionProps,
+        prevTransitionProps,
+      );
+    });
   }
+}
+
+function buildTransitionProps(
+  props: Props,
+  state: State,
+): NavigationTransitionProps {
+  const {
+    navigationState,
+  } = props;
+
+  const {
+    layout,
+    position,
+    progress,
+    scenes,
+  } = state;
+
+  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+   * detected during the deployment of v0.38.0. To see the error, remove this
+   * comment and run flow
+   */
+  return {
+    layout,
+    navigationState,
+    position,
+    progress,
+    scenes,
+    scene: scenes.find(isSceneActive),
+  };
+}
+
+function isSceneNotStale(scene: NavigationScene): boolean {
+  return !scene.isStale;
+}
+
+function isSceneActive(scene: NavigationScene): boolean {
+  return scene.isActive;
 }
 
 const styles = StyleSheet.create({

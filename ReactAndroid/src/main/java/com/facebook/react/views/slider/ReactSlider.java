@@ -30,7 +30,7 @@ public class ReactSlider extends SeekBar {
   /**
    * If step is 0 (unset) we default to this total number of steps.
    * Don't use 100 which leads to rounding errors (0.200000000001).
-   */ 
+   */
   private static int DEFAULT_TOTAL_STEPS = 128;
 
   /**
@@ -50,6 +50,7 @@ public class ReactSlider extends SeekBar {
    * If zero it's determined automatically.
    */
   private double mStep = 0;
+  private double mStepCalculated = 0;
 
   public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
     super(context, attrs, style);
@@ -83,7 +84,7 @@ public class ReactSlider extends SeekBar {
     if (seekBarProgress == getMax()) {
       return mMaxValue;
     }
-    return seekBarProgress * mStep + mMinValue;
+    return seekBarProgress * getStepValue() + mMinValue;
   }
 
   /**
@@ -91,7 +92,7 @@ public class ReactSlider extends SeekBar {
    */
   private void updateAll() {
     if (mStep == 0) {
-      mStep = (mMaxValue - mMinValue) / (double) DEFAULT_TOTAL_STEPS;
+      mStepCalculated = (mMaxValue - mMinValue) / (double) DEFAULT_TOTAL_STEPS;
     }
     setMax(getTotalSteps());
     updateValue();
@@ -106,6 +107,10 @@ public class ReactSlider extends SeekBar {
   }
 
   private int getTotalSteps() {
-    return (int) Math.ceil((mMaxValue - mMinValue) / mStep);
+    return (int) Math.ceil((mMaxValue - mMinValue) / getStepValue());
+  }
+
+  private double getStepValue() {
+    return mStep > 0 ? mStep : mStepCalculated;
   }
 }

@@ -11,12 +11,13 @@
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
-var ColorPropType = require('ColorPropType');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ReactPropTypes = require('React').PropTypes;
+const ColorPropType = require('ColorPropType');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-// TODO: use spread instead of Object.assign/create after #6560135 is fixed
-var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
+const TextStylePropTypes = {
+  ...ViewStylePropTypes,
+
   color: ColorPropType,
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
@@ -29,6 +30,18 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   fontWeight: ReactPropTypes.oneOf(
     ['normal' /*default*/, 'bold',
      '100', '200', '300', '400', '500', '600', '700', '800', '900']
+  ),
+  /**
+   * @platform ios
+   */
+  fontVariant: ReactPropTypes.arrayOf(
+    ReactPropTypes.oneOf([
+      'small-caps',
+      'oldstyle-nums',
+      'lining-nums',
+      'tabular-nums',
+      'proportional-nums',
+    ])
   ),
   textShadowOffset: ReactPropTypes.shape(
     {width: ReactPropTypes.number, height: ReactPropTypes.number}
@@ -53,6 +66,13 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   textAlignVertical: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'top', 'bottom', 'center']
   ),
+  /**
+   * Set to `false` to remove extra font padding intended to make space for certain ascenders / descenders.
+   * With some fonts, this padding can make text look slightly misaligned when centered vertically.
+   * For best results also set `textAlignVertical` to `center`. Default is true.
+   * @platform android
+   */
+  includeFontPadding: ReactPropTypes.bool,
   textDecorationLine: ReactPropTypes.oneOf(
     ['none' /*default*/, 'underline', 'line-through', 'underline line-through']
   ),
@@ -72,6 +92,6 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
-});
+};
 
 module.exports = TextStylePropTypes;

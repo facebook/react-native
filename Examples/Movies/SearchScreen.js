@@ -299,7 +299,7 @@ var SearchScreen = React.createClass({
         onEndReached={this.onEndReached}
         automaticallyAdjustContentInsets={false}
         keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps={true}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       />;
 
@@ -318,8 +318,8 @@ var SearchScreen = React.createClass({
   },
 });
 
-var NoMovies = React.createClass({
-  render: function() {
+class NoMovies extends React.Component {
+  render() {
     var text = '';
     if (this.props.filter) {
       text = `No results for "${this.props.filter}"`;
@@ -335,7 +335,7 @@ var NoMovies = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

@@ -83,6 +83,20 @@ describe('NavigationStateUtils', () => {
     expect(() => NavigationStateUtils.jumpTo(state, 'c')).toThrow();
   });
 
+  it('move backwards', () => {
+    const state = {index: 1, routes: [{key: 'a'}, {key: 'b'}]};
+    const newState = {index: 0, routes: [{key: 'a'}, {key: 'b'}]};
+    expect(NavigationStateUtils.back(state)).toEqual(newState);
+    expect(NavigationStateUtils.back(newState)).toBe(newState);
+  });
+
+  it('move forwards', () => {
+    const state = {index: 0, routes: [{key: 'a'}, {key: 'b'}]};
+    const newState = {index: 1, routes: [{key: 'a'}, {key: 'b'}]};
+    expect(NavigationStateUtils.forward(state)).toEqual(newState);
+    expect(NavigationStateUtils.forward(newState)).toBe(newState);
+  });
+
   // Replace
   it('Replaces by key', () => {
     const state = {index: 0, routes: [{key: 'a'}, {key: 'b'}]};

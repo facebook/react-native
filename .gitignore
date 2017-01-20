@@ -34,6 +34,7 @@ project.xcworkspace
 buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
 /ReactAndroid/src/main/jni/prebuilt/lib/x86/
+/ReactAndroid/src/main/gen
 
 # Android
 .idea
@@ -52,3 +53,4 @@ node_modules
 
 # Test generated files
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+*.js.meta

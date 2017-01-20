@@ -18,12 +18,14 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
+require('UIManagerTestModule');
 
 require('CatalystRootViewTestModule');
 require('DatePickerDialogTestModule');
 require('MeasureLayoutTestModule');
 require('PickerAndroidTestModule');
 require('ScrollViewTestModule');
+require('ShareTestModule');
 require('SwipeRefreshLayoutTestModule');
 require('TextInputTestModule');
 require('TimePickerDialogTestModule');
@@ -72,6 +74,10 @@ var apps = [
 {
   appKey: 'ScrollViewTestApp',
   component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+},
+{
+  appKey: 'ShareTestApp',
+  component: () => require('ShareTestModule').ShareTestApp,
 },
 {
   appKey: 'SubviewsClippingTestApp',

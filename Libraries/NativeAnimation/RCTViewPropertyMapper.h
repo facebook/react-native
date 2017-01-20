@@ -6,17 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 #import <Foundation/Foundation.h>
 
-@class RCTNativeAnimatedModule;
+@class RCTUIManager;
 
 @interface RCTViewPropertyMapper : NSObject
 
 @property (nonatomic, readonly) NSNumber *viewTag;
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag
-                animationModule:(RCTNativeAnimatedModule *)animationModule NS_DESIGNATED_INITIALIZER;
+                      uiManager:(RCTUIManager *)uiManager NS_DESIGNATED_INITIALIZER;
 
-- (void)updateViewWithDictionary:(NSDictionary<NSString *, NSNumber *> *)updates;
+- (void)updateViewWithDictionary:(NSDictionary<NSString *, NSObject *> *)updates;
 
 @end

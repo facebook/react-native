@@ -40,6 +40,12 @@ var ImageResizeMode = keyMirror({
   * The image will not be scaled up.
   */
   center: null,
+
+  /**
+   * repeat - The image will be repeated to cover the frame of the View. The
+   * image will keep it's size and aspect ratio.
+   */
+  repeat: null,
 });
 
 module.exports = ImageResizeMode;

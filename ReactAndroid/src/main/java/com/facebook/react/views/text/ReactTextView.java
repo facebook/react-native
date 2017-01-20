@@ -9,21 +9,39 @@
 
 package com.facebook.react.views.text;
 
+import javax.annotation.Nullable;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
+
+  private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
+    new ViewGroup.LayoutParams(0, 0);
 
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
   private boolean mTextIsSelectable;
+  private float mLineHeight = Float.NaN;
+  private int mTextAlign = Gravity.NO_GRAVITY;
+  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
+  private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
+
+  private ReactViewBackgroundDrawable mReactBackgroundDrawable;
 
   public ReactTextView(Context context) {
     super(context);
@@ -34,7 +52,29 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
   public void setText(ReactTextUpdate update) {
     mContainsImages = update.containsImages();
+    // Android's TextView crashes when it tries to relayout if LayoutParams are
+    // null; explicitly set the LayoutParams to prevent this crash. See:
+    // https://github.com/facebook/react-native/pull/7011
+    if (getLayoutParams() == null) {
+      setLayoutParams(EMPTY_LAYOUT_PARAMS);
+    }
     setText(update.getText());
+    setPadding(
+      (int) Math.floor(update.getPaddingLeft()),
+      (int) Math.floor(update.getPaddingTop()),
+      (int) Math.floor(update.getPaddingRight()),
+      (int) Math.floor(update.getPaddingBottom()));
+
+    int nextTextAlign = update.getTextAlign();
+    if (mTextAlign != nextTextAlign) {
+      mTextAlign = nextTextAlign;
+    }
+    setGravityHorizontal(mTextAlign);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (getBreakStrategy() != update.getTextBreakStrategy()) {
+        setBreakStrategy(update.getTextBreakStrategy());
+      }
+    }
   }
 
   @Override
@@ -164,6 +204,15 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
   }
 
+  @Override
+  public void setBackgroundColor(int color) {
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
       gravityHorizontal = mDefaultGravityHorizontal;
@@ -178,5 +227,56 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  public void setNumberOfLines(int numberOfLines) {
+    mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
+    setMaxLines(mNumberOfLines);
+  }
+
+  public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
+    mEllipsizeLocation = ellipsizeLocation;
+  }
+
+  public void updateView() {
+    @Nullable TextUtils.TruncateAt ellipsizeLocation = mNumberOfLines == ViewDefaults.NUMBER_OF_LINES ? null : mEllipsizeLocation;
+    setEllipsize(ellipsizeLocation);
+  }
+
+  public void setBorderWidth(int position, float width) {
+    getOrCreateReactViewBackground().setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mReactBackgroundDrawable == null) {
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      Drawable backgroundDrawable = getBackground();
+      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      // drawable back as a part of LayerDrawable
+      if (backgroundDrawable == null) {
+        super.setBackground(mReactBackgroundDrawable);
+      } else {
+        LayerDrawable layerDrawable =
+                new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
+        super.setBackground(layerDrawable);
+      }
+    }
+    return mReactBackgroundDrawable;
   }
 }

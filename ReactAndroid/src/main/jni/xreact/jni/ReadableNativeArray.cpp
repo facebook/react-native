@@ -76,11 +76,9 @@ local_ref<ReadableType> ReadableNativeArray::getType(jint index) {
   return ReadableType::getType(array.at(index).type());
 }
 
-// Export getMap() so we can workaround constructing ReadableNativeMap
-__attribute__((visibility("default")))
 local_ref<NativeMap::jhybridobject> ReadableNativeArray::getMap(jint index) {
-  // TODO(cjhopman): ... this moves the map?!?
-  return ReadableNativeMap::createWithContents(std::move(array.at(index)));
+  auto& elem = array.at(index);
+  return ReadableNativeMap::createWithContents(folly::dynamic(elem));
 }
 
 namespace {

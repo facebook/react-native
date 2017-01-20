@@ -13,9 +13,8 @@
  */
 #import <XCTest/XCTest.h>
 
-#import "RCTBundleURLProvider.h"
-#import "RCTUtils.h"
-
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTUtils.h>
 
 static NSString *const testFile = @"test.jsbundle";
 static NSString *const mainBundle = @"main.jsbundle";
@@ -60,7 +59,6 @@ static NSURL *ipBundleURL()
   RCTSwapInstanceMethods([NSBundle class],
                          @selector(URLForResource:withExtension:),
                           @selector(RCT_URLForResource:withExtension:));
-  [[RCTBundleURLProvider sharedSettings] setDefaults];
 }
 
 - (void)tearDown

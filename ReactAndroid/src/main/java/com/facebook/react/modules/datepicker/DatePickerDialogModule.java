@@ -31,11 +31,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
  * the user selects a date.
  */
+@ReactModule(name = "DatePickerAndroid")
 public class DatePickerDialogModule extends ReactContextBaseJavaModule {
 
   @VisibleForTesting
@@ -46,6 +48,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
   /* package */ static final String ARG_DATE = "date";
   /* package */ static final String ARG_MINDATE = "minDate";
   /* package */ static final String ARG_MAXDATE = "maxDate";
+  /* package */ static final String ARG_MODE = "mode";
 
   /* package */ static final String ACTION_DATE_SET = "dateSetAction";
   /* package */ static final String ACTION_DISMISSED = "dismissedAction";
@@ -107,6 +110,9 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    *     {@code maxDate} (timestamp in milliseconds) the maximum date the user should be allowed
    *     to select
    *    </li>
+   *   <li>
+   *      {@code mode} To set the date picker mode to 'calendar/spinner/default'
+   *   </li>
    * </ul>
    *
    * @param promise This will be invoked with parameters action, year,
@@ -129,7 +135,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
       android.support.v4.app.FragmentManager fragmentManager =
           ((android.support.v4.app.FragmentActivity) activity).getSupportFragmentManager();
       android.support.v4.app.DialogFragment oldFragment =
-          (android.support.v4.app.DialogFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+          (android.support.v4.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null) {
         oldFragment.dismiss();
       }
@@ -144,7 +150,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
       fragment.show(fragmentManager, FRAGMENT_TAG);
     } else {
       FragmentManager fragmentManager = activity.getFragmentManager();
-      DialogFragment oldFragment = (DialogFragment)fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+      DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null) {
         oldFragment.dismiss();
       }
@@ -170,6 +176,9 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
     }
     if (options.hasKey(ARG_MAXDATE) && !options.isNull(ARG_MAXDATE)) {
       args.putLong(ARG_MAXDATE, (long) options.getDouble(ARG_MAXDATE));
+    }
+    if (options.hasKey(ARG_MODE) && !options.isNull(ARG_MODE)) {
+      args.putString(ARG_MODE, options.getString(ARG_MODE));
     }
     return args;
   }

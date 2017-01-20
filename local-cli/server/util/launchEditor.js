@@ -12,6 +12,8 @@ var chalk = require('chalk');
 var fs = require('fs');
 var path = require('path');
 var child_process = require('child_process');
+const isAbsolutePath = require('absolute-path');
+const shellQuote = require('shell-quote');
 
 function isTerminalEditor(editor) {
   switch (editor) {
@@ -32,16 +34,30 @@ var COMMON_EDITORS = {
     '/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl',
   '/Applications/Sublime Text 2.app/Contents/MacOS/Sublime Text 2':
     '/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl',
+  '/Applications/Visual Studio Code.app/Contents/MacOS/Electron': 'code',
 };
 
-function getArgumentsForLineNumber(editor, fileName, lineNumber) {
+function addWorkspaceToArgumentsIfExists(args, workspace) {
+  if (workspace) {
+    args.unshift(workspace);
+  }
+  return args;
+}
+
+function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
   switch (path.basename(editor)) {
     case 'vim':
     case 'mvim':
       return [fileName, '+' + lineNumber];
     case 'atom':
+    case 'Atom':
+    case 'Atom Beta':
     case 'subl':
     case 'sublime':
+    case 'wstorm':
+    case 'appcode':
+    case 'charm':
+    case 'idea':  
       return [fileName + ':' + lineNumber];
     case 'joe':
     case 'emacs':
@@ -51,6 +67,8 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber) {
     case 'mate':
     case 'mine':
       return ['--line', lineNumber, fileName];
+    case 'code':
+      return addWorkspaceToArgumentsIfExists(['-g', fileName + ':' + lineNumber], workspace);
   }
 
   // For all others, drop the lineNumber until we have
@@ -62,7 +80,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber) {
 function guessEditor() {
   // Explicit config always wins
   if (process.env.REACT_EDITOR) {
-    return process.env.REACT_EDITOR;
+    return shellQuote.parse(process.env.REACT_EDITOR);
   }
 
   // Using `ps x` on OSX we can find out which editor is currently running.
@@ -74,7 +92,7 @@ function guessEditor() {
       for (var i = 0; i < processNames.length; i++) {
         var processName = processNames[i];
         if (output.indexOf(processName) !== -1) {
-          return COMMON_EDITORS[processName];
+          return [COMMON_EDITORS[processName]];
         }
       }
     } catch(error) {
@@ -83,7 +101,13 @@ function guessEditor() {
   }
 
   // Last resort, use old skool env vars
-  return process.env.VISUAL || process.env.EDITOR;
+  if (process.env.VISUAL) {
+    return [process.env.VISUAL];
+  } else if (process.env.EDITOR) {
+    return [process.env.EDITOR];
+  }
+
+  return null;
 }
 
 function printInstructions(title) {
@@ -100,8 +124,23 @@ function printInstructions(title) {
   ].join('\n'));
 }
 
+function transformToAbsolutePathIfNeeded(pathName) {
+  if (!isAbsolutePath(pathName)) {
+    pathName = path.resolve(process.cwd(), pathName);
+  }
+  return pathName;
+}
+
+function findRootForFile(projectRoots, fileName) {
+  fileName = transformToAbsolutePathIfNeeded(fileName);
+  return projectRoots.find((root) => {
+    root = transformToAbsolutePathIfNeeded(root);
+    return fileName.startsWith(root + path.sep);
+  });
+}
+
 var _childProcess = null;
-function launchEditor(fileName, lineNumber) {
+function launchEditor(fileName, lineNumber, projectRoots) {
   if (!fs.existsSync(fileName)) {
     return;
   }
@@ -112,15 +151,17 @@ function launchEditor(fileName, lineNumber) {
     return;
   }
 
-  var editor = guessEditor();
+  let [editor, ...args] = guessEditor();
   if (!editor) {
     printInstructions('PRO TIP');
     return;
   }
 
-  var args = [fileName];
+  var workspace = findRootForFile(projectRoots, fileName);
   if (lineNumber) {
-    args = getArgumentsForLineNumber(editor, fileName, lineNumber);
+    args = args.concat(getArgumentsForLineNumber(editor, fileName, lineNumber, workspace));
+  } else {
+    args.push(fileName);
   }
   console.log('Opening ' + chalk.underline(fileName) + ' with ' + chalk.bold(editor));
 

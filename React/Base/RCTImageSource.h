@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 /**
  * Object containing an image URL and associated metadata.
@@ -36,15 +36,9 @@
 
 @end
 
-@interface RCTImageSource (Deprecated)
-
-@property (nonatomic, strong, readonly) NSURL *imageURL
-__deprecated_msg("Use request.URL instead.");
-
-@end
-
 @interface RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json;
++ (NSArray<RCTImageSource *> *)RCTImageSourceArray:(id)json;
 
 @end

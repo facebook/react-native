@@ -9,6 +9,8 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -91,9 +93,10 @@ public class StackTraceHelper {
    * Convert a JavaScript stack trace (see {@code parseErrorStack} JS module) to an array of
    * {@link StackFrame}s.
    */
-  public static StackFrame[] convertJsStackTrace(ReadableArray stack) {
-    StackFrame[] result = new StackFrame[stack.size()];
-    for (int i = 0; i < stack.size(); i++) {
+  public static StackFrame[] convertJsStackTrace(@Nullable ReadableArray stack) {
+    int size = stack != null ? stack.size() : 0;
+    StackFrame[] result = new StackFrame[size];
+    for (int i = 0; i < size; i++) {
       ReadableMap frame = stack.getMap(i);
       String methodName = frame.getString("methodName");
       String fileName = frame.getString("file");
@@ -124,4 +127,32 @@ public class StackTraceHelper {
     return result;
   }
 
+  /**
+   * Format a {@link StackFrame} to a String (method name is not included).
+   */
+  public static String formatFrameSource(StackFrame frame) {
+    String lineInfo = "";
+    final int column = frame.getColumn();
+    // If the column is 0, don't show it in red box.
+    final String columnString = column <= 0 ? "" : ":" + column;
+    lineInfo += frame.getFileName() + ":" + frame.getLine() + columnString;
+    return lineInfo;
+  }
+
+  /**
+   * Format an array of {@link StackFrame}s with the error title to a String.
+   */
+  public static String formatStackTrace(String title, StackFrame[] stack) {
+    StringBuilder stackTrace = new StringBuilder();
+    stackTrace.append(title).append("\n");
+    for (StackFrame frame: stack) {
+      stackTrace.append(frame.getMethod())
+          .append("\n")
+          .append("    ")
+          .append(formatFrameSource(frame))
+          .append("\n");
+    }
+
+    return stackTrace.toString();
+  }
 }

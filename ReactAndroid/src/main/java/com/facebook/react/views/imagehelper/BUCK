@@ -1,0 +1,30 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'imagehelper',
+  srcs = glob(['*.java'], excludes=['MultiSourceHelper.java']),
+  deps = [
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+android_library(
+  name = 'withmultisource',
+  srcs = ['MultiSourceHelper.java'],
+  exported_deps = [
+    ':imagehelper',
+  ],
+  deps = [
+    react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+

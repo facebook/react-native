@@ -34,7 +34,7 @@ describe('TaskQueue', () => {
     });
   }
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     onMoreTasks = jest.fn();
     const TaskQueue = require('TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});
@@ -140,6 +140,15 @@ describe('TaskQueue', () => {
     expect(task3).not.toBeCalled();
     expectToBeCalledOnce(task2);
     expectToBeCalledOnce(task4);
+    expect(taskQueue.hasTasksToProcess()).toBe(false);
+  });
+
+  it('should not crash when last task is cancelled', () => {
+    const task1 = jest.fn();
+    taskQueue.enqueue(task1);
+    taskQueue.cancelTasks([task1]);
+    clearTaskQueue(taskQueue);
+    expect(task1).not.toBeCalled();
     expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
 });
