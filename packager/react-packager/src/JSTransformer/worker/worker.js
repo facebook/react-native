@@ -14,16 +14,23 @@
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap} from 'babel-core';
+import type {Ast, SourceMap, TransformOptions as BabelTransformOptions} from 'babel-core';
 
-function makeTransformParams(filename, sourceCode, options) {
+function makeTransformParams(filename, sourceCode, options, willMinify) {
+  invariant(
+    !willMinify || options.generateSourceMaps,
+    'Minifying source code requires the `generateSourceMaps` option to be `true`',
+  );
+
+
   if (filename.endsWith('.json')) {
     sourceCode = 'module.exports=' + sourceCode;
   }
+
   return {filename, sourceCode, options};
 }
 
@@ -31,7 +38,7 @@ export type TransformedCode = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
 };
 
 type Transform = (
@@ -46,7 +53,20 @@ type Transform = (
   ) => mixed,
 ) => void;
 
-export type Options = {transform?: {}};
+export type TransformOptions = {
+  generateSourceMaps: boolean,
+  platform: string,
+  preloadedModules?: Array<string>,
+  projectRoots: Array<string>,
+  ramGroups?: Array<string>,
+} & BabelTransformOptions;
+
+export type Options = {
+  +dev: boolean,
+  +minify: boolean,
+  platform: string,
+  transform: TransformOptions,
+};
 
 export type Data = {
   result: TransformedCode,
@@ -66,7 +86,12 @@ function transformCode(
   options: Options,
   callback: Callback,
 ) {
-  const params = makeTransformParams(filename, sourceCode, options.transform);
+  const params = makeTransformParams(
+    filename,
+    sourceCode,
+    options.transform,
+    options.minify,
+  );
   const isJson = filename.endsWith('.json');
 
   const transformFileStartLogEntry = {
@@ -130,7 +155,7 @@ exports.transformAndExtractDependencies = (
   transform: string,
   filename: string,
   sourceCode: string,
-  options: ?Options,
+  options: Options,
   callback: Callback,
 ) => {
   /* $FlowFixMe: impossible to type a dynamic require */

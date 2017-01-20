@@ -30,6 +30,11 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
+static BOOL isTestingEnvironment(void) {
+  NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+  return [environment[@"IS_TESTING"] boolValue];
+}
+
 RCT_EXPORT_MODULE(IOSConstants)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -38,7 +43,9 @@ RCT_EXPORT_MODULE(IOSConstants)
   return @{
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),
     @"osVersion": [device systemVersion],
+    @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
+    @"isTesting": @(isTestingEnvironment()),
   };
 }
 

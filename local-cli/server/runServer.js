@@ -10,12 +10,15 @@
 
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
+const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
@@ -85,13 +88,19 @@ function getPackagerServer(args, config) {
     typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
     undefined;
 
+  const providesModuleNodeModules =
+    args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
+
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    getTransformOptions: config.getTransformOptions,
+    platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
+    providesModuleNodeModules: providesModuleNodeModules,
+    reporter: new TerminalReporter(),
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
     verbose: args.verbose,

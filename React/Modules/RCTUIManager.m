@@ -11,7 +11,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <CSSLayout/CSSLayout.h>
+#import <yoga/Yoga.h>
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
@@ -246,11 +246,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)interfaceOrientationWillChange:(NSNotification *)notification
+- (void)interfaceOrientationDidChange
 {
 #if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
-    [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+    [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
   if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
@@ -260,7 +260,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(YES)];
+                                                body:RCTExportedDimensions()];
 #pragma clang diagnostic pop
   }
 
@@ -347,8 +347,8 @@ RCT_EXPORT_MODULE()
                                              object:_bridge.accessibilityManager];
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationWillChange:)
-                                               name:UIApplicationWillChangeStatusBarOrientationNotification
+                                           selector:@selector(interfaceOrientationDidChange)
+                                               name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 #endif
 
@@ -1217,15 +1217,15 @@ RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
     // By convention, all coordinates, whether they be touch coordinates, or
     // measurement coordinates are with respect to the root view.
     CGRect frame = view.frame;
-    CGPoint pagePoint = [view.superview convertPoint:frame.origin toView:rootView];
+    CGRect globalBounds = [view convertRect:view.bounds toView:rootView];
 
     callback(@[
       @(frame.origin.x),
       @(frame.origin.y),
-      @(frame.size.width),
-      @(frame.size.height),
-      @(pagePoint.x),
-      @(pagePoint.y)
+      @(globalBounds.size.width),
+      @(globalBounds.size.height),
+      @(globalBounds.origin.x),
+      @(globalBounds.origin.y),
     ]);
   }];
 }
@@ -1530,12 +1530,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions(NO);
+  constants[@"Dimensions"] = RCTExportedDimensions();
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
+static NSDictionary *RCTExportedDimensions()
 {
   RCTAssertMainQueue();
 
@@ -1543,8 +1543,8 @@ static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
   CGRect screenSize = [[UIScreen mainScreen] bounds];
   return @{
     @"window": @{
-        @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
-        @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
+        @"width": @(screenSize.size.width),
+        @"height": @(screenSize.size.height),
         @"scale": @(RCTScreenScale()),
     },
   };

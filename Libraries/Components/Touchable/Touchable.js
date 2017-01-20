@@ -12,12 +12,15 @@
 'use strict';
 
 const BoundingDimensions = require('BoundingDimensions');
+const Platform = require('Platform');
 const Position = require('Position');
-const React = require('React'); // eslint-disable-line no-unused-vars
+const React = require('React');
+const TVEventHandler = require('TVEventHandler');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
 const View = require('View');
 
+const findNodeHandle = require('findNodeHandle');
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('normalizeColor');
 
@@ -313,10 +316,35 @@ var LONG_PRESS_ALLOWED_MOVEMENT = 10;
  * @lends Touchable.prototype
  */
 var TouchableMixin = {
+  componentDidMount: function() {
+    if (!Platform.isTVOS) {
+      return;
+    }
+
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      var myTag = findNodeHandle(cmp);
+      evt.dispatchConfig = {};
+      if (myTag === evt.tag) {
+        if (evt.eventType === 'focus') {
+          cmp.touchableHandleActivePressIn && cmp.touchableHandleActivePressIn(evt);
+        } else if (evt.eventType === 'blur') {
+          cmp.touchableHandleActivePressOut && cmp.touchableHandleActivePressOut(evt);
+        } else if (evt.eventType === 'select') {
+          cmp.touchableHandlePress && cmp.touchableHandlePress(evt);
+        }
+      }
+    });
+  },
+
   /**
    * Clear all timeouts on unmount
    */
   componentWillUnmount: function() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.longPressDelayTimeout && clearTimeout(this.longPressDelayTimeout);
     this.pressOutDelayTimeout && clearTimeout(this.pressOutDelayTimeout);

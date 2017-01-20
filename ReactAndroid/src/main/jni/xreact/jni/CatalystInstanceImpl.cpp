@@ -14,6 +14,8 @@
 #include <jni/LocalReference.h>
 
 #include <cxxreact/Instance.h>
+#include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 
@@ -99,8 +101,9 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
       makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+      makeNativeMethod("setSourceURL", CatalystInstanceImpl::setSourceURL),
       makeNativeMethod("loadScriptFromAssets",
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
                        CatalystInstanceImpl::loadScriptFromAssets),
@@ -156,6 +159,10 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
+void CatalystInstanceImpl::setSourceURL(const std::string& sourceURL) {
+  instance_->setSourceURL(sourceURL);
+}
+
 void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
                                                 const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
@@ -174,10 +181,30 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
   }
 }
 
-void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
+bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  if (!bundle_stream) {
+    return false;
+  }
+  BundleHeader header;
+  bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
+  bundle_stream.close();
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+void CatalystInstanceImpl::loadScriptFromFile(const std::string& fileName,
                                               const std::string& sourceURL) {
-  return instance_->loadScriptFromFile(fileName ? fileName->toStdString() : "",
-                                       sourceURL);
+  auto zFileName = fileName.c_str();
+  if (isIndexedRAMBundle(zFileName)) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
+    auto startupScript = bundle->getStartupCode();
+    instance_->loadUnbundle(
+      std::move(bundle),
+      std::move(startupScript),
+      sourceURL);
+  } else {
+    instance_->loadScriptFromFile(fileName, sourceURL);
+  }
 }
 
 void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,

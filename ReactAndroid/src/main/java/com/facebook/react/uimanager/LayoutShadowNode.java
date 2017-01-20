@@ -6,13 +6,18 @@ import javax.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.facebook.csslayout.CSSAlign;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.CSSFlexDirection;
-import com.facebook.csslayout.CSSJustify;
-import com.facebook.csslayout.CSSOverflow;
-import com.facebook.csslayout.CSSPositionType;
-import com.facebook.csslayout.CSSWrap;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReadableType;
+
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaOverflow;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaValue;
+import com.facebook.yoga.YogaUnit;
+import com.facebook.yoga.YogaWrap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
@@ -27,57 +32,111 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  */
 public class LayoutShadowNode extends ReactShadowNode {
 
-  @ReactProp(name = ViewProps.WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setWidth(float width) {
-    if (isVirtual()) {
-      return;
-    }
-    setStyleWidth(CSSConstants.isUndefined(width) ? width : PixelUtil.toPixelFromDIP(width));
+  private static boolean dynamicIsPercent(Dynamic dynamic) {
+    return dynamic.getType() == ReadableType.String && dynamic.asString().endsWith("%");
   }
 
-  @ReactProp(name = ViewProps.MIN_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setMinWidth(float minWidth) {
-    if (isVirtual()) {
-      return;
-    }
-    setStyleMinWidth(
-      CSSConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
+  private static float getDynamicAsPercent(Dynamic dynamic) {
+    final String value = dynamic.asString();
+    return Float.parseFloat(value.substring(0, value.length() - 1));
   }
 
-  @ReactProp(name = ViewProps.MAX_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setMaxWidth(float maxWidth) {
-    if (isVirtual()) {
-      return;
-    }
-    setStyleMaxWidth(
-      CSSConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
+  private static float getDynamicAsFloat(Dynamic dynamic) {
+    return (float) PixelUtil.toPixelFromDIP(dynamic.asDouble());
   }
 
-  @ReactProp(name = ViewProps.HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setHeight(float height) {
-    if (isVirtual()) {
-      return;
-    }
-    setStyleHeight(
-      CSSConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
+  private static boolean isNull(Dynamic d) {
+    return d == null || d.isNull();
   }
 
-  @ReactProp(name = ViewProps.MIN_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setMinHeight(float minHeight) {
+  @ReactProp(name = ViewProps.WIDTH)
+  public void setWidth(Dynamic width) {
     if (isVirtual()) {
       return;
     }
-    setStyleMinHeight(
-      CSSConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
+
+    if (!isNull(width) && dynamicIsPercent(width)) {
+      setStyleWidthPercent(getDynamicAsPercent(width));
+    } else {
+      setStyleWidth(isNull(width) ? YogaConstants.UNDEFINED : getDynamicAsFloat(width));
+    }
+
+    width.recycle();
   }
 
-  @ReactProp(name = ViewProps.MAX_HEIGHT, defaultFloat = CSSConstants.UNDEFINED)
-  public void setMaxHeight(float maxHeight) {
+  @ReactProp(name = ViewProps.MIN_WIDTH)
+  public void setMinWidth(Dynamic minWidth) {
     if (isVirtual()) {
       return;
     }
-    setStyleMaxHeight(
-      CSSConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
+
+    if (!isNull(minWidth) && dynamicIsPercent(minWidth)) {
+      setStyleMinWidthPercent(getDynamicAsPercent(minWidth));
+    } else {
+      setStyleMinWidth(isNull(minWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minWidth));
+    }
+
+    minWidth.recycle();
+  }
+
+  @ReactProp(name = ViewProps.MAX_WIDTH)
+  public void setMaxWidth(Dynamic maxWidth) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (!isNull(maxWidth) && dynamicIsPercent(maxWidth)) {
+      setStyleMaxWidthPercent(getDynamicAsPercent(maxWidth));
+    } else {
+      setStyleMaxWidth(isNull(maxWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxWidth));
+    }
+
+    maxWidth.recycle();
+  }
+
+  @ReactProp(name = ViewProps.HEIGHT)
+  public void setHeight(Dynamic height) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (!isNull(height) && dynamicIsPercent(height)) {
+      setStyleHeightPercent(getDynamicAsPercent(height));
+    } else {
+      setStyleHeight(isNull(height) ? YogaConstants.UNDEFINED : getDynamicAsFloat(height));
+    }
+
+    height.recycle();
+  }
+
+  @ReactProp(name = ViewProps.MIN_HEIGHT)
+  public void setMinHeight(Dynamic minHeight) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (!isNull(minHeight) && dynamicIsPercent(minHeight)) {
+      setStyleMinHeightPercent(getDynamicAsPercent(minHeight));
+    } else {
+      setStyleMinHeight(isNull(minHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minHeight));
+    }
+
+    minHeight.recycle();
+  }
+
+  @ReactProp(name = ViewProps.MAX_HEIGHT)
+  public void setMaxHeight(Dynamic maxHeight) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (!isNull(maxHeight) && dynamicIsPercent(maxHeight)) {
+      setStyleMaxHeightPercent(getDynamicAsPercent(maxHeight));
+    } else {
+      setStyleMaxHeight(isNull(maxHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxHeight));
+    }
+
+    maxHeight.recycle();
   }
 
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
@@ -104,15 +163,22 @@ public class LayoutShadowNode extends ReactShadowNode {
     super.setFlexShrink(flexShrink);
   }
 
-  @ReactProp(name = ViewProps.FLEX_BASIS, defaultFloat = 0f)
-  public void setFlexBasis(float flexBasis) {
+  @ReactProp(name = ViewProps.FLEX_BASIS)
+  public void setFlexBasis(Dynamic flexBasis) {
     if (isVirtual()) {
       return;
     }
-    super.setFlexBasis(flexBasis);
+
+    if (!isNull(flexBasis) && dynamicIsPercent(flexBasis)) {
+      setFlexBasisPercent(getDynamicAsPercent(flexBasis));
+    } else {
+      setFlexBasis(isNull(flexBasis) ? 0 : getDynamicAsFloat(flexBasis));
+    }
+
+    flexBasis.recycle();
   }
 
-  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = CSSConstants.UNDEFINED)
+  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
   public void setAspectRatio(float aspectRatio) {
     setStyleAspectRatio(aspectRatio);
   }
@@ -123,7 +189,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
     setFlexDirection(
-        flexDirection == null ? CSSFlexDirection.COLUMN : CSSFlexDirection.valueOf(
+        flexDirection == null ? YogaFlexDirection.COLUMN : YogaFlexDirection.valueOf(
             flexDirection.toUpperCase(Locale.US).replace("-", "_")));
   }
 
@@ -133,9 +199,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
     if (flexWrap == null || flexWrap.equals("nowrap")) {
-      setFlexWrap(CSSWrap.NO_WRAP);
+      setFlexWrap(YogaWrap.NO_WRAP);
     } else if (flexWrap.equals("wrap")) {
-      setFlexWrap(CSSWrap.WRAP);
+      setFlexWrap(YogaWrap.WRAP);
     } else {
       throw new IllegalArgumentException("Unknown flexWrap value: " + flexWrap);
     }
@@ -146,7 +212,7 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setAlignSelf(alignSelf == null ? CSSAlign.AUTO : CSSAlign.valueOf(
+    setAlignSelf(alignSelf == null ? YogaAlign.AUTO : YogaAlign.valueOf(
             alignSelf.toUpperCase(Locale.US).replace("-", "_")));
   }
 
@@ -156,7 +222,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
     setAlignItems(
-        alignItems == null ? CSSAlign.STRETCH : CSSAlign.valueOf(
+        alignItems == null ? YogaAlign.STRETCH : YogaAlign.valueOf(
             alignItems.toUpperCase(Locale.US).replace("-", "_")));
   }
 
@@ -165,7 +231,7 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setJustifyContent(justifyContent == null ? CSSJustify.FLEX_START : CSSJustify.valueOf(
+    setJustifyContent(justifyContent == null ? YogaJustify.FLEX_START : YogaJustify.valueOf(
             justifyContent.toUpperCase(Locale.US).replace("-", "_")));
   }
 
@@ -174,7 +240,7 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setOverflow(overflow == null ? CSSOverflow.VISIBLE : CSSOverflow.valueOf(
+    setOverflow(overflow == null ? YogaOverflow.VISIBLE : YogaOverflow.valueOf(
             overflow.toUpperCase(Locale.US).replace("-", "_")));
   }
 
@@ -186,12 +252,21 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.MARGIN_RIGHT,
       ViewProps.MARGIN_TOP,
       ViewProps.MARGIN_BOTTOM,
-  }, defaultFloat = CSSConstants.UNDEFINED)
-  public void setMargins(int index, float margin) {
+  })
+  public void setMargins(int index, Dynamic margin) {
     if (isVirtual()) {
       return;
     }
-    setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(margin));
+
+    if (!isNull(margin) && dynamicIsPercent(margin)) {
+      setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(margin));
+    } else {
+      setMargin(
+          ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
+          isNull(margin) ? YogaConstants.UNDEFINED : getDynamicAsFloat(margin));
+    }
+
+    margin.recycle();
   }
 
   @ReactPropGroup(names = {
@@ -202,14 +277,22 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.PADDING_RIGHT,
       ViewProps.PADDING_TOP,
       ViewProps.PADDING_BOTTOM,
-  }, defaultFloat = CSSConstants.UNDEFINED)
-  public void setPaddings(int index, float padding) {
+  })
+  public void setPaddings(int index, Dynamic padding) {
     if (isVirtual()) {
       return;
     }
-    setPadding(
-        ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-        CSSConstants.isUndefined(padding) ? padding : PixelUtil.toPixelFromDIP(padding));
+
+    if (!isNull(padding) && dynamicIsPercent(padding)) {
+      setPaddingPercent(
+          ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(padding));
+    } else {
+      setPadding(
+          ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
+          isNull(padding) ? YogaConstants.UNDEFINED : getDynamicAsFloat(padding));
+    }
+
+    padding.recycle();
   }
 
   @ReactPropGroup(names = {
@@ -218,7 +301,7 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidths(int index, float borderWidth) {
     if (isVirtual()) {
       return;
@@ -231,14 +314,21 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.RIGHT,
       ViewProps.TOP,
       ViewProps.BOTTOM,
-  }, defaultFloat = CSSConstants.UNDEFINED)
-  public void setPositionValues(int index, float position) {
+  })
+  public void setPositionValues(int index, Dynamic position) {
     if (isVirtual()) {
       return;
     }
-    setPosition(
-      ViewProps.POSITION_SPACING_TYPES[index],
-      CSSConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position));
+
+    if (!isNull(position) && dynamicIsPercent(position)) {
+      setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], getDynamicAsPercent(position));
+    } else {
+      setPosition(
+          ViewProps.POSITION_SPACING_TYPES[index],
+          isNull(position) ? YogaConstants.UNDEFINED : getDynamicAsFloat(position));
+    }
+
+    position.recycle();
   }
 
   @ReactProp(name = ViewProps.POSITION)
@@ -246,8 +336,8 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    CSSPositionType positionType = position == null ?
-        CSSPositionType.RELATIVE : CSSPositionType.valueOf(position.toUpperCase(Locale.US));
+    YogaPositionType positionType = position == null ?
+        YogaPositionType.RELATIVE : YogaPositionType.valueOf(position.toUpperCase(Locale.US));
     setPositionType(positionType);
   }
 

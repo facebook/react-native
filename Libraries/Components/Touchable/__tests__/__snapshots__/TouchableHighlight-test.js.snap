@@ -4,7 +4,9 @@ exports[`TouchableHighlight renders correctly 1`] = `
   accessibilityLabel={undefined}
   accessibilityTraits={undefined}
   accessible={true}
+  hasTVPreferredFocus={undefined}
   hitSlop={undefined}
+  isTVSelectable={true}
   onLayout={undefined}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
@@ -20,7 +22,8 @@ exports[`TouchableHighlight renders correctly 1`] = `
       Object {},
     ]
   }
-  testID={undefined}>
+  testID={undefined}
+  tvParallaxProperties={undefined}>
   <Text
     accessible={true}
     allowFontScaling={true}

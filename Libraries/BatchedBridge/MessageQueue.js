@@ -157,8 +157,14 @@ class MessageQueue {
         }
       }
       onFail && params.push(this._callbackID);
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+       * detected during the deployment of v0.38.0. To see the error, remove
+       * this comment and run flow */
       this._callbacks[this._callbackID++] = onFail;
       onSucc && params.push(this._callbackID);
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+       * detected during the deployment of v0.38.0. To see the error, remove
+       * this comment and run flow */
       this._callbacks[this._callbackID++] = onSucc;
     }
 
@@ -270,7 +276,13 @@ class MessageQueue {
       }
     }
 
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._callbacks[cbID & ~1] = null;
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._callbacks[cbID |  1] = null;
     // $FlowIssue(>=0.35.0) #14551610
     callback.apply(null, args);

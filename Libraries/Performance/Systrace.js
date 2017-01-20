@@ -213,7 +213,7 @@ if (__DEV__) {
   // other files. Therefore, calls to `require('moduleId')` are not replaced
   // with numeric IDs
   // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  require.Systrace = Systrace;
+  (require: any).Systrace = Systrace;
 }
 
 module.exports = Systrace;

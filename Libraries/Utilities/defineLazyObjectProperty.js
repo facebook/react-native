@@ -35,6 +35,12 @@ function defineLazyObjectProperty<T>(
     // `setValue` which calls `Object.defineProperty` which somehow triggers
     // `getValue` again. Adding `valueSet` breaks this loop.
     if (!valueSet) {
+      // Calling `get()` here can trigger an infinite loop if it fails to
+      // remove the getter on the property, which can happen when executing
+      // JS in a V8 context.  `valueSet = true` will break this loop, and
+      // sets the value of the property to undefined, until the code in `get()`
+      // finishes, at which point the property is set to the correct value.
+      valueSet = true;
       setValue(get());
     }
     return value;

@@ -97,6 +97,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
+  private @Nullable String mSourceURL;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -180,6 +181,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                        MessageQueueThread moduleQueue,
                                        ModuleRegistryHolder registryHolder);
 
+  /* package */ native void setSourceURL(String sourceURL);
   /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
   /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
   /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
@@ -188,8 +190,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     mJSBundleHasLoaded = true;
+
     // incrementPendingJSCalls();
-    mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
+    mSourceURL = mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
 
     synchronized (mJSCallsPendingInitLock) {
       // Loading the bundle is queued on the JS thread, but may not have
@@ -206,6 +209,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
+  }
+
+  @Override
+  public @Nullable String getSourceURL() {
+    return mSourceURL;
   }
 
   private native void callJSFunction(

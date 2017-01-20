@@ -12,8 +12,8 @@ android_library(
     react_native_dep('third-party/java/okhttp:okhttp3-ws'),
     react_native_dep('third-party/java/okio:okio'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
-    react_native_target('java/com/facebook/react/common/network:network'),
     react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/react/common/network:network'),
     react_native_target('java/com/facebook/react/module/annotations:annotations'),
     react_native_target('java/com/facebook/react/modules/debug:debug'),
     react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
@@ -22,8 +22,4 @@ android_library(
   visibility = [
     'PUBLIC',
   ],
-)
-
-project_config(
-  src_target = ':devsupport',
 )

@@ -14,33 +14,35 @@
 const GlobalTransformCache = require('../lib/GlobalTransformCache');
 const TransformCache = require('../lib/TransformCache');
 
-const chalk = require('chalk');
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
-const invariant = require('invariant');
+const fs = require('fs');
+const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode} from '../JSTransformer/worker/worker';
+import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {SourceMap} from '../lib/SourceMap';
 import type {ReadTransformProps} from '../lib/TransformCache';
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
-import type FastFs from './fastfs';
 
-type ReadResult = {
-  code?: string,
+export type ReadResult = {
+  code: string,
   dependencies?: ?Array<string>,
   dependencyOffsets?: ?Array<number>,
-  map?: ?{},
+  map?: ?SourceMap,
+  source: string,
 };
 
 export type TransformCode = (
   module: Module,
   sourceCode: string,
-  transformOptions: mixed,
+  transformOptions: TransformOptions,
 ) => Promise<TransformedCode>;
 
 export type Options = {
@@ -50,13 +52,13 @@ export type Options = {
 
 export type ConstructorArgs = {
   file: string,
-  fastfs: FastFs,
   moduleCache: ModuleCache,
   cache: Cache,
   transformCode: ?TransformCode,
   transformCacheKey: ?string,
   depGraphHelpers: DependencyGraphHelpers,
   options: Options,
+  reporter: Reporter,
 };
 
 class Module {
@@ -64,28 +66,28 @@ class Module {
   path: string;
   type: string;
 
-  _fastfs: FastFs;
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
   _transformCacheKey: ?string;
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
+  _reporter: Reporter;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _useGlobalCache: boolean;
+  static _globalCacheRetries: number;
 
   constructor({
     file,
-    fastfs,
     moduleCache,
     cache,
     transformCode,
     transformCacheKey,
     depGraphHelpers,
+    reporter,
     options,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
@@ -95,7 +97,6 @@ class Module {
     this.path = file;
     this.type = 'Module';
 
-    this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
@@ -106,6 +107,7 @@ class Module {
     );
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
+    this._reporter = reporter;
 
     this._readPromises = new Map();
   }
@@ -118,15 +120,15 @@ class Module {
     );
   }
 
-  getCode(transformOptions: Object) {
+  getCode(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: Object) {
+  getMap(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
-  getName(): Promise<string | number> {
+  getName(): Promise<string> {
     return this._cache.get(
       this.path,
       'name',
@@ -158,7 +160,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: Object) {
+  getDependencies(transformOptions: TransformOptions) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -190,7 +192,9 @@ class Module {
 
   _readSourceCode() {
     if (!this._readSourceCodePromise) {
-      this._readSourceCodePromise = this._fastfs.readFile(this.path);
+      this._readSourceCodePromise = new Promise(
+        resolve => resolve(fs.readFileSync(this.path, 'utf8'))
+      );
     }
     return this._readSourceCodePromise;
   }
@@ -211,9 +215,10 @@ class Module {
     id?: string,
     extern: boolean,
     result: TransformedCode,
-  ) {
+  ): ReadResult {
     if (this._options.cacheTransformResults === false) {
       const {dependencies} = result;
+      /* $FlowFixMe: this code path is dead, remove. */
       return {dependencies};
     }
     return {...result, id, source};
@@ -232,29 +237,54 @@ class Module {
     );
   }
 
+  _transformAndStoreCodeGlobally(
+    cacheProps: ReadTransformProps,
+    globalCache: GlobalTransformCache,
+    callback: (error: ?Error, result: ?TransformedCode) => void,
+  ) {
+    this._transformCodeForCallback(
+      cacheProps,
+      (transformError, transformResult) => {
+        if (transformError != null) {
+          callback(transformError);
+          return;
+        }
+        invariant(
+          transformResult != null,
+          'Inconsistent state: there is no error, but no results either.',
+        );
+        globalCache.store(cacheProps, transformResult);
+        callback(undefined, transformResult);
+      },
+    );
+  }
+
   _getTransformedCode(
     cacheProps: ReadTransformProps,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const globalCache = GlobalTransformCache.get();
-    if (!Module._useGlobalCache || globalCache == null) {
+    const noMoreRetries = Module._globalCacheRetries <= 0;
+    if (globalCache == null || noMoreRetries) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._useGlobalCache) {
-        console.log(chalk.red(
-          '\nWarning: the global cache failed with error:',
-        ));
-        console.log(chalk.red(globalCacheError.stack));
-        console.log(chalk.red(
-          'The global cache will be DISABLED for the ' +
-            'remainder of the transformation.',
-        ));
-        Module._useGlobalCache = false;
+      if (globalCacheError != null && Module._globalCacheRetries > 0) {
+        this._reporter.update({
+          type: 'global_cache_error',
+          error: globalCacheError,
+        });
+        Module._globalCacheRetries--;
+        if (Module._globalCacheRetries <= 0) {
+          this._reporter.update({
+            type: 'global_cache_disabled',
+            reason: 'too_many_errors',
+          });
+        }
       }
-      if (globalCacheError != null || globalCachedResult == null) {
-        this._transformCodeForCallback(cacheProps, callback);
+      if (globalCachedResult == null) {
+        this._transformAndStoreCodeGlobally(cacheProps, globalCache, callback);
         return;
       }
       callback(undefined, globalCachedResult);
@@ -281,7 +311,7 @@ class Module {
    * dependencies, etc. The overall process is to read the cache first, and if
    * it's a miss, we let the worker write to the cache and read it again.
    */
-  read(transformOptions: Object): Promise<ReadResult> {
+  read(transformOptions: TransformOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
@@ -343,19 +373,9 @@ class Module {
   isPolyfill() {
     return false;
   }
-
-  toJSON() {
-    return {
-      hash: this.hash(),
-      isJSON: this.isJSON(),
-      isAsset: this.isAsset(),
-      type: this.type,
-      path: this.path,
-    };
-  }
 }
 
-Module._useGlobalCache = true;
+Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();

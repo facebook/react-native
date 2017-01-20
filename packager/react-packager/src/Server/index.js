@@ -5,29 +5,39 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const AssetServer = require('../AssetServer');
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
-const ProgressBar = require('progress');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../../defaults');
 const mime = require('mime-types');
 const path = require('path');
+const terminal = require('../lib/terminal');
 const url = require('url');
 
-const debug = require('debug')('ReactNativePackager:Server');
+const debug = require('debug')('RNP:Server');
+
+import type Module from '../node-haste/Module';
+import type {Stats} from 'fs';
+import type {IncomingMessage, ServerResponse} from 'http';
+import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type Bundle from '../Bundler/Bundle';
+import type {Reporter} from '../lib/reporting';
+import type {GetTransformOptions} from '../Bundler';
 
 const {
   createActionStartEntry,
   createActionEndEntry,
   log,
-  print,
 } = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
@@ -43,59 +53,24 @@ function debounceAndBatch(fn, delay) {
   };
 }
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  transformModulePath: {
-    type: 'string',
-    required: false,
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  watch: {
-    type: 'boolean',
-    default: false,
-  },
-  assetExts: {
-    type: 'array',
-    default: defaults.assetExts,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    required: false,
-  },
-  getTransformOptionsModulePath: {
-    type: 'string',
-    required: false,
-  },
-  silent: {
-    type: 'boolean',
-    default: false,
-  },
-});
+type Options = {
+  assetExts?: Array<string>,
+  blacklistRE?: RegExp,
+  cacheVersion?: string,
+  extraNodeModules?: {},
+  getTransformOptions?: GetTransformOptions,
+  moduleFormat?: string,
+  platforms?: Array<string>,
+  polyfillModuleNames?: Array<string>,
+  projectRoots: Array<string>,
+  providesModuleNodeModules?: Array<string>,
+  reporter: Reporter,
+  resetCache?: boolean,
+  silent?: boolean,
+  transformModulePath?: string,
+  transformTimeoutInterval?: number,
+  watch?: boolean,
+};
 
 const bundleOpts = declareOpts({
   sourceMapUrl: {
@@ -193,25 +168,76 @@ const bundleDeps = new WeakMap();
 const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
 
 class Server {
-  constructor(options) {
-    const opts = this._opts = validateOpts(options);
+
+  _opts: {
+    assetExts: Array<string>,
+    blacklistRE: ?RegExp,
+    cacheVersion: string,
+    extraNodeModules: {},
+    getTransformOptions?: GetTransformOptions,
+    moduleFormat: string,
+    platforms: Array<string>,
+    polyfillModuleNames: Array<string>,
+    projectRoots: Array<string>,
+    providesModuleNodeModules?: Array<string>,
+    reporter: Reporter,
+    resetCache: boolean,
+    silent: boolean,
+    transformModulePath: ?string,
+    transformTimeoutInterval: ?number,
+    watch: boolean,
+  };
+  _projectRoots: Array<string>;
+  _bundles: {};
+  _changeWatchers: Array<{
+    req: IncomingMessage,
+    res: ServerResponse,
+  }>;
+  _fileChangeListeners: Array<(filePath: string) => mixed>;
+  _assetServer: AssetServer;
+  _bundler: Bundler;
+  _debouncedFileChangeHandler: (filePath: string) => mixed;
+  _hmrFileChangeListener: (type: string, filePath: string) => mixed;
+  _reporter: Reporter;
+
+  constructor(options: Options) {
+    this._opts = {
+      assetExts: options.assetExts || defaults.assetExts,
+      blacklistRE: options.blacklistRE,
+      cacheVersion: options.cacheVersion || '1.0',
+      extraNodeModules: options.extraNodeModules || {},
+      getTransformOptions: options.getTransformOptions,
+      moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
+      platforms: options.platforms || defaults.platforms,
+      polyfillModuleNames: options.polyfillModuleNames || [],
+      projectRoots: options.projectRoots,
+      providesModuleNodeModules: options.providesModuleNodeModules,
+      reporter: options.reporter,
+      resetCache: options.resetCache || false,
+      silent: options.silent || false,
+      transformModulePath: options.transformModulePath,
+      transformTimeoutInterval: options.transformTimeoutInterval,
+      watch: options.watch || false,
+    };
     const processFileChange =
       ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
 
-    this._projectRoots = opts.projectRoots;
+    this._reporter = options.reporter;
+    this._projectRoots = this._opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
 
     this._assetServer = new AssetServer({
-      assetExts: opts.assetExts,
-      projectRoots: opts.projectRoots,
+      assetExts: this._opts.assetExts,
+      projectRoots: this._opts.projectRoots,
     });
 
-    const bundlerOpts = Object.create(opts);
+    const bundlerOpts = Object.create(this._opts);
     bundlerOpts.assetServer = this._assetServer;
-    bundlerOpts.allowBundleUpdates = options.watch;
-    bundlerOpts.watch = options.watch;
+    bundlerOpts.allowBundleUpdates = this._opts.watch;
+    bundlerOpts.watch = this._opts.watch;
+    bundlerOpts.reporter = options.reporter;
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
@@ -234,7 +260,9 @@ class Server {
           this._bundles[key].then(bundle => {
             const deps = bundleDeps.get(bundle);
             filePaths.forEach(filePath => {
+              // $FlowFixMe(>=0.37.0)
               if (deps.files.has(filePath)) {
+                // $FlowFixMe(>=0.37.0)
                 deps.outdated.add(filePath);
               }
             });
@@ -251,21 +279,26 @@ class Server {
     }, 50);
   }
 
-  end() {
+  end(): mixed {
     return this._bundler.end();
   }
 
-  setHMRFileChangeListener(listener) {
+  setHMRFileChangeListener(
+    listener: (type: string, filePath: string) => mixed,
+  ) {
     this._hmrFileChangeListener = listener;
   }
 
-  addFileChangeListener(listener) {
+  addFileChangeListener(listener: (filePath: string) => mixed) {
     if (this._fileChangeListeners.indexOf(listener) === -1) {
       this._fileChangeListeners.push(listener);
     }
   }
 
-  buildBundle(options) {
+  buildBundle(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<Bundle> {
     return this._bundler.getResolver().getDependencyGraph().load().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -295,16 +328,23 @@ class Server {
     });
   }
 
-  buildBundleFromUrl(reqUrl) {
+  buildBundleFromUrl(reqUrl: string): Promise<mixed> {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules, host, port) {
-    return this._bundler.hmrBundle(modules, host, port);
+  buildBundleForHMR(
+    options: {platform: ?string},
+    host: string,
+    port: number,
+  ): Promise<string> {
+    return this._bundler.hmrBundle(options, host, port);
   }
 
-  getShallowDependencies(options) {
+  getShallowDependencies(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<mixed> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -315,11 +355,14 @@ class Server {
     });
   }
 
-  getModuleForPath(entryFile) {
+  getModuleForPath(entryFile: string): Module {
     return this._bundler.getModuleForPath(entryFile);
   }
 
-  getDependencies(options) {
+  getDependencies(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<ResolutionResponse> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -330,14 +373,14 @@ class Server {
     });
   }
 
-  getOrderedDependencyPaths(options) {
+  getOrderedDependencyPaths(options: {}): Promise<mixed> {
     return Promise.resolve().then(() => {
       const opts = dependencyOpts(options);
       return this._bundler.getOrderedDependencyPaths(opts);
     });
   }
 
-  onFileChange(type, filePath, stat) {
+  onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
     this._bundler.invalidateFile(filePath);
 
@@ -347,7 +390,7 @@ class Server {
     if (this._hmrFileChangeListener) {
       // Clear cached bundles in case user reloads
       this._clearBundles();
-      this._hmrFileChangeListener(filePath, this._bundler.stat(filePath));
+      this._hmrFileChangeListener(type, filePath);
       return;
     } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files
@@ -363,7 +406,7 @@ class Server {
     );
   }
 
-  _onFileChangeComplete(filePath) {
+  _onFileChangeComplete(filePath: string) {
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(filePath);
@@ -387,9 +430,10 @@ class Server {
     this._changeWatchers = [];
   }
 
-  _processDebugRequest(reqUrl, res) {
+  _processDebugRequest(reqUrl: string, res: ServerResponse) {
     let ret = '<!doctype html>';
     const pathname = url.parse(reqUrl).pathname;
+    /* $FlowFixMe: pathname would be null for an invalid URL */
     const parts = pathname.split('/').filter(Boolean);
     if (parts.length === 1) {
       ret += '<div><a href="/debug/bundles">Cached Bundles</a></div>';
@@ -406,17 +450,17 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          console.log(e.stack); // eslint-disable-line no-console-disallow
+          terminal.log(e.stack); // eslint-disable-line no-console-disallow
         }
       );
     } else {
-      res.writeHead('404');
+      res.writeHead(404);
       res.end('Invalid debug request');
       return;
     }
   }
 
-  _processOnChangeRequest(req, res) {
+  _processOnChangeRequest(req: IncomingMessage, res: ServerResponse) {
     const watchers = this._changeWatchers;
 
     watchers.push({
@@ -434,7 +478,12 @@ class Server {
     });
   }
 
-  _rangeRequestMiddleware(req, res, data, assetPath) {
+  _rangeRequestMiddleware(
+    req: IncomingMessage,
+    res: ServerResponse,
+    data: string,
+    assetPath: string,
+  ) {
     if (req.headers && req.headers.range) {
       const [rangeStart, rangeEnd] = req.headers.range.replace(/bytes=/, '').split('-');
       const dataStart = parseInt(rangeStart, 10);
@@ -443,7 +492,7 @@ class Server {
 
       res.writeHead(206, {
         'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
+        'Content-Length': chunksize.toString(),
         'Content-Range': `bytes ${dataStart}-${dataEnd}/${data.length}`,
         'Content-Type': mime.lookup(path.basename(assetPath[1])),
       });
@@ -454,16 +503,18 @@ class Server {
     return data;
   }
 
-  _processAssetsRequest(req, res) {
+  _processAssetsRequest(req: IncomingMessage, res: ServerResponse) {
     const urlObj = url.parse(decodeURI(req.url), true);
-    const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
+    /* $FlowFixMe: could be empty if the url is invalid */
+    const assetPath: string = urlObj.pathname.match(/^\/assets\/(.+)$/);
 
     const processingAssetRequestLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Processing asset request',
         asset: assetPath[1],
-      })), ['asset']);
+      }));
 
+    /* $FlowFixMe: query may be empty for invalid URLs */
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => {
@@ -474,23 +525,26 @@ class Server {
           }
           res.end(this._rangeRequestMiddleware(req, res, data, assetPath));
           process.nextTick(() => {
-            print(log(createActionEndEntry(processingAssetRequestLogEntry)), ['asset']);
+            log(createActionEndEntry(processingAssetRequestLogEntry));
           });
         },
         error => {
           console.error(error.stack);
-          res.writeHead('404');
+          res.writeHead(404);
           res.end('Asset not found');
         }
       );
   }
 
-  optionsHash(options) {
+  optionsHash(options: {}) {
     // onProgress is a function, can't be serialized
     return JSON.stringify(Object.assign({}, options, { onProgress: null }));
   }
 
-  _useCachedOrUpdateOrCreateBundle(options) {
+  _useCachedOrUpdateOrCreateBundle(options: {
+    entryFile: string,
+    platform?: string,
+  }): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -501,19 +555,26 @@ class Server {
     if (optionsJson in this._bundles) {
       return this._bundles[optionsJson].then(bundle => {
         const deps = bundleDeps.get(bundle);
+        // $FlowFixMe(>=0.37.0)
         const {dependencyPairs, files, idToIndex, outdated} = deps;
         if (outdated.size) {
 
           const updatingExistingBundleLogEntry =
-            print(log(createActionStartEntry({
+            log(createActionStartEntry({
               action_name: 'Updating existing bundle',
               outdated_modules: outdated.size,
-            })), ['outdated_modules']);
+            }));
+          this._reporter.update({
+            type: 'bundle_update_existing',
+            entryFilePath: options.entryFile,
+            outdatedModuleCount: outdated.size,
+          });
 
           debug('Attempt to update existing bundle');
 
           const changedModules =
             Array.from(outdated, this.getModuleForPath, this);
+          // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
           const opts = bundleOpts(options);
@@ -551,12 +612,17 @@ class Server {
                   const moduleTransport = newModules[i];
                   const {meta, sourcePath} = moduleTransport;
                   if (outdated.has(sourcePath)) {
+                    /* $FlowFixMe: `meta` could be empty */
                     if (!contentsEqual(meta.dependencies, new Set(files.get(sourcePath)))) {
                       // bail out if any dependencies changed
                       return Promise.reject(Error(
                         `Dependencies of ${sourcePath} changed from [${
+                          /* $FlowFixMe: `get` can return empty */
                           files.get(sourcePath).join(', ')
-                        }] to [${meta.dependencies.join(', ')}]`
+                        }] to [${
+                          /* $FlowFixMe: `meta` could be empty */
+                          meta.dependencies.join(', ')
+                        }]`
                       ));
                     }
 
@@ -566,10 +632,7 @@ class Server {
 
                 bundle.invalidateSource();
 
-                print(
-                  log(createActionEndEntry(updatingExistingBundleLogEntry)),
-                  ['outdated_modules'],
-                );
+                log(createActionEndEntry(updatingExistingBundleLogEntry));
 
                 debug('Successfully updated existing bundle');
                 return bundle;
@@ -589,9 +652,16 @@ class Server {
     return bundleFromScratch();
   }
 
-  processRequest(req, res, next) {
+  processRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: () => mixed,
+  ) {
     const urlObj = url.parse(req.url, true);
-    const pathname = urlObj.pathname;
+    const {host} = req.headers;
+    debug(`Handling request: ${host ? 'http://' + host : ''}${req.url}`);
+    /* $FlowFixMe: Could be empty if the URL is invalid. */
+    const pathname: string = urlObj.pathname;
 
     let requestType;
     if (pathname.match(/\.bundle$/)) {
@@ -618,27 +688,32 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
+    this._reporter.update({
+      type: 'bundle_requested',
+      entryFilePath: options.entryFile,
+    });
     const requestingBundleLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Requesting bundle',
         bundle_url: req.url,
         entry_point: options.entryFile,
-      })), ['bundle_url']);
+      }));
 
-    let consoleProgress = () => {};
-    if (process.stdout.isTTY && !this._opts.silent) {
-      const bar = new ProgressBar('transformed :current/:total (:percent)', {
-        complete: '=',
-        incomplete: ' ',
-        width: 40,
-        total: 1,
-      });
-      consoleProgress = debouncedTick(bar);
+    let reportProgress = () => {};
+    if (!this._opts.silent) {
+      reportProgress = (transformedFileCount, totalFileCount) => {
+        this._reporter.update({
+          type: 'bundle_transform_progressed',
+          entryFilePath: options.entryFile,
+          transformedFileCount,
+          totalFileCount,
+        });
+      };
     }
 
     const mres = MultipartResponse.wrap(req, res);
     options.onProgress = (done, total) => {
-      consoleProgress(done, total);
+      reportProgress(done, total);
       mres.writeChunk({'Content-Type': 'application/json'}, JSON.stringify({done, total}));
     };
 
@@ -646,6 +721,10 @@ class Server {
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
+        this._reporter.update({
+          type: 'bundle_built',
+          entryFilePath: options.entryFile,
+        });
         if (requestType === 'bundle') {
           debug('Generating source code');
           const bundleSource = p.getSource({
@@ -666,25 +745,21 @@ class Server {
             mres.end(bundleSource);
           }
           debug('Finished response');
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'map') {
-          let sourceMap = p.getSourceMap({
+          const sourceMap = p.getSourceMapString({
             minify: options.minify,
             dev: options.dev,
           });
 
-          if (typeof sourceMap !== 'string') {
-            sourceMap = JSON.stringify(sourceMap);
-          }
-
           mres.setHeader('Content-Type', 'application/json');
           mres.end(sourceMap);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         } else if (requestType === 'assets') {
           const assetsList = JSON.stringify(p.getAssets());
           mres.setHeader('Content-Type', 'application/json');
           mres.end(assetsList);
-          print(log(createActionEndEntry(requestingBundleLogEntry)), ['bundle_url']);
+          log(createActionEndEntry(requestingBundleLogEntry));
         }
       },
       error => this._handleError(mres, this.optionsHash(options), error)
@@ -695,10 +770,12 @@ class Server {
     });
   }
 
-  _symbolicate(req, res) {
+  _symbolicate(req: IncomingMessage, res: ServerResponse) {
     const symbolicatingLogEntry =
-      print(log(createActionStartEntry('Symbolicating')));
+      log(createActionStartEntry('Symbolicating'));
 
+    /* $FlowFixMe: where is `rowBody` defined? Is it added by
+     * the `connect` framework? */
     Promise.resolve(req.rawBody).then(body => {
       const stack = JSON.parse(body).stack;
 
@@ -748,7 +825,7 @@ class Server {
       stack => {
         res.end(JSON.stringify({stack: stack}));
         process.nextTick(() => {
-          print(log(createActionEndEntry(symbolicatingLogEntry)));
+          log(createActionEndEntry(symbolicatingLogEntry));
         });
       },
       error => {
@@ -759,7 +836,7 @@ class Server {
     );
   }
 
-  _sourceMapForURL(reqUrl) {
+  _sourceMapForURL(reqUrl: string): Promise<SourceMapConsumer> {
     const options = this._getOptionsFromUrl(reqUrl);
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     return building.then(p => {
@@ -771,7 +848,14 @@ class Server {
     });
   }
 
-  _handleError(res, bundleID, error) {
+  _handleError(res: ServerResponse, bundleID: string, error: {
+    status: number,
+    type: string,
+    description: string,
+    filename: string,
+    lineNumber: number,
+    errors: Array<{description: string, filename: string, lineNumber: number}>,
+  }) {
     res.writeHead(error.status || 500, {
       'Content-Type': 'application/json; charset=UTF-8',
     });
@@ -799,9 +883,23 @@ class Server {
     }
   }
 
-  _getOptionsFromUrl(reqUrl) {
+  _getOptionsFromUrl(reqUrl: string): {
+    sourceMapUrl: string,
+    entryFile: string,
+    dev: boolean,
+    minify: boolean,
+    hot: boolean,
+    runModule: boolean,
+    inlineSourceMap: boolean,
+    platform?: string,
+    entryModuleOnly: boolean,
+    generateSourceMaps: boolean,
+    assetPlugins: Array<string>,
+    onProgress?: (doneCont: number, totalCount: number) => mixed,
+  } {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
+    /* $FlowFixMe: `pathname` could be empty for an invalid URL */
     const pathname = decodeURIComponent(urlObj.pathname);
 
     // Backwards compatibility. Options used to be as added as '.' to the
@@ -818,19 +916,23 @@ class Server {
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url
+    /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
       getPlatformExtension(pathname);
 
+    /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;
     const assetPlugins = Array.isArray(assetPlugin) ?
       assetPlugin :
       (typeof assetPlugin === 'string') ? [assetPlugin] : [];
 
+    const dev = this._getBoolOptionFromQuery(urlObj.query, 'dev', true);
+    const minify = this._getBoolOptionFromQuery(urlObj.query, 'minify', false);
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
-      dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
-      minify: this._getBoolOptionFromQuery(urlObj.query, 'minify', false),
+      dev,
+      minify,
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
@@ -844,12 +946,13 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      generateSourceMaps: this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap'),
+      generateSourceMaps: minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }
 
-  _getBoolOptionFromQuery(query, opt, defaultVal) {
+  _getBoolOptionFromQuery(query: ?{}, opt: string, defaultVal: boolean): boolean {
+    /* $FlowFixMe: `query` could be empty when it comes from an invalid URL */
     if (query[opt] == null) {
       return defaultVal;
     }
@@ -858,27 +961,8 @@ class Server {
   }
 }
 
-function contentsEqual(array, set) {
+function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
   return array.length === set.size && array.every(set.has, set);
-}
-
-function debouncedTick(progressBar) {
-  let n = 0;
-  let start, total;
-
-  return (_, t) => {
-    total = t;
-    n += 1;
-    if (start) {
-      if (progressBar.curr + n >= total || Date.now() - start > 200) {
-        progressBar.total = total;
-        progressBar.tick(n);
-        start = n = 0;
-      }
-    } else {
-      start = Date.now();
-    }
-  };
 }
 
 module.exports = Server;

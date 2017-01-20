@@ -27,10 +27,10 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
+import com.facebook.yoga.YogaConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.FloatUtil;
-import com.facebook.csslayout.Spacing;
+import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.uimanager.Spacing;
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports
@@ -87,7 +87,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable RectF mTempRectForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadiusOutline;
   private boolean mNeedUpdatePathForBorderRadius = false;
-  private float mBorderRadius = CSSConstants.UNDEFINED;
+  private float mBorderRadius = YogaConstants.UNDEFINED;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -100,7 +100,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   public void draw(Canvas canvas) {
     updatePathEffect();
     boolean roundedBorders = mBorderCornerRadii != null ||
-        (!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
+        (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
 
     if ((mBorderStyle == null || mBorderStyle == BorderStyle.SOLID) && !roundedBorders) {
       drawRectangularBackgroundWithBorders(canvas);
@@ -145,7 +145,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
       super.getOutline(outline);
       return;
     }
-    if ((!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
+    if ((!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) || mBorderCornerRadii != null) {
       updatePath();
 
       outline.setConvexPath(mPathForBorderRadiusOutline);
@@ -216,7 +216,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   public void setRadius(float radius, int position) {
     if (mBorderCornerRadii == null) {
       mBorderCornerRadii = new float[4];
-      Arrays.fill(mBorderCornerRadii, CSSConstants.UNDEFINED);
+      Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
     }
 
     if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], radius)) {
@@ -277,11 +277,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
 
-    float defaultBorderRadius = !CSSConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
-    float topLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
-    float topRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
-    float bottomRightRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
-    float bottomLeftRadius = mBorderCornerRadii != null && !CSSConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+    float defaultBorderRadius = !YogaConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
+    float topLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
+    float topRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
+    float bottomRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
+    float bottomLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
 
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
@@ -333,7 +333,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
    * For rounded borders we use default "borderWidth" property.
    */
   private float getFullBorderWidth() {
-    return (mBorderWidth != null && !CSSConstants.isUndefined(mBorderWidth.getRaw(Spacing.ALL))) ?
+    return (mBorderWidth != null && !YogaConstants.isUndefined(mBorderWidth.getRaw(Spacing.ALL))) ?
         mBorderWidth.getRaw(Spacing.ALL) : 0f;
   }
 
@@ -342,9 +342,9 @@ public class ReactViewBackgroundDrawable extends Drawable {
    * {@link #getFullBorderWidth}.
    */
   private int getFullBorderColor() {
-    float rgb = (mBorderRGB != null && !CSSConstants.isUndefined(mBorderRGB.getRaw(Spacing.ALL))) ?
+    float rgb = (mBorderRGB != null && !YogaConstants.isUndefined(mBorderRGB.getRaw(Spacing.ALL))) ?
         mBorderRGB.getRaw(Spacing.ALL) : DEFAULT_BORDER_RGB;
-    float alpha = (mBorderAlpha != null && !CSSConstants.isUndefined(mBorderAlpha.getRaw(Spacing.ALL))) ?
+    float alpha = (mBorderAlpha != null && !YogaConstants.isUndefined(mBorderAlpha.getRaw(Spacing.ALL))) ?
         mBorderAlpha.getRaw(Spacing.ALL) : DEFAULT_BORDER_ALPHA;
     return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }

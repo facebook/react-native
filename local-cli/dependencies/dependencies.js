@@ -28,7 +28,7 @@ function dependencies(argv, config, args, packagerInstance) {
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
+    getTransformOptions: config.getTransformOptions,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,

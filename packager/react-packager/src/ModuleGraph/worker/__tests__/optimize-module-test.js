@@ -41,24 +41,20 @@ describe('optimizing JS modules', () => {
     });
   });
 
-  it('copies everything from the transformed file, except for transform results', done => {
-    optimizeModule(transformResult, optimizationOptions, (error, result) => {
-      const expected = JSON.parse(transformResult);
-      delete expected.transformed;
-      expect(result).toEqual(objectContaining(expected));
-      done();
-    });
+  it('copies everything from the transformed file, except for transform results', () => {
+    const result = optimizeModule(transformResult, optimizationOptions);
+    const expected = JSON.parse(transformResult);
+    delete expected.transformed;
+    expect(result).toEqual(objectContaining(expected));
   });
 
   describe('code optimization', () => {
     let dependencyMapName, injectedVars, optimized, requireName;
-    beforeAll(done => {
-      optimizeModule(transformResult, optimizationOptions, (error, result) => {
-        optimized = result.transformed.default;
-        injectedVars = optimized.code.match(/function\(([^)]*)/)[1].split(',');
-        [requireName,,,, dependencyMapName] = injectedVars;
-        done();
-      });
+    beforeAll(() => {
+      const result = optimizeModule(transformResult, optimizationOptions);
+      optimized = result.transformed.default;
+      injectedVars = optimized.code.match(/function\(([^)]*)/)[1].split(',');
+      [requireName,,,, dependencyMapName] = injectedVars;
     });
 
     it('optimizes code', () => {
@@ -79,15 +75,12 @@ describe('optimizing JS modules', () => {
         .toEqual(objectContaining(loc));
     });
 
-    it('does not extract dependencies for polyfills', done => {
-      optimizeModule(
+    it('does not extract dependencies for polyfills', () => {
+      const result = optimizeModule(
         transformResult,
         {...optimizationOptions, isPolyfill: true},
-        (error, result) => {
-          expect(result.transformed.default.dependencies).toEqual([]);
-          done();
-        },
       );
+      expect(result.transformed.default.dependencies).toEqual([]);
     });
   });
 });

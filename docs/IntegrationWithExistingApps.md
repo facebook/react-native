@@ -726,9 +726,36 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 }
 ```
 
-That's it, your activity is ready to run some JavaScript code.
+Now your activity is ready to run some JavaScript code.
 
-> If your app is targeting the Android `api level 23` or greater, make sure you have, for the development build, the `overlay permission` enabled. You can check it with `Settings.canDrawOverlays(this);`. This is required because, if your app produces an error in the react native component, the error view is displayed above all the other windows. Due to the new permissions system, introduced in the api level 23, the user needs to approve it.
+### Configure permissions for development error overlay
+
+If your app is targeting the Android `API level 23` or greater, make sure you have the `overlay` permission enabled for the development build. You can check it with `Settings.canDrawOverlays(this);`. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be acheived by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.
+
+```java
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (!Settings.canDrawOverlays(this)) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                   Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+    }
+}
+```
+
+Finally, the `onActivityResult()` method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                // SYSTEM_ALERT_WINDOW permission not granted...
+            }
+        }
+    }
+}
+```
 
 ## Run your app
 

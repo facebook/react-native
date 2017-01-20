@@ -56,6 +56,7 @@ class Button extends React.Component {
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
     touchSoundEnabled?: ?boolean,
+    testID?: ?string,
   };
 
   static propTypes = {
@@ -83,6 +84,10 @@ class Button extends React.Component {
      * If true, plays system sound on touch
      **/
     touchSoundEnabled: React.PropTypes.bool,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: React.PropTypes.string,
   };
 
   render() {
@@ -93,6 +98,7 @@ class Button extends React.Component {
       title,
       disabled,
       touchSoundEnabled,
+      testID,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -116,6 +122,7 @@ class Button extends React.Component {
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={['button']}
+        testID={testID}
         disabled={disabled}
         onPress={onPress}
         touchSoundEnabled={touchSoundEnabled}>
