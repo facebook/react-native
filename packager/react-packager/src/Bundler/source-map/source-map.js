@@ -17,7 +17,7 @@ import type ModuleTransport from '../../lib/ModuleTransport';
 import type {RawMapping as BabelRawMapping} from 'babel-generator';
 
 type GeneratedCodeMapping = [number, number];
-type SourceMapping = [number, number, number, number, void];
+type SourceMapping = [number, number, number, number];
 type SourceMappingWithName =  [number, number, number, number, string];
 
 export type RawMapping =
@@ -59,15 +59,10 @@ function compactMapping(mapping: BabelRawMapping): RawMapping {
   }
 
   if (typeof name !== 'string') {
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
-    return ([line, column, original.line, original.column]: SourceMapping);
+    return [line, column, original.line, original.column];
   }
 
-  return (
-    [line, column, original.line, original.column, name]: SourceMappingWithName
-  );
+  return [line, column, original.line, original.column, name];
 }
 
 function addMappingsForFile(generator, mappings, module, carryOver) {
@@ -75,25 +70,30 @@ function addMappingsForFile(generator, mappings, module, carryOver) {
 
   const columnOffset = module.code.indexOf('{') + 1;
   for (let i = 0, n = mappings.length; i < n; ++i) {
-    const mapping = mappings[i];
-    generator.addMapping(
-      mapping[0] + carryOver,
-      // lines start at 1, columns start at 0
-      mapping[0] === 1 && mapping[1] + columnOffset || mapping[1],
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-       * detected during the deployment of v0.38.0. To see the error, remove
-       * this comment and run flow */
-      mapping[2],
-      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-       * detected during the deployment of v0.38.0. To see the error, remove
-       * this comment and run flow */
-      mapping[3],
-      //$FlowIssue #15417846
-      mapping[4],
-    );
+    addMapping(generator, mappings[i], carryOver, columnOffset);
   }
+
   generator.endFile();
 
+}
+
+function addMapping(generator, mapping, carryOver, columnOffset) {
+  const n = mapping.length;
+  const line = mapping[0] + carryOver;
+  // lines start at 1, columns start at 0
+  const column = mapping[0] === 1 ? mapping[1] + columnOffset : mapping[1];
+  if (n === 2) {
+    generator.addSimpleMapping(line, column);
+  } else if (n === 4) {
+    // $FlowIssue #15579526
+    generator.addSourceMapping(line, column, mapping[2], mapping[3]);
+  } else if (n === 5) {
+    generator.addNamedSourceMapping(
+      // $FlowIssue #15579526
+      line, column, mapping[2], mapping[3], mapping[4]);
+  } else {
+    throw new Error(`Invalid mapping: [${mapping.join(', ')}]`);
+  }
 }
 
 function countLines(string) {
