@@ -140,6 +140,7 @@ var featured = [
     name: 'Convoy Driver',
     icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.driver',
     infoLink: 'http://www.theverge.com/2015/10/27/9620352/convoy-uber-for-trucking',
     infoTitle: 'Convoy, a Seattle-based "Uber for trucking"',
   },
@@ -320,7 +321,22 @@ var featured = [
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
 		infoTitle: 'What we learned after using React Native for a year',
-	}
+	},
+  {
+    name: 'Delivery.com',
+    icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/delivery.com-food-alcohol/id435168129?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
+    infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
+    infoTitle: 'React Native in an Existing iOS App: Getting Started'
+  },
+  {
+    name: 'Yeti Smart Home',
+    icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
+    infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
+    infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+  },
 ];
 
 /*
@@ -431,7 +447,7 @@ var pinned = [
   },
   {
     name: 'Walmart',
-    icon: 'http://facebook.github.io/react-native/img/showcase/wmt_spark.png',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.walmart.android&hl=en',
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',

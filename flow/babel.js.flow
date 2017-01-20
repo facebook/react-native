@@ -49,14 +49,14 @@ type GeneratorOptions = {
   sourceFileName?: string,
 };
 
-type InlinePlugin = [string | {} | () => {}, any];
+type InlinePlugin = string | {} | () => {};
 
 // based on https://babeljs.io/docs/usage/options/ -- 2016-11-11
 type __TransformOptions = {
   filename?: string,
   filenameRelative?: string,
   presets?: Array<string | Object>,
-  plugins?: Array<string | Object | InlinePlugin>,
+  plugins?: Array<string | Object | [InlinePlugin] | [InlinePlugin, mixed]>,
   parserOpts?: BabylonOptions,
   generatorOpts?: GeneratorOptions,
   highlightCode?: boolean,
@@ -87,7 +87,7 @@ type __TransformOptions = {
 
 type _TransformOptions =
   __TransformOptions & {env?: {[key: string]: __TransformOptions}};
-declare class _Ast {};
+declare class _Ast {}
 type TransformResult = {
   ast: _Ast,
   code: ?string,
@@ -119,9 +119,17 @@ declare module 'babel-core' {
   ): TransformResult;
 }
 
+type RawMapping = {
+  generated: {column: number, line: number},
+  name?: string,
+  original?: {column: number, line: number},
+  source?: string,
+};
+
 declare module 'babel-generator' {
+  declare type RawMapping = RawMapping;
   declare function exports(
     ast: _Ast,
     options?: GeneratorOptions,
-  ): TransformResult;
+  ): TransformResult & {rawMappings: ?Array<RawMapping>};
 }

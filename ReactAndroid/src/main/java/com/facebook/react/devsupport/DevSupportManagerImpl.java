@@ -417,9 +417,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            JSCHeapCapture.captureHeap(
-              mApplicationContext.getCacheDir().getPath(),
-              JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+            handleCaptureHeap();
           }
         });
     options.put(
@@ -427,24 +425,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            try {
-              List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-              for (String result : pokeResults) {
-                Toast.makeText(
-                  mCurrentContext,
-                  result == null
-                    ? "Started JSC Sampling Profiler"
-                    : "Stopped JSC Sampling Profiler",
-                  Toast.LENGTH_LONG).show();
-                if (result != null) {
-                  new JscProfileTask(getSourceUrl()).executeOnExecutor(
-                      AsyncTask.THREAD_POOL_EXECUTOR,
-                      result);
-                }
-              }
-            } catch (JSCSamplingProfiler.ProfilerException e) {
-              showNewJavaError(e.getMessage(), e);
-            }
+            handlePokeSamplingProfiler();
           }
         });
     options.put(
@@ -689,6 +670,53 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         handleReloadJS();
       }
     });
+  }
+
+  @Override
+  public void onCaptureHeapCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handleCaptureHeap();
+      }
+    });
+  }
+
+  @Override
+  public void onPokeSamplingProfilerCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handlePokeSamplingProfiler();
+      }
+    });
+  }
+
+  private void handleCaptureHeap() {
+    JSCHeapCapture.captureHeap(
+      mApplicationContext.getCacheDir().getPath(),
+      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+  }
+
+  private void handlePokeSamplingProfiler() {
+    try {
+      List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+      for (String result : pokeResults) {
+        Toast.makeText(
+          mCurrentContext,
+          result == null
+            ? "Started JSC Sampling Profiler"
+            : "Stopped JSC Sampling Profiler",
+          Toast.LENGTH_LONG).show();
+        if (result != null) {
+          new JscProfileTask(getSourceUrl()).executeOnExecutor(
+              AsyncTask.THREAD_POOL_EXECUTOR,
+              result);
+        }
+      }
+    } catch (JSCSamplingProfiler.ProfilerException e) {
+      showNewJavaError(e.getMessage(), e);
+    }
   }
 
   private void updateLastErrorInfo(

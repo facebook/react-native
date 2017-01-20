@@ -145,7 +145,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         if (reactModule == null) {
           throw new ReactModuleSpecException(
             keyString + " not found by ReactModuleSpecProcessor. " +
-            "Did you forget to add the @ReactModule annotation the the native module?");
+            "Did you forget to add the @ReactModule annotation to the native module?");
         }
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")

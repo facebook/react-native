@@ -165,13 +165,11 @@ var MatrixMath = {
   },
 
   reuseSkewXCommand: function(matrixCommand, radians) {
-    matrixCommand[4] = Math.sin(radians);
-    matrixCommand[5] = Math.cos(radians);
+    matrixCommand[4] = Math.tan(radians);
   },
 
   reuseSkewYCommand: function(matrixCommand, radians) {
-    matrixCommand[0] = Math.cos(radians);
-    matrixCommand[1] = Math.sin(radians);
+    matrixCommand[1] = Math.tan(radians);
   },
 
   multiplyInto: function(out, a, b) {
