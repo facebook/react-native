@@ -34,7 +34,7 @@ public enum YogaFlexDirection {
       case 1: return COLUMN_REVERSE;
       case 2: return ROW;
       case 3: return ROW_REVERSE;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }
