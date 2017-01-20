@@ -328,7 +328,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
-  },  
+  },
+  {
+    name: 'Yeti Smart Home',
+    icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
+    infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
+    infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+  },
 ];
 
 /*
