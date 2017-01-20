@@ -32,7 +32,7 @@ public enum YogaUnit {
       case 0: return UNDEFINED;
       case 1: return PIXEL;
       case 2: return PERCENT;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }
