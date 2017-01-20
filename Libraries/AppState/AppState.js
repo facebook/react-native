@@ -53,11 +53,11 @@ const invariant = require('fbjs/lib/invariant');
  *     appState: AppState.currentState
  *   }
  *
- *   componentDidMount () {
+ *   componentDidMount() {
  *     AppState.addEventListener('change', this._handleAppStateChange);
  *   }
  *
- *   componentWillUnmount () {
+ *   componentWillUnmount() {
  *     AppState.removeEventListener('change', this._handleAppStateChange);
  *   }
  *
@@ -68,7 +68,7 @@ const invariant = require('fbjs/lib/invariant');
  *     this.setState({appState: nextAppState});
  *   }
  *
- *   render () {
+ *   render() {
  *     return (
  *       <Text>Current state is: {this.state.appState}</Text>
  *     );
