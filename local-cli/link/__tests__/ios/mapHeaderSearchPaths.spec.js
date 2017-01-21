@@ -9,16 +9,20 @@ const path = require('path');
 const project = xcode.project(
   path.join(__dirname, '../../__fixtures__/project.pbxproj')
 );
-const reactPath = '"$(SRCROOT)/../node_modules/react-native/React/**"';
 
 describe('ios::mapHeaderSearchPaths', () => {
   beforeEach(() => {
     project.parseSync();
   });
 
-  it('should iterate over headers with `react` added only', () => {
-    mapHeaderSearchPaths(project, paths => {
-      expect(paths.find(p => p.indexOf(reactPath))).toBeDefined();
-    });
+  /**
+   * Based on the fixtures, our assumption is that this function
+   * has to be executed two times.
+   */
+  it('should be called twice', () => {
+    const callback = jest.fn();
+    mapHeaderSearchPaths(project, callback);
+
+    expect(callback.mock.calls.length).toBe(2);
   });
 });

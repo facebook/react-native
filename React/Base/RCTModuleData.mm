@@ -219,12 +219,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"RCTBridge required dispatch_sync to load %@. This may lead to deadlocks", _moduleClass);
       }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      RCTExecuteOnMainThread(^{
+
+      RCTUnsafeExecuteOnMainQueueSync(^{
         [self setUpInstanceAndBridge];
-      }, YES);
-#pragma clang diagnostic pop
+      });
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
       [self setUpInstanceAndBridge];
@@ -286,12 +284,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     if (!RCTIsMainQueue()) {
       RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    RCTExecuteOnMainThread(^{
+
+    RCTUnsafeExecuteOnMainQueueSync(^{
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
-    }, YES);
-#pragma clang diagnostic pop
+    });
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }

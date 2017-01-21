@@ -50,6 +50,14 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
+void Instance::setSourceURL(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_setSourceURL",
+                    "sourceURL", sourceURL);
+
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+}
+
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
                                     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
@@ -73,6 +81,7 @@ void Instance::loadScriptFromFile(const std::string& filename,
                     "fileName", filename);
 
   std::unique_ptr<const JSBigFileString> script;
+
   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
     [&filename, &script]() {
       script = JSBigFileString::fromPath(filename);

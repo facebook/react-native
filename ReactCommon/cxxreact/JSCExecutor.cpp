@@ -40,6 +40,9 @@
 #ifdef WITH_JSC_EXTRA_TRACING
 #include "JSCLegacyProfiler.h"
 #include "JSCLegacyTracing.h"
+#endif
+
+#if !defined(__APPLE__) && defined(WITH_JSC_EXTRA_TRACING)
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
@@ -278,7 +281,11 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   PerfLogging::installNativeHooks(m_context);
   #endif
 
-  initSamplingProfilerOnMainJSCThread(m_context);
+  #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
+  if (JSC_JSSamplingProfilerEnabled(m_context)) {
+    initSamplingProfilerOnMainJSCThread(m_context);
+  }
+  #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
   addNativeMemoryHooks(m_context);
@@ -315,22 +322,19 @@ void JSCExecutor::terminateOnJSVMThread() {
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
-static const char* explainLoadSourceError(JSLoadSourceError err) {
-  switch (err) {
-  case JSLoadSourceErrorNone:
+static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
+  switch (status) {
+  case JSLoadSourceIsCompiled:
     return "No error encountered during source load";
 
   case JSLoadSourceErrorOnRead:
     return "Error reading source";
 
-  case JSLoadSourceErrorNotCompiled:
+  case JSLoadSourceIsNotCompiled:
     return "Source is not compiled";
 
   case JSLoadSourceErrorVersionMismatch:
     return "Source version not supported";
-
-  case JSLoadSourceErrorUnknown:
-    return "Unknown error occurred when loading source";
 
   default:
     return "Bad error code";
@@ -365,11 +369,11 @@ void JSCExecutor::loadApplicationScript(
       });
     SCOPE_EXIT { close(fd); };
 
-    JSLoadSourceError jsError;
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
+    JSLoadSourceStatus jsStatus;
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsStatus);
 
     if (!sourceCode) {
-      throw RecoverableError(explainLoadSourceError(jsError));
+      throw RecoverableError(explainLoadSourceStatus(jsStatus));
     }
   } else {
     auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
@@ -406,11 +410,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
-    JSLoadSourceError jsError;
-    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsError);
+    JSLoadSourceStatus jsStatus;
+    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsStatus);
 
-    switch (jsError) {
-    case JSLoadSourceErrorNone:
+    switch (jsStatus) {
+    case JSLoadSourceIsCompiled:
       if (!bcSourceCode) {
         throw std::runtime_error("Unexpected error opening compiled bundle");
       }
@@ -429,11 +433,10 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       return;
 
     case JSLoadSourceErrorVersionMismatch:
-    case JSLoadSourceErrorUnknown:
-      throw RecoverableError(explainLoadSourceError(jsError));
+      throw RecoverableError(explainLoadSourceStatus(jsStatus));
 
     case JSLoadSourceErrorOnRead:
-    case JSLoadSourceErrorNotCompiled:
+    case JSLoadSourceIsNotCompiled:
       // Not bytecode, fall through.
       break;
     }
