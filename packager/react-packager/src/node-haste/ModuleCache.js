@@ -16,6 +16,7 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
+import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type {
@@ -27,7 +28,7 @@ type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  _assetDependencies: mixed;
+  _assetDependencies: Array<string>;
   _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
@@ -35,9 +36,10 @@ class ModuleCache {
   _moduleOptions: ModuleOptions;
   _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
-  _platforms: mixed;
+  _platforms: Set<string>;
   _transformCacheKey: string;
   _transformCode: TransformCode;
+  _reporter: Reporter;
 
   constructor({
     assetDependencies,
@@ -48,15 +50,17 @@ class ModuleCache {
     moduleOptions,
     transformCacheKey,
     transformCode,
+    reporter,
   }: {
-    assetDependencies: mixed,
+    assetDependencies: Array<string>,
     cache: Cache,
     depGraphHelpers: DependencyGraphHelpers,
     getClosestPackage: GetClosestPackageFn,
     moduleOptions: ModuleOptions,
     transformCacheKey: string,
     transformCode: TransformCode,
-  }, platforms: mixed) {
+    reporter: Reporter,
+  }, platforms: Set<string>) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
     this._cache = cache;
@@ -68,6 +72,7 @@ class ModuleCache {
     this._platforms = platforms;
     this._transformCacheKey = transformCacheKey;
     this._transformCode = transformCode;
+    this._reporter = reporter;
   }
 
   getModule(filePath: string) {
@@ -80,6 +85,7 @@ class ModuleCache {
         transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
         options: this._moduleOptions,
+        reporter: this._reporter,
       });
     }
     return this._moduleCache[filePath];
@@ -91,6 +97,9 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
+      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
+       * design in the first place: AssetModule, being simpler than a normal
+       * Module, should not inherit the Module class. */
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
         moduleCache: this,
@@ -114,6 +123,7 @@ class ModuleCache {
   getPackageForModule(module: Module): ?Package {
     if (this._packageModuleMap.has(module)) {
       const packagePath = this._packageModuleMap.get(module);
+      // $FlowFixMe(>=0.37.0)
       if (this._packageCache[packagePath]) {
         return this._packageCache[packagePath];
       } else {

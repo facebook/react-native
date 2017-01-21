@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include <folly/Memory.h>
+#include <folly/ScopeGuard.h>
 
 namespace facebook {
 namespace react {
@@ -22,12 +23,15 @@ void JSExecutor::loadApplicationScript(std::string bundlePath, std::string sourc
       std::move(sourceURL));
 }
 
-void JSExecutor::loadApplicationScript(int fd, std::string sourceURL) {
+std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(const std::string& sourceURL) {
+  int fd = ::open(sourceURL.c_str(), O_RDONLY);
+  folly::checkUnixError(fd, "Could not open file", sourceURL);
+  SCOPE_EXIT { CHECK(::close(fd) == 0); };
+
   struct stat fileInfo;
   folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on bundle failed.");
 
-  auto bundle = folly::make_unique<JSBigFileString>(fd, fileInfo.st_size);
-  return loadApplicationScript(std::move(bundle), std::move(sourceURL));
+  return folly::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
 }
 
 static JSBigOptimizedBundleString::Encoding encodingFromByte(uint8_t byte) {
@@ -51,7 +55,7 @@ std::unique_ptr<const JSBigOptimizedBundleString> JSBigOptimizedBundleString::fr
   uint8_t encoding;
   struct stat fileInfo;
   int fd = -1;
-  SCOPE_FAIL { CHECK(fd == -1 || ::close(fd) == 0); };
+  SCOPE_EXIT { CHECK(fd == -1 || ::close(fd) == 0); };
 
   {
     auto metaPath = bundlePath + UNPACKED_META_PATH_SUFFIX;

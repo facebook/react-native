@@ -127,6 +127,7 @@ describe('DependencyGraph', function() {
         });
       },
       transformCacheKey,
+      reporter: require('../../lib/reporting').nullReporter,
     };
   });
 

@@ -48,7 +48,7 @@ import com.facebook.react.uimanager.ViewManager;
  * {@link #onHostDestroy} and {@link #onHostResume}).
  *
  * Ideally, this would be an interface, but because of the API used by earlier versions, it has to
- * have a static method, and so cannot (in Java < 8), be one.
+ * have a static method, and so cannot (in Java < 8) be one.
  */
 public abstract class ReactInstanceManager {
 
@@ -153,16 +153,6 @@ public abstract class ReactInstanceManager {
     int resultCode,
     Intent data);
   public abstract void showDevOptionsDialog();
-
-  /**
-   * Get the URL where the last bundle was loaded from.
-   */
-  public abstract String getSourceUrl();
-
-  /**
-   * The JS Bundle file that this Instance Manager was constructed with.
-   */
-  public abstract @Nullable String getJSBundleFile();
 
   /**
    * Attach given {@param rootView} to a catalyst instance manager and start JS application using

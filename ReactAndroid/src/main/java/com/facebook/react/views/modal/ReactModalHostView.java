@@ -61,6 +61,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private String mAnimationType;
+  private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -153,6 +154,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mPropertyRequiresNewDialog = true;
   }
 
+  protected void setHardwareAccelerated(boolean hardwareAccelerated) {
+    mHardwareAccelerated = hardwareAccelerated;
+    mPropertyRequiresNewDialog = true;
+  }
+
   @Override
   public void onHostResume() {
     // We show the dialog again when the host resumes
@@ -237,6 +243,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       });
 
     mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    if (mHardwareAccelerated) {
+      mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+    }
     mDialog.show();
   }
 
