@@ -106,43 +106,62 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  const wsList = {
-    clients: [],
-    fileChangeListener: (type, filename) => {}
-  };
-
-  const removeClient = function (wsClient) {
-    wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
-    if (wsList.clients.length === 0) {
-      packagerServer.setHMRFileChangeListener(null);
+  // Support multi hot reloading listener
+  const watchClients: {
+    [bundleEntry: string]: {
+      clients: Object[],
+      fileChangeListener: (type: string, filename: string) => string
     }
-  };
-
-  const sendAllClients = function (data) {
-    const removed = [];
-    wsList.clients.forEach(wsClient => {
-      try {
-        wsClient.send(data);
-      } catch (e) {
-        wsClient.close();
-        removed.push(wsClient);
-      }
-    });
-
-    removed.forEach(wsClient => {
-      removeClient(wsClient);
-    });
-  };
+  } = {};
 
   const listener = (type, filename) => {
-    wsList.fileChangeListener(type, filename);
+    for (const bundleEntry in watchClients) {
+      watchClients[bundleEntry].fileChangeListener(type, filename);
+    }
   };
 
   wss.on('connection', ws => {
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
+
+    if (!params.bundleEntry) {
+      return;
+    }
+
+    packagerServer.setHMRFileChangeListener(listener);
+
+    // Group clients by bundleEntry (and platform, included in bundleEntry)
+    const wsList = watchClients[params.bundleEntry] || {clients: []};
+    watchClients[params.bundleEntry] = wsList;
+
     const wasEmpty = wsList.clients.length === 0;
 
     wsList.clients.push(ws);
+
+    const removeClient = function (wsClient) {
+      wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
+      if (wsList.clients.length === 0) {
+        delete watchClients[params.bundleEntry];
+      }
+      if (Object.keys(watchClients).length === 0) {
+        packagerServer.setHMRFileChangeListener(null);
+      }
+    };
+
+    const sendAllClients = function (data) {
+      const removed = [];
+      wsList.clients.forEach(wsClient => {
+        try {
+          wsClient.send(data);
+        } catch (e) {
+          wsClient.close();
+          removed.push(wsClient);
+        }
+      });
+
+      removed.forEach(wsClient => {
+        removeClient(wsClient);
+      });
+    };
 
     ws.on('error', e => {
       removeClient(ws);
@@ -173,8 +192,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           shallowDependencies,
           inverseDependenciesCache,
         };
-
-        packagerServer.setHMRFileChangeListener(listener);
 
         wsList.fileChangeListener = (type, filename) => {
           if (!client) {
