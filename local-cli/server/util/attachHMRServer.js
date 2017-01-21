@@ -115,8 +115,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     wsList.fileChangeListener(type, filename);
   };
 
-  packagerServer.setHMRFileChangeListener(listener);
-
   wss.on('connection', ws => {
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
     const wasEmpty = wsList.clients.length === 0;
@@ -175,6 +173,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           shallowDependencies,
           inverseDependenciesCache,
         };
+
+        packagerServer.setHMRFileChangeListener(listener);
 
         wsList.fileChangeListener = (type, filename) => {
           if (!client) {
