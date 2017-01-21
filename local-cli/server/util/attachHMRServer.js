@@ -184,7 +184,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         inverseDependenciesCache,
       }) => {
         const client = {
-          ws,
           platform: params.platform,
           bundleEntry: params.bundleEntry,
           dependenciesCache,
@@ -194,10 +193,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         };
 
         wsList.fileChangeListener = (type, filename) => {
-          if (!client) {
-            return;
-          }
-
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
           );
@@ -215,10 +210,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 dev: true,
                 hot: true,
               }).then(deps => {
-                if (!client) {
-                  return [];
-                }
-
                 // if the file dependencies have change we need to invalidate the
                 // dependencies caches because the list of files we need to send
                 // to the client may have changed
@@ -251,10 +242,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     inverseDependenciesCache: inverseDepsCache,
                     resolutionResponse,
                   }) => {
-                    if (!client) {
-                      return {};
-                    }
-
                     // build list of modules for which we'll send HMR updates
                     const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
                     Object.keys(depsModulesCache).forEach(module => {
@@ -285,10 +272,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   });
               })
               .then((resolutionResponse) => {
-                if (!client) {
-                  return;
-                }
-
                 // make sure the file was modified is part of the bundle
                 if (!client.shallowDependencies[filename]) {
                   return;
@@ -311,7 +294,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 }, packagerHost, httpServerAddress.port);
               })
               .then(bundle => {
-                if (!client || !bundle || bundle.isEmpty()) {
+                if (!bundle || bundle.isEmpty()) {
                   return;
                 }
 
@@ -349,7 +332,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({type: 'error', body});
               })
               .then(update => {
-                if (!client || !update) {
+                if (!update) {
                   return;
                 }
 
