@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +47,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.Protocol;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -73,7 +75,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
       OkHttpClient client,
-      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+      @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators,
+      boolean disableHTTP2) {
     super(reactContext);
 
     if (networkInterceptorCreators != null) {
@@ -83,6 +86,18 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       client = clientBuilder.build();
     }
+
+    if (disableHTTP2) {
+      List<Protocol> protocolList = new ArrayList<>();
+      protocolList.add(Protocol.SPDY_3);
+      protocolList.add(Protocol.HTTP_1_1);
+
+      OkHttpClient.Builder clientBuilder = client.newBuilder();
+      clientBuilder = clientBuilder.protocols(protocolList);
+
+      client = clientBuilder.build();
+    }
+
     mClient = client;
     OkHttpClientProvider.replaceOkHttpClient(client);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
@@ -90,6 +105,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
     mRequestIds = new HashSet<>();
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
+   * caller does not provide one explicitly
+   * @param client the {@link OkHttpClient} to be used for networking
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
+   * methods would be called to attach the interceptors to the client.
+   */
+  /* package */ NetworkingModule(
+    ReactApplicationContext context,
+    @Nullable String defaultUserAgent,
+    OkHttpClient client,
+    @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    this(context, defaultUserAgent, client, null,false);
   }
 
   /**
@@ -110,6 +141,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    */
   public NetworkingModule(final ReactApplicationContext context) {
     this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param disable HTTP2 support in OkHttp3. Disable HTTP2 for JS fetch in react native by 
+   * override getNativeModuels() of {@link MainReactPackage}, and provide disableHTTP2 false
+   * value to this constructor of NetworkingModule.
+   */
+  public NetworkingModule(final ReactApplicationContext context, boolean disableHTTP2) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null, disableHTTP2);
   }
 
   /**
