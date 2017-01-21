@@ -111,6 +111,29 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     fileChangeListener: (type, filename) => {}
   };
 
+  const removeClient = function (wsClient) {
+    wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
+    if (wsList.clients.length === 0) {
+      packagerServer.setHMRFileChangeListener(null);
+    }
+  };
+
+  const sendAllClients = function (data) {
+    const removed = [];
+    wsList.clients.forEach(wsClient => {
+      try {
+        wsClient.send(data);
+      } catch (e) {
+        wsClient.close();
+        removed.push(wsClient);
+      }
+    });
+
+    removed.forEach(wsClient => {
+      removeClient(wsClient);
+    });
+  };
+
   const listener = (type, filename) => {
     wsList.fileChangeListener(type, filename);
   };
@@ -120,29 +143,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     const wasEmpty = wsList.clients.length === 0;
 
     wsList.clients.push(ws);
-
-    const removeClient = function (wsClient) {
-      wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
-      if (wsList.clients.length === 0) {
-        packagerServer.setHMRFileChangeListener(null);
-      }
-    };
-
-    const sendAllClients = function (data) {
-      const removed = [];
-      wsList.clients.forEach(wsClient => {
-        try {
-          wsClient.send(data);
-        } catch (e) {
-          wsClient.close();
-          removed.push(wsClient);
-        }
-      });
-
-      removed.forEach(wsClient => {
-        removeClient(wsClient);
-      });
-    };
 
     ws.on('error', e => {
       removeClient(ws);
