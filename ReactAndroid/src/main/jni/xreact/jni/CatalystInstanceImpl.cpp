@@ -101,14 +101,15 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
       makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-      makeNativeMethod("loadScriptFromAssets",
+      makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
+      makeNativeMethod("jniLoadScriptFromAssets",
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
-                       CatalystInstanceImpl::loadScriptFromAssets),
-      makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
-      makeNativeMethod("loadScriptFromOptimizedBundle",
-                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
+                       CatalystInstanceImpl::jniLoadScriptFromAssets),
+      makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
+      makeNativeMethod("jniLoadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
@@ -158,8 +159,12 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
-void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
-                                                const std::string& assetURL) {
+void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
+  instance_->setSourceURL(sourceURL);
+}
+
+void CatalystInstanceImpl::jniLoadScriptFromAssets(jobject assetManager,
+                                                   const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
@@ -187,26 +192,24 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
-                                              const std::string& sourceURL) {
-
-  std::string file = fileName ? fileName->toStdString() : "";
-
-  if (isIndexedRAMBundle(file.c_str())) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(file.c_str());
+void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
+                                                 const std::string& sourceURL) {
+  auto zFileName = fileName.c_str();
+  if (isIndexedRAMBundle(zFileName)) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
     auto startupScript = bundle->getStartupCode();
     instance_->loadUnbundle(
       std::move(bundle),
       std::move(startupScript),
       sourceURL);
   } else {
-    instance_->loadScriptFromFile(file, sourceURL);
+    instance_->loadScriptFromFile(fileName, sourceURL);
   }
 }
 
-void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
-                                                         const std::string& sourceURL,
-                                                         jint flags) {
+void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                            const std::string& sourceURL,
+                                                            jint flags) {
   return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
                                                   std::move(sourceURL),
                                                   flags);

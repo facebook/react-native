@@ -38,7 +38,7 @@ public enum YogaAlign {
       case 3: return FLEX_END;
       case 4: return STRETCH;
       case 5: return BASELINE;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }
