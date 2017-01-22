@@ -72,7 +72,17 @@ type Options = {
  * ```
  */
 class Alert {
-
+  
+  /**
+   * Displays an alert dialog
+   *
+   * Options is an object that accepts `cancelable`. If true,
+   * the modal will not close by pressing the background, only
+   * by pressing a button.
+   *
+   * Example:
+   * `{cancelable: true}`
+   */
   static alert(
     title: ?string,
     message?: ?string,
