@@ -28,12 +28,14 @@ class Replacement {
   isRequireCall(callee, firstArg) {
     return (
       callee.type === 'Identifier' && callee.name === 'require' &&
-      firstArg && firstArg.type === 'StringLiteral'
+      firstArg && isLiteralString(firstArg)
     );
   }
 
-  getIndex(stringLiteral) {
-    const name = stringLiteral.value;
+  getIndex(stringLiteralOrTemplateLiteral) {
+    const name = stringLiteralOrTemplateLiteral.quasis
+      ? stringLiteralOrTemplateLiteral.quasis[0].value.cooked
+      : stringLiteralOrTemplateLiteral.value;
     let index = this.nameToIndex.get(name);
     if (index !== undefined) {
       return index;
@@ -130,6 +132,11 @@ function collectDependencies(ast, replacement, dependencyMapIdentifier) {
     dependencies: replacement.getNames(),
     dependencyMapName: nullthrows(traversalState.dependencyMapIdentifier).name,
   };
+}
+
+function isLiteralString(node) {
+  return node.type === 'StringLiteral' ||
+         node.type === 'TemplateLiteral' && node.quasis.length === 1;
 }
 
 exports = module.exports =
