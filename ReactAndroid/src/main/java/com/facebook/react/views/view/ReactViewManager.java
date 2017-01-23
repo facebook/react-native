@@ -93,7 +93,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
-  @ReactProp(name = "pointerEvents")
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
     if (pointerEventsStr != null) {
       PointerEvents pointerEvents =
