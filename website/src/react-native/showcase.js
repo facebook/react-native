@@ -331,12 +331,20 @@ var featured = [
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
   },
   {
+    name: 'Remedy',
+    icon: 'https://www.remedymedical.com/static/images/AppIconPatient.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/remedy-on-demand-intelligent/id1125877350?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.remedy.android',
+    infoLink: 'https://techcrunch.com/2017/01/10/doctordoctorcantyouseeimburning/',
+    infoTitle: 'Talk to a world-class doctor: advice, prescriptions, and care',
+  },
+  {
     name: 'Yeti Smart Home',
     icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
     linkAppStore: 'https://itunes.apple.com/us/app/yeti-smart-home/id1190638808?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
     infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
-    infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+    infoTitle: 'How React Native is helping us to reinvent the wheel',
   },
 ];
 
