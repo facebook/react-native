@@ -58,6 +58,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
+
+  BOOL _passThroughTouches;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -154,6 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setPassThroughTouches:(BOOL)passThroughTouches
 {
+  _passThroughTouches = passThroughTouches;
   _contentView.passThroughTouches = passThroughTouches;
 }
 
@@ -253,6 +256,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
+  _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
