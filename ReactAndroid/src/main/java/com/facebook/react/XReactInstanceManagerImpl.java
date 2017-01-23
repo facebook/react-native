@@ -841,7 +841,11 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
         "createAndProcessCoreModulesPackage");
     try {
       CoreModulesPackage coreModulesPackage =
-        new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
+        new CoreModulesPackage(
+          this,
+          mBackBtnHandler,
+          mUIImplementationProvider,
+          mLazyViewManagersEnabled);
       processPackage(
         coreModulesPackage,
         reactContext,
