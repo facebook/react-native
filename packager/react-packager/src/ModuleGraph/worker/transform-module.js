@@ -35,7 +35,7 @@ export type TransformOptions = {|
 |};
 
 const defaultVariants = {default: {}};
-const moduleFactoryParameters = ['require', 'module', 'global', 'exports'];
+const moduleFactoryParameters = ['global', 'require', 'module', 'exports'];
 const polyfillFactoryParameters = ['global'];
 
 function transformModule(
