@@ -176,6 +176,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldEndEditing
 {
+  [self textFieldDidChange];
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:self.text
