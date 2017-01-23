@@ -96,7 +96,6 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 
 function prelude(optimize) {
   return virtualModule(
-    `var __DEV__= ${String(!optimize)
-    }, __BUNDLE_START_TIME__ = Date.now();`
+    `var __DEV__=${String(!optimize)},__BUNDLE_START_TIME__=Date.now();`
   );
 }
