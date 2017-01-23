@@ -40,7 +40,9 @@ RCT_EXPORT_MODULE()
     [textField sendKeyValueForString:string];
   }
 
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+  if ([string isEqualToString:@"\t"]) { // Don't write the tab character into the text field value
+    return NO;
+  } else if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
   }
   NSUInteger allowedLength = textField.maxLength.integerValue - MIN(textField.maxLength.integerValue, textField.text.length) + range.length;
