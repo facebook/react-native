@@ -41,11 +41,12 @@ var featured = [
     infoTitle: 'Internet giant tries to get people to pay for digital music',
   },
   {
-    name: 'FanVision Bolt',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple18/v4/94/b4/6e/94b46ee5-80e3-ff6e-513d-16da926b03a3/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/us/app/fanvision-bolt/id1081891275',
-    infoLink: 'https://www.youtube.com/watch?v=oWOcAXyDf0w',
-    infoTitle: 'FanVision Bolt accessory + app provide live audio/video and stats at NASCAR events',
+    name: 'Classroom (腾讯课堂)',
+    icon: 'http://pp.myapp.com/ma_icon/0/icon_10927178_1479093114/96',
+    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu',
+    linkAppStore: 'https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8',
+    infoLink: 'http://baike.baidu.com/view/13030839.htm',
+    infoTitle: 'Classroom is an education app by Chinese Internet giant Tencent',
   },
   {
     name: 'F8',
@@ -82,8 +83,8 @@ var featured = [
     name: 'SoundCloud Pulse',
     icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
-    infoLink: 'https://blog.soundcloud.com/2016/02/23/soundcloud-pulse-now-on-iphone/',
-    infoTitle: 'SoundCloud Pulse: now on iPhone',
+    infoLink: 'https://developers.soundcloud.com/blog/react-native-at-soundcloud',
+    infoTitle: 'Why React Native worked well for us',
   },
   {
     name: 'Start',
@@ -104,7 +105,7 @@ var featured = [
     icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
     linkAppStore: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
     infoLink: 'https://techcrunch.com/2016/02/01/refinery29-debuts-its-first-app-a-morning-news-round-up-called-refinery29-am/',
-    infoTitle: 'Refinery29 debuts its first app',
+    infoTitle: 'Refinery29 debuts morning news roundup app created with React Native',
   },
   {
     name: 'TRED',
@@ -126,19 +127,20 @@ var featured = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
     infoLink: 'http://www.cbssports.com/fantasy/football/games/franchise/2015',
-    infoTitle: 'The award winning Fantasy Football league manager.',
+    infoTitle: 'Award winning Fantasy Football league manager',
   },
   {
     name: 'Coiney (窓口)',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/c9/bc/3a/c9bc3a29-9c11-868f-b960-ca46d5fcd509/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/jp/app/coiney-chuang-kou/id1069271336?mt=8',
     infoLink: 'https://www.techinasia.com/japan-startup-coiney-aims-for-ipo',
-    infoTitle: 'Japanese startup Coiney aims for IPO',
+    infoTitle: 'Coiney provides smarphone-based credit card processing services in Japan',
   },
   {
     name: 'Convoy Driver',
     icon: 'http://a1.mzstatic.com/us/r30/Purple30/v4/5a/74/56/5a74567d-4491-a298-65cd-722c8a7211ac/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/us/app/convoy-driver/id1045368390?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.driver',
     infoLink: 'http://www.theverge.com/2015/10/27/9620352/convoy-uber-for-trucking',
     infoTitle: 'Convoy, a Seattle-based "Uber for trucking"',
   },
@@ -319,7 +321,22 @@ var featured = [
 		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
 		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
 		infoTitle: 'What we learned after using React Native for a year',
-	}
+	},
+  {
+    name: 'Delivery.com',
+    icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/us/app/delivery.com-food-alcohol/id435168129?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
+    infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
+    infoTitle: 'React Native in an Existing iOS App: Getting Started'
+  },
+  {
+    name: 'Yeti Smart Home',
+    icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
+    infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
+    infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+  },
 ];
 
 /*
@@ -430,7 +447,7 @@ var pinned = [
   },
   {
     name: 'Walmart',
-    icon: 'http://facebook.github.io/react-native/img/showcase/wmt_spark.png',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.walmart.android&hl=en',
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',

@@ -24,12 +24,8 @@ public class OptimizedJSBundleLoader extends JSBundleLoader {
   }
 
   @Override
-  public void loadScript(CatalystInstanceImpl instance) {
+  public String loadScript(CatalystInstanceImpl instance) {
     instance.loadScriptFromOptimizedBundle(mPath, mSourceURL, mLoadFlags);
-  }
-
-  @Override
-  public String getSourceUrl() {
     return mSourceURL;
   }
 }

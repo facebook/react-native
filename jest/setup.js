@@ -130,6 +130,7 @@ const mockNativeModules = {
     scriptURL: null,
   },
   StatusBarManager: {
+    setColor: jest.fn(),
     setStyle: jest.fn(),
     setHidden: jest.fn(),
     setNetworkActivityIndicatorVisible: jest.fn(),
@@ -141,6 +142,12 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    createView: jest.fn(),
+    setChildren: jest.fn(),
+    manageChildren: jest.fn(),
+    updateView: jest.fn(),
+    removeSubviewsFromContainerWithID: jest.fn(),
+    replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
     Dimensions: {
