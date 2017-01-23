@@ -324,7 +324,7 @@ var featured = [
 	},
   {
     name: 'Delivery.com',
-    icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
+    icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
     linkAppStore: 'https://itunes.apple.com/us/app/delivery.com-food-alcohol/id435168129?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.deliverycom&hl=en',
     infoLink: 'https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck',
@@ -336,6 +336,13 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
     infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
     infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+  },
+  {
+    name: 'ZIP.ch',
+    icon: 'https://s3.eu-central-1.amazonaws.com/zip.ch/static/images/zip-app-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/zip.ch-das-offizielle-telefonbuch/id969099762?mt=8',
+    infoLink: 'https://zip.ch/en/pages/about/',
+    infoTitle: 'ZIP.ch - Official phonebook for Switzerland',
   },
 ];
 
