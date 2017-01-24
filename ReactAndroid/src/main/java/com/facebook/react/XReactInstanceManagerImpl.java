@@ -222,7 +222,10 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
       try {
         setupReactContext(result.get());
       } catch (Exception e) {
-        mDevSupportManager.handleException(e);
+          NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
+                                                              ? mNativeModuleCallExceptionHandler
+                                                              : mDevSupportManager;
+        exceptionHandler.handleException(e);
       } finally {
         mReactContextInitAsyncTask = null;
       }
