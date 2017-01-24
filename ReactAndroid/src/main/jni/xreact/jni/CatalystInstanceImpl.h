@@ -53,11 +53,11 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
-  void setSourceURL(const std::string& sourceURL);
+  void jniSetSourceURL(const std::string& sourceURL);
 
-  void loadScriptFromAssets(jobject assetManager, const std::string& assetURL);
-  void loadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
-  void loadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
+  void jniLoadScriptFromAssets(jobject assetManager, const std::string& assetURL);
+  void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
+  void jniLoadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
   void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
   void callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();

@@ -446,7 +446,7 @@ public class NativeViewHierarchyOptimizer {
 
     ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
     while (keyIterator.hasNextKey()) {
-      if (!ViewProps.isLayoutOnly(keyIterator.nextKey())) {
+      if (!ViewProps.isLayoutOnly(props.mBackingMap, keyIterator.nextKey())) {
         return false;
       }
     }
