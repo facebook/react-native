@@ -453,7 +453,7 @@ var pinned = [
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
     infoTitle: 'React Native at Walmart Labs',
     defaultLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
-  }
+  },
 ];
 
 featured.sort(function(a, b) {
