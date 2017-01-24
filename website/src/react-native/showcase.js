@@ -333,9 +333,9 @@ var featured = [
     icon: 'http://d2w4pyf30enukh.cloudfront.net/prod/glitch-logo.jpg/tnm.jpg',
     linkAppStore: 'https://itunes.apple.com/gb/app/adidas-glitch-interchangeable/id1166181522?mt=8&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-IPHONE',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.adidas.glitch&cm_sp=FOOTBALL-_-UNDEFINED-_-CTA-DOWNLOAD-ANDROID',
-    infoLink: 'http://bit.ly/adidasGLITCH',
+    infoLink: 'http://www.campaignlive.co.uk/article/adidas-launches-glitch-boot-invite-only-app-revolutionary-approach/1416060',
     infoTitle: 'GLITCH - Break the pattern',
-    defaultLink: 'http://bit.ly/adidasGLITCH',
+    defaultLink: 'http://www.campaignlive.co.uk/article/adidas-launches-glitch-boot-invite-only-app-revolutionary-approach/1416060',
   },
 ];
 
