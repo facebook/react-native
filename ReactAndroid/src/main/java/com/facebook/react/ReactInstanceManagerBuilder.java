@@ -187,7 +187,7 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Instantiates a new {@link ReactInstanceManagerImpl}.
+   * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
    * <ul>
    * <li> {@link #setApplication}
@@ -214,7 +214,7 @@ public class ReactInstanceManagerBuilder {
       mUIImplementationProvider = new UIImplementationProvider();
     }
 
-    return new XReactInstanceManagerImpl(
+    return new ReactInstanceManager(
       mApplication,
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
