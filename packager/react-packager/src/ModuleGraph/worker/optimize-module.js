@@ -71,10 +71,6 @@ function optimize(transformed, file, originalCode, options): TransformResult {
 }
 
 function optimizeCode(code, map, filename, inliningOptions) {
-  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-   * detected during the deployment of v0.38.0. To see the error, remove this
-   * comment and run flow
-   */
   return babel.transform(code, {
     plugins: [
       [constantFolding],

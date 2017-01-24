@@ -134,7 +134,7 @@ function createStackEntry(props: any): any {
  *
  * ### Constants
  *
- * `currentHeight` (Android only) The height of the status bar.
+ * `currentHeight` The height of the status bar.
  */
 class StatusBar extends React.Component {
   props: {
@@ -169,8 +169,6 @@ class StatusBar extends React.Component {
   // discussion in #6195.
   /**
    * The current height of the status bar on the device.
-   *
-   * @platform android
    */
   static currentHeight = StatusBarManager.HEIGHT;
 
