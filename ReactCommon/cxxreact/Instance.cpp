@@ -50,6 +50,14 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
+void Instance::setSourceURL(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_setSourceURL",
+                    "sourceURL", sourceURL);
+
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+}
+
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
                                     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
@@ -74,15 +82,10 @@ void Instance::loadScriptFromFile(const std::string& filename,
 
   std::unique_ptr<const JSBigFileString> script;
 
-  // This function can be called in order to change the Bridge's Source URL.
-  // In that case, the filename will be empty, and we should not attempt to
-  // load it.
-  if (!filename.empty()) {
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-      [&filename, &script]() {
-        script = JSBigFileString::fromPath(filename);
-      });
-  }
+  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+    [&filename, &script]() {
+      script = JSBigFileString::fromPath(filename);
+    });
 
   nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
 }

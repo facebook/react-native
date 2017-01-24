@@ -35,8 +35,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This example shows both fetching and displaying an image from local storage as well as on from
- * network.
+ * This example shows both fetching and displaying an image from local
+ * storage as well as one from network.
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
@@ -140,7 +140,8 @@ const Image = React.createClass({
      * This prop can also contain several remote URLs, specified together with
      * their width and height and potentially with scale/other URI arguments.
      * The native side will then choose the best `uri` to display based on the
-     * measured size of the image container.
+     * measured size of the image container. A `cache` property can be added to
+     * control how networked request interacts with the local cache.
      */
     source: ImageSourcePropType,
     /**

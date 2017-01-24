@@ -1,9 +1,9 @@
 include_defs('//ReactAndroid/DEFS')
 
 # used by ReactToolbarManager because of Gradle
-# TODO t10182713 will be replaced with res-for-appcompat when we stop using Gradle
+# TODO t10182713 will be replaced with appcompat-orig when we stop using Gradle
 android_resource(
-  name = 'res-for-react-native',
+  name = 'appcompat',
   res = react_native_dep('third-party/android/support/v7/appcompat-orig:res-unpacker-cmd'),
   package = 'com.facebook.react',
   visibility = ['//ReactAndroid/...',],

@@ -26,20 +26,9 @@ import com.facebook.react.module.annotations.ReactModule;
 public class SourceCodeModule extends BaseJavaModule {
 
   private final ReactContext mReactContext;
-  private @Nullable String mSourceUrl;
 
   public SourceCodeModule(ReactContext reactContext) {
     mReactContext = reactContext;
-  }
-
-  @Override
-  public void initialize() {
-    super.initialize();
-
-    mSourceUrl =
-      Assertions.assertNotNull(
-        mReactContext.getCatalystInstance().getSourceURL(),
-        "No source URL loaded, have you initialised the instance?");
   }
 
   @Override
@@ -50,7 +39,13 @@ public class SourceCodeModule extends BaseJavaModule {
   @Override
   public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
-    constants.put("scriptURL", mSourceUrl);
+
+    String sourceURL =
+      Assertions.assertNotNull(
+        mReactContext.getCatalystInstance().getSourceURL(),
+        "No source URL loaded, have you initialised the instance?");
+
+    constants.put("scriptURL", sourceURL);
     return constants;
   }
 }
