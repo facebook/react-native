@@ -257,17 +257,20 @@ class TransformProfileSet {
   }
 }
 
-/**
- * One can enable the global cache by calling configure() from a custom CLI
- * script. Eventually we may make it more flexible.
- */
 class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
   _store: ?KeyResultStore;
   _profileSet: TransformProfileSet;
-  static _global: ?GlobalTransformCache;
 
+  /**
+   * For using the global cache one needs to have some kind of central key-value
+   * store that gets prefilled using keyOf() and the transformed results. The
+   * fetching function should provide a mapping of keys to URIs. The files
+   * referred by these URIs contains the transform results. Using URIs instead
+   * of returning the content directly allows for independent and parallel
+   * fetching of each result, that may be arbitrarily large JSON blobs.
+   */
   constructor(
     fetchResultURIs: FetchResultURIs,
     storeResults: ?StoreResults,
@@ -343,32 +346,6 @@ class GlobalTransformCache {
     }
   }
 
-  /**
-   * For using the global cache one needs to have some kind of central key-value
-   * store that gets prefilled using keyOf() and the transformed results. The
-   * fetching function should provide a mapping of keys to URIs. The files
-   * referred by these URIs contains the transform results. Using URIs instead
-   * of returning the content directly allows for independent fetching of each
-   * result.
-   */
-  static configure(
-    fetchResultURIs: FetchResultURIs,
-    storeResults: ?StoreResults,
-    profiles: Iterable<TransformProfile>,
-  ) {
-    GlobalTransformCache._global = new GlobalTransformCache(
-      fetchResultURIs,
-      storeResults,
-      profiles,
-    );
-  }
-
-  static get() {
-    return GlobalTransformCache._global;
-  }
-
 }
-
-GlobalTransformCache._global = null;
 
 module.exports = GlobalTransformCache;
