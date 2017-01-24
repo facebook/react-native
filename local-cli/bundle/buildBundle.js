@@ -73,6 +73,7 @@ function buildBundle(
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
       getTransformOptions: config.getTransformOptions,
+      globalTransformCache: null,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
