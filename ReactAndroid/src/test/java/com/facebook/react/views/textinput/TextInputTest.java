@@ -186,7 +186,8 @@ public class TextInputTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

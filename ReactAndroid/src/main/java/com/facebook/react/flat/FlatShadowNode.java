@@ -144,6 +144,21 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
     }
   }
 
+  /**
+   * Return whether or not this node draws anything
+   *
+   * This is used to decide whether or not to collect the NodeRegion for this node. This ensures
+   * that any FlatShadowNode that does not emit any DrawCommands should not bother handling touch
+   * (i.e. if it draws absolutely nothing, it is, for all intents and purposes, a layout only node).
+   *
+   * @return whether or not this is node draws anything
+   */
+  boolean doesDraw() {
+    // if it mounts to view or draws a background, we can collect it - otherwise, no, unless a
+    // child suggests some alternative behavior
+    return mDrawView != null || mDrawBackground != null;
+  }
+
   @ReactProp(name = ViewProps.BACKGROUND_COLOR)
   public void setBackgroundColor(int backgroundColor) {
     mDrawBackground = (backgroundColor == 0) ? null : new DrawBackgroundColor(backgroundColor);

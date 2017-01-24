@@ -1212,15 +1212,15 @@ RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
     // By convention, all coordinates, whether they be touch coordinates, or
     // measurement coordinates are with respect to the root view.
     CGRect frame = view.frame;
-    CGPoint pagePoint = [view.superview convertPoint:frame.origin toView:rootView];
+    CGRect globalBounds = [view convertRect:view.bounds toView:rootView];
 
     callback(@[
       @(frame.origin.x),
       @(frame.origin.y),
-      @(frame.size.width),
-      @(frame.size.height),
-      @(pagePoint.x),
-      @(pagePoint.y)
+      @(globalBounds.size.width),
+      @(globalBounds.size.height),
+      @(globalBounds.origin.x),
+      @(globalBounds.origin.y),
     ]);
   }];
 }

@@ -178,7 +178,7 @@ describe('code transformation worker:', () => {
       extractDependencies = require('../extract-dependencies');
       inline = require('../inline');
 
-      options = {minify: true};
+      options = {minify: true, transform: {generateSourceMaps: true}};
       dependencyData = {
         dependencies: ['a', 'b', 'c'],
         dependencyOffsets: [100, 120, 140]

@@ -321,7 +321,14 @@
 
 - (void)stopAnimationLoopIfNeeded
 {
-  if (_displayLink && _activeAnimations.count == 0) {
+  if (_activeAnimations.count == 0) {
+    [self stopAnimationLoop];
+  }
+}
+
+- (void)stopAnimationLoop
+{
+  if (_displayLink) {
     [_displayLink invalidate];
     _displayLink = nil;
   }

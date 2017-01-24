@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
-#import "RCTTouchHandler.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 

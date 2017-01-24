@@ -29,7 +29,7 @@ NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomai
   NSMutableString *desc = [NSMutableString new];
   [desc appendString:_status ?: @"Loading"];
 
-  if (_total > 0) {
+  if ([_total integerValue] > 0) {
     [desc appendFormat:@" %ld%% (%@/%@)", (long)(100 * [_done integerValue] / [_total integerValue]), _done, _total];
   }
   [desc appendString:@"\u2026"];
@@ -142,10 +142,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
 
   case facebook::react::ScriptTag::BCBundle:
-    if (header.BCVersion != runtimeBCVersion) {
+    if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
+      if (error) {
+        *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorBCNotSupported
+                                 userInfo:@{NSLocalizedDescriptionKey:
+                                              @"Bytecode bundles are not supported by this runtime."}];
+      }
+      return nil;
+    }
+    else if ((uint32_t)runtimeBCVersion != header.BCVersion) {
       if (error) {
         NSString *errDesc =
-          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %d",
+          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u",
                     runtimeBCVersion, header.BCVersion];
 
         *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain

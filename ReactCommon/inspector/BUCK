@@ -4,6 +4,8 @@ EXPORTED_HEADERS = [
 
 def library(**kwargs):
   if THIS_IS_FBANDROID:
+    include_defs('//ReactAndroid/DEFS')
+
     cxx_library(
       force_static = True,
       # We depend on JSC, support the same platforms
