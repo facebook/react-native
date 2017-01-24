@@ -22,7 +22,7 @@ A native module is just an Objective-C class that implements the `RCTBridgeModul
 
 ```objective-c
 // CalendarManager.h
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface CalendarManager : NSObject <RCTBridgeModule>
 @end
@@ -43,7 +43,7 @@ React Native will not expose any methods of `CalendarManager` to JavaScript unle
 
 ```objective-c
 #import "CalendarManager.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @implementation CalendarManager
 
@@ -126,7 +126,7 @@ And both values would get converted correctly to the native `NSDate`.  A bad val
 As `CalendarManager.addEvent` method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:
 
 ```objective-c
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 RCT_EXPORT_METHOD(addEvent:(NSString *)name details:(NSDictionary *)details)
 {
@@ -260,10 +260,10 @@ RCT_EXPORT_METHOD(doSomethingExpensive:(NSString *)param callback:(RCTResponseSe
 ## Dependency Injection
 The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).
 
-You can do this by creating a class that implements the RTCBridgeDelegate Protocol, initializing an RTCBridge with the delegate as an argument and initialising a RTCRootView with the initialized bridge.
+You can do this by creating a class that implements the RCTBridgeDelegate Protocol, initializing an RCTBridge with the delegate as an argument and initialising a RCTRootView with the initialized bridge.
 
 ```objective-c
-id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRTCBridgeDelegate alloc] init];
+id<RCTBridgeDelegate> moduleInitialiser = [[classThatImplementsRCTBridgeDelegate alloc] init];
 
 RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:nil];
 
@@ -336,32 +336,49 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 
 ## Sending Events to JavaScript
 
-The native module can signal events to JavaScript without being invoked directly. The easiest way to do this is to use `eventDispatcher`:
+The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `suppportEvents` and call `self sendEventWithName`:
 
 ```objective-c
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+// CalendarManager.h
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
+
+@interface CalendarManager : RCTEventEmitter <RCTBridgeModule>
+
+@end
+```
+
+```objective-c
+// CalendarManager.m
+#import "CalendarManager.h"
 
 @implementation CalendarManager
 
-@synthesize bridge = _bridge;
+RCT_EXPORT_MODULE();
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"EventReminder"];
+}
 
 - (void)calendarEventReminderReceived:(NSNotification *)notification
 {
   NSString *eventName = notification.userInfo[@"name"];
-  [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
-                                               body:@{@"name": eventName}];
+  [self sendEventWithName:@"EventReminder" body:@{@"name": eventName}];
 }
 
 @end
 ```
 
-JavaScript code can subscribe to these events:
+JavaScript code can subscribe to these events by creating a new `NativeEventEmitter` instance around your module.
 
 ```javascript
-import { NativeAppEventEmitter } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+const { CalendarManager } = NativeModules;
 
-var subscription = NativeAppEventEmitter.addListener(
+const calendarManagerEmitter = new NativeEventEmitter(CalendarManager);
+
+const subscription = calendarManagerEmitter.addListener(
   'EventReminder',
   (reminder) => console.log(reminder.name)
 );
@@ -371,6 +388,35 @@ subscription.remove();
 ```
 For more examples of sending events to JavaScript, see [`RCTLocationObserver`](https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m).
 
+### Optimizing for zero listeners
+You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override `startObserving` and `stopObserving` in your `RCTEventEmitter` subclass.
+
+```objective-c
+@implementation CalendarManager
+{
+  bool hasListeners;
+}
+
+// Will be called when this module's first listener is added.
+-(void)startObserving { 
+    hasListeners = YES;
+    // Set up any upstream listeners or background tasks as necessary
+}
+
+// Will be called when this module's last listener is removed, or on dealloc.
+-(void)stopObserving { 
+    hasListeners = NO;
+    // Remove upstream listeners, stop unnecessary background tasks
+}
+
+- (void)calendarEventReminderReceived:(NSNotification *)notification
+{
+  NSString *eventName = notification.userInfo[@"name"];
+  if (hasListeners) { // Only send events if anyone is listening
+    [self sendEventWithName:@"EventReminder" body:@{@"name": eventName}];
+  }
+}
+```
 ## Exporting Swift
 
 Swift doesn't have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.
@@ -397,7 +443,7 @@ Then create a private implementation file that will register the required inform
 
 ```objc
 // CalendarManagerBridge.m
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE(CalendarManager, NSObject)
 
@@ -410,7 +456,7 @@ For those of you new to Swift and Objective-C, whenever you [mix the two languag
 
 ```objc
 // CalendarManager-Bridging-Header.h
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 ```
 
 You can also use `RCT_EXTERN_REMAP_MODULE` and `RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h).

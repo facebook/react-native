@@ -79,7 +79,6 @@ module.exports = function<T, P, I, C>(config : HostConfig<T, P, I, C>) {
         item = item.sibling;
       } while (item);
     } else {
-      // $FlowFixMe: Refinement issue. If it is not a Fiber or null, it is a yield
       yields.push(output);
     }
   }

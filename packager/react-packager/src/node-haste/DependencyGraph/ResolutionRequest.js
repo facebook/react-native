@@ -13,7 +13,7 @@
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 
-const debug = require('debug')('ReactNativePackager:DependencyGraph');
+const debug = require('debug')('RNP:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const realPath = require('path');
@@ -32,7 +32,7 @@ type DirExistsFn = (filePath: string) => boolean;
 type Options = {
   dirExists: DirExistsFn,
   entryPath: string,
-  extraNodeModules: Object,
+  extraNodeModules: ?Object,
   hasteFS: HasteFS,
   hasteMap: HasteMap,
   helpers: DependencyGraphHelpers,
@@ -46,7 +46,7 @@ type Options = {
 class ResolutionRequest {
   _dirExists: DirExistsFn;
   _entryPath: string;
-  _extraNodeModules: Object;
+  _extraNodeModules: ?Object;
   _hasteFS: HasteFS;
   _hasteMap: HasteMap;
   _helpers: DependencyGraphHelpers;
@@ -338,10 +338,11 @@ class ResolutionRequest {
           }
 
           if (this._extraNodeModules) {
+            const {_extraNodeModules} = this;
             const bits = toModuleName.split('/');
             const packageName = bits[0];
-            if (this._extraNodeModules[packageName]) {
-              bits[0] = this._extraNodeModules[packageName];
+            if (_extraNodeModules[packageName]) {
+              bits[0] = _extraNodeModules[packageName];
               searchQueue.push(path.join.apply(path, bits));
             }
           }
@@ -371,7 +372,7 @@ class ResolutionRequest {
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
               `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
+              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start --reset-cache`.'
             );
           });
         });

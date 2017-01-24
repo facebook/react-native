@@ -10,13 +10,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-#import <yoga/Yoga.h>
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
+#import <yoga/Yoga.h>
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -47,6 +47,7 @@
 + (NSData *)NSData:(id)json;
 + (NSIndexSet *)NSIndexSet:(id)json;
 
++ (NSURLRequestCachePolicy)NSURLRequestCachePolicy:(id)json;
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
 
@@ -89,6 +90,8 @@ typedef NSURL RCTFileURL;
 
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
+
++ (YGValue)YGValue:(id)json;
 
 + (NSArray<NSArray *> *)NSArrayArray:(id)json;
 + (NSArray<NSString *> *)NSStringArray:(id)json;

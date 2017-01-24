@@ -81,6 +81,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
   }
 
+  @Override
+  boolean doesDraw() {
+    return mDrawImage.hasImageRequest() || super.doesDraw();
+  }
+
   @ReactProp(name = "shouldNotifyLoadEvents")
   public void setShouldNotifyLoadEvents(boolean shouldNotifyLoadEvents) {
     getMutableDrawImage().setReactTag(shouldNotifyLoadEvents ? getReactTag() : 0);

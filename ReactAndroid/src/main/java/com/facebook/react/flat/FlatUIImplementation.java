@@ -217,21 +217,33 @@ public class FlatUIImplementation extends UIImplementation {
       return;
     }
 
+    // virtual nodes do not have values for width and height, so get these values
+    // from the first non-virtual parent node
+    while (node != null && node.isVirtual()) {
+      node = (FlatShadowNode) node.getParent();
+    }
+
+    if (node == null) {
+      // everything is virtual, this shouldn't happen so just silently return
+      return;
+    }
+
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
 
-    float xInParent = node.getLayoutX();
-    float yInParent = node.getLayoutY();
+    boolean nodeMountsToView = node.mountsToView();
+    // this is to avoid double-counting xInParent and yInParent when we visit
+    // the while loop, below.
+    float xInParent = nodeMountsToView ? node.getLayoutX() : 0;
+    float yInParent = nodeMountsToView ? node.getLayoutY() : 0;
 
-    while (true) {
-      node =  Assertions.assumeNotNull((FlatShadowNode) node.getParent());
-      if (node.mountsToView()) {
-        mStateBuilder.ensureBackingViewIsCreated(node);
-        break;
+    while (!node.mountsToView()) {
+      if (!node.isVirtual()) {
+        xInParent += node.getLayoutX();
+        yInParent += node.getLayoutY();
       }
 
-      xInParent += node.getLayoutX();
-      yInParent += node.getLayoutY();
+      node = Assertions.assumeNotNull((FlatShadowNode) node.getParent());
     }
 
     float parentWidth = node.getLayoutWidth();

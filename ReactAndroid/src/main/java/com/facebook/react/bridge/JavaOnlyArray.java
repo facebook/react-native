@@ -89,6 +89,11 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
+  public Dynamic getDynamic(int index) {
+    return DynamicFromArray.create(this, index);
+  }
+
+  @Override
   public ReadableType getType(int index) {
     Object object = mBackingList.get(index);
 

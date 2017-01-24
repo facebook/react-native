@@ -820,7 +820,8 @@ public class UIManagerModuleTest {
     UIManagerModule uiManagerModule =  new UIManagerModule(
         mReactContext,
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }
