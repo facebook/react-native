@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.facebook.react.EagerModuleProvider;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.ModuleSpec;
@@ -103,7 +104,7 @@ public class ReactTestHelper {
     }
 
     @Override
-    public ReactInstanceManager.Builder getReactInstanceManagerBuilder() {
+    public ReactInstanceManagerBuilder getReactInstanceManagerBuilder() {
       return ReactInstanceManager.builder();
     }
   }

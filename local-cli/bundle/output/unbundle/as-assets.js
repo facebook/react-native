@@ -15,6 +15,7 @@ const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
 const path = require('path');
+const relativizeSourceMap = require('../../../../packager/react-packager/src/lib/relativizeSourceMap');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 
@@ -42,7 +43,8 @@ function saveAsAssets(
   const {
     bundleOutput,
     bundleEncoding: encoding,
-    sourcemapOutput
+    sourcemapOutput,
+    sourcemapSourcesRoot,
   } = options;
 
   log('start');
@@ -63,10 +65,14 @@ function saveAsAssets(
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
   const sourceMap =
-    buildSourceMapWithMetaData({
-      startupModules: startupModules.concat(),
-      lazyModules: lazyModules.concat(),
-    });
+    relativizeSourceMap(
+      buildSourceMapWithMetaData({
+        startupModules: startupModules.concat(),
+        lazyModules: lazyModules.concat(),
+      }),
+      sourcemapSourcesRoot
+    );
+
 
   return Promise.all([
     writeUnbundle,

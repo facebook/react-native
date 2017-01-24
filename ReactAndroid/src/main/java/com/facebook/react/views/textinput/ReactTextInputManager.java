@@ -160,16 +160,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public void updateExtraData(ReactEditText view, Object extraData) {
-    if (extraData instanceof float[]) {
-      float[] padding = (float[]) extraData;
+    if (extraData instanceof ReactTextUpdate) {
+      ReactTextUpdate update = (ReactTextUpdate) extraData;
 
       view.setPadding(
-          (int) Math.floor(padding[0]),
-          (int) Math.floor(padding[1]),
-          (int) Math.floor(padding[2]),
-          (int) Math.floor(padding[3]));
-    } else if (extraData instanceof ReactTextUpdate) {
-      ReactTextUpdate update = (ReactTextUpdate) extraData;
+          (int) update.getPaddingLeft(),
+          (int) update.getPaddingTop(),
+          (int) update.getPaddingRight(),
+          (int) update.getPaddingBottom());
+
       if (update.containsImages()) {
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
@@ -689,14 +688,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getId(),
                       editText.getText().toString()));
             }
-            if (actionId == EditorInfo.IME_ACTION_NEXT ||
-              actionId == EditorInfo.IME_ACTION_PREVIOUS) {
-              if (editText.getBlurOnSubmit()) {
-                editText.clearFocus();
-              }
-              return true;
+
+            if (editText.getBlurOnSubmit()) {
+              editText.clearFocus();
             }
-            return !editText.getBlurOnSubmit();
+
+            return true;
           }
         });
   }

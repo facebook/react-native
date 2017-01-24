@@ -330,7 +330,7 @@ describe('Resolver', function() {
       var code = [
         // require
         'require("x")',
-        'require("y")',
+        'require("y");require(\'abc\');',
         'require( \'z\' )',
         'require( "a")',
         'require("b" )',
@@ -356,14 +356,17 @@ describe('Resolver', function() {
         return [
           ['x', createModule('changed')],
           ['y', createModule('Y')],
+          ['abc', createModule('abc')]
         ];
       }
 
       const moduleIds = new Map(
         resolutionResponse
           .getResolvedDependencyPairs()
-          .map(([importId, module]) =>
-            [importId, resolutionResponse.getModuleId(module)])
+          .map(([importId, module]) => [
+            importId,
+            padRight(resolutionResponse.getModuleId(module), importId.length + 2),
+          ])
       );
 
       return depResolver.wrapModule({
@@ -377,8 +380,9 @@ describe('Resolver', function() {
         expect(processedCode).toEqual([
           '__d(/* test module */function(global, require, module, exports) {' +
           // require
-          `require(${moduleIds.get('x')} /* x */)`,
-          `require(${moduleIds.get('y')} /* y */)`,
+          `require(${moduleIds.get('x')}) // ${moduleIds.get('x').trim()} = x`,
+          `require(${moduleIds.get('y')});require(${moduleIds.get('abc')
+          }); // ${moduleIds.get('abc').trim()} = abc // ${moduleIds.get('y').trim()} = y`,
           'require( \'z\' )',
           'require( "a")',
           'require("b" )',
@@ -534,5 +538,11 @@ describe('Resolver', function() {
     }
 
     return ({path}) => knownIds.get(path) || createId(path);
+  }
+
+  function padRight(value, width) {
+    const s = String(value);
+    const diff = width - s.length;
+    return diff > 0 ? s + Array(diff + 1).join(' ') : s;
   }
 });

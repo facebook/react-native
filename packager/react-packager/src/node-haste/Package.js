@@ -97,7 +97,7 @@ class Package {
 
       let relPath = './' + path.relative(this.root, name);
       if (path.sep !== '/') {
-        relPath = relPath.replace(path.sep, '/');
+        relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
       }
 
       let redirect = replacements[relPath];

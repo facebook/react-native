@@ -12,7 +12,7 @@
 'use strict';
 
 const babel = require('babel-core');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 import type {Ast, SourceMap} from 'babel-core';
 const t = babel.types;

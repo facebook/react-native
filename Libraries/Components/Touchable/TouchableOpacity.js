@@ -59,11 +59,17 @@ var TouchableOpacity = React.createClass({
      * active. Defaults to 0.2.
      */
     activeOpacity: React.PropTypes.number,
+    focusedOpacity: React.PropTypes.number,
+    /**
+     * Apple TV parallax effects
+     */
+    tvParallaxProperties: React.PropTypes.object,
   },
 
   getDefaultProps: function() {
     return {
       activeOpacity: 0.2,
+      focusedOpacity: 0.7,
     };
   },
 
@@ -156,6 +162,10 @@ var TouchableOpacity = React.createClass({
     );
   },
 
+  _opacityFocused: function() {
+    this.setOpacityTo(this.props.focusedOpacity);
+  },
+
   render: function() {
     return (
       <Animated.View
@@ -166,6 +176,8 @@ var TouchableOpacity = React.createClass({
         style={[this.props.style, {opacity: this.state.anim}]}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

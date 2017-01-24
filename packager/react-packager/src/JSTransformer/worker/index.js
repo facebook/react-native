@@ -9,8 +9,5 @@
 
 'use strict';
 
-const path = require('path');
-require('../../../../babelRegisterOnly')([
-  path.resolve(path.join(__dirname, '../../**/*')),
-]);
+require('../../../../../setupBabel')();
 module.exports = require('./worker');
