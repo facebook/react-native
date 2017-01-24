@@ -688,14 +688,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getId(),
                       editText.getText().toString()));
             }
-            if (actionId == EditorInfo.IME_ACTION_NEXT ||
-              actionId == EditorInfo.IME_ACTION_PREVIOUS) {
-              if (editText.getBlurOnSubmit()) {
-                editText.clearFocus();
-              }
-              return true;
+
+            if (editText.getBlurOnSubmit()) {
+              editText.clearFocus();
             }
-            return !editText.getBlurOnSubmit();
+
+            return true;
           }
         });
   }
