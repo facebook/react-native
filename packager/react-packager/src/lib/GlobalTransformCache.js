@@ -20,6 +20,7 @@ const request = require('request');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult} from './TransformCache';
+import type {Reporter} from './reporting';
 
 type FetchResultURIs = (
   keys: Array<string>,
@@ -38,7 +39,7 @@ type FetchProps = {
   transformOptions: TransformOptions,
 };
 
-type FetchCallback = (error?: Error, resultURI?: ?CachedResult) => mixed;
+type FetchCallback = (error?: Error, result?: ?CachedResult) => mixed;
 type FetchURICallback = (error?: Error, resultURI?: ?string) => mixed;
 
 type ProcessBatch<TItem, TResult> = (
@@ -135,16 +136,25 @@ type URI = string;
  */
 class KeyURIFetcher {
 
-  _fetchResultURIs: FetchResultURIs;
   _batchProcessor: BatchProcessor<string, ?URI>;
+  _fetchResultURIs: FetchResultURIs;
+  _processError: (error: Error) => mixed;
 
+  /**
+   * When a batch request fails for some reason, we process the error locally
+   * and we proceed as if there were no result for these keys instead. That way
+   * a build will not fail just because of the cache.
+   */
   _processKeys(
     keys: Array<string>,
     callback: (error?: Error, keyURIs: Array<?URI>) => mixed,
   ) {
     this._fetchResultURIs(keys, (error, URIsByKey) => {
+      if (error != null) {
+        this._processError(error);
+      }
       const URIs = keys.map(key => URIsByKey && URIsByKey.get(key));
-      callback(error, URIs);
+      callback(undefined, URIs);
     });
   }
 
@@ -152,13 +162,14 @@ class KeyURIFetcher {
     this._batchProcessor.queue(key, callback);
   }
 
-  constructor(fetchResultURIs: FetchResultURIs) {
+  constructor(fetchResultURIs: FetchResultURIs, processError: (error: Error) => mixed) {
     this._fetchResultURIs = fetchResultURIs;
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
       concurrency: 25,
     }, this._processKeys.bind(this));
+    this._processError = processError;
   }
 
 }
@@ -260,8 +271,24 @@ class TransformProfileSet {
 class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
-  _store: ?KeyResultStore;
   _profileSet: TransformProfileSet;
+  _reporter: Reporter;
+  _retries: number;
+  _store: ?KeyResultStore;
+
+  /**
+   * If too many errors already happened, we just drop the additional errors.
+   */
+  _processError(error: Error) {
+    if (this._retries <= 0) {
+      return;
+    }
+    this._reporter.update({type: 'global_cache_error', error});
+    --this._retries;
+    if (this._retries <= 0) {
+      this._reporter.update({type: 'global_cache_disabled', reason: 'too_many_errors'});
+    }
+  }
 
   /**
    * For using the global cache one needs to have some kind of central key-value
@@ -275,9 +302,12 @@ class GlobalTransformCache {
     fetchResultURIs: FetchResultURIs,
     storeResults: ?StoreResults,
     profiles: Iterable<TransformProfile>,
+    reporter: Reporter,
   ) {
+    this._fetcher = new KeyURIFetcher(fetchResultURIs, this._processError.bind(this));
     this._profileSet = new TransformProfileSet(profiles);
-    this._fetcher = new KeyURIFetcher(fetchResultURIs);
+    this._reporter = reporter;
+    this._retries = 4;
     if (storeResults != null) {
       this._store = new KeyResultStore(storeResults);
     }
@@ -322,8 +352,22 @@ class GlobalTransformCache {
     });
   }
 
+  /**
+   * Wrap `_fetchFromURI` with error logging, and return an empty result instead
+   * of errors. This is because the global cache is not critical to the normal
+   * packager operation.
+   */
+  _tryFetchingFromURI(uri: string, callback: FetchCallback) {
+    this._fetchFromURI(uri, (error, result) => {
+      if (error != null) {
+        this._processError(error);
+      }
+      callback(undefined, result);
+    });
+  }
+
   fetch(props: FetchProps, callback: FetchCallback) {
-    if (!this._profileSet.has(props.transformOptions)) {
+    if (this._retries <= 0 || !this._profileSet.has(props.transformOptions)) {
       process.nextTick(callback);
       return;
     }
@@ -335,7 +379,7 @@ class GlobalTransformCache {
           callback();
           return;
         }
-        this._fetchFromURI(uri, callback);
+        this._tryFetchingFromURI(uri, callback);
       }
     });
   }

@@ -80,8 +80,6 @@ class Module {
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _globalCacheRetries: number;
-
   constructor({
     cache,
     depGraphHelpers,
@@ -268,24 +266,14 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const {_globalCache} = this;
-    const noMoreRetries = Module._globalCacheRetries <= 0;
-    if (_globalCache == null || noMoreRetries) {
+    if (_globalCache == null) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
     _globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._globalCacheRetries > 0) {
-        this._reporter.update({
-          type: 'global_cache_error',
-          error: globalCacheError,
-        });
-        Module._globalCacheRetries--;
-        if (Module._globalCacheRetries <= 0) {
-          this._reporter.update({
-            type: 'global_cache_disabled',
-            reason: 'too_many_errors',
-          });
-        }
+      if (globalCacheError) {
+        callback(globalCacheError);
+        return;
       }
       if (globalCachedResult == null) {
         this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
@@ -378,8 +366,6 @@ class Module {
     return false;
   }
 }
-
-Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();
