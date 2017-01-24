@@ -81,7 +81,8 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
