@@ -72,7 +72,6 @@ type Options = {
  * ```
  */
 class Alert {
-  
   /**
    * Displays an alert dialog
    *
