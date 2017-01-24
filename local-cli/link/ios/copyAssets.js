@@ -31,8 +31,8 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
       .map(file => file.basename);
   };
 
-  addResourcesOfType('video')
-  const fonts = addResourcesOfType('font')
+  addResourcesOfType('video');
+  const fonts = addResourcesOfType('font');
 
   plist.UIAppFonts = (plist.UIAppFonts || []).concat(fonts);
 
