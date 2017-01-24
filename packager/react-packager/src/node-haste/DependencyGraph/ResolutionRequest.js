@@ -347,6 +347,10 @@ class ResolutionRequest {
             }
           }
 
+          if (process.env.NODE_PATH) {
+            searchQueue.push(path.join(process.env.NODE_PATH, realModuleName));
+          }
+
           let p = Promise.reject(new UnableToResolveError(fromModule, toModuleName));
           searchQueue.forEach(potentialModulePath => {
             p = this._tryResolve(
