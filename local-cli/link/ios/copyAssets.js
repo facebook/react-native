@@ -9,8 +9,8 @@ const getPlist = require('./getPlist');
 const getPlistPath = require('./getPlistPath');
 
 /**
- * This function works in a similar manner to its Android version,
- * except it does not copy fonts but creates XCode Group references
+ * Creates XCode Group references and plist entries for custom fonts
+ * and links video files in Resources.
  */
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
@@ -19,15 +19,20 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
 
   createGroupWithMessage(project, 'Resources');
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.addResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  const addResourcesOfType = (type) => {
+    return (assets[type] || [])
+      .map(asset =>
+        project.addResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .filter(file => file)   // xcode returns false if file is already there
-    .map(file => file.basename);
+      .filter(file => file)   // xcode returns false if file is already there
+      .map(file => file.basename);
+  };
+
+  addResourcesOfType('video')
+  const fonts = addResourcesOfType('font')
 
   plist.UIAppFonts = (plist.UIAppFonts || []).concat(fonts);
 
