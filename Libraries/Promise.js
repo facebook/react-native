@@ -18,13 +18,20 @@ if (__DEV__) {
   require('promise/setimmediate/rejection-tracking').enable({
     allRejections: true,
     onUnhandled: (id, error = {}) => {
-      let {message = null, stack = null} = error;
-      if (!message) {
+      let message: string;
+      let stack: ?string;
+
+      const stringValue = Object.prototype.toString.call(error);
+      if (stringValue === '[object Error]') {
+        message = Error.prototype.toString.call(error);
+        stack = error.stack;
+      } else {
         message = prettyFormat(error);
       }
+
       const warning =
         `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-        (message == null ? '' : `${message}\n`) +
+        `${message}\n` +
         (stack == null ? '' : stack);
       console.warn(warning);
     },
