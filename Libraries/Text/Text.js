@@ -185,7 +185,7 @@ const Text = React.createClass({
      * for a `Text` element is `true`.
      *
      * See the
-     * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
+     * [Accessibility guide](docs/accessibility.html#accessible-ios-android)
      * for more information.
      */
     accessible: PropTypes.bool,

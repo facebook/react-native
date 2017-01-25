@@ -482,7 +482,7 @@ const TextInput = React.createClass({
      * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
      * for more detail.
      *
-     * [Styles](/react-native/docs/style.html)
+     * [Styles](docs/style.html)
      */
     style: Text.propTypes.style,
     /**
