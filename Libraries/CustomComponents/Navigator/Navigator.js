@@ -43,6 +43,7 @@ var PanResponder = require('PanResponder');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
+var TVEventHandler = require('TVEventHandler');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
@@ -314,6 +315,7 @@ var Navigator = React.createClass({
      *  - Navigator.SceneConfigs.FloatFromBottom
      *  - Navigator.SceneConfigs.FloatFromBottomAndroid
      *  - Navigator.SceneConfigs.FadeAndroid
+     *  - Navigator.SceneConfigs.SwipeFromLeft
      *  - Navigator.SceneConfigs.HorizontalSwipeJump
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromRight
      *  - Navigator.SceneConfigs.HorizontalSwipeJumpFromLeft
@@ -471,6 +473,7 @@ var Navigator = React.createClass({
   componentDidMount: function() {
     this._handleSpringUpdate();
     this._emitDidFocus(this.state.routeStack[this.state.presentedIndex]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
@@ -484,13 +487,15 @@ var Navigator = React.createClass({
     if (this._interactionHandle) {
       this.clearInteractionHandle(this._interactionHandle);
     }
+
+    this._disableTVEventHandler();
   },
 
   /**
    * Reset every scene with an array of routes.
    *
    * @param {RouteStack} nextRouteStack Next route stack to reinitialize.
-   * All existing route stacks are destroyed an potentially recreated. There
+   * All existing route stacks are destroyed and potentially recreated. There
    * is no accompanying animation and this method immediately replaces and
    * re-renders the navigation bar and the stack items.
    */
@@ -913,7 +918,7 @@ var Navigator = React.createClass({
       }
       return;
     }
-    if (this._doesGestureOverswipe(this.state.activeGesture)) {
+    if (gesture.overswipe && this._doesGestureOverswipe(this.state.activeGesture)) {
       var frictionConstant = gesture.overswipe.frictionConstant;
       var frictionByDistance = gesture.overswipe.frictionByDistance;
       var frictionRatio = 1 / ((frictionConstant) + (Math.abs(nextProgress) * frictionByDistance));
@@ -1299,6 +1304,24 @@ var Navigator = React.createClass({
       navigator: this._navigationBarNavigator,
       navState: this.state,
     });
+  },
+
+  _tvEventHandler: TVEventHandler,
+
+  _enableTVEventHandler: function() {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler: function() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
   },
 
   render: function() {

@@ -10,11 +10,11 @@
  */
 'use strict';
 
-const getUserCommands = require('./core/getCommands');
+const { getProjectCommands } = require('./core');
 
-import type {ConfigT} from './util/Config';
+import type { ConfigT } from './core';
 
-export type Command = {
+export type CommandT = {
   name: string,
   description?: string,
   usage?: string,
@@ -36,7 +36,6 @@ export type Command = {
 };
 
 const documentedCommands = [
-  require('./android/android'),
   require('./server/server'),
   require('./runIOS/runIOS'),
   require('./runAndroid/runAndroid'),
@@ -67,10 +66,10 @@ const undocumentedCommands = [
   },
 ];
 
-const commands: Array<Command> = [
+const commands: Array<CommandT> = [
   ...documentedCommands,
   ...undocumentedCommands,
-  ...getUserCommands(),
+  ...getProjectCommands(),
 ];
 
 module.exports = commands;

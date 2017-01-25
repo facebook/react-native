@@ -25,6 +25,7 @@
     "react": "~0.13.0",
     "react-docgen": "^2.9.0",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
+    "remove-markdown": "^0.1.0",
     "request": "^2.69.0",
     "semver-compare": "^1.0.0"
   },

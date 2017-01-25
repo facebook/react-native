@@ -15,7 +15,7 @@ const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 const UnimplementedView = require('UnimplementedView');
 
-const createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const insetsDiffer = require('insetsDiffer');
 const matricesDiffer = require('matricesDiffer');
 const pointsDiffer = require('pointsDiffer');
@@ -101,7 +101,7 @@ function requireNativeComponent(
   return createReactNativeComponentClass(viewConfig);
 }
 
-var TypeToDifferMap = {
+const TypeToDifferMap = {
   // iOS Types
   CATransform3D: matricesDiffer,
   CGPoint: pointsDiffer,
@@ -112,10 +112,14 @@ var TypeToDifferMap = {
 };
 
 function processColorArray(colors: []): [] {
+  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+   * detected during the deployment of v0.38.0. To see the error, remove this
+   * comment and run flow
+   */
   return colors && colors.map(processColor);
 }
 
-var TypeToProcessorMap = {
+const TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
   CGColorArray: processColorArray,

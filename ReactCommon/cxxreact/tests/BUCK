@@ -1,6 +1,8 @@
 TEST_SRCS = [
   'CxxMessageQueueTest.cpp',
+  'RecoverableErrorTest.cpp',
   'jsarg_helpers.cpp',
+  'jsbigstring.cpp',
   'jscexecutor.cpp',
   'jsclogging.cpp',
   'methodcall.cpp',
@@ -21,7 +23,7 @@ if THIS_IS_FBANDROID:
     ],
     deps = [
       '//native/third-party/android-ndk:android',
-      '//xplat/third-party/gmock:gtest',
+      'xplat//third-party/gmock:gtest',
       react_native_xplat_target('cxxreact:bridge'),
     ],
     visibility = ['//instrumentation_tests/...'],
@@ -35,8 +37,10 @@ if THIS_IS_FBOBJC:
       '-fexceptions',
     ],
     deps = [
-      '//xplat/third-party/gmock:gtest',
+      '//xplat/folly:molly',
+      'xplat//third-party/gmock:gtest',
       react_native_xplat_target('cxxreact:bridge'),
+      react_native_xplat_target('jschelpers:jschelpers'),
     ],
     visibility = [react_native_xplat_target('cxxreact/...')],
   )

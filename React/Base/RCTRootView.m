@@ -20,13 +20,17 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
-#import "RCTSourceCode.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
 #import "RCTProfile.h"
+
+#if TARGET_OS_TV
+#import "RCTTVRemoteHandler.h"
+#import "RCTTVNavigationEventEmitter.h"
+#endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -40,6 +44,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 @property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
+@property (nonatomic, assign) BOOL passThroughTouches;
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
@@ -53,6 +58,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
+
+  BOOL _passThroughTouches;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -92,6 +99,13 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                  name:RCTContentDidAppearNotification
                                                object:self];
 
+#if TARGET_OS_TV
+    self.tvRemoteHandler = [RCTTVRemoteHandler new];
+    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
+      [self addGestureRecognizer:gr];
+    }
+#endif
+
     if (!_bridge.loading) {
       [self bundleFinishedLoading:[_bridge batchedBridge]];
     }
@@ -119,10 +133,31 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+#if TARGET_OS_TV
+- (UIView *)preferredFocusedView
+{
+  if (self.reactPreferredFocusedView) {
+    return self.reactPreferredFocusedView;
+  }
+  return [super preferredFocusedView];
+}
+#endif
+
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   super.backgroundColor = backgroundColor;
   _contentView.backgroundColor = backgroundColor;
+}
+
+- (BOOL)passThroughTouches
+{
+  return _contentView.passThroughTouches;
+}
+
+- (void)setPassThroughTouches:(BOOL)passThroughTouches
+{
+  _passThroughTouches = passThroughTouches;
+  _contentView.passThroughTouches = passThroughTouches;
 }
 
 - (UIViewController *)reactViewController
@@ -221,6 +256,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
+  _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
@@ -257,6 +293,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // The root view itself should never receive touches
+  UIView *hitView = [super hitTest:point withEvent:event];
+  if (self.passThroughTouches && hitView == self) {
+    return nil;
+  }
+  return hitView;
 }
 
 - (void)setAppProperties:(NSDictionary *)appProperties
@@ -338,7 +384,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _bridge = bridge;
     self.reactTag = reactTag;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [self addGestureRecognizer:_touchHandler];
+    [_touchHandler attachToView:self];
     [_bridge.uiManager registerRootView:self withSizeFlexibility:sizeFlexibility];
     self.layer.backgroundColor = NULL;
   }
@@ -380,6 +426,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (UIColor *)backgroundColor
 {
   return _backgroundColor;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // The root content view itself should never receive touches
+  UIView *hitView = [super hitTest:point withEvent:event];
+  if (_passThroughTouches && hitView == self) {
+    return nil;
+  }
+  return hitView;
 }
 
 - (void)invalidate

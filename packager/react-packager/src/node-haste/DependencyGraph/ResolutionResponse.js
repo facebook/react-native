@@ -5,13 +5,34 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
+
+import Module from '../Module';
+
+import type {Options as TransformOptions} from '../../JSTransformer/worker/worker';
 
 const NO_OPTIONS = {};
 
 class ResolutionResponse {
-  constructor({transformOptions}) {
+
+  transformOptions: TransformOptions;
+  dependencies: Array<Module>;
+  mainModuleId: ?(number | string);
+  mocks: mixed;
+  numPrependedDependencies: number;
+
+  // This is monkey-patched from Resolver.
+  getModuleId: ?() => number;
+
+  _mappings: {};
+  _finalized: boolean;
+  _mainModule: ?Module;
+
+  constructor({transformOptions}: {transformOptions: TransformOptions}) {
     this.transformOptions = transformOptions;
     this.dependencies = [];
     this.mainModuleId = null;
@@ -21,7 +42,11 @@ class ResolutionResponse {
     this._finalized = false;
   }
 
-  copy(properties) {
+  copy(properties: {
+    dependencies?: Array<Module>,
+    mainModuleId?: number,
+    mocks?: mixed,
+  }): ResolutionResponse {
     const {
       dependencies = this.dependencies,
       mainModuleId = this.mainModuleId,
@@ -31,6 +56,7 @@ class ResolutionResponse {
     const numPrependedDependencies = dependencies === this.dependencies
       ? this.numPrependedDependencies : 0;
 
+    /* $FlowFixMe: Flow doesn't like Object.assign on class-made objects. */
     return Object.assign(
       new this.constructor({transformOptions: this.transformOptions}),
       this,
@@ -55,7 +81,8 @@ class ResolutionResponse {
     }
   }
 
-  finalize() {
+  finalize(): ResolutionResponse {
+    /* $FlowFixMe: _mainModule is not initialized in the constructor. */
     return this._mainModule.getName().then(id => {
       this.mainModuleId = id;
       this._finalized = true;
@@ -63,7 +90,7 @@ class ResolutionResponse {
     });
   }
 
-  pushDependency(module) {
+  pushDependency(module: Module) {
     this._assertNotFinalized();
     if (this.dependencies.length === 0) {
       this._mainModule = module;
@@ -72,13 +99,17 @@ class ResolutionResponse {
     this.dependencies.push(module);
   }
 
-  prependDependency(module) {
+  prependDependency(module: Module) {
     this._assertNotFinalized();
     this.dependencies.unshift(module);
     this.numPrependedDependencies += 1;
   }
 
-  setResolvedDependencyPairs(module, pairs, options = NO_OPTIONS) {
+  setResolvedDependencyPairs(
+    module: Module,
+    pairs: mixed,
+    options: {ignoreFinalized?: boolean} = NO_OPTIONS,
+  ) {
     if (!options.ignoreFinalized) {
       this._assertNotFinalized();
     }
@@ -88,11 +119,11 @@ class ResolutionResponse {
     }
   }
 
-  setMocks(mocks) {
+  setMocks(mocks: mixed) {
     this.mocks = mocks;
   }
 
-  getResolvedDependencyPairs(module) {
+  getResolvedDependencyPairs(module: Module) {
     this._assertFinalized();
     return this._mappings[module.hash()];
   }

@@ -15,7 +15,7 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
-const findNodeHandle = require('react/lib/findNodeHandle');
+const findNodeHandle = require('findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
 
 import type React from 'react';
@@ -101,7 +101,11 @@ if (Platform.OS === 'ios') {
     }
   });
 } else if (Platform.OS === 'android' && UIManager.AndroidLazyViewManagersEnabled) {
-  // TODO fill this out
+  UIManager.ViewManagerNames.forEach(viewManagerName => {
+    defineLazyObjectProperty(UIManager, viewManagerName, {
+      get: () => NativeModules[viewManagerName.replace(/^(RCT|RK)/, '')],
+    });
+  });
 }
 
 module.exports = UIManager;

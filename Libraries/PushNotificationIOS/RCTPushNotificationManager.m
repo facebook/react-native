@@ -9,10 +9,10 @@
 
 #import "RCTPushNotificationManager.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
 
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
@@ -208,7 +208,7 @@ RCT_EXPORT_MODULE()
 {
   NSMutableDictionary *remoteNotification = [NSMutableDictionary dictionaryWithDictionary:notification.userInfo[@"notification"]];
   RCTRemoteNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
-  NSString* notificationId = [[NSUUID UUID] UUIDString];
+  NSString *notificationId = [[NSUUID UUID] UUIDString];
   remoteNotification[@"notificationId"] = notificationId;
   remoteNotification[@"remote"] = @YES;
   if (completionHandler) {
@@ -219,7 +219,7 @@ RCT_EXPORT_MODULE()
     self.remoteNotificationCallbacks[notificationId] = completionHandler;
   }
 
-  [self sendEventWithName:@"remoteNotificationReceived" body:notification.userInfo];
+  [self sendEventWithName:@"remoteNotificationReceived" body:remoteNotification];
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification
@@ -255,7 +255,7 @@ RCT_EXPORT_MODULE()
   _requestPermissionsResolveBlock = nil;
 }
 
-RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString*)notificationId fetchResult:(UIBackgroundFetchResult)result) {
+RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(UIBackgroundFetchResult)result) {
   RCTRemoteNotificationCallback completionHandler = self.remoteNotificationCallbacks[notificationId];
   if (!completionHandler) {
     RCTLogError(@"There is no completion handler with notification id: %@", notificationId);

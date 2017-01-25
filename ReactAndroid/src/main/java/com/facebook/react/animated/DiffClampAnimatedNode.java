@@ -48,6 +48,6 @@ import com.facebook.react.bridge.ReadableMap;
 
     }
 
-    return ((ValueAnimatedNode) animatedNode).mValue;
+    return ((ValueAnimatedNode) animatedNode).getValue();
   }
 }

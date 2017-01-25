@@ -8,9 +8,10 @@
  */
 'use strict';
 
-const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 const querystring = require('querystring');
 const url = require('url');
+
+const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -45,7 +46,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
       return Promise.all(Object.values(response.dependencies).map(dep => {
         return dep.getName().then(depName => {
-          if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
+          if (dep.isAsset() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
           return packagerServer.getShallowDependencies({
@@ -112,9 +113,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  console.log('[Hot Module Replacement] Server listening on', path);
   wss.on('connection', ws => {
-    console.log('[Hot Module Replacement] Client connected');
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
@@ -134,13 +133,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           inverseDependenciesCache,
         };
 
-        packagerServer.setHMRFileChangeListener((filename, stat) => {
+        packagerServer.setHMRFileChangeListener((type, filename) => {
           if (!client) {
             return;
           }
-          console.log(
-            `[Hot Module Replacement] File change detected (${time()})`
-          );
 
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
@@ -151,14 +147,14 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           }
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
-          stat.then(() => {
-            return packagerServer.getShallowDependencies({
-              entryFile: filename,
-              platform: client.platform,
-              dev: true,
-              hot: true,
-            })
-              .then(deps => {
+          const promise = type === 'delete'
+            ? Promise.resolve()
+            : packagerServer.getShallowDependencies({
+                entryFile: filename,
+                platform: client.platform,
+                dev: true,
+                hot: true,
+              }).then(deps => {
                 if (!client) {
                   return [];
                 }
@@ -297,17 +293,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                console.log(
-                  '[Hot Module Replacement] Sending HMR update to client (' +
-                  time() + ')'
-                );
                 client.ws.send(update);
               });
-            },
-            () => {
-              // do nothing, file was removed
-            },
-          ).then(() => {
+
+          promise.then(() => {
             client.ws.send(JSON.stringify({type: 'update-done'}));
           });
         });
@@ -319,7 +308,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
         client.ws.on('close', () => disconnect());
       })
-    .done();
+    .catch(err => {
+      throw err;
+    });
   });
 }
 
@@ -332,11 +323,6 @@ function arrayEquals(arrayA, arrayB) {
       return element === arrayB[index];
     })
   );
-}
-
-function time() {
-  const date = new Date();
-  return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
 }
 
 module.exports = attachHMRServer;

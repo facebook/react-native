@@ -1,4 +1,17 @@
-(function(){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+/* eslint-disable module-strict */
+
+(function() {
+  'use strict';
+
   // Not on browser
   if (typeof document === 'undefined') {
     return;
@@ -31,7 +44,9 @@
     }
 
     var backdrop = document.querySelector('.modal-backdrop');
-    if (!backdrop) return;
+    if (!backdrop) {
+      return;
+    }
 
     var modalButtonOpenList = document.querySelectorAll('.modal-button-open');
     var modalButtonClose = document.querySelector('.modal-button-close');
@@ -47,7 +62,9 @@
 
   function showModal(e) {
     var backdrop = document.querySelector('.modal-backdrop');
-    if (!backdrop) return;
+    if (!backdrop) {
+      return;
+    }
 
     var modal = document.querySelector('.modal');
 
@@ -57,7 +74,9 @@
 
   function hideModal(e) {
     var backdrop = document.querySelector('.modal-backdrop');
-    if (!backdrop) return;
+    if (!backdrop) {
+      return;
+    }
 
     var modal = document.querySelector('.modal');
 

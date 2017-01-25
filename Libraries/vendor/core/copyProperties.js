@@ -1,19 +1,14 @@
 /**
- * @generated SignedSource<<e8e5ba644b047d0654ca54a100d2f0f3>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule copyProperties
  */
+'use strict';
 
 /**
  * Copy properties from one or more objects (up to 5) into the first object.
@@ -42,7 +37,7 @@ function copyProperties(obj, a, b, c, d, e, f) {
     // IE ignores toString in object iteration.. See:
     // webreflection.blogspot.com/2007/07/quick-fix-internet-explorer-and.html
     if (v.hasOwnProperty && v.hasOwnProperty('toString') &&
-        (typeof v.toString != 'undefined') && (obj.toString !== v.toString)) {
+        (typeof v.toString !== 'undefined') && (obj.toString !== v.toString)) {
       obj.toString = v.toString;
     }
   }

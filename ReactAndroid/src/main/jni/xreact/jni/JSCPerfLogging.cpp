@@ -2,7 +2,7 @@
 
 #include "JSCPerfLogging.h"
 
-#include <cxxreact/JSCHelpers.h>
+#include <jschelpers/JSCHelpers.h>
 
 #include <fb/log.h>
 #include <fb/fbjni.h>
@@ -17,7 +17,6 @@ using jqpl = _jqpl*;
 
 namespace facebook { namespace jni {
 
-
 template<>
 class JObjectWrapper<jqpl> : public JObjectWrapper<jobject> {
 
@@ -28,31 +27,31 @@ class JObjectWrapper<jqpl> : public JObjectWrapper<jobject> {
 
   void markerStart(int markerId, int instanceKey, long timestamp) {
     static auto markerStartMethod =
-      qplClass()->getMethod<void(int32_t, int32_t, int64_t)>("markerStart");
+      qplClass()->getMethod<void(jint, jint, jlong)>("markerStart");
     markerStartMethod(this_, markerId, instanceKey, timestamp);
   }
 
   void markerEnd(int markerId, int instanceKey, short actionId, long timestamp) {
     static auto markerEndMethod =
-      qplClass()->getMethod<void(int32_t, int32_t, int16_t, int64_t)>("markerEnd");
+      qplClass()->getMethod<void(jint, jint, jshort, jlong)>("markerEnd");
     markerEndMethod(this_, markerId, instanceKey, actionId, timestamp);
   }
 
   void markerNote(int markerId, int instanceKey, short actionId, long timestamp) {
     static auto markerNoteMethod =
-      qplClass()->getMethod<void(int32_t, int32_t, int16_t, int64_t)>("markerNote");
+      qplClass()->getMethod<void(jint, jint, jshort, jlong)>("markerNote");
     markerNoteMethod(this_, markerId, instanceKey, actionId, timestamp);
   }
 
   void markerCancel(int markerId, int instanceKey) {
     static auto markerCancelMethod =
-      qplClass()->getMethod<void(int32_t, int32_t)>("markerCancel");
+      qplClass()->getMethod<void(jint, jint)>("markerCancel");
     markerCancelMethod(this_, markerId, instanceKey);
   }
 
   int64_t currentMonotonicTimestamp() {
     static auto currentTimestampMethod =
-      qplClass()->getMethod<int64_t()>("currentMonotonicTimestamp");
+      qplClass()->getMethod<jlong()>("currentMonotonicTimestamp");
     return currentTimestampMethod(this_);
   }
 

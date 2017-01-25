@@ -18,7 +18,9 @@ var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
+var warning = require('fbjs/lib/warning');
 
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
@@ -112,6 +114,15 @@ type State = {
 };
 type Event = Object;
 
+function isTagInstanceOfTextInput(tag) {
+  var instance = getInstanceFromNode(tag);
+  return instance && instance.viewConfig && (
+    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
+    instance.viewConfig.uiViewClassName === 'RCTTextField'
+  );
+}
+
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
   scrollResponderMixinGetInitialState: function(): State {
@@ -124,7 +135,7 @@ var ScrollResponderMixin = {
       // - Determine if the scroll view has been scrolled and therefore should
       // refuse to give up its responder lock.
       // - Determine if releasing should dismiss the keyboard when we are in
-      // tap-to-dismiss mode (!this.props.keyboardShouldPersistTaps).
+      // tap-to-dismiss mode (this.props.keyboardShouldPersistTaps !== 'always').
       observedScrollSinceBecomingResponder: false,
       becameResponderWhileAnimating: false,
     };
@@ -162,7 +173,14 @@ var ScrollResponderMixin = {
    *   true.
    *
    */
-  scrollResponderHandleStartShouldSetResponder: function(): boolean {
+  scrollResponderHandleStartShouldSetResponder: function(e: Event): boolean {
+    var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
+
+    if (this.props.keyboardShouldPersistTaps === 'handled' &&
+      currentlyFocusedTextInput != null &&
+      e.target !== currentlyFocusedTextInput) {
+      return true;
+    }
     return false;
   },
 
@@ -172,7 +190,7 @@ var ScrollResponderMixin = {
    * that *doesn't* give priority to nested views (hence the capture phase):
    *
    * - Currently animating.
-   * - Tapping anywhere that is not the focused input, while the keyboard is
+   * - Tapping anywhere that is not a text input, while the keyboard is
    *   up (which should dismiss the keyboard).
    *
    * Invoke this from an `onStartShouldSetResponderCapture` event.
@@ -180,9 +198,12 @@ var ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    var {keyboardShouldPersistTaps} = this.props;
+    var keyboardNeverPersistTaps = !keyboardShouldPersistTaps ||
+                                    keyboardShouldPersistTaps === 'never';
+    if (keyboardNeverPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target !== currentlyFocusedTextInput) {
+      !isTagInstanceOfTextInput(e.target)) {
       return true;
     }
     return this.scrollResponderIsAnimating();
@@ -240,7 +261,8 @@ var ScrollResponderMixin = {
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (!this.props.keyboardShouldPersistTaps &&
+    if (this.props.keyboardShouldPersistTaps !== true &&
+      this.props.keyboardShouldPersistTaps !== 'always' &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
@@ -400,16 +422,13 @@ var ScrollResponderMixin = {
     rect: { x: number, y: number, width: number, height: number, animated?: boolean },
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
-    if (Platform.OS === 'android') {
-      invariant('zoomToRect is not implemented');
-    } else {
-      if ('animated' in rect) {
-        var { animated, ...rect } = rect;
-      } else if (typeof animated !== 'undefined') {
-        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
-      }
-      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+    invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
+    if ('animated' in rect) {
+      var { animated, ...rect } = rect;
+    } else if (typeof animated !== 'undefined') {
+      console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
+    ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
   },
 
   /**
@@ -417,7 +436,7 @@ var ScrollResponderMixin = {
    * parent view. Note that any module using this mixin needs to return
    * the parent view's ref in getScrollViewRef() in order to use this method.
    * @param {any} nodeHandle The TextInput node handle
-   * @param {number} additionalOffset The scroll view's top "contentInset".
+   * @param {number} additionalOffset The scroll view's bottom "contentInset".
    *        Default is 0.
    * @param {bool} preventNegativeScrolling Whether to allow pulling the content
    *        down to make it meet the keyboard's top. Default is false.
@@ -474,6 +493,13 @@ var ScrollResponderMixin = {
    * The `keyboardWillShow` is called before input focus.
    */
   componentWillMount: function() {
+    var {keyboardShouldPersistTaps} = this.props;
+    warning(
+      typeof keyboardShouldPersistTaps !== 'boolean',
+      `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+    );
+
     this.keyboardWillOpenTo = null;
     this.additionalScrollOffset = 0;
     this.addListenerOn(Keyboard, 'keyboardWillShow', this.scrollResponderKeyboardWillShow);

@@ -47,7 +47,9 @@ class AppEventsTest extends React.Component {
       throw new Error('Received wrong event: ' + JSON.stringify(event));
     }
     var elapsed = (Date.now() - event.ts) + 'ms';
-    this.setState({received: event, elapsed}, TestModule.markTestCompleted);
+    this.setState({received: event, elapsed}, () => {
+      TestModule.markTestCompleted();
+    });
   };
 
   render() {

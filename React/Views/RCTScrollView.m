@@ -14,13 +14,14 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
-#if !TARGET_OS_TV
-#import "RCTRefreshControl.h"
-#endif
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
+
+#if !TARGET_OS_TV
+#import "RCTRefreshControl.h"
+#endif
 
 CGFloat const ZINDEX_DEFAULT = 0;
 CGFloat const ZINDEX_STICKY_HEADER = 50;

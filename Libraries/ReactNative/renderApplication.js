@@ -21,7 +21,7 @@ var invariant = require('fbjs/lib/invariant');
 // require BackAndroid so it sets the default handler that exits the app if no listeners respond
 require('BackAndroid');
 
-function renderApplication<Props>(
+function renderApplication<Props: Object>(
   RootComponent: ReactClass<Props>,
   initialProps: Props,
   rootTag: any
@@ -31,7 +31,7 @@ function renderApplication<Props>(
     'Expect to have a valid rootTag, instead got ', rootTag
   );
   ReactNative.render(
-    <AppContainer>
+    <AppContainer rootTag={rootTag}>
       <RootComponent
         {...initialProps}
         rootTag={rootTag}

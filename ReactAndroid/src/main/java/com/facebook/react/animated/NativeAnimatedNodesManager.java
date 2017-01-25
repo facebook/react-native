@@ -12,6 +12,7 @@ package com.facebook.react.animated;
 import android.util.SparseArray;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -19,6 +20,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -49,8 +52,8 @@ import javax.annotation.Nullable;
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
-  private final ArrayList<AnimationDriver> mActiveAnimations = new ArrayList<>();
-  private final ArrayList<AnimatedNode> mUpdatedNodes = new ArrayList<>();
+  private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
+  private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
   private final Map<String, EventAnimationDriver> mEventDrivers = new HashMap<>();
   private final Map<String, Map<String, String>> mCustomEventTypes;
   private final UIImplementation mUIImplementation;
@@ -68,7 +71,7 @@ import javax.annotation.Nullable;
   }
 
   public boolean hasActiveAnimations() {
-    return !mActiveAnimations.isEmpty() || !mUpdatedNodes.isEmpty();
+    return mActiveAnimations.size() > 0 || mUpdatedNodes.size() > 0;
   }
 
   public void createAnimatedNode(int tag, ReadableMap config) {
@@ -82,7 +85,6 @@ import javax.annotation.Nullable;
       node = new StyleAnimatedNode(config, this);
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
-      mUpdatedNodes.add(node);
     } else if ("props".equals(type)) {
       node = new PropsAnimatedNode(config, this);
     } else if ("interpolation".equals(type)) {
@@ -93,6 +95,8 @@ import javax.annotation.Nullable;
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
       node = new MultiplicationAnimatedNode(config, this);
+    } else if ("modulus".equals(type)) {
+      node = new ModulusAnimatedNode(config, this);
     } else if ("diffclamp".equals(type)) {
       node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
@@ -102,10 +106,12 @@ import javax.annotation.Nullable;
     }
     node.mTag = tag;
     mAnimatedNodes.put(tag, node);
+    mUpdatedNodes.put(tag, node);
   }
 
   public void dropAnimatedNode(int tag) {
     mAnimatedNodes.remove(tag);
+    mUpdatedNodes.remove(tag);
   }
 
   public void startListeningToAnimatedNodeValue(int tag, AnimatedNodeValueListener listener) {
@@ -133,7 +139,35 @@ import javax.annotation.Nullable;
         " does not exists or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).mValue = value;
-    mUpdatedNodes.add(node);
+    mUpdatedNodes.put(tag, node);
+  }
+
+  public void setAnimatedNodeOffset(int tag, double offset) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).mOffset = offset;
+    mUpdatedNodes.put(tag, node);
+  }
+
+  public void flattenAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).flattenOffset();
+  }
+
+  public void extractAnimatedNodeOffset(int tag) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
+        " does not exists or is not a 'value' node");
+    }
+    ((ValueAnimatedNode) node).extractOffset();
   }
 
   public void startAnimatingNode(
@@ -164,7 +198,7 @@ import javax.annotation.Nullable;
     animation.mId = animationId;
     animation.mEndCallback = endCallback;
     animation.mAnimatedValue = (ValueAnimatedNode) node;
-    mActiveAnimations.add(animation);
+    mActiveAnimations.put(animationId, animation);
   }
 
   public void stopAnimation(int animationId) {
@@ -173,13 +207,13 @@ import javax.annotation.Nullable;
     // object map that would require additional memory just to support the use-case of stopping
     // an animation
     for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.get(i);
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animation.mId == animationId) {
         // Invoke animation end callback with {finished: false}
         WritableMap endCallbackResponse = Arguments.createMap();
         endCallbackResponse.putBoolean("finished", false);
         animation.mEndCallback.invoke(endCallbackResponse);
-        mActiveAnimations.remove(i);
+        mActiveAnimations.removeAt(i);
         return;
       }
     }
@@ -201,6 +235,7 @@ import javax.annotation.Nullable;
         " does not exists");
     }
     parentNode.addChild(childNode);
+    mUpdatedNodes.put(childNodeTag, childNode);
   }
 
   public void disconnectAnimatedNodes(int parentNodeTag, int childNodeTag) {
@@ -215,6 +250,7 @@ import javax.annotation.Nullable;
         " does not exists");
     }
     parentNode.removeChild(childNode);
+    mUpdatedNodes.put(childNodeTag, childNode);
   }
 
   public void connectAnimatedNodeToView(int animatedNodeTag, int viewTag) {
@@ -233,6 +269,7 @@ import javax.annotation.Nullable;
         "already attached to a view");
     }
     propsAnimatedNode.mConnectedViewTag = viewTag;
+    mUpdatedNodes.put(animatedNodeTag, node);
   }
 
   public void disconnectAnimatedNodeFromView(int animatedNodeTag, int viewTag) {
@@ -280,10 +317,10 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public boolean onEventDispatch(Event event) {
+  public void onEventDispatch(Event event) {
     // Only support events dispatched from the UI thread.
     if (!UiThreadUtil.isOnUiThread()) {
-      return false;
+      return;
     }
 
     if (!mEventDrivers.isEmpty()) {
@@ -297,12 +334,9 @@ import javax.annotation.Nullable;
       EventAnimationDriver eventDriver = mEventDrivers.get(event.getViewTag() + eventName);
       if (eventDriver != null) {
         event.dispatch(eventDriver);
-        mUpdatedNodes.add(eventDriver.mValueNode);
-        return true;
+        mUpdatedNodes.put(eventDriver.mValueNode.mTag, eventDriver.mValueNode);
       }
     }
-
-    return false;
   }
 
   /**
@@ -338,7 +372,7 @@ import javax.annotation.Nullable;
 
     Queue<AnimatedNode> nodesQueue = new ArrayDeque<>();
     for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.get(i);
+      AnimatedNode node = mUpdatedNodes.valueAt(i);
       if (node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         activeNodesCount++;
@@ -347,7 +381,7 @@ import javax.annotation.Nullable;
     }
 
     for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.get(i);
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
       animation.runAnimationStep(frameTimeNanos);
       AnimatedNode valueNode = animation.mAnimatedValue;
       if (valueNode.mBFSColor != mAnimatedGraphBFSColor) {
@@ -392,7 +426,7 @@ import javax.annotation.Nullable;
     // find nodes with zero "incoming nodes", those can be either nodes from `mUpdatedNodes` or
     // ones connected to active animations
     for (int i = 0; i < mUpdatedNodes.size(); i++) {
-      AnimatedNode node = mUpdatedNodes.get(i);
+      AnimatedNode node = mUpdatedNodes.valueAt(i);
       if (node.mActiveIncomingNodes == 0 && node.mBFSColor != mAnimatedGraphBFSColor) {
         node.mBFSColor = mAnimatedGraphBFSColor;
         updatedNodesCount++;
@@ -400,7 +434,7 @@ import javax.annotation.Nullable;
       }
     }
     for (int i = 0; i < mActiveAnimations.size(); i++) {
-      AnimationDriver animation = mActiveAnimations.get(i);
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
       AnimatedNode valueNode = animation.mAnimatedValue;
       if (valueNode.mActiveIncomingNodes == 0 && valueNode.mBFSColor != mAnimatedGraphBFSColor) {
         valueNode.mBFSColor = mAnimatedGraphBFSColor;
@@ -415,7 +449,17 @@ import javax.annotation.Nullable;
       nextNode.update();
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
-        ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+        try {
+          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
+        } catch (IllegalViewOperationException e) {
+            // An exception is thrown if the view hasn't been created yet. This can happen because views are
+            // created in batches. If this particular view didn't make it into a batch yet, the view won't
+            // exist and an exception will be thrown when attempting to start an animation on it.
+            //
+            // Eat the exception rather than crashing. The impact is that we may drop one or more frames of the
+            // animation.
+            FLog.e(ReactConstants.TAG, "Native animation workaround, frame lost as result of race condition", e);
+          }
       }
       if (nextNode instanceof ValueAnimatedNode) {
         // Potentially send events to JS when the node's value is updated
@@ -449,19 +493,14 @@ import javax.annotation.Nullable;
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
-      int dest = 0;
-      for (int i = 0; i < mActiveAnimations.size(); i++) {
-        AnimationDriver animation = mActiveAnimations.get(i);
-        if (!animation.mHasFinished) {
-          mActiveAnimations.set(dest++, animation);
-        } else {
+      for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
+        AnimationDriver animation = mActiveAnimations.valueAt(i);
+        if (animation.mHasFinished) {
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", true);
           animation.mEndCallback.invoke(endCallbackResponse);
+          mActiveAnimations.removeAt(i);
         }
-      }
-      for (int i = mActiveAnimations.size() - 1; i >= dest; i--) {
-        mActiveAnimations.remove(i);
       }
     }
   }

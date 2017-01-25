@@ -15,13 +15,13 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTBridge+Private.h"
-#import "RCTBridgeModule.h"
-#import "RCTUtils.h"
-#import "RCTUIManager.h"
-#import "RCTViewManager.h"
-#import "RCTJavaScriptExecutor.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTJavaScriptExecutor.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
+#import <React/RCTViewManager.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \

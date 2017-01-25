@@ -152,6 +152,14 @@ class WebView extends React.Component {
      * start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
+
+    /**
+     * Boolean that sets whether JavaScript running in the context of a file
+     * scheme URL should be allowed to access content from any origin.
+     * Including accessing content from other file scheme URLs
+     * @platform android
+     */
+    allowUniversalAccessFromFileURLs: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -227,6 +235,7 @@ class WebView extends React.Component {
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
       />;
 
     return (
@@ -274,6 +283,20 @@ class WebView extends React.Component {
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
       [String(data)]
+    );
+  };
+
+  /**
+  * Injects a javascript string into the referenced WebView. Deliberately does not
+  * return a response because using eval() to return a response breaks this method
+  * on pages with a Content Security Policy that disallows eval(). If you need that
+  * functionality, look into postMessage/onMessage.
+  */
+  injectJavaScript = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.injectJavaScript,
+      [data]
     );
   };
 

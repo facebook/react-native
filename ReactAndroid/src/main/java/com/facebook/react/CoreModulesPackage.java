@@ -52,33 +52,38 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
-@ReactModuleList({
-  AndroidInfoModule.class,
-  AnimationsDebugModule.class,
-  DeviceEventManagerModule.class,
-  ExceptionsManagerModule.class,
-  HeadlessJsTaskSupportModule.class,
-  SourceCodeModule.class,
-  Timing.class,
-  UIManagerModule.class,
-  // Debug only
-  DebugComponentOwnershipModule.class,
-  JSCHeapCapture.class,
-  JSCSamplingProfiler.class,
-})
+@ReactModuleList(
+  javaModules = {
+    AndroidInfoModule.class,
+    AnimationsDebugModule.class,
+    DeviceEventManagerModule.class,
+    ExceptionsManagerModule.class,
+    HeadlessJsTaskSupportModule.class,
+    SourceCodeModule.class,
+    Timing.class,
+    UIManagerModule.class,
+    // Debug only
+    DebugComponentOwnershipModule.class,
+    JSCHeapCapture.class,
+    JSCSamplingProfiler.class,
+  }
+)
 /* package */ class CoreModulesPackage extends LazyReactPackage {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final UIImplementationProvider mUIImplementationProvider;
+  private final boolean mLazyViewManagersEnabled;
 
   CoreModulesPackage(
     ReactInstanceManager reactInstanceManager,
     DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-    UIImplementationProvider uiImplementationProvider) {
+    UIImplementationProvider uiImplementationProvider,
+    boolean lazyViewManagersEnabled) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
+    mLazyViewManagersEnabled = lazyViewManagersEnabled;
   }
 
   @Override
@@ -126,7 +131,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new SourceCodeModule(mReactInstanceManager.getSourceUrl());
+          return new SourceCodeModule(reactContext);
         }
       }));
     moduleSpecList.add(
@@ -206,7 +211,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       return new UIManagerModule(
         reactContext,
         viewManagersList,
-        mUIImplementationProvider);
+        mUIImplementationProvider,
+        mLazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

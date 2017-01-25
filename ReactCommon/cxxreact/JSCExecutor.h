@@ -6,15 +6,15 @@
 #include <memory>
 #include <unordered_map>
 
-#include <JavaScriptCore/JSContextRef.h>
-
 #include <folly/json.h>
 #include <folly/Optional.h>
 
+#include <jschelpers/JavaScriptCore.h>
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
+
 #include "Executor.h"
 #include "ExecutorToken.h"
-#include "JSCHelpers.h"
-#include "Value.h"
 #include "JSCNativeModules.h"
 
 namespace facebook {
@@ -22,7 +22,7 @@ namespace react {
 
 class MessageQueueThread;
 
-class JSCExecutorFactory : public JSExecutorFactory {
+class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
   JSCExecutorFactory(const std::string& cacheDir, const folly::dynamic& jscConfig) :
   m_cacheDir(cacheDir),
@@ -46,7 +46,10 @@ public:
   Object jsObj;
 };
 
-class JSCExecutor : public JSExecutor {
+template <typename T>
+struct ValueEncoder;
+
+class RN_EXPORT JSCExecutor : public JSExecutor {
 public:
   /**
    * Must be invoked from thread this Executor will run on.
@@ -59,39 +62,51 @@ public:
 
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) throw(JSException) override;
+    std::string sourceURL) override;
+
 #ifdef WITH_FBJSCEXTENSIONS
   virtual void loadApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
     int flags) override;
 #endif
+
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
+
   virtual void callFunction(
     const std::string& moduleId,
     const std::string& methodId,
     const folly::dynamic& arguments) override;
+
   virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
+
   template <typename T>
   Value callFunctionSync(
       const std::string& module, const std::string& method, T&& args) {
-    return callFunctionSyncWithValue(module, method,
-                                     toValue(m_context, std::forward<T>(args)));
+    return callFunctionSyncWithValue(
+      module, method, ValueEncoder<typename std::decay<T>::type>::toValue(
+        m_context, std::forward<T>(args)));
   }
+
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
+
   virtual void* getJavaScriptContext() override;
+
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
+
   virtual void handleMemoryPressureUiHidden() override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
+
   virtual void destroy() override;
+
   void setContextName(const std::string& name);
 
 private:
@@ -143,7 +158,7 @@ private:
   void terminateOwnedWebWorker(int worker);
   Object createMessageObject(const std::string& msgData);
 
-  template< JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
+  template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 

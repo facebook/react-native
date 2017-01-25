@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var View = require('View');
 var ColorPropType = require('ColorPropType');

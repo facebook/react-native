@@ -12,6 +12,7 @@ package com.facebook.react.cxxbridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,10 +56,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
     SoLoader.loadLibrary(REACT_NATIVE_LIB);
   }
 
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
-  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
-
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
+
+  private static class PendingJSCall {
+
+    public ExecutorToken mExecutorToken;
+    public String mModule;
+    public String mMethod;
+    public NativeArray mArguments;
+
+    public PendingJSCall(
+        ExecutorToken executorToken,
+        String module,
+        String method,
+        NativeArray arguments) {
+      mExecutorToken = executorToken;
+      mModule = module;
+      mMethod = method;
+      mArguments = arguments;
+    }
+  }
 
   // Access from any thread
   private final ReactQueueConfigurationImpl mReactQueueConfiguration;
@@ -70,6 +87,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
+  private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
+  private final Object mJSCallsPendingInitLock = new Object();
   private ExecutorToken mMainExecutorToken;
 
   private final NativeModuleRegistry mJavaRegistry;
@@ -78,6 +97,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
+  private @Nullable String mSourceURL;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -161,22 +181,69 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                        MessageQueueThread moduleQueue,
                                        ModuleRegistryHolder registryHolder);
 
-  /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
-  /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
-  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
+  /**
+   * This API is used in situations where the JS bundle is being executed not on
+   * the device, but on a host machine. In that case, we must provide two source
+   * URLs for the JS bundle: One to be used on the device, and one to be used on
+   * the remote debugging machine.
+   *
+   * @param deviceURL A source URL that is accessible from this device.
+   * @param remoteURL A source URL that is accessible from the remote machine
+   * executing the JS.
+   */
+  /* package */ void setSourceURLs(String deviceURL, String remoteURL) {
+    mSourceURL = deviceURL;
+    jniSetSourceURL(remoteURL);
+  }
+
+  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL) {
+    mSourceURL = assetURL;
+    jniLoadScriptFromAssets(assetManager, assetURL);
+  }
+
+  /* package */ void loadScriptFromFile(String fileName, String sourceURL) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromFile(fileName, sourceURL);
+  }
+
+  /* package */ void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromOptimizedBundle(path, sourceURL, flags);
+  }
+
+  private native void jniSetSourceURL(String sourceURL);
+  private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL);
+  private native void jniLoadScriptFromFile(String fileName, String sourceURL);
+  private native void jniLoadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
 
   @Override
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     mJSBundleHasLoaded = true;
+
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
-    // Loading the bundle is queued on the JS thread, but may not have
-    // run yet.  It's save to set this here, though, since any work it
-    // gates will be queued on the JS thread behind the load.
-    mAcceptCalls = true;
+
+    synchronized (mJSCallsPendingInitLock) {
+      // Loading the bundle is queued on the JS thread, but may not have
+      // run yet.  It's safe to set this here, though, since any work it
+      // gates will be queued on the JS thread behind the load.
+      mAcceptCalls = true;
+
+      for (PendingJSCall call : mJSCallsPendingInit) {
+        callJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+      }
+      mJSCallsPendingInit.clear();
+    }
+
+
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
+  }
+
+  @Override
+  public @Nullable String getSourceURL() {
+    return mSourceURL;
   }
 
   private native void callJSFunction(
@@ -196,7 +263,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
     if (!mAcceptCalls) {
-      throw new RuntimeException("Attempt to call JS function before JS bundle is loaded.");
+      // Most of the time the instance is initialized and we don't need to acquire the lock
+      synchronized (mJSCallsPendingInitLock) {
+        if (!mAcceptCalls) {
+          mJSCallsPendingInit.add(new PendingJSCall(executorToken, module, method, arguments));
+          return;
+        }
+      }
     }
 
     callJSFunction(executorToken, module, method, arguments);

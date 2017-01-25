@@ -121,7 +121,7 @@ public class NativeAnimatedNodeTraversalTest {
   private void createSimpleAnimatedViewWithOpacity(int viewTag, double opacity) {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", opacity));
+      JavaOnlyMap.of("type", "value", "value", opacity, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
       JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("opacity", 1)));
@@ -387,10 +387,10 @@ public class NativeAnimatedNodeTraversalTest {
       double secondValue) {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 100d));
+      JavaOnlyMap.of("type", "value", "value", 100d, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
-      JavaOnlyMap.of("type", "value", "value", 1000d));
+      JavaOnlyMap.of("type", "value", "value", 1000d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -558,10 +558,10 @@ public class NativeAnimatedNodeTraversalTest {
   public void testMultiplicationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 1d));
+      JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
-      JavaOnlyMap.of("type", "value", "value", 5d));
+      JavaOnlyMap.of("type", "value", "value", 5d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -669,7 +669,7 @@ public class NativeAnimatedNodeTraversalTest {
   public void testInterpolationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 10d));
+      JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
