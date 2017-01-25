@@ -240,7 +240,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
+    JSClassDefinition definition = kJSClassDefinitionEmpty;
+    definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+    globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
