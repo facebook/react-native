@@ -35,6 +35,7 @@ public class TouchEvent extends Event<TouchEvent> {
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
@@ -46,6 +47,7 @@ public class TouchEvent extends Event<TouchEvent> {
       viewTag,
       touchEventType,
       motionEventToCopy,
+      gestureStartTime,
       viewX,
       viewY,
       touchEventCoalescingKeyHelper);
@@ -67,6 +69,7 @@ public class TouchEvent extends Event<TouchEvent> {
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
@@ -76,21 +79,21 @@ public class TouchEvent extends Event<TouchEvent> {
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        touchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.addCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_UP:
-        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
       case MotionEvent.ACTION_POINTER_UP:
-        touchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.incrementCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_MOVE:
         coalescingKey =
-          touchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
+          touchEventCoalescingKeyHelper.getCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_CANCEL:
-        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       default:
         throw new RuntimeException("Unhandled MotionEvent action: " + action);

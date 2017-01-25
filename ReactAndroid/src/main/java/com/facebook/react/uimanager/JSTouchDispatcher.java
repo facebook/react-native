@@ -30,6 +30,7 @@ public class JSTouchDispatcher {
   private int mTargetTag = -1;
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
+  private long mGestureStartTime;
   private final ViewGroup mRootViewGroup;
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
     new TouchEventCoalescingKeyHelper();
@@ -72,6 +73,7 @@ public class JSTouchDispatcher {
       // {@link #findTargetTagForTouch} to find react view ID that will be responsible for handling
       // this gesture
       mChildIsHandlingNativeGesture = false;
+      mGestureStartTime = ev.getEventTime();
       mTargetTag = TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
         ev.getX(),
         ev.getY(),
@@ -83,6 +85,7 @@ public class JSTouchDispatcher {
           mTargetTag,
           TouchEventType.START,
           ev,
+          mGestureStartTime,
           mTargetCoordinates[0],
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
@@ -105,6 +108,7 @@ public class JSTouchDispatcher {
           mTargetTag,
           TouchEventType.END,
           ev,
+          mGestureStartTime,
           mTargetCoordinates[0],
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
@@ -116,6 +120,7 @@ public class JSTouchDispatcher {
           mTargetTag,
           TouchEventType.MOVE,
           ev,
+          mGestureStartTime,
           mTargetCoordinates[0],
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
@@ -126,6 +131,7 @@ public class JSTouchDispatcher {
           mTargetTag,
           TouchEventType.START,
           ev,
+          mGestureStartTime,
           mTargetCoordinates[0],
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
@@ -136,6 +142,7 @@ public class JSTouchDispatcher {
           mTargetTag,
           TouchEventType.END,
           ev,
+          mGestureStartTime,
           mTargetCoordinates[0],
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
@@ -176,6 +183,7 @@ public class JSTouchDispatcher {
         mTargetTag,
         TouchEventType.CANCEL,
         androidEvent,
+        mGestureStartTime,
         mTargetCoordinates[0],
         mTargetCoordinates[1],
         mTouchEventCoalescingKeyHelper));
