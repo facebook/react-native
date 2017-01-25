@@ -12,7 +12,7 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const View = require('View');
@@ -152,7 +152,7 @@ const RefreshControl = React.createClass({
     return (
       <NativeRefreshControl
         {...this.props}
-        ref={ref => this._nativeRef = ref}
+        ref={ref => {this._nativeRef = ref;}}
         onRefresh={this._onRefresh}
       />
     );

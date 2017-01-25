@@ -9,11 +9,13 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
 import java.util.Collection;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an
@@ -23,6 +25,13 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public interface CatalystInstance extends MemoryPressureListener {
   void runJSBundle();
+
+  /**
+   * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
+   * bundle has been run yet.
+   */
+  @Nullable String getSourceURL();
+
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
   @DoNotStrip
@@ -75,4 +84,9 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   */
+  long getJavaScriptContext();
 }

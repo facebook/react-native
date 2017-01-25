@@ -300,23 +300,23 @@ class TextExample extends React.Component {
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Unicode">
-          <View style={{flex: 1}}>
+          <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{backgroundColor: 'red'}}>
                 星际争霸是世界上最好的游戏。
               </Text>
             </View>
-            <View style={{flex: 1}}>
+            <View>
               <Text style={{backgroundColor: 'red'}}>
                 星际争霸是世界上最好的游戏。
               </Text>
             </View>
-            <View style={{flex: 1, alignItems: 'center'}}>
+            <View style={{alignItems: 'center'}}>
               <Text style={{backgroundColor: 'red'}}>
                 星际争霸是世界上最好的游戏。
               </Text>
             </View>
-            <View style={{flex: 1}}>
+            <View>
               <Text style={{backgroundColor: 'red'}}>
                 星际争霸是世界上最好的游戏。星际争霸是世界上最好的游戏。星际争霸是世界上最好的游戏。星际争霸是世界上最好的游戏。
               </Text>
@@ -386,8 +386,13 @@ class TextExample extends React.Component {
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="selectable attribute">
-          <Text selectable={true}>
+          <Text selectable>
             This text is selectable if you click-and-hold, and will offer the native Android selection menus.
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="selectionColor attribute">
+          <Text selectable selectionColor="orange">
+            This text will have a orange highlight on selection.
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Inline images">
@@ -411,6 +416,23 @@ class TextExample extends React.Component {
             This very long text should be truncated with dots in the beginning.
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Include Font Padding">
+          <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10}}>
+            <View style={{alignItems: 'center'}}>
+              <Text style={styles.includeFontPaddingText}>
+                Ey
+              </Text>
+              <Text>Default</Text>
+            </View>
+            <View style={{alignItems: 'center'}}>
+              <Text style={[styles.includeFontPaddingText, {includeFontPadding: false, marginLeft: 10}]}>
+                Ey
+              </Text>
+              <Text>includeFontPadding: false</Text>
+            </View>
+          </View>
+          <Text>By default Android will put extra space above text to allow for upper-case accents or other ascenders. With some fonts, this can make text look slightly misaligned when centered vertically.</Text>
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   }
@@ -421,6 +443,14 @@ var styles = StyleSheet.create({
     left: 5,
     backgroundColor: 'rgba(100, 100, 100, 0.3)'
   },
+  includeFontPaddingText: {
+    fontSize: 120,
+    fontFamily: 'sans-serif',
+    backgroundColor: '#EEEEEE',
+    color: '#000000',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+  }
 });
 
 module.exports = TextExample;

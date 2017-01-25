@@ -15,9 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -39,7 +40,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   private static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -50,13 +51,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
 
     @Override
-    public void measure(
-        CSSNodeAPI node,
+    public long measure(
+        YogaNodeAPI node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode,
-        MeasureOutput measureOutput) {
+        YogaMeasureMode heightMode) {
       if (!mMeasured) {
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         final int spec = View.MeasureSpec.makeMeasureSpec(
@@ -67,8 +67,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         mHeight = reactSlider.getMeasuredHeight();
         mMeasured = true;
       }
-      measureOutput.width = mWidth;
-      measureOutput.height = mHeight;
+
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 
@@ -80,7 +80,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(progress),
+                  ((ReactSlider) seekbar).toRealProgress(progress),
                   fromUser));
         }
 
@@ -94,7 +94,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
+                  ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
         }
       };
 

@@ -9,7 +9,6 @@
 
 package com.facebook.react.cxxbridge;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,33 +38,29 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   @DoNotStrip
   public class MethodDescriptor {
     @DoNotStrip
-    Method method;
-    @DoNotStrip
-    String signature;
-    @DoNotStrip
     String name;
     @DoNotStrip
     String type;
   }
 
   private final CatalystInstance mCatalystInstance;
-  private final BaseJavaModule mModule;
+  private final ModuleHolder mModuleHolder;
   private final ArrayList<BaseJavaModule.JavaMethod> mMethods;
 
-  public JavaModuleWrapper(CatalystInstance catalystinstance, BaseJavaModule module) {
+  public JavaModuleWrapper(CatalystInstance catalystinstance, ModuleHolder moduleHolder) {
     mCatalystInstance = catalystinstance;
-    mModule = module;
-    mMethods = new ArrayList<BaseJavaModule.JavaMethod>();
+    mModuleHolder = moduleHolder;
+    mMethods = new ArrayList<>();
   }
 
   @DoNotStrip
   public BaseJavaModule getModule() {
-    return mModule;
+    return (BaseJavaModule) mModuleHolder.getModule();
   }
 
   @DoNotStrip
   public String getName() {
-    return mModule.getName();
+    return mModuleHolder.getInfo().name();
   }
 
   @DoNotStrip
@@ -73,46 +68,13 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     ArrayList<MethodDescriptor> descs = new ArrayList<>();
 
     for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-           mModule.getMethods().entrySet()) {
+           getModule().getMethods().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
       md.type = entry.getValue().getType();
 
       BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
       mMethods.add(method);
-
-      descs.add(md);
-    }
-
-    return descs;
-  }
-
-  @DoNotStrip
-  public List<MethodDescriptor> newGetMethodDescriptors() {
-    ArrayList<MethodDescriptor> descs = new ArrayList<>();
-
-    for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-           mModule.getMethods().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = entry.getValue().getType();
-
-      BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
-
-      descs.add(md);
-    }
-
-    for (Map.Entry<String, BaseJavaModule.SyncNativeHook> entry :
-        mModule.getSyncHooks().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = BaseJavaModule.METHOD_TYPE_SYNC;
-
-      BaseJavaModule.SyncJavaHook method = (BaseJavaModule.SyncJavaHook) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
 
       descs.add(md);
     }
@@ -127,7 +89,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    Map<String, Object> map = mModule.getConstants();
+    Map<String, Object> map = getModule().getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
@@ -146,7 +108,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   @DoNotStrip
   public boolean supportsWebWorkers() {
-    return mModule.supportsWebWorkers();
+    return getModule().supportsWebWorkers();
   }
 
   @DoNotStrip

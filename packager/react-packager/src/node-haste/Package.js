@@ -1,14 +1,42 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ */
+
 'use strict';
 
+const fs = require('fs');
 const isAbsolutePath = require('absolute-path');
-const path = require('./fastpath');
+const path = require('path');
+
+import type Cache from './Cache';
 
 class Package {
 
-  constructor({ file, fastfs, cache }) {
+  path: string;
+  root: string;
+  type: string;
+  _cache: Cache;
+
+  _reading: Promise<{
+    name: string,
+    'react-native': mixed,
+    browser: mixed,
+    main: ?string,
+  }>;
+
+  constructor({file, cache}: {
+    file: string,
+    cache: Cache,
+  }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
-    this._fastfs = fastfs;
     this.type = 'Package';
     this._cache = cache;
   }
@@ -30,6 +58,7 @@ class Package {
           main;
       }
 
+      /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
       return path.join(this.root, main);
     });
   }
@@ -40,7 +69,7 @@ class Package {
     );
   }
 
-  getName() {
+  getName(): Promise<string> {
     return this._cache.get(this.path, 'package-name', () =>
       this.read().then(json => json.name)
     );
@@ -50,7 +79,7 @@ class Package {
     this._cache.invalidate(this.path);
   }
 
-  redirectRequire(name) {
+  redirectRequire(name: string) {
     return this.read().then(json => {
       var replacements = getReplacements(json);
 
@@ -68,7 +97,7 @@ class Package {
 
       let relPath = './' + path.relative(this.root, name);
       if (path.sep !== '/') {
-        relPath = relPath.replace(path.sep, '/');
+        relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
       }
 
       let redirect = replacements[relPath];
@@ -89,6 +118,7 @@ class Package {
       if (redirect) {
         return path.join(
           this.root,
+          /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
           redirect
         );
       }
@@ -99,8 +129,9 @@ class Package {
 
   read() {
     if (!this._reading) {
-      this._reading = this._fastfs.readFile(this.path)
-        .then(jsonStr => JSON.parse(jsonStr));
+      this._reading = new Promise(
+        resolve => resolve(JSON.parse(fs.readFileSync(this.path, 'utf8')))
+      );
     }
 
     return this._reading;
@@ -119,15 +150,20 @@ function getReplacements(pkg) {
   }
 
   if (typeof rn === 'string') {
+    /* $FlowFixMe: It is likely unsafe to assume all packages would
+     * contain a "main" */
     rn = { [pkg.main]: rn };
   }
 
   if (typeof browser === 'string') {
+    /* $FlowFixMe: It is likely unsafe to assume all packages would
+     * contain a "main" */
     browser = { [pkg.main]: browser };
   }
 
   // merge with "browser" as default,
   // "react-native" as override
+  // $FlowFixMe(>=0.35.0) browser and rn should be objects
   return { ...browser, ...rn };
 }
 

@@ -17,13 +17,13 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
@@ -61,6 +61,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private String mAnimationType;
+  private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -153,6 +154,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mPropertyRequiresNewDialog = true;
   }
 
+  protected void setHardwareAccelerated(boolean hardwareAccelerated) {
+    mHardwareAccelerated = hardwareAccelerated;
+    mPropertyRequiresNewDialog = true;
+  }
+
   @Override
   public void onHostResume() {
     // We show the dialog again when the host resumes
@@ -204,7 +210,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
     mDialog = new Dialog(getContext(), theme);
 
-    mDialog.setContentView(mHostView);
+    mDialog.setContentView(getContentView());
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
@@ -236,7 +242,24 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
         }
       });
 
+    mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    if (mHardwareAccelerated) {
+      mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+    }
     mDialog.show();
+  }
+
+  /**
+   * Returns the view that will be the root view of the dialog. We are wrapping this in a
+   * FrameLayout because this is the system's way of notifying us that the dialog size has changed.
+   * This has the pleasant side-effect of us not having to preface all Modals with
+   * "top: statusBarHeight", since that margin will be included in the FrameLayout.
+   */
+  private View getContentView() {
+    FrameLayout frameLayout = new FrameLayout(getContext());
+    frameLayout.addView(mHostView);
+    frameLayout.setFitsSystemWindows(true);
+    return frameLayout;
   }
 
   /**
@@ -246,8 +269,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    */
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
-
-    mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -286,9 +307,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
           new Runnable() {
             @Override
             public void run() {
-              Point modalSize = ModalHostHelper.getModalHostSize(getContext());
               ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(getChildAt(0).getId(), modalSize.x, modalSize.y);
+                .updateNodeSize(getChildAt(0).getId(), w, h);
             }
           });
       }

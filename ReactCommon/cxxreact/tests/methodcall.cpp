@@ -1,8 +1,12 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <gtest/gtest.h>
 #include <cxxreact/MethodCall.h>
+
 #include <folly/json.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#include <gtest/gtest.h>
+#pragma GCC diagnostic pop
 
 using namespace facebook;
 using namespace facebook::react;

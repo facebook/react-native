@@ -6,10 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-#import "RCTBridgeModule.h"
-#import "RCTValueAnimatedNode.h"
-#import "RCTEventEmitter.h"
 
-@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventEmitter.h>
+
+#import "RCTValueAnimatedNode.h"
+
+@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver>
 
 @end

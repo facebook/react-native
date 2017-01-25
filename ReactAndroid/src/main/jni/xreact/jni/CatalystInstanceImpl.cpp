@@ -14,6 +14,8 @@
 #include <jni/LocalReference.h>
 
 #include <cxxreact/Instance.h>
+#include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 
@@ -99,18 +101,20 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
       makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-      makeNativeMethod("loadScriptFromAssets",
+      makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
+      makeNativeMethod("jniLoadScriptFromAssets",
                        "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
-                       CatalystInstanceImpl::loadScriptFromAssets),
-      makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
-      makeNativeMethod("loadScriptFromOptimizedBundle",
-                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
+                       CatalystInstanceImpl::jniLoadScriptFromAssets),
+      makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
+      makeNativeMethod("jniLoadScriptFromOptimizedBundle",
+                       CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
       makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
       makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
       makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
       makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
       makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
       makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
       makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
@@ -155,8 +159,12 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
-void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
-                                                const std::string& assetURL) {
+void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
+  instance_->setSourceURL(sourceURL);
+}
+
+void CatalystInstanceImpl::jniLoadScriptFromAssets(jobject assetManager,
+                                                   const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
@@ -173,15 +181,35 @@ void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
   }
 }
 
-void CatalystInstanceImpl::loadScriptFromFile(jni::alias_ref<jstring> fileName,
-                                              const std::string& sourceURL) {
-  return instance_->loadScriptFromFile(fileName ? fileName->toStdString() : "",
-                                       sourceURL);
+bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  if (!bundle_stream) {
+    return false;
+  }
+  BundleHeader header;
+  bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
+  bundle_stream.close();
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
-                                                         const std::string& sourceURL,
-                                                         jint flags) {
+void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
+                                                 const std::string& sourceURL) {
+  auto zFileName = fileName.c_str();
+  if (isIndexedRAMBundle(zFileName)) {
+    auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
+    auto startupScript = bundle->getStartupCode();
+    instance_->loadUnbundle(
+      std::move(bundle),
+      std::move(startupScript),
+      sourceURL);
+  } else {
+    instance_->loadScriptFromFile(fileName, sourceURL);
+  }
+}
+
+void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                            const std::string& sourceURL,
+                                                            jint flags) {
   return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
                                                   std::move(sourceURL),
                                                   flags);
@@ -217,6 +245,10 @@ void CatalystInstanceImpl::setGlobalVariable(std::string propName,
 
   instance_->setGlobalVariable(std::move(propName),
                                folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+}
+
+jlong CatalystInstanceImpl::getJavaScriptContext() {
+  return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
 void CatalystInstanceImpl::handleMemoryPressureUiHidden() {

@@ -134,6 +134,7 @@ const SwipeableRow = React.createClass({
       onPanResponderRelease: this._handlePanResponderEnd,
       onPanResponderTerminationRequest: this._onPanResponderTerminationRequest,
       onPanResponderTerminate: this._handlePanResponderEnd,
+      onShouldBlockNativeResponder: (event, gestureState) => false,
     });
   },
 
@@ -168,7 +169,7 @@ const SwipeableRow = React.createClass({
     return true;
   },
 
-  render(): ReactElement<any> {
+  render(): React.Element<any> {
     // The view hidden behind the main view
     let slideOutView;
     if (this.state.isSwipeableViewRendered) {

@@ -1,11 +1,11 @@
 android_library(
   name = 'asm',
   exported_deps = [
-      ':asm-core',
-      ':asm-commons',
-      ':asm-util',
-      ':asm-analysis',
-      ':asm-tree',
+    ':asm-analysis',
+    ':asm-commons',
+    ':asm-core',
+    ':asm-tree',
+    ':asm-util',
   ],
   visibility = ['//ReactAndroid/...',],
 )

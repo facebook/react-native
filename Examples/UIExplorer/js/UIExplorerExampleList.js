@@ -23,23 +23,22 @@
 'use strict';
 
 const ListView = require('ListView');
+const Platform = require('Platform');
 const React = require('react');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInput = require('TextInput');
 const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
 const UIExplorerActions = require('./UIExplorerActions');
 const UIExplorerStatePersister = require('./UIExplorerStatePersister');
+const View = require('View');
 
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios';
-
 import type {
   PassProps,
 } from './UIExplorerStatePersister';
-
 import type {
   StyleObj,
 } from 'StyleSheetTypes';
@@ -63,10 +62,10 @@ type Props = {
 class UIExplorerExampleList extends React.Component {
   props: Props
 
-  render(): ?ReactElement<any> {
+  render(): ?React.Element<any> {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => filterRegex.test(example.module.title);
+    const filter = (example) => filterRegex.test(example.module.title) && (!Platform.isTVOS || example.supportsTVOS);
 
     const dataSource = ds.cloneWithRowsAndSections({
       components: this.props.list.ComponentExamples.filter(filter),
@@ -82,7 +81,7 @@ class UIExplorerExampleList extends React.Component {
           renderRow={this._renderExampleRow.bind(this)}
           renderSectionHeader={this._renderSectionHeader}
           enableEmptySections={true}
-          keyboardShouldPersistTaps={true}
+          keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
         />
@@ -90,7 +89,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTitleRow(): ?ReactElement<any> {
+  _renderTitleRow(): ?React.Element<any> {
     if (!this.props.displayTitleRow) {
       return null;
     }
@@ -106,7 +105,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderTextInput(): ?ReactElement<any> {
+  _renderTextInput(): ?React.Element<any> {
     if (this.props.disableSearch) {
       return null;
     }
@@ -129,7 +128,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderSectionHeader(data: any, section: string): ?ReactElement<any> {
+  _renderSectionHeader(data: any, section: string): ?React.Element<any> {
     return (
       <Text style={styles.sectionHeader}>
         {section.toUpperCase()}
@@ -137,7 +136,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderExampleRow(example: {key: string, module: Object}): ?ReactElement<any> {
+  _renderExampleRow(example: {key: string, module: Object}): ?React.Element<any> {
     return this._renderRow(
       example.module.title,
       example.module.description,
@@ -146,7 +145,7 @@ class UIExplorerExampleList extends React.Component {
     );
   }
 
-  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?ReactElement<any> {
+  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?React.Element<any> {
     return (
       <View key={key || title}>
         <TouchableHighlight onPress={handler}>

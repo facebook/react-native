@@ -9,11 +9,12 @@
 
 #import "RCTTextField.h"
 
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 #import "RCTTextSelection.h"
-#import "UIView+React.h"
 
 @implementation RCTTextField
 {
@@ -54,6 +55,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:nil
                                       key:string
                                eventCount:_nativeEventCount];
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+  if(context.nextFocusedView == self) {
+    _jsRequestingFirstResponder = YES;
+  } else {
+    _jsRequestingFirstResponder = NO;
+  }
 }
 
 // This method is overridden for `onKeyPress`. The manager
@@ -147,16 +158,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
   return [self textRectForBounds:bounds];
-}
-
-- (void)setAutoCorrect:(BOOL)autoCorrect
-{
-  self.autocorrectionType = (autoCorrect ? UITextAutocorrectionTypeYes : UITextAutocorrectionTypeNo);
-}
-
-- (BOOL)autoCorrect
-{
-  return self.autocorrectionType == UITextAutocorrectionTypeYes;
 }
 
 - (void)textFieldDidChange

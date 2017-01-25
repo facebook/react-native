@@ -8,99 +8,153 @@
  */
 'use strict';
 
-const fs = require('fs');
 const chalk = require('chalk');
+const copyProjectTemplateAndReplace = require('../generator/copyProjectTemplateAndReplace');
+const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
-const yeoman = require('yeoman-environment');
+const printRunInstructions = require('../generator/printRunInstructions');
 const semver = require('semver');
+const yarn = require('../util/yarn');
 
-function upgrade(args, config) {
-  args = args || process.argv;
-  const env = yeoman.createEnv();
-  const pak = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  const version = pak.dependencies['react-native'];
+/**
+ * Migrate application to a new version of React Native.
+ * See http://facebook.github.io/react-native/docs/upgrading.html
+ *
+ * IMPORTANT: Assumes the cwd() is the project directory.
+ * The code here must only be invoked via the CLI:
+ * $ cd MyAwesomeApp
+ * $ react-native upgrade
+ */
+function validateAndUpgrade() {
+  const projectDir = process.cwd();
 
-  if (version) {
-    if (version === 'latest' || version === '*') {
-      console.warn(
-        chalk.yellow(
-          'Major releases are most likely to introduce breaking changes.\n' +
-          'Use a proper version number in your \'package.json\' file to avoid breakage.\n' +
-          'e.g. - ^0.18.0'
-        )
-      );
-    } else {
-      const installed = JSON.parse(fs.readFileSync('node_modules/react-native/package.json', 'utf8'));
+  const packageJSON = JSON.parse(
+      fs.readFileSync(path.resolve(projectDir, 'package.json'), 'utf8')
+  );
 
-      if (semver.satisfies(installed.version, version)) {
-        const v = version.replace(/^(~|\^|=)/, '').replace(/x/i, '0');
+  warn(
+    'You should consider using the new upgrade tool based on Git. It ' +
+    'makes upgrades easier by resolving most conflicts automatically.\n' +
+    'To use it:\n' +
+    '- Go back to the old version of React Native\n' +
+    '- Run "npm install -g react-native-git-upgrade"\n' +
+    '- Run "react-native-git-upgrade"\n' +
+    'See https://facebook.github.io/react-native/docs/upgrading.html'
+  );
 
-        if (semver.valid(v)) {
-          console.log(
-            'Upgrading project to react-native v' + installed.version + '\n' +
-            'Be sure to read the release notes and breaking changes:\n' +
-            chalk.blue(
-              'https://github.com/facebook/react-native/releases/tag/v' + semver.major(v) + '.' + semver.minor(v) + '.0'
-            )
-          );
+  const projectName = packageJSON.name;
+  if (!projectName) {
+    warn(
+      'Your project needs to have a name, declared in package.json, ' +
+      'such as "name": "AwesomeApp". Please add a project name. Aborting.'
+    );
+    return;
+  }
 
-          // >= v0.21.0, we require react to be a peer dependency
-          if (semver.gte(v, '0.21.0') && !pak.dependencies.react) {
-            console.log(
-              chalk.yellow(
-                '\nYour \'package.json\' file doesn\'t seem to have \'react\' as a dependency.\n' +
-                '\'react\' was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
-                'Therefore, it\'s necessary to include \'react\' in your project\'s dependencies.\n' +
-                'Just run \'npm install --save react\', then re-run \'react-native upgrade\'.\n'
-              )
-            );
-            return;
-          }
+  const version = packageJSON.dependencies['react-native'];
+  if (!version) {
+    warn(
+      'Your "package.json" file doesn\'t seem to declare "react-native" as ' +
+      'a dependency. Nothing to upgrade. Aborting.'
+    );
+    return;
+  }
 
-          if (semver.satisfies(v, '~0.26.0')) {
-            console.log(
-              chalk.yellow(
-                'React Native 0.26 introduced some breaking changes to the native files on iOS. You can\n' +
-                'perform them manually by checking the release notes or use \'rnpm\' to do it automatically.\n' +
-                'Just run:\n' +
-                '\'npm install -g rnpm && npm install rnpm-plugin-upgrade@0.26 --save-dev\', then run \'rnpm upgrade\''
-              )
-            );
-          }
-        } else {
-          console.log(
-            chalk.yellow(
-              'A valid version number for \'react-native\' is not specified in your \'package.json\' file.'
-            )
-          );
-        }
-      } else {
-        console.warn(
-          chalk.yellow(
-            'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
-            'Try running \'npm install\' to fix the issue.'
-          )
-        );
-      }
-    }
-  } else {
-    console.warn(
-      chalk.yellow(
-        'Your \'package.json\' file doesn\'t seem to have \'react-native\' as a dependency.'
-      )
+  if (version === 'latest' || version === '*') {
+    warn(
+      'Some major releases introduce breaking changes.\n' +
+      'Please use a caret version number in your "package.json" file \n' +
+      'to avoid breakage. Use e.g. react-native: ^0.38.0. Aborting.'
+    );
+    return;
+  }
+
+  const installed = JSON.parse(
+    fs.readFileSync(
+      path.resolve(projectDir, 'node_modules/react-native/package.json'),
+      'utf8'
+    )
+  );
+
+  if (!semver.satisfies(installed.version, version)) {
+    warn(
+      'react-native version in "package.json" doesn\'t match ' +
+      'the installed version in "node_modules".\n' +
+      'Try running "npm install" to fix this. Aborting.'
+    );
+    return;
+  }
+
+  const v = version.replace(/^(~|\^|=)/, '').replace(/x/i, '0');
+
+  if (!semver.valid(v)) {
+    warn(
+      "A valid version number for 'react-native' is not specified in your " +
+      "'package.json' file. Aborting."
+    );
+    return;
+  }
+
+  console.log(
+    'Upgrading project to react-native v' + installed.version + '\n' +
+    'Check out the release notes and breaking changes: ' +
+    'https://github.com/facebook/react-native/releases/tag/v' +
+    semver.major(v) + '.' + semver.minor(v) + '.0'
+  );
+
+  // >= v0.21.0, we require react to be a peer dependency
+  if (semver.gte(v, '0.21.0') && !packageJSON.dependencies.react) {
+    warn(
+      'Your "package.json" file doesn\'t seem to have "react" as a dependency.\n' +
+      '"react" was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
+      'Therefore, it\'s necessary to include "react" in your project\'s dependencies.\n' +
+      'Please run "npm install --save react", then re-run "react-native upgrade".\n'
+    );
+    return;
+  }
+
+  if (semver.satisfies(v, '~0.26.0')) {
+    warn(
+      'React Native 0.26 introduced some breaking changes to the native files on iOS. You can\n' +
+      'perform them manually by checking the release notes or use "rnpm" ' +
+      'to do it automatically.\n' +
+      'Just run:\n' +
+      '"npm install -g rnpm && npm install rnpm-plugin-upgrade@0.26 --save-dev", ' +
+      'then run "rnpm upgrade".'
     );
   }
 
-  const generatorPath = path.join(__dirname, '..', 'generator');
-  env.register(generatorPath, 'react:app');
-  const generatorArgs = ['react:app', pak.name].concat(args);
-  return new Promise((resolve) => env.run(generatorArgs, {upgrade: true}, resolve));
+  return new Promise((resolve) => {
+    upgradeProjectFiles(projectDir, projectName);
+    console.log(
+      'Successfully upgraded this project to react-native v' + installed.version
+    );
+    resolve();
+  });
 }
 
-module.exports = {
+/**
+ * Once all checks passed, upgrade the project files.
+ */
+function upgradeProjectFiles(projectDir, projectName) {
+  // Just owerwrite
+  copyProjectTemplateAndReplace(
+    path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
+    projectDir,
+    projectName,
+    {upgrade: true}
+  );
+}
+
+function warn(message) {
+  console.warn(chalk.yellow(message));
+}
+
+const upgradeCommand = {
   name: 'upgrade',
   description: 'upgrade your app\'s template files to the latest version; run this after ' +
     'updating the react-native version in your package.json and running npm install',
-  func: upgrade,
+  func: validateAndUpgrade,
 };
+
+module.exports = upgradeCommand;

@@ -18,7 +18,7 @@ Make sure you have the following installed:
 
 1. Android SDK version 23 (compileSdkVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
 2. SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
-3. Local Maven repository for Support Libraries (formerly `Android Support Repository`) >= 17 (for Android Support Library)
+3. Android Support Repository >= 17 (for Android Support Library)
 4. Android NDK (download links and installation instructions below)
 
 ### Point Gradle to your Android SDK:
@@ -76,7 +76,7 @@ Add `gradle-download-task` as dependency in `android/build.gradle`:
 ...
     dependencies {
         classpath 'com.android.tools.build:gradle:1.3.1'
-        classpath 'de.undercouch:gradle-download-task:2.0.0'
+        classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -97,7 +97,7 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
+Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
 ...
@@ -116,10 +116,10 @@ dependencies {
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
 
-Modify your `android/app/build.gradle` and replace `compile project(':react-native-custom-module')` with:
+Modify your `android/app/build.gradle`, and add:
 
 ```gradle
-compile(project(':react-native-custom-module')) {
+configurations.all {
     exclude group: 'com.facebook.react', module: 'react-native'
 }
 ```

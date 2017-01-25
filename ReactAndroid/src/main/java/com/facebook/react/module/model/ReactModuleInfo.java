@@ -3,14 +3,15 @@
 package com.facebook.react.module.model;
 
 /**
- * Data holder class holding native module specifications.
+ * Data holder class holding native module specifications. {@link ReactModuleSpecProcessor} creates
+ * these so Java modules don't have to be instantiated at React Native start up.
  */
-public class ReactModuleInfo {
+public class ReactModuleInfo implements Info {
 
-  public final String mName;
-  public final boolean mCanOverrideExistingModule;
-  public final boolean mSupportsWebWorkers;
-  public final boolean mNeedsEagerInit;
+  private final String mName;
+  private final boolean mCanOverrideExistingModule;
+  private final boolean mSupportsWebWorkers;
+  private final boolean mNeedsEagerInit;
 
   public ReactModuleInfo(
     String name,
@@ -21,5 +22,25 @@ public class ReactModuleInfo {
     mCanOverrideExistingModule = canOverrideExistingModule;
     mSupportsWebWorkers = supportsWebWorkers;
     mNeedsEagerInit = needsEagerInit;
+  }
+
+  @Override
+  public String name() {
+    return mName;
+  }
+
+  @Override
+  public boolean canOverrideExistingModule() {
+    return mCanOverrideExistingModule;
+  }
+
+  @Override
+  public boolean supportsWebWorkers() {
+    return mSupportsWebWorkers;
+  }
+
+  @Override
+  public boolean needsEagerInit() {
+    return mNeedsEagerInit;
   }
 }

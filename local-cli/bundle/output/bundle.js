@@ -5,37 +5,52 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-const Promise = require('promise');
 const meta = require('./meta');
+const relativizeSourceMap = require('../../../packager/react-packager/src/lib/relativizeSourceMap');
 const writeFile = require('./writeFile');
 
-function buildBundle(packagerClient, requestOptions) {
+import type Bundle from '../../../packager/react-packager/src/Bundler/Bundle';
+import type Server from '../../../packager/react-packager/src/Server';
+import type {OutputOptions, RequestOptions} from '../types.flow';
+
+function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {
   return packagerClient.buildBundle({
     ...requestOptions,
     isolateModuleIDs: true,
   });
 }
 
-function createCodeWithMap(bundle, dev) {
+function createCodeWithMap(bundle: Bundle, dev: boolean, sourceMapSourcesRoot?: string): * {
+  const map = bundle.getSourceMap({dev});
+  const sourceMap = relativizeSourceMap(
+    typeof map === 'string' ? JSON.parse(map) : map,
+    sourceMapSourcesRoot);
   return {
     code: bundle.getSource({dev}),
-    map: JSON.stringify(bundle.getSourceMap({dev})),
+    map: JSON.stringify(sourceMap),
   };
 }
 
-function saveBundleAndMap(bundle, options, log) {
+function saveBundleAndMap(
+  bundle: Bundle,
+  options: OutputOptions,
+  log: (x: string) => {},
+): Promise<> {
   const {
     bundleOutput,
     bundleEncoding: encoding,
     dev,
-    sourcemapOutput
+    sourcemapOutput,
+    sourcemapSourcesRoot
   } = options;
 
   log('start');
-  const codeWithMap = createCodeWithMap(bundle, dev);
+  const codeWithMap = createCodeWithMap(bundle, !!dev, sourcemapSourcesRoot);
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);

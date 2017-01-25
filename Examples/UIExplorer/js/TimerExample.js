@@ -242,25 +242,13 @@ exports.examples = [
     title: 'this.setInterval(fn, t)',
     description: 'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
-    render: function(): ReactElement<any> {
+    render: function(): React.Element<any> {
       class IntervalExample extends React.Component {
         state = {
           showTimer: true,
         };
 
         render() {
-          if (this.state.showTimer) {
-            var timer = [
-              <TimerTester ref="interval" dt={25} type="setInterval" />,
-              <UIExplorerButton onPress={() => this.refs.interval.clear() }>
-                Clear interval
-              </UIExplorerButton>
-            ];
-            var toggleText = 'Unmount timer';
-          } else {
-            var timer = null;
-            var toggleText = 'Mount new timer';
-          }
           return (
             <View>
               {this.state.showTimer && this._renderTimer()}

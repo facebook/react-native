@@ -5,14 +5,14 @@ layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
 next: android-ui-performance
-previous: running-on-device-android
+previous: headless-js-android
 ---
 
 Android requires that all apps be digitally signed with a certificate before they can be installed, so to distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describes the topic in detail. This guide covers the process in brief, as well as lists the steps required to packaging the JavaScript bundle.
 
 ### Generating a signing key
 
-You can generate a private signing key using `keytool`.
+You can generate a private signing key using `keytool`. On Windows `keytool` must be run from `C:\Program Files\Java\jdkx.x.x_x\bin`.
 
     $ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
@@ -54,10 +54,12 @@ android {
     defaultConfig { ... }
     signingConfigs {
         release {
-            storeFile file(MYAPP_RELEASE_STORE_FILE)
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
@@ -87,10 +89,10 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
-$ react-native run-android --variant=release
+$ react-native run-android --configuration=release
 ```
 
-Note that `--variant=release` is only available if you've set up signing as described above.
+Note that `--configuration=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 

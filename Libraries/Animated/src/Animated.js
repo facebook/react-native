@@ -11,6 +11,7 @@
  */
 'use strict';
 
+
 var AnimatedImplementation = require('AnimatedImplementation');
 var Image = require('Image');
 var Text = require('Text');

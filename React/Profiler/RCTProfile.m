@@ -10,7 +10,6 @@
 #import "RCTProfile.h"
 
 #import <dlfcn.h>
-
 #import <libkern/OSAtomic.h>
 #import <mach/mach.h>
 #import <objc/message.h>
@@ -19,15 +18,15 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
+#import "RCTJSCExecutor.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
-#import "RCTUtils.h"
 #import "RCTUIManager.h"
-#import "RCTJSCExecutor.h"
+#import "RCTUtils.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
@@ -363,7 +362,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
-  [RCTProfilingBridge() requestReload];
+  [RCTProfilingBridge() reload];
 }
 
 + (void)toggle:(UIButton *)target
@@ -381,9 +380,13 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
                atomically:YES
                  encoding:NSUTF8StringEncoding
                     error:nil];
+#if !TARGET_OS_TV
       UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:outFile]]
                                                                                            applicationActivities:nil];
-      activityViewController.completionHandler = ^(__unused NSString *activityType, __unused BOOL completed) {
+      activityViewController.completionWithItemsHandler = ^(__unused UIActivityType activityType,
+                                                            __unused BOOL completed,
+                                                            __unused NSArray *items,
+                                                            __unused NSError *error) {
         RCTProfileControlsWindow.hidden = NO;
       };
       RCTProfileControlsWindow.hidden = YES;
@@ -392,6 +395,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
                                                                                                  animated:YES
                                                                                                completion:nil];
       });
+#endif
     });
   } else {
     RCTProfileInit(RCTProfilingBridge());
@@ -677,12 +681,12 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
 {
   static NSUInteger flowID = 0;
 
-  CHECK(@0);
+  CHECK(0);
 
   NSUInteger cookie = ++flowID;
   if (callbacks != NULL) {
-    callbacks->begin_async_flow(1, "flow", cookie);
-    return @(cookie);
+    callbacks->begin_async_flow(1, "flow", (int)cookie);
+    return cookie;
   }
 
   NSTimeInterval time = CACurrentMediaTime();
@@ -708,7 +712,7 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_flow(1, "flow", cookie);
+    callbacks->end_async_flow(1, "flow", (int)cookie);
     return;
   }
 
@@ -753,6 +757,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
                                                  encoding:NSUTF8StringEncoding];
 
        if (message.length) {
+#if !TARGET_OS_TV
          dispatch_async(dispatch_get_main_queue(), ^{
            [[[UIAlertView alloc] initWithTitle:@"Profile"
                                        message:message
@@ -760,6 +765,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
                              cancelButtonTitle:@"OK"
                              otherButtonTitles:nil] show];
          });
+#endif
        }
      }
    }];

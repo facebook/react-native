@@ -32,13 +32,14 @@
  */
 'use strict';
 
-const React = require('React');
-const ReactNative = require('react-native');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
 const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
-const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationHeaderStyleInterpolator = require('NavigationHeaderStyleInterpolator');
+const NavigationHeaderTitle = require('NavigationHeaderTitle');
+const NavigationPropTypes = require('NavigationPropTypes');
+const React = require('React');
 const ReactComponentWithPureRenderMixin = require('react/lib/ReactComponentWithPureRenderMixin');
+const ReactNative = require('react-native');
+const TVEventHandler = require('TVEventHandler');
 
 const {
   Animated,
@@ -56,7 +57,7 @@ type SubViewProps = NavigationSceneRendererProps & {
   onNavigateBack: ?Function,
 };
 
-type SubViewRenderer = (subViewProps: SubViewProps) => ?ReactElement<any>;
+type SubViewRenderer = (subViewProps: SubViewProps) => ?React.Element<any>;
 
 type DefaultProps = {
   renderLeftComponent: SubViewRenderer,
@@ -128,7 +129,25 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  render(): ReactElement<any> {
+  _tvEventHandler: TVEventHandler;
+
+  componentDidMount(): void {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.props.onNavigateBack && cmp.props.onNavigateBack();
+      }
+    });
+  }
+
+  componentWillUnmount(): void {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
+  }
+
+  render(): React.Element<any> {
     const { scenes, style, viewProps } = this.props;
 
     const scenesProps = scenes.map(scene => {
@@ -156,39 +175,39 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     );
   }
 
-  _renderLeft(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderLeft = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'left',
       this.props.renderLeftComponent,
       NavigationHeaderStyleInterpolator.forLeft,
     );
-  }
+  };
 
-  _renderTitle(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderTitle = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'title',
       this.props.renderTitleComponent,
       NavigationHeaderStyleInterpolator.forCenter,
     );
-  }
+  };
 
-  _renderRight(props: NavigationSceneRendererProps): ?ReactElement<any> {
+  _renderRight = (props: NavigationSceneRendererProps): ?React.Element<any> => {
     return this._renderSubView(
       props,
       'right',
       this.props.renderRightComponent,
       NavigationHeaderStyleInterpolator.forRight,
     );
-  }
+  };
 
   _renderSubView(
     props: NavigationSceneRendererProps,
     name: SubViewName,
     renderer: SubViewRenderer,
     styleInterpolator: NavigationStyleInterpolator,
-  ): ?ReactElement<any> {
+  ): ?React.Element<any> {
     const {
       scene,
       navigationState,

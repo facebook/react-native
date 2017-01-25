@@ -19,6 +19,10 @@ type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
   inputRange: Array<number>,
+  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+   * detected during the deployment of v0.38.0. To see the error, remove this
+   * comment and run flow
+   */
   outputRange: (Array<number> | Array<string>),
   easing?: ((input: number) => number),
   extrapolate?: ExtrapolateType,
@@ -163,7 +167,7 @@ function colorToRgba(input: string): string {
     return input;
   }
 
-  int32Color = int32Color || 0; // $FlowIssue
+  int32Color = int32Color || 0;
 
   var r = (int32Color & 0xff000000) >>> 24;
   var g = (int32Color & 0x00ff0000) >>> 16;

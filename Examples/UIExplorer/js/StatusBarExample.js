@@ -442,7 +442,6 @@ const examples = [{
       </View>
     );
   },
-  platform: 'android',
 }];
 
 exports.examples = examples;

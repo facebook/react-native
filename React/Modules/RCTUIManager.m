@@ -11,18 +11,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
-#import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
+#import <yoga/Yoga.h>
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTComponent.h"
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
@@ -99,6 +94,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 // `UIKeyboardWillChangeFrameNotification`s.
 + (void)initializeStatics
 {
+#if !TARGET_OS_TV
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -106,12 +102,15 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
                                                 name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
   });
+#endif
 }
 
 + (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
+#if !TARGET_OS_TV
   NSDictionary *userInfo = notification.userInfo;
   _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+#endif
 }
 
 - (instancetype)initWithDuration:(NSTimeInterval)duration dictionary:(NSDictionary *)config
@@ -225,8 +224,9 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
-
+#if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
+#endif
 }
 
 @synthesize bridge = _bridge;
@@ -235,6 +235,10 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
+  // Report the event across the bridge.
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                              body:@([_bridge.accessibilityManager multiplier])];
+
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
@@ -242,10 +246,11 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)interfaceOrientationWillChange:(NSNotification *)notification
+- (void)interfaceOrientationDidChange
 {
+#if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation =
-    [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+    [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
   if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
@@ -255,11 +260,12 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(YES)];
+                                                body:RCTExportedDimensions()];
 #pragma clang diagnostic pop
   }
 
   _currentInterfaceOrientation = nextOrientation;
+#endif
 }
 
 - (void)invalidate
@@ -339,11 +345,13 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationWillChange:)
-                                               name:UIApplicationWillChangeStatusBarOrientationNotification
+                                           selector:@selector(interfaceOrientationDidChange)
+                                               name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
+#endif
+
   [RCTAnimation initializeStatics];
 }
 
@@ -808,7 +816,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     NSString *property = deleteAnimation.property;
     [deleteAnimation performAnimations:^{
       if ([property isEqualToString:@"scaleXY"]) {
-        removedChild.layer.transform = CATransform3DMakeScale(0, 0, 0);
+        removedChild.layer.transform = CATransform3DMakeScale(0.001, 0.001, 0.001);
       } else if ([property isEqualToString:@"opacity"]) {
         removedChild.layer.opacity = 0.0;
       } else {
@@ -849,18 +857,21 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
   RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
 
   RCTShadowView *superShadowView = shadowView.superview;
-  RCTAssert(superShadowView != nil, @"shadowView super (of ID %@) not found", reactTag);
+  if (!superShadowView) {
+    RCTAssert(NO, @"shadowView super (of ID %@) not found", reactTag);
+    return;
+  }
 
   NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObject:shadowView];
   RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
   NSArray<NSNumber *> *removeAtIndices = @[@(indexOfView)];
   NSArray<NSNumber *> *addTags = @[newReactTag];
   [self manageChildren:superShadowView.reactTag
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:addTags
+       moveFromIndices:nil
+         moveToIndices:nil
+     addChildReactTags:addTags
           addAtIndices:removeAtIndices
-        removeAtIndices:removeAtIndices];
+       removeAtIndices:removeAtIndices];
 }
 
 RCT_EXPORT_METHOD(setChildren:(nonnull NSNumber *)containerTag
@@ -1201,15 +1212,15 @@ RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
     // By convention, all coordinates, whether they be touch coordinates, or
     // measurement coordinates are with respect to the root view.
     CGRect frame = view.frame;
-    CGPoint pagePoint = [view.superview convertPoint:frame.origin toView:rootView];
+    CGRect globalBounds = [view convertRect:view.bounds toView:rootView];
 
     callback(@[
       @(frame.origin.x),
       @(frame.origin.y),
-      @(frame.size.width),
-      @(frame.size.height),
-      @(pagePoint.x),
-      @(pagePoint.y)
+      @(globalBounds.size.width),
+      @(globalBounds.size.height),
+      @(globalBounds.origin.x),
+      @(globalBounds.origin.y),
     ]);
   }];
 }
@@ -1460,22 +1471,19 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
-  NSMutableDictionary<NSString *, NSDictionary *> *allJSConstants = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
-  [_componentDataByName enumerateKeysAndObjectsUsingBlock:
-   ^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-
-     NSMutableDictionary<NSString *, id> *constantsNamespace =
-       [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
+  [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
+     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
      // Add manager class
-     constantsNamespace[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
 
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     constantsNamespace[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1507,20 +1515,22 @@ RCT_EXPORT_METHOD(clearJSResponder)
        }
      }
 
-     allJSConstants[name] = constantsNamespace;
+     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+     constants[name] = moduleConstants;
   }];
 
+#if !TARGET_OS_TV
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
-  [allJSConstants addEntriesFromDictionary:@{
-    @"customBubblingEventTypes": bubblingEvents,
-    @"customDirectEventTypes": directEvents,
-    @"Dimensions": RCTExportedDimensions(NO)
-  }];
+#endif
 
-  return allJSConstants;
+  constants[@"customBubblingEventTypes"] = bubblingEvents;
+  constants[@"customDirectEventTypes"] = directEvents;
+  constants[@"Dimensions"] = RCTExportedDimensions();
+
+  return constants;
 }
 
-static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
+static NSDictionary *RCTExportedDimensions()
 {
   RCTAssertMainQueue();
 
@@ -1528,8 +1538,8 @@ static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
   CGRect screenSize = [[UIScreen mainScreen] bounds];
   return @{
     @"window": @{
-        @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
-        @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
+        @"width": @(screenSize.size.width),
+        @"height": @(screenSize.size.height),
         @"scale": @(RCTScreenScale()),
     },
   };
@@ -1552,6 +1562,11 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion

@@ -9,24 +9,25 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.csslayout.CSSConstants;
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of spannable {@link TextView}.
@@ -36,6 +37,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  * @{link ReactTextShadowNode} hierarchy to calculate a {@link Spannable} text representing the
  * whole text subtree.
  */
+@ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
 
   @VisibleForTesting
@@ -93,16 +95,25 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   public void setSelectable(ReactTextView view, boolean isSelectable) {
     view.setTextIsSelectable(isSelectable);
   }
-  
+
+  @ReactProp(name = "selectionColor", customType = "Color")
+  public void setSelectionColor(ReactTextView view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
+    } else {
+      view.setHighlightColor(color);
+    }
+  }
+
   @ReactPropGroup(names = {
           ViewProps.BORDER_RADIUS,
           ViewProps.BORDER_TOP_LEFT_RADIUS,
           ViewProps.BORDER_TOP_RIGHT_RADIUS,
           ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
           ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
-    if (!CSSConstants.isUndefined(borderRadius)) {
+    if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -124,9 +135,9 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
           ViewProps.BORDER_RIGHT_WIDTH,
           ViewProps.BORDER_TOP_WIDTH,
           ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = CSSConstants.UNDEFINED)
+  }, defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactTextView view, int index, float width) {
-    if (!CSSConstants.isUndefined(width)) {
+    if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);
@@ -136,11 +147,16 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
           "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color")
   public void setBorderColor(ReactTextView view, int index, Integer color) {
-    float rgbComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
-    float alphaComponent = color == null ? CSSConstants.UNDEFINED : (float) ((int)color >>> 24);
+    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
-  
+
+  @ReactProp(name = "includeFontPadding", defaultBoolean = true)
+  public void setIncludeFontPadding(ReactTextView view, boolean includepad) {
+    view.setIncludeFontPadding(includepad);
+  }
+
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;
@@ -153,7 +169,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode(false);
+    return new ReactTextShadowNode();
   }
 
   @Override

@@ -8,8 +8,11 @@
  */
 'use strict';
 
+const {dirname} = require.requireActual('path');
 const fs = jest.genMockFromModule('fs');
+const path = require('path');
 const stream = require.requireActual('stream');
+
 const noop = () => {};
 
 function asyncCallback(cb) {
@@ -22,7 +25,7 @@ const mtime = {
   getTime: () => Math.ceil(Math.random() * 10000000),
 };
 
-fs.realpath.mockImpl((filepath, callback) => {
+fs.realpath.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -36,9 +39,9 @@ fs.realpath.mockImpl((filepath, callback) => {
   callback(null, filepath);
 });
 
-fs.readdirSync.mockImpl((filepath) => Object.keys(getToNode(filepath)));
+fs.readdirSync.mockImplementation((filepath) => Object.keys(getToNode(filepath)));
 
-fs.readdir.mockImpl((filepath, callback) => {
+fs.readdir.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -57,7 +60,7 @@ fs.readdir.mockImpl((filepath, callback) => {
   callback(null, Object.keys(node));
 });
 
-fs.readFile.mockImpl(function(filepath, encoding, callback) {
+fs.readFile.mockImplementation(function(filepath, encoding, callback) {
   callback = asyncCallback(callback);
   if (arguments.length === 2) {
     callback = encoding;
@@ -71,13 +74,26 @@ fs.readFile.mockImpl(function(filepath, encoding, callback) {
     if (node && typeof node === 'object' && node.SYMLINK == null) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
-    return callback(null, node);
+    if (node == null) {
+      callback(Error('No such file: ' + filepath));
+    } else {
+      callback(null, node);
+    }
   } catch (e) {
     return callback(e);
   }
 });
 
-fs.stat.mockImpl((filepath, callback) => {
+fs.readFileSync.mockImplementation(function(filepath, encoding) {
+  const node = getToNode(filepath);
+  // dir check
+  if (node && typeof node === 'object' && node.SYMLINK == null) {
+    throw new Error('Error readFileSync a dir: ' + filepath);
+  }
+  return node;
+});
+
+fs.stat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
   let node;
   try {
@@ -107,7 +123,7 @@ fs.stat.mockImpl((filepath, callback) => {
   }
 });
 
-fs.statSync.mockImpl((filepath) => {
+fs.statSync.mockImplementation((filepath) => {
   const node = getToNode(filepath);
 
   if (node.SYMLINK) {
@@ -121,7 +137,32 @@ fs.statSync.mockImpl((filepath) => {
   };
 });
 
-fs.lstatSync.mockImpl((filepath) => {
+fs.lstat.mockImplementation((filepath, callback) => {
+  callback = asyncCallback(callback);
+  let node;
+  try {
+    node = getToNode(filepath);
+  } catch (e) {
+    callback(e);
+    return;
+  }
+
+  if (node && typeof node === 'object') {
+    callback(null, {
+      isDirectory: () => true,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  } else {
+    callback(null, {
+      isDirectory: () => false,
+      isSymbolicLink: () => false,
+      mtime,
+    });
+  }
+});
+
+fs.lstatSync.mockImplementation((filepath) => {
   const node = getToNode(filepath);
 
   if (node.SYMLINK) {
@@ -139,17 +180,17 @@ fs.lstatSync.mockImpl((filepath) => {
   };
 });
 
-fs.open.mockImpl(function(path) {
+fs.open.mockImplementation(function(filepath) {
   const callback = arguments[arguments.length - 1] || noop;
   let data, error, fd;
   try {
-    data = getToNode(path);
+    data = getToNode(filepath);
   } catch (e) {
     error = e;
   }
 
   if (error || data == null) {
-    error = Error(`ENOENT: no such file or directory, open ${path}`);
+    error = Error(`ENOENT: no such file or directory, open ${filepath}`);
   }
   if (data != null) {
     /* global Buffer: true */
@@ -159,7 +200,7 @@ fs.open.mockImpl(function(path) {
   callback(error, fd);
 });
 
-fs.read.mockImpl((fd, buffer, writeOffset, length, position, callback = noop) => {
+fs.read.mockImplementation((fd, buffer, writeOffset, length, position, callback = noop) => {
   let bytesWritten;
   try {
     if (position == null || position < 0) {
@@ -174,7 +215,7 @@ fs.read.mockImpl((fd, buffer, writeOffset, length, position, callback = noop) =>
   callback(null, bytesWritten, buffer);
 });
 
-fs.close.mockImpl((fd, callback = noop) => {
+fs.close.mockImplementation((fd, callback = noop) => {
   try {
     fd.buffer = fs.position = undefined;
   } catch (e) {
@@ -186,12 +227,12 @@ fs.close.mockImpl((fd, callback = noop) => {
 
 let filesystem;
 
-fs.createReadStream.mockImpl(path => {
-  if (!path.startsWith('/')) {
-    throw Error('Cannot open file ' + path);
+fs.createReadStream.mockImplementation(filepath => {
+  if (!filepath.startsWith('/')) {
+    throw Error('Cannot open file ' + filepath);
   }
 
-  const parts = path.split('/').slice(1);
+  const parts = filepath.split('/').slice(1);
   let file = filesystem;
 
   for (const part of parts) {
@@ -202,7 +243,7 @@ fs.createReadStream.mockImpl(path => {
   }
 
   if (typeof file !== 'string') {
-    throw Error('Cannot open file ' + path);
+    throw Error('Cannot open file ' + filepath);
   }
 
   return new stream.Readable({
@@ -213,6 +254,29 @@ fs.createReadStream.mockImpl(path => {
   });
 });
 
+fs.createWriteStream.mockImplementation(file => {
+  let node;
+  try {
+    node = getToNode(dirname(file));
+  } finally {
+    if (typeof node === 'object') {
+      const writeStream = new stream.Writable({
+        write(chunk) {
+          this.__chunks.push(chunk);
+        }
+      });
+      writeStream.__file = file;
+      writeStream.__chunks = [];
+      writeStream.end = jest.fn(writeStream.end);
+      fs.createWriteStream.mock.returned.push(writeStream);
+      return writeStream;
+    } else {
+      throw new Error('Cannot open file ' + file);
+    }
+  }
+});
+fs.createWriteStream.mock.returned = [];
+
 
 fs.__setMockFilesystem = (object) => (filesystem = object);
 
@@ -222,6 +286,9 @@ function getToNode(filepath) {
     filepath = filepath.substring(2);
   }
 
+  if (filepath.endsWith(path.sep)) {
+    filepath = filepath.slice(0, -1);
+  }
   const parts = filepath.split(/[\/\\]/);
   if (parts[0] !== '') {
     throw new Error('Make sure all paths are absolute.');

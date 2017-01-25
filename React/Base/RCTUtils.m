@@ -252,16 +252,14 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
   }
 }
 
-void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
+// Please do not use this method
+// unless you know what you are doing.
+void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 {
   if (RCTIsMainQueue()) {
     block();
-  } else if (sync) {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
   } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_sync(dispatch_get_main_queue(), ^{
       block();
     });
   }
@@ -272,9 +270,9 @@ CGFloat RCTScreenScale()
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTExecuteOnMainThread(^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       scale = [UIScreen mainScreen].scale;
-    }, YES);
+    });
   });
 
   return scale;
@@ -289,9 +287,9 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    RCTExecuteOnMainThread(^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       size = [UIScreen mainScreen].bounds.size;
-    }, YES);
+    });
   });
 
   return size;
@@ -413,18 +411,28 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary *userInfo;
   NSMutableDictionary<NSString *, id> *errorInfo =
   [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
+    if (error.userInfo) {
+      userInfo = [error.userInfo mutableCopy];
+      if (userInfo != nil && userInfo[NSUnderlyingErrorKey] != nil) {
+        NSError *underlyingError = error.userInfo[NSUnderlyingErrorKey];
+        NSString *underlyingCode = [NSString stringWithFormat:@"%d", (int)underlyingError.code];
+        userInfo[NSUnderlyingErrorKey] = RCTJSErrorFromCodeMessageAndNSError(underlyingCode, @"underlying error", underlyingError);
+      }
+    }
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
+    userInfo = nil;
   }
   errorInfo[@"code"] = code ?: RCTErrorUnspecified;
-  errorInfo[@"userInfo"] = RCTNullIfNil(error.userInfo);
+  errorInfo[@"userInfo"] = RCTNullIfNil(userInfo);
 
   // Allow for explicit overriding of the error message
   errorMessage = message ?: errorMessage;
@@ -491,31 +499,6 @@ BOOL RCTForceTouchAvailable(void)
 
   return forceSupported &&
     (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
-}
-
-UIAlertView *__nullable RCTAlertView(NSString *title,
-                                     NSString *__nullable message,
-                                     id __nullable delegate,
-                                     NSString *__nullable cancelButtonTitle,
-                                     NSArray<NSString *> *__nullable otherButtonTitles)
-{
-  if (RCTRunningInAppExtension()) {
-    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
-    return nil;
-  }
-
-  UIAlertView *alertView = [UIAlertView new];
-  alertView.title = title;
-  alertView.message = message;
-  alertView.delegate = delegate;
-  if (cancelButtonTitle != nil) {
-    [alertView addButtonWithTitle:cancelButtonTitle];
-    alertView.cancelButtonIndex = 0;
-  }
-  for (NSString *buttonTitle in otherButtonTitles) {
-    [alertView addButtonWithTitle:buttonTitle];
-  }
-  return alertView;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)

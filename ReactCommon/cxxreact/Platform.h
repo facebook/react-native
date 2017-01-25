@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <jschelpers/JavaScriptCore.h>
 
 #include "Executor.h"
 #include "MessageQueueThread.h"

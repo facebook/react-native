@@ -51,7 +51,7 @@
 
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
-  _hasConstantsToExport = RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport));
+  _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -219,12 +219,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"RCTBridge required dispatch_sync to load %@. This may lead to deadlocks", _moduleClass);
       }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      RCTExecuteOnMainThread(^{
+
+      RCTUnsafeExecuteOnMainQueueSync(^{
         [self setUpInstanceAndBridge];
-      }, YES);
-#pragma clang diagnostic pop
+      });
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
       [self setUpInstanceAndBridge];
@@ -286,12 +284,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     if (!RCTIsMainQueue()) {
       RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
     }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    RCTExecuteOnMainThread(^{
+
+    RCTUnsafeExecuteOnMainQueueSync(^{
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
-    }, YES);
-#pragma clang diagnostic pop
+    });
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
@@ -329,12 +325,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 
   NSArray *config = @[
-                      self.name,
-                      RCTNullIfNil(constants),
-                      RCTNullIfNil(methods),
-                      RCTNullIfNil(promiseMethods),
-                      RCTNullIfNil(syncMethods)
-                      ];
+    self.name,
+    RCTNullIfNil(constants),
+    RCTNullIfNil(methods),
+    RCTNullIfNil(promiseMethods),
+    RCTNullIfNil(syncMethods)
+  ];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]));
   return config;
 }

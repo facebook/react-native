@@ -16,7 +16,6 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const RCTNetInfo = NativeModules.NetInfo;
-const deprecatedCallback = require('deprecatedCallback');
 
 const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
@@ -241,10 +240,12 @@ const NetInfo = {
       eventName: ChangeEventName,
       handler: Function
     ): void {
-      /* $FlowFixMe */
       const listener = _isConnectedSubscriptions.get(handler);
       NetInfo.removeEventListener(
         eventName,
+        /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
+         * detected during the deploy of Flow v0.36.0. To see the error, remove
+         * this comment and run Flow */
         listener
       );
       _isConnectedSubscriptions.delete(handler);
@@ -257,12 +258,9 @@ const NetInfo = {
     },
   },
 
-  isConnectionExpensive(): Promise<any> {
-    return deprecatedCallback(
-      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
-      Array.prototype.slice.call(arguments),
-      'single-callback-value-first',
-      'NetInfo.isConnectionMetered(callback) is deprecated. Use the returned Promise instead.'
+  isConnectionExpensive(): Promise<boolean> {
+    return (
+      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS'))
     );
   },
 };

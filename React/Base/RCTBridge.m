@@ -14,14 +14,13 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
+#import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
@@ -67,9 +66,13 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   if (name.length == 0) {
     name = NSStringFromClass(cls);
   }
+
   if ([name hasPrefix:@"RK"]) {
-    name = [name stringByReplacingCharactersInRange:(NSRange){0,@"RK".length} withString:@"RCT"];
+    name = [name substringFromIndex:2];
+  } else if ([name hasPrefix:@"RCT"]) {
+    name = [name substringFromIndex:3];
   }
+
   return name;
 }
 
@@ -115,6 +118,9 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
   free(classes);
 }
 #endif
+
+@interface RCTBridge () <RCTReloadListener>
+@end
 
 @implementation RCTBridge
 {
@@ -196,7 +202,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
    */
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
 }
 
@@ -205,16 +210,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTAssertMainQueue();
 
 #if TARGET_IPHONE_SIMULATOR
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  // reload in current mode
-  __weak typeof(self) weakSelf = self;
-  [commands registerKeyCommandWithInput:@"r"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-    [weakSelf requestReload];
-  }];
+  RCTRegisterReloadCommandListener(self);
 #endif
+}
+
+- (void)didReceiveReloadCommand
+{
+  [self reload];
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -269,7 +271,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)requestReload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
   [self reload];
 }
 
@@ -292,6 +293,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   [self createBatchedBridge];
+  [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
@@ -345,5 +347,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [self.batchedBridge enqueueCallback:cbID args:args];
 }
+
+- (JSValue *)callFunctionOnModule:(NSString *)module
+                           method:(NSString *)method
+                        arguments:(NSArray *)arguments
+                            error:(NSError **)error
+{
+  return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
+}
+
 
 @end

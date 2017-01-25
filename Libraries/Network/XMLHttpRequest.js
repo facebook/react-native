@@ -11,15 +11,42 @@
  */
 'use strict';
 
+const EventTarget = require('event-target-shim');
 const RCTNetworking = require('RCTNetworking');
 
-const EventTarget = require('event-target-shim');
 const base64 = require('base64-js');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
 type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
 type Response = ?Object | string;
+
+type XHRInterceptor = {
+  requestSent(
+    id: number,
+    url: string,
+    method: string,
+    headers: Object
+  ): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(
+    id: number,
+    data: string
+  ): void,
+  loadingFinished(
+    id: number,
+    encodedDataLength: number
+  ): void,
+  loadingFailed(
+    id: number,
+    error: string
+  ): void,
+};
 
 const UNSENT = 0;
 const OPENED = 1;
@@ -68,6 +95,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   static LOADING: number = LOADING;
   static DONE: number = DONE;
 
+  static _interceptor: ?XHRInterceptor = null;
+
   UNSENT: number = UNSENT;
   OPENED: number = OPENED;
   HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -108,6 +137,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   _timedOut: boolean = false;
   _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
+
+  static setInterceptor(interceptor: ?XHRInterceptor) {
+    XMLHttpRequest._interceptor = interceptor;
+  }
 
   constructor() {
     super();
@@ -224,6 +257,12 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   // exposed for testing
   __didCreateRequest(requestId: number): void {
     this._requestId = requestId;
+
+    XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.requestSent(
+      requestId,
+      this._url || '',
+      this._method || 'GET',
+      this._headers);
   }
 
   // exposed for testing
@@ -257,6 +296,12 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       } else {
         delete this.responseURL;
       }
+
+      XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.responseReceived(
+        requestId,
+        responseURL || this._url || '',
+        status,
+        responseHeaders || {});
     }
   }
 
@@ -267,6 +312,10 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     this._response = response;
     this._cachedResponse = undefined; // force lazy recomputation
     this.setReadyState(this.LOADING);
+
+    XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.dataReceived(
+      requestId,
+      response);
   }
 
   __didReceiveIncrementalData(
@@ -283,6 +332,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     } else {
       this._response += responseText;
     }
+
+    XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.dataReceived(
+      requestId,
+      responseText);
+
     this.setReadyState(this.LOADING);
     this.__didReceiveDataProgress(requestId, progress, total);
   }
@@ -322,6 +376,16 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
+
+      if (error) {
+        XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.loadingFailed(
+          requestId,
+          error);
+      } else {
+        XMLHttpRequest._interceptor && XMLHttpRequest._interceptor.loadingFinished(
+          requestId,
+          this._response.length);
+      }
     }
   }
 
@@ -329,6 +393,9 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     (this._subscriptions || []).forEach(sub => {
       sub.remove();
     });
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions = [];
   }
 
@@ -340,7 +407,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     var headers = this.responseHeaders || {};
     return Object.keys(headers).map((headerName) => {
       return headerName + ': ' + headers[headerName];
-    }).join('\n');
+    }).join('\r\n');
   }
 
   getResponseHeader(header: string): ?string {
@@ -352,7 +419,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
     }
-    this._headers[header.toLowerCase()] = value;
+    this._headers[header.toLowerCase()] = String(value);
   }
 
   /**
@@ -393,26 +460,44 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       !!this.onreadystatechange ||
       !!this.onprogress;
 
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didSendNetworkData',
       (args) => this.__didUploadProgress(...args)
     ));
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkResponse',
       (args) => this.__didReceiveResponse(...args)
     ));
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkData',
       (args) => this.__didReceiveData(...args)
     ));
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkIncrementalData',
       (args) => this.__didReceiveIncrementalData(...args)
     ));
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkDataProgress',
       (args) => this.__didReceiveDataProgress(...args)
     ));
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didCompleteNetworkResponse',
       (args) => this.__didCompleteResponse(...args)
