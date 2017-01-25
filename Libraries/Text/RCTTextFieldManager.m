@@ -43,6 +43,13 @@ RCT_EXPORT_MODULE()
   if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
   }
+
+  // Let the user type if it's marked (not finished yet).
+  UITextRange *markedRange = [textField markedTextRange];
+  UITextPosition *position = [textField positionFromPosition:markedRange.start offset:0];
+  if (position)
+    return YES;
+    
   NSUInteger allowedLength = textField.maxLength.integerValue - MIN(textField.maxLength.integerValue, textField.text.length) + range.length;
   if (string.length > allowedLength) {
     if (string.length > 1) {
