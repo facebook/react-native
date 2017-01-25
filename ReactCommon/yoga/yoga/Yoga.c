@@ -1431,11 +1431,10 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     childHeightMeasureMode =
         YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined : YGMeasureModeExactly;
 
-    // According to the spec, if the main size is not definite and the
-    // child's inline axis is parallel to the main axis (i.e. it's
-    // horizontal), the child should be sized using "UNDEFINED" in
-    // the main size. Otherwise use "AT_MOST" in the cross axis.
-    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined) {
+    // If the size of the parent is defined then try to constrain the absolute child to that size
+    // as well. This allows text within the absolute child to wrap to the size of its parent.
+    // This is the same behavior as many browsers implement.
+    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined && width > 0) {
       childWidth = width;
       childWidthMeasureMode = YGMeasureModeAtMost;
     }
