@@ -226,7 +226,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
   if (useCustomJSC) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, toJson(m_jscConfig));
   }
   #else
   const bool useCustomJSC = false;
