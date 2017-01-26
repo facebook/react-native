@@ -41,7 +41,7 @@ function getProgressBar(ratio: number, length: number) {
   );
 }
 
-type TerminalReportableEvent = ReportableEvent | {
+export type TerminalReportableEvent = ReportableEvent | {
   type: 'bundle_transform_progressed_throttled',
   entryFilePath: string,
   transformedFileCount: number,
@@ -152,7 +152,8 @@ class TerminalReporter {
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
         break;
       case 'global_cache_error':
-        reporting.logWarning(terminal, 'The global cache failed: %s', event.error.stack);
+        const message = JSON.stringify(event.error.message);
+        reporting.logWarning(terminal, 'the global cache failed: %s', message);
         break;
       case 'global_cache_disabled':
         this._logCacheDisabled(event.reason);

@@ -13,8 +13,8 @@
 #include <cxxabi.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTUtils.h"
@@ -229,7 +229,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
         }
 
         NSRange range = NSMakeRange(0, frameSymbols.length);
-        NSTextCheckingResult *match = [nativeStackFrameRegex() firstMatchInString:frameSymbols                                                                           options:0 range:range];
+        NSTextCheckingResult *match = [nativeStackFrameRegex() firstMatchInString:frameSymbols options:0 range:range];
         if (!match) {
           return;
         }

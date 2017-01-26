@@ -43,7 +43,7 @@ public class JSPackagerWebSocketClient extends WebSocketListener {
   private boolean mSuppressConnectionErrors;
 
   public interface JSPackagerCallback {
-    void onMessage(String target, String action);
+    void onMessage(@Nullable WebSocket webSocket, String target, String action);
   }
 
   private @Nullable WebSocket mWebSocket;
@@ -105,7 +105,7 @@ public class JSPackagerWebSocketClient extends WebSocketListener {
 
   private void triggerMessageCallback(String target, String action) {
     if (mCallback != null) {
-      mCallback.onMessage(target, action);
+      mCallback.onMessage(mWebSocket, target, action);
     }
   }
 

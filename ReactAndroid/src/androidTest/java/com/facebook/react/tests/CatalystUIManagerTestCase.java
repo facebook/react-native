@@ -82,7 +82,8 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     uiManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {

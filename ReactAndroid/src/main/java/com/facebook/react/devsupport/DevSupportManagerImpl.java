@@ -58,6 +58,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -417,9 +418,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            JSCHeapCapture.captureHeap(
-              mApplicationContext.getCacheDir().getPath(),
-              JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+            handleCaptureHeap();
           }
         });
     options.put(
@@ -427,24 +426,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            try {
-              List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-              for (String result : pokeResults) {
-                Toast.makeText(
-                  mCurrentContext,
-                  result == null
-                    ? "Started JSC Sampling Profiler"
-                    : "Stopped JSC Sampling Profiler",
-                  Toast.LENGTH_LONG).show();
-                if (result != null) {
-                  new JscProfileTask(getSourceUrl()).executeOnExecutor(
-                      AsyncTask.THREAD_POOL_EXECUTOR,
-                      result);
-                }
-              }
-            } catch (JSCSamplingProfiler.ProfilerException e) {
-              showNewJavaError(e.getMessage(), e);
-            }
+            handlePokeSamplingProfiler(null);
           }
         });
     options.put(
@@ -689,6 +671,60 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         handleReloadJS();
       }
     });
+  }
+
+  @Override
+  public void onCaptureHeapCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handleCaptureHeap();
+      }
+    });
+  }
+
+  @Override
+  public void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handlePokeSamplingProfiler(webSocket);
+      }
+    });
+  }
+
+  private void handleCaptureHeap() {
+    JSCHeapCapture.captureHeap(
+      mApplicationContext.getCacheDir().getPath(),
+      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+  }
+
+  private void handlePokeSamplingProfiler(@Nullable WebSocket webSocket) {
+    try {
+      List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+      for (String result : pokeResults) {
+        Toast.makeText(
+          mCurrentContext,
+          result == null
+            ? "Started JSC Sampling Profiler"
+            : "Stopped JSC Sampling Profiler",
+          Toast.LENGTH_LONG).show();
+        if (webSocket != null) {
+          // WebSocket is provided, so there is a client waiting our response
+          webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result == null ? "" : result));
+        } else if (result != null) {
+          // The profile was not initiated by external client, so process the
+          // profile if there is one in the result
+          new JscProfileTask(getSourceUrl()).executeOnExecutor(
+              AsyncTask.THREAD_POOL_EXECUTOR,
+              result);
+        }
+      }
+    } catch (JSCSamplingProfiler.ProfilerException e) {
+      showNewJavaError(e.getMessage(), e);
+    } catch (IOException e) {
+      showNewJavaError(e.getMessage(), e);
+    }
   }
 
   private void updateLastErrorInfo(

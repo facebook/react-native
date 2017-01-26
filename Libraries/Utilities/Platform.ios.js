@@ -22,6 +22,10 @@ const Platform = {
     const constants = require('NativeModules').IOSConstants;
     return constants ? (constants.interfaceIdiom === 'tv') : false;
   },
+  get isTesting(): boolean {
+    const constants = require('NativeModules').IOSConstants;
+    return constants && constants.isTesting;
+  },
   select: (obj: Object) => obj.ios,
 };
 

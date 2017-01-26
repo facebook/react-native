@@ -52,6 +52,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private YogaNode mParent;
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
+  private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
   private Object mData;
 
@@ -68,6 +69,22 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private float mTop = YogaConstants.UNDEFINED;
   @DoNotStrip
   private float mLeft = YogaConstants.UNDEFINED;
+  @DoNotStrip
+  private float mMarginLeft = 0;
+  @DoNotStrip
+  private float mMarginTop = 0;
+  @DoNotStrip
+  private float mMarginRight = 0;
+  @DoNotStrip
+  private float mMarginBottom = 0;
+  @DoNotStrip
+  private float mPaddingLeft = 0;
+  @DoNotStrip
+  private float mPaddingTop = 0;
+  @DoNotStrip
+  private float mPaddingRight = 0;
+  @DoNotStrip
+  private float mPaddingBottom = 0;
   @DoNotStrip
   private int mLayoutDirection = 0;
 
@@ -565,6 +582,46 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   }
 
   @Override
+  public float getLayoutMargin(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mMarginLeft;
+      case TOP:
+        return mMarginTop;
+      case RIGHT:
+        return mMarginRight;
+      case BOTTOM:
+        return mMarginBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mMarginRight : mMarginLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mMarginLeft : mMarginRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout margins of multi-edge shorthands");
+    }
+  }
+
+  @Override
+  public float getLayoutPadding(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mPaddingLeft;
+      case TOP:
+        return mPaddingTop;
+      case RIGHT:
+        return mPaddingRight;
+      case BOTTOM:
+        return mPaddingBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mPaddingRight : mPaddingLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
+    }
+  }
+
+  @Override
   public YogaDirection getLayoutDirection() {
     return YogaDirection.values()[mLayoutDirection];
   }
@@ -593,6 +650,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
           YogaMeasureMode.values()[widthMode],
           height,
           YogaMeasureMode.values()[heightMode]);
+  }
+
+  private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
+  @Override
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mBaselineFunction = baselineFunction;
+    jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
+  }
+
+  @DoNotStrip
+  public final float baseline(float width, float height) {
+    return mBaselineFunction.baseline(this, width, height);
   }
 
   @Override

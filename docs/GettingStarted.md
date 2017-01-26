@@ -205,6 +205,7 @@ Android Studio installs the most recent Android SDK by default. React Native, ho
 Select "SDK Platforms" from within the SDK Manager, then check the box next to "Show Package Details". Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
 
 - `Google APIs`
+- `Android SDK Platform 23`
 - `Intel x86 Atom System Image`
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`

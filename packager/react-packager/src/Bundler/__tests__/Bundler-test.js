@@ -28,8 +28,19 @@ jest
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
+var defaults = require('../../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
+
+var commonOptions = {
+  allowBundleUpdates: false,
+  assetExts: defaults.assetExts,
+  cacheVersion: 'smth',
+  extraNodeModules: {},
+  platforms: defaults.platforms,
+  resetCache: false,
+  watch: false,
+};
 
 describe('Bundler', function() {
 
@@ -91,6 +102,7 @@ describe('Bundler', function() {
     };
 
     bundler = new Bundler({
+      ...commonOptions,
       projectRoots,
       assetServer: assetServer,
     });
@@ -270,6 +282,7 @@ describe('Bundler', function() {
   it('allows overriding the platforms array', () => {
     expect(bundler._opts.platforms).toEqual(['ios', 'android', 'windows', 'web']);
     const b = new Bundler({
+      ...commonOptions,
       projectRoots,
       assetServer: assetServer,
       platforms: ['android', 'vr'],
