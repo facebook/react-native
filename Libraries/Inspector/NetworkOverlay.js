@@ -13,7 +13,6 @@
 
 const ListView = require('ListView');
 const React = require('React');
-const RecyclerViewBackedScrollView = require('RecyclerViewBackedScrollView');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -369,7 +368,7 @@ class NetworkOverlay extends React.Component {
 
   _renderScrollComponent(props: Object): React.Element<any> {
     return (
-      <RecyclerViewBackedScrollView {...props} />
+      <ScrollView {...props} />
     );
   }
 
