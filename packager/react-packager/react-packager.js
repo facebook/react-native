@@ -24,7 +24,7 @@ exports.Logger = Logger;
 
 type Options = {
   globalTransformCache: ?GlobalTransformCache,
-  nonPersistent: boolean,
+  nonPersistent?: boolean,
   projectRoots: Array<string>,
   reporter?: Reporter,
   watch?: boolean,
@@ -32,7 +32,7 @@ type Options = {
 
 type StrictOptions = {
   globalTransformCache: ?GlobalTransformCache,
-  nonPersistent: boolean,
+  nonPersistent?: boolean,
   projectRoots: Array<string>,
   reporter: Reporter,
   watch?: boolean,
