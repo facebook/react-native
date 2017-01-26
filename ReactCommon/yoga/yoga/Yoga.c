@@ -532,7 +532,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
     return node->layout.instanceName;                          \
   }
 
-#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)  \
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)                    \
   type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {                    \
     YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout properties of multi-edge shorthands"); \
                                                                                            \
@@ -1436,7 +1436,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     // If the size of the parent is defined then try to constrain the absolute child to that size
     // as well. This allows text within the absolute child to wrap to the size of its parent.
     // This is the same behavior as many browsers implement.
-    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined && width > 0) {
+    if (!isMainAxisRow && YGFloatIsUndefined(childWidth) && widthMode != YGMeasureModeUndefined &&
+        width > 0) {
       childWidth = width;
       childWidthMeasureMode = YGMeasureModeAtMost;
     }
@@ -1473,12 +1474,13 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
                                                 child->layout.measuredDimensions[dim[mainAxis]] -
                                                 YGNodeTrailingBorder(node, mainAxis) -
                                                 YGNodeTrailingPosition(child, mainAxis, width);
-  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) && 
-      node->style.justifyContent == YGJustifyCenter) {
+  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) &&
+             node->style.justifyContent == YGJustifyCenter) {
     child->layout.position[leading[mainAxis]] = (node->layout.measuredDimensions[dim[mainAxis]] -
-                                                 child->layout.measuredDimensions[dim[mainAxis]]) / 2.0f;
-  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) && 
-      node->style.justifyContent == YGJustifyFlexEnd) {
+                                                 child->layout.measuredDimensions[dim[mainAxis]]) /
+                                                2.0f;
+  } else if (!YGNodeIsLeadingPosDefined(child, mainAxis) &&
+             node->style.justifyContent == YGJustifyFlexEnd) {
     child->layout.position[leading[mainAxis]] = (node->layout.measuredDimensions[dim[mainAxis]] -
                                                  child->layout.measuredDimensions[dim[mainAxis]]);
   }
@@ -1489,12 +1491,14 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
                                                  child->layout.measuredDimensions[dim[crossAxis]] -
                                                  YGNodeTrailingBorder(node, crossAxis) -
                                                  YGNodeTrailingPosition(child, crossAxis, width);
-  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) && 
-    YGNodeAlignItem(node, child) == YGAlignCenter) {
-    child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
-                                                  child->layout.measuredDimensions[dim[crossAxis]]) / 2.0f;
-  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) && 
-    YGNodeAlignItem(node, child) == YGAlignFlexEnd) {
+  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
+             YGNodeAlignItem(node, child) == YGAlignCenter) {
+    child->layout.position[leading[crossAxis]] =
+        (node->layout.measuredDimensions[dim[crossAxis]] -
+         child->layout.measuredDimensions[dim[crossAxis]]) /
+        2.0f;
+  } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
+             YGNodeAlignItem(node, child) == YGAlignFlexEnd) {
     child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
                                                   child->layout.measuredDimensions[dim[crossAxis]]);
   }
@@ -1767,34 +1771,24 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   node->layout.direction = direction;
 
   const YGFlexDirection flexRowDirection = YGFlexDirectionResolve(YGFlexDirectionRow, direction);
-  const YGFlexDirection flexColumnDirection = YGFlexDirectionResolve(YGFlexDirectionColumn, direction);
+  const YGFlexDirection flexColumnDirection =
+      YGFlexDirectionResolve(YGFlexDirectionColumn, direction);
 
-  node->layout.margin[YGEdgeStart] =
-    YGNodeLeadingMargin(node, flexRowDirection, parentWidth);
-  node->layout.margin[YGEdgeEnd] =
-    YGNodeTrailingMargin(node, flexRowDirection, parentWidth);
-  node->layout.margin[YGEdgeTop] =
-    YGNodeLeadingMargin(node, flexColumnDirection, parentWidth);
-  node->layout.margin[YGEdgeBottom] =
-    YGNodeTrailingMargin(node, flexColumnDirection, parentWidth);
+  node->layout.margin[YGEdgeStart] = YGNodeLeadingMargin(node, flexRowDirection, parentWidth);
+  node->layout.margin[YGEdgeEnd] = YGNodeTrailingMargin(node, flexRowDirection, parentWidth);
+  node->layout.margin[YGEdgeTop] = YGNodeLeadingMargin(node, flexColumnDirection, parentWidth);
+  node->layout.margin[YGEdgeBottom] = YGNodeTrailingMargin(node, flexColumnDirection, parentWidth);
 
-  node->layout.border[YGEdgeStart] =
-    YGNodeLeadingBorder(node, flexRowDirection);
-  node->layout.border[YGEdgeEnd] =
-    YGNodeTrailingBorder(node, flexRowDirection);
-  node->layout.border[YGEdgeTop] =
-    YGNodeLeadingBorder(node, flexColumnDirection);
-  node->layout.border[YGEdgeBottom] =
-    YGNodeTrailingBorder(node, flexColumnDirection);
+  node->layout.border[YGEdgeStart] = YGNodeLeadingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeEnd] = YGNodeTrailingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeTop] = YGNodeLeadingBorder(node, flexColumnDirection);
+  node->layout.border[YGEdgeBottom] = YGNodeTrailingBorder(node, flexColumnDirection);
 
-  node->layout.padding[YGEdgeStart] =
-    YGNodeLeadingPadding(node, flexRowDirection, parentWidth);
-  node->layout.padding[YGEdgeEnd] =
-    YGNodeTrailingPadding(node, flexRowDirection, parentWidth);
-  node->layout.padding[YGEdgeTop] =
-    YGNodeLeadingPadding(node, flexColumnDirection, parentWidth);
+  node->layout.padding[YGEdgeStart] = YGNodeLeadingPadding(node, flexRowDirection, parentWidth);
+  node->layout.padding[YGEdgeEnd] = YGNodeTrailingPadding(node, flexRowDirection, parentWidth);
+  node->layout.padding[YGEdgeTop] = YGNodeLeadingPadding(node, flexColumnDirection, parentWidth);
   node->layout.padding[YGEdgeBottom] =
-    YGNodeTrailingPadding(node, flexColumnDirection, parentWidth);
+      YGNodeTrailingPadding(node, flexColumnDirection, parentWidth);
 
   if (node->measure) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(
@@ -1998,8 +1992,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
         const float outerFlexBasis =
-            fmaxf(YGValueResolve(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize), child->layout.computedFlexBasis) +
-                  YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+            fmaxf(YGValueResolve(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
+                  child->layout.computedFlexBasis) +
+            YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
