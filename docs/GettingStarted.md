@@ -112,7 +112,7 @@ choco install python2
 
 > You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
 
-<block class="mac ios android" />
+<block class="windows linux mac ios android" />
 
 ### The React Native CLI
 
@@ -126,19 +126,6 @@ npm install -g react-native-cli
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
-<block class="windows linux android" />
-
-### The React Native CLI
-
-Node.js comes with npm, which lets you install the React Native command line interface.
-
-Run the following command in a Terminal:
-
-```
-npm install -g react-native-cli
-```
-
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
 
 <block class="mac ios" />
 
