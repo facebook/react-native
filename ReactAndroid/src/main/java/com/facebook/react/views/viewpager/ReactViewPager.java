@@ -177,10 +177,13 @@ public class ReactViewPager extends ViewPager {
     if (!mScrollEnabled) {
       return false;
     }
-
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      return true;
+    try {
+      if (super.onInterceptTouchEvent(ev)) {
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        return true;
+      }
+    } catch (Exception e) {
+      // Swallow error
     }
     return false;
   }
@@ -191,7 +194,12 @@ public class ReactViewPager extends ViewPager {
       return false;
     }
 
-    return super.onTouchEvent(ev);
+    try {
+      return super.onTouchEvent(ev);
+    } catch (Exception e) {
+      // Swallow error
+    }
+    return false;
   }
 
   public void setCurrentItemFromJs(int item, boolean animated) {

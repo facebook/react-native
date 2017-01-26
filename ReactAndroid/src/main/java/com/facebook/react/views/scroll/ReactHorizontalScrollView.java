@@ -124,17 +124,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       return false;
     }
     try {
-        if (super.onInterceptTouchEvent(ev)) {
-            NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-            ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-            mDragging = true;
-            enableFpsListener();
-            return true;
-        }
+      if (super.onInterceptTouchEvent(ev)) {
+          NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+          ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+          mDragging = true;
+          enableFpsListener();
+          return true;
+      }
     } catch (Exception e) {
         // Swallow error
     }
-
     return false;
   }
 
@@ -157,6 +156,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } catch (Exception e) {
       // Swallow error
     }
+    return false;
   }
 
   @Override
