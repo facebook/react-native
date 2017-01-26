@@ -123,13 +123,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     if (!mScrollEnabled) {
       return false;
     }
-
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-      mDragging = true;
-      enableFpsListener();
-      return true;
+    try {
+        if (super.onInterceptTouchEvent(ev)) {
+            NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+            ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+            mDragging = true;
+            enableFpsListener();
+            return true;
+        }
+    } catch (Exception e) {
+        // Swallow error
     }
 
     return false;
@@ -141,15 +144,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       return false;
     }
 
-    int action = ev.getAction() & MotionEvent.ACTION_MASK;
-    if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.emitScrollEndDragEvent(this);
-      mDragging = false;
-      // After the touch finishes, we may need to do some scrolling afterwards either as a result
-      // of a fling or because we need to page align the content
-      handlePostTouchScrolling();
+    try {
+      int action = ev.getAction() & MotionEvent.ACTION_MASK;
+      if (action == MotionEvent.ACTION_UP && mDragging) {
+        ReactScrollViewHelper.emitScrollEndDragEvent(this);
+        mDragging = false;
+        // After the touch finishes, we may need to do some scrolling afterwards either as a result
+        // of a fling or because we need to page align the content
+        handlePostTouchScrolling();
+      }
+      return super.onTouchEvent(ev);
+    } catch (Exception e) {
+      // Swallow error
     }
-    return super.onTouchEvent(ev);
   }
 
   @Override
