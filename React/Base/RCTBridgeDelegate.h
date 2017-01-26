@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBRIDGEDELEGATE_H
+#define RCTBRIDGEDELEGATE_H
+
 #import <React/RCTJavaScriptLoader.h>
 
 @class RCTBridge;
@@ -108,3 +111,5 @@
                   withBlock:(RCTSourceLoadBlock)loadCallback;
 
 @end
+
+#endif //RCTBRIDGEDELEGATE_H

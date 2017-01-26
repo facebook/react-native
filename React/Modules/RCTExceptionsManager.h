@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTEXCEPTIONSMANAGER_H
+#define RCTEXCEPTIONSMANAGER_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -28,3 +31,5 @@
 @property (nonatomic, assign) NSUInteger maxReloadAttempts;
 
 @end
+
+#endif //RCTEXCEPTIONSMANAGER_H

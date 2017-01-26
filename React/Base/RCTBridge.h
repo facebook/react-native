@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBRIDGE_H
+#define RCTBRIDGE_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridgeDelegate.h>
@@ -211,3 +214,5 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (BOOL)isBatchActive;
 
 @end
+
+#endif //RCTBRIDGE_H

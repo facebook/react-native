@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTESTMODULE_H
+#define RCTTESTMODULE_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridgeModule.h>
@@ -45,3 +48,5 @@ typedef NS_ENUM(NSInteger, RCTTestStatus) {
 @property (nonatomic, copy) NSString *testSuffix;
 
 @end
+
+#endif //RCTTESTMODULE_H

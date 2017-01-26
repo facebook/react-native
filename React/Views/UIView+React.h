@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef UIVIEW_REACT_H
+#define UIVIEW_REACT_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -82,3 +85,5 @@
 #endif
 
 @end
+
+#endif //UIVIEW_REACT_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSCROLLVIEW_H
+#define RCTSCROLLVIEW_H
+
 #import <UIKit/UIScrollView.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
@@ -68,3 +71,5 @@
 - (void)sendFakeScrollEvent:(NSNumber *)reactTag;
 
 @end
+
+#endif //RCTSCROLLVIEW_H

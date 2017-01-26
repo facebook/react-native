@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTACTIVITYINDICATORVIEWMANAGER_H
+#define RCTACTIVITYINDICATORVIEWMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTConvert (UIActivityIndicatorView)
@@ -18,3 +21,5 @@
 @interface RCTActivityIndicatorViewManager : RCTViewManager
 
 @end
+
+#endif //RCTACTIVITYINDICATORVIEWMANAGER_H

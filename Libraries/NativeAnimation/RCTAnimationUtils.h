@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTANIMATIONUTILS_H
+#define RCTANIMATIONUTILS_H
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
@@ -26,3 +29,5 @@ RCT_EXTERN CGFloat RCTInterpolateValue(CGFloat value,
 
 RCT_EXTERN CGFloat RCTRadiansToDegrees(CGFloat radians);
 RCT_EXTERN CGFloat RCTDegreesToRadians(CGFloat degrees);
+
+#endif //RCTANIMATIONUTILS_H

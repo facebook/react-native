@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTEXTVIEW_H
+#define RCTTEXTVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTView.h>
@@ -40,3 +43,5 @@
 - (void)performTextUpdate;
 
 @end
+
+#endif //RCTTEXTVIEW_H

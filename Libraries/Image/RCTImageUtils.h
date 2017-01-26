@@ -8,6 +8,9 @@
  *
  */
 
+#ifndef RCTIMAGEUTILS_H
+#define RCTIMAGEUTILS_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
@@ -94,3 +97,5 @@ RCT_EXTERN UIImage *__nullable RCTTransformImage(UIImage *image,
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
 NS_ASSUME_NONNULL_END
+
+#endif //RCTIMAGEUTILS_H

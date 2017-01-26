@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTRENDERABLE_H
+#define ARTRENDERABLE_H
+
 #import <Foundation/Foundation.h>
 
 #import "ARTBrush.h"
@@ -23,3 +26,5 @@
 @property (nonatomic, assign) ARTCGFloatArray strokeDash;
 
 @end
+
+#endif //ARTRENDERABLE_H

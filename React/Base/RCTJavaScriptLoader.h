@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJAVASCRIPTLOADER_H
+#define RCTJAVASCRIPTLOADER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
@@ -54,3 +57,5 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourc
                                           error:(NSError **)error;
 
 @end
+
+#endif //RCTJAVASCRIPTLOADER_H

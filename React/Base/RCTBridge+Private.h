@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBRIDGE_PRIVATE_H
+#define RCTBRIDGE_PRIVATE_H
+
 #import <React/RCTBridge.h>
 
 @class RCTModuleData;
@@ -150,3 +153,5 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 - (void)start;
 
 @end
+
+#endif //RCTBRIDGE_PRIVATE_H

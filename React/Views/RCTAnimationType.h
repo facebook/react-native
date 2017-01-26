@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTANIMATIONTYPE_H
+#define RCTANIMATIONTYPE_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTAnimationType) {
@@ -17,3 +20,5 @@ typedef NS_ENUM(NSInteger, RCTAnimationType) {
   RCTAnimationTypeEaseInEaseOut,
   RCTAnimationTypeKeyboard,
 };
+
+#endif //RCTANIMATIONTYPE_H

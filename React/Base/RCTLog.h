@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTLOG_H
+#define RCTLOG_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTAssert.h>
@@ -132,3 +135,5 @@ RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *pref
 
 RCT_EXTERN void _RCTLogNativeInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
 RCT_EXTERN void _RCTLogJavaScriptInternal(RCTLogLevel, NSString *);
+
+#endif //RCTLOG_H

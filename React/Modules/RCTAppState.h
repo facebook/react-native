@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTAPPSTATE_H
+#define RCTAPPSTATE_H
+
 #import <React/RCTEventEmitter.h>
 
 @interface RCTAppState : RCTEventEmitter
 
 @end
+
+#endif //RCTAPPSTATE_H

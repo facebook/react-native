@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTANIMATIONDRIVER_H
+#define RCTANIMATIONDRIVER_H
+
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 
@@ -36,3 +39,5 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 @end
+
+#endif //RCTANIMATIONDRIVER_H

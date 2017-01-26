@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTUIMANAGER_H
+#define RCTUIMANAGER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -134,3 +137,5 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 @property (nonatomic, readonly) RCTUIManager *uiManager;
 
 @end
+
+#endif //RCTUIMANAGER_H

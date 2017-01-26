@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSCROLLABLEPROTOCOL_H
+#define RCTSCROLLABLEPROTOCOL_H
+
 #import <UIKit/UIKit.h>
 
 /**
@@ -25,3 +28,5 @@
 - (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener;
 
 @end
+
+#endif //RCTSCROLLABLEPROTOCOL_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNATIVEANIMATEDNODESMANAGER_H
+#define RCTNATIVEANIMATEDNODESMANAGER_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTUIManager.h>
@@ -82,3 +85,5 @@
                            valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
 
 @end
+
+#endif //RCTNATIVEANIMATEDNODESMANAGER_H

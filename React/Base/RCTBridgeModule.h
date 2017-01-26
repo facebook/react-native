@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBRIDGEMODULE_H
+#define RCTBRIDGEMODULE_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
@@ -244,3 +247,5 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 - (void)partialBatchDidFlush;
 
 @end
+
+#endif //RCTBRIDGEMODULE_H

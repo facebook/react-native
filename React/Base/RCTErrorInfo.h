@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTERRORINFO_H
+#define RCTERRORINFO_H
+
 #import <Foundation/Foundation.h>
 
 @class RCTJSStackFrame;
@@ -23,3 +26,5 @@
                                stack:(NSArray<RCTJSStackFrame *> *)stack;
 
 @end
+
+#endif //RCTERRORINFO_H

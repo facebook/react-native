@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTCGFLOATARRAY_H
+#define ARTCGFLOATARRAY_H
+
 // A little helper to make sure we have the right memory allocation ready for use.
 // We assume that we will only this in one place so no reference counting is necessary.
 // Needs to be freed when dealloced.
@@ -18,3 +21,5 @@ typedef struct {
   size_t count;
   CGFloat *array;
 } ARTCGFloatArray;
+
+#endif //ARTCGFLOATARRAY_H

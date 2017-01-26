@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSEGMENTEDCONTROL_H
+#define RCTSEGMENTEDCONTROL_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -18,3 +21,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif //RCTSEGMENTEDCONTROL_H

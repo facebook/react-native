@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTERRORCUSTOMIZER_H
+#define RCTERRORCUSTOMIZER_H
+
 #import <Foundation/Foundation.h>
 
 @class RCTErrorInfo;
@@ -23,3 +26,5 @@
  */
 - (nonnull RCTErrorInfo *)customizeErrorInfo:(nonnull RCTErrorInfo *)info;
 @end
+
+#endif //RCTERRORCUSTOMIZER_H

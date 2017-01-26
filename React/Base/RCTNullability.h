@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNULLABILITY_H
+#define RCTNULLABILITY_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, RCTNullability) {
@@ -14,3 +17,5 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
   RCTNullable,
   RCTNonnullable,
 };
+
+#endif //RCTNULLABILITY_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNETWORKING_H
+#define RCTNETWORKING_H
+
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 
@@ -31,3 +34,5 @@
 @property (nonatomic, readonly) RCTNetworking *networking;
 
 @end
+
+#endif //RCTNETWORKING_H

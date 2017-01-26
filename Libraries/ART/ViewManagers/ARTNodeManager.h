@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTNODEMANAGER_H
+#define ARTNODEMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @class ARTNode;
@@ -16,3 +19,5 @@
 - (ARTNode *)node;
 
 @end
+
+#endif //ARTNODEMANAGER_H

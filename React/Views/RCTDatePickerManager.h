@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDATEPICKERMANAGER_H
+#define RCTDATEPICKERMANAGER_H
+
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 
@@ -19,3 +22,5 @@
 @interface RCTDatePickerManager : RCTViewManager
 
 @end
+
+#endif //RCTDATEPICKERMANAGER_H

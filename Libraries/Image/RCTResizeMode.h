@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTRESIZEMODE_H
+#define RCTRESIZEMODE_H
+
 #import <React/RCTConvert.h>
 
 typedef NS_ENUM(NSInteger, RCTResizeMode) {
@@ -22,3 +25,5 @@ typedef NS_ENUM(NSInteger, RCTResizeMode) {
 + (RCTResizeMode)RCTResizeMode:(id)json;
 
 @end
+
+#endif //RCTRESIZEMODE_H

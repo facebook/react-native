@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPLATFORM_H
+#define RCTPLATFORM_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -14,3 +17,5 @@
 @interface RCTPlatform : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTPLATFORM_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPOINTEREVENTS_H
+#define RCTPOINTEREVENTS_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTPointerEvents) {
@@ -15,3 +18,5 @@ typedef NS_ENUM(NSInteger, RCTPointerEvents) {
   RCTPointerEventsBoxNone,
   RCTPointerEventsBoxOnly,
 };
+
+#endif //RCTPOINTEREVENTS_H

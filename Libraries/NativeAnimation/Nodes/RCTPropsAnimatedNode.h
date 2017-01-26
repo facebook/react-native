@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPROPSANIMATEDNODE_H
+#define RCTPROPSANIMATEDNODE_H
+
 #import "RCTAnimatedNode.h"
 
 @class RCTUIManager;
@@ -22,3 +25,5 @@
 - (void)performViewUpdatesIfNecessary;
 
 @end
+
+#endif //RCTPROPSANIMATEDNODE_H

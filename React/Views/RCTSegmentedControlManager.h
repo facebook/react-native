@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSEGMENTEDCONTROLMANAGER_H
+#define RCTSEGMENTEDCONTROLMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTSegmentedControlManager : RCTViewManager
 
 @end
+
+#endif //RCTSEGMENTEDCONTROLMANAGER_H

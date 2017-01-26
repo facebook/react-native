@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef UIVIEW_PRIVATE_H
+#define UIVIEW_PRIVATE_H
+
 #import <UIKit/UIKit.h>
 
 @interface UIView (Private)
@@ -20,3 +23,5 @@
 - (void)clearSortedSubviews;
 
 @end
+
+#endif //UIVIEW_PRIVATE_H

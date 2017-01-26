@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTEVENTDISPATCHER_H
+#define RCTEVENTDISPATCHER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -123,3 +126,5 @@ __deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
 - (RCTEventDispatcher *)eventDispatcher;
 
 @end
+
+#endif //RCTEVENTDISPATCHER_H

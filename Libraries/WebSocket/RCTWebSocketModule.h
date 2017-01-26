@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTWEBSOCKETMODULE_H
+#define RCTWEBSOCKETMODULE_H
+
 #import <React/RCTEventEmitter.h>
 
 @interface RCTWebSocketModule : RCTEventEmitter
 
 @end
+
+#endif //RCTWEBSOCKETMODULE_H

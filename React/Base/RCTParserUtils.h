@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPARSERUTILS_H
+#define RCTPARSERUTILS_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
@@ -29,3 +32,5 @@ RCT_EXTERN BOOL RCTParseIdentifier(const char **input, NSString **string);
 RCT_EXTERN NSString *RCTParseType(const char **input);
 
 @end
+
+#endif //RCTPARSERUTILS_H

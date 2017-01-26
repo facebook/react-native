@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTAUTOINSETSPROTOCOL_H
+#define RCTAUTOINSETSPROTOCOL_H
+
 #import <UIKit/UIKit.h>
 
 /**
@@ -27,3 +30,5 @@
 - (void)refreshContentInset;
 
 @end
+
+#endif //RCTAUTOINSETSPROTOCOL_H

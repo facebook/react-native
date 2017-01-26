@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTLINKINGMANAGER_H
+#define RCTLINKINGMANAGER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTEventEmitter.h>
@@ -23,3 +26,5 @@ continueUserActivity:(NSUserActivity *)userActivity
   restorationHandler:(void (^)(NSArray *))restorationHandler;
 
 @end
+
+#endif //RCTLINKINGMANAGER_H

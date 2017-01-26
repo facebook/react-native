@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTSOLIDCOLOR_H
+#define ARTSOLIDCOLOR_H
+
 #import "ARTBrush.h"
 
 @interface ARTSolidColor : ARTBrush
 
 @end
+
+#endif //ARTSOLIDCOLOR_H

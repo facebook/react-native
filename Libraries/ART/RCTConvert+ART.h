@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCONVERT_ART_H
+#define RCTCONVERT_ART_H
+
 #import <QuartzCore/QuartzCore.h>
 
 #import <React/RCTConvert.h>
@@ -29,3 +32,5 @@
 + (CGGradientRef)CGGradient:(id)json offset:(NSUInteger)offset;
 
 @end
+
+#endif //RCTCONVERT_ART_H

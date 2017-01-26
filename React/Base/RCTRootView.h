@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTROOTVIEW_H
+#define RCTROOTVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
@@ -155,3 +158,5 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 
 @end
+
+#endif //RCTROOTVIEW_H

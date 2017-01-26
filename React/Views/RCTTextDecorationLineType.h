@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTEXTDECORATIONLINETYPE_H
+#define RCTTEXTDECORATIONLINETYPE_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTTextDecorationLineType) {
@@ -15,3 +18,5 @@ typedef NS_ENUM(NSInteger, RCTTextDecorationLineType) {
   RCTTextDecorationLineTypeStrikethrough,
   RCTTextDecorationLineTypeUnderlineStrikethrough,
 };
+
+#endif //RCTTEXTDECORATIONLINETYPE_H

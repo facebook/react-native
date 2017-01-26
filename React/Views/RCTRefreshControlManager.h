@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTREFRESHCONTROLMANAGER_H
+#define RCTREFRESHCONTROLMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTRefreshControlManager : RCTViewManager
 
 @end
+
+#endif //RCTREFRESHCONTROLMANAGER_H

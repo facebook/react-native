@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTPATTERN_H
+#define ARTPATTERN_H
+
 #import "ARTBrush.h"
 
 @interface ARTPattern : ARTBrush
 
 @end
+
+#endif //ARTPATTERN_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCONVERT_TEXT_H
+#define RCTCONVERT_TEXT_H
+
 #import <React/RCTConvert.h>
 
 @interface RCTConvert (Text)
@@ -15,3 +18,5 @@
 + (UITextSpellCheckingType)UITextSpellCheckingType:(id)json;
 
 @end
+
+#endif //RCTCONVERT_TEXT_H

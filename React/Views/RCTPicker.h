@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPICKER_H
+#define RCTPICKER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/UIView+React.h>
@@ -23,3 +26,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif //RCTPICKER_H

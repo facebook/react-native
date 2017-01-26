@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTKEYCOMMANDS_H
+#define RCTKEYCOMMANDS_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTKeyCommands : NSObject
@@ -52,3 +55,5 @@
                          modifierFlags:(UIKeyModifierFlags)flags;
 
 @end
+
+#endif //RCTKEYCOMMANDS_H

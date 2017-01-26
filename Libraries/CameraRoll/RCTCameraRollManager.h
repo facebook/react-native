@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCAMERAROLLMANAGER_H
+#define RCTCAMERAROLLMANAGER_H
+
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import <React/RCTBridgeModule.h>
@@ -22,3 +25,5 @@
 @interface RCTCameraRollManager : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTCAMERAROLLMANAGER_H

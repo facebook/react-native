@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMODULEDATA_H
+#define RCTMODULEDATA_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTInvalidating.h>
@@ -86,3 +89,5 @@
 @property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
 
 @end
+
+#endif //RCTMODULEDATA_H

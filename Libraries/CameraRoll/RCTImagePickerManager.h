@@ -8,8 +8,13 @@
  *
  */
 
+ #ifndef RCTIMAGEPICKERMANAGER_H
+ #define RCTIMAGEPICKERMANAGER_H
+
 #import <React/RCTBridgeModule.h>
 
 @interface RCTImagePickerManager : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTIMAGEPICKERMANAGER_H

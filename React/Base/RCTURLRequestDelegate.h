@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTURLREQUESTDELEGATE_H
+#define RCTURLREQUESTDELEGATE_H
+
 #import <Foundation/Foundation.h>
 
 /**
@@ -40,3 +43,5 @@
 - (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error;
 
 @end
+
+#endif //RCTURLREQUESTDELEGATE_H

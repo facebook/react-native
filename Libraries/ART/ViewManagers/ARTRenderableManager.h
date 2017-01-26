@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTRENDERABLEMANAGER_H
+#define ARTRENDERABLEMANAGER_H
+
 #import "ARTNodeManager.h"
 #import "ARTRenderable.h"
 
@@ -15,3 +18,5 @@
 - (ARTRenderable *)node;
 
 @end
+
+#endif //ARTRENDERABLEMANAGER_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBORDERDRAWING_H
+#define RCTBORDERDRAWING_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBorderStyle.h>
@@ -67,3 +70,5 @@ UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
                            RCTBorderColors borderColors,
                            CGColorRef backgroundColor,
                            BOOL drawToEdge);
+
+#endif //RCTBORDERDRAWING_H

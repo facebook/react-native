@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTIMAGEEDITINGMANAGER_H
+#define RCTIMAGEEDITINGMANAGER_H
+
 #import <React/RCTBridgeModule.h>
 
 @interface RCTImageEditingManager : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTIMAGEEDITINGMANAGER_H

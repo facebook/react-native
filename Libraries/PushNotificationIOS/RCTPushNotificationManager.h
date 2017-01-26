@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPUSHNOTIFICATIONMANAGER_H
+#define RCTPUSHNOTIFICATIONMANAGER_H
+
 #import <React/RCTEventEmitter.h>
 
 @interface RCTPushNotificationManager : RCTEventEmitter
@@ -23,3 +26,5 @@ typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 #endif
 
 @end
+
+#endif //RCTPUSHNOTIFICATIONMANAGER_H

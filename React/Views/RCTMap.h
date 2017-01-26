@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMAP_H
+#define RCTMAP_H
+
 #import <MapKit/MapKit.h>
 #import <UIKit/UIKit.h>
 
@@ -39,3 +42,5 @@ RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 - (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays;
 
 @end
+
+#endif //RCTMAP_H

@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTADSUPPORT_H
+#define RCTADSUPPORT_H
+
 #import <React/RCTBridgeModule.h>
 
 @interface RCTAdSupport : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTADSUPPORT_H

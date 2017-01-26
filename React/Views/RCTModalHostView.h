@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMODALHOSTVIEW_H
+#define RCTMODALHOSTVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTInvalidating.h>
@@ -40,3 +43,5 @@
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated;
 
 @end
+
+#endif //RCTMODALHOSTVIEW_H

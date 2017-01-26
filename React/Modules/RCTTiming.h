@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTIMING_H
+#define RCTTIMING_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -16,3 +19,5 @@
 @interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
 
 @end
+
+#endif //RCTTIMING_H

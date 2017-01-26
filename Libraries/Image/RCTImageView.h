@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTIMAGEVIEW_H
+#define RCTIMAGEVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTResizeMode.h>
@@ -26,3 +29,5 @@
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 
 @end
+
+#endif //RCTIMAGEVIEW_H

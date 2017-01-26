@@ -28,6 +28,9 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#ifndef UIIMAGE_COMPARE_H
+#define UIIMAGE_COMPARE_H
+
 #import <UIKit/UIKit.h>
 
 @interface UIImage (Compare)
@@ -35,3 +38,5 @@
 - (BOOL)compareWithImage:(UIImage *)image;
 
 @end
+
+#endif //UIIMAGE_COMPARE_H

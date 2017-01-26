@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTLOCALASSETIMAGELOADER_H
+#define RCTLOCALASSETIMAGELOADER_H
+
 #import <React/RCTImageLoader.h>
 
 @interface RCTLocalAssetImageLoader : NSObject <RCTImageURLLoader>
 
 @end
+
+#endif //RCTLOCALASSETIMAGELOADER_H

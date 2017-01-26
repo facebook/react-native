@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNAVIGATOR_H
+#define RCTNAVIGATOR_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTFrameUpdate.h>
@@ -32,3 +35,5 @@
 - (BOOL)requestSchedulingJavaScriptNavigation;
 
 @end
+
+#endif //RCTNAVIGATOR_H

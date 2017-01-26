@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDATAREQUESTHANDLER_H
+#define RCTDATAREQUESTHANDLER_H
+
 #import <React/RCTInvalidating.h>
 #import <React/RCTURLRequestHandler.h>
 
@@ -16,3 +19,5 @@
 @interface RCTDataRequestHandler : NSObject <RCTURLRequestHandler, RCTInvalidating>
 
 @end
+
+#endif //RCTDATAREQUESTHANDLER_H

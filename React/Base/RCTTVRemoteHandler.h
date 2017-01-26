@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTVREMOTEHANDLER_H
+#define RCTTVREMOTEHANDLER_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTTVRemoteHandler : NSObject
@@ -14,3 +17,5 @@
 @property (nonatomic, copy, readonly) NSArray *tvRemoteGestureRecognizers;
 
 @end
+
+#endif //RCTTVREMOTEHANDLER_H

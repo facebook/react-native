@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTURLREQUESTHANDLER_H
+#define RCTURLREQUESTHANDLER_H
+
 #import <React/RCTBridgeModule.h>
 #import <React/RCTURLRequestDelegate.h>
 
@@ -52,3 +55,5 @@
 - (float)handlerPriority;
 
 @end
+
+#endif //RCTURLREQUESTHANDLER_H

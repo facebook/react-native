@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTEVENTANIMATION_H
+#define RCTEVENTANIMATION_H
+
 #import <React/RCTEventDispatcher.h>
 
 #import "RCTValueAnimatedNode.h"
@@ -21,3 +24,5 @@
 - (void)updateWithEvent:(id<RCTEvent>)event;
 
 @end
+
+#endif //RCTEVENTANIMATION_H

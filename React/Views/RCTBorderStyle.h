@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBORDERSTYLE_H
+#define RCTBORDERSTYLE_H
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTBorderStyle) {
@@ -15,3 +18,5 @@ typedef NS_ENUM(NSInteger, RCTBorderStyle) {
   RCTBorderStyleDotted,
   RCTBorderStyleDashed,
 };
+
+#endif //RCTBORDERSTYLE_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTCONVERT_H
+#define RCTCONVERT_H
+
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
@@ -243,3 +246,5 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }
+
+#endif //RCTCONVERT_H

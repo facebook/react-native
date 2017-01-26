@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNAVIGATORMANAGER_H
+#define RCTNAVIGATORMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTNavigatorManager : RCTViewManager
 
 @end
+
+#endif //RCTNAVIGATORMANAGER_H

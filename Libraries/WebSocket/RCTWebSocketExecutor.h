@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTWEBSOCKETEXECUTOR_H
+#define RCTWEBSOCKETEXECUTOR_H
+
 #import <React/RCTDefines.h>
 #import <React/RCTJavaScriptExecutor.h>
 
@@ -19,3 +22,5 @@
 @end
 
 #endif
+
+#endif //RCTWEBSOCKETEXECUTOR_H

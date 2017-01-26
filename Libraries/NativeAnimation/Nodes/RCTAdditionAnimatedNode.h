@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTADDITIONANIMATEDNODE_H
+#define RCTADDITIONANIMATEDNODE_H
+
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTAdditionAnimatedNode : RCTValueAnimatedNode
 
 @end
+
+#endif //RCTADDITIONANIMATEDNODE_H

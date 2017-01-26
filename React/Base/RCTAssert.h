@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTASSERT_H
+#define RCTASSERT_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
@@ -159,3 +162,5 @@ _Pragma("clang diagnostic pop")
 #define RCTAssertThread(thread, format...) do { } while (0)
 
 #endif
+
+#endif //RCTASSERT_H

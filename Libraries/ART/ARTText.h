@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTTEXT_H
+#define ARTTEXT_H
+
 #import <Foundation/Foundation.h>
 
 #import "ARTRenderable.h"
@@ -18,3 +21,5 @@
 @property (nonatomic, assign) ARTTextFrame textFrame;
 
 @end
+
+#endif //ARTTEXT_H

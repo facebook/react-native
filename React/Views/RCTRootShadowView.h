@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTROOTSHADOWVIEW_H
+#define RCTROOTSHADOWVIEW_H
+
 #import <React/RCTShadowView.h>
 
 @interface RCTRootShadowView : RCTShadowView
@@ -24,3 +27,5 @@
 - (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames;
 
 @end
+
+#endif //RCTROOTSHADOWVIEW_H

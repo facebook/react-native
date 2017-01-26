@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJSSTACKFRAME_H
+#define RCTJSSTACKFRAME_H
+
 #import <Foundation/Foundation.h>
 
 @interface RCTJSStackFrame : NSObject
@@ -25,3 +28,5 @@
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithDictionaries:(NSArray<NSDictionary *> *)dicts;
 
 @end
+
+#endif //RCTJSSTACKFRAME_H

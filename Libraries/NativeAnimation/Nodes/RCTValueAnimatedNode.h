@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVALUEANIMATEDNODE_H
+#define RCTVALUEANIMATEDNODE_H
+
 #import <UIKit/UIKit.h>
 
 #import "RCTAnimatedNode.h"
@@ -29,3 +32,5 @@
 @property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;
 
 @end
+
+#endif //RCTVALUEANIMATEDNODE_H

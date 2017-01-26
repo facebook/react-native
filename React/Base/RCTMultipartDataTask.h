@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMULTIPARTDATATASK_H
+#define RCTMULTIPARTDATATASK_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTMultipartStreamReader.h>
@@ -19,3 +22,5 @@ typedef void (^RCTMultipartDataTaskCallback)(NSInteger statusCode, NSDictionary 
 - (void)startTask;
 
 @end
+
+#endif //RCTMULTIPARTDATATASK_H

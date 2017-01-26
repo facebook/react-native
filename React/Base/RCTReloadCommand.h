@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTRELOADCOMMAND_H
+#define RCTRELOADCOMMAND_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
@@ -17,3 +20,5 @@
 
 /** Registers a weakly-held observer of the Command+R reload key command. */
 RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener);
+
+#endif //RCTRELOADCOMMAND_H

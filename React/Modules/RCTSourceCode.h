@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSOURCECODE_H
+#define RCTSOURCECODE_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -14,3 +17,5 @@
 @interface RCTSourceCode : NSObject <RCTBridgeModule>
 
 @end
+
+#endif //RCTSOURCECODE_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVIEWCONTROLLERPROTOCOL_H
+#define RCTVIEWCONTROLLERPROTOCOL_H
+
 /**
  * A simple protocol that any React-managed ViewControllers should implement.
  * We need all of our ViewControllers to cache layoutGuide changes so any View
@@ -18,3 +21,5 @@
 @property (nonatomic, readonly, strong) id<UILayoutSupport> currentBottomLayoutGuide;
 
 @end
+
+#endif //RCTVIEWCONTROLLERPROTOCOL_H

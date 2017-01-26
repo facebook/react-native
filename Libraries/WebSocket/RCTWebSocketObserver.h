@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTWEBSOCKETOBSERVER_H
+#define RCTWEBSOCKETOBSERVER_H
+
 #import <React/RCTDefines.h>
 #import <React/RCTWebSocketObserverProtocol.h>
 
@@ -16,3 +19,5 @@
 @end
 
 #endif
+
+#endif //RCTWEBSOCKETOBSERVER_H

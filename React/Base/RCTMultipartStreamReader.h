@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMULTIPARTSTREAMREADER_H
+#define RCTMULTIPARTSTREAMREADER_H
+
 #import <Foundation/Foundation.h>
 
 typedef void (^RCTMultipartCallback)(NSDictionary *headers, NSData *content, BOOL done);
@@ -20,3 +23,5 @@ typedef void (^RCTMultipartCallback)(NSDictionary *headers, NSData *content, BOO
 - (BOOL)readAllParts:(RCTMultipartCallback)callback;
 
 @end
+
+#endif //RCTMULTIPARTSTREAMREADER_H

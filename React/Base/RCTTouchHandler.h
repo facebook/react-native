@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTOUCHHANDLER_H
+#define RCTTOUCHHANDLER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTFrameUpdate.h>
@@ -23,3 +26,5 @@
 - (void)cancel;
 
 @end
+
+#endif //RCTTOUCHHANDLER_H

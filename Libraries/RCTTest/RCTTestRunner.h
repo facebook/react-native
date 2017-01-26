@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTESTRUNNER_H
+#define RCTTESTRUNNER_H
+
 #import <Foundation/Foundation.h>
 
 #ifndef FB_REFERENCE_IMAGE_DIR
@@ -115,3 +118,5 @@ configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock;
 
 @end
+
+#endif //RCTTESTRUNNER_H

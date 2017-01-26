@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTEXT_H
+#define RCTTEXT_H
+
 #import <UIKit/UIKit.h>
 
 @interface RCTText : UIView
@@ -17,3 +20,5 @@
 @property (nonatomic, assign) BOOL selectable;
 
 @end
+
+#endif //RCTTEXT_H

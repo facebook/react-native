@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTTEXTFIELD_H
+#define RCTTEXTFIELD_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -33,3 +36,5 @@
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField;
 
 @end
+
+#endif //RCTTEXTFIELD_H

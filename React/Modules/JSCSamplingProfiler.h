@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef JSCSAMPLINGPROFILER_H
+#define JSCSAMPLINGPROFILER_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
@@ -21,3 +24,5 @@
 - (void)operationCompletedWithResults:(NSString *)results;
 
 @end
+
+#endif //JSCSAMPLINGPROFILER_H

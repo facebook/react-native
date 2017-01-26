@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTMODALHOSTVIEWMANAGER_H
+#define RCTMODALHOSTVIEWMANAGER_H
+
 #import <React/RCTInvalidating.h>
 #import <React/RCTViewManager.h>
 
@@ -23,3 +26,5 @@ typedef void (^RCTModalViewInteractionBlock)(UIViewController *reactViewControll
 @property (nonatomic, strong) RCTModalViewInteractionBlock dismissalBlock;
 
 @end
+
+#endif //RCTMODALHOSTVIEWMANAGER_H

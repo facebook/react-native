@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTBUNDLEURLPROVIDER_H
+#define RCTBUNDLEURLPROVIDER_H
+
 #import <Foundation/Foundation.h>
 
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
@@ -77,3 +80,5 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                                 query:(NSString *)query;
 
 @end
+
+#endif //RCTBUNDLEURLPROVIDER_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJSCEXECUTOR_H
+#define RCTJSCEXECUTOR_H
+
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import <React/RCTJavaScriptExecutor.h>
@@ -140,3 +143,5 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 - (JSContext *)jsContext;
 
 @end
+
+#endif //RCTJSCEXECUTOR_H

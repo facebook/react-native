@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTALERTMANAGER_H
+#define RCTALERTMANAGER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridgeModule.h>
@@ -23,3 +26,5 @@ typedef NS_ENUM(NSInteger, RCTAlertViewStyle) {
 @interface RCTAlertManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @end
+
+#endif //RCTALERTMANAGER_H

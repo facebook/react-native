@@ -7,6 +7,9 @@
 
 @interface RCTImageStoreManager : NSObject <RCTURLRequestHandler>
 
+#ifndef RCTIMAGESTOREMANAGER_H
+#define RCTIMAGESTOREMANAGER_H
+
 /**
  * Set and get cached image data asynchronously. It is safe to call these from any
  * thread. The callbacks will be called on an unspecified thread.
@@ -39,3 +42,5 @@
 @property (nonatomic, readonly) RCTImageStoreManager *imageStoreManager;
 
 @end
+
+#endif //RCTIMAGESTOREMANAGER_H

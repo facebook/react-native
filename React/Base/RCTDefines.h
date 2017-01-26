@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTDEFINES_H
+#define RCTDEFINES_H
+
 #if __OBJC__
 #  import <Foundation/Foundation.h>
 #endif
@@ -79,3 +82,5 @@ _Pragma("clang diagnostic ignored \"-Wunused-parameter\"") \
 RCT_EXTERN NSException *_RCTNotImplementedException(SEL, Class); \
 method NS_UNAVAILABLE { @throw _RCTNotImplementedException(_cmd, [self class]); } \
 _Pragma("clang diagnostic pop")
+
+#endif //RCTDEFINES_H

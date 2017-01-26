@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTGIFIMAGEDECODER_H
+#define RCTGIFIMAGEDECODER_H
+
 #import <React/RCTImageLoader.h>
 
 @interface RCTGIFImageDecoder : NSObject <RCTImageDataDecoder>
 
 @end
+
+#endif //RCTGIFIMAGEDECODER_H

@@ -7,9 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTIMAGECACHE_H
+#define RCTIMAGECACHE_H
+
 #import <Foundation/Foundation.h>
 
 #import <React/RCTImageLoader.h>
 
 @interface RCTImageCache : NSObject <RCTImageCache>
 @end
+
+#endif //RCTIMAGECACHE_H

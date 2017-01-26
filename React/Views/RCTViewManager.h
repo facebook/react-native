@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTVIEWMANAGER_H
+#define RCTVIEWMANAGER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridgeModule.h>
@@ -120,3 +123,5 @@ RCT_REMAP_SHADOW_PROPERTY(name, __custom__, type)         \
 - (void)set_##name:(id)json forShadowView:(viewClass *)view
 
 @end
+
+#endif //RCTVIEWMANAGER_H

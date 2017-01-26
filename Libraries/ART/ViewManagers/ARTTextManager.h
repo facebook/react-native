@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTTEXTMANAGER_H
+#define ARTTEXTMANAGER_H
+
 #import "ARTRenderableManager.h"
 
 @interface ARTTextManager : ARTRenderableManager
 
 @end
+
+#endif //ARTTEXTMANAGER_H

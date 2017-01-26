@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTJSCPROFILER_H
+#define RCTJSCPROFILER_H
+
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import <React/RCTDefines.h>
@@ -20,3 +23,5 @@ RCT_EXTERN NSString *RCTJSCProfilerStop(JSContextRef ctx);
 
 RCT_EXTERN BOOL RCTJSCProfilerIsProfiling(JSContextRef ctx);
 RCT_EXTERN BOOL RCTJSCProfilerIsSupported(void);
+
+#endif //RCTJSCPROFILER_H

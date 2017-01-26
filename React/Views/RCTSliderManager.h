@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSLIDERMANAGER_H
+#define RCTSLIDERMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTSliderManager : RCTViewManager
 
 @end
+
+#endif //RCTSLIDERMANAGER_H

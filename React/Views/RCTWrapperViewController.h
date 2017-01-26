@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTWRAPPERVIEWCONTROLLER_H
+#define RCTWRAPPERVIEWCONTROLLER_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTViewControllerProtocol.h>
@@ -30,3 +33,5 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 @property (nonatomic, strong) RCTNavItem *navItem;
 
 @end
+
+#endif //RCTWRAPPERVIEWCONTROLLER_H

@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTPROGRESSVIEWMANAGER_H
+#define RCTPROGRESSVIEWMANAGER_H
+
 #import <React/RCTViewManager.h>
 
 @interface RCTProgressViewManager : RCTViewManager
 
 @end
+
+#endif //RCTPROGRESSVIEWMANAGER_H

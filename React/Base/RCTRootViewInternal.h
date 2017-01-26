@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTROOTVIEWINTERNAL_H
+#define RCTROOTVIEWINTERNAL_H
+
 #import <React/RCTRootView.h>
 
 @class RCTTVRemoteHandler;
@@ -31,3 +34,5 @@
 #endif
 
 @end
+
+#endif //RCTROOTVIEWINTERNAL_H

@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTNETINFO_H
+#define RCTNETINFO_H
+
 #import <SystemConfiguration/SystemConfiguration.h>
 
 #import <React/RCTEventEmitter.h>
@@ -16,3 +19,5 @@
 - (instancetype)initWithHost:(NSString *)host;
 
 @end
+
+#endif //RCTNETINFO_H

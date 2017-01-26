@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef ARTSURFACEVIEW_H
+#define ARTSURFACEVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import "ARTContainer.h"
@@ -14,3 +17,5 @@
 @interface ARTSurfaceView : UIView <ARTContainer>
 
 @end
+
+#endif //ARTSURFACEVIEW_H

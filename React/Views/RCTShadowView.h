@@ -7,6 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#ifndef RCTSHADOWVIEW_H
+#define RCTSHADOWVIEW_H
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -230,3 +233,5 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
 
 @end
+
+#endif //RCTSHADOWVIEW_H
