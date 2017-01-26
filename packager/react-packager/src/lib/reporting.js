@@ -47,6 +47,8 @@ export type ReportableEvent = {
 } | {
   type: 'global_cache_disabled',
   reason: GlobalCacheDisabledReason,
+} | {
+  type: 'transform_cache_reset',
 };
 
 /**

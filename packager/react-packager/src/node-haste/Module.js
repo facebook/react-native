@@ -326,7 +326,10 @@ class Module {
         sourceCode,
         transformCacheKey,
         transformOptions,
-        cacheOptions: this._options,
+        cacheOptions: {
+          resetCache: this._options.resetCache,
+          reporter: this._reporter,
+        },
       };
       const cachedResult = TransformCache.readSync(cacheProps);
       if (cachedResult) {
