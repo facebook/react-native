@@ -48,6 +48,7 @@ typedef struct YGLayout {
   float position[4];
   float dimensions[2];
   float margin[6];
+  float border[6];
   float padding[6];
   YGDirection direction;
 
@@ -596,6 +597,7 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
 
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
 uint32_t gCurrentGenerationCount = 0;
@@ -1764,39 +1766,35 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
   node->layout.direction = direction;
 
+  const YGFlexDirection flexRowDirection = YGFlexDirectionResolve(YGFlexDirectionRow, direction);
+  const YGFlexDirection flexColumnDirection = YGFlexDirectionResolve(YGFlexDirectionColumn, direction);
+
   node->layout.margin[YGEdgeStart] =
-      YGNodeLeadingMargin(node,
-                           YGFlexDirectionResolve(YGFlexDirectionRow, direction),
-                           parentWidth);
+    YGNodeLeadingMargin(node, flexRowDirection, parentWidth);
   node->layout.margin[YGEdgeEnd] =
-      YGNodeTrailingMargin(node,
-                            YGFlexDirectionResolve(YGFlexDirectionRow, direction),
-                            parentWidth);
+    YGNodeTrailingMargin(node, flexRowDirection, parentWidth);
   node->layout.margin[YGEdgeTop] =
-      YGNodeLeadingMargin(node,
-                           YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
-                           parentWidth);
+    YGNodeLeadingMargin(node, flexColumnDirection, parentWidth);
   node->layout.margin[YGEdgeBottom] =
-      YGNodeTrailingMargin(node,
-                            YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
-                            parentWidth);
+    YGNodeTrailingMargin(node, flexColumnDirection, parentWidth);
+
+  node->layout.border[YGEdgeStart] =
+    YGNodeLeadingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeEnd] =
+    YGNodeTrailingBorder(node, flexRowDirection);
+  node->layout.border[YGEdgeTop] =
+    YGNodeLeadingBorder(node, flexColumnDirection);
+  node->layout.border[YGEdgeBottom] =
+    YGNodeTrailingBorder(node, flexColumnDirection);
 
   node->layout.padding[YGEdgeStart] =
-      YGNodeLeadingPadding(node,
-                           YGFlexDirectionResolve(YGFlexDirectionRow, direction),
-                           parentWidth);
+    YGNodeLeadingPadding(node, flexRowDirection, parentWidth);
   node->layout.padding[YGEdgeEnd] =
-      YGNodeTrailingPadding(node,
-                            YGFlexDirectionResolve(YGFlexDirectionRow, direction),
-                            parentWidth);
+    YGNodeTrailingPadding(node, flexRowDirection, parentWidth);
   node->layout.padding[YGEdgeTop] =
-      YGNodeLeadingPadding(node,
-                           YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
-                           parentWidth);
+    YGNodeLeadingPadding(node, flexColumnDirection, parentWidth);
   node->layout.padding[YGEdgeBottom] =
-      YGNodeTrailingPadding(node,
-                            YGFlexDirectionResolve(YGFlexDirectionColumn, direction),
-                            parentWidth);
+    YGNodeTrailingPadding(node, flexColumnDirection, parentWidth);
 
   if (node->measure) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(
