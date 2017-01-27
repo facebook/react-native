@@ -465,13 +465,6 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
   @"square": @(kCGLineCapSquare),
 }), kCGLineCapButt, intValue)
 
-RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
-  @"m11", @"m12", @"m13", @"m14",
-  @"m21", @"m22", @"m23", @"m24",
-  @"m31", @"m32", @"m33", @"m34",
-  @"m41", @"m42", @"m43", @"m44"
-]), nil)
-
 RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
 ]), nil)

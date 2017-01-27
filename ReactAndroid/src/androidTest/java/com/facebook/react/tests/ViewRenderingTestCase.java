@@ -53,7 +53,8 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     final UIManagerModule uiManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

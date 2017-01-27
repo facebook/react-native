@@ -35,8 +35,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This example shows both fetching and displaying an image from local storage as well as on from
- * network.
+ * This example shows both fetching and displaying an image from local
+ * storage as well as one from network.
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';

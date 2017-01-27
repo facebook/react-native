@@ -101,26 +101,24 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
-      makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-      makeNativeMethod("setSourceURL", CatalystInstanceImpl::setSourceURL),
-      makeNativeMethod("loadScriptFromAssets",
-                       "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
-                       CatalystInstanceImpl::loadScriptFromAssets),
-      makeNativeMethod("loadScriptFromFile", CatalystInstanceImpl::loadScriptFromFile),
-      makeNativeMethod("loadScriptFromOptimizedBundle",
-                       CatalystInstanceImpl::loadScriptFromOptimizedBundle),
-      makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
-      makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
-      makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
-      makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
-      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
-      makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
-      makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
-      makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
-      makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
-      makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
-      makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
+    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+    makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+    makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
+    makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
+    makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
+    makeNativeMethod("jniLoadScriptFromOptimizedBundle",
+                     CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
+    makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
+    makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
+    makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
+    makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+    makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
+    makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
+    makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
+    makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
+    makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
+    makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
+    makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
   });
 
   JNativeRunnable::registerNatives();
@@ -159,12 +157,13 @@ void CatalystInstanceImpl::initializeBridge(
                               mrh->getModuleRegistry());
 }
 
-void CatalystInstanceImpl::setSourceURL(const std::string& sourceURL) {
+void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
-void CatalystInstanceImpl::loadScriptFromAssets(jobject assetManager,
-                                                const std::string& assetURL) {
+void CatalystInstanceImpl::jniLoadScriptFromAssets(
+    jni::alias_ref<JAssetManager::javaobject> assetManager,
+    const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
@@ -192,8 +191,8 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-void CatalystInstanceImpl::loadScriptFromFile(const std::string& fileName,
-                                              const std::string& sourceURL) {
+void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
+                                                 const std::string& sourceURL) {
   auto zFileName = fileName.c_str();
   if (isIndexedRAMBundle(zFileName)) {
     auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
@@ -207,9 +206,9 @@ void CatalystInstanceImpl::loadScriptFromFile(const std::string& fileName,
   }
 }
 
-void CatalystInstanceImpl::loadScriptFromOptimizedBundle(const std::string& bundlePath,
-                                                         const std::string& sourceURL,
-                                                         jint flags) {
+void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& bundlePath,
+                                                            const std::string& sourceURL,
+                                                            jint flags) {
   return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
                                                   std::move(sourceURL),
                                                   flags);

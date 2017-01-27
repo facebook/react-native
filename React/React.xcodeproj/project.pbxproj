@@ -721,6 +721,9 @@
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
+		AC70D2ED1DE48A22002E6351 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
+		945929C41DD62ADD00653A7D /* RCTConvert+Transform.m in Sources */ = {isa = PBXBuildFile; fileRef = 945929C31DD62ADD00653A7D /* RCTConvert+Transform.m */; };
+		945929C51DD62ADD00653A7D /* RCTConvert+Transform.m in Sources */ = {isa = PBXBuildFile; fileRef = 945929C31DD62ADD00653A7D /* RCTConvert+Transform.m */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
 		E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */; };
@@ -1356,6 +1359,8 @@
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "oss-compat-util.h"; sourceTree = "<group>"; };
+		945929C21DD62ADD00653A7D /* RCTConvert+Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Transform.h"; sourceTree = "<group>"; };
+		945929C31DD62ADD00653A7D /* RCTConvert+Transform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Transform.m"; sourceTree = "<group>"; };
 		ACDD3FDA1BC7430D00E7DE33 /* RCTBorderStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderStyle.h; sourceTree = "<group>"; };
 		B233E6E81D2D843200BC68BA /* RCTI18nManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTI18nManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nManager.m; sourceTree = "<group>"; };
@@ -1479,6 +1484,8 @@
 				13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */,
 				13456E941ADAD482009F94A7 /* RCTConvert+MapKit.h */,
 				13456E951ADAD482009F94A7 /* RCTConvert+MapKit.m */,
+				945929C21DD62ADD00653A7D /* RCTConvert+Transform.h */,
+				945929C31DD62ADD00653A7D /* RCTConvert+Transform.m */,
 				133CAE8C1B8E5CFD00F6AD92 /* RCTDatePicker.h */,
 				133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */,
 				58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */,
@@ -2417,6 +2424,7 @@
 				2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */,
 				2D3B5EB81D9B091B00451313 /* RCTSourceCode.m in Sources */,
 				2D3B5EB51D9B091100451313 /* RCTDevMenu.mm in Sources */,
+				945929C51DD62ADD00653A7D /* RCTConvert+Transform.m in Sources */,
 				2D3B5EBD1D9B092A00451313 /* RCTTiming.m in Sources */,
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
@@ -2605,6 +2613,7 @@
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
 				391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */,
 				1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */,
+				945929C41DD62ADD00653A7D /* RCTConvert+Transform.m in Sources */,
 				13AB90C11B6FA36700713B4F /* RCTComponentData.m in Sources */,
 				13B0801B1A69489C00A75B9A /* RCTNavigatorManager.m in Sources */,
 			);

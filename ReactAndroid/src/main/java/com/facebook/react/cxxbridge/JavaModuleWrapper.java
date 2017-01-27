@@ -9,7 +9,6 @@
 
 package com.facebook.react.cxxbridge;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +37,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 /* package */ class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
-    @DoNotStrip
-    Method method;
-    @DoNotStrip
-    String signature;
     @DoNotStrip
     String name;
     @DoNotStrip
@@ -80,39 +75,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
       BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
       mMethods.add(method);
-
-      descs.add(md);
-    }
-
-    return descs;
-  }
-
-  @DoNotStrip
-  public List<MethodDescriptor> newGetMethodDescriptors() {
-    ArrayList<MethodDescriptor> descs = new ArrayList<>();
-
-    for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-      getModule().getMethods().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = entry.getValue().getType();
-
-      BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
-
-      descs.add(md);
-    }
-
-    for (Map.Entry<String, BaseJavaModule.SyncNativeHook> entry :
-      getModule().getSyncHooks().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = BaseJavaModule.METHOD_TYPE_SYNC;
-
-      BaseJavaModule.SyncJavaHook method = (BaseJavaModule.SyncJavaHook) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
 
       descs.add(md);
     }

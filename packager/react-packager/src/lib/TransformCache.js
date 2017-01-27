@@ -32,6 +32,7 @@ const CACHE_NAME = 'react-native-packager-cache';
 type CacheFilePaths = {transformedCode: string, metadata: string};
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {SourceMap} from './SourceMap';
+import type {Reporter} from './reporting';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -143,7 +144,10 @@ function writeSync(props: {
   ]));
 }
 
-export type CacheOptions = {resetCache?: boolean};
+export type CacheOptions = {
+  reporter: Reporter,
+  resetCache?: boolean,
+};
 
 /* 1 day */
 const GARBAGE_COLLECTION_PERIOD = 24 * 60 * 60 * 1000;
@@ -204,16 +208,16 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     this._lastCollected = Date.now();
   }
 
-  _resetCache() {
+  _resetCache(reporter: Reporter) {
     rimraf.sync(getCacheDirPath());
-    terminal.log('Warning: The transform cache was reset.');
+    reporter.update({type: 'transform_cache_reset'});
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
   }
 
   collectIfNecessarySync(options: CacheOptions) {
     if (options.resetCache && !this._cacheWasReset) {
-      this._resetCache();
+      this._resetCache(options.reporter);
       return;
     }
     const lastCollected = this._lastCollected;

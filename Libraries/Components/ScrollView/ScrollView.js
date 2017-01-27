@@ -382,11 +382,11 @@ const ScrollView = React.createClass({
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
    *
-   * Syntax:
+   * Example:
    *
-   * `scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
+   * `scrollTo({x: 0; y: 0; animated: true})`
    *
-   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * Note: The weird function signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
@@ -404,7 +404,39 @@ const ScrollView = React.createClass({
   },
 
   /**
-   * Deprecated, do not use.
+   * If this is a vertical ScrollView scrolls to the bottom.
+   * If this is a horizontal ScrollView scrolls to the right.
+   *
+   * Use `scrollToEnd({animated: true})` for smooth animated scrolling,
+   * `scrollToEnd({animated: false})` for immediate scrolling.
+   * If no options are passed, `animated` defaults to true.
+   *
+   * See `ScrollView#scrollToEnd`.
+   */
+  scrollToEnd: function(
+    options?: { animated?: boolean },
+  ) {
+    // Default to true
+    const animated = (options && options.animated) !== false;
+    if (Platform.OS === 'ios') {
+      this.getScrollResponder().scrollResponderScrollToEnd({
+        animated: animated,
+      });
+    } else if (Platform.OS === 'android') {
+      // On Android scrolling past the end of the ScrollView gets clipped
+      // - scrolls to the end.
+      if (this.props.horizontal) {
+        this.scrollTo({x: 10*1000*1000, animated: animated});
+      } else {
+        this.scrollTo({y: 10*1000*1000, animated: animated});
+      }
+    } else {
+      console.warn('scrollToEnd is not supported on this platform');
+    }
+  },
+
+  /**
+   * Deprecated, use `scrollTo` instead.
    */
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
