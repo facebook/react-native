@@ -101,26 +101,24 @@ CatalystInstanceImpl::CatalystInstanceImpl()
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
-      makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
-      makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
-      makeNativeMethod("jniLoadScriptFromAssets",
-                       "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
-                       CatalystInstanceImpl::jniLoadScriptFromAssets),
-      makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
-      makeNativeMethod("jniLoadScriptFromOptimizedBundle",
-                       CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
-      makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
-      makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
-      makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
-      makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
-      makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
-      makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
-      makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
-      makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
-      makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
-      makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
-      makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
+    makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
+    makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+    makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
+    makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
+    makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
+    makeNativeMethod("jniLoadScriptFromOptimizedBundle",
+                     CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
+    makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
+    makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
+    makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
+    makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
+    makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
+    makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
+    makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
+    makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
+    makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
+    makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
+    makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
   });
 
   JNativeRunnable::registerNatives();
@@ -163,8 +161,9 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
-void CatalystInstanceImpl::jniLoadScriptFromAssets(jobject assetManager,
-                                                   const std::string& assetURL) {
+void CatalystInstanceImpl::jniLoadScriptFromAssets(
+    jni::alias_ref<JAssetManager::javaobject> assetManager,
+    const std::string& assetURL) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 

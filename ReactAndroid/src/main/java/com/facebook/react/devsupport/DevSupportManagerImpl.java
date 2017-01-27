@@ -86,7 +86,10 @@ import okhttp3.ws.WebSocket;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
+public class DevSupportManagerImpl implements
+    DevSupportManager,
+    PackagerCommandListener,
+    DevInternalSettings.Listener {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -622,6 +625,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   public void reloadSettings() {
     reload();
   }
+
+  public void onInternalSettingsChanged() { reloadSettings(); }
 
   @Override
   public void handleReloadJS() {
