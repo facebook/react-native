@@ -23,6 +23,7 @@ import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
 import type Cache from '../node-haste/Cache';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
   Promise<{code: string, map: SourceMap}>;
@@ -32,6 +33,7 @@ type Options = {
   blacklistRE?: RegExp,
   cache: Cache,
   extraNodeModules?: {},
+  globalTransformCache: ?GlobalTransformCache,
   minifyCode: MinifyCode,
   platforms: Array<string>,
   polyfillModuleNames?: Array<string>,
@@ -56,6 +58,7 @@ class Resolver {
       assetExts: opts.assetExts,
       cache: opts.cache,
       extraNodeModules: opts.extraNodeModules,
+      globalTransformCache: opts.globalTransformCache,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));

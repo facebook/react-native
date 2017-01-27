@@ -413,6 +413,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
                                                     userInfo:@{RCTUIManagerRootViewKey: rootView}];
 }
 
+- (NSString *)viewNameForReactTag:(NSNumber *)reactTag
+{
+  RCTAssertThread(RCTGetUIManagerQueue(), @"viewNameForReactTag can only be called from the shadow queue");
+  return _shadowViewRegistry[reactTag].viewName;
+}
+
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
 {
   RCTAssertMainQueue();
@@ -1051,6 +1057,16 @@ RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
     UIView *view = viewRegistry[reactTag];
     [componentData setProps:props forView:view];
   }];
+}
+
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag
+                                 viewName:(NSString *)viewName
+                                    props:(NSDictionary *)props
+{
+  RCTAssertMainQueue();
+  RCTComponentData *componentData = _componentDataByName[viewName];
+  UIView *view = _viewRegistry[reactTag];
+  [componentData setProps:props forView:view];
 }
 
 RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
