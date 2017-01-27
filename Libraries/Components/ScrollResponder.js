@@ -377,7 +377,7 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to scroll to a specific point  in the ScrollView.
+   * A helper function to scroll to a specific point in the ScrollView.
    * This is currently used to help focus child TextViews, but can also
    * be used to quickly scroll to any element we want to focus. Syntax:
    *
