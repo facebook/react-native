@@ -267,6 +267,9 @@ async function run(requestedVersion, cliArgs) {
 
     log.info('Setup temporary working directory');
     await setupWorkingDir(tmpDir);
+    if (cliArgs.verbose) {
+      log.info(`Temporary working directory: ${tmpDir}`);
+    }
 
     log.info('Configure Git environment');
     configureGitEnv(tmpDir);
@@ -317,27 +320,25 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "New version" --allow-empty', verbose);
 
     log.info('Generate the patch between the 2 versions');
-    const diffOutput = await exec('git diff HEAD~1 HEAD', verbose);
+    const diffOutput = await exec('git format-patch --stdout HEAD~1..HEAD', verbose);
 
     log.info('Save the patch in temp directory');
     const patchPath = path.resolve(tmpDir, `upgrade_${currentVersion}_${newVersion}.patch`);
     fs.writeFileSync(patchPath, diffOutput);
 
     log.info('Reset the 2 temporary commits');
+    await exec('git tag update-snapshot', verbose);
     await exec('git reset HEAD~2 --hard', verbose);
 
     try {
       log.info('Apply the patch');
-      await exec(`git apply --3way ${patchPath}`, true);
+      await exec(`git am --3way --signoff ${patchPath}`, true);
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +
         'See above for the list of files that have merge conflicts.');
     } finally {
       log.info('Upgrade done');
-      if (cliArgs.verbose) {
-        log.info(`Temporary working directory: ${tmpDir}`);
-      }
     }
 
   } catch (err) {
