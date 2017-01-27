@@ -418,7 +418,7 @@ var ScrollResponderMixin = {
     const animated = (options && options.animated === true) ? true : false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      UIManager.RCTScrollView.Commands.scrollTo,
+      UIManager.RCTScrollView.Commands.scrollToEnd,
       [animated],
     );
   },
