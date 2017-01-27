@@ -415,6 +415,12 @@ var ScrollResponderMixin = {
   scrollResponderScrollToEnd: function(
     options?: { animated?: boolean },
   ) {
+    if (Platform.OS !== 'ios') {
+      console.warn(
+        'scrollResponderScrollToEnd is not supported on this platform'
+      );
+      return;
+    }
     const animated = (options && options.animated === true) ? true : false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),

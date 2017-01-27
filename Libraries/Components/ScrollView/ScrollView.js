@@ -415,7 +415,19 @@ const ScrollView = React.createClass({
   scrollToEnd: function(
     options?: { animated?: boolean },
   ) {
-    this.getScrollResponder().scrollResponderScrollToEnd(options);
+    if (Platform.OS === 'ios') {
+      this.getScrollResponder().scrollResponderScrollToEnd(options);
+    } else if (Platform.OS === 'android') {
+      // On Android scrolling past the end of the ScrollView gets clipped
+      // - scrolls to the end.
+      if (this.props.horizontal) {
+        this.scrollTo({x: 1000*1000, animated: options && options.animated});
+      } else {
+        this.scrollTo({y: 1000*1000, animated: options && options.animated});
+      }
+    } else {
+      console.warn('scrollToEnd is not supported on this platform');
+    }
   },
 
   /**
