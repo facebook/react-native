@@ -7,11 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- *
  */
+
 'use strict';
 
-const chalk = require('chalk');
 const os = require('os');
 const pkgjson = require('../../../package.json');
 
@@ -23,17 +22,6 @@ import type {
   LogEntry,
 } from './Types';
 
-const DATE_LOCALE_OPTIONS = {
-  day: '2-digit',
-  hour12: false,
-  hour: '2-digit',
-  minute: '2-digit',
-  month: '2-digit',
-  second: '2-digit',
-  year: 'numeric',
-};
-
-let PRINT_LOG_ENTRIES = true;
 const log_session = `${os.hostname()}-${Date.now()}`;
 const eventEmitter = new EventEmitter();
 
@@ -92,68 +80,10 @@ function log(logEntry: LogEntry): LogEntry {
   return logEntry;
 }
 
-function print(
-  logEntry: LogEntry,
-  printFields?: Array<string> = [],
-): LogEntry {
-  if (!PRINT_LOG_ENTRIES) {
-    return logEntry;
-  }
-  const {
-    log_entry_label: logEntryLabel,
-    action_phase: actionPhase,
-    duration_ms: duration,
-  } = logEntry;
-
-  const timeStamp = new Date().toLocaleString(undefined, DATE_LOCALE_OPTIONS);
-  let logEntryString;
-
-  switch (actionPhase) {
-    case 'start':
-      logEntryString = chalk.dim(`[${timeStamp}] <START> ${logEntryLabel}`);
-      break;
-    case 'end':
-      logEntryString = chalk.dim(`[${timeStamp}] <END>   ${logEntryLabel}`) +
-        chalk.cyan(` (${+duration}ms)`);
-      break;
-    default:
-      logEntryString = chalk.dim(`[${timeStamp}]         ${logEntryLabel}`);
-      break;
-  }
-
-  if (printFields.length) {
-    const indent = ' '.repeat(timeStamp.length + 11);
-
-    for (const field of printFields) {
-      const value = logEntry[field];
-      if (value === undefined) {
-        continue;
-      }
-      logEntryString += chalk.dim(`\n${indent}${field}: ${value.toString()}`);
-    }
-  }
-
-  // eslint-disable-next-line no-console-disallow
-  console.log(logEntryString);
-
-  return logEntry;
-}
-
-function enablePrinting(): void {
-  PRINT_LOG_ENTRIES = true;
-}
-
-function disablePrinting(): void {
-  PRINT_LOG_ENTRIES = false;
-}
-
 module.exports = {
   on,
   createEntry,
   createActionStartEntry,
   createActionEndEntry,
   log,
-  print,
-  enablePrinting,
-  disablePrinting,
 };

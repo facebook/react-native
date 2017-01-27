@@ -151,7 +151,7 @@ function launchEditor(fileName, lineNumber, projectRoots) {
     return;
   }
 
-  const [editor, ...args] = guessEditor();
+  let [editor, ...args] = guessEditor();
   if (!editor) {
     printInstructions('PRO TIP');
     return;
@@ -159,7 +159,7 @@ function launchEditor(fileName, lineNumber, projectRoots) {
 
   var workspace = findRootForFile(projectRoots, fileName);
   if (lineNumber) {
-    args.push(getArgumentsForLineNumber(editor, fileName, lineNumber, workspace));
+    args = args.concat(getArgumentsForLineNumber(editor, fileName, lineNumber, workspace));
   } else {
     args.push(fileName);
   }

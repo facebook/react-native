@@ -34,7 +34,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"target\": \"targetValue\", \"action\": \"actionValue\"}"));
-    verify(callback).onMessage("targetValue", "actionValue");
+    verify(callback).onMessage(any(WebSocket.class), eq("targetValue"), eq("actionValue"));
   }
 
   @Test
@@ -44,7 +44,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.BINARY,
       "{\"version\": 1, \"target\": \"targetValue\", \"action\": \"actionValue\"}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 
   @Test
@@ -54,7 +54,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"action\": \"actionValue\"}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"target\": null, \"action\": \"actionValue\"}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 
   @Test
@@ -74,7 +74,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"target\": \"targetValue\"}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 
   @Test
@@ -84,7 +84,7 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"target\": \"targetValue\", \"action\": null}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 
   @Test
@@ -94,6 +94,6 @@ public class JSPackagerWebSocketClientTest {
     final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 2, \"target\": \"targetValue\", \"action\": \"actionValue\"}"));
-    verify(callback, never()).onMessage(anyString(), anyString());
+    verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
   }
 }

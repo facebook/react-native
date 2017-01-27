@@ -5,7 +5,7 @@ android_library(
   srcs = glob(['**/*.java']),
   deps = [
     YOGA_TARGET,
-    react_native_dep('android_res/android/support/v7/appcompat-orig:res-for-react-native'),
+    react_native_dep('android_res/com/facebook/catalyst/appcompat:appcompat'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
     react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
@@ -14,14 +14,10 @@ android_library(
     react_native_dep('third-party/java/jsr-305:jsr-305'),
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),
-    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
   ],
   visibility = [
     'PUBLIC',
   ],
-)
-
-project_config(
-  src_target = ':toolbar',
 )

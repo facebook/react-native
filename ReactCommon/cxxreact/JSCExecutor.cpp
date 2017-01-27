@@ -15,6 +15,7 @@
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
+#include <system_error>
 
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
@@ -30,6 +31,7 @@
 #include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
+#include "RecoverableError.h"
 
 #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
 #include "JSCTracing.h"
@@ -38,6 +40,9 @@
 #ifdef WITH_JSC_EXTRA_TRACING
 #include "JSCLegacyProfiler.h"
 #include "JSCLegacyTracing.h"
+#endif
+
+#if !defined(__APPLE__) && defined(WITH_JSC_EXTRA_TRACING)
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
@@ -59,6 +64,8 @@
 
 namespace facebook {
 namespace react {
+
+using namespace detail;
 
 namespace {
 
@@ -219,7 +226,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
   if (useCustomJSC) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, toJson(m_jscConfig));
   }
   #else
   const bool useCustomJSC = false;
@@ -233,7 +240,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
+    JSClassDefinition definition = kJSClassDefinitionEmpty;
+    definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+    globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
@@ -272,8 +281,12 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   PerfLogging::installNativeHooks(m_context);
+  #endif
 
-  initSamplingProfilerOnMainJSCThread(m_context);
+  #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
+  if (JSC_JSSamplingProfilerEnabled(m_context)) {
+    initSamplingProfilerOnMainJSCThread(m_context);
+  }
   #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
@@ -311,6 +324,27 @@ void JSCExecutor::terminateOnJSVMThread() {
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
+static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
+  switch (status) {
+  case JSLoadSourceIsCompiled:
+    return "No error encountered during source load";
+
+  case JSLoadSourceErrorOnRead:
+    return "Error reading source";
+
+  case JSLoadSourceIsNotCompiled:
+    return "Source is not compiled";
+
+  case JSLoadSourceErrorVersionMismatch:
+    return "Source version not supported";
+
+  default:
+    return "Bad error code";
+  }
+}
+#endif
+
+#ifdef WITH_FBJSCEXTENSIONS
 void JSCExecutor::loadApplicationScript(
     std::string bundlePath,
     std::string sourceURL,
@@ -318,9 +352,9 @@ void JSCExecutor::loadApplicationScript(
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  folly::throwOnFail<std::runtime_error>(
-    (flags & UNPACKED_JS_SOURCE) || (flags & UNPACKED_BYTECODE),
-    "Optimized bundle with no unpacked source or bytecode");
+  if (!(flags & (UNPACKED_JS_SOURCE | UNPACKED_BYTECODE))) {
+    throw RecoverableError("Optimized bundle with no unpacked source or bytecode");
+  }
 
   String jsSourceURL(m_context, sourceURL.c_str());
   JSSourceCodeRef sourceCode = nullptr;
@@ -332,14 +366,17 @@ void JSCExecutor::loadApplicationScript(
 
   if (flags & UNPACKED_BYTECODE) {
     int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
-    folly::checkUnixError(fd, "Couldn't open compiled bundle");
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>([fd]() {
+        folly::checkUnixError(fd, "Couldn't open compiled bundle");
+      });
     SCOPE_EXIT { close(fd); };
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, nullptr);
 
-    folly::throwOnFail<std::runtime_error>(
-      sourceCode != nullptr,
-      "Could not create compiled source code"
-    );
+    JSLoadSourceStatus jsStatus;
+    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsStatus);
+
+    if (!sourceCode) {
+      throw RecoverableError(explainLoadSourceStatus(jsStatus));
+    }
   } else {
     auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
     if (!jsScriptBigString->isAscii()) {
@@ -366,63 +403,53 @@ void JSCExecutor::loadApplicationScript(
 }
 #endif
 
-#ifdef WITH_FBJSCEXTENSIONS
-void JSCExecutor::loadApplicationScript(
-    int fd,
-    std::string sourceURL)
-{
-  String jsSourceURL(m_context, sourceURL.c_str());
-
-  JSLoadSourceError jsError;
-  auto bcSourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsError);
-
-  switch (jsError) {
-  case JSLoadSourceErrorOnRead:
-  case JSLoadSourceErrorNotCompiled:
-    // Not bytecode, fall through.
-    return JSExecutor::loadApplicationScript(fd, sourceURL);
-
-  case JSLoadSourceErrorVersionMismatch:
-    throw std::runtime_error("Compiled Source Version Mismatch");
-
-  case JSLoadSourceErrorNone:
-    folly::throwOnFail<std::runtime_error>(
-      bcSourceCode != nullptr,
-      "Unexpected error opening compiled bundle"
-    );
-    break;
-
-  default:
-    throw std::runtime_error("Unhandled Compiled Source Error");
-  }
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
-  evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
-
-  // TODO(luk): t13903306 Remove this check once we make native modules
-  // working for java2js
-  if (m_delegate) {
-    bindBridge();
-    flush();
-  }
-
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
-}
-#endif
-
-void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) throw(JSException) {
+void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
+
+  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+  String jsSourceURL(m_context, sourceURL.c_str());
+
+#ifdef WITH_FBJSCEXTENSIONS
+  if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
+    JSLoadSourceStatus jsStatus;
+    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsStatus);
+
+    switch (jsStatus) {
+    case JSLoadSourceIsCompiled:
+      if (!bcSourceCode) {
+        throw std::runtime_error("Unexpected error opening compiled bundle");
+      }
+
+      evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
+
+      // TODO(luk): t13903306 Remove this check once we make native modules
+      // working for java2js
+      if (m_delegate) {
+        bindBridge();
+        flush();
+      }
+
+      ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+      ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      return;
+
+    case JSLoadSourceErrorVersionMismatch:
+      throw RecoverableError(explainLoadSourceStatus(jsStatus));
+
+    case JSLoadSourceErrorOnRead:
+    case JSLoadSourceIsNotCompiled:
+      // Not bytecode, fall through.
+      break;
+    }
+  }
+#endif
 
   #ifdef WITH_FBSYSTRACE
   fbsystrace_begin_section(
     TRACE_TAG_REACT_CXX_BRIDGE,
     "JSCExecutor::loadApplicationScript-createExpectingAscii");
   #endif
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
 
   ReactMarker::logMarker("loadApplicationScript_startStringConvert");
   String jsScript = jsStringFromBigString(m_context, *script);
@@ -432,7 +459,6 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
   #endif
 
-  String jsSourceURL(m_context, sourceURL.c_str());
   evaluateScript(m_context, jsScript, jsSourceURL);
 
   // TODO(luk): t13903306 Remove this check once we make native modules working for java2js

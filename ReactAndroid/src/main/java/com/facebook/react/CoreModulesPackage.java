@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
@@ -46,39 +47,46 @@ import com.facebook.systrace.Systrace;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
-@ReactModuleList({
-  AndroidInfoModule.class,
-  AnimationsDebugModule.class,
-  DeviceEventManagerModule.class,
-  ExceptionsManagerModule.class,
-  HeadlessJsTaskSupportModule.class,
-  SourceCodeModule.class,
-  Timing.class,
-  UIManagerModule.class,
-  // Debug only
-  DebugComponentOwnershipModule.class,
-  JSCHeapCapture.class,
-  JSCSamplingProfiler.class,
-})
-/* package */ class CoreModulesPackage extends LazyReactPackage {
+@ReactModuleList(
+  javaModules = {
+    AndroidInfoModule.class,
+    AnimationsDebugModule.class,
+    DeviceEventManagerModule.class,
+    ExceptionsManagerModule.class,
+    HeadlessJsTaskSupportModule.class,
+    SourceCodeModule.class,
+    Timing.class,
+    UIManagerModule.class,
+    // Debug only
+    DebugComponentOwnershipModule.class,
+    JSCHeapCapture.class,
+    JSCSamplingProfiler.class,
+  }
+)
+/* package */ class CoreModulesPackage extends LazyReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
   private final UIImplementationProvider mUIImplementationProvider;
+  private final boolean mLazyViewManagersEnabled;
 
   CoreModulesPackage(
     ReactInstanceManager reactInstanceManager,
     DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-    UIImplementationProvider uiImplementationProvider) {
+    UIImplementationProvider uiImplementationProvider,
+    boolean lazyViewManagersEnabled) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
     mUIImplementationProvider = uiImplementationProvider;
+    mLazyViewManagersEnabled = lazyViewManagersEnabled;
   }
 
   @Override
@@ -126,7 +134,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       new ModuleSpec(SourceCodeModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new SourceCodeModule(mReactInstanceManager.getSourceUrl());
+          return new SourceCodeModule(reactContext);
         }
       }));
     moduleSpecList.add(
@@ -193,8 +201,14 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    ReactMarker.logMarker(
+      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_START);
     // This has to be done via reflection or we break open source.
-    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
+    ReactModuleInfoProvider reactModuleInfoProvider =
+      LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
+    ReactMarker.logMarker(
+      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_END);
+    return reactModuleInfoProvider;
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
@@ -206,10 +220,21 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
       return new UIManagerModule(
         reactContext,
         viewManagersList,
-        mUIImplementationProvider);
+        mUIImplementationProvider,
+        mLazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
+  }
+
+  @Override
+  public void startProcessPackage() {
+    ReactMarker.logMarker(PROCESS_CORE_REACT_PACKAGE_START);
+  }
+
+  @Override
+  public void endProcessPackage() {
+    ReactMarker.logMarker(PROCESS_CORE_REACT_PACKAGE_END);
   }
 }

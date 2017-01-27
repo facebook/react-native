@@ -11,6 +11,7 @@
 
 'use strict';
 
+const debugRead = require('debug')('RNP:TransformCache:Read');
 const fs = require('fs');
 /**
  * We get the package "for free" with "write-file-atomic". MurmurHash3 is a
@@ -22,6 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
+const terminal = require('../lib/terminal');
 const toFixedHex = require('./toFixedHex');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
@@ -30,6 +32,7 @@ const CACHE_NAME = 'react-native-packager-cache';
 type CacheFilePaths = {transformedCode: string, metadata: string};
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {SourceMap} from './SourceMap';
+import type {Reporter} from './reporting';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -44,6 +47,10 @@ const getCacheDirPath = (function () {
       dirPath = path.join(
         require('os').tmpdir(),
         CACHE_NAME + '-' + imurmurhash(__dirname).result().toString(16),
+      );
+
+      require('debug')('RNP:TransformCache:Dir')(
+        `transform cache directory: ${dirPath}`
       );
     }
     return dirPath;
@@ -137,7 +144,10 @@ function writeSync(props: {
   ]));
 }
 
-export type CacheOptions = {resetCache?: boolean};
+export type CacheOptions = {
+  reporter: Reporter,
+  resetCache?: boolean,
+};
 
 /* 1 day */
 const GARBAGE_COLLECTION_PERIOD = 24 * 60 * 60 * 1000;
@@ -189,25 +199,25 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     try {
       this._collectSync();
     } catch (error) {
-      console.error(error.stack);
-      console.error(
+      terminal.log(error.stack);
+      terminal.log(
         'Error: Cleaning up the cache folder failed. Continuing anyway.',
       );
-      console.error('The cache folder is: %s', getCacheDirPath());
+      terminal.log('The cache folder is: %s', getCacheDirPath());
     }
     this._lastCollected = Date.now();
   }
 
-  _resetCache() {
+  _resetCache(reporter: Reporter) {
     rimraf.sync(getCacheDirPath());
-    console.log('Warning: The transform cache was reset.');
+    reporter.update({type: 'transform_cache_reset'});
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
   }
 
   collectIfNecessarySync(options: CacheOptions) {
     if (options.resetCache && !this._cacheWasReset) {
-      this._resetCache();
+      this._resetCache(options.reporter);
       return;
     }
     const lastCollected = this._lastCollected;
@@ -328,5 +338,10 @@ function readSync(props: ReadTransformProps): ?CachedResult {
 
 module.exports = {
   writeSync,
-  readSync,
+  readSync(props: ReadTransformProps): ?CachedResult {
+    const result = readSync(props);
+    const msg = result ? 'Cache hit: ' : 'Cache miss: ';
+    debugRead(msg + props.filePath);
+    return result;
+  }
 };

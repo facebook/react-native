@@ -13,6 +13,7 @@
 
 const assert = require('assert');
 const crypto = require('crypto');
+const debug = require('debug')('RNP:Bundler');
 const fs = require('fs');
 const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
@@ -20,12 +21,10 @@ const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
-const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../../package.json').version;
+const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
-const defaults = require('../../../defaults');
 
 const {
   sep: pathSeparator,
@@ -38,13 +37,15 @@ const {
 import type AssetServer from '../AssetServer';
 import type Module from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
+import type {Reporter} from '../lib/reporting';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
-export type GetTransformOptions<T> = (
-  string,
-  Object,
-  string => Promise<Array<string>>,
-) => T | Promise<T>;
+export type GetTransformOptions = (
+  mainModuleName: string,
+  options: {},
+  getDependencies: string => Promise<Array<string>>,
+) => {} | Promise<{}>;
 
 const sizeOf = denodeify(imageSize);
 
@@ -54,66 +55,7 @@ const {
   createActionStartEntry,
   createActionEndEntry,
   log,
-  print,
 } = require('../Logger');
-
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  blacklistRE: {
-    type: 'object', // typeof regex is object
-  },
-  moduleFormat: {
-    type: 'string',
-    default: 'haste',
-  },
-  polyfillModuleNames: {
-    type: 'array',
-    default: [],
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  transformModulePath: {
-    type:'string',
-    required: false,
-  },
-  extraNodeModules: {
-    type: 'object',
-    required: false,
-  },
-  assetExts: {
-    type: 'array',
-    default: ['png'],
-  },
-  platforms: {
-    type: 'array',
-    default: defaults.platforms,
-  },
-  watch: {
-    type: 'boolean',
-    default: false,
-  },
-  assetServer: {
-    type: 'object',
-    required: true,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    required: false,
-  },
-  allowBundleUpdates: {
-    type: 'boolean',
-    default: false,
-  },
-});
 
 const assetPropertyBlacklist = new Set([
   'files',
@@ -122,21 +64,24 @@ const assetPropertyBlacklist = new Set([
 ]);
 
 type Options = {
-  projectRoots: Array<string>,
-  blacklistRE: RegExp,
-  moduleFormat: string,
-  polyfillModuleNames: Array<string>,
-  cacheVersion: string,
-  resetCache: boolean,
-  transformModulePath: string,
-  getTransformOptions?: GetTransformOptions<*>,
-  extraNodeModules: {},
-  assetExts: Array<string>,
-  platforms: Array<string>,
-  watch: boolean,
-  assetServer: AssetServer,
-  transformTimeoutInterval: ?number,
   allowBundleUpdates: boolean,
+  assetExts: Array<string>,
+  assetServer: AssetServer,
+  blacklistRE?: RegExp,
+  cacheVersion: string,
+  extraNodeModules: {},
+  getTransformOptions?: GetTransformOptions,
+  globalTransformCache: ?GlobalTransformCache,
+  moduleFormat: string,
+  platforms: Array<string>,
+  polyfillModuleNames: Array<string>,
+  projectRoots: Array<string>,
+  providesModuleNodeModules?: Array<string>,
+  reporter: Reporter,
+  resetCache: boolean,
+  transformModulePath?: string,
+  transformTimeoutInterval: ?number,
+  watch: boolean,
 };
 
 class Bundler {
@@ -148,15 +93,16 @@ class Bundler {
   _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
-  _getTransformOptions: void | GetTransformOptions<*>;
+  _getTransformOptions: void | GetTransformOptions;
 
-  constructor(options: Options) {
-    const opts = this._opts = validateOpts(options);
+  constructor(opts: Options) {
+    this._opts = opts;
 
     opts.projectRoots.forEach(verifyRootExists);
 
     let transformModuleHash;
     try {
+      /* $FlowFixMe: if transformModulePath is null it'll just be caught */
       const transformModuleStr = fs.readFileSync(opts.transformModulePath);
       transformModuleHash =
         crypto.createHash('sha1').update(transformModuleStr).digest('hex');
@@ -190,6 +136,8 @@ class Bundler {
       cacheKeyParts.join('$'),
     ).digest('hex');
 
+    debug(`Using transform cache key "${transformCacheKey}"`);
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
       cacheKey: transformCacheKey,
@@ -204,20 +152,23 @@ class Bundler {
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
-      watch: opts.watch,
+      globalTransformCache: opts.globalTransformCache,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: opts.platforms,
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
+      providesModuleNodeModules: opts.providesModuleNodeModules,
+      reporter: opts.reporter,
       resetCache: opts.resetCache,
+      transformCacheKey,
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
           code,
           transformCodeOptions,
         ),
-      transformCacheKey,
+      watch: opts.watch,
     });
 
     this._projectRoots = opts.projectRoots;
@@ -401,11 +352,11 @@ class Bundler {
     onProgress = noop,
   }: *) {
     const transformingFilesLogEntry =
-      print(log(createActionStartEntry({
+      log(createActionStartEntry({
         action_name: 'Transforming files',
         entry_point: entryFile,
         environment: dev ? 'dev' : 'prod',
-      })));
+      }));
 
     const modulesByName = Object.create(null);
 
@@ -418,14 +369,14 @@ class Bundler {
         onProgress,
         minify,
         isolateModuleIDs,
-        generateSourceMaps: unbundle || generateSourceMaps,
+        generateSourceMaps: unbundle || minify || generateSourceMaps,
       });
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
-      print(log(createActionEndEntry(transformingFilesLogEntry)));
+      log(createActionEndEntry(transformingFilesLogEntry));
       onResolutionResponse(response);
 
       // get entry file complete path (`entryFile` is relative to roots)
@@ -612,7 +563,7 @@ class Bundler {
     module: Module,
     bundle: Bundle,
     entryFilePath: string,
-    transformOptions: TransformOptions,
+    transformOptions: JSTransformerOptions,
     getModuleId: () => number,
     dependencyPairs: Array<[mixed, {path: string}]>,
     assetPlugins: Array<string>,
@@ -668,20 +619,18 @@ class Bundler {
       'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
     ].indexOf(extname(module.path).slice(1)) !== -1;
 
-    return Promise.all([
-      isImage ? sizeOf(module.path) : null,
-      this._assetServer.getAssetData(relPath, platform),
-    ]).then((res) => {
+    return this._assetServer.getAssetData(relPath, platform).then((assetData) => {
+      return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
+    }).then((res) => {
       const dimensions = res[0];
       const assetData = res[1];
+      const scale = assetData.scales[0];
       const asset = {
         __packager_asset: true,
         fileSystemLocation: pathDirname(module.path),
         httpServerLocation: assetUrlPath,
-        /* $FlowFixMe: `resolution` is assets-only */
-        width: dimensions ? dimensions.width / module.resolution : undefined,
-        /* $FlowFixMe: `resolution` is assets-only */
-        height: dimensions ? dimensions.height / module.resolution : undefined,
+        width: dimensions ? dimensions.width / scale : undefined,
+        height: dimensions ? dimensions.height / scale : undefined,
         scales: assetData.scales,
         files: assetData.files,
         hash: assetData.hash,
@@ -755,11 +704,12 @@ class Bundler {
     mainModuleName: string,
     options: {
       dev?: boolean,
-      platform: string,
-      hot?: boolean,
       generateSourceMaps?: boolean,
+      hot?: boolean,
+      platform: string,
+      projectRoots: Array<string>,
     },
-  ) {
+  ): Promise<TransformOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
@@ -767,7 +717,9 @@ class Bundler {
       ? this._getTransformOptions(mainModuleName, options, getDependencies)
       : null;
     return Promise.resolve(extraOptions)
-      .then(extraOpts => Object.assign(options, extraOpts));
+      .then(extraOpts => {
+        return {...options, ...extraOpts};
+      });
   }
 
   getResolver() {
