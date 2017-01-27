@@ -588,6 +588,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _scrollView.contentOffset = contentOffset;
 }
 
+- (BOOL)isHorizontal:(UIScrollView *)scrollView
+{
+  return (scrollView.contentSize.width > self.frame.size.width);
+}
+
 - (void)scrollToOffset:(CGPoint)offset
 {
   [self scrollToOffset:offset animated:YES];
@@ -608,18 +613,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  */
 - (void)scrollToEnd:(BOOL)animated
 {
-  BOOL isHorizontal = (_scrollView.contentSize.width > self.frame.size.width);
+  BOOL isHorizontal = [self isHorizontal:_scrollView];
   CGPoint offset;
   if (isHorizontal) {
-    offset = (CGPoint){
-      _scrollView.contentSize.width - _scrollView.bounds.size.width,
-      0
-    };
+    offset = CGPointMake(_scrollView.contentSize.width - _scrollView.bounds.size.width, 0);
   } else {
-    offset = (CGPoint){
-      0,
-      _scrollView.contentSize.height - _scrollView.bounds.size.height
-    };
+    offset = CGPointMake(0, _scrollView.contentSize.height - _scrollView.bounds.size.height);
   }
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
@@ -753,7 +752,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
     CGFloat snapToIntervalF = (CGFloat)self.snapToInterval;
 
     // Find which axis to snap
-    BOOL isHorizontal = (scrollView.contentSize.width > self.frame.size.width);
+    BOOL isHorizontal = [self isHorizontal:scrollView];
 
     // What is the current offset?
     CGFloat targetContentOffsetAlongAxis = isHorizontal ? targetContentOffset->x : targetContentOffset->y;

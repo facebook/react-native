@@ -421,6 +421,7 @@ var ScrollResponderMixin = {
       );
       return;
     }
+    // The value passed to native must be a boolean
     const animated = (options && options.animated === true) ? true : false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
