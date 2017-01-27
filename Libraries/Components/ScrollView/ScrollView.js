@@ -404,16 +404,18 @@ const ScrollView = React.createClass({
   },
 
   /**
-   * Scrolls to the end, either immediately or with a smooth animation.
+   * If this is a vertical ScrollView scrolls to the bottom.
+   * If this is a horizontal ScrollView scrolls to the right.
    *
-   * Example:
+   * Use `scrollToEnd()` for immediate scrolling,
+   * `scrollToEnd({animated: true})` for animated scrolling.
    *
-   * `scrollToBottom({animated: true})`
+   * See `ScrollView#scrollToEnd`.
    */
-  scrollToBottom: function(
+  scrollToEnd: function(
     options?: { animated?: boolean },
   ) {
-    this.getScrollResponder().scrollResponderScrollToBottom(options);
+    this.getScrollResponder().scrollResponderScrollToEnd(options);
   },
 
   /**

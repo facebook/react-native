@@ -59,7 +59,7 @@ exports.examples = [
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => { _scrollView.scrollToBottom({animated: true}); }}>
+          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
           <Text>Scroll to bottom</Text>
         </TouchableOpacity>
       </View>
@@ -86,7 +86,7 @@ exports.examples = [
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => { _scrollView.scrollToBottom(); }}>
+          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
           <Text>Scroll to end</Text>
         </TouchableOpacity>
       </View>

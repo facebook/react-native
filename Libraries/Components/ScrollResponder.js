@@ -410,9 +410,9 @@ var ScrollResponderMixin = {
    *
    * Example:
    *
-   * `scrollResponderScrollToBottom({animated: true})`
+   * `scrollResponderScrollToEnd({animated: true})`
    */
-  scrollResponderScrollToBottom: function(
+  scrollResponderScrollToEnd: function(
     options?: { animated?: boolean },
   ) {
     const animated = (options && options.animated === true) ? true : false;

@@ -152,14 +152,14 @@ RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
-     RCTScrollView *view = viewRegistry[reactTag];
-     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
-       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
-       return;
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+     UIView *view = viewRegistry[reactTag];
+     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+       [(id<RCTScrollableProtocol>)view scrollToEnd:animated];
+     } else {
+       RCTLogError(@"tried to scrollTo: on non-RCTScrollableProtocol view %@ "
+                   "with tag #%@", view, reactTag);
      }
-     CGPoint bottomOffset = (CGPoint){0, view.contentSize.height - view.bounds.size.height};
-     [view scrollToOffset:bottomOffset animated:animated];
    }];
 }
 

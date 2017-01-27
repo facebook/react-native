@@ -602,6 +602,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+/**
+ * If this is a vertical scroll view, scrolls to the bottom.
+ * If this is a horizontal scroll view, scrolls to the right.
+ */
+- (void)scrollToEnd:(BOOL)animated
+{
+  BOOL isHorizontal = (_scrollView.contentSize.width > self.frame.size.width);
+  CGPoint offset;
+  if (isHorizontal) {
+    offset = (CGPoint){
+      _scrollView.contentSize.width - _scrollView.bounds.size.width,
+      0
+    };
+  } else {
+    offset = (CGPoint){
+      0,
+      _scrollView.contentSize.height - _scrollView.bounds.size.height
+    };
+  }
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    // Ensure at least one scroll event will fire
+    _allowNextScrollNoMatterWhat = YES;
+    [_scrollView setContentOffset:offset animated:animated];
+  }
+}
+
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
 {
   [_scrollView zoomToRect:rect animated:animated];
