@@ -166,7 +166,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif
-    registerJSLoaderNatives();
 
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

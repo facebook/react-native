@@ -73,22 +73,10 @@ class Generator {
   }
 
   /**
-   * Add a mapping that contains the first 2, 4, or all of the following values:
-   *
-   * 1. line offset in the generated source
-   * 2. column offset in the generated source
-   * 3. line offset in the original source
-   * 4. column offset in the original source
-   * 5. name of the symbol in the original source.
+   * Adds a mapping for generated code without a corresponding source location.
    */
-  addMapping(
-    generatedLine: number,
-    generatedColumn: number,
-    sourceLine?: number,
-    sourceColumn?: number,
-    name?: string,
-  ): void {
-    var {last} = this;
+  addSimpleMapping(generatedLine: number, generatedColumn: number): void {
+    const last = this.last;
     if (this.source === -1 ||
         generatedLine === last.generatedLine &&
         generatedColumn < last.generatedColumn ||
@@ -107,28 +95,47 @@ class Generator {
 
     this.builder.startSegment(generatedColumn - last.generatedColumn);
     last.generatedColumn = generatedColumn;
+  }
 
-    if (sourceLine != null) {
-      if (sourceColumn == null) {
-        throw new Error(
-          'Received mapping with source line, but without source column');
-      }
+  /**
+   * Adds a mapping for generated code with a corresponding source location.
+   */
+  addSourceMapping(
+    generatedLine: number,
+    generatedColumn: number,
+    sourceLine: number,
+    sourceColumn: number,
+  ): void {
+    this.addSimpleMapping(generatedLine, generatedColumn);
 
-      this.builder
-        .append(this.source - last.source)
-        .append(sourceLine - last.sourceLine)
-        .append(sourceColumn - last.sourceColumn);
+    const last = this.last;
+    this.builder
+      .append(this.source - last.source)
+      .append(sourceLine - last.sourceLine)
+      .append(sourceColumn - last.sourceColumn);
 
-      last.source = this.source;
-      last.sourceColumn = sourceColumn;
-      last.sourceLine = sourceLine;
+    last.source = this.source;
+    last.sourceColumn = sourceColumn;
+    last.sourceLine = sourceLine;
+  }
 
-      if (name != null) {
-        const nameIndex = this.names.indexFor(name);
-        this.builder.append(nameIndex - last.name);
-        last.name = nameIndex;
-      }
-    }
+  /**
+   * Adds a mapping for code with a corresponding source location + symbol name.
+   */
+  addNamedSourceMapping(
+    generatedLine: number,
+    generatedColumn: number,
+    sourceLine: number,
+    sourceColumn: number,
+    name: string,
+  ): void {
+    this.addSourceMapping(
+      generatedLine, generatedColumn, sourceLine, sourceColumn);
+
+    const last = this.last;
+    const nameIndex = this.names.indexFor(name);
+    this.builder.append(nameIndex - last.name);
+    last.name = nameIndex;
   }
 
   /**

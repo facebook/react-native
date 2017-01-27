@@ -30,7 +30,10 @@ const {
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
+  Slider,
 } = ReactNative;
+
+var AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
 class Tester extends React.Component {
   state = {
@@ -228,7 +231,6 @@ exports.description = 'Test out Native Animations';
 exports.examples = [
 {
     title: 'Multistage With Multiply and rotation',
-    description: 'description',
     render: function() {
       return (
           <Tester
@@ -278,7 +280,6 @@ exports.examples = [
   },
   {
     title: 'Multistage With Multiply',
-    description: 'description',
     render: function() {
       return (
           <Tester
@@ -322,7 +323,6 @@ exports.examples = [
   },
   {
     title: 'Scale interpolation with clamping',
-    description: 'description',
     render: function() {
       return (
         <Tester
@@ -352,7 +352,6 @@ exports.examples = [
   },
   {
     title: 'Opacity without interpolation',
-    description: 'description',
     render: function() {
       return (
         <Tester
@@ -374,7 +373,6 @@ exports.examples = [
   },
   {
     title: 'Rotate interpolation',
-    description: 'description',
     render: function() {
       return (
         <Tester
@@ -403,7 +401,6 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.spring',
-    description: 'description',
     render: function() {
       return (
         <Tester
@@ -450,6 +447,19 @@ exports.examples = [
                 }
               ]}
             />
+          )}
+        </Tester>
+      );
+    },
+  },{
+    title: 'Drive custom property',
+    render: function() {
+      return (
+        <Tester
+          type="timing"
+          config={{ duration: 1000 }}>
+          {anim => (
+            <AnimatedSlider style={{}} value={anim} />
           )}
         </Tester>
       );

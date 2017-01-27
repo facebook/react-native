@@ -33,6 +33,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type Bundle from '../Bundler/Bundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions} from '../Bundler';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
 const {
   createActionStartEntry,
@@ -59,6 +60,7 @@ type Options = {
   cacheVersion?: string,
   extraNodeModules?: {},
   getTransformOptions?: GetTransformOptions,
+  globalTransformCache: ?GlobalTransformCache,
   moduleFormat?: string,
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
@@ -207,6 +209,7 @@ class Server {
       cacheVersion: options.cacheVersion || '1.0',
       extraNodeModules: options.extraNodeModules || {},
       getTransformOptions: options.getTransformOptions,
+      globalTransformCache: options.globalTransformCache,
       moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
@@ -236,6 +239,7 @@ class Server {
     const bundlerOpts = Object.create(this._opts);
     bundlerOpts.assetServer = this._assetServer;
     bundlerOpts.allowBundleUpdates = this._opts.watch;
+    bundlerOpts.globalTransformCache = options.globalTransformCache;
     bundlerOpts.watch = this._opts.watch;
     bundlerOpts.reporter = options.reporter;
     this._bundler = new Bundler(bundlerOpts);

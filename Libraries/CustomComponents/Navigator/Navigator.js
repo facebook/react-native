@@ -1272,6 +1272,7 @@ var Navigator = React.createClass({
     }
     return (
       <View
+        collapsable={false}
         key={'scene_' + getRouteID(route)}
         ref={(scene) => {
           this._sceneRefs[i] = scene;
