@@ -63,7 +63,7 @@ class ScrollViewSimpleExample extends React.Component {
         {items}
       </ScrollView>
     );
-    
+
     return verticalScrollView;
   }
 }
