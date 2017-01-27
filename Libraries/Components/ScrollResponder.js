@@ -381,7 +381,7 @@ var ScrollResponderMixin = {
    * This is currently used to help focus child TextViews, but can also
    * be used to quickly scroll to any element we want to focus. Syntax:
    *
-   * `scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})``
+   * `scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
    *
    * Note: The weird argument signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
@@ -421,8 +421,8 @@ var ScrollResponderMixin = {
       );
       return;
     }
-    // The value passed to native must be a boolean
-    const animated = (options && options.animated === true) ? true : false;
+    // Default to true
+    const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollToEnd,
