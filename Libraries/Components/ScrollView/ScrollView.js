@@ -407,8 +407,9 @@ const ScrollView = React.createClass({
    * If this is a vertical ScrollView scrolls to the bottom.
    * If this is a horizontal ScrollView scrolls to the right.
    *
-   * Use `scrollToEnd()` for smooth animated scrolling,
+   * Use `scrollToEnd({animated: true})` for smooth animated scrolling,
    * `scrollToEnd({animated: false})` for immediate scrolling.
+   * If no options are passed, `animated` defaults to true.
    *
    * See `ScrollView#scrollToEnd`.
    */
