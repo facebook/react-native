@@ -49,7 +49,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public Dynamic getDynamic(int index) {
-    return new DynamicFromArray(this, index);
+    return DynamicFromArray.create(this, index);
   }
 
   public ArrayList<Object> toArrayList() {

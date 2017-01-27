@@ -39,12 +39,12 @@ public class DevInternalSettings implements
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
 
   private final SharedPreferences mPreferences;
-  private final DevSupportManager mDebugManager;
+  private final Listener mListener;
 
   public DevInternalSettings(
       Context applicationContext,
-      DevSupportManager debugManager) {
-    mDebugManager = debugManager;
+      Listener listener) {
+    mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
   }
@@ -78,11 +78,13 @@ public class DevInternalSettings implements
   }
 
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    if (PREFS_FPS_DEBUG_KEY.equals(key) ||
-        PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
-        PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
-        PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
-      mDebugManager.reloadSettings();
+    if (mListener != null) {
+      if (PREFS_FPS_DEBUG_KEY.equals(key) ||
+          PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) ||
+          PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) ||
+          PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
+        mListener.onInternalSettingsChanged();
+      }
     }
   }
 
@@ -118,5 +120,9 @@ public class DevInternalSettings implements
   @Override
   public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
     mPreferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply();
+  }
+
+  public interface Listener {
+    void onInternalSettingsChanged();
   }
 }

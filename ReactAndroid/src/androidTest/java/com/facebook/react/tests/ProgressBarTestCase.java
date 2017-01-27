@@ -72,7 +72,8 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

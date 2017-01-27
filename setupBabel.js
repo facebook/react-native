@@ -16,6 +16,7 @@ const path = require('path');
 const BABEL_ENABLED_PATHS = [
   'packager/react-packager/react-packager.js',
   'packager/react-packager/src',
+  'packager/transformer.js',
   'local-cli',
 ];
 
@@ -26,7 +27,9 @@ const BABEL_ENABLED_PATHS = [
  */
 function buildRegExps(basePath, dirPaths) {
   return dirPaths.map(folderPath =>
-    new RegExp(`^${escapeRegExp(path.resolve(basePath, folderPath))}`)
+    // Babel `only` option works with forward slashes in the RegExp so replace
+    // backslashes for Windows.
+    new RegExp(`^${escapeRegExp(path.resolve(basePath, folderPath).replace(/\\/g, '/'))}`)
   );
 }
 

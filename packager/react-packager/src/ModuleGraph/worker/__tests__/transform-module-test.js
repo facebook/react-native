@@ -105,7 +105,7 @@ describe('transforming JS modules:', () => {
       const {code, dependencyMapName} = result.transformed.default;
       expect(code.replace(/\s+/g, ''))
         .toEqual(
-          `__d(function(require,module,global,exports,${
+          `__d(function(global,require,module,exports,${
           dependencyMapName}){${transformedCode}});`
         );
       done();
@@ -159,12 +159,12 @@ describe('transforming JS modules:', () => {
       const {dev, prod} = result.transformed;
       expect(dev.code.replace(/\s+/g, ''))
         .toEqual(
-          `__d(function(require,module,global,exports,${
+          `__d(function(global,require,module,exports,${
           dev.dependencyMapName}){arbitrary(code);});`
         );
       expect(prod.code.replace(/\s+/g, ''))
         .toEqual(
-          `__d(function(require,module,global,exports,${
+          `__d(function(global,require,module,exports,${
           prod.dependencyMapName}){arbitrary(code);});`
         );
       done();
@@ -178,7 +178,7 @@ describe('transforming JS modules:', () => {
       const {code} = result.transformed.default;
       expect(code.replace(/\s+/g, ''))
         .toEqual(
-          '__d(function(require,module,global,exports){' +
+          '__d(function(global,require,module,exports){' +
           `module.exports=${json}});`
         );
       done();
