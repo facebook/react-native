@@ -382,11 +382,11 @@ const ScrollView = React.createClass({
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
    *
-   * Syntax:
+   * Example:
    *
-   * `scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
+   * `scrollTo({x: 0; y: 0; animated: true})`
    *
-   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * Note: The weird function signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
@@ -404,7 +404,20 @@ const ScrollView = React.createClass({
   },
 
   /**
-   * Deprecated, do not use.
+   * Scrolls to the end, either immediately or with a smooth animation.
+   *
+   * Example:
+   *
+   * `scrollToBottom({animated: true})`
+   */
+  scrollToBottom: function(
+    options?: { animated?: boolean },
+  ) {
+    this.getScrollResponder().scrollResponderScrollToBottom(options);
+  },
+
+  /**
+   * Deprecated, use `scrollTo` instead.
    */
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
