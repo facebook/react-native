@@ -131,7 +131,9 @@ public class ScrollEvent extends Event<ScrollEvent> {
     int scrollViewHeight,
     ArrayList<ChildFrame> updatedChildFrames) {
       init(viewTag, scrollEventType, scrollX, scrollY, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight);
-      mUpdatedChildFrames.addAll(updatedChildFrames);
+      if (updatedChildFrames != null) {
+        mUpdatedChildFrames.addAll(updatedChildFrames);
+      }
   }
 
   @Override
