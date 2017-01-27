@@ -39,7 +39,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private int mScrollViewWidth;
   private int mScrollViewHeight;
   private @Nullable ScrollEventType mScrollEventType;
-  private @Nullable ArrayList<ChildFrame> mUpdatedChildFrames;
+  private @Nullable ArrayList<ChildFrame> mUpdatedChildFrames = new ArrayList<>();
 
   public static ScrollEvent obtain(
     int viewTag,
@@ -131,7 +131,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
     int scrollViewHeight,
     ArrayList<ChildFrame> updatedChildFrames) {
       init(viewTag, scrollEventType, scrollX, scrollY, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight);
-      mUpdatedChildFrames = updatedChildFrames;
+      mUpdatedChildFrames.addAll(updatedChildFrames);
   }
 
   @Override
