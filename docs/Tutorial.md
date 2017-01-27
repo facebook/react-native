@@ -21,7 +21,7 @@ In accordance with the ancient traditions of our people, we must first build an 
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class HelloWorldApp extends Component {
+class AwesomeProject extends Component {
   render() {
     return (
       <Text>Hello world!</Text>
@@ -29,7 +29,7 @@ class HelloWorldApp extends Component {
   }
 }
 
-AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
+AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 ```
 
 If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine.
