@@ -590,7 +590,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (BOOL)isHorizontal:(UIScrollView *)scrollView
 {
-  return (scrollView.contentSize.width > self.frame.size.width);
+  return scrollView.contentSize.width > self.frame.size.width;
 }
 
 - (void)scrollToOffset:(CGPoint)offset
