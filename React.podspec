@@ -27,11 +27,11 @@ Pod::Spec.new do |s|
   s.requires_arc        = true
   s.platform            = :ios, "8.0"
   s.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
-  s.header_dir          = 'React'
   s.preserve_paths      = "package.json", "LICENSE", "LICENSE-CustomComponents", "PATENTS"
+  s.cocoapods_version   = ">= 1.2.0.beta.1"
 
   s.subspec 'Core' do |ss|
-    ss.dependency      'React/yoga'
+    ss.dependency      'Yoga'
     ss.dependency      'React/cxxreact'
     ss.source_files  = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files = "**/__tests__/*", "IntegrationTests/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*"
@@ -46,18 +46,16 @@ Pod::Spec.new do |s|
 
   s.subspec 'jschelpers' do |ss|
     ss.source_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}'
-    ss.header_dir   = 'jschelpers'
+    ss.private_header_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h'
+    ss.pod_target_xcconfig  = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/ReactCommon' }
+    ss.framework = "JavaScriptCore"
   end
 
   s.subspec 'cxxreact' do |ss|
     ss.dependency     'React/jschelpers'
     ss.source_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}'
-    ss.header_dir   = 'cxxreact'
-  end
-
-  s.subspec 'yoga' do |ss|
-    ss.source_files = 'ReactCommon/yoga/**/*.{c,h}'
-    ss.header_dir   = 'yoga'
+    ss.private_header_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.h'
+    ss.pod_target_xcconfig  = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/ReactCommon' }
   end
 
   s.subspec 'ART' do |ss|
