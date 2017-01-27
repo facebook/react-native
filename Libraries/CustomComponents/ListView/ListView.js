@@ -293,6 +293,9 @@ var ListView = React.createClass({
    * If this is a vertical ListView scrolls to the bottom.
    * If this is a horizontal ListView scrolls to the right.
    *
+   * Use `scrollToEnd()` for immediate scrolling,
+   * `scrollToEnd({animated: true})` for animated scrolling.
+   *
    * See `ScrollView#scrollToEnd`.
    */
   scrollToEnd: function(options?: { animated?: boolean },) {
