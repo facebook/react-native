@@ -42,13 +42,13 @@ public class ScrollViewManager extends ReactContextBaseJavaModule {
         View view = uiManager.getUIImplementation().getView(tag);
 
         if (view instanceof ReactScrollView) {
-            View contentView = ((ReactScrollView)view).getChildAt(0);
+            ReactScrollView scrollView = ((ReactScrollView)view);
 
-            if (contentView == null) {
+            if (scrollView == null) {
                 return;
             }
 
-            ArrayList<ChildFrame> mUpdatedChildFrames = ReactScrollViewHelper.calculateChildFrames((ReactViewGroup)contentView);
+            ArrayList<ChildFrame> mUpdatedChildFrames = scrollView.calculateChildFrames();
 
             WritableArray updatedFrames = Arguments.createArray();
 
