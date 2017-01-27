@@ -26,64 +26,15 @@ public class ReactScrollViewHelper {
 
   public static final long MOMENTUM_DELAY = 20;
 
-  private static ArrayList<ChildFrame> mCachedChildFrames = new ArrayList<>();
-
-  public static ArrayList<ChildFrame> calculateChildFrames(ReactViewGroup contentView) {
-    ArrayList<ChildFrame> updatedChildFrames = new ArrayList<>();
-    int childCount = contentView.getAllChildrenCount();
-
-    for (int i = 0; i < childCount; i++) {
-      View child = contentView.getChildAtWithSubviewClippingEnabled(i);
-
-      boolean isChanged = false;
-      ChildFrame childFrame = new ChildFrame();
-      childFrame.index = i;
-      childFrame.x = child.getLeft();
-      childFrame.y = child.getTop();
-      childFrame.height = child.getHeight();
-      childFrame.width = child.getWidth();
-
-
-      // new
-      if (mCachedChildFrames.size() <= i) {
-        isChanged = true;
-        mCachedChildFrames.add(childFrame);
-      }
-
-
-      if (mCachedChildFrames.size() > i) {
-        ChildFrame cachedChildFrame = mCachedChildFrames.get(i);
-
-        // changed
-        if (cachedChildFrame.height != childFrame.height ||
-                cachedChildFrame.width != childFrame.width ||
-                cachedChildFrame.x != childFrame.x ||
-                cachedChildFrame.y != childFrame.y) {
-          isChanged = true;
-          mCachedChildFrames.set(i, childFrame);
-        }
-      }
-
-      if (isChanged) {
-        updatedChildFrames.add(childFrame);
-
-      }
-    }
-
-    return updatedChildFrames;
-  }
-  
   /**
    * Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}.
    */
-  public static void emitScrollEvent(ViewGroup scrollView) {
+  public static void emitScrollEvent(ViewGroup scrollView, ArrayList<ChildFrame> childFrames) {
     View contentView = scrollView.getChildAt(0);
 
     if (contentView == null) {
       return;
     }
-
-    ArrayList<ChildFrame> childFrames = calculateChildFrames((ReactViewGroup)contentView);
 
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(

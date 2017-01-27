@@ -12,6 +12,7 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -32,6 +33,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.view.ReactViewGroup;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -60,6 +62,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private View mContentView;
+  private ArrayList<ChildFrame> mCachedChildFrames = new ArrayList<>();
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -161,8 +164,58 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         mDoneFlinging = false;
       }
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ArrayList<ChildFrame> childFrames = calculateChildFrames();
+
+      ReactScrollViewHelper.emitScrollEvent(this, childFrames);
     }
+  }
+
+  public ArrayList<ChildFrame> calculateChildFrames() {
+    ReactViewGroup contentView = (ReactViewGroup)this.getChildAt(0);
+
+    if (contentView == null) {
+      return null;
+    }
+
+    ArrayList<ChildFrame> updatedChildFrames = new ArrayList<>();
+
+    int childCount = contentView.getAllChildrenCount();
+
+    for (int i = 0; i < childCount; i++) {
+      View child = contentView.getChildAtWithSubviewClippingEnabled(i);
+
+      boolean isChanged = false;
+      ChildFrame childFrame = new ChildFrame();
+      childFrame.index = i;
+      childFrame.x = child.getLeft();
+      childFrame.y = child.getTop();
+      childFrame.height = child.getHeight();
+      childFrame.width = child.getWidth();
+
+      // new
+      if (mCachedChildFrames.size() <= i) {
+        isChanged = true;
+        mCachedChildFrames.add(childFrame);
+      } else {
+        ChildFrame cachedChildFrame = mCachedChildFrames.get(i);
+
+        // ChildFrame has changed
+        if (cachedChildFrame.height != childFrame.height ||
+          cachedChildFrame.width != childFrame.width ||
+          cachedChildFrame.x != childFrame.x ||
+          cachedChildFrame.y != childFrame.y) {
+          isChanged = true;
+          mCachedChildFrames.set(i, childFrame);
+        }
+      }
+
+      if (isChanged) {
+        updatedChildFrames.add(childFrame);
+
+      }
+    }
+
+    return updatedChildFrames;
   }
 
   @Override
