@@ -61,6 +61,7 @@ var ListViewSimpleExample = React.createClass({
         noSpacer={true}
         noScroll={true}>
         <ListView
+          removeClippedSubviews={true}
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderSeparator={this._renderSeparator}
