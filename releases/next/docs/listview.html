@@ -81,7 +81,6 @@ If no options are passed, <code>animated</code> defaults to true.</p><p>See <cod
   ListView<span class="token punctuation">,</span>
   TouchableHighlight<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
-  RecyclerViewBackedScrollView<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
@@ -116,7 +115,6 @@ If no options are passed, <code>animated</code> defaults to true.</p><p>See <cod
         &lt;ListView
           dataSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>dataSource<span class="token punctuation">}</span>
           renderRow<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderRow<span class="token punctuation">}</span>
-          renderScrollComponent<span class="token operator">=</span><span class="token punctuation">{</span>props <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;RecyclerViewBackedScrollView <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">}</span>
           renderSeparator<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderSeparator<span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
