@@ -16,20 +16,23 @@ const Logger = require('./src/Logger');
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
+import type GlobalTransformCache from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
 
 exports.createServer = createServer;
 exports.Logger = Logger;
 
 type Options = {
-  nonPersistent: boolean,
+  globalTransformCache: ?GlobalTransformCache,
+  nonPersistent?: boolean,
   projectRoots: Array<string>,
   reporter?: Reporter,
   watch?: boolean,
 };
 
 type StrictOptions = {
-  nonPersistent: boolean,
+  globalTransformCache: ?GlobalTransformCache,
+  nonPersistent?: boolean,
   projectRoots: Array<string>,
   reporter: Reporter,
   watch?: boolean,

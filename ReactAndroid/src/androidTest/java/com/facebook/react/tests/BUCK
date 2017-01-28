@@ -1,10 +1,5 @@
 include_defs('//ReactAndroid/DEFS')
 
-# Tests that are too flaky to run on SandCastle
-# TODO t11057216 stabilise them
-SANDCASTLE_FLAKY = [
-]
-
 deps = [
   react_native_dep('third-party/android/support/v4:lib-support-v4'),
   react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -35,15 +30,6 @@ deps = [
 android_library(
   name = 'tests',
   srcs = glob(['**/*.java']),
-  deps = deps,
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-android_library(
-  name = 'stable-tests',
-  srcs = glob(['**/*.java'], excludes=SANDCASTLE_FLAKY),
   deps = deps,
   visibility = [
     'PUBLIC',

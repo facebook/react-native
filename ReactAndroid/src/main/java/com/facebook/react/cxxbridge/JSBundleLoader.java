@@ -83,7 +83,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.setSourceURL(proxySourceURL);
+        instance.setSourceURLs(realSourceURL, proxySourceURL);
         return realSourceURL;
       }
     };

@@ -68,6 +68,7 @@ type Props = {
   gestureResponseDistance?: ?number,
   enableGestures: ?boolean,
   cardStyleInterpolator?: ?NavigationStyleInterpolator,
+  scenesStyle?: any,
 };
 
 type DefaultProps = {
@@ -202,6 +203,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
      * Custom style applied to the cards stack.
      */
     style: View.propTypes.style,
+
+    /**
+     * Custom style applied to the scenes stack.
+     */
+    scenesStyle: View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
@@ -264,7 +270,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     return (
       <View style={styles.container}>
         <View
-          style={styles.scenes}>
+          style={[styles.scenes, this.props.scenesStyle]}>
           {scenes}
         </View>
         {header}

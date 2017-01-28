@@ -50,12 +50,6 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
       getClass()->getMethod<jni::JList<JMethodDescriptor::javaobject>::javaobject()>("getMethodDescriptors");
     return getMethods(self());
   }
-
-  jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject> newGetMethodDescriptors() {
-    static auto getMethods =
-      getClass()->getMethod<jni::JList<JMethodDescriptor::javaobject>::javaobject()>("newGetMethodDescriptors");
-    return getMethods(self());
-  }
 };
 
 class ModuleRegistryHolder : public jni::HybridClass<ModuleRegistryHolder> {

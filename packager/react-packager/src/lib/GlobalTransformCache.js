@@ -11,15 +11,17 @@
 
 'use strict';
 
+const BatchProcessor = require('./BatchProcessor');
+
 const crypto = require('crypto');
 const imurmurhash = require('imurmurhash');
-const invariant = require('fbjs/lib/invariant');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 const request = require('request');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult} from './TransformCache';
+import type {Reporter} from './reporting';
 
 type FetchResultURIs = (
   keys: Array<string>,
@@ -38,94 +40,8 @@ type FetchProps = {
   transformOptions: TransformOptions,
 };
 
-type FetchCallback = (error?: Error, resultURI?: ?CachedResult) => mixed;
+type FetchCallback = (error?: Error, result?: ?CachedResult) => mixed;
 type FetchURICallback = (error?: Error, resultURI?: ?string) => mixed;
-
-type ProcessBatch<TItem, TResult> = (
-  batch: Array<TItem>,
-  callback: (error?: Error, orderedResults?: Array<TResult>) => mixed,
-) => mixed;
-type BatchProcessorOptions = {
-  maximumDelayMs: number,
-  maximumItems: number,
-  concurrency: number,
-};
-
-/**
- * We batch keys together trying to make a smaller amount of queries. For that
- * we wait a small moment before starting to fetch. We limit also the number of
- * keys we try to fetch at once, so if we already have that many keys pending,
- * we can start fetching right away.
- */
-class BatchProcessor<TItem, TResult> {
-
-  _options: BatchProcessorOptions;
-  _processBatch: ProcessBatch<TItem, TResult>;
-  _queue: Array<{
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  }>;
-  _timeoutHandle: ?number;
-  _currentProcessCount: number;
-
-  constructor(
-    options: BatchProcessorOptions,
-    processBatch: ProcessBatch<TItem, TResult>,
-  ) {
-    this._options = options;
-    this._processBatch = processBatch;
-    this._queue = [];
-    this._timeoutHandle = null;
-    this._currentProcessCount = 0;
-    (this: any)._processQueue = this._processQueue.bind(this);
-  }
-
-  _processQueue() {
-    this._timeoutHandle = null;
-    while (
-      this._queue.length > 0 &&
-      this._currentProcessCount < this._options.concurrency
-    ) {
-      this._currentProcessCount++;
-      const jobs = this._queue.splice(0, this._options.maximumItems);
-      const items = jobs.map(job => job.item);
-      this._processBatch(items, (error, results) => {
-        invariant(
-          results == null || results.length === items.length,
-          'Not enough results returned.',
-        );
-        for (let i = 0; i < items.length; ++i) {
-          jobs[i].callback(error, results && results[i]);
-        }
-        this._currentProcessCount--;
-        this._processQueueOnceReady();
-      });
-    }
-  }
-
-  _processQueueOnceReady() {
-    if (this._queue.length >= this._options.maximumItems) {
-      clearTimeout(this._timeoutHandle);
-      process.nextTick(this._processQueue);
-      return;
-    }
-    if (this._timeoutHandle == null) {
-      this._timeoutHandle = setTimeout(
-        this._processQueue,
-        this._options.maximumDelayMs,
-      );
-    }
-  }
-
-  queue(
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  ) {
-    this._queue.push({item, callback});
-    this._processQueueOnceReady();
-  }
-
-}
 
 type URI = string;
 
@@ -135,16 +51,25 @@ type URI = string;
  */
 class KeyURIFetcher {
 
-  _fetchResultURIs: FetchResultURIs;
   _batchProcessor: BatchProcessor<string, ?URI>;
+  _fetchResultURIs: FetchResultURIs;
+  _processError: (error: Error) => mixed;
 
+  /**
+   * When a batch request fails for some reason, we process the error locally
+   * and we proceed as if there were no result for these keys instead. That way
+   * a build will not fail just because of the cache.
+   */
   _processKeys(
     keys: Array<string>,
     callback: (error?: Error, keyURIs: Array<?URI>) => mixed,
   ) {
     this._fetchResultURIs(keys, (error, URIsByKey) => {
+      if (error != null) {
+        this._processError(error);
+      }
       const URIs = keys.map(key => URIsByKey && URIsByKey.get(key));
-      callback(error, URIs);
+      callback(undefined, URIs);
     });
   }
 
@@ -152,13 +77,14 @@ class KeyURIFetcher {
     this._batchProcessor.queue(key, callback);
   }
 
-  constructor(fetchResultURIs: FetchResultURIs) {
+  constructor(fetchResultURIs: FetchResultURIs, processError: (error: Error) => mixed) {
     this._fetchResultURIs = fetchResultURIs;
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
       concurrency: 25,
     }, this._processKeys.bind(this));
+    this._processError = processError;
   }
 
 }
@@ -257,24 +183,46 @@ class TransformProfileSet {
   }
 }
 
-/**
- * One can enable the global cache by calling configure() from a custom CLI
- * script. Eventually we may make it more flexible.
- */
 class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
-  _store: ?KeyResultStore;
   _profileSet: TransformProfileSet;
-  static _global: ?GlobalTransformCache;
+  _reporter: Reporter;
+  _retries: number;
+  _store: ?KeyResultStore;
 
+  /**
+   * If too many errors already happened, we just drop the additional errors.
+   */
+  _processError(error: Error) {
+    if (this._retries <= 0) {
+      return;
+    }
+    this._reporter.update({type: 'global_cache_error', error});
+    --this._retries;
+    if (this._retries <= 0) {
+      this._reporter.update({type: 'global_cache_disabled', reason: 'too_many_errors'});
+    }
+  }
+
+  /**
+   * For using the global cache one needs to have some kind of central key-value
+   * store that gets prefilled using keyOf() and the transformed results. The
+   * fetching function should provide a mapping of keys to URIs. The files
+   * referred by these URIs contains the transform results. Using URIs instead
+   * of returning the content directly allows for independent and parallel
+   * fetching of each result, that may be arbitrarily large JSON blobs.
+   */
   constructor(
     fetchResultURIs: FetchResultURIs,
     storeResults: ?StoreResults,
     profiles: Iterable<TransformProfile>,
+    reporter: Reporter,
   ) {
+    this._fetcher = new KeyURIFetcher(fetchResultURIs, this._processError.bind(this));
     this._profileSet = new TransformProfileSet(profiles);
-    this._fetcher = new KeyURIFetcher(fetchResultURIs);
+    this._reporter = reporter;
+    this._retries = 4;
     if (storeResults != null) {
       this._store = new KeyResultStore(storeResults);
     }
@@ -319,8 +267,22 @@ class GlobalTransformCache {
     });
   }
 
+  /**
+   * Wrap `_fetchFromURI` with error logging, and return an empty result instead
+   * of errors. This is because the global cache is not critical to the normal
+   * packager operation.
+   */
+  _tryFetchingFromURI(uri: string, callback: FetchCallback) {
+    this._fetchFromURI(uri, (error, result) => {
+      if (error != null) {
+        this._processError(error);
+      }
+      callback(undefined, result);
+    });
+  }
+
   fetch(props: FetchProps, callback: FetchCallback) {
-    if (!this._profileSet.has(props.transformOptions)) {
+    if (this._retries <= 0 || !this._profileSet.has(props.transformOptions)) {
       process.nextTick(callback);
       return;
     }
@@ -332,7 +294,7 @@ class GlobalTransformCache {
           callback();
           return;
         }
-        this._fetchFromURI(uri, callback);
+        this._tryFetchingFromURI(uri, callback);
       }
     });
   }
@@ -343,32 +305,6 @@ class GlobalTransformCache {
     }
   }
 
-  /**
-   * For using the global cache one needs to have some kind of central key-value
-   * store that gets prefilled using keyOf() and the transformed results. The
-   * fetching function should provide a mapping of keys to URIs. The files
-   * referred by these URIs contains the transform results. Using URIs instead
-   * of returning the content directly allows for independent fetching of each
-   * result.
-   */
-  static configure(
-    fetchResultURIs: FetchResultURIs,
-    storeResults: ?StoreResults,
-    profiles: Iterable<TransformProfile>,
-  ) {
-    GlobalTransformCache._global = new GlobalTransformCache(
-      fetchResultURIs,
-      storeResults,
-      profiles,
-    );
-  }
-
-  static get() {
-    return GlobalTransformCache._global;
-  }
-
 }
-
-GlobalTransformCache._global = null;
 
 module.exports = GlobalTransformCache;
