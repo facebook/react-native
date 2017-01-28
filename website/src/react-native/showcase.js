@@ -354,6 +354,13 @@ var featured = [
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
   },
+  {
+    name: 'Causr',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/9d/14/20/9d142015-3319-f613-2886-ad889609466a/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/causr-business-networking/id1129819484',
+    infoLink: 'https://medium.com/causr/why-we-chose-react-native-abd7d58a18b5',
+    infoTitle: 'Why we chose React Native'
+  }
 ];
 
 /*
