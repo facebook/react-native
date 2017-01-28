@@ -18,6 +18,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.NativeArray;
+import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -89,12 +90,16 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    Map<String, Object> map = getModule().getConstants();
+    BaseJavaModule baseJavaModule = getModule();
+    Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
       .arg("moduleName", getName())
       .flush();
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).startConstantsMapConversion();
+    }
     WritableNativeMap writableNativeMap;
     try {
       writableNativeMap = Arguments.makeNativeMap(map);
@@ -103,6 +108,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
     WritableNativeArray array = new WritableNativeArray();
     array.pushMap(writableNativeMap);
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).endConstantsMapConversion();
+    }
     return array;
   }
 

@@ -22,6 +22,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -39,6 +40,8 @@ import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_START;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -71,7 +74,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  */
 @ReactModule(name = "RKUIManager")
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
+    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, NativeModuleLogger {
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -565,6 +568,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+  }
+
+  @Override
+  public void startConstantsMapConversion() {
+    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_START);
+  }
+
+  @Override
+  public void endConstantsMapConversion() {
+    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_END);
   }
 
   /**
