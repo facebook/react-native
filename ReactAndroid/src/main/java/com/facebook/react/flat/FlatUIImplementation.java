@@ -11,7 +11,6 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,18 +50,6 @@ public class FlatUIImplementation extends UIImplementation {
     DraweeRequestHelper.setResources(reactContext.getResources());
 
     TypefaceCache.setAssetManager(reactContext.getAssets());
-
-    viewManagers = new ArrayList<>(viewManagers);
-    viewManagers.add(new RCTViewManager());
-    viewManagers.add(new RCTTextManager());
-    viewManagers.add(new RCTRawTextManager());
-    viewManagers.add(new RCTVirtualTextManager());
-    viewManagers.add(new RCTTextInlineImageManager());
-    viewManagers.add(new RCTImageViewManager());
-    viewManagers.add(new RCTTextInputManager());
-    viewManagers.add(new RCTViewPagerManager());
-    viewManagers.add(new FlatARTSurfaceViewManager());
-    viewManagers.add(new RCTModalHostManager());
 
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(

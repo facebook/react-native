@@ -57,6 +57,11 @@ exports.examples = [
           onPress={() => { _scrollView.scrollTo({y: 0}); }}>
           <Text>Scroll to top</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
+          <Text>Scroll to bottom</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -78,6 +83,11 @@ exports.examples = [
           style={styles.button}
           onPress={() => { _scrollView.scrollTo({x: 0}); }}>
           <Text>Scroll to start</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
+          <Text>Scroll to end</Text>
         </TouchableOpacity>
       </View>
     );

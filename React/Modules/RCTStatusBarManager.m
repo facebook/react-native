@@ -132,13 +132,6 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"HEIGHT": @([UIApplication sharedApplication].statusBarFrame.size.height)
-  };
-}
-
 #endif //TARGET_OS_TV
 
 @end

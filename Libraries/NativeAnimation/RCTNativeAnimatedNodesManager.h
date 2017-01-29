@@ -32,7 +32,8 @@
                        childTag:(nonnull NSNumber *)childTag;
 
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
-                          viewTag:(nonnull NSNumber *)viewTag;
+                          viewTag:(nonnull NSNumber *)viewTag
+                         viewName:(nonnull NSString *)viewName;
 
 - (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                                viewTag:(nonnull NSNumber *)viewTag;
