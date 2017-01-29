@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import type {Module} from '../types.flow';
+import type {IdForPathFn, Module} from '../types.flow';
 
 // Transformed modules have the form
 //   __d(function(require, module, global, exports, dependencyMap) {
@@ -59,11 +59,27 @@ exports.createIdForPathFn = (): ({path: string} => number) => {
   };
 };
 
-exports.virtualModule = (code: string): Module => ({
-  dependencies: [],
-  file: {
-    code,
-    path: '',
-    type: 'script',
+// creates a series of virtual modules with require calls to the passed-in
+// modules.
+exports.requireCallsTo = function* (
+  modules: Iterable<Module>,
+  idForPath: IdForPathFn,
+): Iterable<Module> {
+  for (const module of modules) {
+    yield virtualModule(`require(${idForPath(module.file)});`);
   }
-});
+};
+
+// creates a virtual module (i.e. not corresponding to a file on disk)
+// with the given source code.
+exports.virtualModule = virtualModule;
+function virtualModule(code: string) {
+  return {
+    dependencies: [],
+    file: {
+      code,
+      path: '',
+      type: 'script',
+    }
+  };
+}

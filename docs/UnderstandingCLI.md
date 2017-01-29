@@ -22,7 +22,7 @@ required in `commands.js`, which will register it as a documented command to be 
 
 # Command definitions
 
-At the end of each command entry is an export.  The export is an object with a function to perform, description of the command, and the command name.  The object structure for the `unlink` command looks like so:
+At the end of each command entry is an export.  The export is an object with a function to perform, description of the command, and the command name.  The object structure for the `link` command looks like so:
 
 ```js
 module.exports = {

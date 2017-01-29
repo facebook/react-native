@@ -9,7 +9,6 @@
 
 package com.facebook.react.cxxbridge;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.NativeArray;
+import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -38,10 +38,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 /* package */ class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
-    @DoNotStrip
-    Method method;
-    @DoNotStrip
-    String signature;
     @DoNotStrip
     String name;
     @DoNotStrip
@@ -87,39 +83,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     return descs;
   }
 
-  @DoNotStrip
-  public List<MethodDescriptor> newGetMethodDescriptors() {
-    ArrayList<MethodDescriptor> descs = new ArrayList<>();
-
-    for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-      getModule().getMethods().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = entry.getValue().getType();
-
-      BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
-
-      descs.add(md);
-    }
-
-    for (Map.Entry<String, BaseJavaModule.SyncNativeHook> entry :
-      getModule().getSyncHooks().entrySet()) {
-      MethodDescriptor md = new MethodDescriptor();
-      md.name = entry.getKey();
-      md.type = BaseJavaModule.METHOD_TYPE_SYNC;
-
-      BaseJavaModule.SyncJavaHook method = (BaseJavaModule.SyncJavaHook) entry.getValue();
-      md.method = method.getMethod();
-      md.signature = method.getSignature();
-
-      descs.add(md);
-    }
-
-    return descs;
-  }
-
   // TODO mhorowitz: make this return NativeMap, which requires moving
   // NativeMap out of OnLoad.
   @DoNotStrip
@@ -127,12 +90,16 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    Map<String, Object> map = getModule().getConstants();
+    BaseJavaModule baseJavaModule = getModule();
+    Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
       .arg("moduleName", getName())
       .flush();
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).startConstantsMapConversion();
+    }
     WritableNativeMap writableNativeMap;
     try {
       writableNativeMap = Arguments.makeNativeMap(map);
@@ -141,6 +108,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
     WritableNativeArray array = new WritableNativeArray();
     array.pushMap(writableNativeMap);
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).endConstantsMapConversion();
+    }
     return array;
   }
 

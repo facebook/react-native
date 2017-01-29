@@ -19,7 +19,7 @@ describe('Object (ES7)', () => {
   beforeEach(() => {
     delete Object.entries;
     delete Object.values;
-    jest.resetModuleRegistry();
+    jest.resetModules();
     require('../Object.es7');
   });
 

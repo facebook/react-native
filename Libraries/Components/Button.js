@@ -55,6 +55,7 @@ class Button extends React.Component {
     color?: ?string,
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
+    testID?: ?string,
   };
 
   static propTypes = {
@@ -78,6 +79,10 @@ class Button extends React.Component {
      * Handler to be called when the user taps the button
      */
     onPress: React.PropTypes.func.isRequired,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: React.PropTypes.string,
   };
 
   render() {
@@ -87,6 +92,7 @@ class Button extends React.Component {
       onPress,
       title,
       disabled,
+      testID,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -110,6 +116,7 @@ class Button extends React.Component {
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={['button']}
+        testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>

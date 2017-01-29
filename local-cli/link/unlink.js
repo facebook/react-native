@@ -2,8 +2,10 @@ const log = require('npmlog');
 
 const getProjectDependencies = require('./getProjectDependencies');
 const unregisterDependencyAndroid = require('./android/unregisterNativeModule');
+const unregisterDependencyWindows = require('./windows/unregisterNativeModule');
 const unregisterDependencyIOS = require('./ios/unregisterNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
+const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
 const unlinkAssetsAndroid = require('./android/unlinkAssets');
 const unlinkAssetsIOS = require('./ios/unlinkAssets');
@@ -37,6 +39,25 @@ const unlinkDependencyAndroid = (androidProject, dependency, packageName) => {
   unregisterDependencyAndroid(packageName, dependency.android, androidProject);
 
   log.info(`Android module ${packageName} has been successfully unlinked`);
+};
+
+const unlinkDependencyWindows = (windowsProject, dependency, packageName) => {
+  if (!windowsProject || !dependency.windows) {
+    return;
+  }
+
+  const isInstalled = isInstalledWindows(windowsProject, dependency.windows);
+
+  if (!isInstalled) {
+    log.info(`Windows module ${packageName} is not installed`);
+    return;
+  }
+
+  log.info(`Unlinking ${packageName} windows dependency`);
+
+  unregisterDependencyWindows(packageName, dependency.windows, windowsProject);
+
+  log.info(`Windows module ${packageName} has been successfully unlinked`);
 };
 
 const unlinkDependencyIOS = (iOSProject, dependency, packageName, iOSDependencies) => {
@@ -92,18 +113,20 @@ function unlink(args, config) {
 
   const allDependencies = getDependencyConfig(config, getProjectDependencies());
   const otherDependencies = filter(allDependencies, d => d.name !== packageName);
-  const thisDependency = find(allDependencies, d => d.name === packageName);
   const iOSDependencies = compact(otherDependencies.map(d => d.config.ios));
 
   const tasks = [
-    () => promisify(thisDependency.config.commands.preunlink || commandStub),
+    () => promisify(dependency.commands.preunlink || commandStub),
     () => unlinkDependencyAndroid(project.android, dependency, packageName),
     () => unlinkDependencyIOS(project.ios, dependency, packageName, iOSDependencies),
-    () => promisify(thisDependency.config.commands.postunlink || commandStub)
+    () => unlinkDependencyWindows(project.windows, dependency, packageName),
+    () => promisify(dependency.commands.postunlink || commandStub)
   ];
 
   return promiseWaterfall(tasks)
     .then(() => {
+      // @todo move all these to `tasks` array, just like in
+      // link
       const assets = difference(
         dependency.assets,
         flatten(allDependencies, d => d.assets)

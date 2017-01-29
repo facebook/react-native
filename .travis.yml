@@ -18,11 +18,13 @@ script:
   - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh; fi
   - if [[ "$TEST_TYPE" = objc-tvos ]]; then travis_retry travis_wait ./scripts/objc-test-tvos.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
+  - if [[ "$TEST_TYPE" = e2e-objc-tvos ]]; then node ./scripts/run-ci-e2e-tests.js --tvos --retries 3; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
 env:
   matrix:
+    - TEST_TYPE=e2e-objc-tvos
     - TEST_TYPE=e2e-objc
     - TEST_TYPE=objc-ios
     - TEST_TYPE=objc-tvos
@@ -37,5 +39,6 @@ notifications:
   email:
     recipients:
       - bestander@gmail.com
+      - mkonicek@fb.com
     on_failure: change
     on_success: change

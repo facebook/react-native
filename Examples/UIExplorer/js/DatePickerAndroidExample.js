@@ -38,6 +38,10 @@ class DatePickerAndroidExample extends React.Component {
 
   state = {
     presetDate: new Date(2020, 4, 5),
+    simpleDate: new Date(2020, 4, 5),
+    spinnerDate: new Date(2020, 4, 5),
+    calendarDate: new Date(2020, 4, 5),
+    defaultDate: new Date(2020, 4, 5),
     allDate: new Date(2020, 4, 5),
     simpleText: 'pick a date',
     spinnerText: 'pick a date',

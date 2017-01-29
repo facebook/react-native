@@ -12,6 +12,8 @@ package com.facebook.react.uimanager;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import com.facebook.react.bridge.ReadableMap;
+
 /**
  * Keys for props that need to be shared across multiple classes.
  */
@@ -64,6 +66,9 @@ public class ViewProps {
 
   public static final String ASPECT_RATIO = "aspectRatio";
 
+  // Props that sometimes may prevent us from collapsing views
+  public static final String POINTER_EVENTS = "pointerEvents";
+
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";
@@ -82,6 +87,9 @@ public class ViewProps {
   public static final String TEXT_ALIGN = "textAlign";
   public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";
+  public static final String TEXT_BREAK_STRATEGY = "textBreakStrategy";
+
+  public static final String ALLOW_FONT_SCALING = "allowFontScaling";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
@@ -148,7 +156,14 @@ public class ViewProps {
             PADDING_TOP,
             PADDING_BOTTOM));
 
-  public static boolean isLayoutOnly(String prop) {
-    return LAYOUT_ONLY_PROPS.contains(prop);
+  public static boolean isLayoutOnly(ReadableMap map, String prop) {
+    if (LAYOUT_ONLY_PROPS.contains(prop)) {
+      return true;
+    } else if (POINTER_EVENTS.equals(prop)) {
+      String value = map.getString(prop);
+      return "auto".equals(value) || "box-none".equals(value);
+    } else {
+      return false;
+    }
   }
 }

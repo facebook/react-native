@@ -213,7 +213,10 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     (void)rootView;
   }
 
+#if !TARGET_OS_TV // userInteractionEnabled is true for Apple TV views
   XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
+#endif
+
 }
 
 - (void)testUnderlyingBridgeIsDeallocated

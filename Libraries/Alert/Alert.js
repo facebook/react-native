@@ -52,6 +52,11 @@ type Options = {
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
+ * Note that by default alerts on Android can be dismissed by clicking outside of their alert box.
+ * To prevent this behavior, you can provide
+ * an optional `options` parameter `{ cancelable: false }` to the Alert method.
+ *
+ * Example usage:
  * ```
  * // Works on both iOS and Android
  * Alert.alert(
@@ -61,7 +66,8 @@ type Options = {
  *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
  *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
- *   ]
+ *   ],
+ *   { cancelable: false }
  * )
  * ```
  */
