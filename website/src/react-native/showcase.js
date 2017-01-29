@@ -315,13 +315,13 @@ var featured = [
     infoLink: 'https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/',
     infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
   },
-	{
-		name: 'Blink',
-		icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
-		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
-		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
-		infoTitle: 'What we learned after using React Native for a year',
-	},
+  {
+    name: 'Blink',
+    icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
+    infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
+    infoTitle: 'What we learned after using React Native for a year',
+  },
   {
     name: 'Delivery.com',
     icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
@@ -345,6 +345,14 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
     infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
     infoTitle: 'How React Native is helping us to reinvent the wheel',
+  },
+  {
+    name: 'Jack',
+    icon: 'https://s3-eu-west-1.amazonaws.com/jack-public/react-native-showcase/jack-raw-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/you-have-a-jack/id1019167559?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
+    infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
+    infoTitle: 'Our switch to React Native',
   },
 ];
 
@@ -398,7 +406,7 @@ var pinned = [
     defaultLink: 'https://www.airbnb.com/mobile',
   },
   {
-    name: 'Baidu(手机百度)',
+    name: 'Baidu (手机百度)',
     icon: 'http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png',
     linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',

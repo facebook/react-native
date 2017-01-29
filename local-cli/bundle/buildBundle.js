@@ -19,6 +19,7 @@ const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
@@ -58,6 +59,7 @@ function buildBundle(
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
     const transformModulePath =
       args.transformer ? path.resolve(args.transformer) :
@@ -74,6 +76,7 @@ function buildBundle(
       extraNodeModules: config.extraNodeModules,
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
+      platforms: defaultPlatforms.concat(platforms),
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,

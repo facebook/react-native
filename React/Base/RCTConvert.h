@@ -85,7 +85,6 @@ typedef NSURL RCTFileURL;
 + (CGLineCap)CGLineCap:(id)json;
 + (CGLineJoin)CGLineJoin:(id)json;
 
-+ (CATransform3D)CATransform3D:(id)json;
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (UIColor *)UIColor:(id)json;
@@ -236,10 +235,18 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
 }
 
 /**
- * This macro is used for creating converter functions for typed arrays.
+ * This macro is used for creating explicitly-named converter functions
+ * for typed arrays.
  */
-#define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<type *> *)type##Array:(id)json              \
+#define RCT_ARRAY_CONVERTER_NAMED(type, name)          \
++ (NSArray<type *> *)name##Array:(id)json              \
 {                                                      \
-  return RCTConvertArrayValue(@selector(type:), json); \
+  return RCTConvertArrayValue(@selector(name:), json); \
 }
+
+/**
+ * This macro is used for creating converter functions for typed arrays.
+ * RCT_ARRAY_CONVERTER_NAMED may be used when type contains characters
+ * which are disallowed in selector names.
+ */
+#define RCT_ARRAY_CONVERTER(type) RCT_ARRAY_CONVERTER_NAMED(type, type)

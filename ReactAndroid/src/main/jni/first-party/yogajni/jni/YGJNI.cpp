@@ -75,7 +75,9 @@ static void YGPrint(YGNodeRef node) {
 
 static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
-    return findClassLocal("com/facebook/yoga/YogaNode")->getMethod<jfloat(jfloat, jfloat)>("baseline")(obj, width, height);
+    static auto baselineFunc = findClassStatic("com/facebook/yoga/YogaNode")
+                                   ->getMethod<jfloat(jfloat, jfloat)>("baseline");
+    return baselineFunc(obj, width, height);
   } else {
     return height;
   }
@@ -87,7 +89,7 @@ static YGSize YGJNIMeasureFunc(YGNodeRef node,
                                float height,
                                YGMeasureMode heightMode) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
-    static auto measureFunc = findClassLocal("com/facebook/yoga/YogaNode")
+    static auto measureFunc = findClassStatic("com/facebook/yoga/YogaNode")
                                   ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
 
     YGTransferLayoutDirection(node, obj);
@@ -121,7 +123,7 @@ static int YGLog(YGLogLevel level, const char *format, va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 
-  static auto logFunc = findClassLocal("com/facebook/yoga/YogaLogger")
+  static auto logFunc = findClassStatic("com/facebook/yoga/YogaLogger")
                             ->getMethod<void(local_ref<JYogaLogLevel>, jstring)>("log");
 
   static auto logLevelFromInt =
@@ -221,8 +223,11 @@ void jni_YGNodeSetHasMeasureFunc(alias_ref<jobject>, jlong nativePointer, jboole
   YGNodeSetMeasureFunc(_jlong2YGNodeRef(nativePointer), hasMeasureFunc ? YGJNIMeasureFunc : NULL);
 }
 
-void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>, jlong nativePointer, jboolean hasBaselineFunc) {
-  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer), hasBaselineFunc ? YGJNIBaselineFunc : NULL);
+void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>,
+                                  jlong nativePointer,
+                                  jboolean hasBaselineFunc) {
+  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer),
+                        hasBaselineFunc ? YGJNIBaselineFunc : NULL);
 }
 
 jboolean jni_YGNodeHasNewLayout(alias_ref<jobject>, jlong nativePointer) {

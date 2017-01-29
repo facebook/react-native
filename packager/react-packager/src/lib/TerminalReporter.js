@@ -158,6 +158,9 @@ class TerminalReporter {
       case 'global_cache_disabled':
         this._logCacheDisabled(event.reason);
         break;
+      case 'transform_cache_reset':
+        reporting.logWarning(terminal, 'the transform cache was reset.');
+        break;
     }
   }
 

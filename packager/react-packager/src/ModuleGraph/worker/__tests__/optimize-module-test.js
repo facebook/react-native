@@ -54,7 +54,7 @@ describe('optimizing JS modules', () => {
       const result = optimizeModule(transformResult, optimizationOptions);
       optimized = result.transformed.default;
       injectedVars = optimized.code.match(/function\(([^)]*)/)[1].split(',');
-      [requireName,,,, dependencyMapName] = injectedVars;
+      [,requireName,,, dependencyMapName] = injectedVars;
     });
 
     it('optimizes code', () => {

@@ -965,6 +965,9 @@ public class ReactInstanceManager {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
       .arg("className", reactPackage.getClass().getSimpleName())
       .flush();
+    if (reactPackage instanceof ReactPackageLogger) {
+      ((ReactPackageLogger) reactPackage).startProcessPackage();
+    }
     if (mLazyNativeModulesEnabled && reactPackage instanceof LazyReactPackage) {
       LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
       ReactModuleInfoProvider instance = lazyReactPackage.getReactModuleInfoProvider();
@@ -986,6 +989,9 @@ public class ReactInstanceManager {
 
     for (Class<? extends JavaScriptModule> jsModuleClass : reactPackage.createJSModules()) {
       jsModulesBuilder.add(jsModuleClass);
+    }
+    if (reactPackage instanceof ReactPackageLogger) {
+      ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }

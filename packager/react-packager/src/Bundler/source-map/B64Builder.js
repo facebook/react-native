@@ -45,6 +45,9 @@ class B64Builder {
    * Adds `n` markers for generated lines to the mappings.
    */
   markLines(n: number) {
+    if (n < 1) {
+      return this;
+    }
     this.hasSegment = false;
     if (this.pos + n >= this.buffer.length) {
       this._realloc();
