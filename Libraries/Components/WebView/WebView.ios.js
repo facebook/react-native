@@ -236,13 +236,17 @@ class WebView extends React.Component {
      */
     onNavigationStateChange: PropTypes.func,
     /**
-     * A function that is invoked when the webview calls `window.postMessage`.
-     * Setting this property will inject a `postMessage` global into your
-     * webview, but will still call pre-existing values of `postMessage`.
+     * A function that will be invoked when the webview calls `window.postMessage`.
+     * Setting this property will alter `postMessage` to allow posting to React
+     * Native. `postMessage accepts the arguments `data`, `targetOrigin`, and
+     * `transfer`.
      *
-     * `window.postMessage` accepts one argument, `data`, which will be
-     * available on the event object, `event.nativeEvent.data`. `data`
-     * must be a string.
+     * Calling `postMessage` with a `targetOrigin` of `react-native` will post
+     * to React Native. All other values for `targetOrigin` will use the default
+     * HTML5 behaviour.
+     *
+     * Note that when posting to React Native, `data` must be a string. The data
+     * can be retrieved from this handler with `event.nativeEvent.data`.
      */
     onMessage: PropTypes.func,
     /**
@@ -475,10 +479,15 @@ class WebView extends React.Component {
    * Posts a message to the web view, which will emit a `message` event.
    * Accepts one argument, `data`, which must be a string.
    *
+   * The message event will have the properties `data` and `origin`, where
+   * `data` is the string provided to `postMessage` and `origin` is `react-native`
+   *
    * In your webview, you'll need to something like the following.
    *
    * ```js
-   * document.addEventListener('message', e => { document.title = e.data; });
+   * document.addEventListener('message', e => {
+   *   if (e.origin === 'react-native') doSomethingWith(e.data);
+   * });
    * ```
    */
   postMessage = (data) => {

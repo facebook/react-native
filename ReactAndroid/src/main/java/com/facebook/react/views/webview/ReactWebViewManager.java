@@ -279,23 +279,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void linkBridge() {
       if (messagingEnabled) {
-        if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-          // See isNative in lodash
-          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-          evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String value) {
-              if (value.equals("true")) {
-                FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-              }
-            }
-          });
-        }
-
         loadUrl("javascript:(" +
+          "window.native = {" +
+            "postMessage: function(data) {" +
+              BRIDGE_NAME + ".postMessage(String(data));" +
+            "}," +
+            "onmessage: null" +
+          "}," +
           "window.originalPostMessage = window.postMessage," +
-          "window.postMessage = function(data) {" +
-            BRIDGE_NAME + ".postMessage(String(data));" +
+          "window.postMessage = function(data, targetOrigin) {" +
+            "if (targetOrigin === 'react-native') {" +
+              BRIDGE_NAME + ".postMessage(String(data));" +
+            "} else {" +
+              "window.originalPostMessage.apply(arguments);" +
+            "}" +
           "}" +
         ")");
       }
@@ -502,8 +499,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       case COMMAND_POST_MESSAGE:
         try {
           JSONObject eventInitDict = new JSONObject();
+          eventInitDict.put("origin", "react-native");
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+          root.loadUrl("javascript:(" +
+            "document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + "))," +
+            "window.native && typeof window.native.onmessage === 'function' &&" +
+              "window.native.onmessage(new MessageEvent('message', " + eventInitDict.toString() + "))" +
+          ")");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }

@@ -87,10 +87,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)postMessage:(NSString *)message
 {
   NSDictionary *eventInitDict = @{
+    @"origin": @"react-native",
     @"data": message,
   };
   NSString *source = [NSString
-    stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+    stringWithFormat:
+      @"document.dispatchEvent(new MessageEvent('message', %@));"
+      "if (window.native && typeof window.native.onmessage === 'function') {"
+        "window.native.onmessage(new MessageEvent('message', %@))"
+      "}",
     RCTJSONStringify(eventInitDict, NULL)
   ];
   [_webView stringByEvaluatingJavaScriptFromString:source];
@@ -280,21 +285,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
   if (_messagingEnabled) {
-    #if RCT_DEV
-    // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-    BOOL postMessageIsNative = [
-      [webView stringByEvaluatingJavaScriptFromString:testPostMessageNative]
-      isEqualToString:@"true"
-    ];
-    if (!postMessageIsNative) {
-      RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-    }
-    #endif
     NSString *source = [NSString stringWithFormat:
-      @"window.originalPostMessage = window.postMessage;"
-      "window.postMessage = function(data) {"
-        "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+      @"window.native = {"
+        "postMessage: function(data) {"
+          "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+        "},"
+        "onmessage: null"
+      "};"
+      "window.originalPostMessage = window.postMessage;"
+      "window.postMessage = function(data, targetOrigin) {"
+        "if (targetOrigin === 'react-native') {"
+          "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+        "} else {"
+          "window.originalPostMessage.apply(arguments);"
+        "}"
       "};", RCTJSNavigationScheme, RCTJSPostMessageHost
     ];
     [webView stringByEvaluatingJavaScriptFromString:source];
