@@ -30,7 +30,7 @@ public enum YogaExperimentalFeature {
     switch (value) {
       case 0: return ROUNDING;
       case 1: return WEB_FLEX_BASIS;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

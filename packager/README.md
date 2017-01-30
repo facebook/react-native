@@ -112,6 +112,8 @@ Builds a bundle according to the provided options.
   itself
 * `getTransformOptions` function: A function that acts as a middleware for
   generating options to pass to the transformer based on the bundle being built.
+* `reporter` object (required): An object with a single function `update` that
+  is called when events are happening: build updates, warnings, errors.
 
 #### `bundleOptions`
 
@@ -133,9 +135,9 @@ Builds a bundle according to the provided options.
 
 To get verbose output when running the packager, define an environment variable:
 
-    export DEBUG=ReactNativePackager:*
+    export DEBUG=RNP:*
 
-You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
+You can combine this with other values, e.g. `DEBUG=babel,RNP:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
 
 The `/debug` endpoint discussed above is also useful.
 

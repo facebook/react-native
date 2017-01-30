@@ -58,6 +58,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
+
+  BOOL _passThroughTouches;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -154,6 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setPassThroughTouches:(BOOL)passThroughTouches
 {
+  _passThroughTouches = passThroughTouches;
   _contentView.passThroughTouches = passThroughTouches;
 }
 
@@ -253,6 +256,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
+  _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
@@ -380,7 +384,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _bridge = bridge;
     self.reactTag = reactTag;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [self addGestureRecognizer:_touchHandler];
+    [_touchHandler attachToView:self];
     [_bridge.uiManager registerRootView:self withSizeFlexibility:sizeFlexibility];
     self.layer.backgroundColor = NULL;
   }

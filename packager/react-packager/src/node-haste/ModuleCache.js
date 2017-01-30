@@ -16,27 +16,26 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
-import type {
-  TransformCode,
-  Options as ModuleOptions,
-} from './Module';
+import type {TransformCode, Options as ModuleOptions} from './Module';
 
 type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
 
-  _assetDependencies: mixed;
+  _assetDependencies: Array<string>;
   _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
+  _globalTransformCache: ?GlobalTransformCache;
   _moduleCache: {[filePath: string]: Module};
   _moduleOptions: ModuleOptions;
   _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
-  _platforms: mixed;
+  _platforms: Set<string>;
   _transformCacheKey: string;
   _transformCode: TransformCode;
   _reporter: Reporter;
@@ -47,22 +46,25 @@ class ModuleCache {
     depGraphHelpers,
     extractRequires,
     getClosestPackage,
+    globalTransformCache,
     moduleOptions,
+    reporter,
     transformCacheKey,
     transformCode,
-    reporter,
   }: {
-    assetDependencies: mixed,
+    assetDependencies: Array<string>,
     cache: Cache,
     depGraphHelpers: DependencyGraphHelpers,
     getClosestPackage: GetClosestPackageFn,
+    globalTransformCache: ?GlobalTransformCache,
     moduleOptions: ModuleOptions,
+    reporter: Reporter,
     transformCacheKey: string,
     transformCode: TransformCode,
-    reporter: Reporter,
-  }, platforms: mixed) {
+  }, platforms: Set<string>) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
+    this._globalTransformCache = globalTransformCache;
     this._cache = cache;
     this._depGraphHelpers = depGraphHelpers;
     this._moduleCache = Object.create(null);
@@ -78,14 +80,15 @@ class ModuleCache {
   getModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
-        file: filePath,
-        moduleCache: this,
         cache: this._cache,
-        transformCode: this._transformCode,
-        transformCacheKey: this._transformCacheKey,
         depGraphHelpers: this._depGraphHelpers,
+        file: filePath,
+        globalTransformCache: this._globalTransformCache,
+        moduleCache: this,
         options: this._moduleOptions,
         reporter: this._reporter,
+        transformCacheKey: this._transformCacheKey,
+        transformCode: this._transformCode,
       });
     }
     return this._moduleCache[filePath];
@@ -97,6 +100,9 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
+      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
+       * design in the first place: AssetModule, being simpler than a normal
+       * Module, should not inherit the Module class. */
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
         moduleCache: this,

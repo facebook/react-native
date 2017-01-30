@@ -45,7 +45,7 @@ const querystring = require('querystring');
 const parseUrl = require('url').parse;
 const WebSocket = require('ws');
 
-const debug = require('debug')('ReactNativePackager:InspectorProxy');
+const debug = require('debug')('RNP:InspectorProxy');
 const launchChrome = require('./launchChrome');
 
 type DevicePage = {
@@ -305,7 +305,6 @@ class InspectorProxy {
 
   processRequest(req: any, res: any, next: any) {
     // TODO: Might wanna actually do the handling here
-    console.log(req.url);
     const endpoints = [
       '/inspector/',
       '/inspector/page',
@@ -456,7 +455,7 @@ function attachToServer(server: http.Server, pathPrefix: string): InspectorProxy
 
 if (!module.parent) {
   console.info('Starting server');
-  process.env.DEBUG = 'ReactNativePackager:Inspector';
+  process.env.DEBUG = 'RNP:Inspector';
   const serverInstance = http.createServer().listen(
     8081,
     'localhost',

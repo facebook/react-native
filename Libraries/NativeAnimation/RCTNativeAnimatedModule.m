@@ -20,6 +20,11 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 RCT_EXPORT_MODULE();
 
+- (void)invalidate
+{
+  [_nodesManager stopAnimationLoop];
+}
+
 - (void)dealloc
 {
   [self.bridge.eventDispatcher removeDispatchObserver:self];
@@ -116,8 +121,9 @@ RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                   viewTag:(nonnull NSNumber *)viewTag)
 {
+  NSString *viewName = [self.bridge.uiManager viewNameForReactTag:viewTag];
   [_operations addObject:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager connectAnimatedNodeToView:nodeTag viewTag:viewTag];
+    [nodesManager connectAnimatedNodeToView:nodeTag viewTag:viewTag viewName:viewName];
   }];
 }
 
