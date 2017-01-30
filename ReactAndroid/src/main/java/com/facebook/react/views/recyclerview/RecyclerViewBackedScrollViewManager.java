@@ -81,6 +81,15 @@ public class RecyclerViewBackedScrollViewManager extends
   }
 
   @Override
+  public void scrollToEnd(
+      RecyclerViewBackedScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // Not implemented.
+    // RecyclerViewBackedScrollView is deprecated and will be removed.
+    // People should use a standard ScrollView or ListView instead.
+  }
+
+  @Override
   public @Nullable
   Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
