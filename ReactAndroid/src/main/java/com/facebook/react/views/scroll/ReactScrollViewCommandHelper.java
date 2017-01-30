@@ -75,12 +75,10 @@ public class ReactScrollViewCommandHelper {
         int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
         boolean animated = args.getBoolean(2);
         viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
-        return;
       }
       case COMMAND_SCROLL_TO_END: {
         boolean animated = args.getBoolean(0);
         viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
-        return;
       }
       default:
         throw new IllegalArgumentException(String.format(
