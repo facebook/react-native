@@ -354,6 +354,15 @@ var featured = [
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
   },
+  {
+    name: 'A Stock Master(投顾大师)',
+    icon: 'http://is4.mzstatic.com/image/thumb/Purple122/v4/4d/3e/0b/4d3e0b34-660a-5548-fd99-b49f9f9b3d08/source/175x175bb.jpg',
+    linkPlayStore: 'http://a.app.qq.com/o/simple.jsp?pkgname=cn.tougudashi',
+    linkAppStore: 'https://itunes.apple.com/cn/app/gu-piao-tou-gu-da-shi-tou/id1107938157?mt=8',
+    infoLink: 'http://baike.baidu.com/link?url=NuX_PBPaeVDgi-S98-179d13g7qJzPS1s23CySO-AM01EXsiQyKmeo1TSI1LUOwHdPvcwNpX7SCAZeEM2S05impcmGr7qD2Paa0uY488hoRMBwr9Ufwuy3FHrUjjAFrE',
+    infoTitle: '投顾大师，致力搭建有利于股民与证券投资顾问双向互动的沟通交流平台，最大限度实现投顾的个人价值和投资者的资产管理诉求。',
+    defaultLink: 'http://a.app.qq.com/o/simple.jsp?pkgname=cn.tougudashi',
+  },
 ];
 
 /*
