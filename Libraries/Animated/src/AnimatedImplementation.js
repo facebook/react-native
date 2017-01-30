@@ -97,6 +97,7 @@ type AnimationConfig = {
   isInteraction?: bool,
   useNativeDriver?: bool,
   onComplete?: ?EndCallback,
+  iterations?: number,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -107,6 +108,7 @@ class Animation {
   __isInteraction: bool;
   __nativeId: number;
   __onEnd: ?EndCallback;
+  __iterations: number;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -233,7 +235,6 @@ type TimingAnimationConfig = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-  numLoops?: number,
 };
 
 type TimingAnimationConfigSingle = AnimationConfig & {
@@ -241,7 +242,6 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-  numLoops?: number,
 };
 
 let _easeInOut;
@@ -259,7 +259,6 @@ class TimingAnimation extends Animation {
   _toValue: any;
   _duration: number;
   _delay: number;
-  _numLoops: number;
   _easing: (value: number) => number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -274,7 +273,7 @@ class TimingAnimation extends Animation {
     this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
-    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this._useNativeDriver = shouldUseNativeDriver(config);
   }
@@ -291,7 +290,7 @@ class TimingAnimation extends Animation {
       frames,
       toValue: this._toValue,
       delay: this._delay,
-      numLoops: this._numLoops
+      iterations: this.__iterations,
     };
   }
 
@@ -366,13 +365,11 @@ class TimingAnimation extends Animation {
 type DecayAnimationConfig = AnimationConfig & {
   velocity: number | {x: number, y: number},
   deceleration?: number,
-  numLoops?: number,
 };
 
 type DecayAnimationConfigSingle = AnimationConfig & {
   velocity: number,
   deceleration?: number,
-  numLoops?: number,
 };
 
 class DecayAnimation extends Animation {
@@ -384,7 +381,6 @@ class DecayAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: bool;
-  _numLoops: number;
 
   constructor(
     config: DecayAnimationConfigSingle,
@@ -394,7 +390,7 @@ class DecayAnimation extends Animation {
     this._velocity = config.velocity;
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
   }
 
   __getNativeAnimationConfig() {
@@ -402,7 +398,7 @@ class DecayAnimation extends Animation {
       type: 'decay',
       deceleration: this._deceleration,
       velocity: this._velocity,
-      numLoops: this._numLoops
+      iterations: this.__iterations,
     };
   }
 
@@ -464,7 +460,6 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
-  numLoops?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -477,7 +472,6 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
-  numLoops?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -503,7 +497,6 @@ class SpringAnimation extends Animation {
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: bool;
-  _numLoops: number;
 
   constructor(
     config: SpringAnimationConfigSingle,
@@ -518,7 +511,7 @@ class SpringAnimation extends Animation {
     this._toValue = config.toValue;
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
-    this._numLoops = config.numLoops !== undefined ? config.numLoops : 1;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
 
     var springConfig;
     if (config.bounciness !== undefined || config.speed !== undefined) {
@@ -550,7 +543,7 @@ class SpringAnimation extends Animation {
       friction: this._friction,
       initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
       toValue: this._toValue,
-      numLoops: this._numLoops
+      iterations: this.__iterations,
     };
   }
 
@@ -868,7 +861,6 @@ class AnimatedValue extends AnimatedWithChildren {
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
     this._value = this._startingValue;
-    this._offset = 0;
   }
 
   /**
@@ -1917,7 +1909,7 @@ type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
-  startNativeLoop: (iterations?: ?number) => void,
+  _startNativeLoop: (iterations?: ?number) => void,
 };
 
 var add = function(
@@ -2028,9 +2020,9 @@ var spring = function(
       value.resetAnimation();
     },
 
-    startNativeLoop: function(iterations: number): void {
-      config.numLoops = iterations;
-      start(value, config);
+    _startNativeLoop: function(iterations: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
     }
   };
 };
@@ -2073,9 +2065,9 @@ var timing = function(
       value.resetAnimation();
     },
 
-    startNativeLoop: function(iterations: number): void {
-      config.numLoops = iterations;
-      start(value, config);
+    _startNativeLoop: function(iterations: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
     }
   };
 };
@@ -2108,9 +2100,9 @@ var decay = function(
       value.resetAnimation();
     },
 
-    startNativeLoop: function(iterations: number): void {
-      config.numLoops = iterations;
-      start(value, config);
+    _startNativeLoop: function(iterations: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
     }
   };
 };
@@ -2157,7 +2149,7 @@ var sequence = function(
       current = 0;
     },
 
-    startNativeLoop: function() {
+    _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.sequence animations');
     }
   };
@@ -2220,7 +2212,7 @@ var parallel = function(
       });
     },
 
-    startNativeLoop: function() {
+    _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.parallel animations');
     }
   };
@@ -2245,14 +2237,12 @@ var stagger = function(
   }));
 };
 
-type LoopAnimationConfig = AnimationConfig & { iterations: number };
+type LoopAnimationConfig = { iterations: number };
 
 var loop = function(
   animation: CompositeAnimation,
-  config: LoopAnimationConfig,
+  config: LoopAnimationConfig = {iterations: -1},
 ): CompositeAnimation {
-  if (!config) config = {}; // Use empty config to avoid checking if (config && ...) every time
-  if (!config.iterations) config.iterations = -1; // Loop indefinitely if no 'iterations' provided
   var isFinished = false;
   var iterationsSoFar = 0;
   return {
@@ -2270,7 +2260,7 @@ var loop = function(
         callback && callback({finished: true});
       } else {
         if (config.useNativeDriver) {
-          animation.startNativeLoop(config.iterations);
+          animation._startNativeLoop(config.iterations);
         } else {
           restart(); // Start looping recursively on the js thread
         }
@@ -2288,7 +2278,7 @@ var loop = function(
       animation.reset();
     },
 
-    startNativeLoop: function() {
+    __startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.loop animations');
     }
   };

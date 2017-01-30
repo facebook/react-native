@@ -39,7 +39,7 @@ import com.facebook.react.bridge.ReadableMap;
   private double mDisplacementFromRestThreshold;
   private double mTimeAccumulator = 0;
   // for controlling loop
-  private int mNumLoops;
+  private int mIterations;
   private int mCurrentLoop = 0;
   private double mOriginalValue;
 
@@ -51,7 +51,7 @@ import com.facebook.react.bridge.ReadableMap;
     mRestSpeedThreshold = config.getDouble("restSpeedThreshold");
     mDisplacementFromRestThreshold = config.getDouble("restDisplacementThreshold");
     mOvershootClampingEnabled = config.getBoolean("overshootClamping");
-    mNumLoops = config.hasKey("numLoops") ? config.getInt("numLoops") : 1;
+    mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
   }
 
   @Override
@@ -70,7 +70,7 @@ import com.facebook.react.bridge.ReadableMap;
     mLastTime = frameTimeMillis;
     mAnimatedValue.mValue = mCurrentState.position;
     if (isAtRest()) {
-      if (mNumLoops == -1 || mCurrentLoop < mNumLoops) { // looping animation, return to start
+      if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
         mSpringStarted = false;
         mAnimatedValue.mValue = mOriginalValue;
         mCurrentLoop++;

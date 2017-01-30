@@ -26,7 +26,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
   private final double[] mFrames;
   private final double mToValue;
   private double mFromValue;
-  private int mNumLoops;
+  private int mIterations;
   private int mCurrentLoop;
 
   FrameBasedAnimationDriver(ReadableMap config) {
@@ -37,7 +37,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
       mFrames[i] = frames.getDouble(i);
     }
     mToValue = config.getDouble("toValue");
-    mNumLoops = config.hasKey("numLoops") ? config.getInt("numLoops") : 1;
+    mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
   }
 
@@ -58,7 +58,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     double nextValue;
     if (frameIndex >= mFrames.length - 1) {
       nextValue = mToValue;
-      if (mNumLoops == -1 || mCurrentLoop < mNumLoops) { // looping animation, return to start
+      if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
         mStartFrameTimeNanos = frameTimeNanos;
         mCurrentLoop++;
       } else { // animation has completed, no more frames left

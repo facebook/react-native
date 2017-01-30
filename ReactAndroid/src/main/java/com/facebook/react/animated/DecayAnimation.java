@@ -23,13 +23,13 @@ public class DecayAnimation extends AnimationDriver {
   private long mStartFrameTimeMillis = -1;
   private double mFromValue;
   private double mLastValue;
-  private int mNumLoops;
+  private int mIterations;
   private int mCurrentLoop;
 
   public DecayAnimation(ReadableMap config) {
     mVelocity = config.getDouble("velocity");
     mDeceleration = config.getDouble("deceleration");
-    mNumLoops = config.hasKey("numLoops") ? config.getInt("numLoops") : 1;
+    mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
   }
 
@@ -49,7 +49,8 @@ public class DecayAnimation extends AnimationDriver {
 
     if (Math.abs(mLastValue - value) < 0.1) {
 
-      if (mNumLoops == -1 || mCurrentLoop < mNumLoops) { // looping animation, return to start
+      if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
+        // Set mStartFrameTimeMillis to -1 to reset instance variables on the next runAnimationStep 
         mStartFrameTimeMillis = -1;
         mAnimatedValue.mValue = mFromValue;
         mCurrentLoop++;
