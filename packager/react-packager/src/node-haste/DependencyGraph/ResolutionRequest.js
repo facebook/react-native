@@ -489,7 +489,7 @@ class UnableToResolveError extends Error {
     this.from = fromModule.path;
     this.to = toModule;
     this.message = util.format(
-      'Unable to resolve module %s from %s: %s',
+      'Unable to resolve module `%s` from `%s`: %s',
       toModule,
       fromModule.path,
       message,

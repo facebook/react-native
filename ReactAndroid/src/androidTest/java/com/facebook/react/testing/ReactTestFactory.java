@@ -10,7 +10,7 @@ package com.facebook.react.testing;
 
 import android.content.Context;
 
-import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
 
@@ -23,5 +23,5 @@ public interface ReactTestFactory {
   }
 
   ReactInstanceEasyBuilder getCatalystInstanceBuilder();
-  ReactInstanceManager.Builder getReactInstanceManagerBuilder();
+  ReactInstanceManagerBuilder getReactInstanceManagerBuilder();
 }
