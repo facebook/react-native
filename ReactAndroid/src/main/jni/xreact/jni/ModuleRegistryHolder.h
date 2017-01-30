@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include <cxxreact/ModuleRegistry.h>
 #include <fb/fbjni.h>
 
-#include <cxxreact/ModuleRegistry.h>
 #include "CxxModuleWrapper.h"
 
 namespace facebook {
