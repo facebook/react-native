@@ -354,6 +354,13 @@ var featured = [
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
   },
+  {
+    name: 'ZIP.ch',
+    icon: 'https://s3.eu-central-1.amazonaws.com/zip.ch/static/images/zip-app-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/zip.ch-das-offizielle-telefonbuch/id969099762?mt=8',
+    infoLink: 'https://zip.ch/en/pages/about/',
+    infoTitle: 'ZIP.ch - Official phonebook for Switzerland',
+  },
 ];
 
 /*
