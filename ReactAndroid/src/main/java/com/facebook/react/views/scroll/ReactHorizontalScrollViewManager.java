@@ -117,6 +117,20 @@ public class ReactHorizontalScrollViewManager
     }
   }
 
+  @Override
+  public void scrollToEnd(
+      ReactHorizontalScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // ScrollView always has one child - the scrollable area
+    int right =
+      scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(right, scrollView.getScrollY());
+    } else {
+      scrollView.scrollTo(right, scrollView.getScrollY());
+    }
+  }
+
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.

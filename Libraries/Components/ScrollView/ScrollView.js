@@ -410,29 +410,15 @@ const ScrollView = React.createClass({
    * Use `scrollToEnd({animated: true})` for smooth animated scrolling,
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
-   *
-   * See `ScrollView#scrollToEnd`.
    */
   scrollToEnd: function(
     options?: { animated?: boolean },
   ) {
     // Default to true
     const animated = (options && options.animated) !== false;
-    if (Platform.OS === 'ios') {
-      this.getScrollResponder().scrollResponderScrollToEnd({
-        animated: animated,
-      });
-    } else if (Platform.OS === 'android') {
-      // On Android scrolling past the end of the ScrollView gets clipped
-      // - scrolls to the end.
-      if (this.props.horizontal) {
-        this.scrollTo({x: 10*1000*1000, animated: animated});
-      } else {
-        this.scrollTo({y: 10*1000*1000, animated: animated});
-      }
-    } else {
-      console.warn('scrollToEnd is not supported on this platform');
-    }
+    this.getScrollResponder().scrollResponderScrollToEnd({
+      animated: animated,
+    });
   },
 
   /**
