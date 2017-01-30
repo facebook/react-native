@@ -12,6 +12,10 @@
 #import <React/RCTComponent.h>
 
 @class RCTEventDispatcher;
+@class  RCTTextField;
+
+// input View Accessory Handle definition
+typedef UIView * (^RCTTextFieldKeyboardAccessory)(RCTTextField *);
 
 @interface RCTTextField : UITextField
 
@@ -32,4 +36,19 @@
 - (void)sendKeyValueForString:(NSString *)string;
 - (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField;
 
+/*
+ * This method was exposed as public to enable accessory handle to submit changes to JS code
+ */
+- (void)textFieldSubmitEditing;
+
+
+/**
+ * The method to allow application register handle to produce inputAccessoryView for particular keyboard type
+ * handler presents instancdispatch_oncee of KeyboardAccessory type
+ */
+
++(void) registerKeyboardTypeAccessoryHandler:(UIKeyboardType)type handler:(RCTTextFieldKeyboardAccessory)handler;
+
+
 @end
+
