@@ -1909,7 +1909,7 @@ type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
-  _startNativeLoop: (iterations?: ?number) => void,
+  _startNativeLoop: (iterations?: number) => void,
 };
 
 var add = function(
@@ -2020,7 +2020,7 @@ var spring = function(
       value.resetAnimation();
     },
 
-    _startNativeLoop: function(iterations: number): void {
+    _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
     }
@@ -2065,7 +2065,7 @@ var timing = function(
       value.resetAnimation();
     },
 
-    _startNativeLoop: function(iterations: number): void {
+    _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
     }
@@ -2100,7 +2100,7 @@ var decay = function(
       value.resetAnimation();
     },
 
-    _startNativeLoop: function(iterations: number): void {
+    _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
     }
