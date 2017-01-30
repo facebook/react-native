@@ -25,6 +25,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -589,9 +590,8 @@ public class UIViewOperationQueue {
    * subclass to support UIOperations not provided by UIViewOperationQueue.
    */
   protected void enqueueUIOperation(UIOperation operation) {
-    if (operation != null) {
-      mOperations.add(operation);
-    }
+    SoftAssertions.assertNotNull(operation);
+    mOperations.add(operation);
   }
 
   public void enqueueRemoveRootView(int rootViewTag) {
@@ -780,8 +780,8 @@ public class UIViewOperationQueue {
                  }
 
                  if (operations != null) {
-                   for (UIOperation op : operations) {
-                     op.execute();
+                   for (int i = 0; i < operations.size(); i++) {
+                     operations.get(i).execute();
                    }
                  }
 
