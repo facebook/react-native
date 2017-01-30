@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.view;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -22,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -31,6 +30,8 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+
+import javax.annotation.Nullable;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -96,6 +97,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private @Nullable ReadableMap mNativeBackground;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -136,16 +138,33 @@ public class ReactViewGroup extends ViewGroup implements
         "This method is not supported for ReactViewGroup instances");
   }
 
-  public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
+  public void setNativeBackground(@Nullable ReadableMap nativeBackground) {
+    mNativeBackground = nativeBackground;
+    refreshTranslucentBackgroundDrawable();
+  }
+
+  public void refreshTranslucentBackgroundDrawable() {
     // it's required to call setBackground to null, as in some of the cases we may set new
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
+
+    Drawable background = null;
+    if (mNativeBackground != null) {
+      float[] cornerRadii = null;
+      if (mReactBackgroundDrawable != null) {
+        cornerRadii = mReactBackgroundDrawable.getBorderRadii();
+      }
+      background = ReactDrawableHelper.createDrawableFromJSDescription(getContext(), mNativeBackground, cornerRadii);
+    }
+
     super.setBackground(null);
     if (mReactBackgroundDrawable != null && background != null) {
       LayerDrawable layerDrawable =
           new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, background});
       super.setBackground(layerDrawable);
+    } else if (mReactBackgroundDrawable != null && background == null) {
+      super.setBackground(mReactBackgroundDrawable);
     } else if (background != null) {
       super.setBackground(background);
     }
@@ -209,10 +228,12 @@ public class ReactViewGroup extends ViewGroup implements
 
   public void setBorderRadius(float borderRadius) {
     getOrCreateReactViewBackground().setRadius(borderRadius);
+    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderRadius(float borderRadius, int position) {
     getOrCreateReactViewBackground().setRadius(borderRadius, position);
+    refreshTranslucentBackgroundDrawable();
   }
 
   public void setBorderStyle(@Nullable String style) {

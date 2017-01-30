@@ -255,6 +255,25 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
   }
 
+  /* package */ float[] getBorderRadii() {
+    float defaultBorderRadius = !YogaConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
+    float topLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
+    float topRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
+    float bottomRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
+    float bottomLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+
+    return new float[] {
+      topLeftRadius,
+      topLeftRadius,
+      topRightRadius,
+      topRightRadius,
+      bottomRightRadius,
+      bottomRightRadius,
+      bottomLeftRadius,
+      bottomLeftRadius
+    };
+  }
+
   private void updatePath() {
     if (!mNeedUpdatePathForBorderRadius) {
       return;
@@ -277,25 +296,12 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
 
-    float defaultBorderRadius = !YogaConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
-    float topLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[0]) ? mBorderCornerRadii[0] : defaultBorderRadius;
-    float topRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[1]) ? mBorderCornerRadii[1] : defaultBorderRadius;
-    float bottomRightRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
-    float bottomLeftRadius = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
+    float[] borderRadii = getBorderRadii();
 
     mPathForBorderRadius.addRoundRect(
-        mTempRectForBorderRadius,
-        new float[] {
-          topLeftRadius,
-          topLeftRadius,
-          topRightRadius,
-          topRightRadius,
-          bottomRightRadius,
-          bottomRightRadius,
-          bottomLeftRadius,
-          bottomLeftRadius
-        },
-        Path.Direction.CW);
+      mTempRectForBorderRadius,
+      borderRadii,
+      Path.Direction.CW);
 
     float extraRadiusForOutline = 0;
 
@@ -306,14 +312,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mPathForBorderRadiusOutline.addRoundRect(
       mTempRectForBorderRadiusOutline,
       new float[] {
-        topLeftRadius + extraRadiusForOutline,
-        topLeftRadius + extraRadiusForOutline,
-        topRightRadius + extraRadiusForOutline,
-        topRightRadius + extraRadiusForOutline,
-        bottomRightRadius + extraRadiusForOutline,
-        bottomRightRadius + extraRadiusForOutline,
-        bottomLeftRadius + extraRadiusForOutline,
-        bottomLeftRadius + extraRadiusForOutline
+        borderRadii[0] + extraRadiusForOutline,
+        borderRadii[1] + extraRadiusForOutline,
+        borderRadii[2] + extraRadiusForOutline,
+        borderRadii[3] + extraRadiusForOutline,
+        borderRadii[4] + extraRadiusForOutline,
+        borderRadii[5] + extraRadiusForOutline,
+        borderRadii[6] + extraRadiusForOutline,
+        borderRadii[7] + extraRadiusForOutline
       },
       Path.Direction.CW);
   }

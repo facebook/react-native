@@ -87,6 +87,7 @@ exports.examples = [
       backgroundColor: 'rgb(180, 64, 119)',
       width: 200,
       height: 100,
+      borderRadius: 20,
       transform: [{scale: mScale}]
     };
     return (
