@@ -8,10 +8,8 @@ import java.util.Map;
 
 import android.view.View;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -86,11 +84,9 @@ public class RecyclerViewBackedScrollViewManager extends
   public void scrollToEnd(
       RecyclerViewBackedScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
-    FLog.w(
-      ReactConstants.TAG,
-      "scrollToEnd is not implemented for RecyclerViewBackedScrollView." +
-      "RecyclerViewBackedScrollView is deprecated and will be removed. " +
-      "Use a standard ScrollView or ListView instead.");
+    // Not implemented.
+    // RecyclerViewBackedScrollView is deprecated and will be removed.
+    // People should use a standard ScrollView or ListView instead.
   }
 
   @Override
