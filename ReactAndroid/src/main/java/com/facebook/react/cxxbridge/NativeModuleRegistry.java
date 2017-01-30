@@ -10,6 +10,7 @@
 package com.facebook.react.cxxbridge;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -36,22 +37,27 @@ public class NativeModuleRegistry {
     mBatchCompleteListenerModules = batchCompleteListenerModules;
   }
 
-  /* package */ ModuleRegistryHolder getModuleRegistryHolder(
-    CatalystInstanceImpl catalystInstanceImpl) {
+  /* package */ Collection<JavaModuleWrapper> getJavaModules(
+      CatalystInstanceImpl catalystInstanceImpl) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
+    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
+      Class<?> type = entry.getKey();
+      if (!CxxModuleWrapper.class.isAssignableFrom(type)) {
+        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, entry.getValue()));
+      }
+    }
+    return javaModules;
+  }
+
+  /* package */ Collection<CxxModuleWrapper> getCxxModules() {
     ArrayList<CxxModuleWrapper> cxxModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
-      ModuleHolder moduleHolder = entry.getValue();
-      if (BaseJavaModule.class.isAssignableFrom(type)) {
-        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, moduleHolder));
-      } else if (CxxModuleWrapper.class.isAssignableFrom(type)) {
-        cxxModules.add((CxxModuleWrapper) moduleHolder.getModule());
-      } else {
-        throw new IllegalArgumentException("Unknown module type " + type);
+      if (CxxModuleWrapper.class.isAssignableFrom(type)) {
+        cxxModules.add((CxxModuleWrapper) entry.getValue().getModule());
       }
     }
-    return new ModuleRegistryHolder(catalystInstanceImpl, javaModules, cxxModules);
+    return cxxModules;
   }
 
   /* package */ void notifyCatalystInstanceDestroy() {
