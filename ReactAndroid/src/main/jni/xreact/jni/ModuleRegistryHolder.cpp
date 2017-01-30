@@ -163,10 +163,6 @@ class NewJavaNativeModule : public NativeModule {
   std::vector<MethodDescriptor> methodDescriptors_;
 
   MethodCallResult invokeInner(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
-    if (!params.isArray()) {
-      throw std::invalid_argument(
-        folly::to<std::string>("method parameters should be array, but are ", params.typeName()));
-    }
     return methods_[reactMethodId].invoke(instance_, module_.get(), token, params);
   }
 };
