@@ -94,6 +94,7 @@ var CameraRollView = React.createClass({
         var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
         return (
           <Image
+            key={asset}
             source={asset.node.image}
             style={imageStyle}
           />
