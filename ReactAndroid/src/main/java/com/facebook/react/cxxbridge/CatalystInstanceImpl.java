@@ -128,7 +128,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mReactQueueConfiguration.getNativeModulesQueueThread(),
-      mJavaRegistry.getModuleRegistryHolder(this));
+      mJavaRegistry.getJavaModules(this),
+      mJavaRegistry.getCxxModules());
     mMainExecutorToken = getMainExecutorToken();
   }
 
@@ -179,7 +180,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                        JavaScriptExecutor jsExecutor,
                                        MessageQueueThread jsQueue,
                                        MessageQueueThread moduleQueue,
-                                       ModuleRegistryHolder registryHolder);
+                                       Collection<JavaModuleWrapper> javaModules,
+                                       Collection<CxxModuleWrapper> cxxModules);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on
