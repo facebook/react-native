@@ -31,6 +31,7 @@ public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
   private static @Nullable OkHttpClient sClient;
+  private static @Nullable OkHttpClient sClientForWebSocket;
 
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
@@ -38,11 +39,18 @@ public class OkHttpClientProvider {
     }
     return sClient;
   }
-  
+
   // okhttp3 OkHttpClient is immutable
   // This allows app to init an OkHttpClient with custom settings.
   public static void replaceOkHttpClient(OkHttpClient client) {
     sClient = client;
+  }
+
+  public static OkHttpClient getOkHttpClientForWebSocket() {
+    if (sClientForWebSocket == null) {
+      sClientForWebSocket = createClientForWebSocket();
+    }
+    return sClientForWebSocket;
   }
 
   private static OkHttpClient createClient() {
@@ -54,6 +62,14 @@ public class OkHttpClientProvider {
       .cookieJar(new ReactCookieJarContainer());
 
     return enableTls12OnPreLollipop(client).build();
+  }
+
+  private static OkHttpClient createClientForWebSocket() {
+    return new OkHttpClient.Builder()
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .writeTimeout(10, TimeUnit.SECONDS)
+      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+      .build();
   }
 
   /*
@@ -83,5 +99,4 @@ public class OkHttpClientProvider {
 
     return client;
   }
-
 }
