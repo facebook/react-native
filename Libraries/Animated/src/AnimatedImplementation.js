@@ -2245,6 +2245,8 @@ var loop = function(
 ): CompositeAnimation {
   var isFinished = false;
   var iterationsSoFar = 0;
+  // Config without iterations specified (e.g. only 'useNativeDriver') should loop indefinitely
+  if (!config.hasOwnProperty('iterations')) config.iterations = -1;
   return {
     start: function(callback?: ?EndCallback) {
       var restart = function(): void {
