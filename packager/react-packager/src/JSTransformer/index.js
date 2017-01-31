@@ -13,12 +13,13 @@
 
 const Logger = require('../Logger');
 
-const declareOpts = require('../lib/declareOpts');
+const debug = require('debug')('RNP:JStransformer');
 const denodeify = require('denodeify');
+const invariant = require('fbjs/lib/invariant');
 const os = require('os');
+const path = require('path');
 const util = require('util');
 const workerFarm = require('worker-farm');
-const debug = require('debug')('RNP:JStransformer');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 import type {SourceMap} from '../lib/SourceMap';
@@ -33,17 +34,6 @@ const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
-
-const validateOpts = declareOpts({
-  transformModulePath: {
-    type:'string',
-    required: false,
-  },
-});
-
-type Options = {
-  transformModulePath?: ?string,
-};
 
 const maxConcurrentWorkers = ((cores, override) => {
   if (override) {
@@ -79,11 +69,8 @@ function makeFarm(worker, methods, timeout) {
 
 class Transformer {
 
-  _opts: {
-    transformModulePath?: ?string,
-  };
   _workers: {[name: string]: mixed};
-  _transformModulePath: ?string;
+  _transformModulePath: string;
   _transform: (
     transform: string,
     filename: string,
@@ -96,22 +83,17 @@ class Transformer {
     sourceMap: SourceMap,
   ) => Promise<{code: string, map: SourceMap}>;
 
-  constructor(options: Options) {
-    const opts = this._opts = validateOpts(options);
+  constructor(transformModulePath: string) {
+    invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
+    this._transformModulePath = transformModulePath;
 
-    const {transformModulePath} = opts;
-
-    if (transformModulePath) {
-      this._transformModulePath = require.resolve(transformModulePath);
-
-      this._workers = makeFarm(
-        require.resolve('./worker'),
-        ['minify', 'transformAndExtractDependencies'],
-        TRANSFORM_TIMEOUT_INTERVAL,
-      );
-      this._transform = denodeify(this._workers.transformAndExtractDependencies);
-      this.minify = denodeify(this._workers.minify);
-    }
+    this._workers = makeFarm(
+      require.resolve('./worker'),
+      ['minify', 'transformAndExtractDependencies'],
+      TRANSFORM_TIMEOUT_INTERVAL,
+    );
+    this._transform = denodeify(this._workers.transformAndExtractDependencies);
+    this.minify = denodeify(this._workers.minify);
   }
 
   kill() {
@@ -124,7 +106,6 @@ class Transformer {
     }
     debug('transforming file', fileName);
     return this
-      /* $FlowFixMe: _transformModulePath may be empty, see constructor */
       ._transform(this._transformModulePath, fileName, code, options)
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
@@ -145,8 +126,7 @@ class Transformer {
         } else if (error.type === 'ProcessTerminatedError') {
           const uncaughtError = new Error(
             'Uncaught error in the transformer worker: ' +
-            /* $FlowFixMe: _transformModulePath may be empty, see constructor */
-            this._opts.transformModulePath
+            this._transformModulePath
           );
           /* $FlowFixMe: monkey-patch Error */
           uncaughtError.type = 'ProcessTerminatedError';
