@@ -10,7 +10,7 @@ previous: colors
 
 ## Static Image Resources
 
-React Native provides a unified way of managing images in your iOS and Android apps. To add a static image to your app, place it somewhere in your source code tree and reference it like this:
+React Native provides a unified way of managing images and other media assets in your iOS and Android apps. To add a static image to your app, place it somewhere in your source code tree and reference it like this:
 
 ```javascript
 <Image source={require('./my-icon.png')} />
@@ -64,6 +64,12 @@ var icon = this.props.active ? require('./my-icon-active.png') : require('./my-i
 ```
 
 Note that image sources required this way include size (width, height) info for the Image. If you need to scale the image dynamically (i.e. via flex), you may need to manually set `{ width: undefined, height: undefined }` on the style attribute.
+
+## Static Non-Image Resources
+
+The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf` (see the [packager defaults](https://github.com/facebook/react-native/blob/master/packager/defaults.js) file for the full list).
+
+A caveat is that videos must use absolute positioning instead of `flexGrow`, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.
 
 ## Images From Hybrid App's Resources
 
