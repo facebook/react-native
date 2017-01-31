@@ -2282,7 +2282,7 @@ var loop = function(
       animation.reset();
     },
 
-    __startNativeLoop: function() {
+    _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.loop animations');
     }
   };
