@@ -2,10 +2,8 @@
 
 #include "JavaModuleWrapper.h"
 
-#include <folly/json.h>
-
 #include <fb/fbjni.h>
-
+#include <folly/json.h>
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
@@ -42,9 +40,30 @@ std::string JavaNativeModule::getName() {
 
 std::vector<MethodDescriptor> JavaNativeModule::getMethods() {
   std::vector<MethodDescriptor> ret;
+  syncMethods_.clear();
   auto descs = wrapper_->getMethodDescriptors();
   for (const auto& desc : *descs) {
-    ret.emplace_back(desc->getName(), desc->getType());
+    auto methodName = desc->getName();
+    auto methodType = desc->getType();
+
+    if (methodType == "sync") {
+      // allow for the sync methods vector to have empty values, resize on demand
+      size_t methodIndex = ret.size();
+      if (methodIndex >= syncMethods_.size()) {
+        syncMethods_.resize(methodIndex + 1);
+      }
+      syncMethods_.insert(syncMethods_.begin() + methodIndex, MethodInvoker(
+        desc->getMethod(),
+        desc->getSignature(),
+        getName() + "." + methodName,
+        true
+      ));
+    }
+
+    ret.emplace_back(
+      std::move(methodName),
+      std::move(methodType)
+    );
   }
   return ret;
 }
@@ -75,7 +94,15 @@ void JavaNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, f
 }
 
 MethodCallResult JavaNativeModule::callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
-  throw std::runtime_error("Unsupported operation.");
+    // TODO: evaluate whether calling through invoke is potentially faster
+    if (reactMethodId >= syncMethods_.size()) {
+      throw std::invalid_argument(
+        folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", syncMethods_.size(), "]"));
+    }
+
+    auto& method = syncMethods_[reactMethodId];
+    CHECK(method.hasValue() && method->isSyncHook()) << "Trying to invoke a asynchronous method as synchronous hook";
+    return method->invoke(instance_, wrapper_->getModule(), token, params);
 }
 
 NewJavaNativeModule::NewJavaNativeModule(

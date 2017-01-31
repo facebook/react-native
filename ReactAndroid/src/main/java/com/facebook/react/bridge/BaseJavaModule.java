@@ -461,6 +461,7 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   private static char returnTypeToChar(Class returnClass) {
+    // Keep this in sync with MethodInvoker
     char tryCommon = commonTypeToChar(returnClass);
     if (tryCommon != '\0') {
       return tryCommon;
