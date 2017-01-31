@@ -21,7 +21,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 var TVViewPropTypes = {};
 if (Platform.isTVOS) {

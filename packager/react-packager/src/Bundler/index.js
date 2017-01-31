@@ -39,6 +39,7 @@ import type Module from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
 export type GetTransformOptions = (
   mainModuleName: string,
@@ -70,6 +71,7 @@ type Options = {
   cacheVersion: string,
   extraNodeModules: {},
   getTransformOptions?: GetTransformOptions,
+  globalTransformCache: ?GlobalTransformCache,
   moduleFormat: string,
   platforms: Array<string>,
   polyfillModuleNames: Array<string>,
@@ -141,15 +143,15 @@ class Bundler {
       cacheKey: transformCacheKey,
     });
 
-    this._transformer = new Transformer({
-      transformModulePath: opts.transformModulePath,
-    });
+    /* $FlowFixMe: in practice it's always here. */
+    this._transformer = new Transformer(opts.transformModulePath);
 
     this._resolver = new Resolver({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
+      globalTransformCache: opts.globalTransformCache,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: opts.platforms,

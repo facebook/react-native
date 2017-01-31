@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const generate = require('babel-generator').default;
 const stub = require('sinon/lib/sinon/stub');
 
 exports.fn = () => {
@@ -16,3 +17,7 @@ exports.fn = () => {
   f.stub = s;
   return f;
 };
+
+const generateOptions = {concise: true};
+exports.codeFromAst = ast => generate(ast, generateOptions).code;
+exports.comparableCode = code => code.trim().replace(/\s\s+/g, ' ');

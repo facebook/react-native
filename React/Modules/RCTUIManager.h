@@ -61,6 +61,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility;
 
 /**
+ * Gets the view name associated with a reactTag.
+ */
+- (NSString *)viewNameForReactTag:(NSNumber *)reactTag;
+
+/**
  * Gets the view associated with a reactTag.
  */
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
@@ -89,6 +94,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Used by native animated module to bypass the process of updating the values through the shadow
+ * view hierarchy. This method will directly update native views, which means that updates for
+ * layout-related propertied won't be handled properly.
+ * Make sure you know what you're doing before calling this method :)
+ */
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag
+                                 viewName:(NSString *)viewName
+                                    props:(NSDictionary *)props;
 
 /**
  * Given a reactTag from a component, find its root view, if possible.

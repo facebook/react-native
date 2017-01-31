@@ -372,7 +372,7 @@ class ResolutionRequest {
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
               `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
+              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start --reset-cache`.'
             );
           });
         });
@@ -489,7 +489,7 @@ class UnableToResolveError extends Error {
     this.from = fromModule.path;
     this.to = toModule;
     this.message = util.format(
-      'Unable to resolve module %s from %s: %s',
+      'Unable to resolve module `%s` from `%s`: %s',
       toModule,
       fromModule.path,
       message,

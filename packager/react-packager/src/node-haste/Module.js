@@ -11,7 +11,6 @@
 
 'use strict';
 
-const GlobalTransformCache = require('../lib/GlobalTransformCache');
 const TransformCache = require('../lib/TransformCache');
 
 const crypto = require('crypto');
@@ -24,6 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
@@ -51,14 +51,15 @@ export type Options = {
 };
 
 export type ConstructorArgs = {
+  cache: Cache,
+  depGraphHelpers: DependencyGraphHelpers,
+  globalTransformCache: ?GlobalTransformCache,
   file: string,
   moduleCache: ModuleCache,
-  cache: Cache,
-  transformCode: ?TransformCode,
-  transformCacheKey: ?string,
-  depGraphHelpers: DependencyGraphHelpers,
   options: Options,
   reporter: Reporter,
+  transformCacheKey: ?string,
+  transformCode: ?TransformCode,
 };
 
 class Module {
@@ -73,22 +74,22 @@ class Module {
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
   _reporter: Reporter;
+  _globalCache: ?GlobalTransformCache;
 
   _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  static _globalCacheRetries: number;
-
   constructor({
-    file,
-    moduleCache,
     cache,
-    transformCode,
-    transformCacheKey,
     depGraphHelpers,
-    reporter,
+    file,
+    globalTransformCache,
+    moduleCache,
     options,
+    reporter,
+    transformCacheKey,
+    transformCode,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
@@ -108,6 +109,7 @@ class Module {
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
     this._reporter = reporter;
+    this._globalCache = globalTransformCache;
 
     this._readPromises = new Map();
   }
@@ -263,28 +265,18 @@ class Module {
     cacheProps: ReadTransformProps,
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
-    const globalCache = GlobalTransformCache.get();
-    const noMoreRetries = Module._globalCacheRetries <= 0;
-    if (globalCache == null || noMoreRetries) {
+    const {_globalCache} = this;
+    if (_globalCache == null) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
-    globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError != null && Module._globalCacheRetries > 0) {
-        this._reporter.update({
-          type: 'global_cache_error',
-          error: globalCacheError,
-        });
-        Module._globalCacheRetries--;
-        if (Module._globalCacheRetries <= 0) {
-          this._reporter.update({
-            type: 'global_cache_disabled',
-            reason: 'too_many_errors',
-          });
-        }
+    _globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
+      if (globalCacheError) {
+        callback(globalCacheError);
+        return;
       }
       if (globalCachedResult == null) {
-        this._transformAndStoreCodeGlobally(cacheProps, globalCache, callback);
+        this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
         return;
       }
       callback(undefined, globalCachedResult);
@@ -334,7 +326,10 @@ class Module {
         sourceCode,
         transformCacheKey,
         transformOptions,
-        cacheOptions: this._options,
+        cacheOptions: {
+          resetCache: this._options.resetCache,
+          reporter: this._reporter,
+        },
       };
       const cachedResult = TransformCache.readSync(cacheProps);
       if (cachedResult) {
@@ -374,8 +369,6 @@ class Module {
     return false;
   }
 }
-
-Module._globalCacheRetries = 4;
 
 // use weak map to speed up hash creation of known objects
 const knownHashes = new WeakMap();

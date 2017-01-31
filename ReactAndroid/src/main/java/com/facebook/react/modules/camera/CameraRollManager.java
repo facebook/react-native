@@ -56,8 +56,10 @@ import com.facebook.react.module.annotations.ReactModule;
  * {@link NativeModule} that allows JS to interact with the photos on the device (i.e.
  * {@link MediaStore.Images}).
  */
-@ReactModule(name = "RKCameraRollManager")
+@ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -100,7 +102,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKCameraRollManager";
+    return NAME;
   }
 
   /**
