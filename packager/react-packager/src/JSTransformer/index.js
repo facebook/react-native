@@ -39,15 +39,10 @@ const validateOpts = declareOpts({
     type:'string',
     required: false,
   },
-  methods: {
-    type: 'array',
-    default: [],
-  },
 });
 
 type Options = {
   transformModulePath?: ?string,
-  methods?: ?Array<string>,
 };
 
 const maxConcurrentWorkers = ((cores, override) => {
@@ -86,7 +81,6 @@ class Transformer {
 
   _opts: {
     transformModulePath?: ?string,
-    methods: Array<string>,
   };
   _workers: {[name: string]: mixed};
   _transformModulePath: ?string;
