@@ -29,7 +29,7 @@ import type {SourceMap} from '../lib/SourceMap';
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 301000;
+const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
@@ -38,10 +38,6 @@ const validateOpts = declareOpts({
   transformModulePath: {
     type:'string',
     required: false,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    default: DEFAULT_MAX_CALL_TIME,
   },
   worker: {
     type: 'string',
@@ -54,7 +50,6 @@ const validateOpts = declareOpts({
 
 type Options = {
   transformModulePath?: ?string,
-  transformTimeoutInterval?: ?number,
   worker?: ?string,
   methods?: ?Array<string>,
 };
@@ -95,7 +90,6 @@ class Transformer {
 
   _opts: {
     transformModulePath?: ?string,
-    transformTimeoutInterval: number,
     worker: ?string,
     methods: Array<string>,
   };
@@ -120,7 +114,7 @@ class Transformer {
 
     if (opts.worker) {
       this._workers =
-        makeFarm(opts.worker, opts.methods, opts.transformTimeoutInterval);
+        makeFarm(opts.worker, opts.methods, TRANSFORM_TIMEOUT_INTERVAL);
       opts.methods.forEach(name => {
         /* $FlowFixMe: assigning the class object fields directly is
          * questionable, because it's prone to conflicts. */
@@ -133,7 +127,7 @@ class Transformer {
       this._workers = makeFarm(
         require.resolve('./worker'),
         ['minify', 'transformAndExtractDependencies'],
-        opts.transformTimeoutInterval,
+        TRANSFORM_TIMEOUT_INTERVAL,
       );
       this._transform = denodeify(this._workers.transformAndExtractDependencies);
       this.minify = denodeify(this._workers.minify);
@@ -162,7 +156,7 @@ class Transformer {
         if (error.type === 'TimeoutError') {
           const timeoutErr = new Error(
             `TimeoutError: transforming ${fileName} took longer than ` +
-            `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
+            `${TRANSFORM_TIMEOUT_INTERVAL / 1000} seconds.\n` +
             'You can adjust timeout via the \'transformTimeoutInterval\' option'
           );
           /* $FlowFixMe: monkey-patch Error */
