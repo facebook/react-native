@@ -2249,16 +2249,18 @@ var loop = function(
   if (!config.hasOwnProperty('iterations')) config.iterations = -1;
   return {
     start: function(callback?: ?EndCallback) {
-      var restart = function(): void {
-        if (isFinished || (iterationsSoFar === config.iterations)) {
-          callback && ({finished: true});
+      var restart = function(result: ?EndResult = {finished: true}): void {
+        if (isFinished ||
+            (iterationsSoFar === config.iterations) ||
+            (result.hasOwnProperty('finished') && result.finished === false)) {
+          callback && callback(result);
         } else {
           iterationsSoFar++;
           animation.reset();
           animation.start(restart);
         }
       };
-      if (!animation) {
+      if (!animation || config.iterations === 0) {
         callback && callback({finished: true});
       } else {
         if (config.useNativeDriver) {
