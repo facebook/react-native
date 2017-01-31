@@ -75,7 +75,7 @@ Add `gradle-download-task` as dependency in `android/build.gradle`:
 ```gradle
 ...
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.1'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         classpath 'de.undercouch:gradle-download-task:3.1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
