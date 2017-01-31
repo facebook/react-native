@@ -221,7 +221,7 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, jni::a
 
     CASE_OBJECT('S', JString, toStdString())
     CASE_OBJECT('M', WritableNativeMap, cthis()->consume())
-    CASE_OBJECT('A', WritableNativeArray, cthis()->array)
+    CASE_OBJECT('A', WritableNativeArray, cthis()->consume())
 
     default:
       LOG(FATAL) << "Unknown return type: " << returnType;
