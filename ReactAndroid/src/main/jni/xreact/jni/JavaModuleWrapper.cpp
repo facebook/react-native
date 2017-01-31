@@ -76,7 +76,7 @@ folly::dynamic JavaNativeModule::getConstants() {
     return nullptr;
   } else {
     // See JavaModuleWrapper#getConstants for the other side of this hack.
-    return cthis(constants)->array[0];
+    return cthis(constants)->consume()[0];
   }
 }
 
@@ -145,7 +145,7 @@ folly::dynamic NewJavaNativeModule::getConstants() {
     return nullptr;
   } else {
     // See JavaModuleWrapper#getConstants for the other side of this hack.
-    return cthis(constants)->array[0];
+    return cthis(constants)->consume()[0];
   }
 }
 
