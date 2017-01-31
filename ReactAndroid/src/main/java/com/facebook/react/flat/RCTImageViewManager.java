@@ -9,7 +9,26 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+
 public final class RCTImageViewManager extends FlatViewManager {
+
+  private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private final @Nullable Object mCallerContext;
+
+  public RCTImageViewManager() {
+    this(null, null);
+  }
+
+  public RCTImageViewManager(
+    AbstractDraweeControllerBuilder draweeControllerBuilder,
+    Object callerContext) {
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mCallerContext = callerContext;
+  }
 
   @Override
   public String getName() {
@@ -24,5 +43,16 @@ public final class RCTImageViewManager extends FlatViewManager {
   @Override
   public Class<RCTImageView> getShadowNodeClass() {
     return RCTImageView.class;
+  }
+
+  public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
+    if (mDraweeControllerBuilder == null) {
+      mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+    }
+    return mDraweeControllerBuilder;
+  }
+
+  public Object getCallerContext() {
+    return mCallerContext;
   }
 }
