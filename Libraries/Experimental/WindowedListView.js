@@ -341,7 +341,7 @@ class WindowedListView extends React.Component {
 
     // 2.  Compute and update the visible interval to decide if rendering needed
     let visibleInterval = this._visibleInterval();
-    if (visibleInterval === undefined) {
+    if (visibleInterval === null) {
       // Something went wrong with frame calculation - may happen when rows come out of order, so do nothing & just wait for the rest.
       return;
     }
@@ -532,7 +532,7 @@ class WindowedListView extends React.Component {
     for (let idx = 0; idx < lastRow; idx++) {
       const frame = rowFrames[data[idx].rowKey];
       if (!frame) {
-        return undefined;
+        return null;
       }
       if (((frame.y + frame.height) > top) && (firstVisible < 0)) {
         firstVisible = idx;
