@@ -52,7 +52,8 @@ const guard = (fn) => {
 class MessageQueue {
   _callableModules: {[key: string]: Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
-  _callbacksForCall: Array<?[?Function, ?Function]>;
+  _successCallbacks: Array<?Function>;
+  _failureCallbacks: Array<?Function>;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
@@ -66,7 +67,8 @@ class MessageQueue {
   constructor() {
     this._callableModules = {};
     this._queue = [[], [], [], 0];
-    this._callbacksForCall = [];
+    this._successCallbacks = [];
+    this._failureCallbacks = [];
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
@@ -155,7 +157,8 @@ class MessageQueue {
       }
       onFail && params.push(this._callID * 2);
       onSucc && params.push((this._callID  * 2) + 1);
-      this._callbacksForCall[this._callID] = [onFail || null, onSucc || null];
+      this._successCallbacks[this._callID] = onSucc;
+      this._failureCallbacks[this._callID] = onFail;
     }
 
     if (__DEV__) {
@@ -238,7 +241,7 @@ class MessageQueue {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     const callID = cbID >> 1;
-    const callback: ?Function = this._callbacksForCall[callID] && this._callbacksForCall[callID][cbID % 2 ? 1 : 0];
+    const callback = (cbID % 2 === 1) ? this._successCallbacks[callID] : this._failureCallbacks[callID];
 
 
     if (__DEV__) {
@@ -268,7 +271,7 @@ class MessageQueue {
       }
     }
 
-    this._callbacksForCall[callID] = null;
+    this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
 
     // $FlowIssue(>=0.35.0) #14551610
     callback.apply(null, args);
