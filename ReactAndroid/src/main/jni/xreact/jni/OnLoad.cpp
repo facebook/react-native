@@ -11,7 +11,6 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
-#include "ModuleRegistryHolder.h"
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
@@ -160,7 +159,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
-    ModuleRegistryHolder::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR

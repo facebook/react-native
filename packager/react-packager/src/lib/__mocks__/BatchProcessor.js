@@ -23,13 +23,12 @@ class BatchProcessorMock {
     this._queue.push([item, callback]);
   }
 
-  flush(callback) {
+  flushMock() {
     const {_queue} = this;
     this._queue = [];
     process.nextTick(() => {
       this._processBatch(_queue.map(pair => pair[0]), (error, res) => {
         _queue.forEach((pair, i) => pair[1](error, res && res[i]));
-        callback();
       });
     });
   }

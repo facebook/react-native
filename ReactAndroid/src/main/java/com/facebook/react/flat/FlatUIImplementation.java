@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.yoga.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,7 +25,7 @@ import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.image.ReactImageManager;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * FlatUIImplementation builds on top of UIImplementation and allows pre-creating everything
@@ -40,9 +39,9 @@ public class FlatUIImplementation extends UIImplementation {
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher) {
 
-    ReactImageManager reactImageManager = findReactImageManager(viewManagers);
-    if (reactImageManager != null) {
-      Object callerContext = reactImageManager.getCallerContext();
+    RCTImageViewManager rctImageViewManager = findRCTImageManager(viewManagers);
+    if (rctImageViewManager != null) {
+      Object callerContext = rctImageViewManager.getCallerContext();
       if (callerContext != null) {
         RCTImageView.setCallerContext(callerContext);
       }
@@ -59,7 +58,7 @@ public class FlatUIImplementation extends UIImplementation {
         nativeViewHierarchyManager);
     return new FlatUIImplementation(
       reactContext,
-      reactImageManager,
+      rctImageViewManager,
       viewManagerRegistry,
       operationsQueue,
       eventDispatcher
@@ -71,32 +70,32 @@ public class FlatUIImplementation extends UIImplementation {
    * Not used outside of the said method.
    */
   private final MoveProxy mMoveProxy = new MoveProxy();
-  private final StateBuilder mStateBuilder;
-  private @Nullable ReactImageManager mReactImageManager;
   private final ReactApplicationContext mReactContext;
+  private @Nullable RCTImageViewManager mRCTImageViewManager;
+  private final StateBuilder mStateBuilder;
 
   private FlatUIImplementation(
       ReactApplicationContext reactContext,
-      @Nullable ReactImageManager reactImageManager,
+      @Nullable RCTImageViewManager rctImageViewManager,
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue,
       EventDispatcher eventDispatcher) {
     super(reactContext, viewManagers, operationsQueue, eventDispatcher);
     mReactContext = reactContext;
+    mRCTImageViewManager = rctImageViewManager;
     mStateBuilder = new StateBuilder(operationsQueue);
-    mReactImageManager = reactImageManager;
   }
 
   @Override
   protected ReactShadowNode createRootShadowNode() {
-    if (mReactImageManager != null) {
+    if (mRCTImageViewManager != null) {
       // This is not the best place to initialize DraweeRequestHelper, but order of module
       // initialization is undefined, and this is pretty much the earliest when we are guarantied
       // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
       // relatively rarely to have any performance considerations.
       DraweeRequestHelper.setDraweeControllerBuilder(
-          mReactImageManager.getDraweeControllerBuilder());
-      mReactImageManager = null;
+        mRCTImageViewManager.getDraweeControllerBuilder());
+      mRCTImageViewManager = null;
     }
 
     ReactShadowNode node = new FlatRootShadowNode();
@@ -547,10 +546,10 @@ public class FlatUIImplementation extends UIImplementation {
         blockNativeResponder);
   }
 
-  private static @Nullable ReactImageManager findReactImageManager(List<ViewManager> viewManagers) {
+  private static @Nullable RCTImageViewManager findRCTImageManager(List<ViewManager> viewManagers) {
     for (int i = 0, size = viewManagers.size(); i != size; ++i) {
-      if (viewManagers.get(i) instanceof ReactImageManager) {
-        return (ReactImageManager) viewManagers.get(i);
+      if (viewManagers.get(i) instanceof RCTImageViewManager) {
+        return (RCTImageViewManager) viewManagers.get(i);
       }
     }
 
