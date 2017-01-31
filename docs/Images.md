@@ -78,7 +78,7 @@ This approach provides no safety checks. It's up to you to guarantee that those 
 
 ## Network Images
 
-Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, *you will need to manually specify the dimensions of your image*. It's highly recommended that you use https as well in order to satisfy [App Transport Security](/react-native/docs/running-on-device.html#app-transport-security) requirements on iOS.
+Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, *you will need to manually specify the dimensions of your image*. It's highly recommended that you use https as well in order to satisfy [App Transport Security](docs/running-on-device.html#app-transport-security) requirements on iOS.
 
 ```javascript
 // GOOD
