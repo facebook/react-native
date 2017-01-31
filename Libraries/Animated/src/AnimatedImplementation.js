@@ -2249,10 +2249,10 @@ var loop = function(
   if (!config.hasOwnProperty('iterations')) config.iterations = -1;
   return {
     start: function(callback?: ?EndCallback) {
-      var restart = function(result: ?EndResult = {finished: true}): void {
+      var restart = function(result: EndResult = {finished: true}): void {
         if (isFinished ||
             (iterationsSoFar === config.iterations) ||
-            (result.hasOwnProperty('finished') && result.finished === false)) {
+            (result.finished === false)) {
           callback && callback(result);
         } else {
           iterationsSoFar++;
