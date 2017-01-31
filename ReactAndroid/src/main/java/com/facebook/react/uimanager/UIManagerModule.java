@@ -72,9 +72,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_C
  *                consider implementing a pool
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
-@ReactModule(name = "RKUIManager")
+@ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, NativeModuleLogger {
+
+  protected static final String NAME = "UIManager";
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -114,7 +116,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "RKUIManager";
+    return NAME;
   }
 
   @Override
