@@ -195,6 +195,14 @@ var featured = [
     infoTitle: 'The concept is to turn learning into an adventure',
   },
   {
+    name: 'Sleeperbot',
+    icon: 'https://blitzchat.net/uploads/c8425332190a4f4b852d7770ad32e602/original.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/sleeperbot-fantasy-football/id987367543?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
+    infoLink: 'https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn',
+    infoTitle: 'Switching to React Native in Production on iOS and Android',
+  },
+  {
     name: 'sneat',
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
