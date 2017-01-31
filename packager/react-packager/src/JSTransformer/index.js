@@ -39,9 +39,6 @@ const validateOpts = declareOpts({
     type:'string',
     required: false,
   },
-  worker: {
-    type: 'string',
-  },
   methods: {
     type: 'array',
     default: [],
@@ -50,7 +47,6 @@ const validateOpts = declareOpts({
 
 type Options = {
   transformModulePath?: ?string,
-  worker?: ?string,
   methods?: ?Array<string>,
 };
 
@@ -90,7 +86,6 @@ class Transformer {
 
   _opts: {
     transformModulePath?: ?string,
-    worker: ?string,
     methods: Array<string>,
   };
   _workers: {[name: string]: mixed};
@@ -112,16 +107,7 @@ class Transformer {
 
     const {transformModulePath} = opts;
 
-    if (opts.worker) {
-      this._workers =
-        makeFarm(opts.worker, opts.methods, TRANSFORM_TIMEOUT_INTERVAL);
-      opts.methods.forEach(name => {
-        /* $FlowFixMe: assigning the class object fields directly is
-         * questionable, because it's prone to conflicts. */
-        this[name] = this._workers[name];
-      });
-    }
-    else if (transformModulePath) {
+    if (transformModulePath) {
       this._transformModulePath = require.resolve(transformModulePath);
 
       this._workers = makeFarm(
