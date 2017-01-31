@@ -52,6 +52,7 @@ import com.facebook.react.bridge.ReadableMap;
     mDisplacementFromRestThreshold = config.getDouble("restDisplacementThreshold");
     mOvershootClampingEnabled = config.getBoolean("overshootClamping");
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
+    mHasFinished = mIterations == 0;
   }
 
   @Override

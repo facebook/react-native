@@ -31,6 +31,7 @@ public class DecayAnimation extends AnimationDriver {
     mDeceleration = config.getDouble("deceleration");
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
+    mHasFinished = mIterations == 0;
   }
 
   @Override
@@ -50,7 +51,7 @@ public class DecayAnimation extends AnimationDriver {
     if (Math.abs(mLastValue - value) < 0.1) {
 
       if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
-        // Set mStartFrameTimeMillis to -1 to reset instance variables on the next runAnimationStep 
+        // Set mStartFrameTimeMillis to -1 to reset instance variables on the next runAnimationStep
         mStartFrameTimeMillis = -1;
         mAnimatedValue.mValue = mFromValue;
         mCurrentLoop++;

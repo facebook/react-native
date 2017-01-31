@@ -39,6 +39,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     mToValue = config.getDouble("toValue");
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
+    mHasFinished = mIterations == 0;
   }
 
   @Override
