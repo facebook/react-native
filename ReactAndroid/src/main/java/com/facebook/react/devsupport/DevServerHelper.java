@@ -219,8 +219,9 @@ public class DevServerHelper {
    */
   private String getHostForJSProxy() {
     String host = getDebugServerHost();
+	Assertions.assertNotNull(host);
     int portOffset = host.lastIndexOf(':');
-    return "localhost" + (portOffset > -1? host.substring(portOffset): "");
+    return "localhost" + (portOffset > -1 ? host.substring(portOffset) : "");
   }
 
   /**
