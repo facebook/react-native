@@ -32,7 +32,7 @@
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
 
-#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+#if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
 #endif
 
@@ -271,7 +271,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   #endif
 
-  #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+  #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
   addNativeTracingHooks(m_context);
   #endif
 
