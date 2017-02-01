@@ -11,7 +11,6 @@
 #include <folly/json.h>
 #include <folly/Exception.h>
 #include <folly/Memory.h>
-#include <folly/String.h>
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
