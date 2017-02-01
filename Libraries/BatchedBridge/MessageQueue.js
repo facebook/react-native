@@ -155,10 +155,10 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
       }
-      //Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
-      //to indicate fail (0) or success (1)
+      // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
+      // to indicate fail (0) or success (1)
       onFail && params.push(this._callID << 1);
-      onSucc && params.push((this._callID  << 1) | 1);
+      onSucc && params.push((this._callID << 1) | 1);
       this._successCallbacks[this._callID] = onSucc;
       this._failureCallbacks[this._callID] = onFail;
     }
@@ -243,8 +243,8 @@ class MessageQueue {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
 
-    //The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
-    const callID = cbID >> 1;
+    // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
+    const callID = cbID >>> 1;
     const callback = (cbID & 1) ? this._successCallbacks[callID] : this._failureCallbacks[callID];
 
 
