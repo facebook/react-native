@@ -5,16 +5,17 @@
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
 
+#include "CxxModuleWrapper.h"
 #include "JExecutorToken.h"
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
+#include "JavaModuleWrapper.h"
 
 namespace facebook {
 namespace react {
 
 class Instance;
 class JavaScriptExecutorHolder;
-class ModuleRegistryHolder;
 class NativeArray;
 
 struct ReactCallback : public jni::JavaClass<ReactCallback> {
@@ -46,7 +47,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
-      ModuleRegistryHolder* mrh);
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+      jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.

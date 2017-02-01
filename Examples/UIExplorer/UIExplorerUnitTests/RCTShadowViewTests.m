@@ -28,11 +28,10 @@
 {
   [super setUp];
 
-  self.parentView = [self _shadowViewWithConfig:^(YGNodeRef node) {
-    YGNodeStyleSetFlexDirection(node, YGFlexDirectionColumn);
-    YGNodeStyleSetWidth(node, 440);
-    YGNodeStyleSetHeight(node, 440);
-  }];
+  self.parentView = [RCTRootShadowView new];
+  YGNodeStyleSetFlexDirection(self.parentView.cssNode, YGFlexDirectionColumn);
+  YGNodeStyleSetWidth(self.parentView.cssNode, 440);
+  YGNodeStyleSetHeight(self.parentView.cssNode, 440);
   self.parentView.reactTag = @1; // must be valid rootView tag
 }
 
@@ -132,6 +131,7 @@
 - (void)testAssignsSuggestedWidthDimension
 {
   [self _withShadowViewWithStyle:^(YGNodeRef node) {
+                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
                                    YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
                                    YGNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    YGNodeStyleSetHeight(node, 10);
@@ -143,6 +143,7 @@
 - (void)testAssignsSuggestedHeightDimension
 {
   [self _withShadowViewWithStyle:^(YGNodeRef node) {
+                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
                                    YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
                                    YGNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    YGNodeStyleSetWidth(node, 10);
@@ -154,6 +155,7 @@
 - (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
 {
   [self _withShadowViewWithStyle:^(YGNodeRef node) {
+                                   YGNodeStyleSetPositionType(node, YGPositionTypeAbsolute);
                                    YGNodeStyleSetPosition(node, YGEdgeLeft, 0);
                                    YGNodeStyleSetPosition(node, YGEdgeTop, 0);
                                    YGNodeStyleSetWidth(node, 10);
@@ -189,11 +191,12 @@
                 NSStringFromCGRect(actualRect));
 }
 
-- (RCTRootShadowView *)_shadowViewWithConfig:(void(^)(YGNodeRef node))configBlock
+- (RCTShadowView *)_shadowViewWithConfig:(void(^)(YGNodeRef node))configBlock
 {
-  RCTRootShadowView *shadowView = [RCTRootShadowView new];
+  RCTShadowView *shadowView = [RCTShadowView new];
   configBlock(shadowView.cssNode);
   return shadowView;
 }
+
 
 @end

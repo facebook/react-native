@@ -10,20 +10,16 @@
 package com.facebook.react.cxxbridge;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Pair;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -35,68 +31,33 @@ public class NativeModuleRegistry {
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
 
   public NativeModuleRegistry(
-    List<ModuleSpec> moduleSpecList,
-    Map<Class, ReactModuleInfo> reactModuleInfoMap,
-    boolean isLazyNativeModulesEnabled) {
-    Map<String, Pair<Class<? extends NativeModule>, ModuleHolder>> namesToSpecs = new HashMap<>();
-    for (ModuleSpec module : moduleSpecList) {
-      Class<? extends NativeModule> type = module.getType();
-      ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type);
-      if (isLazyNativeModulesEnabled &&
-        reactModuleInfo == null &&
-        BaseJavaModule.class.isAssignableFrom(type)) {
-        throw new IllegalStateException("Native Java module " + type.getSimpleName() +
-          " should be annotated with @ReactModule and added to a @ReactModuleList.");
-      }
-      ModuleHolder holder = new ModuleHolder(type, reactModuleInfo, module.getProvider());
-      String name = holder.getInfo().name();
-      Class<? extends NativeModule> existing = namesToSpecs.containsKey(name) ?
-        namesToSpecs.get(name).first :
-        null;
-      if (existing != null && !holder.getInfo().canOverrideExistingModule()) {
-        throw new IllegalStateException("Native module " + type.getSimpleName() +
-          " tried to override " + existing.getSimpleName() + " for module name " + name +
-          ". If this was your intention, set canOverrideExistingModule=true");
-      }
-      namesToSpecs.put(name, new Pair<Class<? extends NativeModule>, ModuleHolder>(type, holder));
-    }
-
-    mModules = new HashMap<>();
-    for (Pair<Class<? extends NativeModule>, ModuleHolder> pair : namesToSpecs.values()) {
-      mModules.put(pair.first, pair.second);
-    }
-
-    mBatchCompleteListenerModules = new ArrayList<>();
-    for (Class<? extends NativeModule> type : mModules.keySet()) {
-      if (OnBatchCompleteListener.class.isAssignableFrom(type)) {
-        final ModuleHolder holder = mModules.get(type);
-        mBatchCompleteListenerModules.add(new OnBatchCompleteListener() {
-          @Override
-          public void onBatchComplete() {
-            OnBatchCompleteListener listener = (OnBatchCompleteListener) holder.getModule();
-            listener.onBatchComplete();
-          }
-        });
-      }
-    }
+    Map<Class<? extends NativeModule>, ModuleHolder> modules,
+    ArrayList<OnBatchCompleteListener> batchCompleteListenerModules) {
+    mModules = modules;
+    mBatchCompleteListenerModules = batchCompleteListenerModules;
   }
 
-  /* package */ ModuleRegistryHolder getModuleRegistryHolder(
-    CatalystInstanceImpl catalystInstanceImpl) {
+  /* package */ Collection<JavaModuleWrapper> getJavaModules(
+      CatalystInstanceImpl catalystInstanceImpl) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
+    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
+      Class<?> type = entry.getKey();
+      if (!CxxModuleWrapper.class.isAssignableFrom(type)) {
+        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, entry.getValue()));
+      }
+    }
+    return javaModules;
+  }
+
+  /* package */ Collection<CxxModuleWrapper> getCxxModules() {
     ArrayList<CxxModuleWrapper> cxxModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
-      ModuleHolder moduleHolder = entry.getValue();
-      if (BaseJavaModule.class.isAssignableFrom(type)) {
-        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, moduleHolder));
-      } else if (CxxModuleWrapper.class.isAssignableFrom(type)) {
-        cxxModules.add((CxxModuleWrapper) moduleHolder.getModule());
-      } else {
-        throw new IllegalArgumentException("Unknown module type " + type);
+      if (CxxModuleWrapper.class.isAssignableFrom(type)) {
+        cxxModules.add((CxxModuleWrapper) entry.getValue().getModule());
       }
     }
-    return new ModuleRegistryHolder(catalystInstanceImpl, javaModules, cxxModules);
+    return cxxModules;
   }
 
   /* package */ void notifyCatalystInstanceDestroy() {

@@ -85,6 +85,14 @@ function logWarning(terminal: Terminal, format: string, ...args: Array<mixed>): 
 }
 
 /**
+ * Similar to `logWarning`, but for messages that require the user to act.
+ */
+function logError(terminal: Terminal, format: string, ...args: Array<mixed>): void {
+  const str = util.format(format, ...args);
+  terminal.log('%s: %s', chalk.red('error'), str);
+}
+
+/**
  * A reporter that does nothing. Errors and warnings will be swallowed, that
  * is generally not what you want.
  */
@@ -92,5 +100,6 @@ const nullReporter = {update() {}};
 
 module.exports = {
   logWarning,
+  logError,
   nullReporter,
 };

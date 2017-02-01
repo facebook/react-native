@@ -81,14 +81,15 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) CGRect frame;
 
+/**
+ * Represents the natural size of the view, which is used when explicit size is not set or is ambiguous.
+ * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
+ */
+@property (nonatomic, assign) CGSize intrinsicContentSize;
+
+
 - (void)setTopLeft:(CGPoint)topLeft;
 - (void)setSize:(CGSize)size;
-
-/**
- * Set the natural size of the view, which is used when no explicit size is set.
- * Use UIViewNoIntrinsicMetric to ignore a dimension.
- */
-- (void)setIntrinsicContentSize:(CGSize)size;
 
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.

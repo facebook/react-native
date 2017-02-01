@@ -9,6 +9,7 @@
 
 package com.facebook.react.cxxbridge;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.NativeArray;
+import com.facebook.react.bridge.NativeModuleLogger;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -38,6 +41,10 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   @DoNotStrip
   public class MethodDescriptor {
     @DoNotStrip
+    Method method;
+    @DoNotStrip
+    String signature;
+    @DoNotStrip
     String name;
     @DoNotStrip
     String type;
@@ -45,7 +52,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   private final CatalystInstance mCatalystInstance;
   private final ModuleHolder mModuleHolder;
-  private final ArrayList<BaseJavaModule.JavaMethod> mMethods;
+  private final ArrayList<NativeModule.NativeMethod> mMethods;
 
   public JavaModuleWrapper(CatalystInstance catalystinstance, ModuleHolder moduleHolder) {
     mCatalystInstance = catalystinstance;
@@ -66,19 +73,21 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   @DoNotStrip
   public List<MethodDescriptor> getMethodDescriptors() {
     ArrayList<MethodDescriptor> descs = new ArrayList<>();
-
-    for (Map.Entry<String, BaseJavaModule.NativeMethod> entry :
-           getModule().getMethods().entrySet()) {
+    for (Map.Entry<String, NativeModule.NativeMethod> entry :
+          getModule().getMethods().entrySet()) {
       MethodDescriptor md = new MethodDescriptor();
       md.name = entry.getKey();
       md.type = entry.getValue().getType();
 
       BaseJavaModule.JavaMethod method = (BaseJavaModule.JavaMethod) entry.getValue();
+      if (md.type == BaseJavaModule.METHOD_TYPE_SYNC) {
+        md.signature = method.getSignature();
+        md.method = method.getMethod();
+      }
       mMethods.add(method);
 
       descs.add(md);
     }
-
     return descs;
   }
 
@@ -89,12 +98,16 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    Map<String, Object> map = getModule().getConstants();
+    BaseJavaModule baseJavaModule = getModule();
+    Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
       .arg("moduleName", getName())
       .flush();
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).startConstantsMapConversion();
+    }
     WritableNativeMap writableNativeMap;
     try {
       writableNativeMap = Arguments.makeNativeMap(map);
@@ -103,6 +116,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     }
     WritableNativeArray array = new WritableNativeArray();
     array.pushMap(writableNativeMap);
+    if (baseJavaModule instanceof NativeModuleLogger) {
+      ((NativeModuleLogger) baseJavaModule).endConstantsMapConversion();
+    }
     return array;
   }
 

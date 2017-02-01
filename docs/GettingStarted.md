@@ -10,7 +10,7 @@ next: tutorial
 Welcome to React Native! This page will help you install React Native on
 your system, so that you can build apps with it right away. If you already
 have React Native installed, you can skip ahead to the
-[Tutorial](/react-native/docs/tutorial.html).
+[Tutorial](docs/tutorial.html).
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you
 want to develop for both iOS and Android, that's fine - you just have to pick
