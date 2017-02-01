@@ -9,8 +9,6 @@
 
 package com.facebook.react.animated;
 
-import javax.annotation.Nullable;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -20,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -28,6 +27,8 @@ import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
+
+import javax.annotation.Nullable;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -80,7 +81,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   private final Object mOperationsCopyLock = new Object();
   private @Nullable GuardedChoreographerFrameCallback mAnimatedFrameCallback;
+  private @Nullable Runnable mEnqueueAnimatedFrameCallbackRunnable;
   private @Nullable ReactChoreographer mReactChoreographer;
+  private boolean mAnimatedFrameCallbackActive = false;
   private ArrayList<UIThreadOperation> mOperations = new ArrayList<>();
   private volatile @Nullable ArrayList<UIThreadOperation> mReadyOperations = null;
 
@@ -100,7 +103,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
-
         ArrayList<UIThreadOperation> operations;
         synchronized (mOperationsCopyLock) {
           operations = mReadyOperations;
@@ -117,15 +119,24 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
           nodesManager.runUpdates(frameTimeNanos);
         }
 
-        // TODO: Would be great to avoid adding this callback in case there are no active animations
-        // and no outstanding tasks on the operations queue. Apparently frame callbacks can only
-        // be posted from the UI thread and therefore we cannot schedule them directly from
-        // @ReactMethod methods
-        Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
-          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-          mAnimatedFrameCallback);
+        // If there are still active animations post the frame callback again.
+        if (nodesManager.hasActiveAnimations()) {
+          Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
+            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+            mAnimatedFrameCallback);
+        } else {
+          mAnimatedFrameCallbackActive = false;
+        }
       }
     };
+
+    mEnqueueAnimatedFrameCallbackRunnable = new Runnable() {
+      @Override
+      public void run() {
+        enqueueFrameCallback();
+      }
+    };
+
     reactCtx.addLifecycleEventListener(this);
   }
 
@@ -147,6 +158,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
           mReadyOperations.addAll(operations);
         }
       }
+
+
+      UiThreadUtil.runOnUiThread(mEnqueueAnimatedFrameCallbackRunnable);
     }
   }
 
@@ -171,15 +185,21 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   private void clearFrameCallback() {
-    Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
-      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-      mAnimatedFrameCallback);
+    if (mAnimatedFrameCallbackActive) {
+      mAnimatedFrameCallbackActive = false;
+      Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
+        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+        mAnimatedFrameCallback);
+    }
   }
 
   private void enqueueFrameCallback() {
-    Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
-      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-      mAnimatedFrameCallback);
+    if (!mAnimatedFrameCallbackActive) {
+      mAnimatedFrameCallbackActive = true;
+      Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
+        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+        mAnimatedFrameCallback);
+    }
   }
 
   @ReactMethod
