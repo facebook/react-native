@@ -390,7 +390,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   // Register view
   _viewRegistry[reactTag] = rootView;
-  CGRect frame = rootView.frame;
+  CGSize size = rootView.bounds.size;
 
   // Register shadow view
   dispatch_async(RCTGetUIManagerQueue(), ^{
@@ -400,7 +400,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.reactTag = reactTag;
-    shadowView.frame = frame;
+    shadowView.size = size;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
     shadowView.sizeFlexibility = sizeFlexibility;
@@ -425,7 +425,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return _viewRegistry[reactTag];
 }
 
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
+- (void)setSize:(CGSize)size forView:(UIView *)view
 {
   RCTAssertMainQueue();
 
@@ -445,8 +445,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
     BOOL needsLayout = NO;
-    if (!CGRectEqualToRect(frame, shadowView.frame)) {
-      shadowView.frame = frame;
+    if (!CGSizeEqualToSize(size, shadowView.size)) {
+      shadowView.size = size;
       needsLayout = YES;
     }
 
@@ -1639,6 +1639,16 @@ static UIView *_jsResponder;
 + (UIView *)JSResponder
 {
   return _jsResponder;
+}
+
+@end
+
+@implementation RCTUIManager (Deprecated)
+
+- (void)setFrame:(CGRect)frame forView:(UIView *)view
+{
+  RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
+  [self setSize:frame.size forView:view];
 }
 
 @end

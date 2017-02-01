@@ -547,16 +547,26 @@ RCT_POSITION_PROPERTY(Right, right, YGEdgeEnd)
 RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
 RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
 
-- (void)setFrame:(CGRect)frame
+// Size
+
+- (CGSize)size
 {
-  if (!CGRectEqualToRect(frame, _frame)) {
-    _frame = frame;
-    YGNodeStyleSetPosition(_cssNode, YGEdgeLeft, CGRectGetMinX(frame));
-    YGNodeStyleSetPosition(_cssNode, YGEdgeTop, CGRectGetMinY(frame));
-    YGNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
-    YGNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
-  }
+  YGValue width = YGNodeStyleGetWidth(_cssNode);
+  YGValue height = YGNodeStyleGetHeight(_cssNode);
+
+  return CGSizeMake(
+    width.unit == YGUnitPixel ? width.value : NAN,
+    height.unit == YGUnitPixel ? height.value : NAN
+  );
 }
+
+- (void)setSize:(CGSize)size
+{
+  YGNodeStyleSetWidth(_cssNode, size.width);
+  YGNodeStyleSetHeight(_cssNode, size.height);
+}
+
+// IntrinsicContentSize
 
 static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
@@ -611,18 +621,6 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   }
 
   YGNodeMarkDirty(_cssNode);
-}
-
-- (void)setTopLeft:(CGPoint)topLeft
-{
-  YGNodeStyleSetPosition(_cssNode, YGEdgeLeft, topLeft.x);
-  YGNodeStyleSetPosition(_cssNode, YGEdgeTop, topLeft.y);
-}
-
-- (void)setSize:(CGSize)size
-{
-  YGNodeStyleSetWidth(_cssNode, size.width);
-  YGNodeStyleSetHeight(_cssNode, size.height);
 }
 
 // Flex
