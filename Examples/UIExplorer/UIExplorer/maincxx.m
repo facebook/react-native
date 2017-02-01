@@ -1,3 +1,5 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
 /**
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
@@ -14,10 +16,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTCxxBridge.h>
+
 #import "AppDelegate.h"
 
 int main(int argc, char * argv[]) {
   @autoreleasepool {
+    [RCTCxxBridge enable];
     return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
   }
 }
