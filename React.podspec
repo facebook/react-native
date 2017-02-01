@@ -132,6 +132,12 @@ Pod::Spec.new do |s|
     ss.source_files   = "Libraries/LinkingIOS/*.{h,m}"
   end
 
+  s.subspec 'RCTLinking' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/Linking/*.{h,m}"
+    ss.preserve_paths   = "Libraries/Linking/*.js"
+  end
+
   s.subspec 'RCTTest' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/RCTTest/**/*.{h,m}"
