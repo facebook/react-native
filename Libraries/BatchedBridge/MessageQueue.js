@@ -155,7 +155,7 @@ class MessageQueue {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
       }
-      //Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit  
+      //Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       //to indicate fail (0) or success (1)
       onFail && params.push(this._callID << 1);
       onSucc && params.push((this._callID  << 1) | 1);
