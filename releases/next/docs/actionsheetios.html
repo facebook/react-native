@@ -114,9 +114,9 @@ class <span class="token class-name">ShareActionSheetExample</span> extends <spa
       <span class="token punctuation">]</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token function">alert<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">,</span>
-    <span class="token punctuation">(</span>success<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">(</span>completed<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> text<span class="token punctuation">;</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>completed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         text <span class="token operator">=</span> `Shared via $<span class="token punctuation">{</span>method<span class="token punctuation">}</span>`<span class="token punctuation">;</span>
       <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
         text <span class="token operator">=</span> <span class="token string">&#x27;You didn\&#x27;t share&#x27;</span><span class="token punctuation">;</span>
@@ -155,9 +155,9 @@ class <span class="token class-name">ShareScreenshotExample</span> extends <span
         <span class="token punctuation">]</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
       <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token function">alert<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">,</span>
-      <span class="token punctuation">(</span>success<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+      <span class="token punctuation">(</span>completed<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
         <span class="token keyword">var</span> text<span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>completed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
           text <span class="token operator">=</span> `Shared via $<span class="token punctuation">{</span>method<span class="token punctuation">}</span>`<span class="token punctuation">;</span>
         <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
           text <span class="token operator">=</span> <span class="token string">&#x27;You didn\&#x27;t share&#x27;</span><span class="token punctuation">;</span>
