@@ -75,7 +75,8 @@ static void YGPrint(YGNodeRef node) {
 
 static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
-    static auto baselineFunc = findClassStatic("com/facebook/yoga/YogaNode")->getMethod<jfloat(jfloat, jfloat)>("baseline");
+    static auto baselineFunc = findClassStatic("com/facebook/yoga/YogaNode")
+                                   ->getMethod<jfloat(jfloat, jfloat)>("baseline");
     return baselineFunc(obj, width, height);
   } else {
     return height;
@@ -222,8 +223,11 @@ void jni_YGNodeSetHasMeasureFunc(alias_ref<jobject>, jlong nativePointer, jboole
   YGNodeSetMeasureFunc(_jlong2YGNodeRef(nativePointer), hasMeasureFunc ? YGJNIMeasureFunc : NULL);
 }
 
-void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>, jlong nativePointer, jboolean hasBaselineFunc) {
-  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer), hasBaselineFunc ? YGJNIBaselineFunc : NULL);
+void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>,
+                                  jlong nativePointer,
+                                  jboolean hasBaselineFunc) {
+  YGNodeSetBaselineFunc(_jlong2YGNodeRef(nativePointer),
+                        hasBaselineFunc ? YGJNIBaselineFunc : NULL);
 }
 
 jboolean jni_YGNodeHasNewLayout(alias_ref<jobject>, jlong nativePointer) {

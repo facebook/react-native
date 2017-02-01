@@ -212,6 +212,9 @@ RCT_EXPORT_MODULE()
       self->_executorOverride = [self->_defaults objectForKey:@"executor-override"];
     });
 
+    // Same values are read during the bridge starup path
+    _startSamplingProfilerOnLaunch = [_settings[@"startSamplingProfilerOnLaunch"] boolValue];
+
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
       [weakSelf updateSettings:self->_settings];
@@ -537,6 +540,8 @@ RCT_EXPORT_MODULE()
   }
 
   // Add toggles for JSC's sampling profiler, if the profiler is enabled
+  // Note: bridge.jsContext is not implemented in the old bridge, so this code is
+  // duplicated in RCTJSCExecutor
   if (JSC_JSSamplingProfilerEnabled(self->_bridge.jsContext.JSGlobalContextRef)) {
     JSContext *context = self->_bridge.jsContext;
     // Allow to toggle the sampling profiler through RN's dev menu
@@ -623,6 +628,12 @@ RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
 {
   _shakeToShow = shakeToShow;
   [self updateSetting:@"shakeToShow" value:@(_shakeToShow)];
+}
+
+- (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
+{
+  _startSamplingProfilerOnLaunch = startSamplingProfilerOnLaunch;
+  [self updateSetting:@"startSamplingProfilerOnLaunch" value:@(_startSamplingProfilerOnLaunch)];
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)

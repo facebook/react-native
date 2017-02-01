@@ -38,6 +38,7 @@ const {
 } = require('../Logger');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {Reporter} from '../lib/reporting';
 import type {
   Options as ModuleOptions,
@@ -53,6 +54,7 @@ class DependencyGraph {
     extensions: Array<string>,
     extraNodeModules: ?Object,
     forceNodeFilesystemAPI: boolean,
+    globalTransformCache: ?GlobalTransformCache,
     ignoreFilePath: (filePath: string) => boolean,
     maxWorkers: ?number,
     mocksPattern: mixed,
@@ -87,6 +89,7 @@ class DependencyGraph {
     extensions,
     extraNodeModules,
     forceNodeFilesystemAPI,
+    globalTransformCache,
     ignoreFilePath,
     maxWorkers,
     mocksPattern,
@@ -109,6 +112,7 @@ class DependencyGraph {
     extensions?: ?Array<string>,
     extraNodeModules: ?Object,
     forceNodeFilesystemAPI?: boolean,
+    globalTransformCache: ?GlobalTransformCache,
     ignoreFilePath: (filePath: string) => boolean,
     maxWorkers?: ?number,
     mocksPattern?: mixed,
@@ -130,6 +134,7 @@ class DependencyGraph {
       extensions: extensions || ['js', 'json'],
       extraNodeModules,
       forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
+      globalTransformCache,
       ignoreFilePath: ignoreFilePath || (() => {}),
       maxWorkers,
       mocksPattern,
@@ -186,6 +191,7 @@ class DependencyGraph {
 
       this._moduleCache = new ModuleCache({
         cache: this._cache,
+        globalTransformCache: this._opts.globalTransformCache,
         transformCode: this._opts.transformCode,
         transformCacheKey: this._opts.transformCacheKey,
         depGraphHelpers: this._helpers,

@@ -36,16 +36,17 @@ public class ModuleHolder {
   private @Nullable NativeModule mModule;
   private boolean mInitializeNeeded;
 
-  public ModuleHolder(
-    Class<? extends NativeModule> clazz,
-    @Nullable ReactModuleInfo reactModuleInfo,
-    Provider<? extends NativeModule> provider) {
-    mInfo = reactModuleInfo == null ? new LegacyModuleInfo(clazz) : reactModuleInfo;
+  public ModuleHolder(ReactModuleInfo info, Provider<? extends NativeModule> provider) {
+    mInfo = info;
     mProvider = provider;
-
     if (mInfo.needsEagerInit()) {
       mModule = doCreate();
     }
+  }
+
+  public ModuleHolder(LegacyModuleInfo info, NativeModule nativeModule) {
+    mInfo = info;
+    mModule = nativeModule;
   }
 
   public synchronized void initialize() {
@@ -137,31 +138,6 @@ public class ModuleHolder {
       future.get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  private class LegacyModuleInfo implements Info {
-
-    public final Class<?> mType;
-
-    public LegacyModuleInfo(Class<?> type) {
-      mType = type;
-    }
-
-    public String name() {
-      return getModule().getName();
-    }
-
-    public boolean canOverrideExistingModule() {
-      return getModule().canOverrideExistingModule();
-    }
-
-    public boolean supportsWebWorkers() {
-      return getModule().supportsWebWorkers();
-    }
-
-    public boolean needsEagerInit() {
-      return true;
     }
   }
 }

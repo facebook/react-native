@@ -31,6 +31,11 @@
 @property (nonatomic, assign) BOOL profilingEnabled;
 
 /**
+ * Enables starting of profiling sampler on launch
+ */
+@property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;
+
+/**
  * Enables automatic polling for JS code changes. Only applicable when
  * running the app from a server.
  */

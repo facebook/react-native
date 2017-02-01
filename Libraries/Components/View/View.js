@@ -21,7 +21,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 var TVViewPropTypes = {};
 if (Platform.isTVOS) {
@@ -76,9 +76,9 @@ const statics = {
 
 /**
  * The most fundamental component for building a UI, `View` is a container that supports layout with
- * [flexbox](/react-native/docs/flexbox.html), [style](/react-native/docs/style.html),
- * [some touch handling](/react-native/docs/handling-touches.html), and
- * [accessibility](/react-native/docs/accessibility.html) controls. `View` maps directly to the
+ * [flexbox](docs/flexbox.html), [style](docs/style.html),
+ * [some touch handling](docs/handling-touches.html), and
+ * [accessibility](docs/accessibility.html) controls. `View` maps directly to the
  * native view equivalent on whatever platform React Native is running on, whether that is a
  * `UIView`, `<div>`, `android.view`, etc.
  *
@@ -101,7 +101,7 @@ const statics = {
  * }
  * ```
  *
- * > `View`s are designed to be used with [`StyleSheet`](/react-native/docs/style.html) for clarity
+ * > `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity
  * > and performance, although inline styles are also supported.
  *
  * ### Synthetic Touch Events
@@ -243,7 +243,7 @@ const View = React.createClass({
      * - `'allowsDirectInteraction'` - The element allows direct touch interaction for VoiceOver users.
      * - `'pageTurn'` - Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
      *
-     * See the [Accessibility guide](/react-native/docs/accessibility.html#accessibilitytraits-ios)
+     * See the [Accessibility guide](docs/accessibility.html#accessibilitytraits-ios)
      * for more information.
      *
      * @platform ios

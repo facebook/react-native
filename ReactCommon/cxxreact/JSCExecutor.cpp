@@ -226,7 +226,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
   if (useCustomJSC) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, toJson(m_jscConfig));
   }
   #else
   const bool useCustomJSC = false;
@@ -240,7 +240,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
+    JSClassDefinition definition = kJSClassDefinitionEmpty;
+    definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+    globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
@@ -262,7 +264,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
@@ -865,13 +866,18 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
 
   unsigned int moduleId = Value(m_context, arguments[0]).asUnsignedInteger();
   unsigned int methodId = Value(m_context, arguments[1]).asUnsignedInteger();
-  std::string argsJson = Value(m_context, arguments[2]).toJSONString();
+  folly::dynamic args = folly::parseJson(Value(m_context, arguments[2]).toJSONString());
+
+  if (!args.isArray()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("method parameters should be array, but are ", args.typeName()));
+  }
 
   MethodCallResult result = m_delegate->callSerializableNativeHook(
       *this,
       moduleId,
       methodId,
-      argsJson);
+      std::move(args));
   if (result.isUndefined) {
     return Value::makeUndefined(m_context);
   }

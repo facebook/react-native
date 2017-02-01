@@ -10,22 +10,17 @@ package com.facebook.react.testing;
 
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Instrumentation;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.react.EagerModuleProvider;
+import com.facebook.react.NativeModuleRegistryBuilder;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -34,8 +29,6 @@ import com.facebook.react.cxxbridge.CatalystInstanceImpl;
 import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
 import com.facebook.react.cxxbridge.JavaScriptExecutor;
-import com.facebook.react.cxxbridge.NativeModuleRegistry;
-import com.facebook.react.module.model.ReactModuleInfo;
 
 import com.android.internal.util.Predicate;
 
@@ -43,7 +36,8 @@ public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {
     private static class ReactInstanceEasyBuilderImpl implements ReactInstanceEasyBuilder {
 
-      private final List<ModuleSpec> mModuleSpecList = new ArrayList<>();
+      private final NativeModuleRegistryBuilder mNativeModuleRegistryBuilder =
+        new NativeModuleRegistryBuilder(null, false);
       private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
         new JavaScriptModuleRegistry.Builder();
 
@@ -57,8 +51,7 @@ public class ReactTestHelper {
 
       @Override
       public ReactInstanceEasyBuilder addNativeModule(NativeModule nativeModule) {
-        mModuleSpecList.add(
-          new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
+        mNativeModuleRegistryBuilder.addNativeModule(nativeModule);
         return this;
       }
 
@@ -79,10 +72,7 @@ public class ReactTestHelper {
         return new CatalystInstanceImpl.Builder()
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
           .setJSExecutor(executor)
-          .setRegistry(new NativeModuleRegistry(
-            mModuleSpecList,
-            Collections.<Class, ReactModuleInfo>emptyMap(),
-            false))
+          .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createAssetLoader(
                                mContext,
