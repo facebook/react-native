@@ -53,6 +53,7 @@ type ConnectivityStateAndroid = $Enum<{
   PROXY: string,
   VPN: string,
   UNKNOWN: string,
+  '': string,
 }>;
 
 
@@ -69,7 +70,7 @@ if (Platform.OS === 'ios') {
   _isConnected = function(
       connectionType: ConnectivityStateAndroid,
     ): bool {
-    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
+    return connectionType !== 'NONE' && connectionType !== 'UNKNOWN' && connectionType !== '';
   };
 }
 
