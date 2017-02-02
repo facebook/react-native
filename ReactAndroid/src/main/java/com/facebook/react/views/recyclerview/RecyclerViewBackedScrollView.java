@@ -5,6 +5,7 @@ package com.facebook.react.views.recyclerview;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -82,6 +83,15 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       }
     }
   }
+
+  @SuppressLint("WrongCall")
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    // FIX: https://github.com/facebook/react-native/issues/7001
+    onLayout(false, getTop(), getLeft(), getRight(), getBottom());
+  }
+
 
   /**
    * JavaScript ListView implementation rely on getting correct scroll offset. This class helps
