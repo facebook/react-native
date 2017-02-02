@@ -28,7 +28,7 @@ const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
 
-const defaults = require('../../../../defaults');
+const defaults = require('../../../defaults');
 
 type ResolveOptions = {|
   assetExts: Extensions,

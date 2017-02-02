@@ -12,7 +12,7 @@ jest.disableAutomock();
 
 const optimizeModule = require('../optimize-module');
 const transformModule = require('../transform-module');
-const transform = require('../../../../../transformer.js');
+const transform = require('../../../../transformer.js');
 const {SourceMapConsumer} = require('source-map');
 
 const {objectContaining} = jasmine;

@@ -10,9 +10,9 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/error-guard');
+require.requireActual('../packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/src/Resolver/polyfills/Object.es7.js');
+require.requireActual('../packager/src/Resolver/polyfills/error-guard');
 
 global.__DEV__ = true;
 

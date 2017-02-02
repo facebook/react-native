@@ -25,7 +25,7 @@ var Transformer = require('../');
 const {any} = jasmine;
 
 describe('Transformer', function() {
-  let workers, Cache;
+  let options, workers, Cache;
   const fileName = '/an/arbitrary/file.js';
   const transformModulePath = __filename;
 
@@ -34,6 +34,7 @@ describe('Transformer', function() {
     Cache.prototype.get = jest.fn((a, b, c) => c());
 
     fs.writeFileSync.mockClear();
+    options = {transformModulePath};
     workerFarm.mockClear();
     workerFarm.mockImplementation((opts, path, methods) => {
       const api = workers = {};
@@ -42,11 +43,11 @@ describe('Transformer', function() {
     });
   });
 
-  it('passes transform module path, file path, source code' +
-    ' to the worker farm when transforming', () => {
+  it('passes transform module path, file path, source code,' +
+    ' and options to the worker farm when transforming', () => {
     const transformOptions = {arbitrary: 'options'};
     const code = 'arbitrary(code)';
-    new Transformer(transformModulePath).transformFile(fileName, code, transformOptions);
+    new Transformer(options).transformFile(fileName, code, transformOptions);
     expect(workers.transformAndExtractDependencies).toBeCalledWith(
       transformModulePath,
       fileName,
@@ -57,7 +58,7 @@ describe('Transformer', function() {
   });
 
   it('should add file info to parse errors', function() {
-    const transformer = new Transformer(transformModulePath);
+    const transformer = new Transformer(options);
     var message = 'message';
     var snippet = 'snippet';
 

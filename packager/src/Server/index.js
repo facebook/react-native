@@ -18,7 +18,7 @@ const MultipartResponse = require('./MultipartResponse');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 const mime = require('mime-types');
 const path = require('path');
 const terminal = require('../lib/terminal');
