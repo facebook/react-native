@@ -552,6 +552,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   typedef struct {
     CGRect frame;
+    UIUserInterfaceLayoutDirection layoutDirection;
     BOOL isNew;
     BOOL parentIsNew;
     BOOL isHidden;
@@ -568,6 +569,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       reactTags[index] = shadowView.reactTag;
       frameDataArray[index++] = (RCTFrameData){
         shadowView.frame,
+        shadowView.effectiveLayoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
         shadowView.isHidden,
@@ -634,6 +636,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       CGRect frame = frameData.frame;
 
       BOOL isHidden = frameData.isHidden;
+      UIUserInterfaceLayoutDirection layoutDirection = frameData.layoutDirection;
       BOOL isNew = frameData.isNew;
       RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
       BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
@@ -652,6 +655,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
+      }
+
+      if (view.reactLayoutDirection != layoutDirection) {
+        view.reactLayoutDirection = layoutDirection;
       }
 
       RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
