@@ -61,15 +61,20 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility;
 
 /**
+ * Gets the view name associated with a reactTag.
+ */
+- (NSString *)viewNameForReactTag:(NSNumber *)reactTag;
+
+/**
  * Gets the view associated with a reactTag.
  */
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
 
 /**
- * Update the frame of a view. This might be in response to a screen rotation
+ * Set the size of a view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */
-- (void)setFrame:(CGRect)frame forView:(UIView *)view;
+- (void)setSize:(CGSize)size forView:(UIView *)view;
 
 /**
  * Set the natural size of a view, which is used when no explicit size is set.
@@ -89,6 +94,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Used by native animated module to bypass the process of updating the values through the shadow
+ * view hierarchy. This method will directly update native views, which means that updates for
+ * layout-related propertied won't be handled properly.
+ * Make sure you know what you're doing before calling this method :)
+ */
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag
+                                 viewName:(NSString *)viewName
+                                    props:(NSDictionary *)props;
 
 /**
  * Given a reactTag from a component, find its root view, if possible.
@@ -121,6 +136,18 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * React won't be aware of this, so we need to make sure it happens.
  */
 - (void)setNeedsLayout;
+
+@end
+
+@interface RCTUIManager (Deprecated)
+
+/**
+ * This method is deprecated and will be removed in next releases.
+ * Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.
+ * Only frames with `origin` equals {0, 0} are supported.
+ */
+- (void)setFrame:(CGRect)frame forView:(UIView *)view
+__deprecated_msg("Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.");
 
 @end
 

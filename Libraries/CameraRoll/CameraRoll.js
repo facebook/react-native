@@ -111,7 +111,7 @@ var getPhotosReturnChecker = createStrictShapeTypeChecker({
 /**
  * `CameraRoll` provides access to the local camera roll / gallery.
  * Before using this you must link the `RCTCameraRoll` library.
- * You can refer to [Linking](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) for help.
+ * You can refer to [Linking](docs/linking-libraries-ios.html) for help.
  *
  * ### Permissions
  * The user's permission is required in order to access the Camera Roll on devices running iOS 10 or later.

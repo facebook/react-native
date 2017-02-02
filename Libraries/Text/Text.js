@@ -176,7 +176,7 @@ const Text = React.createClass({
      */
     testID: PropTypes.string,
     /**
-     * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
      */
     allowFontScaling: PropTypes.bool,
@@ -185,7 +185,7 @@ const Text = React.createClass({
      * for a `Text` element is `true`.
      *
      * See the
-     * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
+     * [Accessibility guide](docs/accessibility.html#accessible-ios-android)
      * for more information.
      */
     accessible: PropTypes.bool,

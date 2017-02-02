@@ -30,10 +30,10 @@ function processTransform(transform: Object): Object {
     _validateTransforms(transform);
   }
 
-  // Android implementation of transform property accepts the list of transform
-  // properties as opposed to a transform Matrix. This is necessary to control
-  // transform property updates completely on the native thread.
-  if (Platform.OS === 'android') {
+  // Android & iOS implementations of transform property accept the list of
+  // transform properties as opposed to a transform Matrix. This is necessary
+  // to control transform property updates completely on the native thread.
+  if (Platform.OS === 'android' || Platform.OS === 'ios') {
     return transform;
   }
 
