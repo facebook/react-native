@@ -395,7 +395,8 @@ class Server {
       // Clear cached bundles in case user reloads
       this._clearBundles();
       this._hmrFileChangeListener(type, filePath);
-      return;
+      // when HMR clients connected, also allow live reloading clients
+      // return;
     } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files
       debug('Clearing bundles due to potential node_modules resolution change');
