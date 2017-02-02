@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import android.graphics.Color;
+import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
