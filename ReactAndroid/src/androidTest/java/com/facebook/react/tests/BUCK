@@ -1,7 +1,6 @@
 include_defs('//ReactAndroid/DEFS')
 
 deps = [
-  '//java/com/facebook/fbreact/views/recyclerview:recyclerview',
   react_native_dep('third-party/android/support/v4:lib-support-v4'),
   react_native_dep('third-party/java/jsr-305:jsr-305'),
   react_native_dep('third-party/java/junit:junit'),
