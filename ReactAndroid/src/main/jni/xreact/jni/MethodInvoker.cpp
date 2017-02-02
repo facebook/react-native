@@ -192,7 +192,7 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, jni::a
   case KEY: {                                                                  \
     auto result = env->Call ## METHOD ## MethodA(module.get(), method_, args); \
     jni::throwPendingJniExceptionAsCppException();                             \
-    return MethodCallResult {result, false};                                   \
+    return folly::dynamic(result);                                             \
   }
 
 #define CASE_OBJECT(KEY, JNI_CLASS, ACTIONS)                                \
@@ -200,7 +200,7 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, jni::a
     auto jobject = env->CallObjectMethodA(module.get(), method_, args);     \
     jni::throwPendingJniExceptionAsCppException();                          \
     auto result = adopt_local(static_cast<JNI_CLASS::javaobject>(jobject)); \
-    return MethodCallResult {result->ACTIONS, false};                       \
+    return folly::dynamic(result->ACTIONS);                                 \
   }
 
   char returnType = signature_.at(0);
@@ -208,7 +208,7 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, jni::a
     case 'v':
       env->CallVoidMethodA(module.get(), method_, args);
       jni::throwPendingJniExceptionAsCppException();
-      return MethodCallResult {nullptr, true};
+      return folly::none;
 
     CASE_PRIMITIVE('z', jboolean, Boolean)
     CASE_OBJECT('Z', JBoolean, value())
@@ -225,7 +225,7 @@ MethodCallResult MethodInvoker::invoke(std::weak_ptr<Instance>& instance, jni::a
 
     default:
       LOG(FATAL) << "Unknown return type: " << returnType;
-      return MethodCallResult {nullptr, true};
+      return folly::none;
   }
 }
 
