@@ -77,7 +77,7 @@ function generateProject(destinationRoot, newProjectName, options) {
     yarn.getYarnVersionIfAvailable() &&
     yarn.isGlobalCliUsingYarn(destinationRoot);
 
-  createProjectFromTemplate(destinationRoot, newProjectName, options.template);
+  createProjectFromTemplate(destinationRoot, newProjectName, options.template, yarnVersion);
 
   if (yarnVersion) {
     console.log('Adding React...');
