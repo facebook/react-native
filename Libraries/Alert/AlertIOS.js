@@ -22,19 +22,19 @@ export type AlertType = $Enum<{
   /**
    * Default alert with no inputs
    */
-  'default': string,
+    'default': string,
   /**
    * Plain text input alert
    */
-  'plain-text': string,
+    'plain-text': string,
   /**
    * Secure text input alert
    */
-  'secure-text': string,
+    'secure-text': string,
   /**
    * Login and password alert
    */
-  'login-password': string,
+    'login-password': string,
 }>;
 
 /**
@@ -44,15 +44,15 @@ export type AlertButtonStyle = $Enum<{
   /**
    * Default button style
    */
-  'default': string,
+    'default': string,
   /**
    * Cancel button style
    */
-  'cancel': string,
+    'cancel': string,
   /**
    * Destructive button style
    */
-  'destructive': string,
+    'destructive': string,
 }>;
 
 /**
@@ -66,15 +66,15 @@ type ButtonsArray = Array<{
   /**
    * Button label
    */
-  text?: string,
+    text?: string,
   /**
    * Callback function when button pressed
    */
-  onPress?: ?Function,
+    onPress?: ?Function,
   /**
    * Button style
    */
-  style?: AlertButtonStyle,
+    style?: AlertButtonStyle,
 }>;
 
 /**
@@ -139,15 +139,15 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     callbackOrButtons?: ?(() => void) | ButtonsArray,
-    type?: AlertType,
-    tintColor?: ?string
+    tintColor?: ?string,
+    type?: AlertType
   ): void {
     if (typeof type !== 'undefined') {
       console.warn('AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
-      this.prompt(title, message, callbackOrButtons, type, null, null, tintColor);
+      this.prompt(title, message, callbackOrButtons, tintColor, type);
       return;
     }
-    this.prompt(title, message, callbackOrButtons, 'default');
+    this.prompt(title, message, callbackOrButtons, tintColor);
   }
 
   /**
@@ -199,10 +199,10 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
-    type?: ?AlertType = 'plain-text',
+    tintColor?: string,
+    type?: ?AlertType,
     defaultValue?: string,
-    keyboardType?: string,
-    tintColor?: string
+    keyboardType?: string
   ): void {
     if (typeof type === 'function') {
       console.warn(
@@ -250,8 +250,8 @@ class AlertIOS {
       title: title || undefined,
       message: message || undefined,
       buttons,
-      type: type || undefined,
       tintColor: processColor(tintColor),
+      type: type || undefined,
       defaultValue,
       cancelButtonKey,
       destructiveButtonKey,
