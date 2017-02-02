@@ -237,11 +237,11 @@ void CatalystInstanceImpl::callJSFunction(
   instance_->callJSFunction(token->getExecutorToken(nullptr),
                             std::move(module),
                             std::move(method),
-                            std::move(arguments->array));
+                            arguments->consume());
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
-  instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, std::move(arguments->array));
+  instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, arguments->consume());
 }
 
 local_ref<JExecutorToken::JavaPart> CatalystInstanceImpl::getMainExecutorToken() {

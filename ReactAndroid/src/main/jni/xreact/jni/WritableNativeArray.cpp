@@ -17,23 +17,23 @@ local_ref<WritableNativeArray::jhybriddata> WritableNativeArray::initHybrid(alia
 }
 
 void WritableNativeArray::pushNull() {
-  exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
-  array.push_back(nullptr);
+  throwIfConsumed();
+  array_.push_back(nullptr);
 }
 
 void WritableNativeArray::pushBoolean(jboolean value) {
-  exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
-  array.push_back(value == JNI_TRUE);
+  throwIfConsumed();
+  array_.push_back(value == JNI_TRUE);
 }
 
 void WritableNativeArray::pushDouble(jdouble value) {
-  exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
-  array.push_back(value);
+  throwIfConsumed();
+  array_.push_back(value);
 }
 
 void WritableNativeArray::pushInt(jint value) {
-  exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
-  array.push_back(value);
+  throwIfConsumed();
+  array_.push_back(value);
 }
 
 void WritableNativeArray::pushString(jstring value) {
@@ -41,8 +41,8 @@ void WritableNativeArray::pushString(jstring value) {
     pushNull();
     return;
   }
-  exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
-  array.push_back(wrap_alias(value)->toStdString());
+  throwIfConsumed();
+  array_.push_back(wrap_alias(value)->toStdString());
 }
 
 void WritableNativeArray::pushNativeArray(WritableNativeArray* otherArray) {
@@ -50,10 +50,8 @@ void WritableNativeArray::pushNativeArray(WritableNativeArray* otherArray) {
     pushNull();
     return;
   }
-  exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
-  exceptions::throwIfObjectAlreadyConsumed(otherArray, "Array to push already consumed");
-  array.push_back(std::move(otherArray->array));
-  otherArray->isConsumed = true;
+  throwIfConsumed();
+  array_.push_back(otherArray->consume());
 }
 
 void WritableNativeArray::pushNativeMap(WritableNativeMap* map) {
@@ -61,9 +59,8 @@ void WritableNativeArray::pushNativeMap(WritableNativeMap* map) {
     pushNull();
     return;
   }
-  exceptions::throwIfObjectAlreadyConsumed(this, "Receiving array already consumed");
-  map->throwIfConsumed();
-  array.push_back(map->consume());
+  throwIfConsumed();
+  array_.push_back(map->consume());
 }
 
 void WritableNativeArray::registerNatives() {

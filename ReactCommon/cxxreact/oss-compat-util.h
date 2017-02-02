@@ -9,7 +9,7 @@
   #define USE_FOLLY_FOR_TO_STRING 1
 #elif defined(__has_include)
   #define USE_FOLLY_FOR_ENDIAN_SWAP __has_include(<folly/Bits.h>)
-  #define USE_FOLLY_FOR_TO_STRING __has_include(<folly/String.h>)
+  #define USE_FOLLY_FOR_TO_STRING __has_include(<folly/Conv.h>)
 #else
   #define USE_FOLLY_FOR_ENDIAN_SWAP 0
   #define USE_FOLLY_FOR_TO_STRING 0
@@ -23,7 +23,7 @@
 #endif // USE_FOLLY_FOR_ENDIAN_SWAP
 
 #if USE_FOLLY_FOR_TO_STRING
-#include <folly/String.h>
+#include <folly/Conv.h>
 #else
 #include <sstream>
 #include <string>

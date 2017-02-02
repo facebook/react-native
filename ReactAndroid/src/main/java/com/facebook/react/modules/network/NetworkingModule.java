@@ -51,8 +51,10 @@ import okio.ByteString;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = "RCTNetworking", supportsWebWorkers = true)
+@ReactModule(name = NetworkingModule.NAME, supportsWebWorkers = true)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "Networking";
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
@@ -141,7 +143,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RCTNetworking";
+    return NAME;
   }
 
   @Override

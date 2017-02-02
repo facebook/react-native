@@ -13,12 +13,13 @@
 
 const Logger = require('../Logger');
 
-const declareOpts = require('../lib/declareOpts');
+const debug = require('debug')('RNP:JStransformer');
 const denodeify = require('denodeify');
+const invariant = require('fbjs/lib/invariant');
 const os = require('os');
+const path = require('path');
 const util = require('util');
 const workerFarm = require('worker-farm');
-const debug = require('debug')('RNP:JStransformer');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 import type {SourceMap} from '../lib/SourceMap';
@@ -29,35 +30,10 @@ import type {SourceMap} from '../lib/SourceMap';
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 301000;
+const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
-
-const validateOpts = declareOpts({
-  transformModulePath: {
-    type:'string',
-    required: false,
-  },
-  transformTimeoutInterval: {
-    type: 'number',
-    default: DEFAULT_MAX_CALL_TIME,
-  },
-  worker: {
-    type: 'string',
-  },
-  methods: {
-    type: 'array',
-    default: [],
-  },
-});
-
-type Options = {
-  transformModulePath?: ?string,
-  transformTimeoutInterval?: ?number,
-  worker?: ?string,
-  methods?: ?Array<string>,
-};
 
 const maxConcurrentWorkers = ((cores, override) => {
   if (override) {
@@ -93,14 +69,8 @@ function makeFarm(worker, methods, timeout) {
 
 class Transformer {
 
-  _opts: {
-    transformModulePath?: ?string,
-    transformTimeoutInterval: number,
-    worker: ?string,
-    methods: Array<string>,
-  };
   _workers: {[name: string]: mixed};
-  _transformModulePath: ?string;
+  _transformModulePath: string;
   _transform: (
     transform: string,
     filename: string,
@@ -113,31 +83,17 @@ class Transformer {
     sourceMap: SourceMap,
   ) => Promise<{code: string, map: SourceMap}>;
 
-  constructor(options: Options) {
-    const opts = this._opts = validateOpts(options);
+  constructor(transformModulePath: string) {
+    invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
+    this._transformModulePath = transformModulePath;
 
-    const {transformModulePath} = opts;
-
-    if (opts.worker) {
-      this._workers =
-        makeFarm(opts.worker, opts.methods, opts.transformTimeoutInterval);
-      opts.methods.forEach(name => {
-        /* $FlowFixMe: assigning the class object fields directly is
-         * questionable, because it's prone to conflicts. */
-        this[name] = this._workers[name];
-      });
-    }
-    else if (transformModulePath) {
-      this._transformModulePath = require.resolve(transformModulePath);
-
-      this._workers = makeFarm(
-        require.resolve('./worker'),
-        ['minify', 'transformAndExtractDependencies'],
-        opts.transformTimeoutInterval,
-      );
-      this._transform = denodeify(this._workers.transformAndExtractDependencies);
-      this.minify = denodeify(this._workers.minify);
-    }
+    this._workers = makeFarm(
+      require.resolve('./worker'),
+      ['minify', 'transformAndExtractDependencies'],
+      TRANSFORM_TIMEOUT_INTERVAL,
+    );
+    this._transform = denodeify(this._workers.transformAndExtractDependencies);
+    this.minify = denodeify(this._workers.minify);
   }
 
   kill() {
@@ -150,7 +106,6 @@ class Transformer {
     }
     debug('transforming file', fileName);
     return this
-      /* $FlowFixMe: _transformModulePath may be empty, see constructor */
       ._transform(this._transformModulePath, fileName, code, options)
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
@@ -162,7 +117,7 @@ class Transformer {
         if (error.type === 'TimeoutError') {
           const timeoutErr = new Error(
             `TimeoutError: transforming ${fileName} took longer than ` +
-            `${this._opts.transformTimeoutInterval / 1000} seconds.\n` +
+            `${TRANSFORM_TIMEOUT_INTERVAL / 1000} seconds.\n` +
             'You can adjust timeout via the \'transformTimeoutInterval\' option'
           );
           /* $FlowFixMe: monkey-patch Error */
@@ -171,8 +126,7 @@ class Transformer {
         } else if (error.type === 'ProcessTerminatedError') {
           const uncaughtError = new Error(
             'Uncaught error in the transformer worker: ' +
-            /* $FlowFixMe: _transformModulePath may be empty, see constructor */
-            this._opts.transformModulePath
+            this._transformModulePath
           );
           /* $FlowFixMe: monkey-patch Error */
           uncaughtError.type = 'ProcessTerminatedError';

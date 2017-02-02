@@ -21,7 +21,7 @@ public:
   JSIndexedRAMBundle(const char *sourceURL);
 
   // Throws std::runtime_error on failure.
-  std::unique_ptr<const facebook::react::JSBigString> getStartupCode();
+  std::unique_ptr<const JSBigString> getStartupCode();
   // Throws std::runtime_error on failure.
   Module getModule(uint32_t moduleId) const override;
 
@@ -56,7 +56,7 @@ private:
   mutable std::ifstream m_bundle;
   ModuleTable m_table;
   size_t m_baseOffset;
-  std::unique_ptr<facebook::react::JSBigBufferString> m_startupCode;
+  std::unique_ptr<JSBigBufferString> m_startupCode;
 };
 
 }  // namespace react
