@@ -67,7 +67,6 @@ import com.facebook.react.views.modal.ReactModalHostManager;
 import com.facebook.react.views.picker.ReactDialogPickerManager;
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
-import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
 import com.facebook.react.views.slider.ReactSliderManager;
@@ -275,7 +274,6 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactViewPagerManager());
     viewManagers.add(new ReactVirtualTextViewManager());
     viewManagers.add(new ReactWebViewManager());
-    viewManagers.add(new RecyclerViewBackedScrollViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(reactContext);
