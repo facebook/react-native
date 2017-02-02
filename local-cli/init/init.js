@@ -8,7 +8,10 @@
  */
 'use strict';
 
-const createProjectFromTemplate = require('../generator/createProjectFromTemplate');
+const {
+  listTemplatesAndExit,
+  createProjectFromTemplate,
+} = require('../generator/templates');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const minimist = require('minimist');
@@ -27,8 +30,6 @@ const yarn = require('../util/yarn');
  *                E.g. `{ version: '0.43.0', template: 'navigation' }`
  */
 function init(projectDir, argsOrName) {
-  console.log('Setting up new React Native app in ' + projectDir);
-
   const args = Array.isArray(argsOrName)
     ? argsOrName // argsOrName was e.g. ['AwesomeApp', '--verbose']
     : [argsOrName].concat(process.argv.slice(4)); // argsOrName was e.g. 'AwesomeApp'
@@ -42,7 +43,14 @@ function init(projectDir, argsOrName) {
   const newProjectName = args[0];
   const options = minimist(args);
 
-  generateProject(projectDir, newProjectName, options);
+  if (listTemplatesAndExit(newProjectName, options)) {
+    // Just listing templates using 'react-native init --template'
+    // Not creating a new app.
+    return;
+  } else {
+    console.log('Setting up new React Native app in ' + projectDir);
+    generateProject(projectDir, newProjectName, options);
+  }
 }
 
 /**
