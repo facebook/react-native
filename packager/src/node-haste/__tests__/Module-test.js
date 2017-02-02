@@ -125,34 +125,6 @@ describe('Module', () => {
       });
     });
 
-    describe('@provides annotations', () => {
-      beforeEach(() => {
-        mockIndexFile(source.replace(/@providesModule/, '@provides'));
-      });
-
-      it('extracts the module name from the header if it has a @provides annotation', () =>
-        module.getName().then(name => expect(name).toEqual(moduleId))
-      );
-
-      it('identifies the module as haste module', () =>
-        module.isHaste().then(isHaste => expect(isHaste).toBe(true))
-      );
-
-      it('does not transform the file in order to access the name', () => {
-        const transformCode =
-          jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).getName()
-          .then(() => expect(transformCode).not.toBeCalled());
-      });
-
-      it('does not transform the file in order to access the haste status', () => {
-        const transformCode =
-          jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).isHaste()
-          .then(() => expect(transformCode).not.toBeCalled());
-      });
-    });
-
     describe('no annotation', () => {
       beforeEach(() => {
         mockIndexFile('arbitrary(code);');

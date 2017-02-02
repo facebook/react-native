@@ -184,10 +184,11 @@ class Module {
     // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
     // project-specific code that is using @providesModule.
     const moduleDocBlock = docblock.parseAsObject(docBlock);
-    const provides = moduleDocBlock.providesModule || moduleDocBlock.provides;
+    const providesModule = moduleDocBlock.providesModule;
 
-    const id = provides && !this._depGraphHelpers.isNodeModulesDir(this.path)
-        ? /^\S+/.exec(provides)[0]
+    const id =
+      providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
+        ? /^\S+/.exec(providesModule)[0]
         : undefined;
     return {id, moduleDocBlock};
   }
