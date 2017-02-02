@@ -45,7 +45,7 @@ function listTemplatesAndExit(newProjectName, options) {
 }
 
 function createProjectFromTemplate(destPath, newProjectName, templateName) {
-
+  // Expand the basic 'HelloWorld' template
   copyProjectTemplateAndReplace(
     path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
     destPath,
@@ -53,13 +53,15 @@ function createProjectFromTemplate(destPath, newProjectName, templateName) {
   );
 
   if (templateName !== undefined) {
+    // Keep the files from the 'HelloWorld' template, and overwrite some of them
+    // with the specified project template.
+    // The 'HelloWorld' template contains the native files (these are used by
+    // all templates) and every other template only contains additional JS code.
+    // Reason:
+    // This way we don't have to duplicate the native files in every template.
+    // If we duplicated them we'd make RN larger and risk that people would
+    // forget to maintain all the copies so they would go out of sync.
     if (availableTemplates[templateName]) {
-      // Keep the files from the HelloWorld template, and overwrite some of them
-      // with the project template. The project template only contains JS code,
-      // all the native files are kept from HelloWorld. This way we don't have
-      // to duplicate the native files in every template (if we duplicated them
-      // we'd make RN larger and risk that people would forget to maintain all
-      // the copies so they would go out of sync).
       copyProjectTemplateAndReplace(
         path.resolve(
           'node_modules', 'react-native', 'local-cli', 'templates', availableTemplates[templateName]
