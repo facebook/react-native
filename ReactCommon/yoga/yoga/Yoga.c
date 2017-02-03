@@ -489,34 +489,34 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
     return node->style.instanceName;                                            \
   }
 
-#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(type, name, paramName, instanceName, defaultValue) \
-  void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) {    \
-    if (node->style.instanceName[edge].value != paramName ||                                     \
-        node->style.instanceName[edge].unit != YGUnitPixel) {                                    \
-      node->style.instanceName[edge].value = paramName;                                          \
-      node->style.instanceName[edge].unit =                                                      \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                         \
-      YGNodeMarkDirtyInternal(node);                                                             \
-    }                                                                                            \
-  }                                                                                              \
-                                                                                                 \
-  void YGNodeStyleSet##name##Percent(const YGNodeRef node,                                       \
-                                     const YGEdge edge,                                          \
-                                     const float paramName) {                                    \
-    if (node->style.instanceName[edge].value != paramName ||                                     \
-        node->style.instanceName[edge].unit != YGUnitPercent) {                                  \
-      node->style.instanceName[edge].value = paramName;                                          \
-      node->style.instanceName[edge].unit =                                                      \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;                       \
-      YGNodeMarkDirtyInternal(node);                                                             \
-    }                                                                                            \
-  }                                                                                              \
-                                                                                                 \
-  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                           \
-    return *YGComputedEdgeValue(node->style.instanceName, edge, &defaultValue);                  \
+#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(type, name, paramName, instanceName)            \
+  void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
+    if (node->style.instanceName[edge].value != paramName ||                                  \
+        node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
+      node->style.instanceName[edge].value = paramName;                                       \
+      node->style.instanceName[edge].unit =                                                   \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                      \
+      YGNodeMarkDirtyInternal(node);                                                          \
+    }                                                                                         \
+  }                                                                                           \
+                                                                                              \
+  void YGNodeStyleSet##name##Percent(const YGNodeRef node,                                    \
+                                     const YGEdge edge,                                       \
+                                     const float paramName) {                                 \
+    if (node->style.instanceName[edge].value != paramName ||                                  \
+        node->style.instanceName[edge].unit != YGUnitPercent) {                               \
+      node->style.instanceName[edge].value = paramName;                                       \
+      node->style.instanceName[edge].unit =                                                   \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;                    \
+      YGNodeMarkDirtyInternal(node);                                                          \
+    }                                                                                         \
+  }                                                                                           \
+                                                                                              \
+  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                        \
+    return node->style.instanceName[edge];                                                    \
   }
 
-#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName, defaultValue)   \
+#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)                 \
   void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
     if (node->style.instanceName[edge].value != paramName ||                                  \
         node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
@@ -528,7 +528,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   }                                                                                           \
                                                                                               \
   float YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                       \
-    return YGComputedEdgeValue(node->style.instanceName, edge, &defaultValue)->value;         \
+    return node->style.instanceName[edge].value;                                              \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -577,10 +577,10 @@ YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
 YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position, YGValueUndefined);
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin, YGValueZero);
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding, YGValueZero);
-YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border, YGValueZero);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding);
+YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
 
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, Width, width, dimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, Height, height, dimensions[YGDimensionHeight]);
