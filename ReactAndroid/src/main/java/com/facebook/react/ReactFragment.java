@@ -171,7 +171,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
    * Helper to forward onKeyUp commands from our host Activity.
    * This allows ReactFragment to handle double tap reloads and dev menus
    *
-   * This must be called via a foward from your host Activity
+   * This must be called via a forward from your host Activity
    *
    * @param keyCode keyCode
    * @param event   event
@@ -179,7 +179,6 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
    */
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     boolean handled = false;
-    // TODO: Update once https://github.com/facebook/react-native/pull/11329 is merged (Right now using a fork)
     if (getReactNativeHost().getUseDeveloperSupport() && getReactNativeHost().hasInstance()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
         getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
