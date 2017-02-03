@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -54,9 +56,12 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
+import com.facebook.react.views.webview.events.TopUrlBlockedEvent;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+
+import static android.R.attr.name;
 
 /**
  * Manages instances of {@link WebView}
@@ -132,10 +137,37 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               createWebViewEvent(webView, url)));
     }
 
+    private boolean urlBlocked(String url, @Nullable ReadableArray blockList ){
+      if(null != blockList) {
+        for (int i = 0; i < blockList.size(); i++) {
+          String pattern = blockList.getString(i);
+          // Create a Pattern object
+          Pattern r = Pattern.compile(pattern);
+
+          // Now create matcher object.
+          Matcher m = r.matcher(url);
+          if (m.find()) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      ReactWebView rWebView = (ReactWebView) view;
         if (url.startsWith("http://") || url.startsWith("https://") ||
             url.startsWith("file://")) {
+          if( urlBlocked(url, rWebView.blockList )){
+
+            WritableMap eventData = createWebViewEvent(view, url);
+
+            dispatchEvent(
+                    view,
+                    new TopUrlBlockedEvent(view.getId(), eventData));
+            return true;
+          }
           return false;
         } else {
           try {
@@ -211,6 +243,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
     private boolean messagingEnabled = false;
+    private @Nullable ReadableArray blockList; // for url blocking
 
     private class ReactWebViewBridge {
       ReactWebView mContext;
@@ -357,6 +390,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
+  }
+
+  @ReactProp(name = "blockList")
+  public void setBlockList(WebView view, @Nullable ReadableArray blockList){
+    ((ReactWebView)view).blockList = blockList;
   }
 
   @ReactProp(name = "scalesPageToFit")

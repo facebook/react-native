@@ -57,9 +57,12 @@ class WebView extends React.Component {
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     onMessage: PropTypes.func,
+    onUrlBlocked: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
+    blockList: PropTypes.array,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -234,6 +237,8 @@ class WebView extends React.Component {
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        blockList = {this.props.blockList}
+        onUrlBlocked = {this.onUrlBlocked}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
       />;
@@ -318,6 +323,11 @@ class WebView extends React.Component {
     var onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
+  };
+
+  onUrlBlocked = (event) => {
+    var _onUrlBlocked = this.props.onUrlBlocked;
+    _onUrlBlocked && _onUrlBlocked(event);
   };
 
   onLoadingError = (event) => {
