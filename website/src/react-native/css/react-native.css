@@ -1,5 +1,4 @@
 html {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #484848;
   line-height: 1.28;
@@ -27,9 +26,9 @@ em {
 h1, h2, h3, h4, h5, h6 {
   margin: 10px 0;
   font-family: inherit;
-  font-weight: bold;
+  font-weight: 400;
   line-height: 20px;
-  color: inherit;
+  color: #025268;
   text-rendering: optimizelegibility;
 }
 
@@ -255,12 +254,11 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 
 .nav-main {
   *zoom: 1;
-  background: #3B3738;
+  background: #0484A7;
   color: #fafafa;
   position: fixed;
   top: 0;
-  min-height: 50px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  height: 50px;
   width: 100%;
   z-index: 100;
 }
@@ -280,6 +278,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .nav-main .nav-site-wrapper {
+  float: right;
   display: inline;
 }
 
@@ -302,21 +301,19 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   line-height: 50px;
   display: inline-block;
   height: 50px;
-  color: #ddd;
 }
 
-.nav-main .nav-site a:hover {
+.nav-site-wrapper a:hover {
   color: #fff;
 }
 
-.nav-main .nav-site a.active {
+.nav-site-wrapper a.active {
   color: #fff;
-  border-bottom: 3px solid #05A5D1;
-  background: #333;
 }
 
 .nav-main .nav-home {
   font-size: 24px;
+  font-weight: 300;
   line-height: 50px;
 }
 
@@ -342,8 +339,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 
 .nav-main a.nav-version {
   font-size: 16px;
-  font-weight: 800;
-  color: #05A5D1;
+  font-weight: 300;
   margin-left: 8px;
   text-decoration: underline;
 }
@@ -382,7 +378,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 
   .nav-main .nav-site a.active {
     color: #05A5D1;
-    font-weight: bold;
+    font-weight: 300;
     background-color: transparent;
   }
 
@@ -411,18 +407,13 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 }
 
 .hero .text {
-  font-size: 64px;
+  font-size: 300%;
   text-align: center;
 }
 
 .hero .minitext {
-  font-size: 16px;
+  font-size: 24px;
   text-align: center;
-  text-transform: uppercase;
-}
-
-.hero strong {
-  font-weight: 400;
 }
 
 .buttons-unit {
@@ -469,29 +460,42 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin: 0;
 }
 
-.nav-docs h3 {
-  text-transform: uppercase;
-  font-size: 14px;
-}
-
-.nav-docs a {
-  color: #666;
-  display: block;
-}
-
 .nav-docs a:hover {
   text-decoration: none;
-  color: #0485A9;
+  color: #025268;
 }
 
 .nav-docs a.active {
-  color: #0485A9;
+  color: #0484A7;
+  font-weight: bold;
 }
 
-.nav-docs h3 {
-  line-height: 25px;
+.nav-docs-section {
+  background-color: rgba(5, 165, 209, 0.05);
+  padding-bottom: 0;
+}
+
+.nav-docs-section h3 {
+  color: white;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
   margin-top: 12px;
   margin-bottom: 5px;
+  padding: 10px;
+  background-color: #0484A7;
+}
+
+.nav-docs-section ul {
+  display: block;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.nav-docs-section a {
+  color: #025268;
+  display: block;
+  margin: 2px 10px 5px;
 }
 
 .nav-docs .nav-docs-section:first-child h3 {
@@ -709,20 +713,20 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 
 #examples #todoExample input {
   border: 1px solid #ccc;
-  font: 14px proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
   padding: 3px;
   width: 150px;
 }
 
 #examples #todoExample button {
-  font: 14px proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
   margin-left: 5px;
   padding: 4px 10px;
 }
 
 #examples #markdownExample textarea {
   border: 1px solid #ccc;
-  font: 14px proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
   margin-bottom: 10px;
   padding: 5px;
 }
@@ -835,14 +839,13 @@ h2 {
   border-radius: 4px;
   padding: 8px 16px;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 300;
   margin: 0 12px;
   display: inline-block;
   color: #fafafa;
   text-decoration: none;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-  text-decoration: none;
 }
 
 .button:hover {
@@ -1399,11 +1402,9 @@ div[data-twttr-id] iframe {
 
 .showcase p {
   margin-top: 5px;
-  font-weight: normal;
 }
 
 .showcase a {
-  font-weight: bold;
 }
 
 .showcase h3, .showcase p {
@@ -1537,9 +1538,9 @@ input#algolia-doc-search {
   padding-left: 35px;
   margin-top: 10px;
   height: 30px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 20px;
-  background-color: #555;
+  background-color: #1daed5;
   border-radius: 4px;
   color: white;
   outline: none;
@@ -1549,6 +1550,19 @@ input#algolia-doc-search {
   -webkit-transition: .5s width ease;
   -moz-transition: .5s width ease;
   -o-transition: .5s width ease;
+}
+
+input#algolia-doc-search::placeholder {
+  color: rgba(255,255,255,0.8);
+}
+input#algolia-doc-search::-moz-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+input#algolia-doc-search:-ms-input-placeholder {
+  color: rgba(255,255,255,0.8);
+}
+input#algolia-doc-search::-webkit-input-placeholder {
+  color: rgba(255,255,255,0.8);
 }
 
 input#algolia-doc-search:focus {
@@ -1903,8 +1917,8 @@ footer.nav-footer {
   color: #202020;
   font-size: 15px;
   line-height: 24px;
-  background: #2D2D2D;
-  box-shadow: inset 0 10px 10px -5px #0d1116;
+  background: #012129;
+  box-shadow: inset 0 10px 10px -5px rgba(0,0,0,0.2);
   padding-top: 2em;
   padding-bottom: 2em;
   -webkit-font-smoothing: antialiased;
@@ -1971,6 +1985,7 @@ footer .sitemap h6,
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
   color: #05A5D1;
+  font-weight: 900;
 }
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
