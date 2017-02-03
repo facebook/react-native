@@ -124,6 +124,18 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  _reactLayoutDirection = layoutDirection;
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
+  self.semanticContentAttribute =
+    layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+      UISemanticContentAttributeForceLeftToRight :
+      UISemanticContentAttributeForceRightToLeft;
+#endif
+}
+
 - (NSString *)accessibilityLabel
 {
   if (super.accessibilityLabel) {
