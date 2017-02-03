@@ -27,10 +27,12 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
   if (!destPath) { throw new Error('Need a path to copy to'); }
   if (!newProjectName) { throw new Error('Need a project name'); }
 
+  options = options || {};
+
   walk(srcPath).forEach(absoluteSrcFilePath => {
 
     // 'react-native upgrade'
-    if (options && options.upgrade) {
+    if (options.upgrade) {
       // Don't upgrade these files
       const fileName = path.basename(absoluteSrcFilePath);
       // This also includes __tests__/index.*.js
@@ -44,7 +46,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       .replace(/helloworld/g, newProjectName.toLowerCase());
 
     let contentChangedCallback = null;
-    if (options && options.upgrade && (!options.force)) {
+    if (options.upgrade && (!options.force)) {
       contentChangedCallback = (_, contentChanged) => {
         return upgradeFileContentChangedCallback(
           absoluteSrcFilePath,
@@ -57,6 +59,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       absoluteSrcFilePath,
       path.resolve(destPath, relativeRenamedPath),
       {
+        'Hello App Display Name': options.displayName || newProjectName,
         'HelloWorld': newProjectName,
         'helloworld': newProjectName.toLowerCase(),
       },
