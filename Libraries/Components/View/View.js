@@ -23,6 +23,11 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 
+const {
+  AccessibilityComponentTypes,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
+
 var TVViewPropTypes = {};
 if (Platform.isTVOS) {
   TVViewPropTypes = require('TVViewPropTypes');
@@ -34,39 +39,12 @@ const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-const AccessibilityTraits = [
-  'none',
-  'button',
-  'link',
-  'header',
-  'search',
-  'image',
-  'selected',
-  'plays',
-  'key',
-  'text',
-  'summary',
-  'disabled',
-  'frequentUpdates',
-  'startsMedia',
-  'adjustable',
-  'allowsDirectInteraction',
-  'pageTurn',
-];
-
-const AccessibilityComponentType = [
-  'none',
-  'button',
-  'radiobutton_checked',
-  'radiobutton_unchecked',
-];
-
 const forceTouchAvailable = (NativeModules.IOSConstants &&
   NativeModules.IOSConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
-  AccessibilityComponentType,
+  AccessibilityComponentType: AccessibilityComponentTypes,
   /**
    * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
    * @platform ios
@@ -169,7 +147,7 @@ const View = React.createClass({
      *
      * @platform android
      */
-    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentType),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
 
     /**
      * Indicates to accessibility services whether the user should be notified
