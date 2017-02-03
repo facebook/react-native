@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
@@ -149,7 +150,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
-    ReactInstanceManager.Builder builder =
+    ReactInstanceManagerBuilder builder =
       ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
         .setApplication(getApplication())
         .setBundleAssetName(bundleName)

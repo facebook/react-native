@@ -63,6 +63,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
+ * Computed layout direction for the view backed to Yoga node value.
+ */
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+/**
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */
@@ -79,16 +84,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue minHeight;
 @property (nonatomic, assign) YGValue maxHeight;
 
-@property (nonatomic, assign) CGRect frame;
-
-- (void)setTopLeft:(CGPoint)topLeft;
-- (void)setSize:(CGSize)size;
-
 /**
- * Set the natural size of the view, which is used when no explicit size is set.
- * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ * Convenient alias to `width` and `height` in pixels.
+ * Defaults to NAN in case of non-pixel dimention.
  */
-- (void)setIntrinsicContentSize:(CGSize)size;
+@property (nonatomic, assign) CGSize size;
 
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
@@ -150,6 +150,17 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Clipping properties
  */
 @property (nonatomic, assign) YGOverflow overflow;
+
+/**
+ * Computed position of the view.
+ */
+@property (nonatomic, assign, readonly) CGRect frame;
+
+/**
+ * Represents the natural size of the view, which is used when explicit size is not set or is ambiguous.
+ * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
+ */
+@property (nonatomic, assign) CGSize intrinsicContentSize;
 
 /**
  * Calculate property changes that need to be propagated to the view.

@@ -289,6 +289,29 @@ var ListView = React.createClass({
     }
   },
 
+  /**
+   * If this is a vertical ListView scrolls to the bottom.
+   * If this is a horizontal ListView scrolls to the right.
+   *
+   * Use `scrollToEnd({animated: true})` for smooth animated scrolling,
+   * `scrollToEnd({animated: false})` for immediate scrolling.
+   * If no options are passed, `animated` defaults to true.
+   *
+   * See `ScrollView#scrollToEnd`.
+   */
+  scrollToEnd: function(options?: { animated?: boolean }) {
+    if (this._scrollComponent) {
+      if (this._scrollComponent.scrollToEnd) {
+        this._scrollComponent.scrollToEnd(options);
+      } else {
+        console.warn(
+          'The scroll component used by the ListView does not support ' +
+          'scrollToEnd. Check the renderScrollComponent prop of your ListView.'
+        );
+      }
+    }
+  },
+
   setNativeProps: function(props: Object) {
     if (this._scrollComponent) {
       this._scrollComponent.setNativeProps(props);

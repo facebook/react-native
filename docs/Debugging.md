@@ -94,7 +94,7 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 > Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
 
-### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android 
+### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
 1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
 
@@ -103,10 +103,9 @@ The debugger will receive a list of all project roots, separated by a space. For
    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports: 
+2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports:
 
    ```java
-   import android.os.Bundle;
    import com.facebook.react.modules.network.ReactCookieJarContainer;
    import com.facebook.stetho.Stetho;
    import okhttp3.OkHttpClient;
@@ -117,8 +116,8 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
    ```java
-   public void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
+   public void onCreate() {
+         super.onCreate();
          Stetho.initializeWithDefaults(this);
          OkHttpClient client = new OkHttpClient.Builder()
          .connectTimeout(0, TimeUnit.MILLISECONDS)

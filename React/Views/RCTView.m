@@ -124,6 +124,18 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  _reactLayoutDirection = layoutDirection;
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
+  self.semanticContentAttribute =
+    layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+      UISemanticContentAttributeForceLeftToRight :
+      UISemanticContentAttributeForceRightToLeft;
+#endif
+}
+
 - (NSString *)accessibilityLabel
 {
   if (super.accessibilityLabel) {
@@ -575,10 +587,10 @@ static void RCTUpdateShadowPathForView(RCTView *view)
       // Can't accurately calculate box shadow, so fall back to pixel-based shadow
       view.layer.shadowPath = nil;
 
-      RCTLogWarn(@"View #%@ of type %@ has a shadow set but cannot calculate "
-                 "shadow efficiently. Consider setting a background color to "
-                 "fix this, or apply the shadow to a more specific component.",
-                 view.reactTag, [view class]);
+      RCTLogAdvice(@"View #%@ of type %@ has a shadow set but cannot calculate "
+        "shadow efficiently. Consider setting a background color to "
+        "fix this, or apply the shadow to a more specific component.",
+        view.reactTag, [view class]);
     }
   }
 }

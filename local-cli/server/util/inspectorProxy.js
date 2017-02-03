@@ -305,7 +305,6 @@ class InspectorProxy {
 
   processRequest(req: any, res: any, next: any) {
     // TODO: Might wanna actually do the handling here
-    console.log(req.url);
     const endpoints = [
       '/inspector/',
       '/inspector/page',

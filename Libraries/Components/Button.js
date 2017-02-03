@@ -29,8 +29,8 @@ const invariant = require('fbjs/lib/invariant');
  * <center><img src="img/buttonExample.png"></img></center>
  *
  * If this button doesn't look right for your app, you can build your own
- * button using [TouchableOpacity](https://facebook.github.io/react-native/docs/touchableopacity.html)
- * or [TouchableNativeFeedback](https://facebook.github.io/react-native/docs/touchablenativefeedback.html).
+ * button using [TouchableOpacity](docs/touchableopacity.html)
+ * or [TouchableNativeFeedback](docs/touchablenativefeedback.html).
  * For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
  * Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
  *
