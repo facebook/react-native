@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import android.graphics.Color;
+import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -105,6 +106,14 @@ public class ReactScrollViewManager
   @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBottomFillColor(ReactScrollView view, int color) {
     view.setEndFillColor(color);
+  }
+
+  /**
+   * Controls overScroll behaviour
+   */
+  @ReactProp(name = "overScrollMode")
+  public void setOverScrollMode(ReactScrollView view, String value) {
+    view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
   @Override

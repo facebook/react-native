@@ -1,8 +1,0 @@
-*~
-*.swm
-*.swn
-*.swp
-*.DS_STORE
-npm-debug.log
-.cache
-node_modules

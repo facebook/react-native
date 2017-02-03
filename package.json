@@ -88,6 +88,7 @@
     "cli.js",
     "flow",
     "init.sh",
+    "ios-install-third-party.sh",
     "jest-preset.json",
     "jest",
     "lib",

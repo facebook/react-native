@@ -12,8 +12,8 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Server = require('../../packager/react-packager/src/Server');
-const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
+const Server = require('../../packager/src/Server');
+const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');

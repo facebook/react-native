@@ -227,6 +227,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                       key:nil
                                eventCount:_nativeEventCount];
 }
+
 - (void)textFieldSubmitEditing
 {
   _submitted = YES;

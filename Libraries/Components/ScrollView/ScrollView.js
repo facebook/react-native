@@ -349,6 +349,24 @@ const ScrollView = React.createClass({
      * @platform android
      */
     scrollPerfTag: PropTypes.string,
+
+     /**
+     * Used to override default value of overScroll mode.
+     *
+     * Possible values:
+     *
+     *  - `'auto'` - Default value, allow a user to over-scroll
+     *    this view only if the content is large enough to meaningfully scroll.
+     *  - `'always'` - Always allow a user to over-scroll this view.
+     *  - `'never'` - Never allow a user to over-scroll this view.
+     *
+     * @platform android
+     */
+    overScrollMode: PropTypes.oneOf([
+      'auto',
+      'always',
+      'never',
+    ]),
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -465,6 +483,30 @@ const ScrollView = React.createClass({
   },
 
   render: function() {
+    let ScrollViewClass;
+    let ScrollContentContainerViewClass;
+    if (Platform.OS === 'ios') {
+      ScrollViewClass = RCTScrollView;
+      ScrollContentContainerViewClass = RCTScrollContentView;
+    } else if (Platform.OS === 'android') {
+      if (this.props.horizontal) {
+        ScrollViewClass = AndroidHorizontalScrollView;
+      } else {
+        ScrollViewClass = AndroidScrollView;
+      }
+      ScrollContentContainerViewClass = View;
+    }
+
+    invariant(
+      ScrollViewClass !== undefined,
+      'ScrollViewClass must not be undefined'
+    );
+
+    invariant(
+      ScrollContentContainerViewClass !== undefined,
+      'ScrollContentContainerViewClass must not be undefined'
+    );
+
     const contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
@@ -489,14 +531,14 @@ const ScrollView = React.createClass({
     }
 
     const contentContainer =
-      <View
+      <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
         collapsable={false}>
         {this.props.children}
-      </View>;
+      </ScrollContentContainerViewClass>;
 
     const alwaysBounceHorizontal =
       this.props.alwaysBounceHorizontal !== undefined ?
@@ -540,21 +582,6 @@ const ScrollView = React.createClass({
     if (decelerationRate) {
       props.decelerationRate = processDecelerationRate(decelerationRate);
     }
-
-    let ScrollViewClass;
-    if (Platform.OS === 'ios') {
-      ScrollViewClass = RCTScrollView;
-    } else if (Platform.OS === 'android') {
-      if (this.props.horizontal) {
-        ScrollViewClass = AndroidHorizontalScrollView;
-      } else {
-        ScrollViewClass = AndroidScrollView;
-      }
-    }
-    invariant(
-      ScrollViewClass !== undefined,
-      'ScrollViewClass must not be undefined'
-    );
 
     const refreshControl = this.props.refreshControl;
     if (refreshControl) {
@@ -608,7 +635,7 @@ const styles = StyleSheet.create({
   },
 });
 
-let nativeOnlyProps, AndroidScrollView, AndroidHorizontalScrollView, RCTScrollView;
+let nativeOnlyProps, AndroidScrollView, AndroidHorizontalScrollView, RCTScrollView, RCTScrollContentView;
 if (Platform.OS === 'android') {
   nativeOnlyProps = {
     nativeOnly: {
@@ -631,6 +658,7 @@ if (Platform.OS === 'android') {
     }
   };
   RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 
 module.exports = ScrollView;

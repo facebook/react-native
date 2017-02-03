@@ -87,6 +87,27 @@
   [subview removeFromSuperview];
 }
 
+- (UIUserInterfaceLayoutDirection)reactLayoutDirection
+{
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
+  return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
+#else
+  return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
+#endif
+}
+
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
+  self.semanticContentAttribute =
+    layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+      UISemanticContentAttributeForceLeftToRight :
+      UISemanticContentAttributeForceRightToLeft;
+#else
+  objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+#endif
+}
+
 - (NSInteger)reactZIndex
 {
   return [objc_getAssociatedObject(self, _cmd) integerValue];
