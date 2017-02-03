@@ -172,10 +172,10 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private native void jni_YGNodeCalculateLayout(long nativePointer);
+  private native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height);
   @Override
-  public void calculateLayout() {
-    jni_YGNodeCalculateLayout(mNativePointer);
+  public void calculateLayout(float width, float height) {
+    jni_YGNodeCalculateLayout(mNativePointer, width, height);
   }
 
   private native boolean jni_YGNodeHasNewLayout(long nativePointer);
