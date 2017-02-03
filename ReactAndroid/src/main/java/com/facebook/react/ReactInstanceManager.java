@@ -14,10 +14,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.Application;
@@ -35,8 +33,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
-import com.facebook.react.bridge.ModuleSpec;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -62,8 +58,6 @@ import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.debug.DeveloperSettings;
@@ -863,11 +857,11 @@ public class ReactInstanceManager {
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
-    List<ModuleSpec> moduleSpecs = new ArrayList<>();
-    Map<Class, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
-    JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
-
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
+      reactContext,
+      mLazyNativeModulesEnabled);
+    JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
@@ -883,12 +877,7 @@ public class ReactInstanceManager {
           mBackBtnHandler,
           mUIImplementationProvider,
           mLazyViewManagersEnabled);
-      processPackage(
-        coreModulesPackage,
-        reactContext,
-        moduleSpecs,
-        reactModuleInfoMap,
-        jsModulesBuilder);
+      processPackage(coreModulesPackage, nativeModuleRegistryBuilder, jsModulesBuilder);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -899,12 +888,7 @@ public class ReactInstanceManager {
           TRACE_TAG_REACT_JAVA_BRIDGE,
           "createAndProcessCustomReactPackage");
       try {
-        processPackage(
-          reactPackage,
-          reactContext,
-          moduleSpecs,
-          reactModuleInfoMap,
-          jsModulesBuilder);
+        processPackage(reactPackage, nativeModuleRegistryBuilder, jsModulesBuilder);
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
@@ -915,10 +899,7 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
-       nativeModuleRegistry = new NativeModuleRegistry(
-         moduleSpecs,
-         reactModuleInfoMap,
-         mLazyNativeModulesEnabled);
+       nativeModuleRegistry = nativeModuleRegistryBuilder.build();
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
@@ -958,9 +939,7 @@ public class ReactInstanceManager {
 
   private void processPackage(
     ReactPackage reactPackage,
-    ReactApplicationContext reactContext,
-    List<ModuleSpec> moduleSpecs,
-    Map<Class, ReactModuleInfo> reactModuleInfoMap,
+    NativeModuleRegistryBuilder nativeModuleRegistryBuilder,
     JavaScriptModuleRegistry.Builder jsModulesBuilder) {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
       .arg("className", reactPackage.getClass().getSimpleName())
@@ -968,24 +947,7 @@ public class ReactInstanceManager {
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).startProcessPackage();
     }
-    if (mLazyNativeModulesEnabled && reactPackage instanceof LazyReactPackage) {
-      LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
-      ReactModuleInfoProvider instance = lazyReactPackage.getReactModuleInfoProvider();
-      Map<Class, ReactModuleInfo> map = instance.getReactModuleInfos();
-      if (!map.isEmpty()) {
-        reactModuleInfoMap.putAll(map);
-      }
-      moduleSpecs.addAll(lazyReactPackage.getNativeModules(reactContext));
-    } else {
-      FLog.d(
-        ReactConstants.TAG,
-        reactPackage.getClass().getSimpleName() +
-          " is not a LazyReactPackage, falling back to old version.");
-      for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
-        moduleSpecs.add(
-            new ModuleSpec(nativeModule.getClass(), new EagerModuleProvider(nativeModule)));
-      }
-    }
+    nativeModuleRegistryBuilder.processPackage(reactPackage);
 
     for (Class<? extends JavaScriptModule> jsModuleClass : reactPackage.createJSModules()) {
       jsModulesBuilder.add(jsModuleClass);

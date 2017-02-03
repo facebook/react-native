@@ -202,11 +202,11 @@ void jni_YGNodeRemoveChild(alias_ref<jobject>, jlong nativePointer, jlong childP
   YGNodeRemoveChild(_jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
 }
 
-void jni_YGNodeCalculateLayout(alias_ref<jobject>, jlong nativePointer) {
+void jni_YGNodeCalculateLayout(alias_ref<jobject>, jlong nativePointer, jfloat width, jfloat height) {
   const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
   YGNodeCalculateLayout(root,
-                        YGUndefined,
-                        YGUndefined,
+                        static_cast<float>(width),
+                        static_cast<float>(height),
                         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)));
   YGTransferLayoutOutputsRecursive(root);
 }

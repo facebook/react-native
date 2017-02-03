@@ -95,7 +95,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr != null) {
+    if (pointerEventsStr == null) {
+      view.setPointerEvents(PointerEvents.AUTO);
+    } else {
       PointerEvents pointerEvents =
           PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
       view.setPointerEvents(pointerEvents);

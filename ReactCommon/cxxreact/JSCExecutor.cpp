@@ -11,7 +11,6 @@
 #include <folly/json.h>
 #include <folly/Exception.h>
 #include <folly/Memory.h>
-#include <folly/String.h>
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
@@ -33,7 +32,7 @@
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
 
-#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+#if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
 #endif
 
@@ -264,7 +263,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
@@ -273,7 +271,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   #endif
 
-  #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+  #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
   addNativeTracingHooks(m_context);
   #endif
 
@@ -867,17 +865,22 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
 
   unsigned int moduleId = Value(m_context, arguments[0]).asUnsignedInteger();
   unsigned int methodId = Value(m_context, arguments[1]).asUnsignedInteger();
-  std::string argsJson = Value(m_context, arguments[2]).toJSONString();
+  folly::dynamic args = folly::parseJson(Value(m_context, arguments[2]).toJSONString());
+
+  if (!args.isArray()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("method parameters should be array, but are ", args.typeName()));
+  }
 
   MethodCallResult result = m_delegate->callSerializableNativeHook(
       *this,
       moduleId,
       methodId,
-      argsJson);
-  if (result.isUndefined) {
+      std::move(args));
+  if (!result.hasValue()) {
     return Value::makeUndefined(m_context);
   }
-  return Value::fromDynamic(m_context, result.result);
+  return Value::fromDynamic(m_context, result.value());
 }
 
 } }

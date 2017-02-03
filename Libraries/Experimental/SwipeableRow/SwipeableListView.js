@@ -196,6 +196,7 @@ class SwipeableListView extends React.Component {
         maxSwipeDistance={this._getMaxSwipeDistance(rowData, sectionID, rowID)}
         key={rowID}
         onOpen={() => this._onOpen(rowData.id)}
+        onClose={() => this._onClose(rowData.id)}
         onSwipeEnd={() => this._setListViewScrollable(true)}
         onSwipeStart={() => this._setListViewScrollable(false)}
         shouldBounceOnMount={shouldBounceOnMount}>
@@ -207,6 +208,12 @@ class SwipeableListView extends React.Component {
   _onOpen(rowID: string): void {
     this.setState({
       dataSource: this.state.dataSource.setOpenRowID(rowID),
+    });
+  }
+
+  _onClose(rowID: string): void {
+    this.setState({
+      dataSource: this.state.dataSource.setOpenRowID(null),
     });
   }
 }

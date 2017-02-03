@@ -367,6 +367,8 @@ const TextInput = React.createClass({
     onEndEditing: PropTypes.func,
     /**
      * Callback that is called when the text input selection is changed.
+     * This will be called with
+     * `{ nativeEvent: { selection: { start, end } } }`.
      */
     onSelectionChange: PropTypes.func,
     /**
@@ -482,7 +484,7 @@ const TextInput = React.createClass({
      * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
      * for more detail.
      *
-     * [Styles](/react-native/docs/style.html)
+     * [Styles](docs/style.html)
      */
     style: Text.propTypes.style,
     /**

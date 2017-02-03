@@ -342,6 +342,7 @@ function registerCapture(data, captureId, capture, stacks, strings) {
       parseInt(id, 16),
       ref.type,
       ref.size,
+      ref.cellSize,
       captureId,
       ref.rootPath === undefined ? noneStack : ref.rootPath,
       ref.reactTree === undefined ? noneStack : ref.reactTree,
@@ -355,6 +356,7 @@ function registerCapture(data, captureId, capture, stacks, strings) {
       parseInt(id, 16),
       'Marked Block Overhead',
       block.capacity - block.size,
+      0,
       captureId,
       noneStack,
       noneStack,
@@ -372,6 +374,7 @@ if (preLoadedCapture) {
     { name: 'id', type: 'int' },
     { name: 'type', type: 'string', strings: strings },
     { name: 'size', type: 'int' },
+    { name: 'cell', type: 'int' },
     { name: 'trace', type: 'string', strings: strings },
     { name: 'path', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
     { name: 'react', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
@@ -398,8 +401,10 @@ if (preLoadedCapture) {
     valueExpander,
   ]);
   const sizeAggregator = aggrow.addSumAggregator('Size', 'size');
+  const cellAggregator = aggrow.addSumAggregator('Cell Size', 'cell');
   const countAggregator = aggrow.addCountAggregator('Count');
   aggrow.expander.setActiveAggregators([
+    cellAggregator,
     sizeAggregator,
     countAggregator,
   ]);

@@ -18,13 +18,13 @@
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/CxxNativeModule.h>
 
-#include "JSLoader.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
-#include "ModuleRegistryHolder.h"
-#include "NativeArray.h"
 #include "JNativeRunnable.h"
+#include "JSLoader.h"
+#include "NativeArray.h"
 
 using namespace facebook::jni;
 
@@ -32,7 +32,6 @@ namespace facebook {
 namespace react {
 
 namespace {
-
 
 class Exception : public jni::JavaClass<Exception> {
  public:
@@ -130,9 +129,21 @@ void CatalystInstanceImpl::initializeBridge(
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
-    ModuleRegistryHolder* mrh) {
+    jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+    jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules) {
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
+
+  std::vector<std::unique_ptr<NativeModule>> modules;
+  std::weak_ptr<Instance> winstance(instance_);
+  for (const auto& jm : *javaModules) {
+    modules.emplace_back(folly::make_unique<JavaNativeModule>(winstance, jm));
+  }
+  for (const auto& cm : *cxxModules) {
+    modules.emplace_back(
+      folly::make_unique<CxxNativeModule>(winstance, std::move(cthis(cm)->getModule())));
+  }
+  auto moduleRegistry = std::make_shared<ModuleRegistry>(std::move(modules));
 
   // This used to be:
   //
@@ -154,7 +165,7 @@ void CatalystInstanceImpl::initializeBridge(
                               jseh->getExecutorFactory(),
                               folly::make_unique<JMessageQueueThread>(jsQueue),
                               folly::make_unique<JMessageQueueThread>(moduleQueue),
-                              mrh->getModuleRegistry());
+                              moduleRegistry);
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
@@ -226,11 +237,11 @@ void CatalystInstanceImpl::callJSFunction(
   instance_->callJSFunction(token->getExecutorToken(nullptr),
                             std::move(module),
                             std::move(method),
-                            std::move(arguments->array));
+                            arguments->consume());
 }
 
 void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
-  instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, std::move(arguments->array));
+  instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, arguments->consume());
 }
 
 local_ref<JExecutorToken::JavaPart> CatalystInstanceImpl::getMainExecutorToken() {

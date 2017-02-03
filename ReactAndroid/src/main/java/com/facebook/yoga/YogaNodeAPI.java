@@ -20,7 +20,7 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   void setMeasureFunction(YogaMeasureFunction measureFunction);
   void setBaselineFunction(YogaBaselineFunction measureFunction);
   boolean isMeasureDefined();
-  void calculateLayout();
+  void calculateLayout(float width, float height);
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();

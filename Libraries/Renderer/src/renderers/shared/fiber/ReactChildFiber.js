@@ -73,7 +73,6 @@ function ChildReconciler(shouldClone) {
           return clone;
         }
         const child = createFiberFromElement(element, priority);
-        // $FlowFixMe(>=0.34.0)
         previousSibling.sibling = child;
         child.return = returnFiber;
         return child;
