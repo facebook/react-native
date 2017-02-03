@@ -86,6 +86,12 @@ Pod::Spec.new do |s|
     ss.source_files   = "Libraries/CameraRoll/*.{h,m}"
   end
 
+  s.subspec 'RCTCameraRoll' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/CameraRoll/*.{h,m}"
+    ss.preserve_paths   = "Libraries/CameraRoll/*.js"
+  end
+
   s.subspec 'RCTGeolocation' do |ss|
     ss.dependency       'React/Core'
     ss.source_files   = "Libraries/Geolocation/*.{h,m}"
