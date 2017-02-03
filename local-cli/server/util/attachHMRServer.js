@@ -11,7 +11,7 @@
 const querystring = require('querystring');
 const url = require('url');
 
-const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
+const {getInverseDependencies} = require('../../../packager/src//node-haste');
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',

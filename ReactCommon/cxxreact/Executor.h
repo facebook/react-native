@@ -6,11 +6,11 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <sys/mman.h>
 #include <vector>
 
-#include <sys/mman.h>
-
 #include <folly/Exception.h>
+#include <folly/Optional.h>
 #include <folly/dynamic.h>
 
 #include "JSModulesUnbundle.h"
@@ -34,10 +34,7 @@ class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
 
-struct MethodCallResult {
-  folly::dynamic result;
-  bool isUndefined;
-};
+using MethodCallResult = folly::Optional<folly::dynamic>;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.

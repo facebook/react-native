@@ -438,6 +438,12 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return description;
 }
 
+// Layout Direction
+
+- (UIUserInterfaceLayoutDirection)effectiveLayoutDirection {
+  return YGNodeLayoutGetDirection(self.cssNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
+}
+
 // Margin
 
 #define RCT_MARGIN_PROPERTY(prop, metaProp)       \

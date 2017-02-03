@@ -119,7 +119,7 @@ void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::
 MethodCallResult RCTNativeModule::callSerializableNativeHook(
     ExecutorToken token, unsigned int reactMethodId, folly::dynamic &&params) {
   RCTFatal(RCTErrorWithMessage(@"callSerializableNativeHook is not yet supported on iOS"));
-  return {nullptr, true};
+  return folly::none;
 }
 
 

@@ -877,10 +877,10 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
       moduleId,
       methodId,
       std::move(args));
-  if (result.isUndefined) {
+  if (!result.hasValue()) {
     return Value::makeUndefined(m_context);
   }
-  return Value::fromDynamic(m_context, result.result);
+  return Value::fromDynamic(m_context, result.value());
 }
 
 } }
