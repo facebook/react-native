@@ -256,12 +256,16 @@ static inline const YGValue *YGComputedEdgeValue(const YGValue edges[YGEdgeCount
   return defaultValue;
 }
 
-static inline float YGValueResolve(const YGValue *const unit, const float parentSize) {
-  if (unit->unit == YGUnitPixel) {
-    return unit->value;
-  } else {
-    return unit->value * parentSize / 100.0f;
+static inline float YGValueResolve(const YGValue *const value, const float parentSize) {
+  switch (value->unit) {
+    case YGUnitUndefined:
+      return YGUndefined;
+    case YGUnitPixel:
+      return value->value;
+    case YGUnitPercent:
+      return value->value * parentSize / 100.0f;
   }
+  return YGUndefined;
 }
 
 int32_t gNodeInstanceCount = 0;
@@ -2253,7 +2257,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             childHeight = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionHeight],
                                          availableInnerHeight) +
                           marginColumn;
-            childHeightMeasureMode = YGMeasureModeExactly;
+            childHeightMeasureMode =
+                YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined : YGMeasureModeExactly;
           }
         } else {
           childHeight = updatedMainSize + marginColumn;
@@ -2277,7 +2282,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             childWidth = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionWidth],
                                         availableInnerWidth) +
                          marginRow;
-            childWidthMeasureMode = YGMeasureModeExactly;
+            childWidthMeasureMode =
+                YGFloatIsUndefined(childWidth) ? YGMeasureModeUndefined : YGMeasureModeExactly;
           }
         }
 
