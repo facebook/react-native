@@ -83,8 +83,8 @@ var DocsSidebar = React.createClass({
               {category.links.map((metadata) =>
                 <li key={metadata.id}>
                   <a
+                    style={{marginLeft: 10}}
                     target={metadata.permalink.match(/^https?:/) && '_blank'}
-                    style={{marginLeft: metadata.indent ? 20 : 0}}
                     className={metadata.id === this.props.metadata.id ? 'active' : ''}
                     href={this.getLink(metadata)}>
                     {metadata.title}
