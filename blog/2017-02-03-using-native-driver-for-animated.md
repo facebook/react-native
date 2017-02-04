@@ -12,7 +12,7 @@ For the past year, we've been working on improving performance of animations tha
 
 ## What is this?
 
-The Animated API was designed with a very important constraint in mind, it is serializable. This means we can send everything about the animation to native before it has even started. This allows native code to perform the animation on the UI thread without having to go through the bridge on every frame. This is very useful because once the animation has started, the JS thread can be blocked and the animation will still run smoothly. In practice this can happen a lot because user code runs on the JS thread and react renders can also lock JS for a long time. This is key to high performance animations while not having to worry about user code causing lag.
+The Animated API was designed with a very important constraint in mind, it is serializable. This means we can send everything about the animation to native before it has even started and allows native code to perform the animation on the UI thread without having to go through the bridge on every frame. It is very useful because once the animation has started, the JS thread can be blocked and the animation will still run smoothly. In practice this can happen a lot because user code runs on the JS thread and react renders can also lock JS for a long time.
 
 ## A bit of history...
 
