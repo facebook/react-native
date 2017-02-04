@@ -18,7 +18,7 @@ The Animated API was designed with a very important constraint in mind, it is se
 
 This project started about a year ago, when Exponent built the li.st app on Android. [Krzysztof Magiera](https://twitter.com/kzzzf) was contracted to build the initial implementation on Android. It ended up working well and li.st was the first app to ship with native driven animations using Animated. A few months later [Brandon Withrow](https://github.com/buba447) built the initial implementation on iOS and after that [Ryan Gomba](https://twitter.com/ryangomba) and myself worked on adding missing features like support for `Animated.event` as well as squash bugs we found when using it in production apps. This was truly a community effort and I would like to thanks everyone that was involved as well as Exponent for sponsoring a large part of the development. As of today it is now used by `Touchable` components in React Native as well as for navigation animations in the newly released [React Navigation](https://github.com/react-community/react-navigation) library.
 
-## How does it works?
+## How does it work?
 
 First let's check out how animations currently work using Animated with the JS driver. When using Animated, you declare a graph of nodes that represent the animations that you want to perform, and then use a driver to update an Animated value using a predefined curve. You may also update an Animated value by connecting it to an event of a `View` using `Animated.event`.
 
