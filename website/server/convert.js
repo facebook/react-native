@@ -16,6 +16,7 @@ var optimist = require('optimist');
 var path = require('path');
 var removeMd = require('remove-markdown');
 var extractDocs = require('./extractDocs');
+var cache = require('memory-cache');
 var argv = optimist.argv;
 
 function splitHeader(content) {
@@ -91,6 +92,7 @@ function buildFile(layout, metadata, rawContent) {
 }
 
 function execute() {
+  console.log('execute.start');
   var DOCS_MD_DIR = '../docs/';
   var BLOG_MD_DIR = '../blog/';
 
@@ -135,7 +137,12 @@ function execute() {
     );
   }
 
-  extractDocs().forEach(function(content) {
+  var extractedDocs = cache.get('extractedDocs');
+  if (!extractedDocs) {
+    extractedDocs = extractDocs();
+    cache.put('extractedDocs', extractedDocs);
+  }
+  extractedDocs.forEach(function(content) {
     handleMarkdown(content, null);
   });
 
