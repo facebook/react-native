@@ -16,6 +16,7 @@ var optimist = require('optimist');
 var path = require('path');
 var removeMd = require('remove-markdown');
 var extractDocs = require('./extractDocs');
+var cache = require('memory-cache');
 var argv = optimist.argv;
 
 function splitHeader(content) {
@@ -135,7 +136,12 @@ function execute() {
     );
   }
 
-  extractDocs().forEach(function(content) {
+  var extractedDocs = cache.get('extractedDocs');
+  if (!extractedDocs) {
+    extractedDocs = extractDocs();
+    cache.put('extractedDocs', extractedDocs);
+  }
+  extractedDocs.forEach(function(content) {
     handleMarkdown(content, null);
   });
 
