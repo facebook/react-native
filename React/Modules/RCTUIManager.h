@@ -14,6 +14,7 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
+#import <React/RCTEventEmitter.h>
 
 /**
  * UIManager queue
@@ -53,7 +54,7 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 /**
  * The RCTUIManager is the module responsible for updating the view hierarchy.
  */
-@interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
+@interface RCTUIManager : RCTEventEmitter <RCTBridgeModule, RCTInvalidating>
 
 /**
  * Register a root view with the RCTUIManager.
