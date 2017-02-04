@@ -92,7 +92,6 @@ function buildFile(layout, metadata, rawContent) {
 }
 
 function execute() {
-  console.log('execute.start');
   var DOCS_MD_DIR = '../docs/';
   var BLOG_MD_DIR = '../blog/';
 
