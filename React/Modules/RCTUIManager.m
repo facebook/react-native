@@ -290,7 +290,7 @@ RCT_EXPORT_MODULE()
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
     self->_bridgeTransactionListeners = nil;
-    [self setBridge:nil];
+    [super setBridge:nil];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
