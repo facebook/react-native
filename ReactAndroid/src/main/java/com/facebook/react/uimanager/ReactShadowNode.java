@@ -345,7 +345,7 @@ public class ReactShadowNode {
   }
 
   public void calculateLayout() {
-    mYogaNode.calculateLayout();
+    mYogaNode.calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
   }
 
   public final boolean hasNewLayout() {

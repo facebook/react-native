@@ -40,6 +40,7 @@ var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
+var View = require('View');
 
 var cloneReferencedElement = require('react-clone-referenced-element');
 var isEmpty = require('isEmpty');
@@ -299,7 +300,7 @@ var ListView = React.createClass({
    *
    * See `ScrollView#scrollToEnd`.
    */
-  scrollToEnd: function(options?: { animated?: boolean }) {
+  scrollToEnd: function(options?: ?{ animated?: ?boolean }) {
     if (this._scrollComponent) {
       if (this._scrollComponent.scrollToEnd) {
         this._scrollComponent.scrollToEnd(options);
@@ -465,7 +466,8 @@ var ListView = React.createClass({
         totalIndex++;
 
         if (this.props.renderSeparator &&
-            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
+            rowIdx !== rowIDs.length - 1 &&
+            sectionIdx === allRowIDs.length - 1) {
           var adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID && (
               this.state.highlightedRow.rowID === rowID ||
@@ -477,7 +479,11 @@ var ListView = React.createClass({
             adjacentRowHighlighted
           );
           if (separator) {
-            bodyComponents.push(separator);
+            bodyComponents.push(
+              <View key={'s_' + comboID}>
+                {separator}
+              </View>
+            );
             totalIndex++;
           }
         }
