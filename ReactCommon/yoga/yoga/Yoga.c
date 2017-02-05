@@ -256,12 +256,16 @@ static inline const YGValue *YGComputedEdgeValue(const YGValue edges[YGEdgeCount
   return defaultValue;
 }
 
-static inline float YGValueResolve(const YGValue *const unit, const float parentSize) {
-  if (unit->unit == YGUnitPixel) {
-    return unit->value;
-  } else {
-    return unit->value * parentSize / 100.0f;
+static inline float YGValueResolve(const YGValue *const value, const float parentSize) {
+  switch (value->unit) {
+    case YGUnitUndefined:
+      return YGUndefined;
+    case YGUnitPixel:
+      return value->value;
+    case YGUnitPercent:
+      return value->value * parentSize / 100.0f;
   }
+  return YGUndefined;
 }
 
 int32_t gNodeInstanceCount = 0;
@@ -485,34 +489,34 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
     return node->style.instanceName;                                            \
   }
 
-#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(type, name, paramName, instanceName, defaultValue) \
-  void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) {    \
-    if (node->style.instanceName[edge].value != paramName ||                                     \
-        node->style.instanceName[edge].unit != YGUnitPixel) {                                    \
-      node->style.instanceName[edge].value = paramName;                                          \
-      node->style.instanceName[edge].unit =                                                      \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                         \
-      YGNodeMarkDirtyInternal(node);                                                             \
-    }                                                                                            \
-  }                                                                                              \
-                                                                                                 \
-  void YGNodeStyleSet##name##Percent(const YGNodeRef node,                                       \
-                                     const YGEdge edge,                                          \
-                                     const float paramName) {                                    \
-    if (node->style.instanceName[edge].value != paramName ||                                     \
-        node->style.instanceName[edge].unit != YGUnitPercent) {                                  \
-      node->style.instanceName[edge].value = paramName;                                          \
-      node->style.instanceName[edge].unit =                                                      \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;                       \
-      YGNodeMarkDirtyInternal(node);                                                             \
-    }                                                                                            \
-  }                                                                                              \
-                                                                                                 \
-  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                           \
-    return *YGComputedEdgeValue(node->style.instanceName, edge, &defaultValue);                  \
+#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(type, name, paramName, instanceName)            \
+  void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
+    if (node->style.instanceName[edge].value != paramName ||                                  \
+        node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
+      node->style.instanceName[edge].value = paramName;                                       \
+      node->style.instanceName[edge].unit =                                                   \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                      \
+      YGNodeMarkDirtyInternal(node);                                                          \
+    }                                                                                         \
+  }                                                                                           \
+                                                                                              \
+  void YGNodeStyleSet##name##Percent(const YGNodeRef node,                                    \
+                                     const YGEdge edge,                                       \
+                                     const float paramName) {                                 \
+    if (node->style.instanceName[edge].value != paramName ||                                  \
+        node->style.instanceName[edge].unit != YGUnitPercent) {                               \
+      node->style.instanceName[edge].value = paramName;                                       \
+      node->style.instanceName[edge].unit =                                                   \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;                    \
+      YGNodeMarkDirtyInternal(node);                                                          \
+    }                                                                                         \
+  }                                                                                           \
+                                                                                              \
+  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                        \
+    return node->style.instanceName[edge];                                                    \
   }
 
-#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName, defaultValue)   \
+#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)                 \
   void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
     if (node->style.instanceName[edge].value != paramName ||                                  \
         node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
@@ -524,7 +528,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   }                                                                                           \
                                                                                               \
   float YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                       \
-    return YGComputedEdgeValue(node->style.instanceName, edge, &defaultValue)->value;         \
+    return node->style.instanceName[edge].value;                                              \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -573,10 +577,10 @@ YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
 YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(float, FlexBasis, flexBasis, flexBasis);
 
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position, YGValueUndefined);
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin, YGValueZero);
-YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding, YGValueZero);
-YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border, YGValueZero);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding);
+YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
 
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, Width, width, dimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, Height, height, dimensions[YGDimensionHeight]);
@@ -1071,9 +1075,14 @@ static inline float YGNodeDimWithMargin(const YGNodeRef node,
          YGNodeTrailingMargin(node, axis, widthSize);
 }
 
-static inline bool YGNodeIsStyleDimDefined(const YGNodeRef node, const YGFlexDirection axis) {
-  return node->style.dimensions[dim[axis]].unit != YGUnitUndefined &&
-         node->style.dimensions[dim[axis]].value >= 0.0f;
+static inline bool YGNodeIsStyleDimDefined(const YGNodeRef node,
+                                           const YGFlexDirection axis,
+                                           const float parentSize) {
+  return !(
+      node->style.dimensions[dim[axis]].unit == YGUnitUndefined ||
+      (node->style.dimensions[dim[axis]].unit == YGUnitPixel &&
+       node->style.dimensions[dim[axis]].value < 0.0f) ||
+      (node->style.dimensions[dim[axis]].unit == YGUnitPercent && YGFloatIsUndefined(parentSize)));
 }
 
 static inline bool YGNodeIsLayoutDimDefined(const YGNodeRef node, const YGFlexDirection axis) {
@@ -1244,17 +1253,18 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
   YGMeasureMode childWidthMeasureMode;
   YGMeasureMode childHeightMeasureMode;
 
-  const bool isRowStyleDimDefined = YGNodeIsStyleDimDefined(child, YGFlexDirectionRow);
-  const bool isColumnStyleDimDefined = YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn);
+  const float resolvedFlexBasis =
+      YGValueResolve(YGNodeStyleGetFlexBasisPtr(child), mainAxisParentSize);
+  const bool isRowStyleDimDefined = YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, parentWidth);
+  const bool isColumnStyleDimDefined =
+      YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn, parentHeight);
 
-  if (YGNodeStyleGetFlexBasisPtr(child)->unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(mainAxisSize)) {
+  if (!YGFloatIsUndefined(resolvedFlexBasis) && !YGFloatIsUndefined(mainAxisSize)) {
     if (YGFloatIsUndefined(child->layout.computedFlexBasis) ||
         (YGIsExperimentalFeatureEnabled(YGExperimentalFeatureWebFlexBasis) &&
          child->layout.computedFlexBasisGeneration != gCurrentGenerationCount)) {
       child->layout.computedFlexBasis =
-          fmaxf(YGValueResolve(YGNodeStyleGetFlexBasisPtr(child), mainAxisParentSize),
-                YGNodePaddingAndBorderForAxis(child, mainAxis, parentWidth));
+          fmaxf(resolvedFlexBasis, YGNodePaddingAndBorderForAxis(child, mainAxis, parentWidth));
     }
   } else if (isMainAxisRow && isRowStyleDimDefined) {
     // The width is definite, so use that as the flex basis.
@@ -1382,7 +1392,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
   const float marginRow = YGNodeMarginForAxis(child, YGFlexDirectionRow, width);
   const float marginColumn = YGNodeMarginForAxis(child, YGFlexDirectionColumn, width);
 
-  if (YGNodeIsStyleDimDefined(child, YGFlexDirectionRow)) {
+  if (YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, width)) {
     childWidth = YGValueResolve(&child->style.dimensions[YGDimensionWidth], width) + marginRow;
   } else {
     // If the child doesn't have a specified width, compute the width based
@@ -1399,7 +1409,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     }
   }
 
-  if (YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn)) {
+  if (YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn, height)) {
     childHeight =
         YGValueResolve(&child->style.dimensions[YGDimensionHeight], height) + marginColumn;
   } else {
@@ -2230,12 +2240,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           childWidthMeasureMode = YGMeasureModeExactly;
 
           if (!YGFloatIsUndefined(availableInnerCrossDim) &&
-              !YGNodeIsStyleDimDefined(currentRelativeChild, YGFlexDirectionColumn) &&
+              !YGNodeIsStyleDimDefined(currentRelativeChild,
+                                       YGFlexDirectionColumn,
+                                       availableInnerHeight) &&
               heightMeasureMode == YGMeasureModeExactly &&
               YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch) {
             childHeight = availableInnerCrossDim;
             childHeightMeasureMode = YGMeasureModeExactly;
-          } else if (!YGNodeIsStyleDimDefined(currentRelativeChild, YGFlexDirectionColumn)) {
+          } else if (!YGNodeIsStyleDimDefined(currentRelativeChild,
+                                              YGFlexDirectionColumn,
+                                              availableInnerHeight)) {
             childHeight = availableInnerCrossDim;
             childHeightMeasureMode =
                 YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined : YGMeasureModeAtMost;
@@ -2243,19 +2257,24 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             childHeight = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionHeight],
                                          availableInnerHeight) +
                           marginColumn;
-            childHeightMeasureMode = YGMeasureModeExactly;
+            childHeightMeasureMode =
+                YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined : YGMeasureModeExactly;
           }
         } else {
           childHeight = updatedMainSize + marginColumn;
           childHeightMeasureMode = YGMeasureModeExactly;
 
           if (!YGFloatIsUndefined(availableInnerCrossDim) &&
-              !YGNodeIsStyleDimDefined(currentRelativeChild, YGFlexDirectionRow) &&
+              !YGNodeIsStyleDimDefined(currentRelativeChild,
+                                       YGFlexDirectionRow,
+                                       availableInnerWidth) &&
               widthMeasureMode == YGMeasureModeExactly &&
               YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch) {
             childWidth = availableInnerCrossDim;
             childWidthMeasureMode = YGMeasureModeExactly;
-          } else if (!YGNodeIsStyleDimDefined(currentRelativeChild, YGFlexDirectionRow)) {
+          } else if (!YGNodeIsStyleDimDefined(currentRelativeChild,
+                                              YGFlexDirectionRow,
+                                              availableInnerWidth)) {
             childWidth = availableInnerCrossDim;
             childWidthMeasureMode =
                 YGFloatIsUndefined(childWidth) ? YGMeasureModeUndefined : YGMeasureModeAtMost;
@@ -2263,7 +2282,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             childWidth = YGValueResolve(&currentRelativeChild->style.dimensions[YGDimensionWidth],
                                         availableInnerWidth) +
                          marginRow;
-            childWidthMeasureMode = YGMeasureModeExactly;
+            childWidthMeasureMode =
+                YGFloatIsUndefined(childWidth) ? YGMeasureModeUndefined : YGMeasureModeExactly;
           }
         }
 
@@ -2312,7 +2332,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             &childHeight);
 
         const bool requiresStretchLayout =
-            !YGNodeIsStyleDimDefined(currentRelativeChild, crossAxis) &&
+            !YGNodeIsStyleDimDefined(currentRelativeChild, crossAxis, availableInnerCrossDim) &&
             YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch;
 
         // Recursively call the layout algorithm for this child with the updated
@@ -2497,8 +2517,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           // current line.
           if (alignItem == YGAlignStretch) {
             const bool isCrossSizeDefinite =
-                (isMainAxisRow && YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn)) ||
-                (!isMainAxisRow && YGNodeIsStyleDimDefined(child, YGFlexDirectionRow));
+                (isMainAxisRow &&
+                 YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn, availableInnerHeight)) ||
+                (!isMainAxisRow &&
+                 YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, availableInnerWidth));
 
             float childWidth;
             float childHeight;
@@ -3106,7 +3128,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
 
   if (!YGFloatIsUndefined(width)) {
     widthMeasureMode = YGMeasureModeExactly;
-  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow)) {
+  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, availableWidth)) {
     width = YGValueResolve(&node->style.dimensions[dim[YGFlexDirectionRow]], availableWidth) +
             YGNodeMarginForAxis(node, YGFlexDirectionRow, availableWidth);
     widthMeasureMode = YGMeasureModeExactly;
@@ -3117,7 +3139,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
 
   if (!YGFloatIsUndefined(height)) {
     heightMeasureMode = YGMeasureModeExactly;
-  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn)) {
+  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn, availableHeight)) {
     height = YGValueResolve(&node->style.dimensions[dim[YGFlexDirectionColumn]], availableHeight) +
              YGNodeMarginForAxis(node, YGFlexDirectionColumn, availableWidth);
     heightMeasureMode = YGMeasureModeExactly;

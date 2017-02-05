@@ -121,7 +121,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: [any];
+  _subscriptions: Array<*>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;
@@ -393,9 +393,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     (this._subscriptions || []).forEach(sub => {
       sub.remove();
     });
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions = [];
   }
 
@@ -460,44 +457,26 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       !!this.onreadystatechange ||
       !!this.onprogress;
 
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didSendNetworkData',
       (args) => this.__didUploadProgress(...args)
     ));
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkResponse',
       (args) => this.__didReceiveResponse(...args)
     ));
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkData',
       (args) => this.__didReceiveData(...args)
     ));
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkIncrementalData',
       (args) => this.__didReceiveIncrementalData(...args)
     ));
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didReceiveNetworkDataProgress',
       (args) => this.__didReceiveDataProgress(...args)
     ));
-    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-     * detected during the deployment of v0.38.0. To see the error, remove this
-     * comment and run flow */
     this._subscriptions.push(RCTNetworking.addListener(
       'didCompleteNetworkResponse',
       (args) => this.__didCompleteResponse(...args)
