@@ -149,27 +149,27 @@ describe('Resolver', function() {
               .calls
               .map((call) => call[0]))
           .toEqual([
-            { id: 'polyfills/polyfills.js',
-              file: 'polyfills/polyfills.js',
+            { id: 'polyfills/Object.es6.js',
+              file: 'polyfills/Object.es6.js',
               dependencies: []
             },
             { id: 'polyfills/console.js',
               file: 'polyfills/console.js',
               dependencies: [
-                'polyfills/polyfills.js'
+                'polyfills/Object.es6.js'
               ],
             },
             { id: 'polyfills/error-guard.js',
               file: 'polyfills/error-guard.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js'
               ],
             },
             { id: 'polyfills/Number.es6.js',
               file: 'polyfills/Number.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js'
               ],
@@ -177,7 +177,7 @@ describe('Resolver', function() {
             { id: 'polyfills/String.prototype.es6.js',
               file: 'polyfills/String.prototype.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -186,7 +186,7 @@ describe('Resolver', function() {
             { id: 'polyfills/Array.prototype.es6.js',
               file: 'polyfills/Array.prototype.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -196,7 +196,7 @@ describe('Resolver', function() {
             { id: 'polyfills/Array.es6.js',
               file: 'polyfills/Array.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -207,7 +207,7 @@ describe('Resolver', function() {
             { id: 'polyfills/Object.es7.js',
               file: 'polyfills/Object.es7.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -219,7 +219,7 @@ describe('Resolver', function() {
             { id: 'polyfills/babelHelpers.js',
               file: 'polyfills/babelHelpers.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -300,7 +300,7 @@ describe('Resolver', function() {
             { file: 'some module',
               id: 'some module',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',

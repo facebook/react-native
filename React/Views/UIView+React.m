@@ -89,23 +89,23 @@
 
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-  return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
-#else
-  return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
-#endif
+  if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
+    return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
+  } else {
+    return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
+  }
 }
 
 - (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-  self.semanticContentAttribute =
-    layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
-      UISemanticContentAttributeForceLeftToRight :
-      UISemanticContentAttributeForceRightToLeft;
-#else
-  objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-#endif
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute =
+      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+        UISemanticContentAttributeForceLeftToRight :
+        UISemanticContentAttributeForceRightToLeft;
+  } else {
+    objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
 }
 
 - (NSInteger)reactZIndex

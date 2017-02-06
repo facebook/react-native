@@ -87,6 +87,8 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaDirection getLayoutDirection();
   YogaOverflow getOverflow();
   void setOverflow(YogaOverflow overflow);
+  YogaDisplay getDisplay();
+  void setDisplay(YogaDisplay display);
   void setData(Object data);
   Object getData();
   void reset();
