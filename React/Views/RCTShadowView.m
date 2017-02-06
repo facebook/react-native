@@ -636,6 +636,11 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   YGNodeStyleSetFlex(_cssNode, value);
 }
 
+- (float)flex
+{
+  return YGNodeStyleGetFlex(_cssNode);
+}
+
 - (void)setFlexBasis:(YGValue)value
 {
   RCT_SET_YGVALUE(value, YGNodeStyleSetFlexBasis, _cssNode);

@@ -14,6 +14,12 @@
 
 @implementation RCTSwitch
 
+// `on` is a component prop, so we must expose symmetrical `on` and `setOn` methods.
+// UIView breaks convention with the name `isOn`, so we simply forward.
+- (BOOL)on {
+  return [self isOn];
+}
+
 - (void)setOn:(BOOL)on animated:(BOOL)animated {
   _wasOn = on;
   [super setOn:on animated:animated];

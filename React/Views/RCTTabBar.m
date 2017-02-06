@@ -149,6 +149,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.translucent = translucent;
 }
 
+- (UIColor *)unselectedItemTintColor {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+  if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
+    return _tabController.tabBar.unselectedItemTintColor;
+  }
+#endif
+  return nil;
+}
+
 - (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
   if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
