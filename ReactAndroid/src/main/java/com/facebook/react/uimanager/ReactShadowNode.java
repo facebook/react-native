@@ -167,7 +167,9 @@ public class ReactShadowNode {
       YogaNode childYogaNode = child.mYogaNode;
       if (childYogaNode == null) {
         throw new RuntimeException(
-          "Cannot add a child that doesn't have a CSS node to a node without a measure function!");
+          "Cannot add a child that doesn't have a YogaNode to a parent without a measure " +
+            "function! (Trying to add a '" + child.getClass().getSimpleName() + "' to a '" +
+            getClass().getSimpleName() + "')");
       }
       mYogaNode.addChildAt(childYogaNode, i);
     }
@@ -343,7 +345,7 @@ public class ReactShadowNode {
   }
 
   public void calculateLayout() {
-    mYogaNode.calculateLayout();
+    mYogaNode.calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
   }
 
   public final boolean hasNewLayout() {

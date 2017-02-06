@@ -131,9 +131,9 @@ class ShareActionSheetExample extends React.Component {
       ]
     },
     (error) => alert(error),
-    (success, method) => {
+    (completed, method) => {
       var text;
-      if (success) {
+      if (completed) {
         text = `Shared via ${method}`;
       } else {
         text = 'You didn\'t share';
@@ -172,9 +172,9 @@ class ShareScreenshotExample extends React.Component {
         ]
       },
       (error) => alert(error),
-      (success, method) => {
+      (completed, method) => {
         var text;
-        if (success) {
+        if (completed) {
           text = `Shared via ${method}`;
         } else {
           text = 'You didn\'t share';

@@ -1016,6 +1016,11 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
+  extractOffset(): void {
+    this.x.extractOffset();
+    this.y.extractOffset();
+  }
+
   __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
@@ -1108,9 +1113,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
-    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
-     * deploy of Flow v0.36.0. To see the error, remove this comment and run
-     * Flow */
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
+     * detected during the deploy of Flow v0.36.0. To see the error, remove
+     * this comment and run Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1699,7 +1704,6 @@ class AnimatedProps extends Animated {
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
-    NativeAnimatedHelper.validateProps(propsConfig);
     return {
       type: 'props',
       props: propsConfig,

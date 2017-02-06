@@ -20,7 +20,7 @@ const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const path = require('path');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
-const {compactMapping} = require('./react-packager/src/Bundler/source-map');
+const {compactMapping} = require('./src/Bundler/source-map');
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -50,7 +50,7 @@ const getBabelRC = (function() {
     if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
-          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+          path.resolve(__dirname, 'rn-babelrc.json'))
         );
 
       // Require the babel-preset's listed in the default babel config

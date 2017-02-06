@@ -338,7 +338,9 @@ static NSThread *newJavaScriptThread(void)
       contextRef = context.JSGlobalContextRef;
     } else {
       if (self->_useCustomJSCLibrary) {
-        JSC_configureJSCForIOS(true);
+        JSC_configureJSCForIOS(true, RCTJSONStringify(@{
+          @"StartSamplingProfilerOnInit": @(self->_bridge.devMenu.startSamplingProfilerOnLaunch)
+        }, NULL).UTF8String);
       }
       contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
@@ -1028,7 +1030,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 - (void)_createContext
 {
   if (_useCustomJSCLibrary) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, "{}");
   }
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(_useCustomJSCLibrary, nullptr, nullptr);
   _context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];

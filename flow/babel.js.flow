@@ -49,14 +49,14 @@ type GeneratorOptions = {
   sourceFileName?: string,
 };
 
-type InlinePlugin = [string | {} | () => {}, any];
+type InlinePlugin = string | {} | () => {};
 
 // based on https://babeljs.io/docs/usage/options/ -- 2016-11-11
 type __TransformOptions = {
   filename?: string,
   filenameRelative?: string,
   presets?: Array<string | Object>,
-  plugins?: Array<string | Object | InlinePlugin>,
+  plugins?: Array<string | Object | [InlinePlugin] | [InlinePlugin, mixed]>,
   parserOpts?: BabylonOptions,
   generatorOpts?: GeneratorOptions,
   highlightCode?: boolean,

@@ -211,7 +211,7 @@ exports.title = 'Transforms';
 exports.description = 'View transforms';
 exports.examples = [
   {
-    title: 'Perspective',
+    title: 'Perspective, Rotate, Animation',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
     render(): React.Element<any> { return <Flip />; }
   },
