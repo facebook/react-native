@@ -10,7 +10,7 @@
 
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
-const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
+const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');

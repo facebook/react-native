@@ -163,7 +163,7 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
                              " is asynchronous but invoked synchronously"));
   }
 
-  return { method.syncFunc(std::move(args)), false };
+  return method.syncFunc(std::move(args));
 }
 
 }
