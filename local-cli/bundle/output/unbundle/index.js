@@ -13,8 +13,8 @@
 const asAssets = require('./as-assets');
 const asIndexedFile = require('./as-indexed-file');
 
-import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
-import type Server from '../../../../packager/react-packager/src/Server';
+import type Bundle from '../../../../packager/src//Bundler/Bundle';
+import type Server from '../../../../packager/src//Server';
 import type {OutputOptions, RequestOptions} from '../../types.flow';
 
 function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {

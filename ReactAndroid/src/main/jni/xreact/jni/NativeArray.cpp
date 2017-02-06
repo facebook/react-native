@@ -5,30 +5,38 @@
 #include <fb/fbjni.h>
 #include <folly/json.h>
 
-#include "NativeCommon.h"
-
 using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
 
-NativeArray::NativeArray(folly::dynamic a)
-    : array(std::move(a)) {
-  if (!array.isArray()) {
+NativeArray::NativeArray(folly::dynamic array)
+    : isConsumed(false), array_(std::move(array)) {
+  if (!array_.isArray()) {
     throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass,
-                               "expected Array, got a %s", array.typeName());
+                               "expected Array, got a %s", array_.typeName());
   }
 }
 
 local_ref<jstring> NativeArray::toString() {
-  exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
-  return make_jstring(folly::toJson(array).c_str());
+  throwIfConsumed();
+  return make_jstring(folly::toJson(array_).c_str());
 }
 
 void NativeArray::registerNatives() {
   registerHybrid({
     makeNativeMethod("toString", NativeArray::toString),
   });
+}
+
+folly::dynamic NativeArray::consume() {
+  throwIfConsumed();
+  isConsumed = true;
+  return std::move(array_);
+}
+
+void NativeArray::throwIfConsumed() {
+  exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
 }
 
 }

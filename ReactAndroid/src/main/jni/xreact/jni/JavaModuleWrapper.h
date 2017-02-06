@@ -4,6 +4,7 @@
 
 #include <cxxreact/NativeModule.h>
 #include <fb/fbjni.h>
+#include <folly/Optional.h>
 
 #include "MethodInvoker.h"
 
@@ -54,6 +55,7 @@ class JavaNativeModule : public NativeModule {
  private:
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
+  std::vector<folly::Optional<MethodInvoker>> syncMethods_;
 };
 
 // Experimental new implementation that uses direct method invocation

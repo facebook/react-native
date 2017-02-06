@@ -84,7 +84,7 @@ JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
 
 JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) {
   switch (obj.type()) {
-    // For premitive types (and strings), just create and return an equivalent JSValue
+    // For primitive types (and strings), just create and return an equivalent JSValue
     case folly::dynamic::Type::NULLT:
       return JSC_JSValueMakeNull(ctx);
 

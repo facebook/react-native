@@ -31,7 +31,7 @@ class MethodInvoker {
 public:
   MethodInvoker(jni::alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync);
 
-  MethodCallResult invoke(std::weak_ptr<Instance>& instance, JBaseJavaModule::javaobject module, ExecutorToken token, const folly::dynamic& params);
+  MethodCallResult invoke(std::weak_ptr<Instance>& instance, jni::alias_ref<JBaseJavaModule::javaobject> module, ExecutorToken token, const folly::dynamic& params);
 
   bool isSyncHook() const {
     return isSync_;
