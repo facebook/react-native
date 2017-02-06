@@ -7,17 +7,17 @@ import {
 import { TabNavigator } from 'react-navigation';
 
 import ChatListScreen from './chat/ChatListScreen';
-import FriendListScreen from './friends/FriendListScreen';
+import WelcomeScreen from './welcome/WelcomeScreen';
 
 /**
  * Screen with tabs shown on app startup.
  */
 const HomeScreenTabNavigator = TabNavigator({
+  Welcome: {
+    screen: WelcomeScreen,
+  },
   Chats: {
     screen: ChatListScreen,
-  },
-  Friends: {
-    screen: FriendListScreen,
   },
 });
 
