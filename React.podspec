@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.platform                = :ios, "8.0"
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
   s.preserve_paths          = "package.json", "LICENSE", "LICENSE-CustomComponents", "PATENTS"
-  s.cocoapods_version       = ">= 1.2.0.beta.1"
+  s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|
     ss.dependency             "Yoga", "#{package["version"]}.React"
