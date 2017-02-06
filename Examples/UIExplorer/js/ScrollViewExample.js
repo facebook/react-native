@@ -41,7 +41,7 @@ exports.examples = [
   title: '<ScrollView>',
   description: 'To make content scrollable, wrap it within a <ScrollView> component',
   render: function() {
-    var _scrollView: ScrollView;
+    var _scrollView = ScrollView;
     return (
       <View>
         <ScrollView
@@ -69,7 +69,7 @@ exports.examples = [
   title: '<ScrollView> (horizontal = true)',
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
-    var _scrollView: ScrollView;
+    var _scrollView = ScrollView;
     return (
       <View>
         <ScrollView
