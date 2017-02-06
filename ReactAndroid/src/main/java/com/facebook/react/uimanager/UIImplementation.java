@@ -95,11 +95,11 @@ public class UIImplementation {
     return viewManager.createShadowNodeInstance();
   }
 
-  protected final ReactShadowNode resolveShadowNode(int reactTag) {
+  public final ReactShadowNode resolveShadowNode(int reactTag) {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
-  protected final ViewManager resolveViewManager(String className) {
+  public final ViewManager resolveViewManager(String className) {
     return mViewManagers.get(className);
   }
 
