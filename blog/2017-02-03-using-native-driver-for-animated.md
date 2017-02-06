@@ -22,7 +22,7 @@ This project started about a year ago, when Exponent built the li.st app on Andr
 
 First let's check out how animations currently work using Animated with the JS driver. When using Animated, you declare a graph of nodes that represent the animations that you want to perform, and then use a driver to update an Animated value using a predefined curve. You may also update an Animated value by connecting it to an event of a `View` using `Animated.event`.
 
-<INSERT COOL IMAGE?>
+![](/react-native/blog/img/animated-diagram.png)
 
 Here's a breakdown of the steps for an animation and where it happens:
 - JS: The animation driver uses `requestAnimationFrame` to execute on every frame and update the value it drives using the new value it calculates based on the animation curve.
@@ -37,7 +37,7 @@ What the native driver does is since Animated produces a graph of animated nodes
 
 Here's an example of how we can serialize an animated value and an interpolation node (not the exact implementation, just an example).
 
-Create the native value node:
+Create the native value node, this is the value that will be animated:
 ```
 NativeAnimatedModule.createNode({
   id: 1,
@@ -46,7 +46,7 @@ NativeAnimatedModule.createNode({
 });
 ```
 
-Create the native interpolation node:
+Create the native interpolation node, this tells the native driver how to interpolate a value:
 ```
 NativeAnimatedModule.createNode({
   id: 2,
@@ -57,14 +57,24 @@ NativeAnimatedModule.createNode({
 });
 ```
 
-Connect the 2 nodes together:
+Create the native props node, this tells the native driver which prop on the view it is attached to:
 ```
-NativeAnimatedModule.connectNodes(1, 2);
+NativeAnimatedModule.createNode({
+  id: 3,
+  type: 'props',
+  properties: ['style.opacity'],
+});
 ```
 
-Connect the interpolation node to a view:
+Connect nodes together:
 ```
-NativeAnimatedModule.connectToView(2, ReactNative.findNodeHandle(viewRef));
+NativeAnimatedModule.connectNodes(1, 2);
+NativeAnimatedModule.connectNodes(2, 3);
+```
+
+Connect the props node to a view:
+```
+NativeAnimatedModule.connectToView(3, ReactNative.findNodeHandle(viewRef));
 ```
 
 With that the native animated module has all the info it needs to update the native views directly without having to go to JS to calculate any value.
@@ -94,7 +104,7 @@ Before:
 Animated.timing(this.state.animatedValue, {
   toValue: 1,
   duration: 500,
-});
+}).start();
 ```
 After:
 ```
@@ -135,7 +145,7 @@ After:
 
 ## Caveats
 
-Not everything you can do with Animated is currently supported in Native Animated. The main limitation is around `Animated.event`, it will only work with direct events and not bubbling events. This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
+Not everything you can do with Animated is currently supported in Native Animated. The main limitation is that you can only animate non-layout properties, things like `transform`, `opacity` and `backgroundColor` will work but flexbox and position properties won't. Another one is with `Animated.event`, it will only work with direct events and not bubbling events. This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
 
 Native Animated has also been part of React Native for quite a while but has never been documented because it was considered experimental. Because of that make sure you are using a recent version (0.40+) of React Native if you want to use this feature.
 
