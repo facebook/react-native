@@ -128,12 +128,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   _reactLayoutDirection = layoutDirection;
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-  self.semanticContentAttribute =
-    layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
-      UISemanticContentAttributeForceLeftToRight :
-      UISemanticContentAttributeForceRightToLeft;
-#endif
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute =
+      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+        UISemanticContentAttributeForceLeftToRight :
+        UISemanticContentAttributeForceRightToLeft;
+  }
 }
 
 - (NSString *)accessibilityLabel

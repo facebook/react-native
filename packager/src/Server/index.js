@@ -309,26 +309,25 @@ class Server {
       }
 
       const opts = bundleOpts(options);
-      const building = this._bundler.bundle(opts);
-      building.then(bundle => {
-        const modules = bundle.getModules();
-        const nonVirtual = modules.filter(m => !m.virtual);
-        bundleDeps.set(bundle, {
-          files: new Map(
-            nonVirtual
-              .map(({sourcePath, meta = {dependencies: []}}) =>
-                [sourcePath, meta.dependencies])
-          ),
-          idToIndex: new Map(modules.map(({id}, i) => [id, i])),
-          dependencyPairs: new Map(
-            nonVirtual
-              .filter(({meta}) => meta && meta.dependencyPairs)
-              .map(m => [m.sourcePath, m.meta.dependencyPairs])
-          ),
-          outdated: new Set(),
-        });
+      return this._bundler.bundle(opts);
+    }).then(bundle => {
+      const modules = bundle.getModules();
+      const nonVirtual = modules.filter(m => !m.virtual);
+      bundleDeps.set(bundle, {
+        files: new Map(
+          nonVirtual
+            .map(({sourcePath, meta = {dependencies: []}}) =>
+              [sourcePath, meta.dependencies])
+        ),
+        idToIndex: new Map(modules.map(({id}, i) => [id, i])),
+        dependencyPairs: new Map(
+          nonVirtual
+            .filter(({meta}) => meta && meta.dependencyPairs)
+            .map(m => [m.sourcePath, m.meta.dependencyPairs])
+        ),
+        outdated: new Set(),
       });
-      return building;
+      return bundle;
     });
   }
 

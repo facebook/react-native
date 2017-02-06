@@ -102,7 +102,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     boolean roundedBorders = mBorderCornerRadii != null ||
         (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
 
-    if ((mBorderStyle == null || mBorderStyle == BorderStyle.SOLID) && !roundedBorders) {
+    if (!roundedBorders) {
       drawRectangularBackgroundWithBorders(canvas);
     } else {
       drawRoundedBackgroundWithBorders(canvas);
