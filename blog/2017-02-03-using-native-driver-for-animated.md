@@ -12,15 +12,15 @@ For the past year, we've been working on improving performance of animations tha
 
 ## What is this?
 
-The Animated API was designed with a very important constraint in mind, it is serializable. This means we can send everything about the animation to native before it has even started and allows native code to perform the animation on the UI thread without having to go through the bridge on every frame. It is very useful because once the animation has started, the JS thread can be blocked and the animation will still run smoothly. In practice this can happen a lot because user code runs on the JS thread and react renders can also lock JS for a long time.
+The Animated API was designed with a very important constraint in mind, it is serializable. This means we can send everything about the animation to native before it has even started and allows native code to perform the animation on the UI thread without having to go through the bridge on every frame. It is very useful because once the animation has started, the JS thread can be blocked and the animation will still run smoothly. In practice this can happen a lot because user code runs on the JS thread and React renders can also lock JS for a long time.
 
 ## A bit of history...
 
-This project started about a year ago, when Exponent built the li.st app on Android. [Krzysztof Magiera](https://twitter.com/kzzzf) was contracted to build the initial implementation on Android. It ended up working well and li.st was the first app to ship with native driven animations using Animated. A few months later [Brandon Withrow](https://github.com/buba447) built the initial implementation on iOS and after that [Ryan Gomba](https://twitter.com/ryangomba) and myself worked on adding missing features like support for `Animated.event` as well as squash bugs we found when using it in production apps. This was truly a community effort and I would like to thanks everyone that was involved as well as Exponent for sponsoring a large part of the development. As of today it is now used by `Touchable` components in React Native as well as for navigation animations in the newly released [React Navigation](https://github.com/react-community/react-navigation) library.
+This project started about a year ago, when Exponent built the li.st app on Android. [Krzysztof Magiera](https://twitter.com/kzzzf) was contracted to build the initial implementation on Android. It ended up working well and li.st was the first app to ship with native driven animations using Animated. A few months later, [Brandon Withrow](https://github.com/buba447) built the initial implementation on iOS. After that, [Ryan Gomba](https://twitter.com/ryangomba) and myself worked on adding missing features like support for `Animated.event` as well as squash bugs we found when using it in production apps. This was truly a community effort and I would like to thanks everyone that was involved as well as Exponent for sponsoring a large part of the development. It is now used by `Touchable` components in React Native as well as for navigation animations in the newly released [React Navigation](https://github.com/react-community/react-navigation) library.
 
 ## How does it work?
 
-First let's check out how animations currently work using Animated with the JS driver. When using Animated, you declare a graph of nodes that represent the animations that you want to perform, and then use a driver to update an Animated value using a predefined curve. You may also update an Animated value by connecting it to an event of a `View` using `Animated.event`.
+First, let's check out how animations currently work using Animated with the JS driver. When using Animated, you declare a graph of nodes that represent the animations that you want to perform, and then use a driver to update an Animated value using a predefined curve. You may also update an Animated value by connecting it to an event of a `View` using `Animated.event`.
 
 ![](/react-native/blog/img/animated-diagram.png)
 
@@ -31,9 +31,9 @@ Here's a breakdown of the steps for an animation and where it happens:
 - JS to Native bridge.
 - Native: The `UIView` or `android.View` is updated.
 
-As you can see most of the work happens on the JS thread so if it is blocked the animation will skip frames. It also needs to go through the JS to Native bridge on every frame to update native views.
+As you can see, most of the work happens on the JS thread. If it is blocked the animation will skip frames. It also needs to go through the JS to Native bridge on every frame to update native views.
 
-What the native driver does is since Animated produces a graph of animated nodes, it can be serialized and sent to native only once when the animation starts. After that native code can take care of updating the views directly on the UI thread on every frame.
+What the native driver does is move all of these steps to native. Since Animated produces a graph of animated nodes, it can be serialized and sent to native only once when the animation starts, eliminating the need to callback into the JS thread; the native code can take care of updating the views directly on the UI thread on every frame.
 
 Here's an example of how we can serialize an animated value and an interpolation node (not the exact implementation, just an example).
 
@@ -77,7 +77,7 @@ Connect the props node to a view:
 NativeAnimatedModule.connectToView(3, ReactNative.findNodeHandle(viewRef));
 ```
 
-With that the native animated module has all the info it needs to update the native views directly without having to go to JS to calculate any value.
+With that, the native animated module has all the info it needs to update the native views directly without having to go to JS to calculate any value.
 
 All there is left to do is actually start the animation by specifying what type of animation curve we want and what animated value to update. Timing animations can also be simplified by calculating every frame of the animation in advance in JS to make the native implementation smaller.
 ```
@@ -93,11 +93,11 @@ And now here's the breakdown of what happens when the animation runs:
 - Native: Intermediate values are calculated and passed to a props node that is attached to a native view.
 - Native: The `UIView` or `android.View` is updated.
 
-As you can see no more JS thread and no more bridge which means faster animations! 🎉🎉
+As you can see, no more JS thread and no more bridge which means faster animations! 🎉🎉
 
 ## How do I use this in my app?
 
-For normal animations the answer is pretty simple, you just have to add `useNativeDriver: true` to the animation config when starting it.
+For normal animations the answer is simple, just add `useNativeDriver: true` to the animation config when starting it.
 
 Before:
 ```
@@ -115,7 +115,7 @@ Animated.timing(this.state.animatedValue, {
 }).start();
 ```
 
-Animated values are only compatible with one driver so if you use native driver when starting an animation on a value, make sure every animations on that value also use the native driver.
+Animated values are only compatible with one driver so if you use native driver when starting an animation on a value, make sure every animation on that value also uses the native driver.
 
 It also works with `Animated.event`, this is very useful if you have an animation that must follow the scroll position because without the native driver it will always run a frame behind of the gesture because of the async nature of React Native.
 
@@ -151,6 +151,6 @@ Native Animated has also been part of React Native for quite a while but has nev
 
 ## Resources
 
-I really recommend this talk by [Krzysztof Magiera](https://twitter.com/kzzzf) about animations in React Native: https://www.youtube.com/watch?v=qgSMjYWqBk4.
+For more information about animated I recommend watching [this talk](https://www.youtube.com/watch?v=xtqUJVqpKNo) by [Christopher Chedeau](https://twitter.com/Vjeux).
 
-<MORE?>
+If you want a deep dive into animations and how offloading them to native can improve user experience there is also [this talk](https://www.youtube.com/watch?v=qgSMjYWqBk4) by [Krzysztof Magiera](https://twitter.com/kzzzf).
