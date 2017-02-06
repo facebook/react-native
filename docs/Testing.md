@@ -42,7 +42,7 @@ It's a good idea to add an Android unit test whenever you are working on code th
 
 ## Android Integration Tests
 
-To run the integration tests, you need to install the Android NDK. See [Prerequisites](/react-native/docs/android-building-from-source.html#prerequisites).
+To run the integration tests, you need to install the Android NDK. See [Prerequisites](docs/android-building-from-source.html#prerequisites).
 
 You also need to install the [Buck build tool](https://buckbuild.com/setup/install.html).
 

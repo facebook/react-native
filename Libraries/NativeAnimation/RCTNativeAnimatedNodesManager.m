@@ -116,10 +116,11 @@
 
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                           viewTag:(nonnull NSNumber *)viewTag
+                         viewName:(nonnull NSString *)viewName
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
-  if (viewTag && [node isKindOfClass:[RCTPropsAnimatedNode class]]) {
-    [(RCTPropsAnimatedNode *)node connectToView:viewTag uiManager:_uiManager];
+  if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+    [(RCTPropsAnimatedNode *)node connectToView:viewTag viewName:viewName uiManager:_uiManager];
   }
   [node setNeedsUpdate];
 }
@@ -128,7 +129,7 @@
                                viewTag:(nonnull NSNumber *)viewTag
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
-  if (viewTag && node && [node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+  if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
     [(RCTPropsAnimatedNode *)node disconnectFromView:viewTag];
   }
 }
@@ -294,7 +295,7 @@
                             valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
 {
   RCTAnimatedNode *node = _animationNodes[tag];
-  if (node && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
+  if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
     ((RCTValueAnimatedNode *)node).valueObserver = valueObserver;
   }
 }
@@ -303,7 +304,7 @@
                            valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
 {
   RCTAnimatedNode *node = _animationNodes[tag];
-  if (node && [node isKindOfClass:[RCTValueAnimatedNode class]]) {
+  if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
     ((RCTValueAnimatedNode *)node).valueObserver = valueObserver;
   }
 }

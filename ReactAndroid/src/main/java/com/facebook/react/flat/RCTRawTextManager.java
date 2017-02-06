@@ -12,7 +12,7 @@ package com.facebook.react.flat;
 /**
  * ViewManager that creates instances of RCTRawText.
  */
-/* package */ final class RCTRawTextManager extends VirtualViewManager<RCTRawText> {
+public final class RCTRawTextManager extends VirtualViewManager<RCTRawText> {
 
   @Override
   public String getName() {

@@ -24,8 +24,8 @@
 'use strict';
 
 const Animated = require('Animated');
-const PanResponder = require('PanResponder');
 const I18nManager = require('I18nManager');
+const PanResponder = require('PanResponder');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
@@ -85,6 +85,7 @@ const SwipeableRow = React.createClass({
     isOpen: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     onSwipeEnd: PropTypes.func.isRequired,
     onSwipeStart: PropTypes.func.isRequired,
     // Should bounce the row on mount
@@ -120,6 +121,7 @@ const SwipeableRow = React.createClass({
       isOpen: false,
       maxSwipeDistance: 0,
       onOpen: emptyFunction,
+      onClose: emptyFunction,
       onSwipeEnd: emptyFunction,
       onSwipeStart: emptyFunction,
       swipeThreshold: 30,
@@ -172,7 +174,7 @@ const SwipeableRow = React.createClass({
   render(): React.Element<any> {
     // The view hidden behind the main view
     let slideOutView;
-    if (this.state.isSwipeableViewRendered) {
+    if (this.state.isSwipeableViewRendered && this.state.rowHeight) {
       slideOutView = (
         <View style={[
           styles.slideOutContainer,
@@ -369,6 +371,7 @@ const SwipeableRow = React.createClass({
         this._animateToOpenPositionWith(gestureState.vx, horizontalDistance);
       } else {
         // Swiped right
+        this.props.onClose();
         this._animateToClosedPosition();
       }
     } else {

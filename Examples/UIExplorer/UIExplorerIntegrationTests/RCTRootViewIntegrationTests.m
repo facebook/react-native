@@ -144,7 +144,7 @@ static ControlBlock propertiesUpdateBlock()
 
 #pragma mark Logic Tests
 
-// This list should be kept in sync with RCTRootViewIntegrationTestApp.js
+// This list should be kept in sync with RCTRootViewIntegrationTestsApp.js
 
 // Simple size flexibility tests - test if the content is measured properly
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, none, simpleSizeFlexibilityBlock(RCTNone));

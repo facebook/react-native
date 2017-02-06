@@ -12,6 +12,7 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import android.graphics.Color;
+import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
@@ -98,6 +99,14 @@ public class ReactHorizontalScrollViewManager
     view.setPagingEnabled(pagingEnabled);
   }
 
+  /**
+   * Controls overScroll behaviour
+   */
+  @ReactProp(name = "overScrollMode")
+  public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
+    view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
@@ -114,6 +123,20 @@ public class ReactHorizontalScrollViewManager
       scrollView.smoothScrollTo(data.mDestX, data.mDestY);
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
+  }
+
+  @Override
+  public void scrollToEnd(
+      ReactHorizontalScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+    // ScrollView always has one child - the scrollable area
+    int right =
+      scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(right, scrollView.getScrollY());
+    } else {
+      scrollView.scrollTo(right, scrollView.getScrollY());
     }
   }
 

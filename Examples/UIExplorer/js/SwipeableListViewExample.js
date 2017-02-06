@@ -29,7 +29,6 @@ var {
   SwipeableListView,
   TouchableHighlight,
   StyleSheet,
-  RecyclerViewBackedScrollView,
   Text,
   View,
   Alert,
@@ -76,7 +75,6 @@ var SwipeableListViewSimpleExample = React.createClass({
             </View>);
           }}
           renderRow={this._renderRow}
-          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
           renderSeparator={this._renderSeperator}
         />
       </UIExplorerPage>

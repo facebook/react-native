@@ -16,6 +16,35 @@
 
 #import "RCTTextSelection.h"
 
+@interface RCTTextField()
+
+- (BOOL)shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+- (BOOL)keyboardInputShouldDelete;
+- (BOOL)textFieldShouldEndEditing;
+
+@end
+
+@interface RCTTextFieldDelegateProxy: NSObject <UITextFieldDelegate>
+@end
+
+@implementation RCTTextFieldDelegateProxy
+
+- (BOOL)textField:(RCTTextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  return [textField shouldChangeCharactersInRange:range replacementString:string];
+}
+
+- (BOOL)keyboardInputShouldDelete:(RCTTextField *)textField
+{
+  return [textField keyboardInputShouldDelete];
+}
+
+- (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField {
+  return [textField textFieldShouldEndEditing];
+}
+
+@end
+
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -23,6 +52,9 @@
   NSInteger _nativeEventCount;
   BOOL _submitted;
   UITextRange *_previousSelectionRange;
+  BOOL _textWasPasted;
+  NSString *_finalText;
+  RCTTextFieldDelegateProxy *_delegateProxy;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -36,6 +68,11 @@
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
     _blurOnSubmit = YES;
+
+    // We cannot use `self.delegate = self;` here because `UITextField` implements some of these delegate methods itself,
+    // so if we implement this delegate on self, we will override some of its behaviours.
+    _delegateProxy = [RCTTextFieldDelegateProxy new];
+    self.delegate = _delegateProxy;
   }
   return self;
 }
@@ -176,12 +213,21 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldEndEditing
 {
+  if (![_finalText isEqualToString:self.text]) {
+    _finalText = nil;
+    // iOS does't send event `UIControlEventEditingChanged` if the change was happened because of autocorrection
+    // which was triggered by loosing focus. We assume that if `text` was changed in the middle of loosing focus process,
+    // we did not receive that event. So, we call `textFieldDidChange` manually.
+    [self textFieldDidChange];
+  }
+
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
 }
+
 - (void)textFieldSubmitEditing
 {
   _submitted = YES;
@@ -207,15 +253,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
     [self sendSelectionEvent];
   });
-}
-
-- (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField
-{
-  if (_submitted) {
-    _submitted = NO;
-    return _blurOnSubmit;
-  }
-  return YES;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -275,6 +312,60 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                  eventCount:_nativeEventCount];
   }
   return result;
+}
+
+#pragma mark - UITextFieldDelegate (Proxied)
+
+- (BOOL)shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  // Only allow single keypresses for `onKeyPress`, pasted text will not be sent.
+  if (_textWasPasted) {
+    _textWasPasted = NO;
+  } else {
+    [self sendKeyValueForString:string];
+  }
+
+  if (_maxLength != nil && ![string isEqualToString:@"\n"]) { // Make sure forms can be submitted via return.
+    NSUInteger allowedLength = _maxLength.integerValue - MIN(_maxLength.integerValue, self.text.length) + range.length;
+    if (string.length > allowedLength) {
+      if (string.length > 1) {
+        // Truncate the input string so the result is exactly `maxLength`.
+        NSString *limitedString = [string substringToIndex:allowedLength];
+        NSMutableString *newString = self.text.mutableCopy;
+        [newString replaceCharactersInRange:range withString:limitedString];
+        self.text = newString;
+
+        // Collapse selection at end of insert to match normal paste behavior.
+        UITextPosition *insertEnd = [self positionFromPosition:self.beginningOfDocument
+                                                        offset:(range.location + allowedLength)];
+        self.selectedTextRange = [self textRangeFromPosition:insertEnd toPosition:insertEnd];
+        [self textFieldDidChange];
+      }
+      return NO;
+    }
+  }
+
+  return YES;
+}
+
+// This method allows us to detect a `Backspace` keyPress
+// even when there is no more text in the TextField.
+- (BOOL)keyboardInputShouldDelete
+{
+  [self shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
+  return YES;
+}
+
+- (BOOL)textFieldShouldEndEditing
+{
+  _finalText = self.text;
+
+  if (_submitted) {
+    _submitted = NO;
+    return _blurOnSubmit;
+  }
+
+  return YES;
 }
 
 @end

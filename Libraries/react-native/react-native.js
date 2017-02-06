@@ -50,7 +50,6 @@ const ReactNative = {
   get Slider() { return require('Slider'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
   get SwipeableListView() { return require('SwipeableListView'); },
